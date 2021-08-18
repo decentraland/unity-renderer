@@ -95,7 +95,7 @@ public class BIWMainController : PluginFeature
         if (builderInWorldBridge != null)
         {
             builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
-            builderInWorldBridge.OnBuilderProjectInfo += BuilderProjectPanelInfo;
+            builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
         }
 
         InitHUD();

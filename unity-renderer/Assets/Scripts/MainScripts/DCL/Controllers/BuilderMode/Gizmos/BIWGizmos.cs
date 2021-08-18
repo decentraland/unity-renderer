@@ -113,7 +113,7 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
         return 0;
     }
 
-    public void OnEndDrag() { activeAxis?.SetColorDefault(); }
+    public void OnEndDrag() { activeAxis.SetColorDefault(); }
 
     public virtual bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {

@@ -206,8 +206,8 @@ public class BuilderProjectsPanelController : IHUD
             tld = TESTING_TLD;
             DataStore.i.playerRealm.Set(new CurrentRealmModel()
             {
-                domain = $"https://peer-lb.decentraland.{TESTING_TLD}",
-                contentServerUrl = $"https://peer-lb.decentraland.{TESTING_TLD}/content",
+                domain = $"https://peer.decentraland.{TESTING_TLD}",
+                contentServerUrl = $"https://peer.decentraland.{TESTING_TLD}/content",
             });
         }
 #endif

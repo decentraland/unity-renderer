@@ -36,12 +36,12 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
     public delegate void OnMouseDragDelegate(int buttonId, Vector3 position, float axisX, float axisY);
     public delegate void OnMouseDragDelegateRaw(int buttonId, Vector3 position, float axisX, float axisY);
 
-    internal float lastTimeMouseDown = 0;
-    internal Vector3 lastMousePosition;
-    internal bool canInputBeMade = true;
-    internal bool currentClickIsOnUi = false;
-    internal int lastMouseWheelAxisDirection = 0;
-    internal float lastMouseWheelTime = 0;
+    private float lastTimeMouseDown = 0;
+    private Vector3 lastMousePosition;
+    private bool canInputBeMade = true;
+    private bool currentClickIsOnUi = false;
+    private int lastMouseWheelAxisDirection = 0;
+    private float lastMouseWheelTime = 0;
 
     public override void Update()
     {
@@ -55,14 +55,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
         UpdateMouseWheelInput();
     }
 
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        currentClickIsOnUi = false;
-    }
-
-    internal bool HasMouseButtonInput(int button)
+    private bool HasMouseButtonInput(int button)
     {
         if (Input.GetMouseButtonDown(button))
         {
@@ -86,7 +79,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
         return false;
     }
 
-    internal void OnMouseWheelInput(float axisValue)
+    private void OnMouseWheelInput(float axisValue)
     {
         int axisDirection = (int)Mathf.Sign(axisValue);
         if (lastMouseWheelAxisDirection == axisDirection)
@@ -100,14 +93,14 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
         }
     }
 
-    internal void SetMouseWheelDelta(float axisValue, int axisDirection)
+    private void SetMouseWheelDelta(float axisValue, int axisDirection)
     {
         MouseWheel(axisValue);
         lastMouseWheelTime = Time.unscaledTime;
         lastMouseWheelAxisDirection = axisDirection;
     }
 
-    internal void UpdateMouseWheelInput()
+    private void UpdateMouseWheelInput()
     {
         float axisValue = Input.GetAxis(MOUSE_SCROLLWHEEL);
         if (axisValue != 0)
@@ -118,7 +111,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
     public void ResumeInput() { canInputBeMade = true; }
 
-    internal void MouseUp(int buttonId, Vector3 mousePosition)
+    private void MouseUp(int buttonId, Vector3 mousePosition)
     {
         if (!isEditModeActive)
             return;
@@ -134,24 +127,19 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
             return;
 
         if (!BIWUtils.IsPointerOverUIElement())
-            MouseUpInvoke(buttonId, mousePosition);
+        {
+            OnMouseUp?.Invoke(buttonId, mousePosition);
+            if (Vector3.Distance(mousePosition, lastMousePosition) >= MOVEMENT_CLICK_THRESHOLD)
+                return;
+            if (Time.unscaledTime >= lastTimeMouseDown + MS_CLICK_THRESHOLD / 1000)
+                return;
+            OnMouseClick?.Invoke(buttonId, mousePosition);
+        }
         else
-            MouseUpOnGUI(buttonId, mousePosition);
+            OnMouseUpOnUI?.Invoke(buttonId, mousePosition);
     }
 
-    internal void MouseUpInvoke(int buttonId, Vector3 mousePosition)
-    {
-        OnMouseUp?.Invoke(buttonId, mousePosition);
-        if (Vector3.Distance(mousePosition, lastMousePosition) >= MOVEMENT_CLICK_THRESHOLD)
-            return;
-        if (Time.unscaledTime >= lastTimeMouseDown + MS_CLICK_THRESHOLD / 1000)
-            return;
-        OnMouseClick?.Invoke(buttonId, mousePosition);
-    }
-
-    internal void MouseUpOnGUI(int buttonId, Vector3 mousePosition) { OnMouseUpOnUI?.Invoke(buttonId, mousePosition); }
-
-    internal void MouseDown(int buttonId, Vector3 mousePosition)
+    private void MouseDown(int buttonId, Vector3 mousePosition)
     {
         if (!isEditModeActive)
             return;
@@ -166,7 +154,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
             OnMouseDown?.Invoke(buttonId, mousePosition);
     }
 
-    internal void MouseWheel(float axisValue)
+    private void MouseWheel(float axisValue)
     {
         if (!isEditModeActive)
             return;
@@ -177,7 +165,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
             OnMouseWheel?.Invoke(axisValue);
     }
 
-    internal void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+    private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
         if (!isEditModeActive)
             return;
@@ -188,7 +176,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
         OnMouseDrag?.Invoke(buttonId, mousePosition, axisX, axisY);
     }
 
-    internal void MouseRawDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+    private void MouseRawDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
         if (!isEditModeActive)
             return;

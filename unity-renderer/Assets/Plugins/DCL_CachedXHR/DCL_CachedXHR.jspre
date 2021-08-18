@@ -192,17 +192,29 @@ DCL_CachedXHR.cache = {
     },
     init: function () {
         var self = this;
-        DCL_CachedXHR.log("Initializing plugin...");
+        DCL_CachedXHR.log("Initializing plugin... waiting for config...");
 
-        self.enabled = false;
+        var idb_enabled_future = window.USE_UNITY_INDEXED_DB_CACHE;
 
-        if (window.indexedDB == null) {
-            DCL_CachedXHR.log("Non-chrome detected!. IndexedDB is " + !!DCL_CachedXHR.cache.enabled);
-        } else {
-            DCL_CachedXHR.log("We are in chrome. IndexedDB is " + !!DCL_CachedXHR.cache.enabled);
+        if (idb_enabled_future == null) {
+            DCL_CachedXHR.log("future is null :(");
+            self.openDB();
+            return;
         }
 
-        self.openDB();
+        idb_enabled_future.then(
+            function (is_enabled) {
+                is_enabled &= window.indexedDB == null; // NOTE(Brian): if config comes as false, disable in chrome only
+                self.enabled = is_enabled;
+
+                if (window.indexedDB == null) {
+                    DCL_CachedXHR.log("Non-chrome detected!. IndexedDB is " + !!DCL_CachedXHR.cache.enabled);
+                } else {
+                    DCL_CachedXHR.log("We are in chrome. IndexedDB is " + !!DCL_CachedXHR.cache.enabled);
+                }
+
+                self.openDB();
+            })
     },
 
     openDB: function () {

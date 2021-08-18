@@ -57,13 +57,10 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
 
     public void Dispose()
     {
-        if (gameObject == null)
-            return;
-
-        if (isDestroyed)
-            return;
-
-        Destroy(gameObject);
+        if (!isDestroyed && gameObject != null)
+        {
+            Destroy(gameObject);
+        }
     }
 
     void IUnpublishPopupView.Show(string title, string info)

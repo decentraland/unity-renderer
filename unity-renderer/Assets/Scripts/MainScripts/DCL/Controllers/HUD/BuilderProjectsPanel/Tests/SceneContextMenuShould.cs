@@ -21,7 +21,6 @@ namespace Tests
 
         [Test]
         [Explicit("Not valid for MVP version")]
-        [Category("Explicit")]
         public void ShowOptionsForOwnerDeployedScene()
         {
             contextMenu.Show("", isSceneDeployed: true, isOwnerOrOperator: true, isContributor: false);
@@ -54,7 +53,6 @@ namespace Tests
 
         [Test]
         [Explicit("Not valid for MVP version")]
-        [Category("Explicit")]
         public void ShowOptionsForContributorDeployedScene()
         {
             contextMenu.Show("", isSceneDeployed: true, isOwnerOrOperator: false, isContributor: true);

@@ -1,17 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using DCL;
 using DCL.Helpers;
 using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using WaitUntil = UnityEngine.WaitUntil;
 
 public class WearablesVisualTests : VisualTestsBase
 {
-    private AvatarMeshCombinerHelper combiner = new AvatarMeshCombinerHelper();
     private BaseDictionary<string, WearableItem> catalog;
     private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
     private Material avatarMaterial;
@@ -35,7 +31,6 @@ public class WearablesVisualTests : VisualTestsBase
     public IEnumerator EmissiveWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearable()); }
 
     [UnityTest, VisualTest]
-    [Category("Visual Tests")]
     public IEnumerator EmissiveWearable()
     {
         //Arrange
@@ -55,7 +50,6 @@ public class WearablesVisualTests : VisualTestsBase
     public IEnumerator AlphaBlendWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearable()); }
 
     [UnityTest, VisualTest]
-    [Category("Visual Tests")]
     public IEnumerator AlphaBlendWearable()
     {
         //Arrange
@@ -93,40 +87,23 @@ public class WearablesVisualTests : VisualTestsBase
     {
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
-
         WearableController wearable = new WearableController(wearableItem);
         toCleanUp.Add(wearable);
-
         bool succeeded = false;
         bool failed = false;
-
-        GameObject testGameObject = CreateTestGameObject(wearable.id, Vector3.up * -0.75f);
-        wearable.Load(bodyShapeId, testGameObject.transform, x => succeeded = true, x => failed = true);
-
+        wearable.Load(bodyShapeId, CreateTestGameObject(wearable.id, wearablePosition).transform, x => succeeded = true, x => failed = true);
         yield return new WaitUntil(() => succeeded || failed);
-
         Assert.IsTrue(succeeded);
-
         wearable.SetAssetRenderersEnabled(true);
-        wearable.SetupHairAndSkinColors(skinColor, hairColor);
-
-        var rends = wearable.GetRenderers();
-        combiner.Combine(rends[0], rends.ToArray(), avatarMaterial);
-        combiner.container.transform.SetParent(rends[0].transform.parent);
-        combiner.container.transform.localPosition = rends[0].transform.localPosition;
-
-        testGameObject.transform.position = wearablePosition;
+        wearable.SetupDefaultMaterial(avatarMaterial, skinColor, hairColor);
     }
 
     protected override IEnumerator TearDown()
     {
-        combiner.Dispose();
-
         foreach (WearableController wearable in toCleanUp)
         {
             wearable.CleanUp();
         }
-
         return base.TearDown();
     }
 }

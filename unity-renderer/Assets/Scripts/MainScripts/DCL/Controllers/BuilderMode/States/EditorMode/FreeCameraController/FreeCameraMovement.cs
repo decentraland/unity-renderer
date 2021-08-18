@@ -72,33 +72,32 @@ namespace DCL.Camera
         [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
         [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
-        internal Vector3 direction = Vector3.zero;
+        private Vector3 direction = Vector3.zero;
 
-        internal float yaw = 0f;
-        internal float pitch = 0f;
+        private float yaw = 0f;
+        private float pitch = 0f;
 
-        internal float panAxisX = 0f;
-        internal float panAxisY = 0f;
+        private float panAxisX = 0f;
+        private float panAxisY = 0f;
 
-        internal bool isCameraAbleToMove = true;
+        private bool isCameraAbleToMove = true;
 
-        internal bool isAdvancingForward = false;
-        internal bool isAdvancingBackward = false;
-        internal bool isAdvancingLeft = false;
-        internal bool isAdvancingRight = false;
-        internal bool isAdvancingUp = false;
-        internal bool isAdvancingDown = false;
+        private bool isAdvancingForward = false;
+        private bool isAdvancingBackward = false;
+        private bool isAdvancingLeft = false;
+        private bool isAdvancingRight = false;
+        private bool isAdvancingUp = false;
+        private bool isAdvancingDown = false;
 
-        internal bool isDetectingMovement = false;
-        internal bool hasBeenMovement = false;
+        private bool isDetectingMovement = false;
+        private bool hasBeenMovement = false;
 
-        internal bool isPanCameraActive = false;
-        internal bool isMouseRightClickDown = false;
+        private bool isPanCameraActive = false;
+        private bool isMouseRightClickDown = false;
 
-        internal Coroutine smoothLookAtCoroutine;
-        internal Coroutine smoothFocusOnTargetCoroutine;
-        internal Coroutine smoothScrollCoroutine;
-        internal Coroutine takeScreenshotCoroutine;
+        private Coroutine smoothLookAtCor;
+        private Coroutine smoothFocusOnTargetCor;
+        private Coroutine smoothScrollCor;
 
         private InputAction_Hold.Started advanceForwardStartDelegate;
         private InputAction_Hold.Finished advanceForwardFinishedDelegate;
@@ -125,14 +124,13 @@ namespace DCL.Camera
         private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
         private Vector3 nextTranslation;
-        internal Vector3 originalCameraPosition;
-        internal Transform originalCameraLookAt;
+        private Vector3 originalCameraPosition;
         private Vector3 cameraVelocity = Vector3.zero;
+        private Transform originalCameraLookAt;
 
         private float lastMouseWheelTime;
         private float cameraPanAdvance;
         private float cameraLookAdvance;
-        internal UnityEngine.Camera screenshotCamera;
 
         private void Awake()
         {
@@ -146,75 +144,50 @@ namespace DCL.Camera
             advanceForwardStartDelegate = (action) => isAdvancingForward = true;
             advanceForwardFinishedDelegate = (action) => isAdvancingForward = false;
 
-            if (advanceFowardInputAction != null)
-            {
-                advanceFowardInputAction.OnStarted += advanceForwardStartDelegate;
-                advanceFowardInputAction.OnFinished += advanceForwardFinishedDelegate;
-            }
+            advanceFowardInputAction.OnStarted += advanceForwardStartDelegate;
+            advanceFowardInputAction.OnFinished += advanceForwardFinishedDelegate;
 
             advanceBackStartDelegate = (action) => isAdvancingBackward = true;
             advanceBackFinishedDelegate = (action) => isAdvancingBackward = false;
 
-            if (advanceBackInputAction != null)
-            {
-                advanceBackInputAction.OnStarted += advanceBackStartDelegate;
-                advanceBackInputAction.OnFinished += advanceBackFinishedDelegate;
-            }
+            advanceBackInputAction.OnStarted += advanceBackStartDelegate;
+            advanceBackInputAction.OnFinished += advanceBackFinishedDelegate;
 
             advanceLeftStartDelegate = (action) => isAdvancingLeft = true;
             advanceLeftFinishedDelegate = (action) => isAdvancingLeft = false;
 
-            if (advanceLeftInputAction != null)
-            {
-                advanceLeftInputAction.OnStarted += advanceLeftStartDelegate;
-                advanceLeftInputAction.OnFinished += advanceLeftFinishedDelegate;
-            }
+            advanceLeftInputAction.OnStarted += advanceLeftStartDelegate;
+            advanceLeftInputAction.OnFinished += advanceLeftFinishedDelegate;
 
             advanceRightStartDelegate = (action) => isAdvancingRight = true;
             advanceRightFinishedDelegate = (action) => isAdvancingRight = false;
 
-            if (advanceRightInputAction != null)
-            {
-                advanceRightInputAction.OnStarted += advanceRightStartDelegate;
-                advanceRightInputAction.OnFinished += advanceRightFinishedDelegate;
-            }
+            advanceRightInputAction.OnStarted += advanceRightStartDelegate;
+            advanceRightInputAction.OnFinished += advanceRightFinishedDelegate;
 
             advanceUpStartDelegate = (action) => isAdvancingUp = true;
             advanceUpFinishedDelegate = (action) => isAdvancingUp = false;
 
-            if (advanceUpInputAction != null)
-            {
-                advanceUpInputAction.OnStarted += advanceUpStartDelegate;
-                advanceUpInputAction.OnFinished += advanceUpFinishedDelegate;
-            }
+            advanceUpInputAction.OnStarted += advanceUpStartDelegate;
+            advanceUpInputAction.OnFinished += advanceUpFinishedDelegate;
 
             advanceDownStartDelegate = (action) => isAdvancingDown = true;
             advanceDownFinishedDelegate = (action) => isAdvancingDown = false;
 
-            if (advanceDownInputAction != null)
-            {
-                advanceDownInputAction.OnStarted += advanceDownStartDelegate;
-                advanceDownInputAction.OnFinished += advanceDownFinishedDelegate;
-            }
+            advanceDownInputAction.OnStarted += advanceDownStartDelegate;
+            advanceDownInputAction.OnFinished += advanceDownFinishedDelegate;
 
             cameraPanStartDelegate = (action) => isPanCameraActive = true;
             cameraPanFinishedDelegate = (action) => isPanCameraActive = false;
 
-            if (cameraPanInputAction != null)
-            {
-                cameraPanInputAction.OnStarted += cameraPanStartDelegate;
-                cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
-            }
+            cameraPanInputAction.OnStarted += cameraPanStartDelegate;
+            cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
 
             zoomInFromKeyboardDelegate = (action) => MouseWheel(1f);
-
-            if (zoomInFromKeyboardInputAction != null)
-                zoomInFromKeyboardInputAction.OnTriggered += zoomInFromKeyboardDelegate;
+            zoomInFromKeyboardInputAction.OnTriggered += zoomInFromKeyboardDelegate;
 
             zoomOutFromKeyboardDelegate = (action) => MouseWheel(-1f);
-
-            if (zoomOutFromKeyboardInputAction != null)
-                zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
+            zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
         }
 
         public void StartDectectingMovement()
@@ -227,7 +200,7 @@ namespace DCL.Camera
 
         public void StopDetectingMovement() { isDetectingMovement = false; }
 
-        internal void OnInputMouseUp(int buttonId, Vector3 mousePosition)
+        private void OnInputMouseUp(int buttonId, Vector3 mousePosition)
         {
             if (buttonId != 1)
                 return;
@@ -235,7 +208,7 @@ namespace DCL.Camera
             isMouseRightClickDown = false;
         }
 
-        internal void OnInputMouseDown(int buttonId, Vector3 mousePosition)
+        private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
         {
             if (buttonId != 1)
                 return;
@@ -253,65 +226,29 @@ namespace DCL.Camera
             BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
             BIWInputWrapper.OnMouseUp -= OnInputMouseUp;
 
-            if (advanceFowardInputAction != null)
-            {
-                advanceFowardInputAction.OnStarted -= advanceForwardStartDelegate;
-                advanceFowardInputAction.OnFinished -= advanceForwardFinishedDelegate;
-            }
+            advanceFowardInputAction.OnStarted -= advanceForwardStartDelegate;
+            advanceFowardInputAction.OnFinished -= advanceForwardFinishedDelegate;
 
-            if (advanceBackInputAction != null)
-            {
-                advanceBackInputAction.OnStarted -= advanceBackStartDelegate;
-                advanceBackInputAction.OnFinished -= advanceBackFinishedDelegate;
-            }
+            advanceBackInputAction.OnStarted -= advanceBackStartDelegate;
+            advanceBackInputAction.OnFinished -= advanceBackFinishedDelegate;
 
-            if (advanceLeftInputAction != null)
-            {
-                advanceLeftInputAction.OnStarted -= advanceLeftStartDelegate;
-                advanceLeftInputAction.OnFinished -= advanceLeftFinishedDelegate;
-            }
+            advanceLeftInputAction.OnStarted -= advanceLeftStartDelegate;
+            advanceLeftInputAction.OnFinished -= advanceLeftFinishedDelegate;
 
-            if (advanceRightInputAction != null)
-            {
-                advanceRightInputAction.OnStarted -= advanceRightStartDelegate;
-                advanceRightInputAction.OnFinished -= advanceRightFinishedDelegate;
-            }
+            advanceRightInputAction.OnStarted -= advanceRightStartDelegate;
+            advanceRightInputAction.OnFinished -= advanceRightFinishedDelegate;
 
-            if (advanceDownInputAction != null)
-            {
-                advanceDownInputAction.OnStarted -= advanceDownStartDelegate;
-                advanceDownInputAction.OnFinished -= advanceDownFinishedDelegate;
-            }
+            advanceDownInputAction.OnStarted -= advanceDownStartDelegate;
+            advanceDownInputAction.OnFinished -= advanceDownFinishedDelegate;
 
-            if (advanceUpInputAction != null)
-            {
-                advanceUpInputAction.OnStarted -= advanceUpStartDelegate;
-                advanceUpInputAction.OnFinished -= advanceUpFinishedDelegate;
-            }
+            advanceUpInputAction.OnStarted -= advanceUpStartDelegate;
+            advanceUpInputAction.OnFinished -= advanceUpFinishedDelegate;
 
-            if (cameraPanInputAction != null)
-            {
-                cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
-                cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
-            }
+            cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
+            cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
 
-            if (zoomInFromKeyboardInputAction != null)
-                zoomInFromKeyboardInputAction.OnTriggered -= zoomInFromKeyboardDelegate;
-
-            if (zoomOutFromKeyboardInputAction != null)
-                zoomOutFromKeyboardInputAction.OnTriggered -= zoomOutFromKeyboardDelegate;
-
-            if (smoothScrollCoroutine != null)
-                CoroutineStarter.Stop(smoothScrollCoroutine);
-
-            if (smoothLookAtCoroutine != null)
-                CoroutineStarter.Stop(smoothLookAtCoroutine);
-
-            if (smoothFocusOnTargetCoroutine != null)
-                CoroutineStarter.Stop(smoothFocusOnTargetCoroutine);
-
-            if (takeScreenshotCoroutine != null)
-                CoroutineStarter.Stop(takeScreenshotCoroutine);
+            zoomInFromKeyboardInputAction.OnTriggered -= zoomInFromKeyboardDelegate;
+            zoomOutFromKeyboardInputAction.OnTriggered -= zoomOutFromKeyboardDelegate;
         }
 
         private void Update()
@@ -353,7 +290,7 @@ namespace DCL.Camera
 
         #endregion
 
-        internal void HandleCameraMovementInput()
+        private void HandleCameraMovementInput()
         {
             int velocityChangedCount = 0;
             if (isAdvancingForward)
@@ -419,28 +356,28 @@ namespace DCL.Camera
 
         public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
 
-        internal void MouseWheel(float axis)
+        private void MouseWheel(float axis)
         {
             if (!isCameraAbleToMove)
                 return;
 
-            if (smoothScrollCoroutine != null)
-                CoroutineStarter.Stop(smoothScrollCoroutine);
+            if (smoothScrollCor != null)
+                CoroutineStarter.Stop(smoothScrollCor);
 
             float delta = Time.time - lastMouseWheelTime;
             float scrollValue = axis * Mathf.Clamp01(delta);
             lastMouseWheelTime = Time.time;
 
-            smoothScrollCoroutine = CoroutineStarter.Start(SmoothScroll(scrollValue));
+            smoothScrollCor = CoroutineStarter.Start(SmoothScroll(scrollValue));
         }
 
-        internal void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+        private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
         {
             if (buttonId == 1 && !isPanCameraActive)
                 CameraLook(axisX, axisY);
         }
 
-        internal void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+        private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
         {
             if (buttonId == 2 || buttonId == 1 && isPanCameraActive)
                 CameraDrag(axisX, axisY);
@@ -481,9 +418,9 @@ namespace DCL.Camera
                 float.IsNaN(middlePoint.z))
                 return;
 
-            if (smoothFocusOnTargetCoroutine != null)
-                CoroutineStarter.Stop(smoothFocusOnTargetCoroutine);
-            smoothFocusOnTargetCoroutine = CoroutineStarter.Start(SmoothFocusOnTarget(middlePoint));
+            if (smoothFocusOnTargetCor != null)
+                CoroutineStarter.Stop(smoothFocusOnTargetCor);
+            smoothFocusOnTargetCor = CoroutineStarter.Start(SmoothFocusOnTarget(middlePoint));
             SmoothLookAt(middlePoint);
         }
 
@@ -500,9 +437,9 @@ namespace DCL.Camera
 
         public void SmoothLookAt(Vector3 position)
         {
-            if (smoothLookAtCoroutine != null)
-                CoroutineStarter.Stop(smoothLookAtCoroutine);
-            smoothLookAtCoroutine = CoroutineStarter.Start(SmoothLookAtCorutine(position));
+            if (smoothLookAtCor != null)
+                CoroutineStarter.Stop(smoothLookAtCor);
+            smoothLookAtCor = CoroutineStarter.Start(SmoothLookAtCorutine(position));
         }
 
         Vector3 FindMidPoint(List<BIWEntity> entitiesToLook)
@@ -588,20 +525,16 @@ namespace DCL.Camera
             direction = Vector3.zero;
         }
 
-        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
+        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
 
         private IEnumerator TakeSceneScreenshotCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
         {
-            UnityEngine.Camera camera = UnityEngine.Camera.current;
-            if (screenshotCamera != null)
-                camera = screenshotCamera;
-
             var current = camera.targetTexture;
             camera.targetTexture = null;
 
             yield return null;
 
-            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+            Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
             camera.targetTexture = current;
             callback?.Invoke(sceneScreenshot);
         }
@@ -621,7 +554,7 @@ namespace DCL.Camera
 
             yield return null;
 
-            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+            Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
             camera.targetTexture = current;
             callback?.Invoke(sceneScreenshot);
 
@@ -630,12 +563,12 @@ namespace DCL.Camera
             transform.forward = currentLookAt;
         }
 
-        private Texture2D ScreenshotFromCamera(UnityEngine.Camera cameraToScreenshot, int width, int height)
+        private Texture2D ScreenshotFromCamera(int width, int height)
         {
             RenderTexture rt = new RenderTexture(width, height, 32);
-            cameraToScreenshot.targetTexture = rt;
+            camera.targetTexture = rt;
             Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
-            cameraToScreenshot.Render();
+            camera.Render();
             RenderTexture.active = rt;
             screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
             screenShot.Apply();

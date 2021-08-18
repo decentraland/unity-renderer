@@ -110,9 +110,6 @@ namespace DCL.Bots
             CatalogController.i.AddWearablesToCatalog(newWearables);
         }
 
-        private Vector3 playerUnityPosition => CommonScriptableObjects.playerUnityPosition.Get();
-        private Vector3 playerWorldPosition => CommonScriptableObjects.playerWorldPosition.Get();
-
         /// <summary>
         /// Instantiates bots using the config file param values. It defaults some uninitialized values using the player's position
         /// </summary>
@@ -121,23 +118,22 @@ namespace DCL.Bots
         {
             yield return EnsureGlobalSceneAndCatalog();
 
-            // TODO(Brian): Use nullable types here, this may fail.
             if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
                 Log($"X Position value wasn't provided... using player's current X Position.");
-                config.xPos = playerUnityPosition.x;
+                config.xPos = DCLCharacterController.i.characterPosition.unityPosition.x;
             }
 
             if (config.yPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
                 Log($"Y Position value wasn't provided... using player's current Y Position.");
-                config.yPos = playerUnityPosition.y;
+                config.yPos = DCLCharacterController.i.characterPosition.unityPosition.y;
             }
 
             if (config.zPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
                 Log($"Z Position value wasn't provided... using player's current Z Position.");
-                config.zPos = playerUnityPosition.z;
+                config.zPos = DCLCharacterController.i.characterPosition.unityPosition.z;
             }
 
             Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xPos}, {config.yPos}, {config.zPos})...");
@@ -161,20 +157,20 @@ namespace DCL.Bots
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
                 Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
-                config.xCoord = Mathf.Floor(playerWorldPosition.x / ParcelSettings.PARCEL_SIZE);
+                config.xCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.x / ParcelSettings.PARCEL_SIZE);
             }
 
             if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
                 Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
-                config.yCoord = Mathf.Floor(playerWorldPosition.z / ParcelSettings.PARCEL_SIZE);
+                config.yCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.z / ParcelSettings.PARCEL_SIZE);
             }
 
             var worldPosConfig = new WorldPosInstantiationConfig()
             {
                 amount = config.amount,
                 xPos = config.xCoord * ParcelSettings.PARCEL_SIZE,
-                yPos = playerUnityPosition.y - DCLCharacterController.i.characterController.height / 2,
+                yPos = DCLCharacterController.i.characterPosition.unityPosition.y - DCLCharacterController.i.characterController.height / 2,
                 zPos = config.yCoord * ParcelSettings.PARCEL_SIZE,
                 areaWidth = config.areaWidth,
                 areaDepth = config.areaDepth
@@ -197,9 +193,9 @@ namespace DCL.Bots
             {
                 id = entityId,
                 name = entityId,
-                hairColor = Random.ColorHSV(0, 1, 0, 1, 0.25f, 0.9f),
-                eyeColor = Random.ColorHSV(0, 1, 0, 1, 0f, 0.2f),
-                skinColor = Random.ColorHSV(0, 1, 0.3f, 1, 0.4f, 0.9f),
+                hairColor = Color.white,
+                eyeColor = Color.white,
+                skinColor = Color.white,
                 bodyShape = Random.Range(0, 2) == 0 ? WearableLiterals.BodyShapes.FEMALE : WearableLiterals.BodyShapes.MALE,
                 wearables = GetRandomizedWearablesSet()
             };

@@ -89,7 +89,7 @@ namespace DCL.Helpers
 
             if (assert)
             {
-                Assert.IsTrue(ratioResult >= ratio,
+                Assert.IsTrue(ratioResult > ratio,
                     $"{Path.GetFileName(baselineImagePathWithFilename)} has {ratioResult}% affinity, the minimum is {ratio}%. A diff image has been generated. Check it out at {testImagesPath}");
             }
 
@@ -144,7 +144,6 @@ namespace DCL.Helpers
             {
                 pixels[index] = new Color( Mathf.LinearToGammaSpace(pixels[index].r), Mathf.LinearToGammaSpace(pixels[index].g), Mathf.LinearToGammaSpace(pixels[index].b));
             }
-
             currentSnapshot.SetPixels(pixels);
 
             currentSnapshot.Apply();

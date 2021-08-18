@@ -101,7 +101,7 @@ namespace AvatarShape_Tests
             yield return new WaitUntil(() => wearable.isReady);
 
             //Act
-            wearable.SetAnimatorBones(skinnedMeshRenderer.bones, skinnedMeshRenderer.rootBone);
+            wearable.SetAnimatorBones(skinnedMeshRenderer);
 
             //Assert
             SkinnedMeshRenderer wearableSMR = wearable.assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
