@@ -31,6 +31,8 @@ namespace DCL.Bots
         private List<string> feetWearableIds = new List<string>();
         private List<string> bodyshapeWearableIds = new List<string>();
 
+        private Coroutine movementRoutine = null;
+
         /// <summary>
         /// Makes sure the Catalogue with all the wearables has already been loaded, otherwise it loads it
         /// </summary>
@@ -112,7 +114,7 @@ namespace DCL.Bots
 
         private Vector3 playerUnityPosition => CommonScriptableObjects.playerUnityPosition.Get();
         private Vector3 playerWorldPosition => CommonScriptableObjects.playerWorldPosition.Get();
-
+        private WorldPosInstantiationConfig lastConfigUsed;
         /// <summary>
         /// Instantiates bots using the config file param values. It defaults some uninitialized values using the player's position
         /// </summary>
@@ -150,6 +152,11 @@ namespace DCL.Bots
             }
 
             Log($"Finished instantiating {config.amount} avatars. They may take some time to appear while their wearables are being loaded.");
+
+            lastConfigUsed = config;
+
+            // TODO: Remove this and add to new entrypoint call in DebugController...
+            StartRandomMovement(0.5f);
         }
 
         /// <summary>
@@ -270,6 +277,73 @@ namespace DCL.Bots
                 wearablesSet.Add(bodyshapeWearableIds[Random.Range(0, bodyshapeWearableIds.Count)]);
 
             return wearablesSet;
+        }
+
+        /// <summary>
+        /// Starts a coroutine that traverses a % of the instantiated population at that moment and updates their waypoint with a frequency of 'waypointsUpdateTime' in seconds 
+        /// </summary>
+        /// <param name="populationNormalizedPercentage">The population % that will start moving, expressed normalized e.g: 50% would be 0.5f</param>
+        /// <param name="waypointsUpdateTime">The time wait in seconds for each waypoints update</param>
+        void StartRandomMovement(float populationNormalizedPercentage, float waypointsUpdateTime = 5f)
+        {
+            StopMovement();
+
+            int instantiatedCount = instantiatedBots.Count;
+            int botsAmount = Mathf.Min(Mathf.FloorToInt(instantiatedCount * populationNormalizedPercentage), instantiatedCount);
+
+            List<int> randomBotIndices = new List<int>();
+            for (int i = 0; i < botsAmount; i++)
+            {
+                int randomIndex = Random.Range(0, instantiatedCount);
+
+                if (botsAmount == instantiatedCount)
+                {
+                    randomIndex = i;
+                }
+                else
+                {
+                    while (randomBotIndices.Contains(randomIndex))
+                    {
+                        randomIndex = Random.Range(0, instantiatedCount);
+                    }
+                }
+
+                randomBotIndices.Add(randomIndex);
+            }
+
+            movementRoutine = CoroutineStarter.Start(RandomMovementRoutine(randomBotIndices, waypointsUpdateTime));
+        }
+
+        void StopMovement()
+        {
+            if (movementRoutine != null)
+                CoroutineStarter.Stop(movementRoutine);
+        }
+
+        private float lastMovementUpdateTime;
+        IEnumerator RandomMovementRoutine(List<int> targetBots, float waypointsUpdateTime)
+        {
+            lastMovementUpdateTime = Time.timeSinceLevelLoad;
+            while (true)
+            {
+                float currentTime = Time.timeSinceLevelLoad;
+                if (currentTime - lastMovementUpdateTime >= waypointsUpdateTime)
+                {
+                    lastMovementUpdateTime = currentTime;
+                    foreach (int targetBotIndex in targetBots)
+                    {
+                        // Thanks to the avatars movement interpolation, we can just update their entity position to the target position.
+                        Vector3 randomizedAreaPosition = new Vector3(Random.Range(lastConfigUsed.xPos, lastConfigUsed.xPos + lastConfigUsed.areaWidth),
+                            lastConfigUsed.yPos,
+                            Random.Range(lastConfigUsed.zPos,
+                                lastConfigUsed.zPos + lastConfigUsed.areaDepth));
+
+                        UpdateEntityTransform(globalScene, instantiatedBots[targetBotIndex], randomizedAreaPosition, Quaternion.identity, Vector3.one);
+                    }
+                }
+
+                yield return null;
+            }
         }
 
         void UpdateEntityTransform(ParcelScene scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)
