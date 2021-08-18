@@ -6,12 +6,12 @@ public class BIWScaleGizmos : BIWGizmos
 {
     const float MINIMUN_SCALE_ALLOWED = 0.01f;
 
-    [SerializeField] BIWGizmosAxis axisProportionalScale = null;
+    [SerializeField] internal BIWGizmosAxis axisProportionalScale = null;
 
-    private Vector2 lastMousePosition;
+    internal Vector2 lastMousePosition;
     private Vector2 initialMousePosition;
     private Vector3 initialHitPoint;
-    private Vector3 lastHitPoint;
+    internal Vector3 lastHitPoint;
     private Dictionary<Transform, Vector3> entitiesOriginalPositions = new Dictionary<Transform, Vector3>();
 
     public override void Initialize(Camera camera, Transform cameraTransform)
@@ -115,15 +115,15 @@ public class BIWScaleGizmos : BIWGizmos
         return scale;
     }
 
-    protected override void SetPreviousAxisValue(float axisValue, float transformValue)
+    internal override void SetPreviousAxisValue(float axisValue, float transformValue)
     {
         if (activeAxis == axisProportionalScale)
-            prevAxisValue = 0;
+            previousAxisValue = 0;
         else
-            prevAxisValue = axisValue;
+            previousAxisValue = axisValue;
     }
 
-    protected override float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
+    internal override float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
     {
         if (axis == axisProportionalScale)
         {
