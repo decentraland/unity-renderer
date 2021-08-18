@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,95 +84,49 @@ namespace DCL
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            Queue<IAvatarLODController> nearPlayersWithoutSpot = new Queue<IAvatarLODController>(); // Near players without an avatar spot
-            Queue<IAvatarLODController> farawayPlayerPromoted = new Queue<IAvatarLODController>(); // List of faraway players promoted to avatars
-
             //Cache .Get to boost performance
             float lodDistance = this.LODDistance.Get();
-            foreach (IAvatarLODController lodController in lodControllers.Values)
-            {
-                float distance = DistanceToOwnPlayer(lodController.player);
+            Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
-                if (distance < 0) //Behind camera
+            (IAvatarLODController lodController, float distance)[] data = lodControllers.Values.Select(x => (lodController: x, distance: DistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
+            Array.Sort(data, (x, y) => x.distance.CompareTo(y.distance));
+            foreach (var player in data)
+            {
+                if (player.distance < 0) //Behind camera
                 {
-                    lodController.SetInvisible();
                     continue;
                 }
 
                 //Nearby player
-                if (distance < lodDistance)
+                if (player.distance < lodDistance)
                 {
                     if (avatarsCount < maxAvatars)
                     {
-                        if (distance < simpleAvatarDistance.Get())
-                            lodController.SetFullAvatar();
+                        if (player.distance < simpleAvatarDistance.Get())
+                            player.lodController.SetFullAvatar();
                         else
-                            lodController.SetSimpleAvatar();
+                            player.lodController.SetSimpleAvatar();
                         avatarsCount++;
                         continue;
                     }
-
-                    // near avatar without spot will go invisible
-                    nearPlayersWithoutSpot.Enqueue(lodController);
+                    player.lodController.SetInvisible();
                     continue;
                 }
 
-                //We enqueue this faraway player as a candidate to be avatar instead of impostor
                 if (avatarsCount < maxAvatars)
                 {
-                    farawayPlayerPromoted.Enqueue(lodController);
+                    player.lodController.SetSimpleAvatar();
                     avatarsCount++;
                     continue;
                 }
-
                 if (impostorCount < maxImpostors)
                 {
-                    lodController.SetImpostor();
+                    player.lodController.SetImpostor();
                     impostorCount++;
                     continue;
                 }
 
-                lodController.SetInvisible();
-            }
-            EvaluatePromotedFarawayPlayers(nearPlayersWithoutSpot, farawayPlayerPromoted, maxImpostors - impostorCount);
-        }
-
-        internal void EvaluatePromotedFarawayPlayers(Queue<IAvatarLODController> nearPlayersWithoutSpot, Queue<IAvatarLODController> farAwayPlayersPromoted, int impostorSpotsLeft)
-        {
-            //Each promoted faraway player holds a spot for an avatar.
-            //If we have near players without spots, we let them take the spot
-            //Otherwise we give the spot of a Simple Avatar to the faraway player
-
-            while (farAwayPlayersPromoted.Count > 0)
-            {
-                //We ran out of near players, we can claim the avatar spot for this faraway player
-                if (nearPlayersWithoutSpot.Count <= 0)
-                {
-                    farAwayPlayersPromoted.Dequeue().SetSimpleAvatar();
-                    continue;
-                }
-
-                //We claim back the avatar spot for the nearby player
-                IAvatarLODController nearPlayer = nearPlayersWithoutSpot.Dequeue();
-                if (DistanceToOwnPlayer(nearPlayer.player) < simpleAvatarDistance.Get())
-                    nearPlayer.SetFullAvatar();
-                else
-                    nearPlayer.SetSimpleAvatar();
-
-                if (impostorSpotsLeft > 0)
-                {
-                    farAwayPlayersPromoted.Dequeue().SetImpostor();
-                    impostorSpotsLeft--;
-                    continue;
-                }
-                farAwayPlayersPromoted.Dequeue().SetInvisible();
-            }
-
-            //We still have some near player to process but we have no more spots
-            //we set them invisible
-            while (nearPlayersWithoutSpot.Count > 0)
-            {
-                nearPlayersWithoutSpot.Dequeue().SetInvisible();
+                player.lodController.SetInvisible();
             }
         }
 
@@ -180,11 +135,11 @@ namespace DCL
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        private float DistanceToOwnPlayer(Player player)
+        private float DistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
         {
             if (player == null || !IsInFrontOfCamera(player))
                 return -1;
-            return Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), player.worldPosition);
+            return Vector3.Distance(ownPlayerPosition, player.worldPosition);
         }
 
         private bool IsInFrontOfCamera(Player player) => true;

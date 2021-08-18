@@ -72,8 +72,8 @@ namespace DCL
 
         public class DataStore_AvatarsLOD
         {
-            public const int DEFAULT_MAX_AVATAR = 10;
-            public const int DEFAULT_MAX_IMPOSTORS = 200;
+            public const int DEFAULT_MAX_AVATAR = 50;
+            public const int DEFAULT_MAX_IMPOSTORS = 70;
 
             public readonly BaseVariable<float> simpleAvatarDistance = new BaseVariable<float>(15f);
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);

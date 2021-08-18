@@ -215,9 +215,9 @@ namespace Tests.AvatarsLODController
 
             controller.UpdateAllLODs(maxAvatars: 2);
 
-            controller.lodControllers["player0"].Received().SetSimpleAvatar();
+            controller.lodControllers["player0"].Received().SetInvisible();
             controller.lodControllers["player1"].Received().SetFullAvatar();
-            controller.lodControllers["player2"].Received().SetInvisible(); // Due to performance issues, we dont sort by distance
+            controller.lodControllers["player2"].Received().SetFullAvatar();
         }
 
         [Test]
