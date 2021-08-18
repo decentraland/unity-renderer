@@ -1,4 +1,5 @@
 #include "DCLSimpleLighting.hlsl"
+#include "GPUSkinning.hlsl"
 
 void BuildInputData(Varyings input, SurfaceDescription surfaceDescription, out InputData inputData)
 {
@@ -39,6 +40,8 @@ void BuildInputData(Varyings input, SurfaceDescription surfaceDescription, out I
 PackedVaryings vert(Attributes input)
 {
     Varyings output = (Varyings)0;
+    input.positionOS = GetSkinnedPos(input.positionOS, input.tangentOS, input.uv1);
+
     output = BuildVaryings(input);
     PackedVaryings packedOutput = (PackedVaryings)0;
     packedOutput = PackVaryings(output);
