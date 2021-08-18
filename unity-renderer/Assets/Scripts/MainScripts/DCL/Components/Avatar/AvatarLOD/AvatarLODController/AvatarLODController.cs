@@ -15,6 +15,11 @@ namespace DCL
     public class AvatarLODController : IAvatarLODController
     {
         private const float TRANSITION_DURATION = 0.25f;
+        private const float MAX_IMPOSTOR_TINT_DISTANCE = 32f;
+        private const float NEAREST_IMPOSTOR_COLOR_TINT_VALUE = 0.2f;
+        private const float FAREST_IMPOSTOR_COLOR_TINT_VALUE = 0.9f;
+        private const float NEAREST_IMPOSTOR_COLOR_ALPHA_VALUE = 1f;
+        private const float FAREST_IMPOSTOR_COLOR_ALPHA_VALUE = 0.75f;
         internal Player player;
 
         internal float avatarFade;
@@ -128,12 +133,12 @@ namespace DCL
 
         public void UpdateImpostorTint(float distanceToClosestPosition)
         {
-            float tintStep = Mathf.InverseLerp(0, 32, distanceToClosestPosition);
-            float tintValue = Mathf.Lerp(0.2f, 0.9f, tintStep);
+            float tintStep = Mathf.InverseLerp(0, MAX_IMPOSTOR_TINT_DISTANCE, distanceToClosestPosition);
+            float tintValue = Mathf.Lerp(NEAREST_IMPOSTOR_COLOR_TINT_VALUE, FAREST_IMPOSTOR_COLOR_TINT_VALUE, tintStep); // 20% to 90% alpha
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
-            newColor.a = Mathf.Lerp(1f, 0.75f, tintStep);
+            newColor.a = Mathf.Lerp(NEAREST_IMPOSTOR_COLOR_ALPHA_VALUE, FAREST_IMPOSTOR_COLOR_ALPHA_VALUE, tintStep); // 100% to 75% alpha
 
-            player.renderer.SetImpostorTintColor(newColor);
+            player.renderer.SetImpostorColor(newColor);
         }
 
         public void Dispose() { CoroutineStarter.Stop(currentTransition); }

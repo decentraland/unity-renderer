@@ -529,7 +529,7 @@ namespace DCL
 
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
 
-        public void SetImpostorTintColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
+        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
 
         public void SetAvatarFade(float avatarFade)
         {
