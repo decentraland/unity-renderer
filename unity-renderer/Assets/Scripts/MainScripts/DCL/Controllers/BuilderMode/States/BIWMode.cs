@@ -10,6 +10,7 @@ public class BIWMode
     public event Action OnInputDone;
     public event Action<BIWCompleteAction> OnActionGenerated;
 
+    public bool isSnapActive => isSnapActiveValue;
     public float maxDistanceToSelectEntities => maxDistanceToSelectEntitiesValue;
 
     protected float maxDistanceToSelectEntitiesValue = 50;
@@ -27,10 +28,12 @@ public class BIWMode
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
-    protected bool isSnapActiveValue = false, isMultiSelectionActive = false, isModeActive = false;
-    internal List<BIWEntity> selectedEntities;
+    internal bool isSnapActiveValue = false;
+    internal bool isModeActive = false;
+    internal bool isMultiSelectionActive = false;
+    protected List<BIWEntity> selectedEntities;
 
-    protected bool isNewObjectPlaced = false;
+    internal bool isNewObjectPlaced = false;
 
     internal List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
@@ -74,8 +77,6 @@ public class BIWMode
         isSnapActiveValue = isActive;
         HUDController.i.builderInWorldMainHud?.SetSnapModeActive(isSnapActiveValue);
     }
-
-    public bool isSnapActive => isSnapActiveValue;
 
     public virtual void StartMultiSelection() { isMultiSelectionActive = true; }
 

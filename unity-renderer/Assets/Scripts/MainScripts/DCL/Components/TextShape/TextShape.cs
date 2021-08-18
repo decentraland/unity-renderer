@@ -1,17 +1,17 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
     public class TextShape : BaseComponent
     {
-        [System.Serializable]
+        [Serializable]
         public class Model : BaseModel
         {
             public bool billboard;
@@ -69,6 +69,7 @@ namespace DCL.Components
             model = new Model();
             cachedFontMaterial = new Material(text.fontSharedMaterial);
             text.fontSharedMaterial = cachedFontMaterial;
+            text.text = string.Empty;
         }
 
         public void Update()
@@ -224,10 +225,16 @@ namespace DCL.Components
 
         public override int GetClassId() { return (int) CLASS_ID.UI_TEXT_SHAPE; }
 
+        public override void Cleanup()
+        {
+            text.text = string.Empty;
+            base.Cleanup();
+        }
+
         private void OnDestroy()
         {
             base.Cleanup();
-            Object.Destroy(cachedFontMaterial);
+            Destroy(cachedFontMaterial);
         }
     }
 }
