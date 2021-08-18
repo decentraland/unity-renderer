@@ -90,7 +90,7 @@ namespace DCL.Components
                 }
 
                 string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream);
+                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;

@@ -4,12 +4,10 @@ using DCL.Components;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
-using DCL.Components.Video.Plugin;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.Controllers;
 using DCL.Interface;
-using Newtonsoft.Json;
 
 namespace Tests
 {
@@ -36,38 +34,25 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VideoTextureIsPlayedCorrectly()
-        {
-            DCLVideoTexture.Model model = new DCLVideoTexture.Model()
-            {
-                playing = true
-            };
-            DCLVideoTexture videoTexture = CreateDCLVideoTextureWithCustomTextureModel(scene, "it-wont-load-during-test", model);
-            yield return videoTexture.routine;
-            Assert.IsTrue(videoTexture.texturePlayer.playing, "VideoTexture should be playing");
-        }
-
-        [UnityTest]
         public IEnumerator MessageIsSentWhenVideoStartsPlaying()
         {
-                        
             DCLVideoTexture.Model model = new DCLVideoTexture.Model()
             {
                 playing = true
             };
-            DCLVideoTexture videoTexture = CreateDCLVideoTextureWithCustomTextureModel(scene, "it-wont-load-during-test", model);
+            CreateDCLVideoTextureWithCustomTextureModel(scene, "it-wont-load-during-test", model);
             
-            var evt = new WebInterface.SendVideoStartedEvent()
+            var expectedEvent = new WebInterface.SendVideoStartedEvent()
             {
                 
             };
-            var json = JsonUtility.ToJson(evt);
-            var wasEventSend = false;
+            var json = JsonUtility.ToJson(expectedEvent);
+            var wasEventSent = false;
             yield return TestHelpers.WaitForMessageFromEngine("VideoStartedEvent", json,
                 () => { },
-                () =>wasEventSend = true);
+                () =>wasEventSent = true);
 
-            Assert.IsTrue(wasEventSend, $"Event of type {evt.GetType()} was not sent.");
+            Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent.");
         }
 
         [UnityTest]
