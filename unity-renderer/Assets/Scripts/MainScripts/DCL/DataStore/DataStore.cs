@@ -82,6 +82,7 @@ namespace DCL
                 public readonly BaseVariable<float> impostorsMovementInterpolationWait = new BaseVariable<float>(2f);
                 public readonly BaseVariable<float> lodDistance = new BaseVariable<float>(16f);
                 public readonly BaseVariable<float> maxNonLODAvatars = new BaseVariable<float>(70);
+                public readonly BaseVariable<float> impostorTintMinDistance = new BaseVariable<float>(32f);
                 public readonly BaseVariable<float> impostorTintMaxDistance = new BaseVariable<float>(32f);
                 public readonly BaseVariable<float> impostorTintNearestBlackness = new BaseVariable<float>(0.2f);
                 public readonly BaseVariable<float> impostorTintFarestBlackness = new BaseVariable<float>(0.9f);

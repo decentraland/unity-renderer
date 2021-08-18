@@ -88,7 +88,7 @@ namespace DCL
                 {
                     lodController.SetImpostorState();
                     // lodController.UpdateImpostorTint(distanceToPlayer - DataStore.i.avatarsLOD.LODDistance.Get());
-                    lodController.UpdateImpostorTint(distanceToPlayer - DataStore.i.avatarsLOD.testPanel.lodDistance.Get(),
+                    lodController.UpdateImpostorTint(distanceToPlayer, DataStore.i.avatarsLOD.testPanel.impostorTintMinDistance.Get(),
                         DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaNearestValue.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaFarestValue.Get());
                 }
                 else
@@ -112,7 +112,7 @@ namespace DCL
                 {
                     currentAvatar.SetImpostorState();
                     // currentAvatar.UpdateImpostorTint(closeDistanceAvatars.Keys[i] - DataStore.i.avatarsLOD.LODDistance.Get());
-                    currentAvatar.UpdateImpostorTint(closeDistanceAvatars.Keys[i] - DataStore.i.avatarsLOD.testPanel.lodDistance.Get(),
+                    currentAvatar.UpdateImpostorTint(closeDistanceAvatars.Keys[i], DataStore.i.avatarsLOD.testPanel.impostorTintMinDistance.Get(),
                         DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaNearestValue.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaFarestValue.Get());
                 }
                 else

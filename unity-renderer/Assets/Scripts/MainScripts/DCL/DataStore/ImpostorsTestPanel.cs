@@ -10,6 +10,7 @@ public class ImpostorsTestPanel : MonoBehaviour
     public Slider movementInterpolationWait;
     public Slider lodDistance;
     public Slider maxNonLODAvatars;
+    public Slider impostorTintMinDistance;
     public Slider impostorTintMaxDistance;
     public Slider impostorTintNearestBlackness;
     public Slider impostorTintFarestBlackness;
@@ -19,6 +20,7 @@ public class ImpostorsTestPanel : MonoBehaviour
     private Text movementInterpolationWaitText;
     private Text lodDistanceText;
     private Text maxNonLODAvatarsText;
+    private Text impostorTintMinDistanceText;
     private Text impostorTintMaxDistanceText;
     private Text impostorTintNearestBlacknessText;
     private Text impostorTintFarestBlacknessText;
@@ -30,6 +32,7 @@ public class ImpostorsTestPanel : MonoBehaviour
         SetupSlider(movementInterpolationWait, DataStore.i.avatarsLOD.testPanel.impostorsMovementInterpolationWait, movementInterpolationWaitText);
         SetupSlider(lodDistance, DataStore.i.avatarsLOD.testPanel.lodDistance, lodDistanceText);
         SetupSlider(maxNonLODAvatars, DataStore.i.avatarsLOD.testPanel.maxNonLODAvatars, maxNonLODAvatarsText);
+        SetupSlider(impostorTintMinDistance, DataStore.i.avatarsLOD.testPanel.impostorTintMinDistance, impostorTintMinDistanceText);
         SetupSlider(impostorTintMaxDistance, DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance, impostorTintMaxDistanceText);
         SetupSlider(impostorTintNearestBlackness, DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness, impostorTintNearestBlacknessText);
         SetupSlider(impostorTintFarestBlackness, DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness, impostorTintFarestBlacknessText);
