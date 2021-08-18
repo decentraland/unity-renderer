@@ -83,7 +83,7 @@ public class BIWNFTController
 
     public void UseNFT(string id)
     {
-        if (desactivateNFT)
+        if (desactivateNFT || nftOwner.assets == null)
             return;
 
         foreach (NFTInfo info in nftOwner.assets)

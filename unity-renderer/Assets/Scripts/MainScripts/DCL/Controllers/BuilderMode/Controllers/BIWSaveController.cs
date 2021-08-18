@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IBIWSaveController
 {
+    int GetSaveTimes();
     void SetSaveActivation(bool isActive, bool tryToSave = false);
     void TryToSave();
     void ForceSave();
@@ -13,12 +14,13 @@ public class BIWSaveController : BIWController, IBIWSaveController
 {
     private const float MS_BETWEEN_SAVES = 5000f;
 
-    public int numberOfSaves { get; private set; } = 0;
+    internal int numberOfSaves { get; set; } = 0;
 
     private BuilderInWorldBridge bridge;
 
     private float nextTimeToSave;
     private bool canActivateSave = true;
+    public int GetSaveTimes() { return numberOfSaves; }
 
     public override void Init(BIWContext context)
     {
@@ -100,5 +102,5 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { bridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
 
-    void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { ResetNumberOfSaves(); }
+    internal void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { ResetNumberOfSaves(); }
 }
