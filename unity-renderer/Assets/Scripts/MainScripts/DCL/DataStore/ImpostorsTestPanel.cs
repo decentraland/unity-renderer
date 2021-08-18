@@ -9,6 +9,7 @@ public class ImpostorsTestPanel : MonoBehaviour
 {
     public Slider movementInterpolationWait;
     public Slider lodDistance;
+    public Slider maxNonLODAvatars;
     public Slider impostorTintMaxDistance;
     public Slider impostorTintNearestBlackness;
     public Slider impostorTintFarestBlackness;
@@ -17,6 +18,7 @@ public class ImpostorsTestPanel : MonoBehaviour
 
     private Text movementInterpolationWaitText;
     private Text lodDistanceText;
+    private Text maxNonLODAvatarsText;
     private Text impostorTintMaxDistanceText;
     private Text impostorTintNearestBlacknessText;
     private Text impostorTintFarestBlacknessText;
@@ -25,67 +27,25 @@ public class ImpostorsTestPanel : MonoBehaviour
 
     private void Awake()
     {
-        DataStore.i.avatarsLOD.testPanel.impostorsMovementInterpolationWait.Set(movementInterpolationWait.value);
-        movementInterpolationWaitText = movementInterpolationWait.handleRect.GetComponentInChildren<Text>();
-        movementInterpolationWaitText.text = movementInterpolationWait.value.ToString("0.00");
-        movementInterpolationWait.onValueChanged.AddListener((float newValue) =>
-        {
-            DataStore.i.avatarsLOD.testPanel.impostorsMovementInterpolationWait.Set(newValue);
-            movementInterpolationWaitText.text = newValue.ToString("0.00");
-        });
+        SetupSlider(movementInterpolationWait, DataStore.i.avatarsLOD.testPanel.impostorsMovementInterpolationWait, movementInterpolationWaitText);
+        SetupSlider(lodDistance, DataStore.i.avatarsLOD.testPanel.lodDistance, lodDistanceText);
+        SetupSlider(maxNonLODAvatars, DataStore.i.avatarsLOD.testPanel.maxNonLODAvatars, maxNonLODAvatarsText);
+        SetupSlider(impostorTintMaxDistance, DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance, impostorTintMaxDistanceText);
+        SetupSlider(impostorTintNearestBlackness, DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness, impostorTintNearestBlacknessText);
+        SetupSlider(impostorTintFarestBlackness, DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness, impostorTintFarestBlacknessText);
+        SetupSlider(impostorAlphaNearestValue, DataStore.i.avatarsLOD.testPanel.impostorAlphaNearestValue, impostorAlphaNearestValueText);
+        SetupSlider(impostorAlphaFarestValue, DataStore.i.avatarsLOD.testPanel.impostorAlphaFarestValue, impostorAlphaFarestValueText);
+    }
 
-        DataStore.i.avatarsLOD.testPanel.lodDistance.Set(lodDistance.value);
-        lodDistanceText = lodDistance.handleRect.GetComponentInChildren<Text>();
-        lodDistanceText.text = lodDistance.value.ToString("0.00");
-        lodDistance.onValueChanged.AddListener((float newValue) =>
+    void SetupSlider(Slider targetSlider, BaseVariable<float> dataStoreTargetVariable, Text UITextReference)
+    {
+        dataStoreTargetVariable.Set(targetSlider.value);
+        UITextReference = targetSlider.handleRect.GetComponentInChildren<Text>();
+        UITextReference.text = targetSlider.value.ToString("0.00");
+        targetSlider.onValueChanged.AddListener((float newValue) =>
         {
-            DataStore.i.avatarsLOD.testPanel.lodDistance.Set(newValue);
-            lodDistanceText.text = newValue.ToString("0.00");
-        });
-
-        DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance.Set(impostorTintMaxDistance.value);
-        impostorTintMaxDistanceText = impostorTintMaxDistance.handleRect.GetComponentInChildren<Text>();
-        impostorTintMaxDistanceText.text = impostorTintMaxDistance.value.ToString("0.00");
-        impostorTintMaxDistance.onValueChanged.AddListener((float newValue) =>
-        {
-            DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance.Set(newValue);
-            impostorTintMaxDistanceText.text = newValue.ToString("0.00");
-        });
-
-        DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness.Set(impostorTintNearestBlackness.value);
-        impostorTintNearestBlacknessText = impostorTintNearestBlackness.handleRect.GetComponentInChildren<Text>();
-        impostorTintNearestBlacknessText.text = impostorTintNearestBlackness.value.ToString("0.00");
-        impostorTintNearestBlackness.onValueChanged.AddListener((float newValue) =>
-        {
-            DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness.Set(newValue);
-            impostorTintNearestBlacknessText.text = newValue.ToString("0.00");
-        });
-
-        DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness.Set(impostorTintFarestBlackness.value);
-        impostorTintFarestBlacknessText = impostorTintFarestBlackness.handleRect.GetComponentInChildren<Text>();
-        impostorTintFarestBlacknessText.text = impostorTintFarestBlackness.value.ToString("0.00");
-        impostorTintFarestBlackness.onValueChanged.AddListener((float newValue) =>
-        {
-            DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness.Set(newValue);
-            impostorTintFarestBlacknessText.text = newValue.ToString("0.00");
-        });
-
-        DataStore.i.avatarsLOD.testPanel.impostorAlphaNearestValue.Set(impostorAlphaNearestValue.value);
-        impostorAlphaNearestValueText = impostorAlphaNearestValue.handleRect.GetComponentInChildren<Text>();
-        impostorAlphaNearestValueText.text = impostorAlphaNearestValue.value.ToString("0.00");
-        impostorAlphaNearestValue.onValueChanged.AddListener((float newValue) =>
-        {
-            DataStore.i.avatarsLOD.testPanel.impostorAlphaNearestValue.Set(newValue);
-            impostorAlphaNearestValueText.text = newValue.ToString("0.00");
-        });
-
-        DataStore.i.avatarsLOD.testPanel.impostorAlphaFarestValue.Set(impostorAlphaFarestValue.value);
-        impostorAlphaFarestValueText = impostorAlphaFarestValue.handleRect.GetComponentInChildren<Text>();
-        impostorAlphaFarestValueText.text = impostorAlphaFarestValue.value.ToString("0.00");
-        impostorAlphaFarestValue.onValueChanged.AddListener((float newValue) =>
-        {
-            DataStore.i.avatarsLOD.testPanel.impostorAlphaFarestValue.Set(newValue);
-            impostorAlphaFarestValueText.text = newValue.ToString("0.00");
+            dataStoreTargetVariable.Set(newValue);
+            UITextReference.text = newValue.ToString("0.00");
         });
     }
 }

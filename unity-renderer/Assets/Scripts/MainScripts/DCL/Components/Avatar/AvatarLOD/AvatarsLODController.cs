@@ -102,10 +102,12 @@ namespace DCL
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
+            int maxNonLODAvatars = Mathf.FloorToInt(DataStore.i.avatarsLOD.testPanel.maxNonLODAvatars.Get());
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
                 IAvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
-                bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
+                // bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
+                bool isLOD = i >= maxNonLODAvatars;
                 if (isLOD)
                 {
                     currentAvatar.SetImpostorState();
