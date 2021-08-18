@@ -61,18 +61,21 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         freeCameraMovement.gameObject.SetActive(true);
+        var camera = freeCameraMovement.gameObject.AddComponent<Camera>();
+        freeCameraMovement.screenshotCamera = camera;
 
         //Act
         freeCameraMovement.TakeSceneScreenshot(AssertScreenShot);
         yield return new WaitUntil(() => screenshotTaken);
+        GameObject.Destroy(camera);
     }
 
     private void AssertScreenShot(Texture2D screenshot)
     {
-        screenshotTaken = true;
-
         //Assert
         Assert.IsNotNull(screenshot);
+
+        screenshotTaken = true;
     }
 
     protected override IEnumerator TearDown()

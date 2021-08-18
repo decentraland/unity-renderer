@@ -176,13 +176,13 @@ namespace DCL
                         debugString = "DEBUG_MODE&";
                         break;
                     case Environment.ZONE:
-                        debugString = "ENV=zone&";
+                        debugString = "NETWORK=ropsten&";
                         break;
                     case Environment.TODAY:
-                        debugString = "ENV=today&";
+                        debugString = "NETWORK=mainnet&";
                         break;
                     case Environment.ORG:
-                        debugString = "ENV=org&";
+                        debugString = "NETWORK=mainnet&";
                         break;
                 }
 

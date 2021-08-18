@@ -22,7 +22,7 @@ public static class AvatarUtils
         Func<Material, Material> mapFunction,
         string materialsContainingThisName = null)
     {
-        Renderer[] renderers = transformRoot.GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = transformRoot.GetComponentsInChildren<Renderer>(true);
 
         for (int i = 0; i < renderers.Length; i++)
         {
@@ -36,15 +36,21 @@ public static class AvatarUtils
                 if (m == null)
                     continue;
 
-                string materialName = m.name.ToLower();
+                bool materialNameIsCorrect = true;
 
-                if (string.IsNullOrEmpty(materialsContainingThisName) || materialName.Contains(materialsContainingThisName.ToLower()))
+                if ( !string.IsNullOrEmpty(materialsContainingThisName) )
                 {
-                    string newMatName = sharedMats[i1].name;
-                    Material newMat = mapFunction.Invoke(sharedMats[i1]);
-                    newMat.name = newMatName;
-                    sharedMats[i1] = newMat;
+                    string materialName = m.name.ToLower();
+                    materialNameIsCorrect = materialName.Contains(materialsContainingThisName.ToLower());
                 }
+
+                if (!materialNameIsCorrect)
+                    continue;
+
+                string newMatName = sharedMats[i1].name;
+                Material newMat = mapFunction.Invoke(sharedMats[i1]);
+                newMat.name = newMatName;
+                sharedMats[i1] = newMat;
             }
 
             r.sharedMaterials = sharedMats;
@@ -60,80 +66,15 @@ public static class AvatarUtils
     public static void SetColorInHierarchy(Transform transformRoot,
         string materialsContainingThisName,
         Color colorToChange,
-        string shaderId = "_BaseColor")
+        int propertyId)
     {
-        int _Color = Shader.PropertyToID(shaderId);
-
         MapSharedMaterialsRecursively(
             transformRoot,
             (mat) =>
             {
-                mat.SetColor(_Color, colorToChange);
+                mat.SetColor(propertyId, colorToChange);
                 return mat;
             },
             materialsContainingThisName);
-    }
-
-    /// <summary>
-    /// This will search all the transform hierachy for all renderers,
-    /// and replace all of its materials containing the specified name by the new one.
-    /// </summary>
-    /// <param name="transformRoot">Transform where to start the traversal</param>
-    /// <param name="replaceThemWith">material to replace them</param>
-    /// <param name="materialsContainingThisName">name to filter in materials</param>
-    public static List<Material> ReplaceMaterialsWithCopiesOf(Transform transformRoot,
-        Material replaceThemWith,
-        string materialsContainingThisName = null)
-    {
-        List<Material> result = new List<Material>();
-
-        MapSharedMaterialsRecursively(
-            transformRoot,
-            (mat) =>
-            {
-                Material copy = new Material(replaceThemWith);
-
-                Texture _MatCap = null;
-                Texture _GMatCap = null;
-                Texture _FMatCap = null;
-                float? _DitherFade = null;
-
-                if (replaceThemWith.HasProperty(ShaderUtils.MatCap))
-                    _MatCap = replaceThemWith.GetTexture(ShaderUtils.MatCap);
-
-                if (replaceThemWith.HasProperty(ShaderUtils.GlossMatCap))
-                    _GMatCap = replaceThemWith.GetTexture(ShaderUtils.GlossMatCap);
-
-                if (replaceThemWith.HasProperty(ShaderUtils.FresnelMatCap))
-                    _FMatCap = replaceThemWith.GetTexture(ShaderUtils.FresnelMatCap);
-
-                if (replaceThemWith.HasProperty(ShaderUtils.DitherFade))
-                    _DitherFade = replaceThemWith.GetFloat(ShaderUtils.DitherFade);
-
-                //NOTE(Brian): This method has a bug, if the material being copied lacks a property of the source material,
-                //             the source material property will get erased. It can't be added back and even the material inspector crashes.
-                //             Check the comment in Lit.shader.
-                copy.CopyPropertiesFromMaterial(mat);
-
-                if (_GMatCap != null)
-                    copy.SetTexture(ShaderUtils.GlossMatCap, _GMatCap);
-
-                if (_FMatCap != null)
-                    copy.SetTexture(ShaderUtils.FresnelMatCap, _FMatCap);
-
-                if (_MatCap != null)
-                    copy.SetTexture(ShaderUtils.MatCap, _MatCap);
-
-                if (_DitherFade != null)
-                    copy.SetFloat(ShaderUtils.DitherFade, _DitherFade.Value);
-
-                SRPBatchingHelper.OptimizeMaterial(copy);
-
-                result.Add(copy);
-                return copy;
-            },
-            materialsContainingThisName);
-
-        return result;
     }
 }
