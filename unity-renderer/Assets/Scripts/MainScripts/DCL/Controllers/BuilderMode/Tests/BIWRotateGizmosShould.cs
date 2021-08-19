@@ -12,7 +12,7 @@ public class BIWRotateGizmosShould
     private BIWGizmosAxis axis;
 
     [SetUp]
-    void SetUp()
+    public void SetUp()
     {
         mockedGizmosGameObject = new GameObject("ScaleGizmos");
         mockedEntityGameObject = new GameObject("EntityScaleGizmos");
@@ -69,7 +69,7 @@ public class BIWRotateGizmosShould
     }
 
     [TearDown]
-    void TearDown()
+    public void TearDown()
     {
         GameObject.Destroy(mockedGizmosGameObject);
         GameObject.Destroy(mockedEntityGameObject);
