@@ -104,13 +104,13 @@ public static class BIWAnalytics
         SendEditorEvent("end_scene_publish", events);
     }
 
-    public static void SceneLimitsOverPassed(SceneMetricsModel sceneUsage, SceneMetricsModel sceneLimits)
+    public static void SceneLimitsExceeded(SceneMetricsModel sceneUsage, SceneMetricsModel sceneLimits)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("limits_passed", GetLimitsPassedArray(sceneUsage, sceneLimits));
         events.Add("scene_limits", JsonConvert.SerializeObject(ConvertSceneMetricsModelToDictionary(sceneLimits)));
         events.Add("current_usage", JsonConvert.SerializeObject(ConvertSceneMetricsModelToDictionary(sceneUsage)));
-        SendEditorEvent("scene_limits_over_passed", events);
+        SendEditorEvent("scene_limits_exceeded", events);
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public static class BIWAnalytics
         return sceneLimitsDictionary;
     }
 
-    private static string GetLimitsPassedArray(SceneMetricsModel sceneUsage, SceneMetricsModel sceneLimits)
+    public static string GetLimitsPassedArray(SceneMetricsModel sceneUsage, SceneMetricsModel sceneLimits)
     {
         string limitsPassed = "[";
 
