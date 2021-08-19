@@ -57,10 +57,10 @@ namespace Tests.BuildModeHUDControllers
         public void AdapterStartDragging()
         {
             //Arrange
-            var adatper = CreateAdapter();
+            var adapter = CreateAdapter();
 
             //Act
-            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adapter);
 
             //Assert
             Assert.IsNotNull(dragAndDropSceneObjectController.catalogItemCopy);
@@ -70,8 +70,8 @@ namespace Tests.BuildModeHUDControllers
         public void MoveCopyAdapterToPosition()
         {
             //Arrange
-            var adatper = CreateAdapter();
-            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+            var adapter = CreateAdapter();
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adapter);
             var newPosition = Vector3.one * 5f;
 
             //Act
@@ -85,8 +85,8 @@ namespace Tests.BuildModeHUDControllers
         public IEnumerator AdapterEndDrag()
         {
             //Arrange
-            var adatper = CreateAdapter();
-            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+            var adapter = CreateAdapter();
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adapter);
 
             //Act
             dragAndDropSceneObjectController.OnEndDrag(null);
@@ -101,8 +101,8 @@ namespace Tests.BuildModeHUDControllers
         public void CatalogItemAdapterDropped()
         {
             //Arrange
-            var adatper = CreateAdapter();
-            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+            var adapter = CreateAdapter();
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adapter);
             var newPosition = Vector3.one * 5f;
 
             //Act
@@ -117,9 +117,9 @@ namespace Tests.BuildModeHUDControllers
 
         private CatalogItemAdapter CreateAdapter()
         {
-            var adatper = BIWTestHelper.CreateCatalogItemAdapter(mockedGameObject);
-            adatper.SetContent(item);
-            return adatper;
+            var adapter = BIWTestHelper.CreateCatalogItemAdapter(mockedGameObject);
+            adapter.SetContent(item);
+            return adapter;
         }
     }
 }
