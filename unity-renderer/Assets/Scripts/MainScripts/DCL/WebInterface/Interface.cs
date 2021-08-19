@@ -1005,20 +1005,10 @@ namespace DCL.Interface
         }
 
         [Serializable]
-        public class SendVideoStartedEvent
-        {
-            public float currentPosition;
-        }
-        
-        [Serializable]
-        public class SendVideoPausedEvent
-        {
-            public float currentPosition;
-        }
-        
-        [Serializable]
         public class SendVideoProgressEvent
         {
+            public string componentId;
+            public string sceneId;
             public string videoTextureId;
             public int status;
             public float currentOffset;
@@ -1289,29 +1279,19 @@ namespace DCL.Interface
             stringPayload.value = message;
             SendMessage("NotifyStatusThroughChat", stringPayload);
         }
-        public static void ReportVideoStartedEvent(float videoPosition)
-        {
-            SendVideoStartedEvent sendVideoStartedEvent = new SendVideoStartedEvent()
-            {
-                currentPosition = videoPosition
-            };
-            
-            SendMessage("VideoStartedEvent", sendVideoStartedEvent);
-        }
-        public static void ReportVideoPausedEvent(float videoPosition)
-        {
-            SendVideoPausedEvent sendVideoStartedEvent = new SendVideoPausedEvent()
-            {
-                currentPosition = videoPosition
-            };
-            
-            SendMessage("VideoPausedEvent", sendVideoStartedEvent);
-        }
-        public static void ReportVideoProgressEvent(string lastVideoClipID, int videoStatus, float currentOffset, float length)
+        public static void ReportVideoProgressEvent(
+            string componentId,
+            string sceneId,
+            string videoClipId, 
+            int videoStatus, 
+            float currentOffset,
+            float length)
         {
             SendVideoProgressEvent progressEvent = new SendVideoProgressEvent()
             {
-                videoTextureId = lastVideoClipID,
+                componentId = componentId,
+                sceneId = sceneId,
+                videoTextureId = videoClipId,
                 status = videoStatus,
                 currentOffset =  currentOffset,
                 videoLength = length
@@ -1320,6 +1300,4 @@ namespace DCL.Interface
             SendMessage("VideoProgressEvent", progressEvent);
         }
     }
-
-    
 }

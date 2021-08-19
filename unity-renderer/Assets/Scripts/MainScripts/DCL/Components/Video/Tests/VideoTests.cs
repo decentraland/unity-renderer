@@ -43,17 +43,23 @@ namespace Tests
                 playing = true,
                 seek = 10
             };
-            CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+            var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
             
-            var expectedEvent = new WebInterface.SendVideoStartedEvent()
+            var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
-                currentPosition = 10
+                sceneId = scene.sceneData.id,
+                componentId = component.id,
+                videoLength = 0,
+                videoTextureId = id,
+                currentOffset = 0,
+                status = 1
             };
+            
             var json = JsonUtility.ToJson(expectedEvent);
             var wasEventSent = false;
-            yield return TestHelpers.WaitForMessageFromEngine("VideoStartedEvent", json,
+            yield return TestHelpers.WaitForMessageFromEngine("VideoProgressEvent", json,
                 () => { },
-                () =>wasEventSent = true);
+                () => wasEventSent = true);
 
             Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
         }
@@ -67,16 +73,21 @@ namespace Tests
                 videoClipId = id,
                 playing = false
             };
-            CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+            var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
             
-            var expectedEvent = new WebInterface.SendVideoPausedEvent()
+            var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
-                currentPosition = 0 //this value cant really be tested here so its always 0
+                sceneId = scene.sceneData.id,
+                componentId = component.id,
+                videoLength = 0,
+                videoTextureId = id,
+                currentOffset = 0,
+                status = 0
             };
             
             var json = JsonUtility.ToJson(expectedEvent);
             var wasEventSent = false;
-            yield return TestHelpers.WaitForMessageFromEngine("VideoPausedEvent", json,
+            yield return TestHelpers.WaitForMessageFromEngine("VideoProgressEvent", json,
                 () => { },
                 () =>wasEventSent = true);
 
@@ -91,10 +102,12 @@ namespace Tests
                 videoClipId = id,
                 playing = true
             };
-            CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+            var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
             
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
+                sceneId = scene.sceneData.id,
+                componentId = component.id,
                 videoLength = 0,
                 videoTextureId = id,
                 currentOffset = 0,
