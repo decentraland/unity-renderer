@@ -71,11 +71,7 @@ namespace DCL
 
         bool FileToHash(string fileName, out string hash)
         {
-            if (provider.TryGetContentHash(assetDirectoryPath + fileName, out hash))
-            {
-                return true;
-            }
-            return false;
+            return provider.TryGetContentHash(assetDirectoryPath + fileName, out hash);
         }
 
         protected override void OnReuse(System.Action OnSuccess)
