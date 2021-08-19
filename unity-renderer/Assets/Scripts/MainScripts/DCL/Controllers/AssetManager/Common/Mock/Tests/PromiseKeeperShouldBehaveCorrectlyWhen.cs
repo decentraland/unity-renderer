@@ -1,8 +1,9 @@
 using DCL;
 using System.Collections;
+using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.TestTools;
+using Assert = UnityEngine.Assertions.Assert;
 
 namespace AssetPromiseKeeper_Mock_Tests
 {
@@ -50,6 +51,8 @@ namespace AssetPromiseKeeper_Mock_Tests
         }
 
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
             var library = new AssetLibrary_Mock();

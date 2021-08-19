@@ -164,6 +164,9 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void AddEntityOnKernel(IDCLEntity entity, ParcelScene scene)
     {
+        if (scene == null)
+            return;
+
         List<ComponentPayload> list = new List<ComponentPayload>();
 
         foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)

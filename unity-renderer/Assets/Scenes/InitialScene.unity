@@ -1110,6 +1110,7 @@ MonoBehaviour:
   baseUrlMode: 1
   baseUrlCustom: https://play.decentraland.zone/?
   environment: 4
+  realm: fenrir-amber
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
   allWearables: 0

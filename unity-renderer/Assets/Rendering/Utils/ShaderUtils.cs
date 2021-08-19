@@ -45,5 +45,6 @@ namespace DCL.Helpers
 
         public static readonly int SpecularHighlights = Shader.PropertyToID("_SpecularHighlights");
         public static readonly int EnvironmentReflections = Shader.PropertyToID("_EnvironmentReflections");
+        public static readonly int Surface = Shader.PropertyToID("_Surface");
     }
 }
