@@ -111,7 +111,6 @@ declare var DclRenderer: typeof Renderer
   ensureFileExists(path.resolve(DIST_PATH, typingsRoot), "index.d.ts")
 }
 
-
 async function createPackageJson() {
   console.log("> writing package.json")
 
