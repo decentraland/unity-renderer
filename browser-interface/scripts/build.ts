@@ -122,7 +122,7 @@ async function createPackageJson() {
     .replace(/([^\dT])/g, "")
     .replace("T", "")
 
-  const commitHash = git.short(process.env.CIRCLE_SHA1 as string)
+  const commitHash = git.short(__dirname)
 
   writeFileSync(
     path.resolve(DIST_PATH, "package.json"),
