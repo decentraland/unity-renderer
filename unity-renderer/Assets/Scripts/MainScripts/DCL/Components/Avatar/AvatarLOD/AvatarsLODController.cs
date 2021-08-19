@@ -84,25 +84,26 @@ namespace DCL
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            //Cache .Get to boost performance
-            float lodDistance = this.LODDistance.Get();
+            //Cache .Get to boost performance. Also use squared data to boost distance comparison
+            float lodDistance = LODDistance.Get() * LODDistance.Get();
+            float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
-            (IAvatarLODController lodController, float distance)[] data = lodControllers.Values.Select(x => (lodController: x, distance: DistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
-            Array.Sort(data, (x, y) => x.distance.CompareTo(y.distance));
+            (IAvatarLODController lodController, float sqrtDistance)[] data = lodControllers.Values.Select(x => (lodController: x, sqrtDistance: SqrtDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
+            Array.Sort(data, (x, y) => x.sqrtDistance.CompareTo(y.sqrtDistance));
             foreach (var player in data)
             {
-                if (player.distance < 0) //Behind camera
+                if (player.sqrtDistance < 0) //Behind camera
                 {
                     continue;
                 }
 
                 //Nearby player
-                if (player.distance < lodDistance)
+                if (player.sqrtDistance < lodDistance)
                 {
                     if (avatarsCount < maxAvatars)
                     {
-                        if (player.distance < simpleAvatarDistance.Get())
+                        if (player.sqrtDistance < squaredSimpleAvatarDistance)
                             player.lodController.SetFullAvatar();
                         else
                             player.lodController.SetSimpleAvatar();
@@ -135,11 +136,11 @@ namespace DCL
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        private float DistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
+        private float SqrtDistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
         {
             if (player == null || !IsInFrontOfCamera(player))
                 return -1;
-            return Vector3.Distance(ownPlayerPosition, player.worldPosition);
+            return Mathf.Abs(Vector3.SqrMagnitude(ownPlayerPosition - player.worldPosition));
         }
 
         private bool IsInFrontOfCamera(Player player) => true;
