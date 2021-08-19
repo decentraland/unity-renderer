@@ -43,7 +43,7 @@ namespace DCL.Components
 
         public abstract IEnumerator ApplyChanges(BaseModel model);
 
-        void OnEnable()
+        protected void OnEnable()
         {
             if (updateHandler == null)
                 updateHandler = CreateUpdateHandler();

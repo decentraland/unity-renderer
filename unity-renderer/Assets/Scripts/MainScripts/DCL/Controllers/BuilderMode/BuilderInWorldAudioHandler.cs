@@ -3,26 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuilderInWorldAudioHandler : BIWController
+public class BuilderInWorldAudioHandler : MonoBehaviour
 {
     const float MUSIC_DELAY_TIME_ON_START = 4f;
     const float MUSIC_FADE_OUT_TIME_ON_EXIT = 5f;
     const float MUSIC_FADE_OUT_TIME_ON_TUTORIAL = 3f;
 
-    [SerializeField]
-    BIWCreatorController creatorController;
+    private IBIWCreatorController creatorController;
 
-    [SerializeField]
-    GameObject builderInWorldModesParent;
+    private IBIWEntityHandler entityHandler;
 
-    [SerializeField]
-    BuilderInWorldController inWorldController;
-
-    [SerializeField]
-    BuilderInWorldEntityHandler entityHandler;
-
-    [SerializeField]
-    BIWModeController modeController;
+    private IBIWModeController modeController;
 
     [Header("Audio Events")]
     [SerializeField]
@@ -56,10 +47,17 @@ public class BuilderInWorldAudioHandler : BIWController
     private int entityCount;
     bool playPlacementSoundOnDeselect;
     private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
+    private Coroutine fadeInCoroutine, fadeOutCoroutine;
 
-    private void Start()
+    private void Start() { playPlacementSoundOnDeselect = false; }
+
+    public void Init(BIWContext context)
     {
-        playPlacementSoundOnDeselect = false;
+        creatorController = context.creatorController;
+
+        entityHandler = context.entityHandler;
+
+        modeController = context.modeController;
 
         AddListeners();
     }
@@ -72,9 +70,11 @@ public class BuilderInWorldAudioHandler : BIWController
         entityHandler.OnDeleteSelectedEntities += OnAssetDelete;
         modeController.OnChangedEditModeState += OnChangedEditModeState;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += OnEntityBoundsCheckerStatusChanged;
-
-        DCL.Tutorial.TutorialController.i.OnTutorialEnabled += OnTutorialEnabled;
-        DCL.Tutorial.TutorialController.i.OnTutorialDisabled += OnTutorialDisabled;
+        if (DCL.Tutorial.TutorialController.i != null)
+        {
+            DCL.Tutorial.TutorialController.i.OnTutorialEnabled += OnTutorialEnabled;
+            DCL.Tutorial.TutorialController.i.OnTutorialDisabled += OnTutorialDisabled;
+        }
 
         entityHandler.OnEntityDeselected += OnAssetDeselect;
         entityHandler.OnEntitySelected += OnAssetSelect;
@@ -87,17 +87,27 @@ public class BuilderInWorldAudioHandler : BIWController
         modeController.OnChangedEditModeState -= OnChangedEditModeState;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
 
-        DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
-        DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
+        if (DCL.Tutorial.TutorialController.i != null)
+        {
+            DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
+            DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
+        }
 
         entityHandler.OnEntityDeselected -= OnAssetDeselect;
         entityHandler.OnEntitySelected -= OnAssetSelect;
     }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public void Dispose()
     {
-        base.EnterEditMode(scene);
+        if (fadeInCoroutine != null)
+            CoroutineStarter.Stop(fadeInCoroutine);
 
+        if (fadeOutCoroutine != null)
+            CoroutineStarter.Stop(fadeOutCoroutine);
+    }
+
+    public void EnterEditMode(ParcelScene scene)
+    {
         UpdateEntityCount();
         CoroutineStarter.Start(StartBuilderMusic());
         if (HUDController.i.builderInWorldMainHud != null)
@@ -106,12 +116,10 @@ public class BuilderInWorldAudioHandler : BIWController
         gameObject.SetActive(true);
     }
 
-    public override void ExitEditMode()
+    public void ExitEditMode()
     {
-        base.ExitEditMode();
-
         eventBuilderExit.Play();
-        CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
+        fadeOutCoroutine = CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
 
@@ -120,9 +128,9 @@ public class BuilderInWorldAudioHandler : BIWController
 
     private void OnAssetSpawn() { eventAssetSpawn.Play(); }
 
-    private void OnAssetDelete(List<DCLBuilderInWorldEntity> entities)
+    private void OnAssetDelete(List<BIWEntity> entities)
     {
-        foreach (DCLBuilderInWorldEntity deletedEntity in entities)
+        foreach (BIWEntity deletedEntity in entities)
         {
             if (entitiesOutOfBounds.Contains(deletedEntity.rootEntity.entityId))
             {
@@ -135,7 +143,7 @@ public class BuilderInWorldAudioHandler : BIWController
 
     private void OnAssetSelect() { eventAssetSelect.Play(); }
 
-    private void OnAssetDeselect(DCLBuilderInWorldEntity entity)
+    private void OnAssetDeselect(BIWEntity entity)
     {
         if (playPlacementSoundOnDeselect)
         {
@@ -157,13 +165,13 @@ public class BuilderInWorldAudioHandler : BIWController
 
     private void OnTutorialEnabled()
     {
-        if (inWorldController.isBuilderInWorldActivated)
-            CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
+        if (gameObject.activeInHierarchy)
+            fadeOutCoroutine = CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
     }
 
     private void OnTutorialDisabled()
     {
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             CoroutineStarter.Start(StartBuilderMusic());
     }
 
@@ -171,7 +179,7 @@ public class BuilderInWorldAudioHandler : BIWController
     {
         yield return new WaitForSeconds(MUSIC_DELAY_TIME_ON_START);
 
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             eventBuilderMusic.Play();
     }
 

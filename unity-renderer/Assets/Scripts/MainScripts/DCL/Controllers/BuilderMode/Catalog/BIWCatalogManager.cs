@@ -14,8 +14,9 @@ public static class BIWCatalogManager
     {
         if (!IS_INIT)
         {
-            BuilderInWorldNFTController.i.OnNftsFetched += ConvertCollectiblesPack;
-            AssetCatalogBridge.OnSceneObjectAdded += AddSceneObject;
+            BIWNFTController.i.OnNftsFetched += ConvertCollectiblesPack;
+            AssetCatalogBridge.OnItemAdded += AddSceneObject;
+            AssetCatalogBridge.OnSceneCatalogItemAdded += AddSceneCatalog;
             AssetCatalogBridge.OnSceneAssetPackAdded += AddSceneAssetPack;
             IS_INIT = true;
         }
@@ -23,8 +24,9 @@ public static class BIWCatalogManager
 
     public static void Dispose()
     {
-        BuilderInWorldNFTController.i.OnNftsFetched -= ConvertCollectiblesPack;
-        AssetCatalogBridge.OnSceneObjectAdded -= AddSceneObject;
+        BIWNFTController.i.OnNftsFetched -= ConvertCollectiblesPack;
+        AssetCatalogBridge.OnItemAdded -= AddSceneObject;
+        AssetCatalogBridge.OnSceneCatalogItemAdded -= AddSceneCatalog;
         AssetCatalogBridge.OnSceneAssetPackAdded -= AddSceneAssetPack;
         IS_INIT = false;
     }
@@ -56,8 +58,8 @@ public static class BIWCatalogManager
 
         Dictionary<string, CatalogItemPack> assetPackDic = new Dictionary<string, CatalogItemPack>();
 
-        if (DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(BuilderInWorldSettings.ASSETS_COLLECTIBLES))
-            assetPackDic.Add(BuilderInWorldSettings.ASSETS_COLLECTIBLES, DataStore.i.builderInWorld.catalogItemPackDict[BuilderInWorldSettings.ASSETS_COLLECTIBLES]);
+        if (DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(BIWSettings.ASSETS_COLLECTIBLES))
+            assetPackDic.Add(BIWSettings.ASSETS_COLLECTIBLES, DataStore.i.builderInWorld.catalogItemPackDict[BIWSettings.ASSETS_COLLECTIBLES]);
         else
             CreateNewCollectiblePack();
 
@@ -98,14 +100,18 @@ public static class BIWCatalogManager
         return assetPackDic.Values.OrderBy(x => x.title).ToList();
     }
 
-    public static void AddSceneObject(SceneObject sceneObject)
+    public static void AddSceneObject(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.builderInWorld.catalogItemDict); }
+
+    public static void AddSceneObject(SceneObject sceneObject , BaseDictionary<string, CatalogItem> catalogToAdd )
     {
-        if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(sceneObject.id))
+        if (catalogToAdd.ContainsKey(sceneObject.id))
             return;
 
         CatalogItem catalogItem = CreateCatalogItem(sceneObject);
-        DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
+        catalogToAdd.Add(catalogItem.id, catalogItem);
     }
+
+    public static void AddSceneCatalog(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.builderInWorld.currentSceneCatalogItemDict); }
 
     public static void AddSceneAssetPack(SceneAssetPack sceneAssetPack)
     {
@@ -120,6 +126,9 @@ public static class BIWCatalogManager
 
     public static string GetAssetPackNameById(string assetPackId)
     {
+        if (string.IsNullOrEmpty(assetPackId))
+            return "";
+
         DataStore.i.builderInWorld.catalogItemPackDict.TryGetValue(assetPackId, out CatalogItemPack catalogItemPack);
         if (catalogItemPack != null)
             return catalogItemPack.title;
@@ -134,13 +143,13 @@ public static class BIWCatalogManager
 
         CatalogItemPack collectiblesItemPack;
 
-        if (!DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(BuilderInWorldSettings.ASSETS_COLLECTIBLES))
+        if (!DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(BIWSettings.ASSETS_COLLECTIBLES))
         {
             collectiblesItemPack = CreateNewCollectiblePack();
         }
         else
         {
-            collectiblesItemPack = DataStore.i.builderInWorld.catalogItemPackDict[BuilderInWorldSettings.ASSETS_COLLECTIBLES];
+            collectiblesItemPack = DataStore.i.builderInWorld.catalogItemPackDict[BIWSettings.ASSETS_COLLECTIBLES];
             foreach (CatalogItem catalogItem in collectiblesItemPack.assets)
             {
                 if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(catalogItem.id))
@@ -163,8 +172,8 @@ public static class BIWCatalogManager
     private static CatalogItemPack CreateNewCollectiblePack()
     {
         CatalogItemPack collectiblesItemPack = new CatalogItemPack();
-        collectiblesItemPack.id = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
-        collectiblesItemPack.title = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
+        collectiblesItemPack.id = BIWSettings.ASSETS_COLLECTIBLES;
+        collectiblesItemPack.title = BIWSettings.ASSETS_COLLECTIBLES;
         collectiblesItemPack.assets = new List<CatalogItem>();
         if (!DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(collectiblesItemPack.id))
             DataStore.i.builderInWorld.catalogItemPackDict.Add(collectiblesItemPack.id, collectiblesItemPack);
@@ -198,7 +207,7 @@ public static class BIWCatalogManager
     {
         CatalogItem catalogItem = new CatalogItem();
         catalogItem.id = sceneObject.id;
-        if (sceneObject.asset_pack_id == BuilderInWorldSettings.VOXEL_ASSETS_PACK_ID)
+        if (sceneObject.asset_pack_id == BIWSettings.VOXEL_ASSETS_PACK_ID)
             catalogItem.isVoxel = true;
         catalogItem.name = sceneObject.name;
         catalogItem.model = sceneObject.model;
@@ -235,9 +244,9 @@ public static class BIWCatalogManager
         catalogItem.id = nFTInfo.assetContract.address;
         catalogItem.thumbnailURL = nFTInfo.thumbnailUrl;
         catalogItem.name = nFTInfo.name;
-        catalogItem.assetPackName = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
+        catalogItem.assetPackName = BIWSettings.ASSETS_COLLECTIBLES;
         catalogItem.category = nFTInfo.assetContract.name;
-        catalogItem.model = $"{BuilderInWorldSettings.COLLECTIBLE_MODEL_PROTOCOL}{nFTInfo.assetContract.address}/{nFTInfo.tokenId}";
+        catalogItem.model = $"{BIWSettings.COLLECTIBLE_MODEL_PROTOCOL}{nFTInfo.assetContract.address}/{nFTInfo.tokenId}";
         catalogItem.tags = new List<string>();
         catalogItem.contents = new Dictionary<string, string>();
         catalogItem.metrics = new SceneObject.ObjectMetrics();

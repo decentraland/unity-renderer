@@ -38,6 +38,7 @@ public class RenderingController : MonoBehaviour
     {
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(false);
+        WebInterface.ReportControlEvent(new WebInterface.DeactivateRenderingACK());
     }
 
     [ContextMenu("Enable Rendering")]

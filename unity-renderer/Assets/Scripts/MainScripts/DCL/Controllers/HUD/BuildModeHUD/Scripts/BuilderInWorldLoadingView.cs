@@ -8,11 +8,13 @@ public interface IBuilderInWorldLoadingView
 {
     bool isActive { get; }
 
+    GameObject viewGO { get; }
     void Show();
     void Hide(bool forzeHidding = false, Action onHideAction = null);
     void StartTipsCarousel();
     void StopTipsCarousel();
     void SetPercentage(float newValue);
+    void Dispose();
 }
 
 public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingView
@@ -33,6 +35,8 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
     [SerializeField] internal LoadingBar loadingBar;
 
     public bool isActive => gameObject.activeSelf;
+
+    public GameObject viewGO => gameObject;
 
     internal Coroutine tipsCoroutine;
     internal Coroutine hideCoroutine;
@@ -90,6 +94,14 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
         hideCoroutine = CoroutineStarter.Start(TryToHideCoroutine(forzeHidding, onHideAction));
     }
 
+    public void Dispose()
+    {
+        if (hideCoroutine != null)
+            CoroutineStarter.Stop(hideCoroutine);
+        if (tipsCoroutine != null)
+            CoroutineStarter.Stop(tipsCoroutine);
+    }
+
     public void StartTipsCarousel()
     {
         StopTipsCarousel();
@@ -115,7 +127,8 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
         }
 
         StopTipsCarousel();
-        gameObject.SetActive(false);
+        if (gameObject != null)
+            gameObject.SetActive(false);
         onHideAction?.Invoke();
         AudioScriptableObjects.builderReady.Play();
     }

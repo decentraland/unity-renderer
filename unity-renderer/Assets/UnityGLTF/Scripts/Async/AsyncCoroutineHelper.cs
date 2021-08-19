@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 namespace UnityGLTF
@@ -52,7 +53,7 @@ namespace UnityGLTF
                 if (coroutineInfo != null)
                 {
                     runningActions.Add(coroutineInfo);
-                    StartCoroutine(CallMethodOnMainThread(coroutineInfo));
+                    this.StartThrowingCoroutine(CallMethodOnMainThread(coroutineInfo), (exception => Debug.LogError(exception)));
                 }
             }
         }

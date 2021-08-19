@@ -37,15 +37,15 @@ public class FirstPersonModeView : MonoBehaviour, IFirstPersonModeView
     private void Awake()
     {
         mainButton.onClick.AddListener(OnPointerClick);
-        BuilderInWorldUtils.ConfigureEventTrigger(changeModeEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
-        BuilderInWorldUtils.ConfigureEventTrigger(changeModeEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
+        BIWUtils.ConfigureEventTrigger(changeModeEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
+        BIWUtils.ConfigureEventTrigger(changeModeEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
     }
 
     private void OnDestroy()
     {
         mainButton.onClick.RemoveListener(OnPointerClick);
-        BuilderInWorldUtils.RemoveEventTrigger(changeModeEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(changeModeEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(changeModeEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(changeModeEventTrigger, EventTriggerType.PointerExit);
     }
 
     public void OnPointerClick() { OnFirstPersonModeClick?.Invoke(); }

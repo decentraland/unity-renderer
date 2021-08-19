@@ -1,10 +1,14 @@
+using DCL;
 using UnityEngine;
 
-public class BIWPublishController : BIWController
+public interface IBIWPublishController { }
+
+public class BIWPublishController : BIWController, IBIWPublishController
 {
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
-    public BuilderInWorldBridge builderInWorldBridge;
-    public BIWCreatorController biwCreatorController;
+    private IBIWEntityHandler entityHandler;
+    private IBIWCreatorController creatorController;
+
+    private BuilderInWorldBridge builderInWorldBridge;
 
     private int checkerSceneLimitsOptimizationCounter = 0;
 
@@ -16,20 +20,28 @@ public class BIWPublishController : BIWController
     private bool reportSceneLimitsOverpassedAnalytic = true;
     private float startPublishingTimestamp = 0;
 
-    public override void Init()
+    public override void Init(BIWContext context)
     {
+        base.Init(context);
+
+        entityHandler = context.entityHandler;
+        creatorController = context.creatorController;
+
         if (HUDController.i?.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnPublishAction += StartPublishFlow;
             HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += StartPublishScene;
         }
+
+        builderInWorldBridge = context.sceneReferences.builderInWorldBridge;
+
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnPublishEnd += PublishEnd;
     }
 
-    protected override void FrameUpdate()
+    public override void Update()
     {
-        base.FrameUpdate();
+        base.Update();
         if (checkerSceneLimitsOptimizationCounter >= FRAMES_BEETWEN_UPDATES)
         {
             checkerSceneLimitsOptimizationCounter = 0;
@@ -41,8 +53,10 @@ public class BIWPublishController : BIWController
         }
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
+        base.Dispose();
+
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnPublishAction -= StartPublishFlow;
@@ -54,30 +68,34 @@ public class BIWPublishController : BIWController
 
     public bool CanPublish()
     {
-        if (biwCreatorController.IsAnyErrorOnEntities())
+        if (creatorController.IsAnyErrorOnEntities())
             return false;
 
         if (!sceneToEdit.metricsController.IsInsideTheLimits())
             return false;
 
-        if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
+        if (!entityHandler.AreAllEntitiesInsideBoundaries())
             return false;
 
         reportSceneLimitsOverpassedAnalytic = true;
         return true;
     }
 
-    void CheckPublishConditions()
+    /// <summary>
+    /// This function will check if you are able to publish the scene to the content server. If no error are present, an empty message will be returned
+    /// </summary>
+    /// <returns>A message the with the reason telling you why you can't publish. If you can publish an empty message will be returned </returns>
+    public string CheckPublishConditions()
     {
-        if (HUDController.i.builderInWorldMainHud is null)
-            return;
+        if (HUDController.i.builderInWorldMainHud == null)
+            return "";
 
         string feedbackMessage = "";
-        if (biwCreatorController.IsAnyErrorOnEntities())
+        if (creatorController.IsAnyErrorOnEntities())
         {
             feedbackMessage = FEEDBACK_MESSAGE_ENTITY_ERROR;
         }
-        else if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
+        else if (!entityHandler.AreAllEntitiesInsideBoundaries())
         {
             feedbackMessage = FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES;
         }
@@ -91,7 +109,8 @@ public class BIWPublishController : BIWController
             }
         }
 
-        HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+        HUDController.i.builderInWorldMainHud?.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+        return feedbackMessage;
     }
 
     private void StartPublishFlow()

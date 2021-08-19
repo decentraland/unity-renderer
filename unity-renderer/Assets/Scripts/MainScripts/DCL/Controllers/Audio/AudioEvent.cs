@@ -34,8 +34,6 @@ public class AudioEvent : ScriptableObject
     private int clipIndex, lastPlayedIndex;
     protected float pitch;
     private float lastPlayedTime, nextAvailablePlayTime; // Used for cooldown
-    private Coroutine fadeInCoroutine, fadeOutCoroutine;
-
     [HideInInspector] public event System.Action OnPlay, OnStop, OnFadedIn, OnFadedOut;
 
     public virtual void Initialize(AudioContainer audioContainer)

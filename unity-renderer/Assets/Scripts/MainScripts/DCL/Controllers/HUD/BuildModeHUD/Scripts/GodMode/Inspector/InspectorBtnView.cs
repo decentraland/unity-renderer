@@ -41,16 +41,16 @@ public class InspectorBtnView : MonoBehaviour, IInspectorBtnView
     {
         mainButton.onClick.AddListener(() => OnPointerClick(dummyActionTrigger));
         toggleOpenEntityListInputAction.OnTriggered += OnPointerClick;
-        BuilderInWorldUtils.ConfigureEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
-        BuilderInWorldUtils.ConfigureEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
+        BIWUtils.ConfigureEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
+        BIWUtils.ConfigureEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
     }
 
     private void OnDestroy()
     {
         mainButton.onClick.RemoveAllListeners();
         toggleOpenEntityListInputAction.OnTriggered -= OnPointerClick;
-        BuilderInWorldUtils.RemoveEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerExit);
     }
 
     public void OnPointerClick(DCLAction_Trigger action) { OnInspectorButtonClick?.Invoke(); }

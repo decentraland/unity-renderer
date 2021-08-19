@@ -10,7 +10,8 @@ public class AssetCatalogBridge : MonoBehaviour
 {
     public static bool VERBOSE = false;
 
-    public static System.Action<SceneObject> OnSceneObjectAdded;
+    public static System.Action<SceneObject> OnItemAdded;
+    public static System.Action<SceneObject> OnSceneCatalogItemAdded;
     public static System.Action<SceneAssetPack> OnSceneAssetPackAdded;
 
     public static AssetCatalogBridge i { get; private set; }
@@ -103,7 +104,32 @@ public class AssetCatalogBridge : MonoBehaviour
             return;
 
         sceneObjectCatalog.Add(sceneObject.id, sceneObject);
-        OnSceneObjectAdded?.Invoke(sceneObject);
+        OnItemAdded?.Invoke(sceneObject);
+    }
+
+    public void RemoveSceneObjectToSceneCatalog(string sceneObjectId)
+    {
+        if (!sceneObjectCatalog.ContainsKey(sceneObjectId))
+            return;
+
+        sceneObjectCatalog.Remove(sceneObjectId);
+    }
+
+    public void AddSceneObjectToSceneCatalog(SceneObject[] sceneObjects)
+    {
+        foreach (var sceneObject in sceneObjects)
+        {
+            AddSceneObjectToSceneCatalog(sceneObject);
+        }
+    }
+
+    public void AddSceneObjectToSceneCatalog(SceneObject sceneObject)
+    {
+        if (sceneObjectCatalog.ContainsKey(sceneObject.id))
+            return;
+
+        sceneObjectCatalog.Add(sceneObject.id, sceneObject);
+        OnSceneCatalogItemAdded?.Invoke(sceneObject);
     }
 
     public void AddSceneAssetPackToCatalog(SceneAssetPack sceneAssetPack)

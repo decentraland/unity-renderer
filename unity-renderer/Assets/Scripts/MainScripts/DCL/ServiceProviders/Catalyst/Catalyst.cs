@@ -13,8 +13,8 @@ public class Catalyst : ICatalyst
 
     public string contentUrl => realmContentServerUrl;
 
-    private string realmDomain = "https://peer.decentraland.org";
-    private string realmContentServerUrl = "https://peer.decentraland.org/content";
+    private string realmDomain = "https://peer-lb.decentraland.org";
+    private string realmContentServerUrl = "https://peer-lb.decentraland.org/content";
 
     private readonly IDataCache<CatalystSceneEntityPayload[]> deployedScenesCache = new DataCache<CatalystSceneEntityPayload[]>();
 
@@ -130,7 +130,7 @@ public class Catalyst : ICatalyst
         {
             string urlParams = "";
             urlParams = pointersGroupsToFetch[i].Aggregate(urlParams, (current, pointer) => current + $"&pointer={pointer}");
-            string url = $"{realmDomain}/content/entities/{entityType}?{urlParams}";
+            string url = $"{realmContentServerUrl}/entities/{entityType}?{urlParams}";
 
             splittedPromises[i] = Get(url);
             splittedPromises[i]
@@ -154,7 +154,8 @@ public class Catalyst : ICatalyst
                     for (int j = 1; j < splittedPromises.Length; j++)
                     {
                         string jsonContent = splittedPromises[j].value.Substring(1, splittedPromises[j].value.Length - 2);
-                        json += $",{jsonContent}";
+                        if (!string.IsNullOrEmpty(jsonContent))
+                            json += $",{jsonContent}";
                     }
 
                     promise.Resolve($"[{json}]");

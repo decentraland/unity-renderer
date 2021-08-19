@@ -1,7 +1,7 @@
-using DCL;
-using DCL.Helpers;
 using System.Collections;
 using System.Text.RegularExpressions;
+using DCL;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -40,21 +40,24 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Object.Destroy(parent);
 
             yield return prom;
+
+            var asset = prom.asset;
+            
             yield return prom2;
             yield return prom3;
 
-            Assert.AreEqual(AssetPromiseState.FINISHED, prom.state);
+            Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom3.state);
 
             Assert.IsFalse(failEventCalled2);
             Assert.IsFalse(failEventCalled3);
 
-            Assert.IsTrue(prom.asset != null);
+            Assert.IsTrue(prom.asset == null);
             Assert.IsTrue(prom2.asset != null);
             Assert.IsTrue(prom3.asset != null);
 
-            Assert.IsTrue(keeper.library.Contains(prom.asset));
+            Assert.IsTrue(keeper.library.Contains(asset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
         }
 

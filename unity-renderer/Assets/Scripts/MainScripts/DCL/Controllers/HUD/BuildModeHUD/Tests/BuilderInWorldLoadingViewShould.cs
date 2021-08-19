@@ -12,7 +12,11 @@ namespace Tests.BuildModeHUDViews
         public void SetUp() { builderInWorldLoadingView = BuilderInWorldLoadingView.Create(); }
 
         [TearDown]
-        public void TearDown() { Object.Destroy(builderInWorldLoadingView.gameObject); }
+        public void TearDown()
+        {
+            builderInWorldLoadingView.Dispose();
+            Object.Destroy(builderInWorldLoadingView.gameObject);
+        }
 
         [Test]
         public void ShowCorrectly()

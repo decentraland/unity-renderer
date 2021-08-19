@@ -227,7 +227,7 @@ namespace UnityGLTF
                         GLTFUri = GLTFUri.TrimStart(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
                         string fullPath = Path.Combine(Application.streamingAssetsPath, GLTFUri);
                         string directoryPath = URIHelper.GetDirectoryName(fullPath);
-                        loader = new FileLoader(directoryPath);
+                        loader = new GLTFFileLoader(directoryPath);
                         sceneImporter = new GLTFSceneImporter(
                             null,
                             Path.GetFileName(GLTFUri),

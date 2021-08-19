@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class EntityListView : ListView<DCLBuilderInWorldEntity>
+public class EntityListView : ListView<BIWEntity>
 {
     [SerializeField] internal EntityListAdapter entityListAdapter;
     [SerializeField] internal DynamicScrollSensitivity dynamicScrollSensitivity;
 
-    public System.Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnActionInvoked;
-    public System.Action<DCLBuilderInWorldEntity, string> OnEntityRename;
+    public System.Action<EntityAction, BIWEntity, EntityListAdapter> OnActionInvoked;
+    public System.Action<BIWEntity, string> OnEntityRename;
 
     public bool isActive => gameObject.activeSelf;
 
@@ -14,7 +14,7 @@ public class EntityListView : ListView<DCLBuilderInWorldEntity>
     {
         base.AddAdapters();
 
-        foreach (DCLBuilderInWorldEntity entity in contentList)
+        foreach (BIWEntity entity in contentList)
         {
             if (entity.isFloor)
                 continue;
@@ -45,9 +45,9 @@ public class EntityListView : ListView<DCLBuilderInWorldEntity>
             dynamicScrollSensitivity.RecalculateSensitivity();
     }
 
-    public void EntityActionInvoked(EntityAction action, DCLBuilderInWorldEntity entityToApply, EntityListAdapter adapter) { OnActionInvoked?.Invoke(action, entityToApply, adapter); }
+    public void EntityActionInvoked(EntityAction action, BIWEntity entityToApply, EntityListAdapter adapter) { OnActionInvoked?.Invoke(action, entityToApply, adapter); }
 
-    public void EntityRename(DCLBuilderInWorldEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
+    public void EntityRename(BIWEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 }

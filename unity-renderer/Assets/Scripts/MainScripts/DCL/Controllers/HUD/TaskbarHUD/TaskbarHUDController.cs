@@ -47,10 +47,7 @@ public class TaskbarHUDController : IHUD
 
     public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
 
-    protected internal virtual TaskbarHUDView CreateView()
-    {
-        return TaskbarHUDView.Create(this, chatController, friendsController);
-    }
+    protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
 
     public void Initialize(
         IMouseCatcher mouseCatcher,

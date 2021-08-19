@@ -39,7 +39,7 @@ namespace DCL.Components
 
             Model model = (Model)newModel;
             bool forceUpdate = prevModel.volume != model.volume;
-            settingsVolume = Settings.i.generalSettings.sfxVolume;
+            settingsVolume = GetCalculatedSettingsVolume(Settings.i.currentAudioSettings);
 
             UpdatePlayingState(forceUpdate);
             prevModel = model;
@@ -50,7 +50,8 @@ namespace DCL.Components
         {
             CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
-            Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
+            Settings.i.OnAudioSettingsChanged += OnSettingsChanged;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
         }
 
         private void OnDestroy()
@@ -58,7 +59,8 @@ namespace DCL.Components
             isDestroyed = true;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
-            Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
+            Settings.i.OnAudioSettingsChanged -= OnSettingsChanged;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
             StopStreaming();
         }
 
@@ -115,14 +117,19 @@ namespace DCL.Components
             }
         }
 
-        private void OnSettingsChanged(SettingsData.GeneralSettings settings)
+        private void OnSettingsChanged(SettingsData.AudioSettings settings)
         {
-            if (settingsVolume != settings.sfxVolume)
+            float newSettingsVolume = GetCalculatedSettingsVolume(settings);
+            if (settingsVolume != newSettingsVolume)
             {
-                settingsVolume = settings.sfxVolume;
+                settingsVolume = newSettingsVolume;
                 UpdatePlayingState(true);
             }
         }
+
+        private float GetCalculatedSettingsVolume(SettingsData.AudioSettings audioSettings) { return Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettings.sceneSFXVolume * audioSettings.masterVolume); }
+
+        private void SceneSFXVolume_OnChange(float current, float previous) { OnSettingsChanged(Settings.i.currentAudioSettings); }
 
         private void StopStreaming()
         {

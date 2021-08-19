@@ -124,8 +124,12 @@ namespace DCL
 
         public string baseUrlCustom;
 
+
         [Space(10)]
         public Environment environment;
+
+        [Tooltip("Set this field to force the realm (server). On the latin-american zone, recommended realms are fenrir-amber, baldr-amber and thor. Other realms can give problems to debug from Unity editor due to request certificate issues.\n\nFor auto selection leave this field blank.\n\nCheck out all the realms at https://catalyst-monitor.vercel.app/?includeDevServers")]
+        public string realm;
 
         public Vector2 startInCoords = new Vector2(-99, 109);
 
@@ -176,13 +180,13 @@ namespace DCL
                         debugString = "DEBUG_MODE&";
                         break;
                     case Environment.ZONE:
-                        debugString = "ENV=zone&";
+                        debugString = "NETWORK=ropsten&";
                         break;
                     case Environment.TODAY:
-                        debugString = "ENV=today&";
+                        debugString = "NETWORK=mainnet&";
                         break;
                     case Environment.ORG:
-                        debugString = "ENV=org&";
+                        debugString = "NETWORK=mainnet&";
                         break;
                 }
 
@@ -214,6 +218,11 @@ namespace DCL
                 if (builderInWorld)
                 {
                     debugString += "ENABLE_BUILDER_IN_WORLD&";
+                }
+
+                if ( !string.IsNullOrEmpty(realm))
+                {
+                    debugString += $"realm={realm}&";
                 }
 
                 string debugPanelString = "";
@@ -494,6 +503,9 @@ namespace DCL
                                 break;
                             case "BuilderInWorldCatalogHeaders":
                                 GetBuilderInWorldBridge()?.BuilderInWorldCatalogHeaders(msg.payload);
+                                break;
+                            case "AddAssets":
+                                GetBuilderInWorldBridge()?.AddAssets(msg.payload);
                                 break;
                             case "RunPerformanceMeterTool":
                                 if (float.TryParse(msg.payload, out float durationInSeconds))

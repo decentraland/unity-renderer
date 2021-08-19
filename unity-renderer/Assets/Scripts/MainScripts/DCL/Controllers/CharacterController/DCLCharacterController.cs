@@ -2,9 +2,7 @@ using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
-using System.Collections;
 using Cinemachine;
-using UnityEngine.SceneManagement;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -44,6 +42,10 @@ public class DCLCharacterController : MonoBehaviour
     float lastMovementReportTime;
     float originalGravity;
     Vector3 lastLocalGroundPosition;
+    
+    Vector3 lastCharacterRotation;
+    Vector3 lastGlobalCharacterRotation;
+    
     Vector3 velocity = Vector3.zero;
 
     public bool isWalking { get; private set; } = false;
@@ -97,7 +99,6 @@ public class DCLCharacterController : MonoBehaviour
 
     [System.NonSerialized]
     public float movingPlatformSpeed;
-
     public event System.Action OnJump;
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
@@ -139,6 +140,7 @@ public class DCLCharacterController : MonoBehaviour
 
         avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
         firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
+        
     }
 
     private void SubscribeToInput()
@@ -346,10 +348,20 @@ public class DCLCharacterController : MonoBehaviour
 
         if (isOnMovingPlatform)
         {
-            lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
+            SaveLateUpdateGroundTransforms();
         }
 
         OnUpdateFinish?.Invoke(deltaTime);
+    }
+    private void SaveLateUpdateGroundTransforms()
+    {
+        lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
+        
+        if (CommonScriptableObjects.characterForward.HasValue())
+        {
+            lastCharacterRotation = groundTransform.InverseTransformDirection(CommonScriptableObjects.characterForward.Get().Value);
+            lastGlobalCharacterRotation = CommonScriptableObjects.characterForward.Get().Value;
+        }
     }
 
     void Jump()
@@ -390,6 +402,16 @@ public class DCLCharacterController : MonoBehaviour
             Vector3 newGroundWorldPos = groundTransform.TransformPoint(lastLocalGroundPosition);
             movingPlatformSpeed = Vector3.Distance(newGroundWorldPos, transform.position);
             transform.position = newGroundWorldPos;
+            
+            Vector3 newCharacterForward = groundTransform.TransformDirection(lastCharacterRotation);
+            Vector3 lastFrameDifference = Vector3.zero;
+            if (CommonScriptableObjects.characterForward.HasValue())
+            {
+                lastFrameDifference = CommonScriptableObjects.characterForward.Get().Value - lastGlobalCharacterRotation;
+            }
+            //NOTE(Kinerius) CameraStateTPS rotates the character between frames so we add the difference.
+            //               if we dont do this, the character wont rotate when moving, only when the platform rotates
+            CommonScriptableObjects.characterForward.Set(newCharacterForward + lastFrameDifference);
         }
 
         Transform transformHit = CastGroundCheckingRays();
@@ -406,12 +428,16 @@ public class DCLCharacterController : MonoBehaviour
                     isOnMovingPlatform = true;
                     CommonScriptableObjects.playerIsOnMovingPlatform.Set(true);
                     Physics.SyncTransforms();
-                    lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
+                    SaveLateUpdateGroundTransforms();
+                    
+                    Quaternion deltaRotation = groundTransform.rotation * Quaternion.Inverse(groundLastRotation);
+                    CommonScriptableObjects.movingPlatformRotationDelta.Set(deltaRotation);
                 }
             }
             else
             {
                 groundTransform = transformHit;
+                CommonScriptableObjects.movingPlatformRotationDelta.Set(Quaternion.identity);
             }
         }
         else
@@ -442,10 +468,7 @@ public class DCLCharacterController : MonoBehaviour
         return null;
     }
 
-    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
-    {
-        return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo);
-    }
+    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo) { return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo); }
 
     public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
     {
@@ -463,7 +486,7 @@ public class DCLCharacterController : MonoBehaviour
         float rayMagnitude = (bounds.extents.y + extraDistance);
         float originScale = scale * bounds.extents.x;
 
-        if (!CastGroundCheckingRay(Vector3.zero, out hitInfo, rayMagnitude, groundLayers) // center
+        if (!CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers) // center
             && !CastGroundCheckingRay( transform.position + transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // forward
             && !CastGroundCheckingRay( transform.position + transform.right * originScale, out hitInfo, rayMagnitude, groundLayers) // right
             && !CastGroundCheckingRay( transform.position + -transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // back
@@ -499,7 +522,7 @@ public class DCLCharacterController : MonoBehaviour
         float height = 0.875f;
 
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
-        var compositeRotation = Quaternion.LookRotation(cameraForward.Get());
+        var compositeRotation = Quaternion.LookRotation(characterForward.HasValue() ? characterForward.Get().Value : cameraForward.Get());
         var playerHeight = height + (characterController.height / 2);
 
         //NOTE(Brian): We have to wait for a Teleport before sending the ReportPosition, because if not ReportPosition events will be sent

@@ -28,6 +28,14 @@ namespace DCL.Camera
 
         internal Dictionary<CameraMode.ModeId, CameraStateBase> cachedModeToVirtualCamera;
 
+        public delegate void CameraBlendStarted();
+        public event CameraBlendStarted onCameraBlendStarted;
+
+        public delegate void CameraBlendFinished();
+        public event CameraBlendFinished onCameraBlendFinished;
+
+        private bool wasBlendingLastFrame;
+
         private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
         private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
         private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
@@ -67,6 +75,7 @@ namespace DCL.Camera
                 OnFullscreenUIVisibilityChange(CommonScriptableObjects.isFullscreenHUDOpen.Get(), !CommonScriptableObjects.isFullscreenHUDOpen.Get());
 
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
+            wasBlendingLastFrame = false;
         }
 
         private float prevRenderScale = 1.0f;
@@ -77,6 +86,20 @@ namespace DCL.Camera
                 return;
 
             camera.enabled = !visibleState;
+        }
+
+        public bool TryGetCameraStateByType<T>(out CameraStateBase searchedCameraState)
+        {
+            foreach (CameraStateBase cameraMode in cameraModes)
+            {
+                if (cameraMode.GetType() == typeof(T))
+                {
+                    searchedCameraState = cameraMode;
+                    return true;
+                }
+            }
+            searchedCameraState = null;
+            return false;
         }
 
         private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled; }
@@ -112,10 +135,7 @@ namespace DCL.Camera
             onSetCameraMode.Invoke(newMode);
         }
 
-        public CameraStateBase GetCameraMode( CameraMode.ModeId mode )
-        {
-            return cameraModes.FirstOrDefault( x => x.cameraModeId == mode );
-        }
+        public CameraStateBase GetCameraMode( CameraMode.ModeId mode ) { return cameraModes.FirstOrDefault( x => x.cameraModeId == mode ); }
 
         private void OnWorldReposition(Vector3 newValue, Vector3 oldValue) { transform.position += newValue - oldValue; }
 
@@ -125,6 +145,20 @@ namespace DCL.Camera
             cameraRight.Set(cameraTransform.right);
             cameraPosition.Set(cameraTransform.position);
             cameraIsBlending.Set(cameraBrain.IsBlending);
+
+            if (cameraBrain.IsBlending)
+            {
+                if (!wasBlendingLastFrame)
+                    onCameraBlendStarted?.Invoke();
+
+                wasBlendingLastFrame = true;
+            }
+            else if (wasBlendingLastFrame)
+            {
+                onCameraBlendFinished?.Invoke();
+
+                wasBlendingLastFrame = false;
+            }
 
             currentCameraState?.OnUpdate();
         }

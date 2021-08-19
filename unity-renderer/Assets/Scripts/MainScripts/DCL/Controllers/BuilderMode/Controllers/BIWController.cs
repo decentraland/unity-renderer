@@ -3,13 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BIWController : MonoBehaviour
+public interface IBIWController
 {
-    protected ParcelScene sceneToEdit;
+    void Init(BIWContext context);
+    void EnterEditMode(ParcelScene scene);
+    void ExitEditMode();
+    void OnGUI();
+
+    void LateUpdate();
+
+    void Update();
+    void Dispose();
+}
+
+public abstract class BIWController : IBIWController
+{
+    internal ParcelScene sceneToEdit;
 
     protected bool isEditModeActive = false;
 
-    public virtual void Init() { isEditModeActive = false; }
+    public virtual void Init(BIWContext context) { isEditModeActive = false; }
 
     public virtual void EnterEditMode(ParcelScene scene)
     {
@@ -23,12 +36,15 @@ public class BIWController : MonoBehaviour
         sceneToEdit = null;
     }
 
-    protected virtual void Update()
+    public virtual void OnGUI() { }
+
+    public virtual void LateUpdate() { }
+
+    public virtual void Update()
     {
         if (!isEditModeActive)
             return;
-        FrameUpdate();
     }
 
-    protected virtual void FrameUpdate() { }
+    public virtual void Dispose() { }
 }

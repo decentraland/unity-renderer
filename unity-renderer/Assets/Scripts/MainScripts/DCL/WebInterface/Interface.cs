@@ -100,6 +100,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class DeactivateRenderingACK : ControlEvent<object>
+        {
+            public DeactivateRenderingACK() : base("DeactivateRenderingACK", null) { }
+        }
+
+        [System.Serializable]
         public class SceneEvent<T>
         {
             public string sceneId;
@@ -452,12 +458,6 @@ namespace DCL.Interface
         public class OpenURLPayload
         {
             public string url;
-        }
-
-        [System.Serializable]
-        public class SendUserEmailPayload
-        {
-            public string userEmail;
         }
 
         [System.Serializable]
@@ -1068,14 +1068,6 @@ namespace DCL.Interface
             SendMessage("UnblockPlayer", new SendUnblockPlayerPayload()
             {
                 userId = userId
-            });
-        }
-
-        public static void SendUserEmail(string email)
-        {
-            SendMessage("ReportUserEmail", new SendUserEmailPayload()
-            {
-                userEmail = email
             });
         }
 
