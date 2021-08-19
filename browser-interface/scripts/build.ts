@@ -122,7 +122,7 @@ async function createPackageJson() {
     .replace(/([^\dT])/g, "")
     .replace("T", "")
 
-  const commitHash = git.short(__dirname)
+  const shortCommitHash = (process.env.CIRCLE_SHA1 as string).substring(0, 7)
 
   writeFileSync(
     path.resolve(DIST_PATH, "package.json"),
@@ -131,7 +131,7 @@ async function createPackageJson() {
         name: "@dcl/unity-renderer",
         main: "index.js",
         typings: "index.d.ts",
-        version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}-${time}.commit-${commitHash}`,
+        version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}-${time}.commit-${shortCommitHash}`,
         tag: process.env.CIRCLE_TAG,
         commit: process.env.CIRCLE_SHA1,
         branch: process.env.CIRCLE_BRANCH,
