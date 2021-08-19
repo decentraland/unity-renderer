@@ -17,22 +17,20 @@ namespace DCL
         object id = null;
 
         public AssetPromise_GLTF(string url, IWebRequestController webRequestController)
-        {
-            this.provider = new ContentProvider_Dummy();
-            this.url = url.Substring(url.LastIndexOf('/') + 1);
-            this.id = url;
-            this.webRequestController = webRequestController;
-            // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
-            // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
-            assetDirectoryPath = URIHelper.GetDirectoryName(url);
-        }
+            : this(new ContentProvider_Dummy(), url, null, webRequestController) { }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash = null)
+            : this(provider, url, hash, Environment.i.platform.webRequest) { }
+
+        public AssetPromise_GLTF(ContentProvider provider, string url, IWebRequestController webRequestController)
+            : this(provider, url, null, webRequestController) { }
+
+        public AssetPromise_GLTF(ContentProvider provider, string url, string hash, IWebRequestController webRequestController)
         {
             this.provider = provider;
             this.fileName = url.Substring(url.LastIndexOf('/') + 1);
             this.id = hash ?? url;
-            this.webRequestController = Environment.i.platform.webRequest;
+            this.webRequestController = webRequestController;
             // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
             // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
             assetDirectoryPath = URIHelper.GetDirectoryName(url);
@@ -63,7 +61,8 @@ namespace DCL
                 addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
             };
 
-            gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string, false, tmpSettings, FileToHash);
+            gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
+                false, tmpSettings, FileToHash);
             gltfComponent.OnSuccess += OnSuccess;
             gltfComponent.OnFail += OnFail;
 
