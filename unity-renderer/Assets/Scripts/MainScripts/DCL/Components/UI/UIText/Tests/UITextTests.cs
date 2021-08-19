@@ -58,23 +58,22 @@ namespace Tests
                     isPointerBlocker = true,
                     hAlign = "left",
                     vAlign = "bottom",
-                    textModel = new TextShape.Model
-                    {
-                        value = "hello world",
-                        color = Color.green,
-                        opacity = 0.5f,
-                        fontSize = 35f,
-                        paddingTop = 10f,
-                        paddingRight = 30f,
-                        paddingBottom = 20f,
-                        paddingLeft = 15,
-                        lineSpacing = 0.1f,
-                        lineCount = 3,
-                        shadowOffsetX = 0.1f,
-                        shadowOffsetY = 0.1f,
-                        shadowColor = Color.yellow,
-                        textWrapping = true
-                    }
+
+                    value = "hello world",
+                    color = Color.green,
+                    opacity = 0.5f,
+                    fontSize = 35f,
+                    paddingTop = 10f,
+                    paddingRight = 30f,
+                    paddingBottom = 20f,
+                    paddingLeft = 15,
+                    lineSpacing = 0.1f,
+                    lineCount = 3,
+                    shadowOffsetX = 0.1f,
+                    shadowOffsetY = 0.1f,
+                    shadowColor = Color.yellow,
+                    textWrapping = true
+
                 });
 
             // Check default properties are applied correctly
@@ -139,23 +138,22 @@ namespace Tests
                     hAlign = "left",
                     vAlign = "bottom",
                     onClick = "UUIDFakeEventId",
-                    textModel = new TextShape.Model
-                    {
-                        value = "hello world",
-                        color = Color.green,
-                        opacity = 0.5f,
-                        fontSize = 35f,
-                        paddingTop = 10f,
-                        paddingRight = 30f,
-                        paddingBottom = 20f,
-                        paddingLeft = 15,
-                        lineSpacing = 0.1f,
-                        lineCount = 3,
-                        shadowOffsetX = 0.1f,
-                        shadowOffsetY = 0.1f,
-                        shadowColor = Color.yellow,
-                        textWrapping = true,
-                    }
+
+                    value = "hello world",
+                    color = Color.green,
+                    opacity = 0.5f,
+                    fontSize = 35f,
+                    paddingTop = 10f,
+                    paddingRight = 30f,
+                    paddingBottom = 20f,
+                    paddingLeft = 15,
+                    lineSpacing = 0.1f,
+                    lineCount = 3,
+                    shadowOffsetX = 0.1f,
+                    shadowOffsetY = 0.1f,
+                    shadowColor = Color.yellow,
+                    textWrapping = true,
+
                 });
 
             //------------------------------------------------------------------------
