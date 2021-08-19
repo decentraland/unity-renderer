@@ -111,8 +111,16 @@ declare var DclRenderer: typeof Renderer
   ensureFileExists(path.resolve(DIST_PATH, typingsRoot), "index.d.ts")
 }
 
+
 async function createPackageJson() {
   console.log("> writing package.json")
+
+  const time = new Date()
+    .toISOString()
+    .replace(/(\..*$)/g, "")
+    .replace(/([^\dT])/g, "")
+    .replace("T", "")
+
   writeFileSync(
     path.resolve(DIST_PATH, "package.json"),
     JSON.stringify(
@@ -120,7 +128,7 @@ async function createPackageJson() {
         name: "@dcl/unity-renderer",
         main: "index.js",
         typings: "index.d.ts",
-        version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}`,
+        version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}-${time}.commit-${process.env.CIRCLE_SHA1 as string}`,
         tag: process.env.CIRCLE_TAG,
         commit: process.env.CIRCLE_SHA1,
         branch: process.env.CIRCLE_BRANCH,
