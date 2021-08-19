@@ -48,7 +48,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void AssetPackSelected()
+        public void SelectAssetPack()
         {
             //Arrange
             mockedGameObject = new GameObject();
@@ -77,7 +77,7 @@ namespace Tests.BuildModeHUDControllers
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]
-        public void QuickBarInputCorrectly(int quickBarSlot)
+        public void UseQuickBarCorrectly(int quickBarSlot)
         {
             // Act
             sceneCatalogController.QuickBarInput(quickBarSlot);
@@ -87,7 +87,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void CatalogItemSelectedCorrectly()
+        public void SelectCatalogItemCorrectly()
         {
             // Arrange
             CatalogItem testCatalogItem = new CatalogItem { id = "test id" };
@@ -130,7 +130,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void HideCatalogClickedCorrectly()
+        public void HideCatalogCorrectly()
         {
             // Arrange
             bool hideCatalogClicked = false;
@@ -170,7 +170,7 @@ namespace Tests.BuildModeHUDControllers
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SceneCatalogBackCorrectly(bool isShowingAssetPacks)
+        public void BackFromSceneCatalogCorrectly(bool isShowingAssetPacks)
         {
             // Arrange
             sceneCatalogController.isShowingAssetPacks = isShowingAssetPacks;

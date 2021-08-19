@@ -6,7 +6,7 @@ using UnityEngine;
 public class SceneDataShould
 {
     [Test]
-    public void SceneDataCorrectSize()
+    public void SceneDataShoulSetCorrectSize()
     {
         //Arrange
         var metadata = new CatalystSceneEntityPayload();

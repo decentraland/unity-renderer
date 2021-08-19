@@ -11,8 +11,8 @@ public class BIWTranslateGizmosShould
     private BIWTranslateGizmos gizmos;
     private BIWGizmosAxis axis;
 
-    [UnitySetUp]
-    protected IEnumerator SetUp()
+    [SetUp]
+    private void SetUp()
     {
         mockedGizmosGameObject = new GameObject("ScaleGizmos");
         mockedEntityGameObject = new GameObject("EntityScaleGizmos");
@@ -21,7 +21,6 @@ public class BIWTranslateGizmosShould
         axis.SetGizmo(gizmos);
         gizmos.activeAxis = axis;
 
-        yield break;
     }
 
     [Test]
@@ -39,11 +38,10 @@ public class BIWTranslateGizmosShould
         Assert.AreEqual(value, 1f);
     }
 
-    [UnityTearDown]
-    protected IEnumerator TearDown()
+    [TearDown]
+    private void TearDown()
     {
         GameObject.Destroy(mockedGizmosGameObject);
         GameObject.Destroy(mockedEntityGameObject);
-        yield break;
     }
 }

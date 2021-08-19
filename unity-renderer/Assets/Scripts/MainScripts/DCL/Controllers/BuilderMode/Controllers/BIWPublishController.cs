@@ -107,7 +107,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
         }
 
         if (HUDController.i.builderInWorldMainHud != null)
-            HUDController.i.builderInWorldMainHud?.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+            HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
 
         return feedbackMessage;
     }

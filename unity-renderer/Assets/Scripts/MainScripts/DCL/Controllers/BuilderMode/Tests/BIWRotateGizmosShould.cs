@@ -11,8 +11,8 @@ public class BIWRotateGizmosShould
     private BIWGizmosRotate gizmos;
     private BIWGizmosAxis axis;
 
-    [UnitySetUp]
-    protected IEnumerator SetUp()
+    [SetUp]
+    void SetUp()
     {
         mockedGizmosGameObject = new GameObject("ScaleGizmos");
         mockedEntityGameObject = new GameObject("EntityScaleGizmos");
@@ -20,8 +20,6 @@ public class BIWRotateGizmosShould
         axis = mockedGizmosGameObject.AddComponent<BIWGizmosAxis>();
         axis.SetGizmo(gizmos);
         gizmos.activeAxis = axis;
-
-        yield break;
     }
 
     [Test]
@@ -70,11 +68,10 @@ public class BIWRotateGizmosShould
         Assert.AreEqual(hitpoint, result);
     }
 
-    [UnityTearDown]
-    protected IEnumerator TearDown()
+    [TearDown]
+    void TearDown()
     {
         GameObject.Destroy(mockedGizmosGameObject);
         GameObject.Destroy(mockedEntityGameObject);
-        yield break;
     }
 }

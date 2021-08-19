@@ -49,7 +49,7 @@ namespace Tests
         }
 
         [Test]
-        public void LandsFetchedError()
+        public void GiveErrorOnFailLandsFetched()
         {
             //Arrange
             controller.isFetching = true;
@@ -64,7 +64,7 @@ namespace Tests
         }
 
         [Test]
-        public void LandsFetched()
+        public void FetchLands()
         {
             //Arrange
             Parcel parcel = new Parcel();
@@ -75,15 +75,15 @@ namespace Tests
             Land land = new Land();
             land.parcels = new List<Parcel>() { parcel };
 
-            LandWithAccess landWithAcces = new LandWithAccess(land);
+            LandWithAccess landWithAccess = new LandWithAccess(land);
             DeployedScene deployedScene = new DeployedScene();
             deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
             deployedScene.deploymentSource = DeployedScene.Source.SDK;
 
-            landWithAcces.scenes = new List<DeployedScene>() { deployedScene };
+            landWithAccess.scenes = new List<DeployedScene>() { deployedScene };
             var lands = new LandWithAccess[]
             {
-                landWithAcces
+                landWithAccess
             };
 
             //Act
@@ -104,7 +104,7 @@ namespace Tests
         }
 
         [Test]
-        public void OnGoToEditScene()
+        public void GoToEditScene()
         {
             //Arrange
             controller.OnJumpInOrEdit += AssertJump;

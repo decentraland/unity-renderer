@@ -21,7 +21,7 @@ namespace Tests
         public void TearDown() { controller.Dispose(); }
 
         [Test]
-        public void AdminPressed()
+        public void AddAdmin()
         {
             //Act
             int a = 5;
@@ -33,7 +33,7 @@ namespace Tests
         }
 
         [Test]
-        public void AddedBannedUser()
+        public void AddBannerUser()
         {
             //Act
             controller.OnAddBannedUserPressed("TestId");

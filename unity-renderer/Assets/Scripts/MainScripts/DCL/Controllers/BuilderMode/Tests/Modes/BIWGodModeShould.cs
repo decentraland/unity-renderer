@@ -88,7 +88,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void SelectedEntity()
+    public void SelectEntity()
     {
         //Arrange
         var entity = new BIWEntity();
@@ -115,7 +115,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void ActionStartCreated()
+    public void CreateActionStart()
     {
         //Arrange
         var result = godMode.actionList.Count;
@@ -135,7 +135,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void ActionEndCreated()
+    public void CreateActionEnd()
     {
         //Arrange
         var result = godMode.actionList;
@@ -157,7 +157,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator OutlineOfEntitiesInsideSquareSelection()
+    public IEnumerator OutlineEntitiesInsideSquareSelection()
     {
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
