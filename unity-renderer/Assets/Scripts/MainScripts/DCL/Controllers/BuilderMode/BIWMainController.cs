@@ -457,6 +457,7 @@ public class BIWMainController : PluginFeature
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
         sceneToEdit = (ParcelScene)Environment.i.world.state.GetScene(sceneToEditId);
+        sceneToEdit.metricsController = new BIWSceneMetricsController(sceneToEdit);
         sceneToEdit.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
     }
 

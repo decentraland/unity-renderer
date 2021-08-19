@@ -50,8 +50,9 @@ namespace AssetPromiseKeeper_Mock_Tests
             Assert.AreEqual(0, library.masterAssets.Count);
         }
 
-        [Explicit]
+        [UnityTest]
         [Category("Explicit")]
+        [Explicit]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
             var library = new AssetLibrary_Mock();

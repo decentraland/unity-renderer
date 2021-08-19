@@ -110,8 +110,8 @@ namespace AssetPromiseKeeper_Tests
         }
 
         [UnityTest]
-        [Explicit]
         [Category("Explicit")]
+        [Explicit]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
             var prom = CreatePromise();
