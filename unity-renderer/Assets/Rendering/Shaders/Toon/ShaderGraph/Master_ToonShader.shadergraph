@@ -172,7 +172,7 @@
             },
             "m_InputSlot": {
                 "m_Node": {
-                    "m_Id": "b720705a29ed4d789960e80a45491652"
+                    "m_Id": "2e7dde3a0e5b4413b42eb84430fff531"
                 },
                 "m_SlotId": 0
             }
@@ -228,9 +228,9 @@
             },
             "m_InputSlot": {
                 "m_Node": {
-                    "m_Id": "05c042d7d9f4436b8f5459f213ab865b"
+                    "m_Id": "b720705a29ed4d789960e80a45491652"
                 },
-                "m_SlotId": -233074774
+                "m_SlotId": 0
             }
         },
         {
@@ -270,9 +270,9 @@
             },
             "m_InputSlot": {
                 "m_Node": {
-                    "m_Id": "2e7dde3a0e5b4413b42eb84430fff531"
+                    "m_Id": "05c042d7d9f4436b8f5459f213ab865b"
                 },
-                "m_SlotId": 0
+                "m_SlotId": -233074774
             }
         },
         {
@@ -534,10 +534,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1588.0,
-            "y": -407.199951171875,
-            "width": 213.59999084472657,
-            "height": 117.60000610351563
+            "x": 1566.0,
+            "y": -107.9999771118164,
+            "width": 211.0,
+            "height": 117.99999237060547
         }
     },
     "m_Slots": [
@@ -615,10 +615,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1408.800048828125,
-            "y": -424.7999572753906,
-            "width": 140.0,
-            "height": 34.399993896484378
+            "x": 1415.0,
+            "y": -142.00001525878907,
+            "width": 138.0,
+            "height": 34.0
         }
     },
     "m_Slots": [
@@ -2085,7 +2085,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "8ab43401c4c449ca9551a83eb95b3a2a",
     "m_Id": -233074774,
-    "m_DisplayName": "Alpha",
+    "m_DisplayName": "AlphaClip",
     "m_SlotType": 0,
     "m_Hidden": false,
     "m_ShaderOutputName": "Vector1_5b481b78f39f486db90c8087ed357ebc",
@@ -2239,7 +2239,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 1.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,

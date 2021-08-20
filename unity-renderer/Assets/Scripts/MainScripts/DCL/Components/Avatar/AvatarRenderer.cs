@@ -578,10 +578,10 @@ namespace DCL
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
 
-            bodyShapeController.SetFadeDither(avatarFade);
-            foreach (WearableController wearableController in wearableControllers.Values)
+            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            for (int j = 0; j < mats.Length; j++)
             {
-                wearableController.SetFadeDither(avatarFade);
+                mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
         }
 
@@ -643,11 +643,7 @@ namespace DCL
             return success;
         }
 
-        void CleanMergedAvatar()
-        {
-            avatarMeshCombiner.Dispose();
-        }
-
+        void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
 
         protected virtual void OnDestroy()
         {
