@@ -135,7 +135,6 @@ namespace DCL.Components
 
             if (texturePlayer != null)
             {
-                var lstSeekTime = model.seek;
                 if (model.seek >= 0)
                 {
                     texturePlayer.SetTime(model.seek);
@@ -148,13 +147,13 @@ namespace DCL.Components
                 if (model.playing)
                 {
                     texturePlayer.Play();
-                    ReportVideoProgress();
                 }
                 else
                 {
                     texturePlayer.Pause();
-                    ReportVideoProgress();
                 }
+                
+                ReportVideoProgress();
 
                 if (baseVolume != model.volume)
                 {
