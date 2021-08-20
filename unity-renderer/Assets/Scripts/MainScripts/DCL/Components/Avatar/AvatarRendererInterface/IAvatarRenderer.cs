@@ -14,7 +14,7 @@ namespace DCL
         bool isReady { get; }
         event Action<VisualCue> OnVisualCue;
         void CleanupAvatar();
-        void UpdateExpressions(string id, long timestamp);
+        void SetExpression(string id, long timestamp);
         void SetVisibility(bool newVisibility);
         void SetImpostorVisibility(bool impostorVisibility);
         void SetImpostorForward(Vector3 newForward);
@@ -23,5 +23,4 @@ namespace DCL
         void SetFacialFeaturesVisible(bool visible);
         void SetSSAOEnabled(bool enabled);
     }
-
 }
