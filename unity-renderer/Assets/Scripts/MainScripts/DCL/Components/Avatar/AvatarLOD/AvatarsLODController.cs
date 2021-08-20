@@ -123,6 +123,6 @@ namespace DCL
 
             otherPlayers.OnAdded -= RegisterAvatar;
             otherPlayers.OnRemoved -= UnregisterAvatar;
-        } //Test
+        }
     }
 }
