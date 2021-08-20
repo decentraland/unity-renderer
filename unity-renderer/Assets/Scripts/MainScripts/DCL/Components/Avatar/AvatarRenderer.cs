@@ -149,7 +149,8 @@ namespace DCL
             if (!isDestroyed)
             {
                 SetVisibility(true);
-                SetImpostorVisibility(false);
+                if (lodRenderer != null)
+                    SetImpostorVisibility(false);
             }
 
             eyebrowsController?.CleanUp();

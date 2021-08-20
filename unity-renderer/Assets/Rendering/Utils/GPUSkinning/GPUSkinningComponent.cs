@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GPUSkinningComponent : MonoBehaviour
 {
-    public Material gpuSkinningMat;
     private List<SimpleGPUSkinning> gpuSkinnedRenderers = new List<SimpleGPUSkinning>();
 
     void Start()
@@ -13,7 +12,7 @@ public class GPUSkinningComponent : MonoBehaviour
 
         foreach ( var r in renderers )
         {
-            var newSkinning = new SimpleGPUSkinning( r, gpuSkinningMat );
+            var newSkinning = new SimpleGPUSkinning(r);
             gpuSkinnedRenderers.Add(newSkinning);
         }
     }

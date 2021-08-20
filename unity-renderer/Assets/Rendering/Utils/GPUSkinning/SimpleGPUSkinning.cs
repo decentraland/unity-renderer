@@ -6,7 +6,6 @@ public class SimpleGPUSkinning
 {
     public Transform[] bones;
     public Renderer meshRenderer;
-    public Material skinningMaterial;
 
     private Matrix4x4[] boneMatrices;
     private static readonly int BONE_MATRICES = Shader.PropertyToID("_Matrices");
@@ -52,7 +51,7 @@ public class SimpleGPUSkinning
         skr.sharedMesh.SetUVs(1, bone23data);
     }
 
-    public SimpleGPUSkinning (SkinnedMeshRenderer skr, Material gpuSkinningMaterial)
+    public SimpleGPUSkinning (SkinnedMeshRenderer skr)
     {
         ConfigureBindPoses(skr);
 
@@ -63,11 +62,13 @@ public class SimpleGPUSkinning
         go.AddComponent<MeshFilter>().sharedMesh = skr.sharedMesh;
 
         meshRenderer = go.AddComponent<MeshRenderer>();
+        meshRenderer.sharedMaterials = skr.sharedMaterials;
 
-        this.skinningMaterial = new Material(gpuSkinningMaterial);
-        skinningMaterial.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
-
-        meshRenderer.sharedMaterial = skinningMaterial;
+        foreach (Material material in meshRenderer.sharedMaterials)
+        {
+            material.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
+            material.EnableKeyword("_GPU_SKINNING");
+        }
         bones = skr.bones;
 
         Object.Destroy(skr);
@@ -82,8 +83,11 @@ public class SimpleGPUSkinning
             var bone = bones[i];
             boneMatrices[i] = bone.localToWorldMatrix;
         }
+        foreach (Material material in meshRenderer.sharedMaterials)
+        {
+            material.SetMatrix(RENDERER_WORLD_INVERSE, meshRenderer.transform.worldToLocalMatrix);
+            material.SetMatrixArray(BONE_MATRICES, boneMatrices.ToArray());
+        }
 
-        skinningMaterial.SetMatrix(RENDERER_WORLD_INVERSE, meshRenderer.transform.worldToLocalMatrix);
-        skinningMaterial.SetMatrixArray(BONE_MATRICES, boneMatrices.ToArray());
     }
 }
