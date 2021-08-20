@@ -84,51 +84,58 @@ namespace DCL
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            //Cache .Get to boost performance. Also use squared data to boost distance comparison
+            //Cache .Get to boost performance. Also use squared values to boost distance comparison
             float lodDistance = LODDistance.Get() * LODDistance.Get();
             float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
-            (IAvatarLODController lodController, float sqrtDistance)[] data = lodControllers.Values.Select(x => (lodController: x, sqrtDistance: SqrtDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
-            Array.Sort(data, (x, y) => x.sqrtDistance.CompareTo(y.sqrtDistance));
-            foreach (var player in data)
+            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
+            for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
-                if (player.sqrtDistance < 0) //Behind camera
+                (IAvatarLODController lodController, float sqrtDistance) = lodControllersByDistance[index];
+                if (sqrtDistance < 0) //Behind camera
                 {
                     continue;
                 }
 
                 //Nearby player
-                if (player.sqrtDistance < lodDistance)
+                if (sqrtDistance < lodDistance)
                 {
                     if (avatarsCount < maxAvatars)
                     {
-                        if (player.sqrtDistance < squaredSimpleAvatarDistance)
-                            player.lodController.SetFullAvatar();
+                        if (sqrtDistance < squaredSimpleAvatarDistance)
+                            lodController.SetFullAvatar();
                         else
-                            player.lodController.SetSimpleAvatar();
+                            lodController.SetSimpleAvatar();
                         avatarsCount++;
                         continue;
                     }
-                    player.lodController.SetInvisible();
+                    lodController.SetInvisible();
                     continue;
                 }
 
                 if (avatarsCount < maxAvatars)
                 {
-                    player.lodController.SetSimpleAvatar();
+                    lodController.SetSimpleAvatar();
                     avatarsCount++;
                     continue;
                 }
                 if (impostorCount < maxImpostors)
                 {
-                    player.lodController.SetImpostor();
+                    lodController.SetImpostor();
                     impostorCount++;
                     continue;
                 }
 
-                player.lodController.SetInvisible();
+                lodController.SetInvisible();
             }
+        }
+
+        private (IAvatarLODController lodController, float sqrtDistance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
+        {
+            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersWithDistance = lodControllers.Select(x => (x, SqrtDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
+            Array.Sort(lodControllersWithDistance, (x, y) => x.sqrtDistance.CompareTo(y.sqrtDistance));
+            return lodControllersWithDistance;
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace DCL
 {
+    //TODO Rename to IAvatar (not now to avoid conflicts)
     public interface IAvatarLODController : IDisposable
     {
         Player player { get; }
