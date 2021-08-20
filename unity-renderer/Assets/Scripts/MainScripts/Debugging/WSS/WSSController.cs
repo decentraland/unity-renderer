@@ -511,6 +511,9 @@ namespace DCL
                             case "InstantiateBotsAtCoords":
                                 DCL.Environment.i.platform.debugController.InstantiateBotsAtCoords(msg.payload);
                                 break;
+                            case "StartBotsRandomizedMovement":
+                                DCL.Environment.i.platform.debugController.StartBotsRandomizedMovement(msg.payload);
+                                break;
                             case "RemoveBot":
                                 DCL.Environment.i.platform.debugController.RemoveBot(msg.payload);
                                 break;
