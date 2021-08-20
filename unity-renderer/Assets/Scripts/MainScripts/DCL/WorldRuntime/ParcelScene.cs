@@ -29,6 +29,7 @@ namespace DCL.Controllers
         public event System.Action<string, ISharedComponent> OnAddSharedComponent;
         public event System.Action<float> OnLoadingStateUpdated;
 
+        public string GetName() { return sceneName; }
         public ContentProvider contentProvider { get; protected set; }
 
         public bool isTestScene { get; set; } = false;
