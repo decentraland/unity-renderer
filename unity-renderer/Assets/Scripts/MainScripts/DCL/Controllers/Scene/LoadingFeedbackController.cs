@@ -95,9 +95,6 @@ public class LoadingFeedbackController : MonoBehaviour
 
     private void RefreshFeedbackMessage()
     {
-        if (!DataStore.i.HUDs.loadingHUD.visible.Get())
-            return;
-
         string loadingText = string.Empty;
         string secondLoadingText = string.Empty;
         DCL.Interface.WebInterface.LoadingFeedbackMessage messageToSend = new WebInterface.LoadingFeedbackMessage();
