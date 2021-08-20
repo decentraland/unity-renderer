@@ -164,6 +164,8 @@ namespace Tests
         }
 
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit]
         public IEnumerator FeedbackIsNotDisplayedOnParent()
         {
             var cursorController = GameObject.FindObjectOfType<CursorController>();

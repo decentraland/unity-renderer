@@ -157,6 +157,7 @@ public static class BIWTestHelper
 
     public static void CreateTestCatalogLocalSingleObject()
     {
+        BIWCatalogManager.Init();
         AssetCatalogBridge.i.ClearCatalog();
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/sceneObjectCatalog.json";
 
