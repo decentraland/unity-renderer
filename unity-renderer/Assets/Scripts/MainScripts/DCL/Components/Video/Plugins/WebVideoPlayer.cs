@@ -147,6 +147,11 @@ namespace DCL.Components.Video.Plugin
             return plugin.GetDuration(videoPlayerId);
         }
 
+        public VideoState GetState()
+        {
+            return (VideoState)plugin.GetState(videoPlayerId);
+        }
+
         public void Dispose()
         {
             plugin.Remove(videoPlayerId);
