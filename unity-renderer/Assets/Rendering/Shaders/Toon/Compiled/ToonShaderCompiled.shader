@@ -19,7 +19,7 @@
         [NoScaleOffset]_AvatarMap10("AvatarMap10", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap11("AvatarMap11", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap12("AvatarMap12", 2D) = "white" {}
-        _DitherFade("_DitherFade", Float) = 1
+        _DitherFade("_DitherFade", Float) = 0
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -323,12 +323,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -563,6 +557,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -583,30 +624,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -634,15 +684,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -958,13 +1009,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -1015,53 +1066,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -1172,19 +1176,6 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Emission = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2.xyz);
@@ -1192,7 +1183,7 @@
                 surface.Smoothness = 0;
                 surface.Occlusion = 1;
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -1254,15 +1245,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -1589,12 +1572,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -1829,6 +1806,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -1849,30 +1873,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -1900,15 +1933,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -2224,13 +2258,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -2281,53 +2315,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -2438,19 +2425,6 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Emission = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2.xyz);
@@ -2458,7 +2432,7 @@
                 surface.Smoothness = 0;
                 surface.Occlusion = 1;
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -2520,15 +2494,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -2812,12 +2778,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -3015,6 +2975,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -3035,30 +3042,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -3086,15 +3102,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -3410,13 +3427,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -3467,53 +3484,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -3618,21 +3588,8 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -3690,15 +3647,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -3981,12 +3930,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -4184,6 +4127,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -4204,30 +4194,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -4255,15 +4254,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -4579,13 +4579,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -4636,53 +4636,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -4787,21 +4740,8 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -4859,15 +4799,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -5166,12 +5098,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -5374,6 +5300,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -5394,30 +5367,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -5445,15 +5427,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -5769,13 +5752,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -5826,53 +5809,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -5978,22 +5914,9 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -6055,15 +5978,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -6348,12 +6263,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -6551,6 +6460,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -6571,30 +6527,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -6622,15 +6587,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -6946,13 +6912,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -7003,53 +6969,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -7156,23 +7075,10 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.Emission = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2.xyz);
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -7230,15 +7136,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -7518,12 +7416,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -7721,6 +7613,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -7741,30 +7680,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -7792,15 +7740,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -8116,13 +8065,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -8173,53 +8122,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -8325,22 +8227,9 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -8398,15 +8287,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -8742,12 +8623,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -8982,6 +8857,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -9002,30 +8924,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -9053,15 +8984,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -9377,13 +9309,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -9434,53 +9366,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -9591,19 +9476,6 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Emission = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2.xyz);
@@ -9611,7 +9483,7 @@
                 surface.Smoothness = 0;
                 surface.Occlusion = 1;
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -9673,15 +9545,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -9963,12 +9827,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -10166,6 +10024,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -10186,30 +10091,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -10237,15 +10151,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -10561,13 +10476,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -10618,53 +10533,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -10769,21 +10637,8 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -10841,15 +10696,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -11131,12 +10978,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -11334,6 +11175,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -11354,30 +11242,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -11405,15 +11302,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -11729,13 +11627,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -11786,53 +11684,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -11937,21 +11788,8 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -12009,15 +11847,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -12315,12 +12145,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -12523,6 +12347,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -12543,30 +12414,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -12594,15 +12474,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -12918,13 +12799,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -12975,53 +12856,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -13127,22 +12961,9 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -13204,15 +13025,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -13497,12 +13310,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -13700,6 +13507,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -13720,30 +13574,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -13771,15 +13634,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -14095,13 +13959,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -14152,53 +14016,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -14305,23 +14122,10 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.Emission = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2.xyz);
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -14379,15 +14183,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -14668,12 +14464,6 @@
                 float3 ViewSpacePosition;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float3 WorldSpacePosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float4 ScreenPosition;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 float4 uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -14871,6 +14661,53 @@
                 Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
             }
 
+            void Unity_Combine_float(float R, float G, float B, float A, out float4 RGBA, out float3 RGB, out float2 RG)
+            {
+                RGBA = float4(R, G, B, A);
+                RGB = float3(R, G, B);
+                RG = float2(R, G);
+            }
+
+            struct Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+            {
+            };
+
+            void SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                float4 Vector4_7f05b3325f1c496d844fbb4070e7a6d5,
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2 IN,
+                out float4 OutVector4_1)
+            {
+                float4 _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0 = Vector4_7f05b3325f1c496d844fbb4070e7a6d5;
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[0];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[1];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[2];
+                float _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4 = _Property_867cdcf65dc14a4489eb5ab3e9dee73e_Out_0[3];
+                float3 _Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0 = float3(
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_R_1, _Split_7a98eb8c0964454dbd4ef92a5b270525_G_2,
+                    _Split_7a98eb8c0964454dbd4ef92a5b270525_B_3);
+                float3 _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float(_Vector3_b80e031850314eeba4ce54378d1b39d5_Out_0,
+                                                            _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1);
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[0];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[1];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3 =
+                    _ColorspaceConversion_79babd15b1a5486b95e8f2c20525e983_Out_1[2];
+                float _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_A_4 = 0;
+                float4 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+                float3 _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5;
+                float2 _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6;
+                Unity_Combine_float(_Split_5df783c0d7e54c288ee07d5ba5a5ec1b_R_1,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_G_2,
+                                    _Split_5df783c0d7e54c288ee07d5ba5a5ec1b_B_3,
+                                    _Split_7a98eb8c0964454dbd4ef92a5b270525_A_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RGB_5,
+                                    _Combine_f0c9a6334f27477fbf5ad134bd134250_RG_6);
+                OutVector4_1 = _Combine_f0c9a6334f27477fbf5ad134bd134250_RGBA_4;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -14891,30 +14728,39 @@
                 float _Split_d9c8ce32db224f65a0e1315d8c452793_A_4 = _UV_6246eb05efec46989ec985ebd51e1c9a_Out_0[3];
                 float4 _UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
-                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
-                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974;
+                float4 _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    IN.VertexColor, _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974,
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
-                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
-                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
-                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
+                Bindings_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d;
+                float4 _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
+                SG_ColorspaceConversionWithAlphaPreservation_16e2702a2c7dabf478236b81c4757bd2(
+                    _UV_16a6d71972f74129be13a142f8b70f0d_Out_0,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d,
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
+                AlbedoColor_5 =
+                    _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1;
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
+                EmissionColor_3 =
+                    _ColorspaceConversionWithAlphaPreservation_f768ad8118e24415abeb46f6f2abb74d_OutVector4_1;
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -14942,15 +14788,16 @@
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_G_2 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[1];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_B_3 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[2];
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_A_4 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[3];
-                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
-                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[0];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[1];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[2];
-                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0[3];
+                float4 _Property_238daf54268048319ef59db2af48e53f_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
+                float _Split_9831600e6068464b9cb169a4f4d34f89_R_1 = _Property_238daf54268048319ef59db2af48e53f_Out_0[0];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_G_2 = _Property_238daf54268048319ef59db2af48e53f_Out_0[1];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_B_3 = _Property_238daf54268048319ef59db2af48e53f_Out_0[2];
+                float _Split_9831600e6068464b9cb169a4f4d34f89_A_4 = _Property_238daf54268048319ef59db2af48e53f_Out_0[3];
                 float _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
                 Unity_Multiply_float(_Split_9699a4e47bebed82bf87ba60d2fddc89_A_4,
                                      _Split_9831600e6068464b9cb169a4f4d34f89_A_4,
                                      _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2);
+                float4 _Property_38cf4154db0c4e38aef26e98a44b604a_Out_0 = Color_20d6639c9fdd413a829b748f8d32667c;
                 float4 _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0 = Vector4_DA7BBBB2;
                 float4 _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
                 Unity_Multiply_float(_Property_38cf4154db0c4e38aef26e98a44b604a_Out_0,
@@ -15266,13 +15113,13 @@
                 Bindings_ToonShader_18f0b7d8f3b31d440beb9efec73eae4d IN, out float Alpha_1, out float4 Albedo_3,
                 out float Alpha_Threshold_4, out float4 Emission_2)
             {
-                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
+                float4 _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0 = Color_55255cee1c54440099edb535c6ba3e59;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
                 float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
-                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
-                                                                  _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
+                                                                  _Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
@@ -15323,53 +15170,6 @@
                 Albedo_3 = _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 Alpha_Threshold_4 = _Property_3f93e0dfe6e1461faf06b1adc62fc0f5_Out_0;
                 Emission_2 = _Multiply_494baa94a4a8448981e05364609e8406_Out_2;
-            }
-
-            void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
-            {
-                float2 uv = ScreenPosition.xy * _ScreenParams.xy;
-                float DITHER_THRESHOLDS[16] =
-                {
-                    1.0 / 17.0, 9.0 / 17.0, 3.0 / 17.0, 11.0 / 17.0,
-                    13.0 / 17.0, 5.0 / 17.0, 15.0 / 17.0, 7.0 / 17.0,
-                    4.0 / 17.0, 12.0 / 17.0, 2.0 / 17.0, 10.0 / 17.0,
-                    16.0 / 17.0, 8.0 / 17.0, 14.0 / 17.0, 6.0 / 17.0
-                };
-                uint index = (uint(uv.x) % 4) * 4 + uint(uv.y) % 4;
-                Out = In - DITHER_THRESHOLDS[index];
-            }
-
-            void Unity_Maximum_float(float A, float B, out float Out)
-            {
-                Out = max(A, B);
-            }
-
-            struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-            {
-                float4 ScreenPosition;
-            };
-
-            void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8,
-                                                                      float Vector1_5b481b78f39f486db90c8087ed357ebc,
-                                                                      Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                                                                      IN, out float Out_Alpha_1)
-            {
-                float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-                float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
-                Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2(1, 0), float2(1, 2),
-                                  _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
-                float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(
-                    IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
-                float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-                Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3,
-                                   _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0,
-                                   _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-                float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-                float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
-                Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2,
-                                    _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0,
-                                    _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
-                Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
             }
 
             // Graph Vertex
@@ -15475,22 +15275,9 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
-                    _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
-                _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
-                float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
-                                                                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
-                #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
-                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
+                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
                 return surface;
             }
 
@@ -15548,15 +15335,7 @@
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.WorldSpacePosition = input.positionWS;
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
                 output.ViewSpacePosition = TransformWorldToView(input.positionWS);
-                #endif
-
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-                output.ScreenPosition = ComputeScreenPos(TransformWorldToHClip(input.positionWS), _ProjectionParams.x);
                 #endif
 
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
