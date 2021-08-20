@@ -36,6 +36,7 @@ namespace DCL
         internal FacialFeatureController mouthController;
         internal AvatarAnimatorLegacy animator;
         internal StickersController stickersController;
+        internal SkinnedMeshRenderer combinedMeshRenderer;
 
         private long lastStickerTimestamp = -1;
 
@@ -148,7 +149,7 @@ namespace DCL
             StopLoadingCoroutines();
             if (!isDestroyed)
             {
-                SetVisibility(true);
+                SetGOVisibility(true);
                 SetImpostorVisibility(false);
             }
 
@@ -444,9 +445,9 @@ namespace DCL
             // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
             UpdateExpression();
 
-            bool mergeSuccess = MergeAvatar();
+            combinedMeshRenderer = MergeAvatar();
 
-            if ( !mergeSuccess )
+            if (combinedMeshRenderer == null)
                 loadSoftFailed = true;
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
@@ -580,12 +581,20 @@ namespace DCL
             this.eyesController = original.eyesController;
         }
 
-        public void SetVisibility(bool newVisibility)
+        public void SetGOVisibility(bool newVisibility)
         {
             //NOTE(Brian): Avatar being loaded needs the renderer.enabled as false until the loading finishes.
             //             So we can' manipulate the values because it'd show an incomplete avatar. Its easier to just deactivate the gameObject.
             if (gameObject.activeSelf != newVisibility)
                 gameObject.SetActive(newVisibility);
+        }
+
+        public void SetCombinedMeshVisibility(bool newVisibility)
+        {
+            if (combinedMeshRenderer == null)
+                return;
+
+            combinedMeshRenderer.enabled = newVisibility;
         }
 
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
@@ -649,16 +658,17 @@ namespace DCL
             }
         }
 
-        bool MergeAvatar()
+        SkinnedMeshRenderer MergeAvatar()
         {
             var renderersToCombine = new List<SkinnedMeshRenderer>( allRenderers );
             renderersToCombine = renderersToCombine.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
-            bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
 
-            if ( success )
+            var combinedMeshRenderer = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
+
+            if (combinedMeshRenderer != null)
                 avatarMeshCombiner.container.transform.SetParent( transform, true );
 
-            return success;
+            return combinedMeshRenderer;
         }
 
         void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }

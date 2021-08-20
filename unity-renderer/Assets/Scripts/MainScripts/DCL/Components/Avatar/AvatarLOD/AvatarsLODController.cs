@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,7 +9,7 @@ namespace DCL
     {
         internal const float SIMPLE_AVATAR_DISTANCE = 10f;
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
-        
+
         private Vector3 cameraForward;
         private Vector3 cameraPosition;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
@@ -142,7 +141,7 @@ namespace DCL
                 lodController.SetInvisible();
             }
         }
-        
+
         private (IAvatarLODController lodController, float sqrtDistance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
         {
             (IAvatarLODController lodController, float sqrtDistance)[] lodControllersWithDistance = lodControllers.Select(x => (x, SqrtDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();

@@ -21,10 +21,7 @@ namespace DCL
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
-        public AvatarMeshCombinerHelper (GameObject container = null)
-        {
-            this.container = container;
-        }
+        public AvatarMeshCombinerHelper (GameObject container = null) { this.container = container; }
 
         /// <summary>
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
@@ -37,7 +34,7 @@ namespace DCL
         /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
         /// <param name="materialAsset">A material asset that will serve as the base of the combine result. A new materialAsset will be created for each combined sub-mesh.</param>
         /// <returns>true if succeeded, false if not</returns>
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
+        public SkinnedMeshRenderer Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
         {
             Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
             Assert.IsTrue(renderersToCombine != null, "renderersToCombine should never be null!");
@@ -49,7 +46,7 @@ namespace DCL
             renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
 
             if ( renderers.Length == 0 )
-                return false;
+                return null;
 
             bool success = CombineInternal(
                 bonesContainer,
@@ -62,7 +59,7 @@ namespace DCL
                 renderers[i].enabled = false;
             }
 
-            return success;
+            return success ? renderer : null;
         }
 
         private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)

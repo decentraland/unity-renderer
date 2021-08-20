@@ -117,7 +117,7 @@ namespace DCL
 
             player.renderer.SetAvatarFade(avatarFade);
             player.renderer.SetImpostorFade(impostorFade);
-            player.renderer.SetVisibility(true);
+            player.renderer.SetCombinedMeshVisibility(true);
             player.renderer.SetImpostorVisibility(true);
 
             while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
@@ -133,7 +133,7 @@ namespace DCL
             impostorFade = targetImpostorFade;
 
             bool avatarVisibility = !Mathf.Approximately(avatarFade, 0);
-            player.renderer.SetVisibility(avatarVisibility);
+            player.renderer.SetCombinedMeshVisibility(avatarVisibility);
             bool impostorVisibility = !Mathf.Approximately(impostorFade, 0);
             player.renderer.SetImpostorVisibility(impostorVisibility);
             currentTransition = null;
