@@ -20,6 +20,6 @@ namespace DCL.SettingsControls
 
         public override object GetStoredValue() { return currentGeneralSettings.maxNonLODAvatars; }
 
-        public override void UpdateSetting(object newValue) { DataStore.i.avatarsLOD.maxNonLODAvatars.Set((int)((float)newValue)); }
+        public override void UpdateSetting(object newValue) { DataStore.i.avatarsLOD.maxAvatars.Set((int)((float)newValue)); }
     }
 }
