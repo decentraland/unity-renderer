@@ -104,7 +104,7 @@ public class WearablesVisualTests : VisualTestsBase
         //Arrange
         const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0";
 
-        yield return InitVisualTestsScene("WearableVisualTests_AlphaTestWearable");
+        yield return InitVisualTestsScene("WearableVisualTests_AlphaBlendWearableWithTransparentBaseColor");
         VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.78f, 1.68f, 8.5f), new Vector3(8, 1.75f, 8));
         VisualTestController.i.camera.fieldOfView = 30;
 
@@ -117,18 +117,18 @@ public class WearablesVisualTests : VisualTestsBase
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator EmissiveWearable2_Generate()
+    public IEnumerator EmissiveWearableWithNoEmissionMap_Generate()
     {
-        yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearable2());
+        yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearableWithNoEmissionMap());
     }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
-    public IEnumerator EmissiveWearable2()
+    public IEnumerator EmissiveWearableWithNoEmissionMap()
     {
         //Arrange
-        yield return InitVisualTestsScene("WearableVisualTests_AlphaTestWearable");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7f, 1.8f, 11f), new Vector3(8, 1.75f, 8));
+        yield return InitVisualTestsScene("WearableVisualTests_EmissiveWearableWithNoEmissionMap");
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.75f, 1.8f, 8.75f), new Vector3(8, 1.75f, 8));
         const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0";
 
         //Act
