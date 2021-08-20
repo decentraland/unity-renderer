@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -117,6 +118,48 @@ namespace Tests
             yield return null;
         }
 
+        [UnityTest]
+        public IEnumerator ComponentIsResizedOnScreenResizeEvent()
+        {
+            // Create UIScreenSpaceShape
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return screenSpaceShape.routine;
+
+            // Create UIContainerStack
+            int widthPercent = 50;
+            int heightPercent = 30;
+            
+            UIContainerStack uiContainerStack =
+                TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_STACK,
+                    new UIContainerStack.Model
+                    {
+                        parentComponent = screenSpaceShape.id,
+                        width = new UIValue(widthPercent, UIValue.Unit.PERCENT),
+                        height = new UIValue(heightPercent, UIValue.Unit.PERCENT)
+                    });
+            yield return uiContainerStack.routine;
+
+            Vector2Int desiredScreenSize = new Vector2Int(500,500);
+
+            // we simulate first that the UI container now has the desired screen size            
+            screenSpaceShape.childHookRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, desiredScreenSize.x);
+            screenSpaceShape.childHookRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, desiredScreenSize.y);
+            
+            //Screen resize event
+            DataStore.i.screen.size.Set(desiredScreenSize);
+            
+            var currentSize = uiContainerStack.childHookRectTransform.rect.size;
+
+            Assert.AreEqual(desiredScreenSize.x * widthPercent/100f, currentSize.x, 0.01f, "UIContainer width after screen resize");
+            Assert.AreEqual(desiredScreenSize.y * heightPercent/100f, currentSize.y, 0.01f, "UIContainer height after screen resize");
+            screenSpaceShape.Dispose();
+            yield return null;
+        }
+
+        
         [UnityTest]
         public IEnumerator TestChildrenAreHandledCorrectly()
         {
