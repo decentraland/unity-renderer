@@ -4,6 +4,7 @@ using DCL.Components;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Components.Video.Plugin;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.Controllers;
@@ -52,7 +53,7 @@ namespace Tests
                 videoLength = 0,
                 videoTextureId = id,
                 currentOffset = 0,
-                status = 1
+                status = (int)VideoState.ERROR // status is always error when not on WebGL
             };
             
             var json = JsonUtility.ToJson(expectedEvent);
@@ -82,7 +83,7 @@ namespace Tests
                 videoLength = 0,
                 videoTextureId = id,
                 currentOffset = 0,
-                status = 0
+                status = (int)VideoState.ERROR
             };
             
             var json = JsonUtility.ToJson(expectedEvent);
@@ -111,7 +112,7 @@ namespace Tests
                 videoLength = 0,
                 videoTextureId = id,
                 currentOffset = 0,
-                status = 1
+                status = (int)VideoState.ERROR
             };
             var json = JsonUtility.ToJson(expectedEvent);
             var wasEventSent = false;

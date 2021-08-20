@@ -199,5 +199,15 @@ namespace Tests
             webVideoPlayer.UpdateWebVideoTexture();
             plugin.Received(1).TextureUpdate(ID, texture.GetNativeTexturePtr(), Arg.Any<bool>() );
         }
+
+        [Test]
+        public void VideoStateIsReturned()
+        {
+            plugin.GetState(ID).Returns(3);
+
+            VideoState state = webVideoPlayer.GetState();
+            
+            Assert.AreEqual(VideoState.READY, state);
+        }
     }
 }
