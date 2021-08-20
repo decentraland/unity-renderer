@@ -19,8 +19,18 @@ public static class AnalyticsHelper
     public static void AddSceneNameAndBasePositionToDictionary(Dictionary<string, string> analyticDict)
     {
         IParcelScene scene = GetSceneWherePlayerIsStanding();
-        analyticDict.Add("parcel", scene.sceneData.basePosition.ToString());
-        analyticDict.Add("scene", scene.GetName());
+        if (scene != null)
+        {
+            analyticDict.Add("parcel", scene.sceneData.basePosition.x + "," + scene.sceneData.basePosition.y );
+            analyticDict.Add("scene", scene.GetName());
+        }
+    }
+
+    public static void SendVoiceChatStartedAnalytic()
+    {
+        Dictionary<string, string> eventToSend = new Dictionary<string, string>();
+        AddSceneNameAndBasePositionToDictionary(eventToSend);
+        Analytics.i.SendAnalytic("voice_chat_start_recording", eventToSend);
     }
 
     public static void SendExternalLinkAnalytic(string url, string nftToken)
