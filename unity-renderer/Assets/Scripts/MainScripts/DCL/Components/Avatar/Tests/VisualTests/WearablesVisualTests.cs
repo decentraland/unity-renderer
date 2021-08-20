@@ -91,7 +91,7 @@ public class WearablesVisualTests : VisualTestsBase
     }
 
     [UnityTest, VisualTest]
-    [Explicit, Category("Visual Tests")]
+    [Explicit, Category("Explicit")]
     public IEnumerator AlphaBlendWearableWithTransparentBaseColor_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearableWithTransparentBaseColor());
@@ -116,7 +116,7 @@ public class WearablesVisualTests : VisualTestsBase
     }
 
     [UnityTest, VisualTest]
-    [Explicit, Category("Visual Tests")]
+    [Explicit, Category("Explicit")]
     public IEnumerator EmissiveWearable2_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearable2());
@@ -162,6 +162,7 @@ public class WearablesVisualTests : VisualTestsBase
 
         var rends = wearable.GetRenderers();
         combiner.Combine(rends[0], rends.ToArray(), avatarMaterial);
+
         combiner.container.transform.SetParent(rends[0].transform.parent);
         combiner.container.transform.localPosition = rends[0].transform.localPosition;
 
@@ -177,6 +178,6 @@ public class WearablesVisualTests : VisualTestsBase
             wearable.CleanUp();
         }
 
-        return base.TearDown();
+        yield return base.TearDown();
     }
 }

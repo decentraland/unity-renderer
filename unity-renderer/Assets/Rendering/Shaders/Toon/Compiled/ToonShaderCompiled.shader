@@ -23,6 +23,10 @@
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
+
+
+
+
     }
     SubShader
     {
@@ -635,7 +639,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -1884,7 +1888,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -3053,7 +3057,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -4205,7 +4209,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -5378,7 +5382,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -6538,7 +6542,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -7691,7 +7695,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -8935,7 +8939,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -10102,7 +10106,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -11253,7 +11257,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -12425,7 +12429,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -13585,7 +13589,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
@@ -14739,7 +14743,7 @@
                     _ColorspaceConversionWithAlphaPreservation_37c76d76c9954e9bbfadc800de51c974_OutVector4_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
