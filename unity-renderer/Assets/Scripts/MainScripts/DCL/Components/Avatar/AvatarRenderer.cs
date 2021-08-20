@@ -47,8 +47,6 @@ namespace DCL
         private AssetPromise_Texture bodySnapshotTexturePromise;
         private bool isDestroyed = false;
 
-        private List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>();
-
         private void Awake()
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
@@ -435,9 +433,6 @@ namespace DCL
 
             CleanUpUnusedItems();
 
-            allRenderers = wearableControllers.SelectMany( x => x.Value.GetRenderers() ).ToList();
-            allRenderers.AddRange( bodyShapeController.GetRenderers() );
-
             isLoading = false;
 
             SetWearableBones();
@@ -445,7 +440,9 @@ namespace DCL
             // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
             UpdateExpression();
 
-            bool mergeSuccess = MergeAvatar();
+            var allRenderers = wearableControllers.SelectMany( x => x.Value.GetRenderers() ).ToList();
+            allRenderers.AddRange( bodyShapeController.GetRenderers() );
+            bool mergeSuccess = MergeAvatar(allRenderers);
 
             if ( !mergeSuccess )
                 loadSoftFailed = true;
@@ -650,10 +647,9 @@ namespace DCL
             }
         }
 
-        bool MergeAvatar()
+        private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
-            var renderersToCombine = new List<SkinnedMeshRenderer>( allRenderers );
-            renderersToCombine = renderersToCombine.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+            var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
 
             if ( success )
