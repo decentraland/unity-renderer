@@ -27,9 +27,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator BasicConnectionTest()
         {
-            GameObject wssControllerGO = new GameObject("WSS Controller");
+            yield return null;
 
-            WSSController wssController = wssControllerGO.AddComponent<WSSController>();
+            WebSocketCommunication wssController = new WebSocketCommunication();
             DCLCharacterController.i.gravity = 0;
 
             yield return new WaitForSeconds(1.0f);
@@ -102,9 +102,7 @@ namespace Tests
                 Assert.IsTrue(DCL.Environment.i.world.state.loadedScenes[loadedSceneID] != null,
                     "Expected loadedScene found but was null!!!");
             }
-
-
-            UnityEngine.Object.Destroy(wssControllerGO);
+            
             // Use the Assert class to test conditions.
             // Use yield to skip a frame.
             yield return null;

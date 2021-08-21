@@ -19,7 +19,7 @@ namespace DCL
         public DebugConfig debugConfig;
 
         private PerformanceMetricsController performanceMetricsController;
-        private EntryPoint_World worldEntryPoint;
+        private IKernelCommunication kernelCommunication;
 
         private PluginSystem pluginSystem;
 
@@ -51,7 +51,9 @@ namespace DCL
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;
 
-            worldEntryPoint = new EntryPoint_World(Environment.i.world.sceneController);
+            kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
+#else
+            kernelCommunication = new WebSocketCommunication();
 #endif
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
@@ -91,6 +93,7 @@ namespace DCL
 
         private void Update()
         {
+            kernelCommunication.Update();
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();

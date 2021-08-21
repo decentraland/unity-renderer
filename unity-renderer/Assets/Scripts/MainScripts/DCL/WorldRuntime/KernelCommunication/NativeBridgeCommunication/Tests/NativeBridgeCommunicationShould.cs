@@ -30,21 +30,21 @@ public class MessageQueueHandler_Mock : IMessageQueueHandler
     }
 }
 
-public class EntryPointWorldShould
+public class NativeBridgeCommunicationShould
 {
-    private EntryPoint_World entryPoint;
+    private NativeBridgeCommunication entryPoint;
     private MessageQueueHandler_Mock queueHandler;
 
     [SetUp]
     public void SetUp()
     {
         queueHandler = new MessageQueueHandler_Mock();
-        entryPoint = new EntryPoint_World(queueHandler);
+        entryPoint = new NativeBridgeCommunication(queueHandler);
 
         const string sceneId = "test-scene-id";
         const string tag = "test-tag";
-        EntryPoint_World.SetSceneId(sceneId);
-        EntryPoint_World.SetTag(tag);
+        NativeBridgeCommunication.SetSceneId(sceneId);
+        NativeBridgeCommunication.SetTag(tag);
     }
 
     [Test]
@@ -53,16 +53,16 @@ public class EntryPointWorldShould
         const string entityId_1 = "1";
         const string entityId_2 = "2";
 
-        EntryPoint_World.SetEntityId(entityId_1);
-        EntryPoint_World.CreateEntity();
-        EntryPoint_World.SetEntityId(entityId_2);
-        EntryPoint_World.CreateEntity();
-        EntryPoint_World.SetEntityParent(entityId_1);
+        NativeBridgeCommunication.SetEntityId(entityId_1);
+        NativeBridgeCommunication.CreateEntity();
+        NativeBridgeCommunication.SetEntityId(entityId_2);
+        NativeBridgeCommunication.CreateEntity();
+        NativeBridgeCommunication.SetEntityParent(entityId_1);
 
-        EntryPoint_World.SetEntityId(entityId_1);
-        EntryPoint_World.RemoveEntity();
-        EntryPoint_World.SetEntityId(entityId_2);
-        EntryPoint_World.RemoveEntity();
+        NativeBridgeCommunication.SetEntityId(entityId_1);
+        NativeBridgeCommunication.RemoveEntity();
+        NativeBridgeCommunication.SetEntityId(entityId_2);
+        NativeBridgeCommunication.RemoveEntity();
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
         string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":""1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
@@ -92,12 +92,12 @@ public class EntryPointWorldShould
         const string componentId = "component-1";
         const int componentClass = 1;
 
-        EntryPoint_World.SetEntityId(entityId);
-        EntryPoint_World.CreateEntity();
-        EntryPoint_World.SharedComponentCreate(componentClass, componentId);
-        EntryPoint_World.SharedComponentAttach(componentId, null);
-        EntryPoint_World.SharedComponentUpdate(componentId, "{}");
-        EntryPoint_World.SharedComponentDispose(componentId);
+        NativeBridgeCommunication.SetEntityId(entityId);
+        NativeBridgeCommunication.CreateEntity();
+        NativeBridgeCommunication.SharedComponentCreate(componentClass, componentId);
+        NativeBridgeCommunication.SharedComponentAttach(componentId, null);
+        NativeBridgeCommunication.SharedComponentUpdate(componentId, "{}");
+        NativeBridgeCommunication.SharedComponentDispose(componentId);
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
         string json1base = @"{""method"":""CreateEntity"",""payload"":{""entityId"":""1""},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
@@ -127,10 +127,10 @@ public class EntryPointWorldShould
         const string componentId = "component-1";
         const int componentClass = 1;
 
-        EntryPoint_World.SetEntityId(entityId);
-        EntryPoint_World.CreateEntity();
-        EntryPoint_World.EntityComponentCreateOrUpdate(componentClass, componentId);
-        EntryPoint_World.EntityComponentDestroy(componentId);
+        NativeBridgeCommunication.SetEntityId(entityId);
+        NativeBridgeCommunication.CreateEntity();
+        NativeBridgeCommunication.EntityComponentCreateOrUpdate(componentClass, componentId);
+        NativeBridgeCommunication.EntityComponentDestroy(componentId);
 
         Assert.AreEqual(3, queueHandler.messagesList.Count);
 
@@ -160,7 +160,7 @@ public class EntryPointWorldShould
             origin = Vector3.zero,
             raycastType = 1
         };
-        EntryPoint_World.Query(payload);
+        NativeBridgeCommunication.Query(payload);
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
         string json1base = @"{""method"":""Query"",""payload"":{""queryType"":null,""payload"":{""sceneId"":""test-scene-id"",""id"":""66"",""raycastType"":1,""ray"":{""origin"":{""x"":0.0,""y"":0.0,""z"":0.0},""direction"":{""x"":1.0,""y"":0.0,""z"":0.0},""distance"":10.0}}},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
@@ -170,7 +170,7 @@ public class EntryPointWorldShould
     [Test]
     public void QueueSceneReadyCorrectly()
     {
-        EntryPoint_World.SceneReady();
+        NativeBridgeCommunication.SceneReady();
 
         string json1 = JsonConvert.SerializeObject(queueHandler.messagesList[0]);
         string json1base = @"{""method"":""InitMessagesFinished"",""payload"":{},""tag"":""test-tag"",""type"":1,""sceneId"":""test-scene-id"",""message"":null,""isUnreliable"":false,""unreliableMessageKey"":null}";
