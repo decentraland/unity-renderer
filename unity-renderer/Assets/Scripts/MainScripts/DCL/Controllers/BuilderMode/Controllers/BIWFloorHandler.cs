@@ -10,6 +10,7 @@ using UnityEngine;
 
 public interface IBIWFloorHandler
 {
+    void CreateDefaultFloor();
     void CreateFloor(CatalogItem floorSceneObject);
     bool IsCatalogItemFloor(CatalogItem floorSceneObject);
     void ChangeFloor(CatalogItem newFloorObject);
@@ -30,7 +31,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private int numberOfParcelsLoaded;
 
     private CatalogItem lastFloorCalalogItemUsed;
-    private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
+    internal readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
     private readonly List<string> loadedFloorEntities = new List<string>();
     private Camera mainCamera;
 
@@ -108,6 +109,9 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     public void CreateFloor(CatalogItem floorSceneObject)
     {
+        if (sceneToEdit == null)
+            return;
+
         Vector3 initialPosition = new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
         Vector2Int[] parcelsPoints = sceneToEdit.sceneData.parcels;
         numberOfParcelsLoaded = 0;

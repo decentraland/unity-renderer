@@ -22,9 +22,9 @@ public class DeployedScene
     public bool isEmpty => metadata.source?.isEmpty ?? false;
 
     private CatalystSceneEntityMetadata metadata;
-    private Source deploymentSource;
+    internal Source deploymentSource;
     private Vector2Int baseCoord;
-    private Vector2Int[] parcelsCoord;
+    internal Vector2Int[] parcelsCoord;
     private string thumbnail;
     private string entityId;
 

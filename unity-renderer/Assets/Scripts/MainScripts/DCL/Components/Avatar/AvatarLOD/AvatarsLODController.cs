@@ -1,15 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        internal const float SIMPLE_AVATAR_DISTANCE = 10f;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
+        private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
+        private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
+        private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
-        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+
         internal bool enabled;
 
         public AvatarsLODController()
@@ -56,7 +62,7 @@ namespace DCL
             if (!enabled)
                 return;
 
-            UpdateAllLODs();
+            UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
             UpdateLODsBillboard();
         }
 
@@ -73,46 +79,78 @@ namespace DCL
             }
         }
 
-        internal void UpdateAllLODs()
+        internal void UpdateAllLODs(int maxAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
-            SortedList<float, IAvatarLODController> closeDistanceAvatars = new SortedList<float, IAvatarLODController>();
-            foreach (var avatarKVP in lodControllers)
-            {
-                var lodController = avatarKVP.Value;
-                var position = otherPlayers[avatarKVP.Key].worldPosition;
-                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
-                bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
+            int avatarsCount = 0; //Full Avatar + Simple Avatar
+            int impostorCount = 0; //Impostor
 
-                if (isInLODDistance)
+            //Cache .Get to boost performance. Also use squared values to boost distance comparison
+            float lodDistance = LODDistance.Get() * LODDistance.Get();
+            float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
+            Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
+
+            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
+            for (int index = 0; index < lodControllersByDistance.Length; index++)
+            {
+                (IAvatarLODController lodController, float sqrtDistance) = lodControllersByDistance[index];
+                if (sqrtDistance < 0) //Behind camera
                 {
-                    lodController.SetImpostorState();
+                    continue;
                 }
-                else
+
+                //Nearby player
+                if (sqrtDistance < lodDistance)
                 {
-                    while (closeDistanceAvatars.ContainsKey(distanceToPlayer))
+                    if (avatarsCount < maxAvatars)
                     {
-                        distanceToPlayer += 0.0001f;
+                        if (sqrtDistance < squaredSimpleAvatarDistance)
+                            lodController.SetFullAvatar();
+                        else
+                            lodController.SetSimpleAvatar();
+                        avatarsCount++;
+                        continue;
                     }
-                    closeDistanceAvatars.Add(distanceToPlayer, lodController);
+                    lodController.SetInvisible();
+                    continue;
                 }
-            }
 
-            int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
-            for (var i = 0; i < closeDistanceAvatarsCount; i++)
-            {
-                IAvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
-                bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
-                if (isLOD)
-                    currentAvatar.SetImpostorState();
-                else
+                if (avatarsCount < maxAvatars)
                 {
-                    if (closeDistanceAvatars.Keys[i] < SIMPLE_AVATAR_DISTANCE)
-                        currentAvatar.SetAvatarState();
-                    else
-                        currentAvatar.SetSimpleAvatar();
+                    lodController.SetSimpleAvatar();
+                    avatarsCount++;
+                    continue;
                 }
+                if (impostorCount < maxImpostors)
+                {
+                    lodController.SetImpostor();
+                    impostorCount++;
+                    continue;
+                }
+
+                lodController.SetInvisible();
             }
         }
+
+        private (IAvatarLODController lodController, float sqrtDistance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
+        {
+            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersWithDistance = lodControllers.Select(x => (x, SqrtDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
+            Array.Sort(lodControllersWithDistance, (x, y) => x.sqrtDistance.CompareTo(y.sqrtDistance));
+            return lodControllersWithDistance;
+        }
+
+        /// <summary>
+        /// Returns -1 if player is not in front of camera or not found
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        private float SqrtDistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
+        {
+            if (player == null || !IsInFrontOfCamera(player))
+                return -1;
+            return Mathf.Abs(Vector3.SqrMagnitude(ownPlayerPosition - player.worldPosition));
+        }
+
+        private bool IsInFrontOfCamera(Player player) => true;
 
         public void Dispose()
         {

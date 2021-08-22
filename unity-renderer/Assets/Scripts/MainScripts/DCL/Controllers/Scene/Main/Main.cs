@@ -46,7 +46,6 @@ namespace DCL
             }
 
             pluginSystem = new PluginSystem();
-            DCL.Interface.WebInterface.SendSystemInfoReport();
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -59,6 +58,12 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
+
+            // this event should be the last one to be executed after initialization
+            // it is used by the kernel to signal "EngineReady" or something like that
+            // to prevent race conditions like "SceneController is not an object",
+            // aka sending events before unity is ready
+            DCL.Interface.WebInterface.SendSystemInfoReport();
         }
 
         protected virtual void SetupEnvironment()

@@ -12,13 +12,27 @@ namespace DCL
         public string url { get; private set; }
 
         GLTFComponent gltfComponent = null;
+        IWebRequestController webRequestController = null;
+
         object id = null;
+
+        public AssetPromise_GLTF(string url, IWebRequestController webRequestController)
+        {
+            this.provider = new ContentProvider_Dummy();
+            this.url = url.Substring(url.LastIndexOf('/') + 1);
+            this.id = url;
+            this.webRequestController = webRequestController;
+            // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
+            // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
+            assetDirectoryPath = URIHelper.GetDirectoryName(url);
+        }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash = null)
         {
             this.provider = provider;
             this.url = url.Substring(url.LastIndexOf('/') + 1);
             this.id = hash ?? url;
+            this.webRequestController = Environment.i.platform.webRequest;
             // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
             // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
             assetDirectoryPath = URIHelper.GetDirectoryName(url);
@@ -39,7 +53,7 @@ namespace DCL
         protected override void OnLoad(System.Action OnSuccess, System.Action OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
-            gltfComponent.Initialize(DCL.Environment.i.platform.webRequest);
+            gltfComponent.Initialize(webRequestController);
 
             GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
             {
