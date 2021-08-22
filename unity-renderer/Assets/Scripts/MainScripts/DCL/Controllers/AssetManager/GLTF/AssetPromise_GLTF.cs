@@ -185,7 +185,8 @@ namespace DCL
                 AddToLibrary();
             }
 
-            CallAndClearEvents(success, false);
+            ClearEvents();
+            CallAndClearEvents(success);
             Cleanup();
         }
     }
