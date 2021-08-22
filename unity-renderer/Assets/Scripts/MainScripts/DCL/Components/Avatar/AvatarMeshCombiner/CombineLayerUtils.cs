@@ -59,7 +59,7 @@ namespace DCL
             }
 
             // No valid materials were found
-            if ( result.Count == 1 && result[0].textureToId.Count == 0 )
+            if ( result.Count == 1 && result[0].textureToId.Count == 0 && result[0].renderers.Count == 0)
             {
                 logger.Log("Slice End Fail!");
                 return null;

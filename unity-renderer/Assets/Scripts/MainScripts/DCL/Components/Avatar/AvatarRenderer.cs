@@ -61,10 +61,23 @@ namespace DCL
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
         {
-            if (this.model != null && model != null && this.model.Equals(model))
+            if ( this.model != null )
             {
-                onSuccess?.Invoke();
-                return;
+                if (model != null && this.model.Equals(model))
+                {
+                    onSuccess?.Invoke();
+                    return;
+                }
+
+                bool wearablesChanged = !this.model.HaveSameWearablesAndColors(model);
+                bool expressionsChanged = !this.model.HaveSameExpressions(model);
+
+                if (!wearablesChanged && expressionsChanged)
+                {
+                    UpdateExpression();
+                    onSuccess?.Invoke();
+                    return;
+                }
             }
 
             this.model = new AvatarModel();
@@ -429,15 +442,7 @@ namespace DCL
             SetWearableBones();
 
             // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
-            UpdateExpressions(model.expressionTriggerId, model.expressionTriggerTimestamp);
-
-            if (lastStickerTimestamp != model.stickerTriggerTimestamp && model.stickerTriggerId != null)
-            {
-                lastStickerTimestamp = model.stickerTriggerTimestamp;
-
-                if ( stickersController != null )
-                    stickersController.PlayEmote(model.stickerTriggerId);
-            }
+            UpdateExpression();
 
             bool mergeSuccess = MergeAvatar();
 
@@ -502,7 +507,20 @@ namespace DCL
             }
         }
 
-        public void UpdateExpressions(string id, long timestamp)
+        private void UpdateExpression()
+        {
+            SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);
+
+            if (lastStickerTimestamp != model.stickerTriggerTimestamp && model.stickerTriggerId != null)
+            {
+                lastStickerTimestamp = model.stickerTriggerTimestamp;
+
+                if ( stickersController != null )
+                    stickersController.PlayEmote(model.stickerTriggerId);
+            }
+        }
+
+        public void SetExpression(string id, long timestamp)
         {
             model.expressionTriggerId = id;
             model.expressionTriggerTimestamp = timestamp;
@@ -578,10 +596,10 @@ namespace DCL
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
 
-            bodyShapeController.SetFadeDither(avatarFade);
-            foreach (WearableController wearableController in wearableControllers.Values)
+            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            for (int j = 0; j < mats.Length; j++)
             {
-                wearableController.SetFadeDither(avatarFade);
+                mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
         }
 
@@ -643,11 +661,7 @@ namespace DCL
             return success;
         }
 
-        void CleanMergedAvatar()
-        {
-            avatarMeshCombiner.Dispose();
-        }
-
+        void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
 
         protected virtual void OnDestroy()
         {

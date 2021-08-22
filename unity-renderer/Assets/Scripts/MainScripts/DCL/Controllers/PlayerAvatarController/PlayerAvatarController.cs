@@ -108,7 +108,7 @@ public class PlayerAvatarController : MonoBehaviour
         userProfile.OnAvatarExpressionSet += OnAvatarExpression;
     }
 
-    private void OnAvatarExpression(string id, long timestamp) { avatarRenderer.UpdateExpressions(id, timestamp); }
+    private void OnAvatarExpression(string id, long timestamp) { avatarRenderer.SetExpression(id, timestamp); }
 
     private void OnUserProfileOnUpdate(UserProfile profile) { avatarRenderer.ApplyModel(profile.avatar, null, null); }
 

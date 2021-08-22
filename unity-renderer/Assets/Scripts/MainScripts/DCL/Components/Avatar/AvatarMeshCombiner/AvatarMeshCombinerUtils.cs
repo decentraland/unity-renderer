@@ -154,13 +154,12 @@ namespace DCL
                     }
 
                     // Base Colors
-                    Color baseColor = mat.GetColor(ShaderUtils.BaseColor);
+                    Vector4 baseColor = mat.GetVector(ShaderUtils.BaseColor);
                     result.colors.AddRange(Enumerable.Repeat(baseColor, vertexCount));
 
                     // Emission Colors
-                    Color emissionColor = mat.GetColor(ShaderUtils.EmissionColor);
-                    Vector4 emissionColorV4 = new Vector4(emissionColor.r, emissionColor.g, emissionColor.b, emissionColor.a);
-                    result.emissionColors.AddRange(Enumerable.Repeat(emissionColorV4, vertexCount));
+                    Vector4 emissionColor = mat.GetVector(ShaderUtils.EmissionColor);
+                    result.emissionColors.AddRange(Enumerable.Repeat(emissionColor, vertexCount));
 
                     logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
                 }
