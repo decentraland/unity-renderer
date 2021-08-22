@@ -123,5 +123,17 @@ namespace DCL
                 return base.GetAsset(id);
             }
         }
+        
+        // NOTE: master promise are silently forgotten. We should make sure that they are loaded anyway since
+        // other promises are waiting for them
+        internal void OnSilentForget()
+        {
+            asset.Hide();
+
+            if (gltfComponent != null)
+            {
+                gltfComponent.SetPrioritized();
+            }
+        }
     }
 }

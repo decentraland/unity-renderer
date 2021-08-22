@@ -12,7 +12,7 @@ namespace UnityGLTF
     /// <summary>
     /// Component to load a GLTF scene with
     /// </summary>
-    public class GLTFComponent : MonoBehaviour, ILoadable
+    public class GLTFComponent : MonoBehaviour, ILoadable, IDownloadQueueElement
     {
         public static bool VERBOSE = false;
 
@@ -23,6 +23,8 @@ namespace UnityGLTF
 
         public static int totalDownloadedCount;
         public static int queueCount;
+
+        private static DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxSimultaneousDownloads, () => downloadingCount);
 
         public class Settings
         {
@@ -63,8 +65,6 @@ namespace UnityGLTF
         public Action OnFinishedLoadingAsset;
         public Action OnFailedLoadingAsset;
 
-        public bool isInQueue => state == State.QUEUED;
-
         [HideInInspector] public bool alreadyLoadedAsset = false;
         [HideInInspector] public GameObject loadedAssetRootGameObject;
 
@@ -90,8 +90,9 @@ namespace UnityGLTF
         private AsyncCoroutineHelper asyncCoroutineHelper;
         private Coroutine loadingRoutine = null;
         private GLTFSceneImporter sceneImporter;
+        private Camera mainCamera;
         private IWebRequestController webRequestController;
-        private DownloadQueueHandler downloadQueueHandler;
+        private bool prioritizeDownload = false;
 
         public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
 
@@ -124,15 +125,11 @@ namespace UnityGLTF
 
             alreadyDecrementedRefCount = false;
             state = State.NONE;
+            mainCamera = Camera.main;
 
             if (settings != null)
             {
                 ApplySettings(settings);
-            }
-
-            if (downloadQueueHandler == null)
-            {
-                downloadQueueHandler = new DownloadQueueHandler(this);
             }
 
             loadingRoutine = CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
@@ -285,9 +282,9 @@ namespace UnityGLTF
                     queueCount++;
 
                     state = State.QUEUED;
+                    downloadQueueHandler.Queue(this);
 
-                    Func<bool> funcTestDistance = () => downloadQueueHandler.IsNextInQueue();
-                    yield return new WaitUntil(funcTestDistance);
+                    yield return new WaitUntil(() => downloadQueueHandler.CanDownload(this));
 
                     queueCount--;
                     totalDownloadedCount++;
@@ -298,6 +295,7 @@ namespace UnityGLTF
                     IncrementDownloadCount();
 
                     state = State.DOWNLOADING;
+                    downloadQueueHandler.Dequeue(this);
 
                     if (transform != null)
                     {
@@ -363,6 +361,11 @@ namespace UnityGLTF
             throw new NotImplementedException();
         }
 
+        public void SetPrioritized()
+        {
+            prioritizeDownload = true;
+        }
+
 #if UNITY_EDITOR
         // In production it will always be false
         private bool isQuitting = false;
@@ -397,7 +400,7 @@ namespace UnityGLTF
                 queueCount--;
             }
 
-            downloadQueueHandler?.Dispose();
+            downloadQueueHandler.Dequeue(this);
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
@@ -407,6 +410,25 @@ namespace UnityGLTF
             }
 
             DecrementDownloadCount();
+        }
+
+        bool IDownloadQueueElement.ShouldPrioritizeDownload()
+        {
+            return prioritizeDownload;
+        }
+
+        bool IDownloadQueueElement.ShouldForceDownload()
+        {
+            return mainCamera == null;
+        }
+
+        float IDownloadQueueElement.GetDistance()
+        {
+            Vector3 cameraPosition = mainCamera.transform.position;
+            Vector3 gltfPosition = transform.position;
+            gltfPosition.y = cameraPosition.y;
+
+            return (gltfPosition - cameraPosition).sqrMagnitude;
         }
     }
 }
