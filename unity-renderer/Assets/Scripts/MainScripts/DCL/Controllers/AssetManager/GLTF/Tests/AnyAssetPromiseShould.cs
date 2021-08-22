@@ -199,6 +199,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
             bool finishedLoading = false;
+            bool failed = false;
 
             AssetPromise_GLTF promise = new AssetPromise_GLTF(scene.contentProvider, url);
             promise.settings.parent = parentGO.transform;
@@ -206,6 +207,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             GLTFComponent gltfComponent = promise.asset.container.GetComponentInChildren<GLTFComponent>();
             gltfComponent.OnSuccess += () => finishedLoading = true;
+            gltfComponent.OnFail += () => failed = true;
             GameObject gltfContainer = promise.asset.container;
 
             Assert.IsNotNull(gltfComponent);
@@ -217,7 +219,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             yield return promise;
 
-            yield return new WaitUntil(() => finishedLoading, 2);
+            yield return new WaitUntil(() => finishedLoading || failed);
             Assert.IsTrue(finishedLoading);
 
             Object.DestroyImmediate(parentGO);
