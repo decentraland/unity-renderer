@@ -192,7 +192,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         }
 
         [UnityTest]
-        public IEnumerator WaitForGLTFtoBeLoadedBeforeDestroyingIt()
+        public IEnumerator WaitForGltfToBeLoadedBeforeDestroyingIt()
         {
             var parentGO = new GameObject("GLTFParent");
             var keeper = new AssetPromiseKeeper_GLTF();
