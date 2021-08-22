@@ -146,10 +146,10 @@ jobs:
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+      # - restore_cache:
+      #     name: Restore hashed files if they exist
+      #     keys:
+      #       - unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Run playmode tests
@@ -239,11 +239,11 @@ jobs:
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: *RESTORE_LIBRARY_CACHE
+      # - restore_cache:
+      #     name: Restore hashed files if they exist
+      #     keys:
+      #       - unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
+      # - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Build Unity Project
           no_output_timeout: 30m
