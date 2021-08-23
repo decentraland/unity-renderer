@@ -43,7 +43,9 @@ public class SceneObject
         //NOTE: This is a workaround since the builder sometimes send the thumbnail composed and sometimes it doesn't
         //This way we ensure that the base url is only 1 time
         string urlBase = BIWUrlUtils.GetUrlSceneObjectContent();
-        return urlBase + thumbnail.Replace(urlBase, "");
+        if (thumbnail != null)
+            urlBase = urlBase + thumbnail.Replace(urlBase, "");
+        return urlBase;
     }
 
     public string GetBaseURL() { return BIWUrlUtils.GetUrlSceneObjectContent(); }

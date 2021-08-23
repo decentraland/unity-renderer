@@ -145,6 +145,7 @@ public static class BIWTestHelper
 
     public static void CreateTestCatalogLocalMultipleFloorObjects()
     {
+        BIWCatalogManager.Init();
         AssetCatalogBridge.i.ClearCatalog();
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
 
@@ -155,7 +156,7 @@ public static class BIWTestHelper
         }
     }
 
-    public static void CreateTestCatalogLocalSingleObject()
+    public static CatalogItem CreateTestCatalogLocalSingleObject()
     {
         BIWCatalogManager.Init();
         AssetCatalogBridge.i.ClearCatalog();
@@ -165,11 +166,15 @@ public static class BIWTestHelper
         {
             string jsonValue = File.ReadAllText(jsonPath);
             AssetCatalogBridge.i.AddFullSceneObjectCatalog(jsonValue);
+            CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+            return item;
         }
+        return null;
     }
 
     public static void CreateTestSmartItemCatalogLocalSingleObject()
     {
+        BIWCatalogManager.Init();
         AssetCatalogBridge.i.ClearCatalog();
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/smartItemSceneObjectCatalog.json";
 

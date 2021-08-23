@@ -4,35 +4,44 @@ using UnityEngine;
 
 namespace DCL
 {
+    //TODO Rename to IAvatar (not now to avoid conflicts)
     public interface IAvatarLODController : IDisposable
     {
-        void SetAvatarState();
+        Player player { get; }
+        void SetFullAvatar();
         void SetSimpleAvatar();
-        void SetImpostorState();
+        void SetImpostor();
+        void SetInvisible();
     }
 
     public class AvatarLODController : IAvatarLODController
     {
-        private const float TRANSITION_DURATION = 0.25f;
-        internal Player player;
+        internal enum State
+        {
+            Invisible,
+            FullAvatar,
+            SimpleAvatar,
+            Impostor,
+        }
+
+        private const float TRANSITION_DURATION = 0.5f;
+
+        public Player player { get; }
 
         internal float avatarFade;
         internal float impostorFade;
-        internal float targetAvatarFade;
-        internal float targetImpostorFade;
 
         internal bool SSAOEnabled;
         internal bool facialFeaturesEnabled;
 
         internal Coroutine currentTransition = null;
+        internal State? lastRequestedState = null;
 
         public AvatarLODController(Player player)
         {
             this.player = player;
             avatarFade = 1;
-            targetAvatarFade = 1;
             impostorFade = 0;
-            targetImpostorFade = 0;
             SSAOEnabled = true;
             facialFeaturesEnabled = true;
             if (player?.renderer == null)
@@ -41,8 +50,12 @@ namespace DCL
             player.renderer.SetImpostorFade(impostorFade);
         }
 
-        public void SetAvatarState()
+        public void SetFullAvatar()
         {
+            if (lastRequestedState == State.FullAvatar)
+                return;
+
+            lastRequestedState = State.FullAvatar;
             if (player?.renderer == null)
                 return;
 
@@ -52,6 +65,10 @@ namespace DCL
 
         public void SetSimpleAvatar()
         {
+            if (lastRequestedState == State.SimpleAvatar)
+                return;
+
+            lastRequestedState = State.SimpleAvatar;
             if (player?.renderer == null)
                 return;
 
@@ -59,8 +76,12 @@ namespace DCL
             StartTransition(1, 0);
         }
 
-        public void SetImpostorState()
+        public void SetImpostor()
         {
+            if (lastRequestedState == State.Impostor)
+                return;
+
+            lastRequestedState = State.Impostor;
             if (player?.renderer == null)
                 return;
 
@@ -68,13 +89,21 @@ namespace DCL
             StartTransition(0, 1);
         }
 
-        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
+        public void SetInvisible()
         {
-            if (Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
+            if (lastRequestedState == State.Invisible)
                 return;
 
-            targetAvatarFade = newTargetAvatarFade;
-            targetImpostorFade = newTargetImpostorFade;
+            lastRequestedState = State.Invisible;
+            if (player?.renderer == null)
+                return;
+
+            SetAvatarFeatures(false, false);
+            StartTransition(0, 0);
+        }
+
+        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
+        {
             CoroutineStarter.Stop(currentTransition);
             currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
         }
@@ -93,8 +122,8 @@ namespace DCL
 
             while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
             {
-                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, 1f / transitionDuration * Time.deltaTime);
-                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, 1f / transitionDuration * Time.deltaTime);
+                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, (1f / transitionDuration) * Time.deltaTime);
+                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, (1f / transitionDuration) * Time.deltaTime);
                 player.renderer.SetAvatarFade(avatarFade);
                 player.renderer.SetImpostorFade(impostorFade);
                 yield return null;
@@ -125,6 +154,10 @@ namespace DCL
             }
         }
 
-        public void Dispose() { CoroutineStarter.Stop(currentTransition); }
+        public void Dispose()
+        {
+            lastRequestedState = null;
+            CoroutineStarter.Stop(currentTransition);
+        }
     }
 }
