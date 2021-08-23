@@ -44,6 +44,6 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
-        return base.TearDown();
+        yield return base.TearDown();
     }
 }

@@ -75,6 +75,7 @@ public class WearablesVisualTests : VisualTestsBase
     public IEnumerator AlphaTestWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaTestWearable()); }
 
     [UnityTest, VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator AlphaTestWearable()
     {
         //Arrange
@@ -88,6 +89,55 @@ public class WearablesVisualTests : VisualTestsBase
         //Assert
         yield return VisualTestHelpers.TakeSnapshot();
     }
+
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
+    public IEnumerator AlphaBlendWearableWithTransparentBaseColor_Generate()
+    {
+        yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearableWithTransparentBaseColor());
+    }
+
+    [UnityTest, VisualTest]
+    [Category("Visual Tests")]
+    public IEnumerator AlphaBlendWearableWithTransparentBaseColor()
+    {
+        //Arrange
+        const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0";
+
+        yield return InitVisualTestsScene("WearableVisualTests_AlphaBlendWearableWithTransparentBaseColor");
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.78f, 1.68f, 8.5f), new Vector3(8, 1.75f, 8));
+        VisualTestController.i.camera.fieldOfView = 30;
+
+        //Act
+        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.75f, 8));
+
+        //Assert
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
+    public IEnumerator EmissiveWearableWithNoEmissionMap_Generate()
+    {
+        yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearableWithNoEmissionMap());
+    }
+
+    [UnityTest, VisualTest]
+    [Category("Visual Tests")]
+    public IEnumerator EmissiveWearableWithNoEmissionMap()
+    {
+        //Arrange
+        yield return InitVisualTestsScene("WearableVisualTests_EmissiveWearableWithNoEmissionMap");
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.75f, 1.8f, 8.75f), new Vector3(8, 1.75f, 8));
+        const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0";
+
+        //Act
+        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.75f, 8));
+
+        //Assert
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
 
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, Vector3 wearablePosition)
     {
@@ -112,6 +162,7 @@ public class WearablesVisualTests : VisualTestsBase
 
         var rends = wearable.GetRenderers();
         combiner.Combine(rends[0], rends.ToArray(), avatarMaterial);
+
         combiner.container.transform.SetParent(rends[0].transform.parent);
         combiner.container.transform.localPosition = rends[0].transform.localPosition;
 
@@ -127,6 +178,6 @@ public class WearablesVisualTests : VisualTestsBase
             wearable.CleanUp();
         }
 
-        return base.TearDown();
+        yield return base.TearDown();
     }
 }

@@ -1,8 +1,6 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -150,10 +148,18 @@ namespace DCL.Components
         public virtual string referencesContainerPrefabName => "";
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
+        
+        private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
 
         public UIShape parentUIComponent { get; protected set; }
 
-        public UIShape() { model = new Model(); }
+        public UIShape()
+        {
+            screenSize.OnChange += OnScreenResize;
+            model = new Model(); 
+        }
+        
+        private void OnScreenResize(Vector2Int current, Vector2Int previous) => RefreshAll();
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 
@@ -283,6 +289,9 @@ namespace DCL.Components
 
             Assert.IsTrue(rootParent != null, "root parent must never be null");
 
+            if (rootParent.referencesContainer == null)
+                return;
+            
             Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
@@ -299,7 +308,10 @@ namespace DCL.Components
             UIShape rootParent = GetRootParent();
 
             Assert.IsTrue(rootParent != null, "root parent must never be null");
-
+            
+            if (rootParent.referencesContainer == null)
+                return;
+            
             Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
@@ -430,6 +442,8 @@ namespace DCL.Components
         {
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
+
+            screenSize.OnChange -= OnScreenResize;
 
             base.Dispose();
         }
