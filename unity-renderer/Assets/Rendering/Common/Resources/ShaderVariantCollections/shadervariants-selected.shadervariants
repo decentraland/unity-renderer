@@ -51,7 +51,7 @@ ShaderVariantCollection:
         passType: 13
       - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP _SSAO_OFF
         passType: 13
-	  - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP _GPU_SKINNING
+      - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP _GPU_SKINNING
         passType: 13
       - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP _SSAO_OFF _GPU_SKINNING
         passType: 13
