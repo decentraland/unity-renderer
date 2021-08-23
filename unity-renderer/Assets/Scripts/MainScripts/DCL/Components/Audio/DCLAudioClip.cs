@@ -1,14 +1,14 @@
-using DCL.Helpers;
-using DCL.Models;
 using System;
 using System.Collections;
+using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
 {
     public class DCLAudioClip : BaseDisposable
     {
-        [System.Serializable]
+        [Serializable]
         public class Model : BaseModel
         {
             public string url;
@@ -23,6 +23,7 @@ namespace DCL.Components
 
         public AudioClip audioClip;
         private bool isDisposed = false;
+        private AssetPromise_AudioClip audioClipPromise = null;
 
         public enum LoadState
         {
@@ -50,11 +51,11 @@ namespace DCL.Components
 
         public override int GetClassId() { return (int) CLASS_ID.AUDIO_CLIP; }
 
-        void OnComplete(AudioClip clip)
+        void OnComplete(Asset_AudioClip assetAudioClip)
         {
-            if (clip != null)
+            if (assetAudioClip.audioClip != null)
             {
-                this.audioClip = clip;
+                this.audioClip = assetAudioClip.audioClip;
                 loadingState = LoadState.LOADING_COMPLETED;
             }
             else
@@ -68,7 +69,7 @@ namespace DCL.Components
             }
         }
 
-        void OnFail(string error)
+        void OnFail(Asset_AudioClip assetAudioClip)
         {
             loadingState = LoadState.LOADING_FAILED;
 
@@ -85,25 +86,21 @@ namespace DCL.Components
             {
                 loadingState = LoadState.LOADING_IN_PROGRESS;
                 Model model = (Model) this.model;
-                if (scene.contentProvider.HasContentsUrl(model.url))
-                {
-                    yield return Utils.FetchAudioClip(
-                        scene.contentProvider.GetContentsUrl(model.url),
-                        Utils.GetAudioTypeFromUrlName(model.url),
-                        OnComplete,
-                        OnFail);
-                }
+
+                audioClipPromise = new AssetPromise_AudioClip(model.url, scene.contentProvider);
+                audioClipPromise.OnSuccessEvent += OnComplete;
+                audioClipPromise.OnFailEvent += OnFail;
+
+                AssetPromiseKeeper_AudioClip.i.Keep(audioClipPromise);
+
+                yield return audioClipPromise;
             }
         }
 
         void Unload()
         {
-            if (audioClip != null && loadingState != LoadState.IDLE)
-            {
-                audioClip.UnloadAudioData();
-                audioClip = null;
-                loadingState = LoadState.IDLE;
-            }
+            loadingState = LoadState.IDLE;
+            AssetPromiseKeeper_AudioClip.i.Forget(audioClipPromise);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -135,7 +132,7 @@ namespace DCL.Components
         public override void Dispose()
         {
             isDisposed = true;
-            Utils.SafeDestroy(audioClip);
+            AssetPromiseKeeper_AudioClip.i.Forget(audioClipPromise);
             base.Dispose();
         }
     }
