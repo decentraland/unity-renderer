@@ -39,7 +39,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
 
     private IBIWGizmos[] gizmos;
 
-    private bool isTransformingObject;
+    internal bool isTransformingObject;
     public IBIWGizmos activeGizmo { get; set; }
 
     private SnapInfo snapInfo = new SnapInfo();
@@ -98,7 +98,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
             activeGizmo.SetSnapFactor(snapInfo);
     }
 
-    private void OnBeginDrag(BIWGizmosAxis hittedAxis)
+    internal void OnBeginDrag(BIWGizmosAxis hittedAxis)
     {
         isTransformingObject = true;
         activeGizmo = hittedAxis.GetGizmo();
@@ -107,18 +107,18 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         OnGizmoTransformObjectStart?.Invoke(activeGizmo.GetGizmoType());
     }
 
-    private void OnDrag(Vector3 hitPoint, Vector2 mousePosition)
+    internal void OnDrag(Vector3 hitPoint, Vector2 mousePosition)
     {
         float value = activeGizmo.OnDrag(hitPoint, mousePosition);
         OnGizmoTransformObject?.Invoke(activeGizmo.GetGizmoType());
         OnChangeTransformValue?.Invoke(value * activeGizmo.GetActiveAxisVector());
     }
 
-    private void OnEndDrag()
+    internal void OnEndDrag()
     {
-        activeGizmo.OnEndDrag();
+        activeGizmo?.OnEndDrag();
         freeCameraMovement.SetCameraCanMove(true);
-        OnGizmoTransformObjectEnd?.Invoke(activeGizmo.GetGizmoType());
+        OnGizmoTransformObjectEnd?.Invoke(activeGizmo?.GetGizmoType());
         isTransformingObject = false;
     }
 
@@ -165,7 +165,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
 
     public bool IsGizmoActive() { return activeGizmo != null; }
 
-    private bool RaycastHit(Ray ray, out Vector3 hitPoint)
+    internal bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {
         if (activeGizmo != null)
             return activeGizmo.RaycastHit(ray, out hitPoint);
@@ -229,7 +229,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     }
     private void OnGizmosAxisPressed(BIWGizmosAxis pressedAxis) { OnBeginDrag(pressedAxis); }
 
-    private void OnMouseUp(int buttonId, Vector3 mousePosition)
+    internal void OnMouseUp(int buttonId, Vector3 mousePosition)
     {
         if (!isTransformingObject)
             return;
@@ -238,7 +238,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
             OnEndDrag();
     }
 
-    private void OnMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+    internal void OnMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
         if (buttonId != 0)
             return;

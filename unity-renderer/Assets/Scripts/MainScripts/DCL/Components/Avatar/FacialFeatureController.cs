@@ -113,7 +113,11 @@ public class FacialFeatureController
         if (maskTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
 
-        Object.Destroy(baseMaterialCopy);
+        if ( baseMaterialCopy != null )
+        {
+            Object.Destroy(baseMaterialCopy);
+            baseMaterialCopy = null;
+        }
 
         isReady = false;
     }

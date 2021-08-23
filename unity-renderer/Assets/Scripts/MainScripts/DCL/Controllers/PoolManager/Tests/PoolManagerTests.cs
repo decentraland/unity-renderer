@@ -107,5 +107,23 @@ namespace Tests
 
             Assert.IsFalse(PoolManager.i.ContainsPool(id), "Pool shouldn't exist after disposal");
         }
+
+        [Test]
+        public void PoolIsNotBeingInitializedAgainAfterRendererWasToggled()
+        {
+            PooledObjectInstantiator instantiator = new PooledObjectInstantiator();
+            GameObject original = new GameObject("Original");
+
+            Pool pool = PoolManager.i.AddPool("totallyNewPoolID", original, instantiator);
+            Assert.IsNotNull(pool, "Pool instance shouldn't be null.");
+
+            // When teleporting this is false
+            CommonScriptableObjects.rendererState.Set(false);
+            
+            pool.Get().Release();
+            pool.Get().Release();
+            
+            UnityEngine.Assertions.Assert.AreEqual(1, pool.unusedObjectsCount, "Unused objects pool");
+        }
     }
 }

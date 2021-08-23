@@ -39,6 +39,7 @@ namespace DCL
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
 
         private int maxPrewarmCount = 0;
+        private bool isInitialized;
 
         public float lastGetTime { get; private set; }
 
@@ -73,8 +74,9 @@ namespace DCL
         public PoolableObject Get()
         {
             // These extra instantiations during initialization are to populate pools that will be used a lot later  
-            if (PoolManager.i.initializing)
+            if (PoolManager.i.initializing && !isInitialized)
             {
+                isInitialized = true;
                 int count = usedObjectsCount;
 
                 for (int i = unusedObjectsCount; i < Mathf.Min(count * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)

@@ -2,6 +2,7 @@
 // assume everything from the loader will be available here
 
 import future from "fp-future"
+import { isMobile, isWebGLCompatible } from "validations"
 import { generatedFiles } from "../package.json"
 
 import Hls from "./hlsLoader"
@@ -59,6 +60,16 @@ export type DecentralandRendererInstance = {
 }
 
 export async function initializeWebRenderer(options: RendererOptions): Promise<DecentralandRendererInstance> {
+  if (isMobile()) {
+    throw new Error("Mobile is not supported")
+  }
+
+  if (!isWebGLCompatible()) {
+    throw new Error(
+      "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible"
+    )
+  
+}
   const rendererVersion = options.versionQueryParam || performance.now()
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy } = options
   const resolveWithBaseUrl = (file: string) => new URL(file + "?v=" + rendererVersion, baseUrl).toString()
