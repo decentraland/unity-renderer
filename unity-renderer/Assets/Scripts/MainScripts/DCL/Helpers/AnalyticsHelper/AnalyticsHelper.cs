@@ -22,7 +22,7 @@ public static class AnalyticsHelper
         if (scene != null)
         {
             analyticDict.Add("parcel", scene.sceneData.basePosition.x + "," + scene.sceneData.basePosition.y );
-            analyticDict.Add("scene", scene.GetName());
+            analyticDict.Add("scene", scene.sceneData.id);
         }
     }
 
