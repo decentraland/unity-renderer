@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DCL.Components;
 using UnityEditor;
@@ -5,8 +6,9 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class DebugParameters : MonoBehaviour
+    public class DebugConfigComponent : MonoBehaviour
     {
+        public DebugConfig debugConfig;
         public enum DebugPanel
         {
             Off,
@@ -63,6 +65,13 @@ namespace DCL
         public bool soloScene = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
+        private void Awake()
+        {
+            DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
+            DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
+            DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
+            DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
+        }
         private void Start()
         {
             lock (DataStore.i.wsCommunication.communicationReady)
@@ -81,6 +90,8 @@ namespace DCL
         {
             if (newState && !prevState)
                 InitConfig();
+
+            DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
         }
         private void InitConfig()
         {
@@ -90,11 +101,13 @@ namespace DCL
                 RendereableAssetLoadHelper.customContentServerUrl = customContentServerUrl;
             }
 
+            if (openBrowserWhenStart)
+                OpenWebBrowser();
+        }
+
+        private void OpenWebBrowser()
+        {
 #if (UNITY_EDITOR || UNITY_STANDALONE)
-
-            if (!openBrowserWhenStart)
-                return;
-
             string baseUrl = "";
             string debugString = "";
 
@@ -170,6 +183,11 @@ namespace DCL
             Application.OpenURL(
                 $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.wssServerUrl}{DataStore.i.wsCommunication.wssServiceId}");
 #endif
+        }
+        
+        private void OnDestroy()
+        {
+            DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
         }
     }
 }

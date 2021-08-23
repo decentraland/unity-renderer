@@ -16,7 +16,6 @@ namespace DCL
         public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
-        public DebugConfig debugConfig;
 
         private PerformanceMetricsController performanceMetricsController;
         private IKernelCommunication kernelCommunication;
@@ -32,11 +31,6 @@ namespace DCL
             }
 
             i = this;
-
-            DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
-            DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
-            DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
-            DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
@@ -93,7 +87,6 @@ namespace DCL
 
         private void Update()
         {
-            kernelCommunication.Update();
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
@@ -113,21 +106,5 @@ namespace DCL
             pluginSystem?.OnDestroy();
         }
         private void OnGUI() { pluginSystem.OnGUI(); }
-
-        #region RuntimeMessagingBridge
-
-        public void LoadParcelScenes(string payload) { Environment.i.world.sceneController.LoadParcelScenes(payload); }
-
-        public void SendSceneMessage(string payload) { Environment.i.world.sceneController.SendSceneMessage(payload); }
-
-        public void UnloadScene(string sceneId) { Environment.i.world.sceneController.UnloadScene(sceneId); }
-
-        public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }
-
-        public void UpdateParcelScenes(string payload) { Environment.i.world.sceneController.UpdateParcelScenes(payload); }
-
-        #endregion
-
-        public void BuilderReady() { UnityEngine.SceneManagement.SceneManager.LoadScene("BuilderScene", UnityEngine.SceneManagement.LoadSceneMode.Additive); }
     }
 }

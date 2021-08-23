@@ -620,7 +620,7 @@ namespace DCL.Interface
             {
                 if (hasQueuedMessages)
                 {
-                    CommunicationReady();
+                    ProcessQueuedMessages();
                 }
                 OnMessageFromEngine.Invoke(type, message);
                 if (VERBOSE)
@@ -638,7 +638,7 @@ namespace DCL.Interface
             }
         }
 
-        private static void CommunicationReady()
+        private static void ProcessQueuedMessages()
         {
             hasQueuedMessages = false;
             lock (queuedMessages)

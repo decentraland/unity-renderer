@@ -1,80 +1,19 @@
-using System;
-using DCL.Interface;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using DCL;
-using UnityEditor;
 using UnityEngine;
-using WebSocketSharp;
 using WebSocketSharp.Server;
-
-public class DCLWebSocketService : WebSocketBehavior
-{
-    public static bool VERBOSE = false;
-
-    private void SendMessageToWeb(string type, string message)
-    {
-#if (UNITY_EDITOR || UNITY_STANDALONE)
-        var x = new Message()
-        {
-            type = type,
-            payload = message
-        };
-        Send(Newtonsoft.Json.JsonConvert.SerializeObject(x));
-        if (VERBOSE)
-        {
-            Debug.Log("SendMessageToWeb: " + type);
-        }
-#endif
-    }
-
-    public class Message
-    {
-        public string type;
-        public string payload;
-
-        public override string ToString() { return string.Format("type = {0}... payload = {1}...", type, payload); }
-    }
-
-    protected override void OnMessage(MessageEventArgs e)
-    {
-        base.OnMessage(e);
-
-        lock (WebSocketCommunication.queuedMessages)
-        {
-            Message finalMessage;
-            finalMessage = JsonUtility.FromJson<Message>(e.Data);
-
-            WebSocketCommunication.queuedMessages.Enqueue(finalMessage);
-            WebSocketCommunication.queuedMessagesDirty = true;
-        }
-    }
-
-    protected override void OnError(ErrorEventArgs e) { base.OnError(e); }
-
-    protected override void OnClose(CloseEventArgs e)
-    {
-        base.OnClose(e);
-        WebInterface.OnMessageFromEngine -= SendMessageToWeb;
-    }
-
-    protected override void OnOpen()
-    {
-        base.OnOpen();
-        WebInterface.OnMessageFromEngine += SendMessageToWeb;
-        
-        DataStore.i.wsCommunication.communicationEstablished.Set(true);
-        
-        var callFromMainThread = new Action(WebInterface.SendSystemInfoReport); // `WebInterface.SendSystemInfoReport` can only be called from MainThread
-        callFromMainThread.Invoke();
-    }
-}
 public class WebSocketCommunication : IKernelCommunication
 {
-    private Dictionary<string, GameObject> cache = new Dictionary<string, GameObject>();
-    
     WebSocketServer ws;
+    private Coroutine updateCoroutine;
+    private bool requestStop = false;
+    
+    private Dictionary<string, GameObject> bridgeGameObjects = new Dictionary<string, GameObject>();
+    
+    public Dictionary<string, string> messageTypeToBridgeName = new Dictionary<string, string>(); // Public to be able to modify it from `explorer-desktop`
 
     [System.NonSerialized]
     public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
@@ -84,7 +23,8 @@ public class WebSocketCommunication : IKernelCommunication
     
     public bool isServerReady { get { return ws.IsListening; } }
 
-    private bool CheckAvailableServerPort(int port) {
+    private bool CheckAvailableServerPort(int port)
+    {
         bool isAvailable = true;
 
         // Evaluate current system tcp connections. This is the same information provided
@@ -104,7 +44,7 @@ public class WebSocketCommunication : IKernelCommunication
         return isAvailable;
     }
 
-    private int searchUnusedPort()
+    private int SearchUnusedPort()
     {
         const int minPort = 5000;
         const int maxPort = 6000;
@@ -121,191 +61,175 @@ public class WebSocketCommunication : IKernelCommunication
     }
     public WebSocketCommunication()
     {
+        InitMessageTypeToBridgeName();
+        
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-        int port = searchUnusedPort();
+        int port = SearchUnusedPort();
         
         string wssServerUrl = $"ws://localhost:{port}/";
         string wssServiceId = "dcl";
         
         DataStore.i.wsCommunication.wssServerUrl = wssServerUrl;
         DataStore.i.wsCommunication.wssServiceId = wssServiceId;
-        DataStore.i.wsCommunication.communicationReady.OnChange += OnCommunicationReadyChangedValue;
 
         ws = new WebSocketServer(wssServerUrl);
         ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
         ws.Start();
         
         DataStore.i.wsCommunication.communicationReady.Set(true);
-    }
-
-    private void OnCommunicationReadyChangedValue(bool newState, bool prevState)
-    {
         
-        //SendMessageToWeb("SystemInfoReport", "{}");
+        updateCoroutine = CoroutineStarter.Start(ProcessMessages());
     }
-    
-    private string GetBridgeName(string messageType)
+    private void InitMessageTypeToBridgeName()
     {
-        switch (messageType)
-        {
-            case "SetDebug":
-            case "SetSceneDebugPanel":
-            case "ShowFPSPanel":
-            case "HideFPSPanel":
-            case "SetEngineDebugPanel":
-                return "Main";
-            case "SendSceneMessage":
-            case "LoadParcelScenes":
-            case "UnloadScene":
-            case "Reset":
-            case "CreateGlobalScene":
-            case "BuilderReady":
-            case "UpdateParcelScenes":
-                return "Main";
-            case "Teleport":
-                return "CharacterController";
-            case "SetRotation":
-                return "CameraController";
-            case "LoadProfile":
-            case "AddUserProfileToCatalog":
-            case "AddUserProfilesToCatalog":
-                case "RemoveUserProfilesFromCatalog":
-                return "Main";
-            case "ActivateRendering":
-            case "DeactivateRendering":
-                return "Main";
-            case "ReportFocusOn":
-            case "ReportFocusOff":
-                return "Bridges";
-            case "ForceActivateRendering":
-                return "Main";
-            case "ShowNotificationFromJson":
-            case "ConfigureHUDElement":
-            case "ShowTermsOfServices":
-            case "RequestTeleport":
-            case "ShowAvatarEditorInSignUp":
-            case "SetUserTalking":
-            case "SetUsersMuted":
-            case "ShowWelcomeNotification":
-            case "UpdateBalanceOfMANA":
-            case "SetPlayerTalking":
-            case "SetVoiceChatEnabledByScene":
-                return "HUDController";
-            
-            case "GetMousePosition":
-            case "SelectGizmo":
-            case "ResetObject":
-            case "ZoomDelta":
-            case "SetPlayMode":
-            case "TakeScreenshot":
-            case "ResetBuilderScene":
-            case "SetBuilderCameraPosition":
-            case "SetBuilderCameraRotation":
-            case "ResetBuilderCameraZoom":
-            case "SetGridResolution":
-            case "OnBuilderKeyDown":
-            case "UnloadBuilderScene":
-            case "SetSelectedEntities":
-            case "GetCameraTargetBuilder":
-            case "PreloadFile":
-            case "SetBuilderConfiguration":
-            case "TriggerSelfUserExpression":
-            case "AirdroppingRequest":
-                return "BuilderController";
+        messageTypeToBridgeName["SetDebug"] = "Main";
+        messageTypeToBridgeName["SetSceneDebugPanel"] = "Main";
+        messageTypeToBridgeName["ShowFPSPanel"] = "Main";
+        messageTypeToBridgeName["HideFPSPanel"] = "Main";
+        messageTypeToBridgeName["SetEngineDebugPanel"] = "Main";
+        messageTypeToBridgeName["SendSceneMessage"] = "Main";
+        messageTypeToBridgeName["LoadParcelScenes"] = "Main";
+        messageTypeToBridgeName["UnloadScene"] = "Main";
+        messageTypeToBridgeName["Reset"] = "Main";
+        messageTypeToBridgeName["CreateGlobalScene"] = "Main";
+        messageTypeToBridgeName["BuilderReady"] = "Main";
+        messageTypeToBridgeName["UpdateParcelScenes"] = "Main";
+        messageTypeToBridgeName["LoadProfile"] = "Main";
+        messageTypeToBridgeName["AddUserProfileToCatalog"] = "Main";
+        messageTypeToBridgeName["AddUserProfilesToCatalog"] = "Main";
+        messageTypeToBridgeName["RemoveUserProfilesFromCatalog"] = "Main";
+        messageTypeToBridgeName["ActivateRendering"] = "Main";
+        messageTypeToBridgeName["DeactivateRendering"] = "Main";
+        messageTypeToBridgeName["ForceActivateRendering"] = "Main";
+        messageTypeToBridgeName["AddWearablesToCatalog"] = "Main";
+        messageTypeToBridgeName["WearablesRequestFailed"] = "Main";
+        messageTypeToBridgeName["RemoveWearablesFromCatalog"] = "Main";
+        messageTypeToBridgeName["ClearWearableCatalog"] = "Main";
+        messageTypeToBridgeName["InitializeFriends"] = "Main";
+        messageTypeToBridgeName["UpdateFriendshipStatus"] = "Main";
+        messageTypeToBridgeName["UpdateUserPresence"] = "Main";
+        messageTypeToBridgeName["FriendNotFound"] = "Main";
+        messageTypeToBridgeName["AddMessageToChatWindow"] = "Main";
+        messageTypeToBridgeName["UpdateMinimapSceneInformation"] = "Main";
+        messageTypeToBridgeName["UpdateHotScenesList"] = "Main";
+        messageTypeToBridgeName["SetRenderProfile"] = "Main";
 
-            case "AddWearablesToCatalog":
-                return "Main";
-            case "WearablesRequestFailed":
-            case "RemoveWearablesFromCatalog":
-            case "ClearWearableCatalog":
-            case "InitializeFriends":
-            case "UpdateFriendshipStatus":
-            case "UpdateUserPresence":
-            case "FriendNotFound":
-            case "AddMessageToChatWindow":
-            case "UpdateMinimapSceneInformation":
-            case "UpdateHotScenesList":
-            case "SetRenderProfile":
-                return "Main";
+        messageTypeToBridgeName["Teleport"] = "CharacterController";
 
-            case "SetTutorialEnabled":
-            case "SetTutorialEnabledForUsersThatAlreadyDidTheTutorial":
-                return "TutorialController";
-            
-            case "SetKernelConfiguration":
-            case "UpdateRealmsInfo":
-            case "ConnectionToRealmSuccess":
-            case "ConnectionToRealmFailed":
-            case "InitializeQuests":
-            case "UpdateQuestProgress":
-            case "SetENSOwnerQueryResult":
-            case "UnpublishSceneResult":
-            case "SetLoadingScreen":
-                return "Bridges";
-            case "CrashPayloadRequest":
-            case "SetDisableAssetBundles":
-            case "DumpRendererLockersInfo":
-                return "Main";
-            case "PublishSceneResult":
-            case "BuilderProjectInfo":
-            case "BuilderInWorldCatalogHeaders":
-            case "AddAssets":
-                return "Main"; // Kernel send `Main`, but this should be handled by BIW
-            
-            case "RunPerformanceMeterTool":
-            case "InstantiateBotsAtWorldPos":
-            case "InstantiateBotsAtCoords":
-            case "RemoveBot":
-            case "ClearBots":
-                return "Main";
-            default:
-                Debug.Log(
-                    "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +
-                    messageType);
-                return "";
-        }
+        messageTypeToBridgeName["SetRotation"] = "CameraController";
+
+        messageTypeToBridgeName["ReportFocusOn"] = "Bridges";
+        messageTypeToBridgeName["ReportFocusOff"] = "Bridges";
+        messageTypeToBridgeName["SetKernelConfiguration"] = "Bridges";
+        messageTypeToBridgeName["UpdateRealmsInfo"] = "Bridges";
+        messageTypeToBridgeName["ConnectionToRealmSuccess"] = "Bridges";
+        messageTypeToBridgeName["ConnectionToRealmFailed"] = "Bridges";
+        messageTypeToBridgeName["InitializeQuests"] = "Bridges";
+        messageTypeToBridgeName["UpdateQuestProgress"] = "Bridges";
+        messageTypeToBridgeName["SetENSOwnerQueryResult"] = "Bridges";
+        messageTypeToBridgeName["UnpublishSceneResult"] = "Bridges";
+        messageTypeToBridgeName["SetLoadingScreen"] = "Bridges";
+
+        messageTypeToBridgeName["ShowNotificationFromJson"] = "HUDController";
+        messageTypeToBridgeName["ConfigureHUDElement"] = "HUDController";
+        messageTypeToBridgeName["ShowTermsOfServices"] = "HUDController";
+        messageTypeToBridgeName["RequestTeleport"] = "HUDController";
+        messageTypeToBridgeName["ShowAvatarEditorInSignUp"] = "HUDController";
+        messageTypeToBridgeName["SetUserTalking"] = "HUDController";
+        messageTypeToBridgeName["SetUsersMuted"] = "HUDController";
+        messageTypeToBridgeName["ShowWelcomeNotification"] = "HUDController";
+        messageTypeToBridgeName["UpdateBalanceOfMANA"] = "HUDController";
+        messageTypeToBridgeName["SetPlayerTalking"] = "HUDController";
+        messageTypeToBridgeName["SetVoiceChatEnabledByScene"] = "HUDController";
+        
+        messageTypeToBridgeName["GetMousePosition"] = "BuilderController";
+        messageTypeToBridgeName["SelectGizmo"] = "BuilderController";
+        messageTypeToBridgeName["ResetObject"] = "BuilderController";
+        messageTypeToBridgeName["ZoomDelta"] = "BuilderController";
+        messageTypeToBridgeName["SetPlayMode"] = "BuilderController";
+        messageTypeToBridgeName["TakeScreenshot"] = "BuilderController";
+        messageTypeToBridgeName["ResetBuilderScene"] = "BuilderController";
+        messageTypeToBridgeName["SetBuilderCameraPosition"] = "BuilderController";
+        messageTypeToBridgeName["SetBuilderCameraRotation"] = "BuilderController";
+        messageTypeToBridgeName["ResetBuilderCameraZoom"] = "BuilderController";
+        messageTypeToBridgeName["SetGridResolution"] = "BuilderController";
+        messageTypeToBridgeName["OnBuilderKeyDown"] = "BuilderController";
+        messageTypeToBridgeName["UnloadBuilderScene"] = "BuilderController";
+        messageTypeToBridgeName["SetSelectedEntities"] = "BuilderController";
+        messageTypeToBridgeName["GetCameraTargetBuilder"] = "BuilderController";
+        messageTypeToBridgeName["PreloadFile"] = "BuilderController";
+        messageTypeToBridgeName["SetBuilderConfiguration"] = "BuilderController";
+        messageTypeToBridgeName["TriggerSelfUserExpression"] = "BuilderController";
+        messageTypeToBridgeName["AirdroppingRequest"] = "BuilderController";
+
+        messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
+        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
+        
+        messageTypeToBridgeName["CrashPayloadRequest"] = "Main";
+        messageTypeToBridgeName["SetDisableAssetBundles"] = "Main";
+        messageTypeToBridgeName["DumpRendererLockersInfo"] = "Main";
+        messageTypeToBridgeName["PublishSceneResult"] = "Main";
+        messageTypeToBridgeName["BuilderProjectInfo"] = "Main";
+        messageTypeToBridgeName["BuilderInWorldCatalogHeaders"] = "Main";
+        messageTypeToBridgeName["AddAssets"] = "Main";
+        messageTypeToBridgeName["RunPerformanceMeterTool"] = "Main";
+        messageTypeToBridgeName["InstantiateBotsAtWorldPos"] = "Main";
+        messageTypeToBridgeName["InstantiateBotsAtCoords"] = "Main";
+        messageTypeToBridgeName["RemoveBot"] = "Main";
+        messageTypeToBridgeName["ClearBots"] = "Main";
     }
-    public override void Update()
+    IEnumerator ProcessMessages()
     {
-        lock (WebSocketCommunication.queuedMessages)
+        while (!requestStop)
         {
-            if (queuedMessagesDirty)
+            lock (queuedMessages)
             {
-                while (queuedMessages.Count > 0)
+                if (queuedMessagesDirty)
                 {
-                    DCLWebSocketService.Message msg = queuedMessages.Dequeue();
-
-
-                    switch (msg.type)
+                    while (queuedMessages.Count > 0)
                     {
-                        // Add to this list the messages that are used a lot and you want better performance
-                        case "SendSceneMessage":
-                            DCL.Environment.i.world.sceneController.SendSceneMessage(msg.payload);
-                            break;
-                        default:
-                            GameObject bridgeObject = null;
-                            if (cache.TryGetValue(msg.type, out bridgeObject) == false)
-                            {
-                                bridgeObject = GameObject.Find(GetBridgeName(msg.type));
-                                cache.Add(msg.type, bridgeObject);
-                            }
+                        DCLWebSocketService.Message msg = queuedMessages.Dequeue();
 
-                            if (bridgeObject != null)
-                            {
-                                bridgeObject.SendMessage(msg.type, msg.payload);
-                            }
-                            break;
-                    }
+                        switch (msg.type)
+                        {
+                            // Add to this list the messages that are used a lot and you want better performance
+                            case "SendSceneMessage":
+                                DCL.Environment.i.world.sceneController.SendSceneMessage(msg.payload);
+                                break;
+                            default:
+                                if (messageTypeToBridgeName.TryGetValue(msg.type, out string bridgeName))
+                                {
+                                    if (bridgeGameObjects.TryGetValue(bridgeName, out GameObject bridgeObject) == false)
+                                    {
+                                        bridgeObject = GameObject.Find(bridgeName);
+                                        bridgeGameObjects.Add(bridgeName, bridgeObject);
+                                    }
 
-                    if (DCLWebSocketService.VERBOSE)
-                    {
-                        Debug.Log(
-                            "<b><color=#0000FF>WSSController</color></b> >>> Got it! passing message of type " +
-                            msg.type);
+                                    if (bridgeObject != null)
+                                    {
+                                        bridgeObject.SendMessage(msg.type, msg.payload);
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.Log(
+                                        "<b><color=#FF0000>WebSocketCommunication:</color></b> received an unknown message from kernel to renderer: " +
+                                        msg.type);
+                                }
+                                break;
+                        }
+
+                        if (DCLWebSocketService.VERBOSE)
+                        {
+                            Debug.Log(
+                                "<b><color=#0000FF>WebSocketCommunication</color></b> >>> Got it! passing message of type " +
+                                msg.type);
+                        }
                     }
                 }
             }
+            yield return null;
         }
     }
 }
