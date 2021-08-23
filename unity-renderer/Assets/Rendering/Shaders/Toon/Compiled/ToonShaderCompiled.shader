@@ -82,7 +82,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -1458,7 +1458,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -2829,7 +2829,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -4115,7 +4115,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -5400,7 +5400,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -6701,7 +6701,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -7989,7 +7989,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -9292,7 +9292,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -10661,7 +10661,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -11946,7 +11946,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -13230,7 +13230,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -14531,7 +14531,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
@@ -15820,7 +15820,7 @@
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
             #pragma multi_compile_local _ _SSAO_OFF
-            #pragma shader_feature_local _ _GPU_SKINNING
+            #pragma multi_compile_local _ _GPU_SKINNING
 
             #if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(_SHADOWS_SOFT) && defined(_RECEIVE_SHADOWS_OFF) && defined(_SSAO_OFF) && defined(_GPU_SKINNING)
             #define KEYWORD_PERMUTATION_0
