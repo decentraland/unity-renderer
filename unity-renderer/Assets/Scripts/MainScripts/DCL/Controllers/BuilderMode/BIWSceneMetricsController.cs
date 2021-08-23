@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class BIWSceneMetricsController : SceneMetricsController
 {
-    private string currentOverpassLimitTypes = "";
+    private string currentExceededLimitTypes = "";
 
     public BIWSceneMetricsController(ParcelScene sceneOwner) : base(sceneOwner)
     {
@@ -31,7 +31,7 @@ public class BIWSceneMetricsController : SceneMetricsController
             SubstractMetrics(e);
             model.entities = entitiesMetrics.Count;
         }
-        CheckSceneLimitOverPassedAnalaytics();
+        CheckSceneLimitExceededAnalaytics();
     }
 
     protected override void OnEntityMeshInfoUpdated(IDCLEntity entity)
@@ -47,24 +47,23 @@ public class BIWSceneMetricsController : SceneMetricsController
             SubstractMetrics(entity);
             model.entities = entitiesMetrics.Count;
         }
-        CheckSceneLimitOverPassedAnalaytics();
+        CheckSceneLimitExceededAnalaytics();
     }
 
-    private void CheckSceneLimitOverPassedAnalaytics()
+    private void CheckSceneLimitExceededAnalaytics()
     {
         if (!IsInsideTheLimits())
         {
-            string overpassLimit = BIWAnalytics.GetLimitsPassedArray(scene.metricsController.GetModel(), scene.metricsController.GetLimits());
-            if (overpassLimit != currentOverpassLimitTypes)
+            string exceededLimits = BIWAnalytics.GetLimitsPassedArray(scene.metricsController.GetModel(), scene.metricsController.GetLimits());
+            if (exceededLimits != currentExceededLimitTypes)
             {
                 BIWAnalytics.SceneLimitsExceeded(scene.metricsController.GetModel(), scene.metricsController.GetLimits());
-                currentOverpassLimitTypes = overpassLimit;
-                Debug.Log("Send overpass limit" + currentOverpassLimitTypes);
+                currentExceededLimitTypes = exceededLimits;
             }
         }
         else
         {
-            currentOverpassLimitTypes = "";
+            currentExceededLimitTypes = "";
         }
     }
 }
