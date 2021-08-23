@@ -20,11 +20,11 @@ namespace DCL.Components
 
         private void UpdateScreenSize()
         {
-            ScreenSize.Set(new Vector2Int(Screen.width, Screen.height));
+            screenSize.Set(new Vector2Int(Screen.width, Screen.height));
         }
         private bool HasScreenSizeChanged()
         {
-            Vector2Int size = ScreenSize.Get();
+            Vector2Int size = screenSize.Get();
             return size.x != Screen.width || size.y != Screen.height;
         }
     }

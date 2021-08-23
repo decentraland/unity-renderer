@@ -148,12 +148,14 @@ namespace DCL.Components
         public virtual string referencesContainerPrefabName => "";
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
+        
+        private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
 
         public UIShape parentUIComponent { get; protected set; }
 
         public UIShape()
         {
-            DataStore.i.screen.size.OnChange += OnScreenResize;
+            screenSize.OnChange += OnScreenResize;
             model = new Model(); 
         }
         
@@ -441,7 +443,7 @@ namespace DCL.Components
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
-            DataStore.i.screen.size.OnChange -= OnScreenResize;
+            screenSize.OnChange -= OnScreenResize;
 
             base.Dispose();
         }
