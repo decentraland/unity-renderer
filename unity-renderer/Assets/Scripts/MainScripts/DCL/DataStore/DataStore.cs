@@ -29,6 +29,7 @@ namespace DCL
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
         public readonly DataStore_AvatarsLOD avatarsLOD = new DataStore_AvatarsLOD();
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
+        public readonly DataStore_Screen screen = new DataStore_Screen();
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
 
         public class DataStore_BuilderInWorld
@@ -94,6 +95,11 @@ namespace DCL
             public readonly BaseVariable<float> avatarSFXVolume = new BaseVariable<float>(1f);
         }
 
+        public class DataStore_Screen
+        {
+            public readonly BaseVariable<Vector2Int> size = new BaseVariable<Vector2Int>(Vector2Int.zero);
+        }
+
         public class DataStore_WSCommunication
         {
             [System.NonSerialized]
@@ -104,6 +110,6 @@ namespace DCL
             
             public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
             public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
-        }
+        }        
     }
 }

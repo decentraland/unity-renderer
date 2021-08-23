@@ -63,22 +63,27 @@ public static partial class BIWUtils
 
     public static Vector2Int GetSceneSize(ParcelScene parcelScene)
     {
-        Vector2Int size = new Vector2Int(0, 0);
-        int lastXCoordinate = 0;
-        int lastYCoordinate = 0;
+        int minX = Int32.MaxValue;
+        int maxX = Int32.MinValue;
+        int minY = Int32.MaxValue;
+        int maxY = Int32.MinValue;
 
         foreach (var parcel in parcelScene.sceneData.parcels)
         {
-            if (parcel.x == lastXCoordinate)
-                size.y++;
-            else
-                size.x++;
+            if (parcel.x > maxX)
+                maxX = parcel.x;
+            if (parcel.x < minX)
+                minX = parcel.x;
 
-            lastXCoordinate = parcel.x;
-            lastYCoordinate = parcel.y;
+            if (parcel.y > maxY)
+                maxY = parcel.y;
+            if (parcel.y < minY)
+                minY = parcel.y;
         }
 
-        return size;
+        int sizeX = maxX - minX + 1;
+        int sizeY = maxY - minY + 1;
+        return new Vector2Int(sizeX, sizeY);
     }
 
     public static Vector3 CalculateUnityMiddlePoint(IParcelScene parcelScene)
