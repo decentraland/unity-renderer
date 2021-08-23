@@ -457,12 +457,10 @@ namespace DCL
             allRenderers.AddRange( bodyShapeController.GetRenderers() );
             bool mergeSuccess = MergeAvatar(allRenderers);
 
-            if ( !mergeSuccess )
-                loadSoftFailed = true;
-            else
-            {
+            if (mergeSuccess)
                 gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
-            }
+            else
+                loadSoftFailed = true;
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
             //              before reaching this branching statement. The failure should be caught with a throw or other
@@ -677,7 +675,7 @@ namespace DCL
 
         void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (gpuSkinning != null)
                 gpuSkinning.Update();

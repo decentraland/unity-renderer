@@ -43,7 +43,6 @@ Shader "DCL/Eyes Shader"
             #pragma fragment frag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Assets\Rendering/Shaders/Toon/Compiled/GPUSkinning.hlsl"
 
 			sampler2D _EyesTexture;
 			sampler2D _IrisMask;
@@ -60,8 +59,6 @@ Shader "DCL/Eyes Shader"
                 float4 vertex : POSITION;
 				float4 ase_normal : NORMAL;
 				float4 ase_texcoord : TEXCOORD0;
-                float4 boneWeights01 : TANGENT;
-                float4 boneWeights23 : TEXCOORD1;
             };
 
             struct GraphVertexOutput
@@ -82,17 +79,13 @@ Shader "DCL/Eyes Shader"
 				o.ase_texcoord.zw = 0;
 				float3 vertexValue =  float3( 0, 0, 0 ) ;
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
-				v.vertex.xyz = vertexValue;
+				v.vertex.xyz = vertexValue; 
 				#else
-                #ifdef _GPU_SKINNING 
-                v.vertex = GetSkinnedPos(v.vertex, v.boneWeights01, v.boneWeights23);
-                #endif
 				v.vertex.xyz += vertexValue;
 				#endif
 
 				v.ase_normal =  v.ase_normal;
                 o.position = TransformObjectToHClip(v.vertex.xyz);
-                
                 return o;
             }
 

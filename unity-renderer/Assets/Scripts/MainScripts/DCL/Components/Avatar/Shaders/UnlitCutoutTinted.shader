@@ -19,13 +19,10 @@ SubShader {
             #pragma multi_compile_fog
  
             #include "UnityCG.cginc"
-            #include "Assets\Rendering/Shaders/Toon/Compiled/GPUSkinning.hlsl"
  
             struct appdata_t {
                 float4 vertex : POSITION;
                 float2 texcoord : TEXCOORD0;
-                float4 boneWeights01 : TANGENT;
-                float4 boneWeights23 : TEXCOORD1;
             };
  
             struct v2f {
@@ -48,15 +45,12 @@ SubShader {
             {
                 v2f o;
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                #ifdef _GPU_SKINNING 
-                v.vertex = GetSkinnedPos(v.vertex, v.boneWeights01, v.boneWeights23);
-                #endif
                 o.vertex = UnityObjectToClipPos(v.vertex);
-
                 o.texcoord = TRANSFORM_TEX(v.texcoord, _BaseMap);
+                UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
-
+ 
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_BaseMap, i.texcoord);
