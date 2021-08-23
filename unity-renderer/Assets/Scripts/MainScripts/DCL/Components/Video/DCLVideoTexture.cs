@@ -17,8 +17,8 @@ namespace DCL.Components
         internal static bool isTest = false;
 #endif
 
-        private const float OUTOFSCENE_TEX_UPDATE_INTERVAL = 1.5f;
-        private const float VIDEO_PROGRESS_UPDATE_INTERVAL = 1f;
+        private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
+        private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
 
         [System.Serializable]
         new public class Model : BaseModel
@@ -43,7 +43,7 @@ namespace DCL.Components
         internal bool isVisible = false;
 
         private bool isPlayerInScene = true;
-        private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL;
+        private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
         private float lastVideoProgressReportTime;
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
@@ -188,7 +188,7 @@ namespace DCL.Components
                     isPlayStateDirty = false;
                 }
 
-                if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL)
+                if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
                 {
                     currUpdateIntervalTime += Time.unscaledDeltaTime;
                 }
@@ -214,7 +214,7 @@ namespace DCL.Components
             var length = texturePlayer.GetDuration();
             WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
         }
-        private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL; }
+        private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS; }
 
         private void CalculateVideoVolumeAndPlayStatus()
         {
