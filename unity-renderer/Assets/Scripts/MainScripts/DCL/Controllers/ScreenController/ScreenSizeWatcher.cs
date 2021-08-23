@@ -5,7 +5,7 @@ namespace DCL.Components
 {
     public class ScreenSizeWatcher : MonoBehaviour
     {
-        private BaseVariable<Vector2Int> ScreenSize => DataStore.i.screen.size;
+        private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
         private void Awake()
         {
             UpdateScreenSize();
