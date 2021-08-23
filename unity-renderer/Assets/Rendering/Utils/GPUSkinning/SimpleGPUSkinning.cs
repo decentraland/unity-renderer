@@ -8,7 +8,7 @@ public class SimpleGPUSkinning
     private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
     private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
 
-    public Renderer renderer { get; }
+    public MeshRenderer renderer { get; }
 
     private Transform[] bones;
     private Matrix4x4[] boneMatrices;
@@ -23,7 +23,10 @@ public class SimpleGPUSkinning
 
         GameObject go = skr.gameObject;
 
-        go.AddComponent<MeshFilter>().sharedMesh = skr.sharedMesh;
+        if (!go.TryGetComponent(out MeshFilter meshFilter))
+            meshFilter = go.AddComponent<MeshFilter>();
+
+        meshFilter.sharedMesh = skr.sharedMesh;
 
         renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterials = skr.sharedMaterials;

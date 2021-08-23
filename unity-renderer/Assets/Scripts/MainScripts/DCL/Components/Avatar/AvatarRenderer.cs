@@ -24,6 +24,17 @@ namespace DCL
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
+        private SimpleGPUSkinning gpuSkinning = null;
+
+        private Renderer mainMeshRenderer
+        {
+            get
+            {
+                if (gpuSkinning != null)
+                    return gpuSkinning.renderer;
+                return avatarMeshCombiner.renderer;
+            }
+        }
 
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
@@ -151,6 +162,8 @@ namespace DCL
                     SetImpostorVisibility(false);
             }
 
+            avatarMeshCombiner.Dispose();
+            gpuSkinning = null;
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
 
@@ -446,6 +459,10 @@ namespace DCL
 
             if ( !mergeSuccess )
                 loadSoftFailed = true;
+            else
+            {
+                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
+            }
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
             //              before reaching this branching statement. The failure should be caught with a throw or other
@@ -594,7 +611,7 @@ namespace DCL
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
 
-            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            Material[] mats = mainMeshRenderer.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
@@ -636,7 +653,7 @@ namespace DCL
             if ( isLoading )
                 return;
 
-            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            Material[] mats = mainMeshRenderer.sharedMaterials;
 
             for (int j = 0; j < mats.Length; j++)
             {
@@ -659,6 +676,12 @@ namespace DCL
         }
 
         void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
+
+        private void Update()
+        {
+            if (gpuSkinning != null)
+                gpuSkinning.Update();
+        }
 
         protected virtual void OnDestroy()
         {

@@ -9,9 +9,6 @@ CBUFFER_END
 
 float3 GetSkinnedPos(float3 vertex, float4 boneWeights01, float4 boneWeights23)
 {
-    #ifdef SHADERGRAPH_PREVIEW
-    skinnedPos = float3(0,0,0);
-    #else
     // Skin with 4 weights per vertex
     float4 pos =
         mul(mul(_Matrices[boneWeights01.x], _BindPoses[boneWeights01.x]), float4(vertex,1)) * boneWeights01.y
@@ -26,6 +23,5 @@ float3 GetSkinnedPos(float3 vertex, float4 boneWeights01, float4 boneWeights23)
     // If we do not do this, when moving the outer parents the world position will be computed twice.
     // (one for the bones, one for the renderer).
     return mul(_WorldInverse, pos).xyz;
-    #endif
 }
 #endif
