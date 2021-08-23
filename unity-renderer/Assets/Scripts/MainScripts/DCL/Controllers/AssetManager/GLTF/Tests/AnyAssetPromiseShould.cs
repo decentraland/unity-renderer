@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 using UnityGLTF;
-using WaitUntil = DCL.WaitUntil;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
