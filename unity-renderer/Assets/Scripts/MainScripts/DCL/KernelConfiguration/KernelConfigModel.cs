@@ -10,6 +10,7 @@ public class KernelConfigModel
     public Profiles profiles = new Profiles();
     public bool gifSupported = false;
     public string tld = "org";
+    public string network = "ropsten";
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
 
     public bool Equals(KernelConfigModel other)
@@ -30,7 +31,8 @@ public class KernelConfigModel
                this.profiles.Equals(other.profiles) &&
                this.features.Equals(other.features) &&
                this.gifSupported == other.gifSupported &&
-               this.tld == other.tld;
+               this.tld == other.tld &&
+               this.network == other.network;
     }
 
     public KernelConfigModel Clone()
@@ -42,6 +44,7 @@ public class KernelConfigModel
         clone.features = features.Clone();
         clone.gifSupported = gifSupported;
         clone.tld = tld;
+        clone.network = network;
         clone.validWorldRanges = new List<WorldRange>(validWorldRanges);
         return clone;
     }

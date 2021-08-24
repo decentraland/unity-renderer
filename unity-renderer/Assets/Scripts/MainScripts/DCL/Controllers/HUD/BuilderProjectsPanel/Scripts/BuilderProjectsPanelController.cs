@@ -199,14 +199,14 @@ public class BuilderProjectsPanelController : IHUD
         isFetching = true;
 
         var address = UserProfile.GetOwnUserProfile().ethAddress;
-        var tld = KernelConfig.i.Get().tld;
+        var network = KernelConfig.i.Get().network;
 
 #if UNITY_EDITOR
         // NOTE: to be able to test in editor without getting a profile we hardcode an address here
         if (string.IsNullOrEmpty(address))
         {
             address = TESTING_ETH_ADDRESS;
-            tld = TESTING_TLD;
+            network = TESTING_TLD;
             DataStore.i.playerRealm.Set(new CurrentRealmModel()
             {
                 domain = $"https://peer-lb.decentraland.{TESTING_TLD}",
@@ -217,7 +217,7 @@ public class BuilderProjectsPanelController : IHUD
 
         sectionsController.SetFetchingDataStart();
 
-        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, landCacheTime, scenesCacheTime);
+        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, network, landCacheTime, scenesCacheTime);
         fetchLandPromise
             .Then(lands =>
             {
