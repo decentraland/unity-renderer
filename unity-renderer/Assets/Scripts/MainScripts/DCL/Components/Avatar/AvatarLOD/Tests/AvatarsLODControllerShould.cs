@@ -142,7 +142,7 @@ namespace Tests.AvatarsLODController
             // Create full avatar to reach max 3D avatars
             Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
             IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            fullAvatarPlayerController.player = fullAvatarPlayer;
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
             controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
             fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (lodDistance * 0.1f);
 
@@ -150,7 +150,7 @@ namespace Tests.AvatarsLODController
             Player impostorPlayer = CreateMockPlayer("impostorPlayer", out IAvatarRenderer impostorPlayerRenderer);
             otherPlayers.Add(impostorPlayer.id, impostorPlayer);
             var lodController = Substitute.For<IAvatarLODController>();
-            lodController.player = impostorPlayer;
+            lodController.player.Returns(impostorPlayer);
             controller.lodControllers.Add(impostorPlayer.id, lodController);
             impostorPlayer.worldPosition = cameraPosition + Vector3.forward * lodDistance * 1.1f + Vector3.left * 3;
 
@@ -172,7 +172,7 @@ namespace Tests.AvatarsLODController
             // Create full avatar to reach max 3D avatars
             Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
             IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            fullAvatarPlayerController.player = fullAvatarPlayer;
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
             controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
             fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (lodDistance * 0.1f);
 
@@ -180,7 +180,7 @@ namespace Tests.AvatarsLODController
             Player impostorPlayer = CreateMockPlayer("impostorPlayer", out IAvatarRenderer impostorPlayerRenderer);
             otherPlayers.Add(impostorPlayer.id, impostorPlayer);
             var lodController = Substitute.For<IAvatarLODController>();
-            lodController.player = impostorPlayer;
+            lodController.player.Returns(impostorPlayer);
             controller.lodControllers.Add(impostorPlayer.id, lodController);
             impostorPlayer.worldPosition = cameraPosition - Vector3.forward * lodDistance;
 
@@ -201,28 +201,29 @@ namespace Tests.AvatarsLODController
 
             Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
             IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            fullAvatarPlayerController.player = fullAvatarPlayer;
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
             controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
             fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f); //Close player => Full Avatar
 
             Player simpleAvatarPlayer = CreateMockPlayer("simpleAvatar");
             IAvatarLODController simpleAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            simpleAvatarPlayerController.player = simpleAvatarPlayer;
+            simpleAvatarPlayerController.player.Returns(simpleAvatarPlayer);
             controller.lodControllers.Add(simpleAvatarPlayer.id, simpleAvatarPlayerController);
             simpleAvatarPlayer.worldPosition = Vector3.forward * (simpleAvatarDistance * 1.05f); //Near By player => Simple Avatar
 
             Player impostorAvatarPlayer = CreateMockPlayer("impostorAvatar");
             IAvatarLODController impostorAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            impostorAvatarPlayerController.player = impostorAvatarPlayer;
+            impostorAvatarPlayerController.player.Returns(impostorAvatarPlayer);
             controller.lodControllers.Add(impostorAvatarPlayer.id, impostorAvatarPlayerController);
             impostorAvatarPlayer.worldPosition = Vector3.forward * (lodDistance * 1.05f); //Far Away player => LOD
 
             Player invisibleAvatarPlayer = CreateMockPlayer("invisibleAvatar");
             IAvatarLODController invisibleAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            invisibleAvatarPlayerController.player = invisibleAvatarPlayer;
+            invisibleAvatarPlayerController.player.Returns(invisibleAvatarPlayer);
             controller.lodControllers.Add(invisibleAvatarPlayer.id, invisibleAvatarPlayerController);
             invisibleAvatarPlayer.worldPosition = -Vector3.forward * 10f; //player behind camera => Invisible
 
+            // controller.Update();
             controller.UpdateAllLODs(2);
 
             fullAvatarPlayerController.Received().SetFullAvatar();
@@ -244,14 +245,14 @@ namespace Tests.AvatarsLODController
             // Create full avatar to reach max 3D avatars
             Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
             IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            fullAvatarPlayerController.player = fullAvatarPlayer;
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
             controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
             fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (lodDistance * 0.1f);
 
             // Create impostor avatar
             Player invisibleAvatarPlayer = CreateMockPlayer("impostorPlayer");
             IAvatarLODController invisibleAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            invisibleAvatarPlayerController.player = invisibleAvatarPlayer;
+            invisibleAvatarPlayerController.player.Returns(invisibleAvatarPlayer);
             otherPlayers.Add(invisibleAvatarPlayer.id, invisibleAvatarPlayer);
             controller.lodControllers.Add(invisibleAvatarPlayer.id, invisibleAvatarPlayerController);
             invisibleAvatarPlayer.worldPosition = cameraPosition - Vector3.forward * 5;
