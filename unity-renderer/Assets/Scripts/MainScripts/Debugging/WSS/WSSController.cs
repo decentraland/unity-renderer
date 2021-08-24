@@ -2,7 +2,6 @@ using DCL.Components;
 using DCL.Interface;
 using System.Collections.Generic;
 using DCL.Camera;
-using UnityEditor;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -60,7 +59,16 @@ namespace DCL
         {
             base.OnOpen();
             WebInterface.OnMessageFromEngine += SendMessageToWeb;
-            Send("{\"welcome\": true}");
+
+            // we now need to send the "The engine is ready to handle messages" signal.
+            // that signal is triggered by the SystemInfoReport message in kernel
+            SendMessageToWeb("SystemInfoReport", "{}");
+
+            // TODO(menduz): For some reason beyond my knowledge, the following line
+            //               _does not_ send any message to the kernel, but it should.
+            //               The line avobe is "hacking" it to make it work. 
+            // WebInterface.SendSystemInfoReport();
+
             if (enterAsAGuest)
                 WebInterface.SendAuthentication(WebInterface.RendererAuthenticationType.Guest);
         }

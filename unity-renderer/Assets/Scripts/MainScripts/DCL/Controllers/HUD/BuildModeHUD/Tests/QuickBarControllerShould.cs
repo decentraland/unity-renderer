@@ -16,7 +16,7 @@ namespace Tests.BuildModeHUDControllers
             quickBarController = new QuickBarController();
             quickBarController.Initialize(
                 Substitute.For<IQuickBarView>(),
-                Substitute.For<ISceneCatalogController>());
+                Substitute.For<IDragAndDropSceneObjectController>());
         }
 
         [TearDown]
@@ -88,7 +88,7 @@ namespace Tests.BuildModeHUDControllers
             quickBarController.SceneObjectDroppedFromCatalog(null);
 
             // Assert
-            quickBarController.sceneCatalogController.Received(1).GetLastCatalogItemDragged();
+            quickBarController.dragAndDropController.Received(1).GetLastAdapterDragged();
         }
 
         [Test]

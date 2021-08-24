@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -42,7 +43,7 @@ namespace DCL
     {
         public List<Material> materials = new List<Material>();
         public List<Vector3> texturePointers = new List<Vector3>();
-        public List<Color> colors = new List<Color>();
+        public List<Vector4> colors = new List<Vector4>();
         public List<Vector4> emissionColors = new List<Vector4>();
     }
 
@@ -129,8 +130,11 @@ namespace DCL
             var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);
             finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, flattenedMaterialsData.texturePointers);
-            finalMesh.SetColors(flattenedMaterialsData.colors);
 
+            var tempArray = new NativeArray<Vector4>(flattenedMaterialsData.colors.Count, Allocator.Temp);
+            tempArray.CopyFrom(flattenedMaterialsData.colors.ToArray());
+            finalMesh.SetColors(tempArray);
+            tempArray.Dispose();
             // Each layer corresponds with a subMesh. This is to take advantage of the sharedMaterials array.
             //
             // When a renderer has many sub-meshes, each materials array element correspond to the sub-mesh of
