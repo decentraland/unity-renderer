@@ -194,16 +194,4 @@ public static class BIWTestHelper
             BIWNFTController.i.NftsFeteched(owner);
         }
     }
-
-    public static IEnumerator CreateShapeForEntity(ParcelScene scene, IDCLEntity entity)
-    {
-        TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
-            new
-            {
-                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
-            }));
-
-        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entity.entityId]);
-        yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
-    }
 }
