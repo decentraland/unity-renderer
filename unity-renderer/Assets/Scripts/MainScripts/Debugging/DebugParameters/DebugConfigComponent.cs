@@ -72,6 +72,7 @@ namespace DCL
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
         }
+
         private void Start()
         {
             lock (DataStore.i.wsCommunication.communicationReady)
@@ -86,6 +87,7 @@ namespace DCL
                 }
             }
         }
+
         private void OnCommunicationReadyChangedValue(bool newState, bool prevState)
         {
             if (newState && !prevState)
@@ -93,6 +95,7 @@ namespace DCL
 
             DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
         }
+
         private void InitConfig()
         {
             if (useCustomContentServer)

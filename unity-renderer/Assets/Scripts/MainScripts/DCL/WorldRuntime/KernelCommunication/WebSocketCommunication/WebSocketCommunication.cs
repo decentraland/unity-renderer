@@ -60,6 +60,7 @@ public class WebSocketCommunication : IKernelCommunication
         Debug.LogError("There are not unused ports.");
         return minPort; // error
     }
+
     public WebSocketCommunication()
     {
         InitMessageTypeToBridgeName();
@@ -116,6 +117,18 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateMinimapSceneInformation"] = "Main";
         messageTypeToBridgeName["UpdateHotScenesList"] = "Main";
         messageTypeToBridgeName["SetRenderProfile"] = "Main";
+        messageTypeToBridgeName["CrashPayloadRequest"] = "Main";
+        messageTypeToBridgeName["SetDisableAssetBundles"] = "Main";
+        messageTypeToBridgeName["DumpRendererLockersInfo"] = "Main";
+        messageTypeToBridgeName["PublishSceneResult"] = "Main";
+        messageTypeToBridgeName["BuilderProjectInfo"] = "Main";
+        messageTypeToBridgeName["BuilderInWorldCatalogHeaders"] = "Main";
+        messageTypeToBridgeName["AddAssets"] = "Main";
+        messageTypeToBridgeName["RunPerformanceMeterTool"] = "Main";
+        messageTypeToBridgeName["InstantiateBotsAtWorldPos"] = "Main";
+        messageTypeToBridgeName["InstantiateBotsAtCoords"] = "Main";
+        messageTypeToBridgeName["RemoveBot"] = "Main";
+        messageTypeToBridgeName["ClearBots"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
@@ -167,20 +180,8 @@ public class WebSocketCommunication : IKernelCommunication
 
         messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
         messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
-        
-        messageTypeToBridgeName["CrashPayloadRequest"] = "Main";
-        messageTypeToBridgeName["SetDisableAssetBundles"] = "Main";
-        messageTypeToBridgeName["DumpRendererLockersInfo"] = "Main";
-        messageTypeToBridgeName["PublishSceneResult"] = "Main";
-        messageTypeToBridgeName["BuilderProjectInfo"] = "Main";
-        messageTypeToBridgeName["BuilderInWorldCatalogHeaders"] = "Main";
-        messageTypeToBridgeName["AddAssets"] = "Main";
-        messageTypeToBridgeName["RunPerformanceMeterTool"] = "Main";
-        messageTypeToBridgeName["InstantiateBotsAtWorldPos"] = "Main";
-        messageTypeToBridgeName["InstantiateBotsAtCoords"] = "Main";
-        messageTypeToBridgeName["RemoveBot"] = "Main";
-        messageTypeToBridgeName["ClearBots"] = "Main";
     }
+
     IEnumerator ProcessMessages()
     {
         while (!requestStop)
