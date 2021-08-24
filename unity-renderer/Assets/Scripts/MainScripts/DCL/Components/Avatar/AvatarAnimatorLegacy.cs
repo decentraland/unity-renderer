@@ -222,6 +222,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
         if (animation == null)
             return;
 
+        if (string.IsNullOrEmpty(expressionTriggerId))
+            return;
+
         var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId) && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
 
         blackboard.expressionTriggerId = expressionTriggerId;

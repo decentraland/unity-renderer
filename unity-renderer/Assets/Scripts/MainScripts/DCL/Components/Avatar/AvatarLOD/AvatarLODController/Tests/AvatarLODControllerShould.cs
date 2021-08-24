@@ -29,11 +29,10 @@ namespace Tests.AvatarLODController
         [Test]
         public void BeCreatedProperly()
         {
+            Assert.IsNull(controller.lastRequestedState);
             Assert.AreEqual(player, controller.player);
             Assert.AreEqual(1, controller.avatarFade);
-            Assert.AreEqual(1, controller.targetAvatarFade);
             Assert.AreEqual(0, controller.impostorFade);
-            Assert.AreEqual(0, controller.targetImpostorFade);
             Assert.IsTrue(controller.SSAOEnabled);
             Assert.IsTrue(controller.facialFeaturesEnabled);
             player.renderer.Received().SetAvatarFade(1);
@@ -43,43 +42,40 @@ namespace Tests.AvatarLODController
         [Test]
         public void SetAvatarStateProperly()
         {
-            controller.targetAvatarFade = 0;
+            controller.avatarFade = 0;
             controller.impostorFade = 1;
             controller.SSAOEnabled = false;
             controller.facialFeaturesEnabled = false;
-            controller.SetAvatarState();
+            controller.SetFullAvatar();
 
             renderer.Received().SetSSAOEnabled(true);
             renderer.Received().SetFacialFeaturesVisible(true);
-            Assert.AreEqual(1, controller.targetAvatarFade);
-            Assert.AreEqual(0, controller.targetImpostorFade);
             Assert.NotNull(controller.currentTransition);
+            Assert.NotNull(controller.lastRequestedState);
         }
 
         [Test]
-        public void SetAvatarStateProperly_NullRenderer()
+        public void SetFullAvatarProperly_NullRenderer()
         {
             player.renderer = null;
-            Assert.DoesNotThrow(() => controller.SetAvatarState());
+            Assert.DoesNotThrow(() => controller.SetFullAvatar());
         }
 
         [Test]
-        public void SetAvatarStateProperly_IgnoresIfTargetsAreSet()
+        public void SetFullAvatarProperly_IgnoresIfTargetsAreSet()
         {
-            controller.targetAvatarFade = 1;
             controller.avatarFade = 1;
-            controller.targetImpostorFade = 0;
             controller.impostorFade = 0;
             controller.currentTransition = null;
-            controller.SetAvatarState();
+            controller.SetFullAvatar();
 
+            Assert.AreEqual(DCL.AvatarLODController.State.FullAvatar , controller.lastRequestedState);
             Assert.IsNull(controller.currentTransition);
         }
 
         [Test]
         public void SetSimpleAvatarStateProperly()
         {
-            controller.targetAvatarFade = 0;
             controller.impostorFade = 1;
             controller.SSAOEnabled = true;
             controller.facialFeaturesEnabled = true;
@@ -87,8 +83,7 @@ namespace Tests.AvatarLODController
 
             renderer.Received().SetSSAOEnabled(false);
             renderer.Received().SetFacialFeaturesVisible(false);
-            Assert.AreEqual(1, controller.targetAvatarFade);
-            Assert.AreEqual(0, controller.targetImpostorFade);
+            Assert.AreEqual(DCL.AvatarLODController.State.SimpleAvatar , controller.lastRequestedState);
             Assert.NotNull(controller.currentTransition);
         }
 
@@ -102,49 +97,45 @@ namespace Tests.AvatarLODController
         [Test]
         public void SetSimpleAvatarStateProperly_IgnoresIfTargetsAreSet()
         {
-            controller.targetAvatarFade = 1;
             controller.avatarFade = 1;
-            controller.targetImpostorFade = 0;
             controller.impostorFade = 0;
             controller.currentTransition = null;
             controller.SetSimpleAvatar();
 
+            Assert.AreEqual(DCL.AvatarLODController.State.SimpleAvatar , controller.lastRequestedState);
             Assert.Null(controller.currentTransition);
         }
 
         [Test]
         public void SetImpostorStateStateProperly()
         {
-            controller.targetAvatarFade = 1;
             controller.impostorFade = 0;
             controller.SSAOEnabled = true;
             controller.facialFeaturesEnabled = true;
-            controller.SetImpostorState();
+            controller.SetImpostor();
 
             renderer.Received().SetSSAOEnabled(false);
             renderer.Received().SetFacialFeaturesVisible(false);
-            Assert.AreEqual(0, controller.targetAvatarFade);
-            Assert.AreEqual(1, controller.targetImpostorFade);
             Assert.NotNull(controller.currentTransition);
+            Assert.AreEqual(DCL.AvatarLODController.State.Impostor , controller.lastRequestedState);
         }
 
         [Test]
         public void SetImpostorStateStateProperly_NullRenderer()
         {
             player.renderer = null;
-            Assert.DoesNotThrow(() => controller.SetImpostorState());
+            Assert.DoesNotThrow(() => controller.SetImpostor());
         }
 
         [Test]
         public void SetImpostorStateStateProperly_IgnoresIfTargetsAreSet()
         {
-            controller.targetAvatarFade = 0;
             controller.avatarFade = 0;
-            controller.targetImpostorFade = 1;
             controller.impostorFade = 1;
             controller.currentTransition = null;
-            controller.SetImpostorState();
+            controller.SetImpostor();
 
+            Assert.AreEqual(DCL.AvatarLODController.State.Impostor , controller.lastRequestedState);
             Assert.Null(controller.currentTransition);
         }
 

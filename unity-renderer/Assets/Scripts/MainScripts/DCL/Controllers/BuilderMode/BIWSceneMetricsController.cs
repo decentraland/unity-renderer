@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class BIWSceneMetricsController : SceneMetricsController
 {
+    private string currentExceededLimitTypes = "";
+
     public BIWSceneMetricsController(ParcelScene sceneOwner) : base(sceneOwner)
     {
         Enable();
@@ -29,6 +31,7 @@ public class BIWSceneMetricsController : SceneMetricsController
             SubstractMetrics(e);
             model.entities = entitiesMetrics.Count;
         }
+        CheckSceneLimitExceededAnalaytics();
     }
 
     protected override void OnEntityMeshInfoUpdated(IDCLEntity entity)
@@ -43,6 +46,24 @@ public class BIWSceneMetricsController : SceneMetricsController
         {
             SubstractMetrics(entity);
             model.entities = entitiesMetrics.Count;
+        }
+        CheckSceneLimitExceededAnalaytics();
+    }
+
+    private void CheckSceneLimitExceededAnalaytics()
+    {
+        if (!IsInsideTheLimits())
+        {
+            string exceededLimits = BIWAnalytics.GetLimitsPassedArray(scene.metricsController.GetModel(), scene.metricsController.GetLimits());
+            if (exceededLimits != currentExceededLimitTypes)
+            {
+                BIWAnalytics.SceneLimitsExceeded(scene.metricsController.GetModel(), scene.metricsController.GetLimits());
+                currentExceededLimitTypes = exceededLimits;
+            }
+        }
+        else
+        {
+            currentExceededLimitTypes = "";
         }
     }
 }

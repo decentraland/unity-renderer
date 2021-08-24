@@ -47,12 +47,8 @@ namespace DCL
                 Models.CLASS_ID.UI_INPUT_TEXT_SHAPE,
                 new UIInputText.Model()
                 {
-                    textModel = new DCL.Components.TextShape.Model()
-                    {
-                        color = Color.white,
-                        opacity = 1,
-                    },
-
+                    color = Color.white,
+                    opacity = 1,
                     placeholder = "Chat here!",
                     placeholderColor = Color.grey,
                     focusedBackground = Color.black,
