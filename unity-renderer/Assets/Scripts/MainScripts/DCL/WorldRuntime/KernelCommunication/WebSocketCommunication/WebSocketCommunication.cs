@@ -189,6 +189,18 @@ public class WebSocketCommunication : IKernelCommunication
                             case "SendSceneMessage":
                                 DCL.Environment.i.world.sceneController.SendSceneMessage(msg.payload);
                                 break;
+                            case "SetVoiceChatEnabledByScene":
+                                if (int.TryParse(msg.payload, out int value)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
+                                {
+                                    GameObject.Find("HUDController").SendMessage(msg.type, value);
+                                }
+                                break;
+                            case "RunPerformanceMeterTool":
+                                if (float.TryParse(msg.payload, out float durationInSeconds)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
+                                {
+                                    GameObject.Find("Main").SendMessage(msg.type, durationInSeconds);
+                                }
+                                break;
                             default:
                                 if (!messageTypeToBridgeName.TryGetValue(msg.type, out string bridgeName))
                                 {
