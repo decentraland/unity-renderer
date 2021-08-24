@@ -39,10 +39,13 @@ public class HUDBridge : MonoBehaviour
 
     public void SetPlayerTalking(string talking) { HUDController.i.taskbarHud?.SetVoiceChatRecording("true".Equals(talking)); }
 
-    public void SetVoiceChatEnabledByScene(int enabledPayload)
+    public void SetVoiceChatEnabledByScene(string payload)
     {
-        bool isEnabled = enabledPayload != 0;
-        HUDController.i.taskbarHud?.SetVoiceChatEnabledByScene(isEnabled);
+        if (int.TryParse(payload, out int enabledPayload))
+        {
+            bool isEnabled = enabledPayload != 0;
+            HUDController.i.taskbarHud?.SetVoiceChatEnabledByScene(isEnabled);
+        }
     }
 
     public void SetUserTalking(string payload)

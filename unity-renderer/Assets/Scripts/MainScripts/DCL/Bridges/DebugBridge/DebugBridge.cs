@@ -98,7 +98,13 @@ namespace DCL
             debugLogger.Log($"Full crash payload size: {fullDump.Length}");
         }
 
-        public void RunPerformanceMeterTool(float durationInSeconds) { Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds); }
+        public void RunPerformanceMeterTool(string payload)
+        {
+            if (float.TryParse(payload, out float durationInSeconds))
+            {
+                Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds);
+            }
+        }
 
         public void InstantiateBotsAtWorldPos(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtWorldPos(configJson); }
 
@@ -108,7 +114,7 @@ namespace DCL
 
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
-        public void DebugPerformanceMeter() { RunPerformanceMeterTool(30); }
+        public void DebugPerformanceMeter() { RunPerformanceMeterTool("30"); }
 
         [ContextMenu("Instantiate 3 bots at player coordinates")]
         public void DebugBotsInstantiation()

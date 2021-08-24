@@ -86,6 +86,7 @@ public class WebSocketCommunication : IKernelCommunication
 
     private void InitMessageTypeToBridgeName()
     {
+        // Please, use `Bridges` as a bridge name, avoid adding messages here. The system will use `Bridges` as the default bridge name.
         messageTypeToBridgeName["SetDebug"] = "Main";
         messageTypeToBridgeName["SetSceneDebugPanel"] = "Main";
         messageTypeToBridgeName["ShowFPSPanel"] = "Main";
@@ -133,18 +134,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
         messageTypeToBridgeName["SetRotation"] = "CameraController";
-
-        messageTypeToBridgeName["ReportFocusOn"] = "Bridges";
-        messageTypeToBridgeName["ReportFocusOff"] = "Bridges";
-        messageTypeToBridgeName["SetKernelConfiguration"] = "Bridges";
-        messageTypeToBridgeName["UpdateRealmsInfo"] = "Bridges";
-        messageTypeToBridgeName["ConnectionToRealmSuccess"] = "Bridges";
-        messageTypeToBridgeName["ConnectionToRealmFailed"] = "Bridges";
-        messageTypeToBridgeName["InitializeQuests"] = "Bridges";
-        messageTypeToBridgeName["UpdateQuestProgress"] = "Bridges";
-        messageTypeToBridgeName["SetENSOwnerQueryResult"] = "Bridges";
-        messageTypeToBridgeName["UnpublishSceneResult"] = "Bridges";
-        messageTypeToBridgeName["SetLoadingScreen"] = "Bridges";
 
         messageTypeToBridgeName["ShowNotificationFromJson"] = "HUDController";
         messageTypeToBridgeName["ConfigureHUDElement"] = "HUDController";
@@ -201,24 +190,20 @@ public class WebSocketCommunication : IKernelCommunication
                                 DCL.Environment.i.world.sceneController.SendSceneMessage(msg.payload);
                                 break;
                             default:
-                                if (messageTypeToBridgeName.TryGetValue(msg.type, out string bridgeName))
+                                if (!messageTypeToBridgeName.TryGetValue(msg.type, out string bridgeName))
                                 {
-                                    if (bridgeGameObjects.TryGetValue(bridgeName, out GameObject bridgeObject) == false)
-                                    {
-                                        bridgeObject = GameObject.Find(bridgeName);
-                                        bridgeGameObjects.Add(bridgeName, bridgeObject);
-                                    }
-
-                                    if (bridgeObject != null)
-                                    {
-                                        bridgeObject.SendMessage(msg.type, msg.payload);
-                                    }
+                                    bridgeName = "Bridges"; // Default bridge
                                 }
-                                else
+
+                                if (bridgeGameObjects.TryGetValue(bridgeName, out GameObject bridgeObject) == false)
                                 {
-                                    Debug.Log(
-                                        "<b><color=#FF0000>WebSocketCommunication:</color></b> received an unknown message from kernel to renderer: " +
-                                        msg.type);
+                                    bridgeObject = GameObject.Find(bridgeName);
+                                    bridgeGameObjects.Add(bridgeName, bridgeObject);
+                                }
+
+                                if (bridgeObject != null)
+                                {
+                                    bridgeObject.SendMessage(msg.type, msg.payload);
                                 }
                                 break;
                         }
