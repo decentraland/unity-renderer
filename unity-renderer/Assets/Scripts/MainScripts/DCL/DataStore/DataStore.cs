@@ -30,6 +30,7 @@ namespace DCL
         public readonly DataStore_AvatarsLOD avatarsLOD = new DataStore_AvatarsLOD();
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
         public readonly DataStore_Screen screen = new DataStore_Screen();
+        public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
 
         public class DataStore_BuilderInWorld
         {
@@ -98,5 +99,17 @@ namespace DCL
         {
             public readonly BaseVariable<Vector2Int> size = new BaseVariable<Vector2Int>(Vector2Int.zero);
         }
+
+        public class DataStore_WSCommunication
+        {
+            [System.NonSerialized]
+            public string wssServerUrl = "ws://localhost:5000/";
+            
+            [System.NonSerialized]
+            public string wssServiceId = "dcl";
+            
+            public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
+            public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
+        }        
     }
 }

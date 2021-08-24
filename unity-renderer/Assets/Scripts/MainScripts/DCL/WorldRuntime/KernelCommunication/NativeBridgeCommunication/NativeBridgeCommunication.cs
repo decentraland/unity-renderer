@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using DCL;
 using DCL.Interface;
@@ -6,7 +6,7 @@ using DCL.Models;
 using UnityEngine;
 using Ray = DCL.Models.Ray;
 
-public class EntryPoint_World
+public class NativeBridgeCommunication : IKernelCommunication
 {
     private static string currentEntityId;
     private static string currentSceneId;
@@ -26,9 +26,9 @@ public class EntryPoint_World
 
     delegate void JS_Delegate_V();
 
-    public EntryPoint_World(IMessageQueueHandler queueHandler)
+    public NativeBridgeCommunication(IMessageQueueHandler queueHandler)
     {
-        EntryPoint_World.queueHandler = queueHandler;
+        NativeBridgeCommunication.queueHandler = queueHandler;
 #if UNITY_WEBGL && !UNITY_EDITOR
         SetCallback_CreateEntity(CreateEntity);
         SetCallback_RemoveEntity(RemoveEntity);
