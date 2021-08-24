@@ -82,6 +82,7 @@ public class WebSocketCommunication : IKernelCommunication
         
         updateCoroutine = CoroutineStarter.Start(ProcessMessages());
     }
+
     private void InitMessageTypeToBridgeName()
     {
         messageTypeToBridgeName["SetDebug"] = "Main";
