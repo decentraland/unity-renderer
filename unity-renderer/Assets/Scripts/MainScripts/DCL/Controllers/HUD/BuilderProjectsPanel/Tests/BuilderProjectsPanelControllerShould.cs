@@ -16,6 +16,8 @@ namespace Tests
         private IScenesViewController scenesViewController;
         private ILandController landsController;
 
+        private bool condtionMet = false;
+
         [SetUp]
         public void SetUp()
         {
@@ -97,23 +99,31 @@ namespace Tests
         public void GoToCoords()
         {
             //Arrange
+            condtionMet = false;
             controller.OnJumpInOrEdit += AssertJump;
 
             //Act
             controller.GoToCoords(new Vector2Int(0, 0));
+
+            //Assert
+            Assert.IsTrue(condtionMet);
         }
 
         [Test]
         public void GoToEditScene()
         {
             //Arrange
+            condtionMet = false;
             controller.OnJumpInOrEdit += AssertJump;
 
             //Act
             controller.OnGoToEditScene(new Vector2Int(0, 0));
+
+            //Assert
+            Assert.IsTrue(condtionMet);
         }
 
-        private void AssertJump() { Assert.Pass(); }
+        private void AssertJump() { condtionMet = true; }
 
         [Test]
         public void ViewCreatedCorrectly() { Assert.IsNotNull(controller.view); }
