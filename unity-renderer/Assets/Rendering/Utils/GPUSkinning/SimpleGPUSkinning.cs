@@ -30,13 +30,13 @@ public class SimpleGPUSkinning
 
         renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterials = skr.sharedMaterials;
-
         foreach (Material material in renderer.sharedMaterials)
         {
             material.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
             material.EnableKeyword("_GPU_SKINNING");
         }
         bones = skr.bones;
+        meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
 
         Object.Destroy(skr);
     }

@@ -668,7 +668,10 @@ namespace DCL
             bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
 
             if ( success )
+            {
                 avatarMeshCombiner.container.transform.SetParent( transform, true );
+                avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
+            }
 
             return success;
         }
