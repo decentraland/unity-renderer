@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using DCL;
 using UnityEngine;
 using WebSocketSharp.Server;
+
 public class WebSocketCommunication : IKernelCommunication
 {
     WebSocketServer ws;
