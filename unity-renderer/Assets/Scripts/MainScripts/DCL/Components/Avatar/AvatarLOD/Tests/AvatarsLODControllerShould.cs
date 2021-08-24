@@ -157,7 +157,7 @@ namespace Tests.AvatarsLODController
             controller.enabled = true;
             controller.Update();
 
-            impostorPlayerRenderer.Received().SetImpostorForward(-(cameraPosition - impostorPlayer.worldPosition).normalized);
+            impostorPlayerRenderer.Received().SetImpostorForward((cameraPosition - impostorPlayer.worldPosition).normalized);
         }
 
         [Test]

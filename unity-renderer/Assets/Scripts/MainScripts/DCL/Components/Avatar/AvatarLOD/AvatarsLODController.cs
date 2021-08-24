@@ -78,7 +78,7 @@ namespace DCL
                     continue;
 
                 Vector3 previousForward = player.forwardDirection;
-                Vector3 lookAtDir = (player.worldPosition - cameraPosition.Get()).normalized;
+                Vector3 lookAtDir = (cameraPosition.Get() - player.worldPosition).normalized;
 
                 lookAtDir.y = previousForward.y;
                 player.renderer.SetImpostorForward(lookAtDir);
