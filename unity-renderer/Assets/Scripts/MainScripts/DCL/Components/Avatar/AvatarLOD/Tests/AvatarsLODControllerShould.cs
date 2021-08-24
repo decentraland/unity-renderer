@@ -131,7 +131,7 @@ namespace Tests.AvatarsLODController
         }
 
         [Test]
-        public void UpdateImpostorsBillboardsRotationProperly()
+        public void UpdateImpostorsBillboardRotationProperly()
         {
             Vector3 cameraPosition = Vector3.zero;
             float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
@@ -154,8 +154,7 @@ namespace Tests.AvatarsLODController
             controller.lodControllers.Add(impostorPlayer.id, lodController);
             impostorPlayer.worldPosition = cameraPosition + Vector3.forward * lodDistance * 1.1f + Vector3.left * 3;
 
-            controller.enabled = true;
-            controller.Update();
+            controller.Update(true);
 
             impostorPlayerRenderer.Received().SetImpostorForward((cameraPosition - impostorPlayer.worldPosition).normalized);
         }
@@ -223,8 +222,8 @@ namespace Tests.AvatarsLODController
             controller.lodControllers.Add(invisibleAvatarPlayer.id, invisibleAvatarPlayerController);
             invisibleAvatarPlayer.worldPosition = -Vector3.forward * 10f; //player behind camera => Invisible
 
-            // controller.Update();
-            controller.UpdateAllLODs(2);
+            DataStore.i.avatarsLOD.maxAvatars.Set(2);
+            controller.Update(true);
 
             fullAvatarPlayerController.Received().SetFullAvatar();
             simpleAvatarPlayerController.Received().SetSimpleAvatar();
@@ -235,7 +234,6 @@ namespace Tests.AvatarsLODController
         [Test]
         public void SetNonRenderedAvatarsAsInvisible()
         {
-            controller.enabled = true;
             Vector3 cameraPosition = Vector3.zero;
             float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
             CommonScriptableObjects.cameraForward.Set(Vector3.forward);
@@ -272,7 +270,8 @@ namespace Tests.AvatarsLODController
             controller.lodControllers.Add("player1", CreateMockLODController(otherPlayers["player1"]));
             controller.lodControllers.Add("player2", CreateMockLODController(otherPlayers["player2"]));
 
-            controller.UpdateAllLODs(maxAvatars: 2);
+            DataStore.i.avatarsLOD.maxAvatars.Set(2);
+            controller.Update(true);
 
             controller.lodControllers["player0"].Received().SetFullAvatar();
             controller.lodControllers["player1"].Received().SetFullAvatar();
@@ -289,7 +288,8 @@ namespace Tests.AvatarsLODController
             controller.lodControllers.Add("player1", CreateMockLODController(otherPlayers["player1"]));
             controller.lodControllers.Add("player2", CreateMockLODController(otherPlayers["player2"]));
 
-            controller.UpdateAllLODs(maxAvatars: 2);
+            DataStore.i.avatarsLOD.maxAvatars.Set(2);
+            controller.Update(true);
 
             controller.lodControllers["player0"].Received().SetSimpleAvatar();
             controller.lodControllers["player1"].Received().SetSimpleAvatar();
@@ -306,7 +306,8 @@ namespace Tests.AvatarsLODController
             controller.lodControllers.Add("player1", CreateMockLODController(otherPlayers["player1"]));
             controller.lodControllers.Add("player2", CreateMockLODController(otherPlayers["player2"]));
 
-            controller.UpdateAllLODs(maxAvatars: 2);
+            DataStore.i.avatarsLOD.maxAvatars.Set(2);
+            controller.Update(true);
 
             controller.lodControllers["player0"].Received().SetInvisible();
             controller.lodControllers["player1"].Received().SetFullAvatar();
@@ -327,7 +328,9 @@ namespace Tests.AvatarsLODController
             controller.lodControllers.Add("player3", CreateMockLODController(otherPlayers["player3"]));
             controller.lodControllers.Add("player4", CreateMockLODController(otherPlayers["player4"]));
 
-            controller.UpdateAllLODs(maxAvatars: 3, maxImpostors: 1);
+            DataStore.i.avatarsLOD.maxAvatars.Set(3);
+            DataStore.i.avatarsLOD.maxImpostors.Set(1);
+            controller.Update(true);
 
             controller.lodControllers["player0"].Received().SetSimpleAvatar(); //Takes one of the free avatar spots 
             controller.lodControllers["player1"].Received().SetFullAvatar();
