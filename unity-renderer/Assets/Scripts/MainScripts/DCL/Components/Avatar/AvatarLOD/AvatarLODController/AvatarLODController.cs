@@ -7,7 +7,7 @@ namespace DCL
     //TODO Rename to IAvatar (not now to avoid conflicts)
     public interface IAvatarLODController : IDisposable
     {
-        Player player { get; }
+        Player player { get; set; }
         void SetFullAvatar();
         void SetSimpleAvatar();
         void SetImpostor();
@@ -26,7 +26,7 @@ namespace DCL
 
         private const float TRANSITION_DURATION = 0.5f;
 
-        public Player player { get; }
+        public Player player { get; set; }
 
         internal float avatarFade;
         internal float impostorFade;
