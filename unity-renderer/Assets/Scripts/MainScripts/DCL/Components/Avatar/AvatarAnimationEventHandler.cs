@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DCL.Helpers;
 
-public class AvatarAnimationEventAudioHandler : MonoBehaviour
+public class AvatarAnimationEventHandler : MonoBehaviour
 {
-    ParticleSystem footstepParticleSystem, footstepParticleSystemPrefab;
-
-    Transform leftFoot, rightFoot;
+    Transform leftFoot, rightFoot, leftHand;
 
     AudioEvent footstepLight;
     AudioEvent footstepSlide;
@@ -16,6 +15,8 @@ public class AvatarAnimationEventAudioHandler : MonoBehaviour
     AudioEvent clap;
     AudioEvent throwMoney;
     AudioEvent blowKiss;
+
+    AvatarParticleSystemsHandler particleSystemsHandler;
 
     public void Init(AudioContainer audioContainer)
     {
@@ -31,63 +32,61 @@ public class AvatarAnimationEventAudioHandler : MonoBehaviour
         throwMoney = audioContainer.GetEvent("ExpressionThrowMoney");
         blowKiss = audioContainer.GetEvent("ExpressionBlowKiss");
 
-        // Find feet
+        // Find body parts
         Transform[] children = GetComponentsInChildren<Transform>();
         for (int i = 0; i < children.Length; i++) {
             if (children[i].name == "Avatar_LeftToeBase")
                 leftFoot = children[i];
             if (children[i].name == "Avatar_RightToeBase")
                 rightFoot = children[i];
+            if (children[i].name == "Avatar_LeftHand")
+                leftHand = children[i];
         }
 
-        // Load particle system
-        footstepParticleSystemPrefab = Resources.Load<ParticleSystem>("AvatarFootstepParticleSystem");
-        footstepParticleSystem = Instantiate(footstepParticleSystemPrefab, transform);
-        footstepParticleSystem.Play();
+        particleSystemsHandler = FindObjectOfType<AvatarParticleSystemsHandler>();
     }
 
     public void AnimEvent_FootstepLight() { TryPlayingEvent(footstepLight); }
 
     public void AnimEvent_FootstepSlide() { TryPlayingEvent(footstepSlide); }
 
-    public void AnimEvent_FootstepWalkLeft()
-    {
-        TryPlayingEvent(footstepWalk);
-        SpawnFootstepParticles(leftFoot, 1);
-    }
+    public void AnimEvent_FootstepWalkLeft() { TryPlayingEvent(footstepWalk); }
 
-    public void AnimEvent_FootstepWalkRight() {
-        TryPlayingEvent(footstepWalk);
-        SpawnFootstepParticles(rightFoot, 1);
-    }
+    public void AnimEvent_FootstepWalkRight() { TryPlayingEvent(footstepWalk); }
 
     public void AnimEvent_FootstepRunLeft()
     {
         TryPlayingEvent(footstepRun);
-        SpawnFootstepParticles(leftFoot, 3);
+        particleSystemsHandler.EmitFootstepParticles(leftFoot.position, 3);
     }
 
     public void AnimEvent_FootstepRunRight() {
         TryPlayingEvent(footstepRun);
-        SpawnFootstepParticles(rightFoot, 3);
+        particleSystemsHandler.EmitFootstepParticles(rightFoot.position, 3);
     }
 
     public void AnimEvent_ClothesRustleShort() { TryPlayingEvent(clothesRustleShort); }
 
-    public void AnimEvent_Clap() { TryPlayingEvent(clap); }
+    public void AnimEvent_Clap()
+    {
+        TryPlayingEvent(clap);
+    }
 
-    public void AnimEvent_ThrowMoney() { TryPlayingEvent(throwMoney); }
+    public void AnimEvent_ThrowMoney()
+    {
+        TryPlayingEvent(throwMoney);
+        particleSystemsHandler.EmitMoneyParticles(leftHand.position, 1);
+    }
 
-    public void AnimEvent_BlowKiss() { TryPlayingEvent(blowKiss); }
+    public void AnimEvent_BlowKiss()
+    {
+        TryPlayingEvent(blowKiss);
+        particleSystemsHandler.EmitHeartParticles(leftHand.position, 1);
+    }
 
     void TryPlayingEvent(AudioEvent audioEvent)
     {
         if (audioEvent != null)
             audioEvent.Play(true);
-    }
-
-    void SpawnFootstepParticles(Transform foot, int amount) {
-        footstepParticleSystem.transform.position = foot.position;
-        footstepParticleSystem.Emit(amount);
     }
 }
