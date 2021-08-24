@@ -36,7 +36,6 @@ namespace DCL
         internal FacialFeatureController mouthController;
         internal AvatarAnimatorLegacy animator;
         internal StickersController stickersController;
-        internal SkinnedMeshRenderer combinedMeshRenderer;
 
         private long lastStickerTimestamp = -1;
 
@@ -445,9 +444,9 @@ namespace DCL
             // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
             UpdateExpression();
 
-            combinedMeshRenderer = MergeAvatar();
+            bool mergeSuccess = MergeAvatar();
 
-            if (combinedMeshRenderer == null)
+            if ( !mergeSuccess )
                 loadSoftFailed = true;
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
@@ -589,12 +588,12 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
-        public void SetCombinedMeshVisibility(bool newVisibility)
+        public void SetRendererEnabled(bool newVisibility)
         {
-            if (combinedMeshRenderer == null)
+            if (avatarMeshCombiner.renderer == null)
                 return;
 
-            combinedMeshRenderer.enabled = newVisibility;
+            avatarMeshCombiner.renderer.enabled = newVisibility;
         }
 
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
@@ -658,17 +657,16 @@ namespace DCL
             }
         }
 
-        SkinnedMeshRenderer MergeAvatar()
+        bool MergeAvatar()
         {
             var renderersToCombine = new List<SkinnedMeshRenderer>( allRenderers );
             renderersToCombine = renderersToCombine.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+            bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
 
-            var combinedMeshRenderer = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
-
-            if (combinedMeshRenderer != null)
+            if ( success )
                 avatarMeshCombiner.container.transform.SetParent( transform, true );
 
-            return combinedMeshRenderer;
+            return success;
         }
 
         void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }

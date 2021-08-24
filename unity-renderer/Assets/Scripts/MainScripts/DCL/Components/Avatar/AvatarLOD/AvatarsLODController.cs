@@ -14,8 +14,8 @@ namespace DCL
         private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
         private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
         private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
-        private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
-        private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
+        private Vector3 cameraPosition;
+        private Vector3 cameraForward;
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         internal bool enabled;
@@ -64,6 +64,9 @@ namespace DCL
             if (!enabled)
                 return;
 
+            cameraPosition = CommonScriptableObjects.cameraPosition.Get();
+            cameraForward = CommonScriptableObjects.cameraForward.Get();
+
             UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
             UpdateLODsBillboard();
         }
@@ -78,7 +81,7 @@ namespace DCL
                     continue;
 
                 Vector3 previousForward = player.forwardDirection;
-                Vector3 lookAtDir = (cameraPosition.Get() - player.worldPosition).normalized;
+                Vector3 lookAtDir = (cameraPosition - player.worldPosition).normalized;
 
                 lookAtDir.y = previousForward.y;
                 player.renderer.SetImpostorForward(lookAtDir);
@@ -159,7 +162,7 @@ namespace DCL
             return Vector3.SqrMagnitude(ownPlayerPosition - player.worldPosition);
         }
 
-        private bool IsInFrontOfCamera(Vector3 position) { return Vector3.Dot(cameraForward.Get(), (position - cameraPosition.Get()).normalized) >= RENDERED_DOT_PRODUCT_ANGLE; }
+        private bool IsInFrontOfCamera(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE; }
 
         public void Dispose()
         {

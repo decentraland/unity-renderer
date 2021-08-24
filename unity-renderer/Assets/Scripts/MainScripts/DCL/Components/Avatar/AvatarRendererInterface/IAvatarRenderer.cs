@@ -16,7 +16,7 @@ namespace DCL
         void CleanupAvatar();
         void SetExpression(string id, long timestamp);
         void SetGOVisibility(bool newVisibility);
-        void SetCombinedMeshVisibility(bool newVisibility);
+        void SetRendererEnabled(bool newVisibility);
         void SetImpostorVisibility(bool impostorVisibility);
         void SetImpostorForward(Vector3 newForward);
         void SetAvatarFade(float avatarFade);
