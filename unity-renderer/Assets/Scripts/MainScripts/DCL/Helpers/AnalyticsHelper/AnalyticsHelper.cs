@@ -6,23 +6,13 @@ using UnityEngine;
 
 public static class AnalyticsHelper
 {
-    private static IParcelScene GetSceneWherePlayerIsStanding()
-    {
-        foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
-        {
-            if (WorldStateUtils.IsCharacterInsideScene(scene))
-                return scene;
-        }
-        return null;
-    }
-
     public static void AddSceneNameAndBasePositionToDictionary(Dictionary<string, string> analyticDict)
     {
-        IParcelScene scene = GetSceneWherePlayerIsStanding();
-        if (scene != null)
+        string sceneId = Environment.i.world.state.currentSceneId;
+        if (!string.IsNullOrEmpty(sceneId))
         {
-            analyticDict.Add("parcel", scene.sceneData.basePosition.x + "," + scene.sceneData.basePosition.y );
-            analyticDict.Add("scene", scene.sceneData.id);
+            analyticDict.Add("parcel", Environment.i.world.state.loadedScenes[sceneId].sceneData.basePosition.x + "," + Environment.i.world.state.loadedScenes[sceneId].sceneData.basePosition.y );
+            analyticDict.Add("scene", sceneId);
         }
     }
 
