@@ -104,6 +104,7 @@ namespace DCL
 
         public void InstantiateBotsAtCoords(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtCoords(configJson); }
         public void StartBotsRandomizedMovement(string configJson) { Environment.i.platform.debugController.StartBotsRandomizedMovement(configJson); }
+        public void StopBotsMovement() { Environment.i.platform.debugController.StopBotsMovement(); }
         public void RemoveBot(string targetEntityId) { Environment.i.platform.debugController.RemoveBot(targetEntityId); }
         public void ClearBots() { Environment.i.platform.debugController.ClearBots(); }
 

@@ -307,7 +307,7 @@ namespace DCL.Bots
 
             Log($"Starting randomized movement on {(config.populationNormalizedPercentage * 100)}% of the current population. Randomized waypoints will be inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xCoord}, {config.yCoord}) coords. The waypoints update time is {config.waypointsUpdateTime} seconds.");
 
-            StopMovement();
+            StopRandomMovement();
 
             int instantiatedCount = instantiatedBots.Count;
             int botsAmount = Mathf.Min(Mathf.FloorToInt(instantiatedCount * config.populationNormalizedPercentage), instantiatedCount);
@@ -372,7 +372,7 @@ namespace DCL.Bots
             }
         }
 
-        public void StopMovement()
+        public void StopRandomMovement()
         {
             if (movementRoutine != null)
                 CoroutineStarter.Stop(movementRoutine);

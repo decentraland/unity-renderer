@@ -8,6 +8,7 @@ namespace DCL.Bots
         IEnumerator InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config);
         IEnumerator InstantiateBotsAtCoords(CoordsInstantiationConfig config);
         void StartRandomMovement(CoordsRandomMovementConfig config);
+        void StopRandomMovement();
         void ClearBots();
         void RemoveBot(string targetEntityId);
     }
