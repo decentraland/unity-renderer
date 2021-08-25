@@ -29,9 +29,12 @@ internal class UnpublishPopupController : IDisposable
     {
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         CoroutineStarter.Stop(fakeProgressRoutine);
-        view.OnCancelPressed -= OnCancel;
-        view.OnConfirmPressed -= OnConfirmUnpublish;
-        view.Dispose();
+        if (view != null)
+        {
+            view.OnCancelPressed -= OnCancel;
+            view.OnConfirmPressed -= OnConfirmUnpublish;
+            view.Dispose();
+        }
     }
 
     public void Show(Vector2Int coordinates, DeployedScene.Source source = DeployedScene.Source.BUILDER_IN_WORLD)

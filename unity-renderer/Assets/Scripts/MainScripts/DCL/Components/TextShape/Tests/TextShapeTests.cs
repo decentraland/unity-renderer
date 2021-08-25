@@ -31,8 +31,6 @@ namespace Tests
 
                 width = 20,
                 height = 20,
-                adaptHeight = false,
-                adaptWidth = false,
                 paddingTop = 10,
                 paddingRight = 0,
                 paddingBottom = 10,
