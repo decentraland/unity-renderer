@@ -59,9 +59,9 @@ namespace DCL
             lodControllers.Remove(id);
         }
 
-        public void Update(bool forceUpdate = false)
+        public void Update()
         {
-            if (!forceUpdate && !enabled)
+            if (!enabled)
                 return;
 
             cameraPosition = CommonScriptableObjects.cameraPosition.Get();
