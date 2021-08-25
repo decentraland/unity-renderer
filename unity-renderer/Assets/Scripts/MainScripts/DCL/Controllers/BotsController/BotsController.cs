@@ -251,6 +251,7 @@ namespace DCL.Bots
             {
                 RemoveBot(instantiatedBots[0]);
             }
+            Log("Removed all bots.");
         }
 
         /// <summary>
@@ -374,8 +375,11 @@ namespace DCL.Bots
 
         public void StopRandomMovement()
         {
-            if (movementRoutine != null)
-                CoroutineStarter.Stop(movementRoutine);
+            if (movementRoutine == null)
+                return;
+
+            CoroutineStarter.Stop(movementRoutine);
+            Log("Stopped bots movement.");
         }
 
         private float lastMovementUpdateTime;
