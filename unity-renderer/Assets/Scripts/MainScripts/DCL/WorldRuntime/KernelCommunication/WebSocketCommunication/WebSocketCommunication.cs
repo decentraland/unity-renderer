@@ -26,6 +26,9 @@ public class WebSocketCommunication : IKernelCommunication
 
     private bool CheckAvailableServerPort(int port)
     {
+#if UNITY_EDITOR_OSX
+        return true;
+#else
         bool isAvailable = true;
 
         // Evaluate current system tcp connections. This is the same information provided
@@ -43,6 +46,7 @@ public class WebSocketCommunication : IKernelCommunication
         }
 
         return isAvailable;
+#endif
     }
 
     private int SearchUnusedPort()
