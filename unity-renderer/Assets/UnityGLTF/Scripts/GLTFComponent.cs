@@ -422,7 +422,7 @@ namespace UnityGLTF
             return mainCamera == null;
         }
 
-        float IDownloadQueueElement.GetDistance()
+        float IDownloadQueueElement.GetSqrDistance()
         {
             Vector3 cameraPosition = mainCamera.transform.position;
             Vector3 gltfPosition = transform.position;

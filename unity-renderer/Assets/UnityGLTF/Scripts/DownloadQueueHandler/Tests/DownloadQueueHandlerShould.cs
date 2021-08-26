@@ -18,15 +18,15 @@ namespace UnityGLTF.Tests
 
             IDownloadQueueElement element1 = Substitute.For<IDownloadQueueElement>();
             element1.ShouldPrioritizeDownload().Returns(false);
-            element1.GetDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
+            element1.GetSqrDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
 
             IDownloadQueueElement element2 = Substitute.For<IDownloadQueueElement>();
             element2.ShouldPrioritizeDownload().Returns(false);
-            element2.GetDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
+            element2.GetSqrDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
 
             IDownloadQueueElement element3 = Substitute.For<IDownloadQueueElement>();
             element3.ShouldPrioritizeDownload().Returns(false);
-            element3.GetDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
+            element3.GetSqrDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
 
             DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxDownloads, () => processQueue ? 0 : maxDownloads);
             downloadQueueHandler.Queue(element1);
@@ -56,15 +56,15 @@ namespace UnityGLTF.Tests
 
             IDownloadQueueElement element1 = Substitute.For<IDownloadQueueElement>();
             element1.ShouldPrioritizeDownload().Returns(false);
-            element1.GetDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
+            element1.GetSqrDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
 
             IDownloadQueueElement element2 = Substitute.For<IDownloadQueueElement>();
             element2.ShouldPrioritizeDownload().Returns(false);
-            element2.GetDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
+            element2.GetSqrDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
 
             IDownloadQueueElement prioritizedElement = Substitute.For<IDownloadQueueElement>();
             prioritizedElement.ShouldPrioritizeDownload().Returns(true);
-            prioritizedElement.GetDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
+            prioritizedElement.GetSqrDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
 
             DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxDownloads, () => processQueue ? 0 : maxDownloads);
             downloadQueueHandler.Queue(element1);
@@ -91,15 +91,15 @@ namespace UnityGLTF.Tests
 
             IDownloadQueueElement element1 = Substitute.For<IDownloadQueueElement>();
             element1.ShouldForceDownload().Returns(false);
-            element1.GetDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
+            element1.GetSqrDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
 
             IDownloadQueueElement element2 = Substitute.For<IDownloadQueueElement>();
             element2.ShouldForceDownload().Returns(false);
-            element2.GetDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
+            element2.GetSqrDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
 
             IDownloadQueueElement forcedElement = Substitute.For<IDownloadQueueElement>();
             forcedElement.ShouldForceDownload().Returns(true);
-            forcedElement.GetDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
+            forcedElement.GetSqrDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
 
             DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(0, () => 0);
             downloadQueueHandler.Queue(element1);
@@ -120,15 +120,15 @@ namespace UnityGLTF.Tests
 
             IDownloadQueueElement element1 = Substitute.For<IDownloadQueueElement>();
             element1.ShouldPrioritizeDownload().Returns(false);
-            element1.GetDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
+            element1.GetSqrDistance().Returns(Vector3.Distance(new Vector3(1, 0, 0), characterPosition));
 
             IDownloadQueueElement element2 = Substitute.For<IDownloadQueueElement>();
             element2.ShouldPrioritizeDownload().Returns(false);
-            element2.GetDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
+            element2.GetSqrDistance().Returns(Vector3.Distance(new Vector3(2, 0, 0), characterPosition));
 
             IDownloadQueueElement element3 = Substitute.For<IDownloadQueueElement>();
             element3.ShouldPrioritizeDownload().Returns(false);
-            element3.GetDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
+            element3.GetSqrDistance().Returns(Vector3.Distance(new Vector3(4, 0, 0), characterPosition));
 
             DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(1, () => 0);
             downloadQueueHandler.Queue(element1);

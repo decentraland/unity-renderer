@@ -4,6 +4,6 @@ namespace UnityGLTF
     {
         bool ShouldPrioritizeDownload();
         bool ShouldForceDownload();
-        float GetDistance();
+        float GetSqrDistance();
     }
 }

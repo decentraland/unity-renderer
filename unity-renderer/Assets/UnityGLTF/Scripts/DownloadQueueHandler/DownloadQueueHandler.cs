@@ -92,7 +92,7 @@ namespace UnityGLTF
                         break;
                     }
 
-                    if (iterator.Current.GetDistance() < nextToDownload.GetDistance())
+                    if (iterator.Current.GetSqrDistance() < nextToDownload.GetSqrDistance())
                         nextToDownload = iterator.Current;
                 }
             }
