@@ -5,6 +5,7 @@ using DCL.Models;
 using UnityEngine;
 using DCL.Components.Video.Plugin;
 using DCL.Helpers;
+using DCL.Interface;
 
 namespace DCL.Components
 {
@@ -16,7 +17,8 @@ namespace DCL.Components
         internal static bool isTest = false;
 #endif
 
-        private const float OUTOFSCENE_TEX_UPDATE_INTERVAL = 1.5f;
+        private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
+        private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
 
         [System.Serializable]
         new public class Model : BaseModel
@@ -41,9 +43,11 @@ namespace DCL.Components
         internal bool isVisible = false;
 
         private bool isPlayerInScene = true;
-        private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL;
+        private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
+        private float lastVideoProgressReportTime;
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
+        private string lastVideoClipID;
 
         public DCLVideoTexture()
         {
@@ -77,10 +81,11 @@ namespace DCL.Components
                     unityWrap = TextureWrapMode.Mirror;
                     break;
             }
+            lastVideoClipID = model.videoClipId;
 
             if (texturePlayer == null)
             {
-                DCLVideoClip dclVideoClip = scene.GetSharedComponent(model.videoClipId) as DCLVideoClip;
+                DCLVideoClip dclVideoClip = scene.GetSharedComponent(lastVideoClipID) as DCLVideoClip;
 
                 if (dclVideoClip == null)
                 {
@@ -89,7 +94,7 @@ namespace DCL.Components
                 }
 
                 string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream);
+                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
@@ -140,9 +145,15 @@ namespace DCL.Components
                 }
 
                 if (model.playing)
+                {
                     texturePlayer.Play();
+                }
                 else
+                {
                     texturePlayer.Pause();
+                }
+                
+                ReportVideoProgress();
 
                 if (baseVolume != model.volume)
                 {
@@ -177,7 +188,7 @@ namespace DCL.Components
                     isPlayStateDirty = false;
                 }
 
-                if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL)
+                if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
                 {
                     currUpdateIntervalTime += Time.unscaledDeltaTime;
                 }
@@ -187,9 +198,23 @@ namespace DCL.Components
                     texturePlayer.UpdateWebVideoTexture();
                 }
 
+                if (texturePlayer.playing && IsTimeToReportVideoProgress())
+                {
+                    lastVideoProgressReportTime = Time.unscaledTime;
+                    ReportVideoProgress();
+                }
+
                 yield return null;
             }
         }
+        private void ReportVideoProgress()
+        {
+            var videoStatus = (int)texturePlayer.GetState();
+            var currentOffset = texturePlayer.GetTime();
+            var length = texturePlayer.GetDuration();
+            WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
+        }
+        private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS; }
 
         private void CalculateVideoVolumeAndPlayStatus()
         {
@@ -233,9 +258,7 @@ namespace DCL.Components
             UpdateVolume();
         }
 
-        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) {
-            UpdateVolume();
-        }
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) { UpdateVolume(); }
 
         private void UpdateVolume()
         {
@@ -244,7 +267,8 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get()))) {
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get())))
+            {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
                 float sceneSFXSetting = Settings.i.currentAudioSettings.sceneSFXVolume;

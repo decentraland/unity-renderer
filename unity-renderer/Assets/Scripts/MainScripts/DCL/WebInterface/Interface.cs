@@ -1004,6 +1004,17 @@ namespace DCL.Interface
             public string newUnverifiedName;
         }
 
+        [Serializable]
+        public class SendVideoProgressEvent
+        {
+            public string componentId;
+            public string sceneId;
+            public string videoTextureId;
+            public int status;
+            public float currentOffset;
+            public float videoLength;
+        }
+
         public static void RequestOwnProfileUpdate() { SendMessage("RequestOwnProfileUpdate"); }
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
@@ -1267,6 +1278,26 @@ namespace DCL.Interface
         {
             stringPayload.value = message;
             SendMessage("NotifyStatusThroughChat", stringPayload);
+        }
+        public static void ReportVideoProgressEvent(
+            string componentId,
+            string sceneId,
+            string videoClipId, 
+            int videoStatus, 
+            float currentOffset,
+            float length)
+        {
+            SendVideoProgressEvent progressEvent = new SendVideoProgressEvent()
+            {
+                componentId = componentId,
+                sceneId = sceneId,
+                videoTextureId = videoClipId,
+                status = videoStatus,
+                currentOffset =  currentOffset,
+                videoLength = length
+            };
+
+            SendMessage("VideoProgressEvent", progressEvent);
         }
     }
 }
