@@ -10,7 +10,7 @@ public class KernelConfigModel
     public Profiles profiles = new Profiles();
     public bool gifSupported = false;
     public string tld = "org";
-    public string network = "ropsten";
+    public string network = "mainnet";
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
 
     public bool Equals(KernelConfigModel other)
