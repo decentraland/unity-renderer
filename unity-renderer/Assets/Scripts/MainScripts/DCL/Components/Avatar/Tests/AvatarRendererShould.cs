@@ -70,7 +70,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
             avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
-            avatarRenderer.SetVisibility(true);
+            avatarRenderer.SetGOVisibility(true);
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -89,7 +89,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
             avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
-            avatarRenderer.SetVisibility(false);
+            avatarRenderer.SetGOVisibility(false);
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -111,7 +111,7 @@ namespace AvatarShape_Tests
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
-            avatarRenderer.SetVisibility(true);
+            avatarRenderer.SetGOVisibility(true);
             yield return new DCL.WaitUntil(() => ready);
 
             Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).myAssetRenderers.All(x => x.enabled));
@@ -130,7 +130,7 @@ namespace AvatarShape_Tests
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
-            avatarRenderer.SetVisibility(false);
+            avatarRenderer.SetGOVisibility(false);
             yield return new DCL.WaitUntil(() => ready);
 
             Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).myAssetRenderers.All(x => !x.enabled));
@@ -150,7 +150,7 @@ namespace AvatarShape_Tests
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
             yield return new DCL.WaitUntil(() => ready);
-            avatarRenderer.SetVisibility(true);
+            avatarRenderer.SetGOVisibility(true);
 
             Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).myAssetRenderers.All(x => x.enabled));
         }
@@ -169,7 +169,7 @@ namespace AvatarShape_Tests
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
             yield return new DCL.WaitUntil(() => ready);
-            avatarRenderer.SetVisibility(false);
+            avatarRenderer.SetGOVisibility(false);
 
             Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).myAssetRenderers.All(x => !x.enabled));
         }

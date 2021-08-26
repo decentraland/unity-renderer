@@ -843,7 +843,7 @@ public class BIWMainController : PluginFeature
                                  Environment.i.platform.serviceProviders.catalyst,
                                  Environment.i.platform.serviceProviders.theGraph,
                                  userProfile.ethAddress,
-                                 KernelConfig.i.Get().tld,
+                                 KernelConfig.i.Get().network,
                                  BIWSettings.CACHE_TIME_LAND,
                                  BIWSettings.CACHE_TIME_SCENES)
                              .Then(lands =>

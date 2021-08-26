@@ -72,28 +72,30 @@ namespace UnityGLTF.Loader
 
             yield return asyncOp;
 
+            bool error = false;
+
             if (!asyncOp.isSucceded)
             {
                 Debug.LogError($"{asyncOp.webRequest.error} - {finalUrl}");
-                yield break;
+                error = true;
             }
 
-            if (asyncOp.webRequest.downloadedBytes > int.MaxValue)
+            if (!error && asyncOp.webRequest.downloadedBytes > int.MaxValue)
             {
                 Debug.LogError("Stream is too big for a byte array");
-                yield break;
+                error = true;
             }
 
-            if (asyncOp.webRequest.downloadHandler.data == null)
-                yield break;
+            if (!error)
+            {
+                //NOTE(Brian): Caution, webRequestResult.downloadHandler.data returns a COPY of the data, if accessed twice,
+                //             2 copies will be performed for the entire file (and then discarded by GC, introducing hiccups).
+                //             The correct fix is by using DownloadHandler.ReceiveData. But this is in version > 2019.3.
+                byte[] data = asyncOp.webRequest.downloadHandler.data;
 
-            //NOTE(Brian): Caution, webRequestResult.downloadHandler.data returns a COPY of the data, if accessed twice,
-            //             2 copies will be performed for the entire file (and then discarded by GC, introducing hiccups).
-            //             The correct fix is by using DownloadHandler.ReceiveData. But this is in version > 2019.3.
-            byte[] data = asyncOp.webRequest.downloadHandler.data;
-
-            if (data != null)
-                LoadedStream = new MemoryStream(data, 0, data.Length, true, true);
+                if (data != null)
+                    LoadedStream = new MemoryStream(data, 0, data.Length, true, true);
+            }
 
             asyncOp.Dispose();
         }

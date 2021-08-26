@@ -100,7 +100,7 @@ public class PlayerAvatarController : MonoBehaviour
         avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
     }
 
-    public void SetAvatarVisibility(bool isVisible) { avatarRenderer.SetVisibility(isVisible); }
+    public void SetAvatarVisibility(bool isVisible) { avatarRenderer.SetGOVisibility(isVisible); }
 
     private void OnEnable()
     {
