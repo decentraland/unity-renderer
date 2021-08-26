@@ -85,9 +85,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
     /// <returns>A message the with the reason telling you why you can't publish. If you can publish an empty message will be returned </returns>
     public string CheckPublishConditions()
     {
-        if (HUDController.i.builderInWorldMainHud == null)
-            return "";
-
         string feedbackMessage = "";
         if (creatorController.IsAnyErrorOnEntities())
         {
@@ -102,7 +99,9 @@ public class BIWPublishController : BIWController, IBIWPublishController
             feedbackMessage = FEEDBACK_MESSAGE_TOO_MANY_ENTITIES;
         }
 
-        HUDController.i.builderInWorldMainHud?.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+
         return feedbackMessage;
     }
 

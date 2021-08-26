@@ -14,7 +14,7 @@ public class AssetCatalogBridge : MonoBehaviour
     public static System.Action<SceneObject> OnSceneCatalogItemAdded;
     public static System.Action<SceneAssetPack> OnSceneAssetPackAdded;
 
-    public static AssetCatalogBridge i { get; private set; }
+    public static AssetCatalogBridge i { get; internal set; }
 
     private SceneAssetPackDictionary sceneAssetPackCatalogValue;
     public SceneAssetPackDictionary sceneAssetPackCatalog

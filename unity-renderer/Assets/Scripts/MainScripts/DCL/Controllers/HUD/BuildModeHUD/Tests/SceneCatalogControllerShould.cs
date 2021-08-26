@@ -3,24 +3,65 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using NSubstitute.Extensions;
+using UnityEngine;
 
 namespace Tests.BuildModeHUDControllers
 {
     public class SceneCatalogControllerShould
     {
         private SceneCatalogController sceneCatalogController;
+        private ISceneCatalogView view;
+        private GameObject mockedGameObject;
 
         [SetUp]
         public void SetUp()
         {
             sceneCatalogController = new SceneCatalogController();
+            view = Substitute.For<ISceneCatalogView>();
             sceneCatalogController.Initialize(
-                Substitute.For<ISceneCatalogView>(),
+                view,
                 Substitute.For<IQuickBarController>());
         }
 
         [TearDown]
-        public void TearDown() { sceneCatalogController.Dispose(); }
+        public void TearDown()
+        {
+            AssetCatalogBridge.i.ClearCatalog();
+            BIWCatalogManager.ClearCatalog();
+            sceneCatalogController.Dispose();
+            if (mockedGameObject != null)
+                GameObject.Destroy(mockedGameObject);
+        }
+
+        [Test]
+        public void ShowFavorites()
+        {
+            //Arrange
+            var favorites = sceneCatalogController.GenerateFavorites();
+
+            //Act
+            sceneCatalogController.ShowFavorites();
+
+            //Assert
+            sceneCatalogController.sceneCatalogView.Received(1).ShowBackButton(false);
+        }
+
+        [Test]
+        public void SelectAssetPack()
+        {
+            //Arrange
+            mockedGameObject = new GameObject();
+            AssetCatalogBridge.i = mockedGameObject.AddComponent<AssetCatalogBridge>();
+            BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+            var catalogItemPack = BIWCatalogManager.GetCatalogItemPackList()[0];
+
+            //Act
+            sceneCatalogController.OnCatalogItemPackSelected(catalogItemPack);
+
+            //Assert
+            sceneCatalogController.sceneCatalogView.Received(1).ShowBackButton(true);
+        }
 
         [Test]
         public void ToggleCatalogExpanseCorrectly()
@@ -36,7 +77,7 @@ namespace Tests.BuildModeHUDControllers
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]
-        public void QuickBarInputCorrectly(int quickBarSlot)
+        public void UseQuickBarCorrectly(int quickBarSlot)
         {
             // Act
             sceneCatalogController.QuickBarInput(quickBarSlot);
@@ -46,7 +87,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void CatalogItemSelectedCorrectly()
+        public void SelectCatalogItemCorrectly()
         {
             // Arrange
             CatalogItem testCatalogItem = new CatalogItem { id = "test id" };
@@ -89,7 +130,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void HideCatalogClickedCorrectly()
+        public void HideCatalogCorrectly()
         {
             // Arrange
             bool hideCatalogClicked = false;
@@ -129,7 +170,7 @@ namespace Tests.BuildModeHUDControllers
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SceneCatalogBackCorrectly(bool isShowingAssetPacks)
+        public void BackFromSceneCatalogCorrectly(bool isShowingAssetPacks)
         {
             // Arrange
             sceneCatalogController.isShowingAssetPacks = isShowingAssetPacks;

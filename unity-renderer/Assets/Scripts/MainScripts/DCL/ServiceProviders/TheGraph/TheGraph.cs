@@ -62,9 +62,9 @@ public class TheGraph : ITheGraph
         return promise;
     }
 
-    public Promise<List<Land>> QueryLands(string tld, string address) { return QueryLands(tld, address, DEFAULT_CACHE_TIME); }
+    public Promise<List<Land>> QueryLands(string network, string address) { return QueryLands(network, address, DEFAULT_CACHE_TIME); }
 
-    public Promise<List<Land>> QueryLands(string tld, string address, float cacheMaxAgeSeconds)
+    public Promise<List<Land>> QueryLands(string network, string address, float cacheMaxAgeSeconds)
     {
         string lowerCaseAddress = address.ToLower();
 
@@ -82,7 +82,7 @@ public class TheGraph : ITheGraph
             }
         }
 
-        string url = tld == "org" ? LAND_SUBGRAPH_URL_ORG : LAND_SUBGRAPH_URL_ZONE;
+        string url = network == "mainnet" ? LAND_SUBGRAPH_URL_ORG : LAND_SUBGRAPH_URL_ZONE;
 
         Query(url, TheGraphQueries.getLandQuery, new AddressVariable() { address = lowerCaseAddress })
             .Then(resultJson =>

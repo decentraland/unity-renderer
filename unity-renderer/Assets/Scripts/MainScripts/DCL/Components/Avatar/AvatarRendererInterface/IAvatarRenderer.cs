@@ -15,7 +15,8 @@ namespace DCL
         event Action<VisualCue> OnVisualCue;
         void CleanupAvatar();
         void SetExpression(string id, long timestamp);
-        void SetVisibility(bool newVisibility);
+        void SetGOVisibility(bool newVisibility);
+        void SetRendererEnabled(bool newVisibility);
         void SetImpostorVisibility(bool impostorVisibility);
         void SetImpostorForward(Vector3 newForward);
         void SetAvatarFade(float avatarFade);
