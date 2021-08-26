@@ -193,6 +193,9 @@ public class WebSocketCommunication : IKernelCommunication
                             case "SendSceneMessage":
                                 DCL.Environment.i.world.sceneController.SendSceneMessage(msg.payload);
                                 break;
+                            case "Reset":
+                                DCL.Environment.i.world.sceneController.UnloadAllScenesQueued();
+                                break;
                             case "SetVoiceChatEnabledByScene":
                                 if (int.TryParse(msg.payload, out int value)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
                                 {
