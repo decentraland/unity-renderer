@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BIWGizmosRotate : BIWGizmos
 {
-    private Plane raycastPlane;
+    internal Plane raycastPlane;
 
     public override void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo) { snapFactor = snapInfo.rotation; }
 

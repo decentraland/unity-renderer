@@ -31,11 +31,11 @@ public class BIWMode
     internal bool isSnapActiveValue = false;
     internal bool isModeActive = false;
     internal bool isMultiSelectionActive = false;
-    protected List<BIWEntity> selectedEntities;
+    internal List<BIWEntity> selectedEntities;
 
     internal bool isNewObjectPlaced = false;
 
-    protected List<BIWEntityAction> actionList = new List<BIWEntityAction>();
+    internal List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
     public virtual void Init(BIWContext context)
     {
