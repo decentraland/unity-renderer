@@ -12,11 +12,11 @@ public class BIWGizmosAxis : MonoBehaviour
 
     private MaterialPropertyBlock props;
 
-    private BIWGizmos gizmo = null;
+    private IBIWGizmos gizmo = null;
 
-    public void SetGizmo(BIWGizmos parentGizmo) { gizmo = parentGizmo; }
+    public void SetGizmo(IBIWGizmos parentGizmo) { gizmo = parentGizmo; }
 
-    public BIWGizmos GetGizmo() { return gizmo; }
+    public IBIWGizmos GetGizmo() { return gizmo; }
 
     public void SetColorHighlight()
     {

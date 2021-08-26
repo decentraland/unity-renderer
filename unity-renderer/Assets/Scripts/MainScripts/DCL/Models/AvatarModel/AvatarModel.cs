@@ -19,6 +19,25 @@ public class AvatarModel : BaseModel
     public long stickerTriggerTimestamp = -1;
     public bool talking = false;
 
+    public bool HaveSameWearablesAndColors(AvatarModel other)
+    {
+        bool wearablesAreEqual = wearables.All(other.wearables.Contains) && wearables.Count == other.wearables.Count;
+
+        return bodyShape == other.bodyShape &&
+               skinColor == other.skinColor &&
+               hairColor == other.hairColor &&
+               eyeColor == other.eyeColor &&
+               wearablesAreEqual;
+    }
+
+    public bool HaveSameExpressions(AvatarModel other)
+    {
+        return expressionTriggerId == other.expressionTriggerId &&
+               expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
+               stickerTriggerTimestamp == other.stickerTriggerTimestamp;
+    }
+
+
     public bool Equals(AvatarModel other)
     {
         bool wearablesAreEqual = wearables.All(other.wearables.Contains) && wearables.Count == other.wearables.Count;

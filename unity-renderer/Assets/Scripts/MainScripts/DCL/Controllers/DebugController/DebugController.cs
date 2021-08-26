@@ -83,6 +83,16 @@ namespace DCL
             CoroutineStarter.Start(botsController.InstantiateBotsAtCoords(config));
         }
 
+        public void StartBotsRandomizedMovement(string configJson)
+        {
+            var config = new DCL.Bots.CoordsRandomMovementConfig();
+            JsonUtility.FromJsonOverwrite(configJson, config);
+
+            botsController.StartRandomMovement(config);
+        }
+
+        public void StopBotsMovement() { botsController.StopRandomMovement(); }
+
         public void RemoveBot(string targetEntityId) { botsController.RemoveBot(targetEntityId); }
 
         public void ClearBots() { botsController.ClearBots(); }

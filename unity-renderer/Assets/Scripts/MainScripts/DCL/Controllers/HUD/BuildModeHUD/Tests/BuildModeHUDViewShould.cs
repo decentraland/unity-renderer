@@ -50,7 +50,7 @@ namespace Tests.BuildModeHUDViews
             Assert.AreEqual(testControllers.sceneCatalogController, buildModeHUDView.controllers.sceneCatalogController, "The sceneCatalogController does not match!");
             testControllers.sceneCatalogController.Received(1).Initialize(buildModeHUDView.sceneCatalogView, testControllers.quickBarController);
             Assert.AreEqual(testControllers.quickBarController, buildModeHUDView.controllers.quickBarController, "The quickBarController does not match!");
-            testControllers.quickBarController.Received(1).Initialize(buildModeHUDView.quickBarView, testControllers.sceneCatalogController);
+            testControllers.quickBarController.Received(1).Initialize(buildModeHUDView.quickBarView, testControllers.dragAndDropSceneObjectController);
             Assert.AreEqual(testControllers.entityInformationController, buildModeHUDView.controllers.entityInformationController, "The entityInformationController does not match!");
             testControllers.entityInformationController.Received(1).Initialize(buildModeHUDView.entityInformationView);
             Assert.AreEqual(testControllers.firstPersonModeController, buildModeHUDView.controllers.firstPersonModeController, "The firstPersonModeController does not match!");
@@ -60,7 +60,7 @@ namespace Tests.BuildModeHUDViews
             Assert.AreEqual(testControllers.publishPopupController, buildModeHUDView.controllers.publishPopupController, "The publishPopupController does not match!");
             testControllers.publishPopupController.Received(1).Initialize(buildModeHUDView.publishPopupView);
             Assert.AreEqual(testControllers.dragAndDropSceneObjectController, buildModeHUDView.controllers.dragAndDropSceneObjectController, "The dragAndDropSceneObjectController does not match!");
-            testControllers.dragAndDropSceneObjectController.Received(1).Initialize(buildModeHUDView.dragAndDropSceneObjectView);
+            testControllers.dragAndDropSceneObjectController.Received(1).Initialize(testControllers.sceneCatalogController, buildModeHUDView.dragAndDropSceneObjectView);
             Assert.AreEqual(testControllers.publishBtnController, buildModeHUDView.controllers.publishBtnController, "The publishBtnController does not match!");
             testControllers.publishBtnController.Received(1).Initialize(buildModeHUDView.publishBtnView, testControllers.tooltipController, testControllers.feedbackTooltipController);
             Assert.AreEqual(testControllers.inspectorBtnController, buildModeHUDView.controllers.inspectorBtnController, "The inspectorBtnController does not match!");

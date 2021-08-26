@@ -17,7 +17,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
     private const string FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES = "Some entities are outside of the Scene boundaries.";
     private const string FEEDBACK_MESSAGE_TOO_MANY_ENTITIES = "Too many entities in the scene. Check scene limits.";
 
-    private bool reportSceneLimitsOverpassedAnalytic = true;
     private float startPublishingTimestamp = 0;
 
     public override void Init(BIWContext context)
@@ -77,7 +76,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if (!entityHandler.AreAllEntitiesInsideBoundaries())
             return false;
 
-        reportSceneLimitsOverpassedAnalytic = true;
         return true;
     }
 
@@ -87,9 +85,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
     /// <returns>A message the with the reason telling you why you can't publish. If you can publish an empty message will be returned </returns>
     public string CheckPublishConditions()
     {
-        if (HUDController.i.builderInWorldMainHud == null)
-            return "";
-
         string feedbackMessage = "";
         if (creatorController.IsAnyErrorOnEntities())
         {
@@ -102,14 +97,11 @@ public class BIWPublishController : BIWController, IBIWPublishController
         else if (!sceneToEdit.metricsController.IsInsideTheLimits())
         {
             feedbackMessage = FEEDBACK_MESSAGE_TOO_MANY_ENTITIES;
-            if (reportSceneLimitsOverpassedAnalytic)
-            {
-                BIWAnalytics.SceneLimitsOverPassed(sceneToEdit.metricsController.GetModel());
-                reportSceneLimitsOverpassedAnalytic = false;
-            }
         }
 
-        HUDController.i.builderInWorldMainHud?.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+
         return feedbackMessage;
     }
 

@@ -18,7 +18,7 @@ public interface IBIWController
 
 public abstract class BIWController : IBIWController
 {
-    protected ParcelScene sceneToEdit;
+    internal ParcelScene sceneToEdit;
 
     protected bool isEditModeActive = false;
 

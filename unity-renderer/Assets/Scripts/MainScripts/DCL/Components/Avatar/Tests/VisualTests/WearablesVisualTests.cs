@@ -1,13 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using DCL;
 using DCL.Helpers;
 using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class WearablesVisualTests : VisualTestsBase
 {
+    private AvatarMeshCombinerHelper combiner = new AvatarMeshCombinerHelper();
     private BaseDictionary<string, WearableItem> catalog;
     private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
     private Material avatarMaterial;
@@ -31,6 +35,7 @@ public class WearablesVisualTests : VisualTestsBase
     public IEnumerator EmissiveWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearable()); }
 
     [UnityTest, VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator EmissiveWearable()
     {
         //Arrange
@@ -50,6 +55,7 @@ public class WearablesVisualTests : VisualTestsBase
     public IEnumerator AlphaBlendWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearable()); }
 
     [UnityTest, VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator AlphaBlendWearable()
     {
         //Arrange
@@ -69,6 +75,7 @@ public class WearablesVisualTests : VisualTestsBase
     public IEnumerator AlphaTestWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaTestWearable()); }
 
     [UnityTest, VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator AlphaTestWearable()
     {
         //Arrange
@@ -83,27 +90,94 @@ public class WearablesVisualTests : VisualTestsBase
         yield return VisualTestHelpers.TakeSnapshot();
     }
 
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
+    public IEnumerator AlphaBlendWearableWithTransparentBaseColor_Generate()
+    {
+        yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearableWithTransparentBaseColor());
+    }
+
+    [UnityTest, VisualTest]
+    [Category("Visual Tests")]
+    public IEnumerator AlphaBlendWearableWithTransparentBaseColor()
+    {
+        //Arrange
+        const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0";
+
+        yield return InitVisualTestsScene("WearableVisualTests_AlphaBlendWearableWithTransparentBaseColor");
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.78f, 1.68f, 8.5f), new Vector3(8, 1.75f, 8));
+        VisualTestController.i.camera.fieldOfView = 30;
+
+        //Act
+        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.75f, 8));
+
+        //Assert
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
+    public IEnumerator EmissiveWearableWithNoEmissionMap_Generate()
+    {
+        yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearableWithNoEmissionMap());
+    }
+
+    [UnityTest, VisualTest]
+    [Category("Visual Tests")]
+    public IEnumerator EmissiveWearableWithNoEmissionMap()
+    {
+        //Arrange
+        yield return InitVisualTestsScene("WearableVisualTests_EmissiveWearableWithNoEmissionMap");
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.75f, 1.8f, 8.75f), new Vector3(8, 1.75f, 8));
+        const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0";
+
+        //Act
+        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.75f, 8));
+
+        //Assert
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, Vector3 wearablePosition)
     {
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
+
         WearableController wearable = new WearableController(wearableItem);
         toCleanUp.Add(wearable);
+
         bool succeeded = false;
         bool failed = false;
-        wearable.Load(bodyShapeId, CreateTestGameObject(wearable.id, wearablePosition).transform, x => succeeded = true, x => failed = true);
+
+        GameObject testGameObject = CreateTestGameObject(wearable.id, Vector3.up * -0.75f);
+        wearable.Load(bodyShapeId, testGameObject.transform, x => succeeded = true, x => failed = true);
+
         yield return new WaitUntil(() => succeeded || failed);
+
         Assert.IsTrue(succeeded);
+
         wearable.SetAssetRenderersEnabled(true);
-        wearable.SetupDefaultMaterial(avatarMaterial, skinColor, hairColor);
+        wearable.SetupHairAndSkinColors(skinColor, hairColor);
+
+        var rends = wearable.GetRenderers();
+        combiner.Combine(rends[0], rends.ToArray(), avatarMaterial);
+
+        combiner.container.transform.SetParent(rends[0].transform.parent);
+        combiner.container.transform.localPosition = rends[0].transform.localPosition;
+
+        testGameObject.transform.position = wearablePosition;
     }
 
     protected override IEnumerator TearDown()
     {
+        combiner.Dispose();
+
         foreach (WearableController wearable in toCleanUp)
         {
             wearable.CleanUp();
         }
-        return base.TearDown();
+
+        yield return base.TearDown();
     }
 }

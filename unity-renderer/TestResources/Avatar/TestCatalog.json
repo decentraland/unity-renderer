@@ -1,1914 +1,1999 @@
 [
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:BaseFemale",
-      "data":{
-         "representations":[
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:BaseFemale",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "BaseFemale.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"BaseFemale.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"Avatar_FemaleSkinBase.png",
-                     "hash":"QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
-                  },
-                  {
-                     "key":"BaseFemale.glb",
-                     "hash":"QmeJR5QExkEmaRpdcWrMykMTaG42JcpcAkDJr6Yr3RaZX2"
-                  },
-                  {
-                     "key":"Brows_00.png",
-                     "hash":"QmbZNqzs4vgysPZzZiJ8jQkmqzu2U1qm1FBjYC5fgSJm81"
-                  },
-                  {
-                     "key":"Eyes_00.png",
-                     "hash":"QmRNHqKFNvpGz5SbdQ2F7Y8eaqjzscaYVeRq5z3MUsTJ28"
-                  },
-                  {
-                     "key":"F_Mouth_00.png",
-                     "hash":"QmQMD96mDqKvo9daSkchLrsyrLqWPritQtE6w7tuMpsgkB"
-                  }
-               ]
-            }
-         ],
-         "category":"body_shape",
-         "tags":[
-            "body",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Woman"
-         },
-         {
-            "code":"es",
-            "text":"Mujer"
-         }
-      ],
-      "thumbnail":"QmQo9oNMzYTDdcGTixkioFdb4ArrB42ZgrHVGNua36gXpn",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:BaseMale",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"BaseMale.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy"
-                  },
-                  {
-                     "key":"BaseMale.glb",
-                     "hash":"QmRhw6iFmT1r8KTbComWMKFLPxf7pFZqFwKrEY1Az2whZ8"
-                  },
-                  {
-                     "key":"EyeBrows_00.png",
-                     "hash":"QmP4823KZpn5d5iAEwXJyGTZy19HriJsJYkCJ22ERmpFMa"
-                  },
-                  {
-                     "key":"Eyes_00.png",
-                     "hash":"QmUYEYptrfbtvAr53C4X3ReAtYYuQsuN41dB5D5cfuLxkh"
-                  },
-                  {
-                     "key":"Mouth_00.png",
-                     "hash":"QmTZXe8CyZWCfV9KvjKx6LpYwDXAzCeRCozoZRuRUth7qP"
-                  }
-               ]
-            }
-         ],
-         "category":"body_shape",
-         "tags":[
-            "body",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Man"
-         },
-         {
-            "code":"es",
-            "text":"Hombre"
-         }
-      ],
-      "thumbnail":"QmbEoKs839SoKDSHF9tkgc3S6ge777ywU9X85W8K42WePu",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:black_sun_glasses",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"F_Eyewear_BlackSunglasses.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"F_Eyewear_BlackSunglasses.glb",
-                     "hash":"QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK"
-                  }
-               ]
+              "key": "Avatar_FemaleSkinBase.png",
+              "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
             },
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Eyewear_BlackSunglasses.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"F_Eyewear_BlackSunglasses.glb",
-                     "hash":"QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK"
-                  }
-               ]
-            }
-         ],
-         "category":"eyewear",
-         "tags":[
-            "accesories",
-            "woman",
-            "women",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Black Sunglasses"
-         },
-         {
-            "code":"es",
-            "text":"Anteojos Negros"
-         }
-      ],
-      "thumbnail":"QmdZ1vLFPWnVF7xMFMskA6LSpKfCVxA9JRi4jsYtrCnrya",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:blue_bandana",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"BlueBandana.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"BlueBandana.glb",
-                     "hash":"Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7"
-                  }
-               ]
+              "key": "BaseFemale.glb",
+              "hash": "QmeJR5QExkEmaRpdcWrMykMTaG42JcpcAkDJr6Yr3RaZX2"
             },
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"BlueBandana.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"BlueBandana.glb",
-                     "hash":"Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7"
-                  }
-               ]
-            }
-         ],
-         "category":"tiara",
-         "tags":[
-            "accesories",
-            "male",
-            "man",
-            "female",
-            "woman",
-            "base-wearable"
-         ],
-         "replaces":[
-            "mask",
-            "hat",
-            "helmet"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Blue Bandana"
-         },
-         {
-            "code":"es",
-            "text":"Bandana Azul"
-         }
-      ],
-      "thumbnail":"QmahWKqgJud9386Vxw53KeViHzELhxsNMjko8ERskR5x1y",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:eyes_00",
-      "data":{
-         "representations":[
+              "key": "Brows_00.png",
+              "hash": "QmbZNqzs4vgysPZzZiJ8jQkmqzu2U1qm1FBjYC5fgSJm81"
+            },
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_Eyes_00.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"M_Eyes_00.png",
-                     "hash":"QmdPqHWhGTu6H3Dtn1SgvatmpxWeCR9Dm2Qb2hofAHqg1A"
-                  }
-               ]
-            }
-         ],
-         "category":"eyes",
-         "tags":[
-            "face",
-            "eyes",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Eyes_00"
-         },
-         {
-            "code":"es",
-            "text":"Eyes_00"
-         }
-      ],
-      "thumbnail":"Qmb4sN5eAcJN2WNNVi8Ui4WDh2CX5Wt6m31teaMpPGuUPz",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:eyebrows_00",
-      "data":{
-         "representations":[
+              "key": "Eyes_00.png",
+              "hash": "QmRNHqKFNvpGz5SbdQ2F7Y8eaqjzscaYVeRq5z3MUsTJ28"
+            },
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_EyeBrows_00.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"M_EyeBrows_00.png",
-                     "hash":"QmZWwUgq6UYJLCgtPbzVdhThkPTNPHqezWiQKw7Lg3yqKV"
-                  }
-               ]
+              "key": "F_Mouth_00.png",
+              "hash": "QmQMD96mDqKvo9daSkchLrsyrLqWPritQtE6w7tuMpsgkB"
             }
-         ],
-         "category":"eyebrows",
-         "tags":[
-            "face",
-            "eyebrows",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"EyeBrows_00"
-         },
-         {
-            "code":"es",
-            "text":"EyeBrows_00"
-         }
+          ]
+        }
       ],
-      "thumbnail":"QmYmTRhaTHM9W5aEWbrrS9ixLQq7iDCHp18Jbm3xKs3nat",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:mouth_00",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_Mouth_00.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"M_Mouth_00.png",
-                     "hash":"QmQZ6MAyHpGaPpntHJnU3x4o2dUvz5KhvNtWbbzvbAE34T"
-                  }
-               ]
-            }
-         ],
-         "category":"mouth",
-         "tags":[
-            "face",
-            "mouth",
-            "male",
-            "man",
-            "base-wearable"
-         ]
+      "category": "body_shape",
+      "tags": [
+        "body",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Woman"
       },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Mouth_00"
-         },
-         {
-            "code":"es",
-            "text":"Mouth_00"
-         }
-      ],
-      "thumbnail":"QmTyFPAEEDDrXfmY8MpLJFUQDCDpwg4EJMArDDLJANmHsr",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:casual_hair_01",
-      "data":{
-         "representations":[
+      {
+        "code": "es",
+        "text": "Mujer"
+      }
+    ],
+    "thumbnail": "QmQo9oNMzYTDdcGTixkioFdb4ArrB42ZgrHVGNua36gXpn",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:BaseMale",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "BaseMale.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_Hair_Standard_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"M_Hair_Standard_01.glb",
-                     "hash":"QmQtwaQT8etWM4XHZANtvBYdpqiiSg3rXFREDKacx7FDkF"
-                  }
-               ]
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy"
+            },
+            {
+              "key": "BaseMale.glb",
+              "hash": "QmRhw6iFmT1r8KTbComWMKFLPxf7pFZqFwKrEY1Az2whZ8"
+            },
+            {
+              "key": "EyeBrows_00.png",
+              "hash": "QmP4823KZpn5d5iAEwXJyGTZy19HriJsJYkCJ22ERmpFMa"
+            },
+            {
+              "key": "Eyes_00.png",
+              "hash": "QmUYEYptrfbtvAr53C4X3ReAtYYuQsuN41dB5D5cfuLxkh"
+            },
+            {
+              "key": "Mouth_00.png",
+              "hash": "QmTZXe8CyZWCfV9KvjKx6LpYwDXAzCeRCozoZRuRUth7qP"
             }
-         ],
-         "category":"hair",
-         "tags":[
-            "hair",
-            "male",
-            "man",
-            "base-wearable"
-         ]
+          ]
+        }
+      ],
+      "category": "body_shape",
+      "tags": [
+        "body",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Man"
       },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Casual Hair Style"
-         },
-         {
-            "code":"es",
-            "text":"Corte Casual"
-         }
-      ],
-      "thumbnail":"QmYWFjBTWggspxmbRqGsodQnMUeuUj2F6EYJoDGN4XzbWw",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:beard",
-      "data":{
-         "representations":[
+      {
+        "code": "es",
+        "text": "Hombre"
+      }
+    ],
+    "thumbnail": "QmbEoKs839SoKDSHF9tkgc3S6ge777ywU9X85W8K42WePu",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:black_sun_glasses",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "F_Eyewear_BlackSunglasses.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"Beard_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"Beard_01.glb",
-                     "hash":"QmY2eXCDj9arFjXD7ofoVLfJvKqJdXVm7zA9o9Macp7mTv"
-                  }
-               ]
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "F_Eyewear_BlackSunglasses.glb",
+              "hash": "QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK"
             }
-         ],
-         "category":"facial_hair",
-         "tags":[
-            "face",
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Eyewear_BlackSunglasses.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "F_Eyewear_BlackSunglasses.glb",
+              "hash": "QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK"
+            }
+          ]
+        }
+      ],
+      "category": "eyewear",
+      "tags": [
+        "accesories",
+        "woman",
+        "women",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Black Sunglasses"
+      },
+      {
+        "code": "es",
+        "text": "Anteojos Negros"
+      }
+    ],
+    "thumbnail": "QmdZ1vLFPWnVF7xMFMskA6LSpKfCVxA9JRi4jsYtrCnrya",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:blue_bandana",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "BlueBandana.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "BlueBandana.glb",
+              "hash": "Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7"
+            }
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "BlueBandana.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "BlueBandana.glb",
+              "hash": "Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7"
+            }
+          ]
+        }
+      ],
+      "category": "tiara",
+      "tags": [
+        "accesories",
+        "male",
+        "man",
+        "female",
+        "woman",
+        "base-wearable"
+      ],
+      "replaces": [
+        "mask",
+        "hat",
+        "helmet"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Blue Bandana"
+      },
+      {
+        "code": "es",
+        "text": "Bandana Azul"
+      }
+    ],
+    "thumbnail": "QmahWKqgJud9386Vxw53KeViHzELhxsNMjko8ERskR5x1y",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:eyes_00",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_Eyes_00.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "M_Eyes_00.png",
+              "hash": "QmdPqHWhGTu6H3Dtn1SgvatmpxWeCR9Dm2Qb2hofAHqg1A"
+            }
+          ]
+        }
+      ],
+      "category": "eyes",
+      "tags": [
+        "face",
+        "eyes",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Eyes_00"
+      },
+      {
+        "code": "es",
+        "text": "Eyes_00"
+      }
+    ],
+    "thumbnail": "Qmb4sN5eAcJN2WNNVi8Ui4WDh2CX5Wt6m31teaMpPGuUPz",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:eyebrows_00",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_EyeBrows_00.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "M_EyeBrows_00.png",
+              "hash": "QmZWwUgq6UYJLCgtPbzVdhThkPTNPHqezWiQKw7Lg3yqKV"
+            }
+          ]
+        }
+      ],
+      "category": "eyebrows",
+      "tags": [
+        "face",
+        "eyebrows",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "EyeBrows_00"
+      },
+      {
+        "code": "es",
+        "text": "EyeBrows_00"
+      }
+    ],
+    "thumbnail": "QmYmTRhaTHM9W5aEWbrrS9ixLQq7iDCHp18Jbm3xKs3nat",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:mouth_00",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_Mouth_00.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "M_Mouth_00.png",
+              "hash": "QmQZ6MAyHpGaPpntHJnU3x4o2dUvz5KhvNtWbbzvbAE34T"
+            }
+          ]
+        }
+      ],
+      "category": "mouth",
+      "tags": [
+        "face",
+        "mouth",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Mouth_00"
+      },
+      {
+        "code": "es",
+        "text": "Mouth_00"
+      }
+    ],
+    "thumbnail": "QmTyFPAEEDDrXfmY8MpLJFUQDCDpwg4EJMArDDLJANmHsr",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:casual_hair_01",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_Hair_Standard_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "M_Hair_Standard_01.glb",
+              "hash": "QmQtwaQT8etWM4XHZANtvBYdpqiiSg3rXFREDKacx7FDkF"
+            }
+          ]
+        }
+      ],
+      "category": "hair",
+      "tags": [
+        "hair",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Casual Hair Style"
+      },
+      {
+        "code": "es",
+        "text": "Corte Casual"
+      }
+    ],
+    "thumbnail": "QmYWFjBTWggspxmbRqGsodQnMUeuUj2F6EYJoDGN4XzbWw",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:beard",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "Beard_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "Beard_01.glb",
+              "hash": "QmY2eXCDj9arFjXD7ofoVLfJvKqJdXVm7zA9o9Macp7mTv"
+            }
+          ]
+        }
+      ],
+      "category": "facial_hair",
+      "tags": [
+        "face",
+        "facial_hair",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Beard"
+      },
+      {
+        "code": "es",
+        "text": "Barba"
+      }
+    ],
+    "thumbnail": "QmRiGkR84p6CNXgKuic7iMswsAqb9TeV9gBrMFeRFpnxcm",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:green_hoodie",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_uBody_Hoodie_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy"
+            },
+            {
+              "key": "M_uBody_Hoodie_01.glb",
+              "hash": "QmSHjzk2Uc2QU5dMx1WZEWxqi6Zrijy8FhHZeatjDApS2e"
+            }
+          ]
+        }
+      ],
+      "category": "upper_body",
+      "tags": [
+        "top",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Green Hoodie"
+      },
+      {
+        "code": "es",
+        "text": "Sudadera Verde con Capucha"
+      }
+    ],
+    "thumbnail": "QmQUxvePLJ4udd5hqFHBrUUy1DFLPVX8Vp2iuBCxCixnVm",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:sneakers",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "Sneakers_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+            },
+            {
+              "key": "Sneakers_01.glb",
+              "hash": "QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8"
+            }
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "Sneakers_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+            },
+            {
+              "key": "Sneakers_01.glb",
+              "hash": "QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8"
+            }
+          ]
+        }
+      ],
+      "category": "feet",
+      "tags": [
+        "shoes",
+        "male",
+        "man",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Sneakers"
+      },
+      {
+        "code": "es",
+        "text": "Zapatillas"
+      }
+    ],
+    "thumbnail": "QmXWRP5pXMXeArQTQciFDt8yuVSoTBhCzL3VAdAEpZksnH",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_eyes_00",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Eyes_00.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "F_Eyes_00.png",
+              "hash": "QmPt59PBdQkYZw9A7KRHx8hBbUSXkWfXmxEATvnDavJ7gR"
+            }
+          ]
+        }
+      ],
+      "category": "eyes",
+      "tags": [
+        "face",
+        "eyes",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "f_Eyes_00"
+      },
+      {
+        "code": "es",
+        "text": "f_Eyes_00"
+      }
+    ],
+    "thumbnail": "Qme5gw36VyXLvEQxJmEAY8vp4cQ3z1hoaqzwh8wQV8pBKF",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_eyebrows_00",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Eyebrows_00.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "F_Eyebrows_00.png",
+              "hash": "QmXqPxhpVaNx7KfiWDjBoufQK28373nbZhNqWbKSwcGwUr"
+            }
+          ]
+        }
+      ],
+      "category": "eyebrows",
+      "tags": [
+        "face",
+        "eyebrows",
+        "Female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "f_EyeBrows_00"
+      },
+      {
+        "code": "es",
+        "text": "f_EyeBrows_00"
+      }
+    ],
+    "thumbnail": "QmWf7zZJhJoDhN45uJZVXw2bExuarbXnskrepxWdTtDBwW",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_mouth_00",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Mouth_00.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "F_Mouth_00.png",
+              "hash": "QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
+            }
+          ]
+        }
+      ],
+      "category": "mouth",
+      "tags": [
+        "face",
+        "mouth",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "f_Mouth_00"
+      },
+      {
+        "code": "es",
+        "text": "f_Mouth_00"
+      }
+    ],
+    "thumbnail": "QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:standard_hair",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Hair_Standard.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png.001.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "F_Hair_Standard.glb",
+              "hash": "Qmbgt2AnZu9JMdxk4tCgERrbzcUYw82ivEDViywwh3dkp7"
+            }
+          ]
+        }
+      ],
+      "category": "hair",
+      "tags": [
+        "hair",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Classic Style"
+      },
+      {
+        "code": "es",
+        "text": "Peinado Clásico"
+      }
+    ],
+    "thumbnail": "QmZzSgyzKprxwmuT94cotTitrPZiMa5tPnfRhrSXGMWmxE",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_sweater",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_uBody_Sweater_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_FemaleSkinBase.png",
+              "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+            },
+            {
+              "key": "F_uBody_Sweater_01.glb",
+              "hash": "QmUog3pt3CHwGDCB2QXbnKKY1GoBsJo71L8qdzV9u133Ph"
+            }
+          ]
+        }
+      ],
+      "category": "upper_body",
+      "tags": [
+        "top",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Yellow Sweater"
+      },
+      {
+        "code": "es",
+        "text": "Suéter Amarillo"
+      }
+    ],
+    "thumbnail": "QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_jeans",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_lBody_Jeans_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "F_lBody_Jeans_01.glb",
+              "hash": "QmNXsTqL9MS24Wae8N7VXi2u4YrDnvaiZRiK8U29DZAC2z"
+            }
+          ]
+        }
+      ],
+      "category": "lower_body",
+      "tags": [
+        "bottom",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Jeans"
+      },
+      {
+        "code": "es",
+        "text": "Jeans"
+      }
+    ],
+    "thumbnail": "QmYMjpmNQ7NMennyfXAgkkgwuT9iATj2zbkad4vU2jjxP3",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:bun_shoes",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_BunShoes_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_FemaleSkinBase.png",
+              "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+            },
+            {
+              "key": "F_BunShoes_01.glb",
+              "hash": "QmPzeZk4AsudG7oAULEasHwQYuak1ASB7YkhHWDwQVHd11"
+            }
+          ]
+        }
+      ],
+      "category": "feet",
+      "tags": [
+        "shoes",
+        "woman",
+        "women",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bun shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatillas de Lona"
+      }
+    ],
+    "thumbnail": "QmYbe52pSJHpbbYEd7bH8gPZv8kJtrybnKN91Tmjap5ZU2",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_eyebrows_01",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Eyebrows_01.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "F_Eyebrows_01.png",
+              "hash": "QmVbxn91ZRByw9u5jRSuxzs6wrdnLhMqiTX7LXH27CEngb"
+            }
+          ]
+        }
+      ],
+      "category": "eyebrows",
+      "tags": [
+        "face",
+        "eyebrows",
+        "Female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "f_EyeBrows_01"
+      },
+      {
+        "code": "es",
+        "text": "f_EyeBrows_01"
+      }
+    ],
+    "thumbnail": "QmV2fzgVkpWuMo8W4UWRbBume6u3BoNMdZJRUXYfWfj2pt",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:bear_slippers",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "BearSlippers_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+            },
+            {
+              "key": "BearSlippers_01.glb",
+              "hash": "QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp"
+            }
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "BearSlippers_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+            },
+            {
+              "key": "BearSlippers_01.glb",
+              "hash": "QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp"
+            }
+          ]
+        }
+      ],
+      "category": "feet",
+      "tags": [
+        "shoes",
+        "male",
+        "man",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bear Slippers"
+      },
+      {
+        "code": "es",
+        "text": "Pantuflas de Oso"
+      }
+    ],
+    "thumbnail": "QmW1RfnBXBL7vMxeZRPJ8DZp88W3CgRUFYpiDU7mDRMEPk",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_african_leggins",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_lBody_AfricanLeggings.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "F_lBody_AfricanLeggings.glb",
+              "hash": "QmWJiYDnp1aeqWRCHydFKZcyT966WWtzA2hgS1E7dkHmpE"
+            }
+          ]
+        }
+      ],
+      "category": "lower_body",
+      "tags": [
+        "bottom",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "African Leggins"
+      },
+      {
+        "code": "es",
+        "text": "Leggins Africanos"
+      }
+    ],
+    "thumbnail": "Qmc4W2ENVei6GML7tbJfHodS929prrSrfYPrZtcSvao2aU",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:bee_t_shirt",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_uBody_BeeTShirt.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            },
+            {
+              "key": "Avatar_FemaleSkinBase.png",
+              "hash": "QmVGmsPD6KkjuFiz3C1UES7MQVWdVUeVDzGuUupZLVGgHJ"
+            },
+            {
+              "key": "F_uBody_BeeTShirt.glb",
+              "hash": "QmTA6EHFiqBPuT8ESafQGyp2VnKXrnYV8faBWpvmbeM6v5"
+            }
+          ]
+        }
+      ],
+      "category": "upper_body",
+      "tags": [
+        "top",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bee T-Shirt"
+      },
+      {
+        "code": "es",
+        "text": "Remera con Estampado de Abeja"
+      }
+    ],
+    "thumbnail": "QmZJFQrujoxYX7kbFwJ6xQDJMSwD8tmQXTm6tZy1uFpJfp",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:brown_pants",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_lBody_LongPants_01.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+            },
+            {
+              "key": "M_lBody_LongPants_01.glb",
+              "hash": "QmVBByC2XaeoxY9oowr9r9N3NX8DyMfVdT5vHe7ZYbjYbN"
+            }
+          ]
+        }
+      ],
+      "category": "lower_body",
+      "tags": [
+        "bottom",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Brown Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalón Marrón"
+      }
+    ],
+    "thumbnail": "QmYfiy3eC93vpXLN66rtRue4EnHTyeg27KAoqskTKrbsuX",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_glasses_cat_style",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Eyewear_CatStyle.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "F_Eyewear_CatStyle.glb",
+              "hash": "QmXVGQTKqfvXuX8hTWzbviAVHievAGEFFaWFcPhQXRUEdr"
+            }
+          ]
+        }
+      ],
+      "category": "eyewear",
+      "tags": [
+        "accesories",
+        "woman",
+        "women",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Cat Style Glasses"
+      },
+      {
+        "code": "es",
+        "text": "Gafas de Estilo Gato"
+      }
+    ],
+    "thumbnail": "QmTz5FqD8PberQpKyFMyR8A47S5NT243s26TBGzmCoUaC9",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_eyebrows_02",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Eyebrows_02.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "F_Eyebrows_02.png",
+              "hash": "QmNM7wkfpUDULNJ7FC8AGua7b9hNnUtw9zMR676bt57v6J"
+            }
+          ]
+        }
+      ],
+      "category": "eyebrows",
+      "tags": [
+        "face",
+        "eyebrows",
+        "Female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "f_EyeBrows_02"
+      },
+      {
+        "code": "es",
+        "text": "f_EyeBrows_02"
+      }
+    ],
+    "thumbnail": "QmQZ8Xb6TTPyo9m9JVDd7NE1P31kWrX5kM2PvR3HiqL2Fd",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_uBody_Clown.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_TX.png",
+              "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+            },
+            {
+              "key": "Avatar_MaleSkinBase.png",
+              "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+            },
+            {
+              "key": "M_uBody_Clown.glb",
+              "hash": "QmUCkpmy48qSZ1NtxaakPcnJDrFtA8fbqBVEYRpVWjDFBF"
+            }
+          ]
+        }
+      ],
+      "category": "upper_body",
+      "tags": [
+        "accesories",
+        "exclusive",
+        "halloween",
+        "upper_body",
+        "suit",
+        "exclusive"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Sad Clown Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Payaso Triste"
+      }
+    ],
+    "thumbnail": "QmTK397dYkoUTGh5vYY4yXPMqCXDwhEWhJg4CJFCBwCi2v",
+    "image": "QmRAeXiJwFCr4rSnN5mJhGAeRmWCRDsMimDw8LjzipmqsV",
+    "description": "Little known fact: blue, red and gold are the saddest colours",
+    "rarity": "epic"
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:f_eyes_01",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "F_Eyes_01.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "F_Eyes_01.png",
+              "hash": "Qmbar9bThqMwjzN6LD7KhtSJshMp6ACAVXC3cgLjnoBBin"
+            },
+            {
+              "key": "F_Eyes_01_Mask.png",
+              "hash": "QmWMR45paAvZtYvCTVvt296NBXsHDvcc54pURbqu2qMKje"
+            }
+          ]
+        }
+      ],
+      "category": "eyes",
+      "tags": [
+        "face",
+        "eyes",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "f_Eyes_01"
+      },
+      {
+        "code": "es",
+        "text": "f_Eyes_01"
+      }
+    ],
+    "thumbnail": "QmPGPaujnDyCMESAp1XxxKgKbQgpgXcDvY77hP3hqZJEcu",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:dracula_mouth",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "dracula_mouth.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "dracula_mouth.png",
+              "hash": "QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
+            },
+            {
+              "key": "dracula_mouth_mask.png",
+              "hash": "QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
+            }
+          ]
+        }
+      ],
+      "category": "mouth",
+      "tags": [
+        "face",
+        "mouth",
+        "female",
+        "woman",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "f_Mouth_00"
+      },
+      {
+        "code": "es",
+        "text": "f_Mouth_00"
+      }
+    ],
+    "thumbnail": "QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:off-chain:base-avatars:eyebrows_02",
+    "data": {
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_EyeBrows_02.png",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "M_EyeBrows_02.png",
+              "hash": "QmaPGCFTsiAPGYkhmDbTcxvM5SyqWyhHraPJ65Rzfp4dWi"
+            }
+          ]
+        }
+      ],
+      "category": "eyebrows",
+      "tags": [
+        "face",
+        "eyebrows",
+        "male",
+        "man",
+        "base-wearable"
+      ]
+    },
+    "type": "wearable",
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "EyeBrows_02"
+      },
+      {
+        "code": "es",
+        "text": "EyeBrows_02"
+      }
+    ],
+    "thumbnail": "QmV8Rg6ZhLdKdzvmhFsSNnPpUcBNJcUVYMa3g8MbTUG4zr",
+    "description": "",
+    "rarity": ""
+  },
+  {
+    "id": "urn:decentraland:ethereum:collections-v1:community_contest:cw_raver_eyewear",
+    "description": "",
+    "image": "https://peer.decentraland.org/content/contents/QmcKNsWuzXpGpukKrkhNdfJTyrkSyEqWEjC96NAvYDucDW",
+    "thumbnail": "https://peer.decentraland.org/content/contents/QmPe2CPbt9JLdjpoH5sKAy9KYYL8bsYuUm1ddr3ipUMh6n",
+    "collectionAddress": "0x32b7495895264ac9d0b12d32afd435453458b1c6",
+    "rarity": "legendary",
+    "data": {
+      "replaces": [
+        "mask",
+        "helmet"
+      ],
+      "hides": [
+      ],
+      "tags": [
+        "accesories",
+        "exclusive",
+        "eyewear",
+        "launch",
+        "20.02.20",
+        "decentraland",
+        "community",
+        "wearables",
+        "exclusive"
+      ],
+      "category": "eyewear",
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "Eyewear_Raver.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_Emissive_TX.png",
+              "url": "https://peer.decentraland.org/content/contents/QmUrULH5u6RB6BjX9MQD97oi8djrvGvgqvNXq5ULXceZ6j"
+            },
+            {
+              "key": "AvatarWearables_TP_TX.png",
+              "url": "https://peer.decentraland.org/content/contents/Qmd7n2dQaQR3qP6MxtChBZstrn5m4NEwb3wjBc1i6omkF8"
+            },
+            {
+              "key": "AvatarWearables_TX.png",
+              "url": "https://peer.decentraland.org/content/contents/QmXGZq67BhmGm8WpmXrSL8EqotM4nEs3CcP8e8fZE9dgWS"
+            },
+            {
+              "key": "Eyewear_Raver.glb",
+              "url": "https://peer.decentraland.org/content/contents/QmY9k1nEvAgBYCkXudN5VAy9f1FKeRHS89G8iMGHZY5Ugy"
+            }
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "Eyewear_Raver.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "AvatarWearables_Emissive_TX.png",
+              "url": "https://peer.decentraland.org/content/contents/QmUrULH5u6RB6BjX9MQD97oi8djrvGvgqvNXq5ULXceZ6j"
+            },
+            {
+              "key": "AvatarWearables_TP_TX.png",
+              "url": "https://peer.decentraland.org/content/contents/Qmd7n2dQaQR3qP6MxtChBZstrn5m4NEwb3wjBc1i6omkF8"
+            },
+            {
+              "key": "AvatarWearables_TX.png",
+              "url": "https://peer.decentraland.org/content/contents/QmXGZq67BhmGm8WpmXrSL8EqotM4nEs3CcP8e8fZE9dgWS"
+            },
+            {
+              "key": "Eyewear_Raver.glb",
+              "url": "https://peer.decentraland.org/content/contents/QmY9k1nEvAgBYCkXudN5VAy9f1FKeRHS89G8iMGHZY5Ugy"
+            }
+          ]
+        }
+      ]
+    },
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Raver Googles"
+      },
+      {
+        "code": "es",
+        "text": "Antiparras de Raver"
+      }
+    ],
+    "createdAt": 1618845339052,
+    "updatedAt": 1618845339052
+  },
+  {
+    "id": "urn:decentraland:ethereum:collections-v1:dc_niftyblocksmith:blocksmith_feet",
+    "description": "These boots will leave digital footprints wherever you go",
+    "image": "https://peer.decentraland.org/content/contents/QmQ3qy16MUrbBqWvqHCzQv3XPi8E262Ld9eTNf9wcnxqBL",
+    "thumbnail": "https://peer.decentraland.org/content/contents/QmehBEhwZQmuYaKE1Ck5sazZxcpML8f12cyE2WZusRPBcQ",
+    "collectionAddress": "0x102daabd1e9d294d4436ec4c521dce7b1f15499e",
+    "rarity": "legendary",
+    "data": {
+      "replaces": [
+      ],
+      "hides": [
+      ],
+      "tags": [
+        "moon",
+        "feet",
+        "mining",
+        "dappcraft",
+        "exclusive"
+      ],
+      "category": "feet",
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "M_niftyblocksmith_boots.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "M_niftyblocksmith_boots.glb",
+              "url": "https://peer.decentraland.org/content/contents/QmPMuAfyEyBinLnTnHMAr9SzYwf867mjoLT5HsYMnX8Q5p"
+            },
+            {
+              "key": "blocksmith_v08_lambert4_BaseColor.png",
+              "url": "https://peer.decentraland.org/content/contents/Qma9FbZtVYb6mMymVFJsH9XESADAUz7gYuc2SHYT74L8uw"
+            },
+            {
+              "key": "blocksmith_v08_lambert4_Emissive.png",
+              "url": "https://peer.decentraland.org/content/contents/Qmdox5gb2VxxS3XcxXgsNKuXzy1qr5UVWe94AytkiJHjtm"
+            }
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "M_niftyblocksmith_boots.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "M_niftyblocksmith_boots.glb",
+              "url": "https://peer.decentraland.org/content/contents/QmPMuAfyEyBinLnTnHMAr9SzYwf867mjoLT5HsYMnX8Q5p"
+            },
+            {
+              "key": "blocksmith_v08_lambert4_BaseColor.png",
+              "url": "https://peer.decentraland.org/content/contents/Qma9FbZtVYb6mMymVFJsH9XESADAUz7gYuc2SHYT74L8uw"
+            },
+            {
+              "key": "blocksmith_v08_lambert4_Emissive.png",
+              "url": "https://peer.decentraland.org/content/contents/Qmdox5gb2VxxS3XcxXgsNKuXzy1qr5UVWe94AytkiJHjtm"
+            }
+          ]
+        }
+      ]
+    },
+    "i18n": [
+      {
+        "code": "en",
+        "text": "DC Nifty Blocksmith Boots"
+      }
+    ],
+    "createdAt": 1617888365119,
+    "updatedAt": 1617888365119
+  },
+  {
+    "id": "urn:decentraland:ethereum:collections-v1:tech_tribal_marc0matic:techtribal_beast_mask",
+    "description": "VR Infused Beast Mask created by Marc0Matic",
+    "image": "https://peer.decentraland.org/content/contents/QmdRpuTmeeMxKMoxCyP2bCbM5eqEBcmAWMbFs5PwhCJmEq",
+    "thumbnail": "https://peer.decentraland.org/content/contents/Qme3E7qbVmRh51v9CAnXVG5U8yok9jYp8JiSGCxUCESWCq",
+    "collectionAddress": "0x480a0f4e360e8964e68858dd231c2922f1df45ef",
+    "rarity": "legendary",
+    "data": {
+      "replaces": [
+      ],
+      "hides": [
+        "facial_hair",
+        "eyewear"
+      ],
+      "tags": [
+        "accessories",
+        "man",
+        "woman",
+        "marc0matic",
+        "tech",
+        "tribal",
+        "mask",
+        "animals",
+        "beast",
+        "punk",
+        "fantasy",
+        "animal",
+        "VR",
+        "deer",
+        "exclusive"
+      ],
+      "category": "mask",
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "Techtribal_Beast_Mask.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "DCL-TechTribal-Alphas.png",
+              "url": "https://peer.decentraland.org/content/contents/QmcjuqSe2yGB9dGwZHWWFtiEv185QHVCH2ncjdN5UgSza7"
+            },
+            {
+              "key": "DCL-TechTribal-Masks.png",
+              "url": "https://peer.decentraland.org/content/contents/QmQ58ZYGWiGcSwmsqwbY2US2dUVAevcM1CCxsi4VSvia2b"
+            },
+            {
+              "key": "Techtribal_Beast_Mask.glb",
+              "url": "https://peer.decentraland.org/content/contents/QmYsHeur2qKK4E5sVCmemsNJQM7DCaDVRiT6x3rHFFkcrb"
+            }
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "Techtribal_Beast_Mask.glb",
+          "overrideReplaces": [
+          ],
+          "overrideHides": [
+          ],
+          "contents": [
+            {
+              "key": "DCL-TechTribal-Alphas.png",
+              "url": "https://peer.decentraland.org/content/contents/QmcjuqSe2yGB9dGwZHWWFtiEv185QHVCH2ncjdN5UgSza7"
+            },
+            {
+              "key": "DCL-TechTribal-Masks.png",
+              "url": "https://peer.decentraland.org/content/contents/QmQ58ZYGWiGcSwmsqwbY2US2dUVAevcM1CCxsi4VSvia2b"
+            },
+            {
+              "key": "Techtribal_Beast_Mask.glb",
+              "url": "https://peer.decentraland.org/content/contents/QmYsHeur2qKK4E5sVCmemsNJQM7DCaDVRiT6x3rHFFkcrb"
+            }
+          ]
+        }
+      ]
+    },
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Tech Tribal Beast Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Bestia Tribal de Tecnologías"
+      }
+    ],
+    "createdAt": 1617888356371,
+    "updatedAt": 1617888356371
+  },
+  {
+    "id": "urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0",
+    "name": "COLDIE 3D shades",
+    "description": "Legendary Coldie 3D shades designed by SugarClub ",
+    "collectionAddress": "0x7c688630370a2900960f5ffd7573d2f66f179733",
+    "rarity": "legendary",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "COLDIE 3D shades"
+      }
+    ],
+    "data": {
+      "replaces": [
+        "helmet",
+        "mask"
+      ],
+      "hides": [],
+      "tags": [
+        "Coldie",
+        "Sugarclub",
+        "Glasses"
+      ],
+      "category": "eyewear",
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "COLDIE_3D.glb",
+          "contents": [
+            {
+              "key": "COLDIE_3D.glb",
+              "url": "https://peer-eu1.decentraland.org/content/contents/QmNgowmbvSX6vd25vwTusktr74q2ACpxooF78cwkoxaWWL"
+            }
+          ],
+          "overrideHides": [],
+          "overrideReplaces": [
+            "helmet",
+            "mask"
+          ]
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "COLDIE_3D.glb",
+          "contents": [
+            {
+              "key": "COLDIE_3D.glb",
+              "url": "https://peer-eu1.decentraland.org/content/contents/QmNgowmbvSX6vd25vwTusktr74q2ACpxooF78cwkoxaWWL"
+            }
+          ],
+          "overrideHides": [],
+          "overrideReplaces": [
+            "helmet",
+            "mask"
+          ]
+        }
+      ]
+    },
+    "image": "https://peer-eu1.decentraland.org/content/contents/QmZfqqzavk2Bs3M3Sp3TUikSAUtAb6HTu87GGW15Q2ZYHh",
+    "thumbnail": "https://peer-eu1.decentraland.org/content/contents/QmUQkjk13EHRinBDABH4PVNx17xHMuVWVHfY6sQjqPjy7f",
+    "metrics": {
+      "triangles": 226,
+      "materials": 3,
+      "textures": 3,
+      "meshes": 3,
+      "bodies": 3,
+      "entities": 1
+    },
+    "createdAt": 1628779371894,
+    "updatedAt": 1628779371894
+  },
+  {
+    "id": "urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0",
+    "name": "Fire Warrior Face",
+    "description": "Fire Warrior Face For Battle.",
+    "collectionAddress": "0x3bb75349bfd21176b4e41f8b9afe96b4b86059db",
+    "rarity": "legendary",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Fire Warrior Face"
+      }
+    ],
+    "data": {
+      "replaces": [],
+      "hides": [
+        "head",
+        "facial_hair",
+        "hair"
+      ],
+      "tags": [
+        "Warrior",
+        "Samurai",
+        "Ninja",
+        "Fire",
+        "Red",
+        "Glow",
+        "Tribal"
+      ],
+      "representations": [
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseMale"
+          ],
+          "mainFile": "warrior.glb",
+          "contents": [
+            {
+              "key": "warrior.glb",
+              "url": "https://peer-eu1.decentraland.org/content/contents/QmVWJZpYGXL8dFXdCJgwwjpxDmCPbkHFPGmM86EBoyiKFD"
+            },
+            {
+              "key": "thumbnail.png",
+              "url": "https://peer-eu1.decentraland.org/content/contents/QmZAo85c5kuu9YWLxypwBEf3kF3HXHjQ13GjL7FEi7ZSxE"
+            }
+          ],
+          "overrideHides": [
+            "head",
             "facial_hair",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Beard"
-         },
-         {
-            "code":"es",
-            "text":"Barba"
-         }
-      ],
-      "thumbnail":"QmRiGkR84p6CNXgKuic7iMswsAqb9TeV9gBrMFeRFpnxcm",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:green_hoodie",
-      "data":{
-         "representations":[
+            "hair"
+          ],
+          "overrideReplaces": []
+        },
+        {
+          "bodyShapes": [
+            "urn:decentraland:off-chain:base-avatars:BaseFemale"
+          ],
+          "mainFile": "warrior.glb",
+          "contents": [
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_uBody_Hoodie_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy"
-                  },
-                  {
-                     "key":"M_uBody_Hoodie_01.glb",
-                     "hash":"QmSHjzk2Uc2QU5dMx1WZEWxqi6Zrijy8FhHZeatjDApS2e"
-                  }
-               ]
-            }
-         ],
-         "category":"upper_body",
-         "tags":[
-            "top",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Green Hoodie"
-         },
-         {
-            "code":"es",
-            "text":"Sudadera Verde con Capucha"
-         }
-      ],
-      "thumbnail":"QmQUxvePLJ4udd5hqFHBrUUy1DFLPVX8Vp2iuBCxCixnVm",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:sneakers",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"Sneakers_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
-                  },
-                  {
-                     "key":"Sneakers_01.glb",
-                     "hash":"QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8"
-                  }
-               ]
+              "key": "warrior.glb",
+              "url": "https://peer-eu1.decentraland.org/content/contents/QmVWJZpYGXL8dFXdCJgwwjpxDmCPbkHFPGmM86EBoyiKFD"
             },
             {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"Sneakers_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
-                  },
-                  {
-                     "key":"Sneakers_01.glb",
-                     "hash":"QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8"
-                  }
-               ]
+              "key": "thumbnail.png",
+              "url": "https://peer-eu1.decentraland.org/content/contents/QmZAo85c5kuu9YWLxypwBEf3kF3HXHjQ13GjL7FEi7ZSxE"
             }
-         ],
-         "category":"feet",
-         "tags":[
-            "shoes",
-            "male",
-            "man",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Sneakers"
-         },
-         {
-            "code":"es",
-            "text":"Zapatillas"
-         }
-      ],
-      "thumbnail":"QmXWRP5pXMXeArQTQciFDt8yuVSoTBhCzL3VAdAEpZksnH",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_eyes_00",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Eyes_00.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"F_Eyes_00.png",
-                     "hash":"QmPt59PBdQkYZw9A7KRHx8hBbUSXkWfXmxEATvnDavJ7gR"
-                  }
-               ]
-            }
-         ],
-         "category":"eyes",
-         "tags":[
-            "face",
-            "eyes",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"f_Eyes_00"
-         },
-         {
-            "code":"es",
-            "text":"f_Eyes_00"
-         }
-      ],
-      "thumbnail":"Qme5gw36VyXLvEQxJmEAY8vp4cQ3z1hoaqzwh8wQV8pBKF",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_eyebrows_00",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Eyebrows_00.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"F_Eyebrows_00.png",
-                     "hash":"QmXqPxhpVaNx7KfiWDjBoufQK28373nbZhNqWbKSwcGwUr"
-                  }
-               ]
-            }
-         ],
-         "category":"eyebrows",
-         "tags":[
-            "face",
-            "eyebrows",
-            "Female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"f_EyeBrows_00"
-         },
-         {
-            "code":"es",
-            "text":"f_EyeBrows_00"
-         }
-      ],
-      "thumbnail":"QmWf7zZJhJoDhN45uJZVXw2bExuarbXnskrepxWdTtDBwW",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_mouth_00",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Mouth_00.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"F_Mouth_00.png",
-                     "hash":"QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
-                  }
-               ]
-            }
-         ],
-         "category":"mouth",
-         "tags":[
-            "face",
-            "mouth",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"f_Mouth_00"
-         },
-         {
-            "code":"es",
-            "text":"f_Mouth_00"
-         }
-      ],
-      "thumbnail":"QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:standard_hair",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Hair_Standard.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png.001.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"F_Hair_Standard.glb",
-                     "hash":"Qmbgt2AnZu9JMdxk4tCgERrbzcUYw82ivEDViywwh3dkp7"
-                  }
-               ]
-            }
-         ],
-         "category":"hair",
-         "tags":[
-            "hair",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Classic Style"
-         },
-         {
-            "code":"es",
-            "text":"Peinado Clásico"
-         }
-      ],
-      "thumbnail":"QmZzSgyzKprxwmuT94cotTitrPZiMa5tPnfRhrSXGMWmxE",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_sweater",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_uBody_Sweater_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_FemaleSkinBase.png",
-                     "hash":"QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
-                  },
-                  {
-                     "key":"F_uBody_Sweater_01.glb",
-                     "hash":"QmUog3pt3CHwGDCB2QXbnKKY1GoBsJo71L8qdzV9u133Ph"
-                  }
-               ]
-            }
-         ],
-         "category":"upper_body",
-         "tags":[
-            "top",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Yellow Sweater"
-         },
-         {
-            "code":"es",
-            "text":"Suéter Amarillo"
-         }
-      ],
-      "thumbnail":"QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_jeans",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_lBody_Jeans_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"F_lBody_Jeans_01.glb",
-                     "hash":"QmNXsTqL9MS24Wae8N7VXi2u4YrDnvaiZRiK8U29DZAC2z"
-                  }
-               ]
-            }
-         ],
-         "category":"lower_body",
-         "tags":[
-            "bottom",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Jeans"
-         },
-         {
-            "code":"es",
-            "text":"Jeans"
-         }
-      ],
-      "thumbnail":"QmYMjpmNQ7NMennyfXAgkkgwuT9iATj2zbkad4vU2jjxP3",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:bun_shoes",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_BunShoes_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_FemaleSkinBase.png",
-                     "hash":"QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
-                  },
-                  {
-                     "key":"F_BunShoes_01.glb",
-                     "hash":"QmPzeZk4AsudG7oAULEasHwQYuak1ASB7YkhHWDwQVHd11"
-                  }
-               ]
-            }
-         ],
-         "category":"feet",
-         "tags":[
-            "shoes",
-            "woman",
-            "women",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Bun shoes"
-         },
-         {
-            "code":"es",
-            "text":"Zapatillas de Lona"
-         }
-      ],
-      "thumbnail":"QmYbe52pSJHpbbYEd7bH8gPZv8kJtrybnKN91Tmjap5ZU2",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_eyebrows_01",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Eyebrows_01.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"F_Eyebrows_01.png",
-                     "hash":"QmVbxn91ZRByw9u5jRSuxzs6wrdnLhMqiTX7LXH27CEngb"
-                  }
-               ]
-            }
-         ],
-         "category":"eyebrows",
-         "tags":[
-            "face",
-            "eyebrows",
-            "Female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"f_EyeBrows_01"
-         },
-         {
-            "code":"es",
-            "text":"f_EyeBrows_01"
-         }
-      ],
-      "thumbnail":"QmV2fzgVkpWuMo8W4UWRbBume6u3BoNMdZJRUXYfWfj2pt",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:bear_slippers",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"BearSlippers_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
-                  },
-                  {
-                     "key":"BearSlippers_01.glb",
-                     "hash":"QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp"
-                  }
-               ]
-            },
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"BearSlippers_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
-                  },
-                  {
-                     "key":"BearSlippers_01.glb",
-                     "hash":"QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp"
-                  }
-               ]
-            }
-         ],
-         "category":"feet",
-         "tags":[
-            "shoes",
-            "male",
-            "man",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Bear Slippers"
-         },
-         {
-            "code":"es",
-            "text":"Pantuflas de Oso"
-         }
-      ],
-      "thumbnail":"QmW1RfnBXBL7vMxeZRPJ8DZp88W3CgRUFYpiDU7mDRMEPk",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_african_leggins",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_lBody_AfricanLeggings.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"F_lBody_AfricanLeggings.glb",
-                     "hash":"QmWJiYDnp1aeqWRCHydFKZcyT966WWtzA2hgS1E7dkHmpE"
-                  }
-               ]
-            }
-         ],
-         "category":"lower_body",
-         "tags":[
-            "bottom",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"African Leggins"
-         },
-         {
-            "code":"es",
-            "text":"Leggins Africanos"
-         }
-      ],
-      "thumbnail":"Qmc4W2ENVei6GML7tbJfHodS929prrSrfYPrZtcSvao2aU",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:bee_t_shirt",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_uBody_BeeTShirt.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
-                  },
-                  {
-                     "key":"Avatar_FemaleSkinBase.png",
-                     "hash":"QmVGmsPD6KkjuFiz3C1UES7MQVWdVUeVDzGuUupZLVGgHJ"
-                  },
-                  {
-                     "key":"F_uBody_BeeTShirt.glb",
-                     "hash":"QmTA6EHFiqBPuT8ESafQGyp2VnKXrnYV8faBWpvmbeM6v5"
-                  }
-               ]
-            }
-         ],
-         "category":"upper_body",
-         "tags":[
-            "top",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Bee T-Shirt"
-         },
-         {
-            "code":"es",
-            "text":"Remera con Estampado de Abeja"
-         }
-      ],
-      "thumbnail":"QmZJFQrujoxYX7kbFwJ6xQDJMSwD8tmQXTm6tZy1uFpJfp",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:brown_pants",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_lBody_LongPants_01.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
-                  },
-                  {
-                     "key":"M_lBody_LongPants_01.glb",
-                     "hash":"QmVBByC2XaeoxY9oowr9r9N3NX8DyMfVdT5vHe7ZYbjYbN"
-                  }
-               ]
-            }
-         ],
-         "category":"lower_body",
-         "tags":[
-            "bottom",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Brown Pants"
-         },
-         {
-            "code":"es",
-            "text":"Pantalón Marrón"
-         }
-      ],
-      "thumbnail":"QmYfiy3eC93vpXLN66rtRue4EnHTyeg27KAoqskTKrbsuX",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_glasses_cat_style",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Eyewear_CatStyle.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"F_Eyewear_CatStyle.glb",
-                     "hash":"QmXVGQTKqfvXuX8hTWzbviAVHievAGEFFaWFcPhQXRUEdr"
-                  }
-               ]
-            }
-         ],
-         "category":"eyewear",
-         "tags":[
-            "accesories",
-            "woman",
-            "women",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Cat Style Glasses"
-         },
-         {
-            "code":"es",
-            "text":"Gafas de Estilo Gato"
-         }
-      ],
-      "thumbnail":"QmTz5FqD8PberQpKyFMyR8A47S5NT243s26TBGzmCoUaC9",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_eyebrows_02",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Eyebrows_02.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"F_Eyebrows_02.png",
-                     "hash":"QmNM7wkfpUDULNJ7FC8AGua7b9hNnUtw9zMR676bt57v6J"
-                  }
-               ]
-            }
-         ],
-         "category":"eyebrows",
-         "tags":[
-            "face",
-            "eyebrows",
-            "Female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"f_EyeBrows_02"
-         },
-         {
-            "code":"es",
-            "text":"f_EyeBrows_02"
-         }
-      ],
-      "thumbnail":"QmQZ8Xb6TTPyo9m9JVDd7NE1P31kWrX5kM2PvR3HiqL2Fd",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_uBody_Clown.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "hash":"QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
-                  },
-                  {
-                     "key":"Avatar_MaleSkinBase.png",
-                     "hash":"QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
-                  },
-                  {
-                     "key":"M_uBody_Clown.glb",
-                     "hash":"QmUCkpmy48qSZ1NtxaakPcnJDrFtA8fbqBVEYRpVWjDFBF"
-                  }
-               ]
-            }
-         ],
-         "category":"upper_body",
-         "tags":[
-            "accesories",
-            "exclusive",
-            "halloween",
-            "upper_body",
-            "suit",
-            "exclusive"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Sad Clown Suit"
-         },
-         {
-            "code":"es",
-            "text":"Traje de Payaso Triste"
-         }
-      ],
-      "thumbnail":"QmTK397dYkoUTGh5vYY4yXPMqCXDwhEWhJg4CJFCBwCi2v",
-      "image":"QmRAeXiJwFCr4rSnN5mJhGAeRmWCRDsMimDw8LjzipmqsV",
-      "description":"Little known fact: blue, red and gold are the saddest colours",
-      "rarity":"epic"
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:f_eyes_01",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"F_Eyes_01.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"F_Eyes_01.png",
-                     "hash":"Qmbar9bThqMwjzN6LD7KhtSJshMp6ACAVXC3cgLjnoBBin"
-                  },
-                  {
-                     "key":"F_Eyes_01_Mask.png",
-                     "hash":"QmWMR45paAvZtYvCTVvt296NBXsHDvcc54pURbqu2qMKje"
-                  }
-               ]
-            }
-         ],
-         "category":"eyes",
-         "tags":[
-            "face",
-            "eyes",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"f_Eyes_01"
-         },
-         {
-            "code":"es",
-            "text":"f_Eyes_01"
-         }
-      ],
-      "thumbnail":"QmPGPaujnDyCMESAp1XxxKgKbQgpgXcDvY77hP3hqZJEcu",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:dracula_mouth",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"dracula_mouth.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"dracula_mouth.png",
-                     "hash":"QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
-                  },
-                  {
-                     "key":"dracula_mouth_mask.png",
-                     "hash":"QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
-                  }
-               ]
-            }
-         ],
-         "category":"mouth",
-         "tags":[
-            "face",
-            "mouth",
-            "female",
-            "woman",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"f_Mouth_00"
-         },
-         {
-            "code":"es",
-            "text":"f_Mouth_00"
-         }
-      ],
-      "thumbnail":"QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:off-chain:base-avatars:eyebrows_02",
-      "data":{
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_EyeBrows_02.png",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"M_EyeBrows_02.png",
-                     "hash":"QmaPGCFTsiAPGYkhmDbTcxvM5SyqWyhHraPJ65Rzfp4dWi"
-                  }
-               ]
-            }
-         ],
-         "category":"eyebrows",
-         "tags":[
-            "face",
-            "eyebrows",
-            "male",
-            "man",
-            "base-wearable"
-         ]
-      },
-      "type":"wearable",
-      "baseUrl":"https://content.decentraland.org/contents/",
-      "i18n":[
-         {
-            "code":"en",
-            "text":"EyeBrows_02"
-         },
-         {
-            "code":"es",
-            "text":"EyeBrows_02"
-         }
-      ],
-      "thumbnail":"QmV8Rg6ZhLdKdzvmhFsSNnPpUcBNJcUVYMa3g8MbTUG4zr",
-      "description":"",
-      "rarity":""
-   },
-   {
-      "id":"urn:decentraland:ethereum:collections-v1:community_contest:cw_raver_eyewear",
-      "description":"",
-      "image":"https://peer.decentraland.org/content/contents/QmcKNsWuzXpGpukKrkhNdfJTyrkSyEqWEjC96NAvYDucDW",
-      "thumbnail":"https://peer.decentraland.org/content/contents/QmPe2CPbt9JLdjpoH5sKAy9KYYL8bsYuUm1ddr3ipUMh6n",
-      "collectionAddress":"0x32b7495895264ac9d0b12d32afd435453458b1c6",
-      "rarity":"legendary",
-      "data":{
-         "replaces":[
-            "mask",
-            "helmet"
-         ],
-         "hides":[
-            
-         ],
-         "tags":[
-            "accesories",
-            "exclusive",
-            "eyewear",
-            "launch",
-            "20.02.20",
-            "decentraland",
-            "community",
-            "wearables",
-            "exclusive"
-         ],
-         "category":"eyewear",
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"Eyewear_Raver.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_Emissive_TX.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmUrULH5u6RB6BjX9MQD97oi8djrvGvgqvNXq5ULXceZ6j"
-                  },
-                  {
-                     "key":"AvatarWearables_TP_TX.png",
-                     "url":"https://peer.decentraland.org/content/contents/Qmd7n2dQaQR3qP6MxtChBZstrn5m4NEwb3wjBc1i6omkF8"
-                  },
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmXGZq67BhmGm8WpmXrSL8EqotM4nEs3CcP8e8fZE9dgWS"
-                  },
-                  {
-                     "key":"Eyewear_Raver.glb",
-                     "url":"https://peer.decentraland.org/content/contents/QmY9k1nEvAgBYCkXudN5VAy9f1FKeRHS89G8iMGHZY5Ugy"
-                  }
-               ]
-            },
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"Eyewear_Raver.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"AvatarWearables_Emissive_TX.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmUrULH5u6RB6BjX9MQD97oi8djrvGvgqvNXq5ULXceZ6j"
-                  },
-                  {
-                     "key":"AvatarWearables_TP_TX.png",
-                     "url":"https://peer.decentraland.org/content/contents/Qmd7n2dQaQR3qP6MxtChBZstrn5m4NEwb3wjBc1i6omkF8"
-                  },
-                  {
-                     "key":"AvatarWearables_TX.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmXGZq67BhmGm8WpmXrSL8EqotM4nEs3CcP8e8fZE9dgWS"
-                  },
-                  {
-                     "key":"Eyewear_Raver.glb",
-                     "url":"https://peer.decentraland.org/content/contents/QmY9k1nEvAgBYCkXudN5VAy9f1FKeRHS89G8iMGHZY5Ugy"
-                  }
-               ]
-            }
-         ]
-      },
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Raver Googles"
-         },
-         {
-            "code":"es",
-            "text":"Antiparras de Raver"
-         }
-      ],
-      "createdAt":1618845339052,
-      "updatedAt":1618845339052
-   },
-   {
-      "id":"urn:decentraland:ethereum:collections-v1:dc_niftyblocksmith:blocksmith_feet",
-      "description":"These boots will leave digital footprints wherever you go",
-      "image":"https://peer.decentraland.org/content/contents/QmQ3qy16MUrbBqWvqHCzQv3XPi8E262Ld9eTNf9wcnxqBL",
-      "thumbnail":"https://peer.decentraland.org/content/contents/QmehBEhwZQmuYaKE1Ck5sazZxcpML8f12cyE2WZusRPBcQ",
-      "collectionAddress":"0x102daabd1e9d294d4436ec4c521dce7b1f15499e",
-      "rarity":"legendary",
-      "data":{
-         "replaces":[
-            
-         ],
-         "hides":[
-            
-         ],
-         "tags":[
-            "moon",
-            "feet",
-            "mining",
-            "dappcraft",
-            "exclusive"
-         ],
-         "category":"feet",
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"M_niftyblocksmith_boots.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"M_niftyblocksmith_boots.glb",
-                     "url":"https://peer.decentraland.org/content/contents/QmPMuAfyEyBinLnTnHMAr9SzYwf867mjoLT5HsYMnX8Q5p"
-                  },
-                  {
-                     "key":"blocksmith_v08_lambert4_BaseColor.png",
-                     "url":"https://peer.decentraland.org/content/contents/Qma9FbZtVYb6mMymVFJsH9XESADAUz7gYuc2SHYT74L8uw"
-                  },
-                  {
-                     "key":"blocksmith_v08_lambert4_Emissive.png",
-                     "url":"https://peer.decentraland.org/content/contents/Qmdox5gb2VxxS3XcxXgsNKuXzy1qr5UVWe94AytkiJHjtm"
-                  }
-               ]
-            },
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"M_niftyblocksmith_boots.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"M_niftyblocksmith_boots.glb",
-                     "url":"https://peer.decentraland.org/content/contents/QmPMuAfyEyBinLnTnHMAr9SzYwf867mjoLT5HsYMnX8Q5p"
-                  },
-                  {
-                     "key":"blocksmith_v08_lambert4_BaseColor.png",
-                     "url":"https://peer.decentraland.org/content/contents/Qma9FbZtVYb6mMymVFJsH9XESADAUz7gYuc2SHYT74L8uw"
-                  },
-                  {
-                     "key":"blocksmith_v08_lambert4_Emissive.png",
-                     "url":"https://peer.decentraland.org/content/contents/Qmdox5gb2VxxS3XcxXgsNKuXzy1qr5UVWe94AytkiJHjtm"
-                  }
-               ]
-            }
-         ]
-      },
-      "i18n":[
-         {
-            "code":"en",
-            "text":"DC Nifty Blocksmith Boots"
-         }
-      ],
-      "createdAt":1617888365119,
-      "updatedAt":1617888365119
-   },
-   {
-      "id":"urn:decentraland:ethereum:collections-v1:tech_tribal_marc0matic:techtribal_beast_mask",
-      "description":"VR Infused Beast Mask created by Marc0Matic",
-      "image":"https://peer.decentraland.org/content/contents/QmdRpuTmeeMxKMoxCyP2bCbM5eqEBcmAWMbFs5PwhCJmEq",
-      "thumbnail":"https://peer.decentraland.org/content/contents/Qme3E7qbVmRh51v9CAnXVG5U8yok9jYp8JiSGCxUCESWCq",
-      "collectionAddress":"0x480a0f4e360e8964e68858dd231c2922f1df45ef",
-      "rarity":"legendary",
-      "data":{
-         "replaces":[
-            
-         ],
-         "hides":[
+          ],
+          "overrideHides": [
+            "head",
             "facial_hair",
-            "eyewear"
-         ],
-         "tags":[
-            "accessories",
-            "man",
-            "woman",
-            "marc0matic",
-            "tech",
-            "tribal",
-            "mask",
-            "animals",
-            "beast",
-            "punk",
-            "fantasy",
-            "animal",
-            "VR",
-            "deer",
-            "exclusive"
-         ],
-         "category":"mask",
-         "representations":[
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseMale"
-               ],
-               "mainFile":"Techtribal_Beast_Mask.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"DCL-TechTribal-Alphas.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmcjuqSe2yGB9dGwZHWWFtiEv185QHVCH2ncjdN5UgSza7"
-                  },
-                  {
-                     "key":"DCL-TechTribal-Masks.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmQ58ZYGWiGcSwmsqwbY2US2dUVAevcM1CCxsi4VSvia2b"
-                  },
-                  {
-                     "key":"Techtribal_Beast_Mask.glb",
-                     "url":"https://peer.decentraland.org/content/contents/QmYsHeur2qKK4E5sVCmemsNJQM7DCaDVRiT6x3rHFFkcrb"
-                  }
-               ]
-            },
-            {
-               "bodyShapes":[
-                  "urn:decentraland:off-chain:base-avatars:BaseFemale"
-               ],
-               "mainFile":"Techtribal_Beast_Mask.glb",
-               "overrideReplaces":[
-                  
-               ],
-               "overrideHides":[
-                  
-               ],
-               "contents":[
-                  {
-                     "key":"DCL-TechTribal-Alphas.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmcjuqSe2yGB9dGwZHWWFtiEv185QHVCH2ncjdN5UgSza7"
-                  },
-                  {
-                     "key":"DCL-TechTribal-Masks.png",
-                     "url":"https://peer.decentraland.org/content/contents/QmQ58ZYGWiGcSwmsqwbY2US2dUVAevcM1CCxsi4VSvia2b"
-                  },
-                  {
-                     "key":"Techtribal_Beast_Mask.glb",
-                     "url":"https://peer.decentraland.org/content/contents/QmYsHeur2qKK4E5sVCmemsNJQM7DCaDVRiT6x3rHFFkcrb"
-                  }
-               ]
-            }
-         ]
-      },
-      "i18n":[
-         {
-            "code":"en",
-            "text":"Tech Tribal Beast Mask"
-         },
-         {
-            "code":"es",
-            "text":"Máscara de Bestia Tribal de Tecnologías"
-         }
+            "hair"
+          ],
+          "overrideReplaces": []
+        }
       ],
-      "createdAt":1617888356371,
-      "updatedAt":1617888356371
-   }
+      "category": "helmet"
+    },
+    "image": "https://peer-eu1.decentraland.org/content/contents/QmPg47GUpe23Zao2vT8kfAxxG1pyShnLtFNQzkEvDUsGdd",
+    "thumbnail": "https://peer-eu1.decentraland.org/content/contents/QmZAo85c5kuu9YWLxypwBEf3kF3HXHjQ13GjL7FEi7ZSxE",
+    "contents": {
+      "warrior.glb": "QmVWJZpYGXL8dFXdCJgwwjpxDmCPbkHFPGmM86EBoyiKFD",
+      "thumbnail.png": "QmZAo85c5kuu9YWLxypwBEf3kF3HXHjQ13GjL7FEi7ZSxE"
+    },
+    "metrics": {
+      "triangles": 1430,
+      "materials": 2,
+      "textures": 1,
+      "meshes": 2,
+      "bodies": 2,
+      "entities": 1
+    },
+    "createdAt": 1623875717009,
+    "updatedAt": 1623875717009
+  }
 ]
