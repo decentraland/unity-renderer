@@ -43,13 +43,14 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
+                tutorialController.hudController.minimapHud != null &&
                 tutorialController.hudController.minimapHud.usersAroundTooltipReference)
             {
                 tooltipTransform.position = tutorialController.hudController.minimapHud.usersAroundTooltipReference.position;
             }
         }
 
-        private void UsersAroundListHud_OnOpen()
+        internal void UsersAroundListHud_OnOpen()
         {
             stepIsFinished = true;
             tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);

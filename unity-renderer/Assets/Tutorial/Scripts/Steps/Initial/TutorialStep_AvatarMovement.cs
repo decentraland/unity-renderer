@@ -11,9 +11,9 @@ namespace DCL.Tutorial
         [SerializeField] AudioEvent audioEventSuccess;
         [SerializeField] InputAction_Measurable playerXAxisInpuAction;
         [SerializeField] InputAction_Measurable playerYAxisInputAction;
-        [SerializeField] float minRunningTime = 2f;
+        [SerializeField] internal float minRunningTime = 2f;
 
-        private float timeRunning = 0f;
+        internal float timeRunning = 0f;
 
         private void Update()
         {

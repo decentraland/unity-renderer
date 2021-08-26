@@ -23,7 +23,9 @@ namespace DCL.Tutorial
             if (toggleControlsHud != null)
                 toggleControlsHud.isTriggerBlocked = null;
 
-            if (tutorialController != null && tutorialController.hudController != null)
+            if (tutorialController != null &&
+                tutorialController.hudController != null &&
+                tutorialController.hudController.controlsHud != null)
             {
                 tutorialController.hudController.controlsHud.OnControlsOpened += ControlsHud_OnControlsOpened;
                 tutorialController.hudController.controlsHud.OnControlsClosed += ControlsHud_OnControlsClosed;
@@ -40,7 +42,9 @@ namespace DCL.Tutorial
         {
             base.OnStepFinished();
 
-            if (tutorialController != null && tutorialController.hudController != null)
+            if (tutorialController != null &&
+                tutorialController.hudController != null &&
+                tutorialController.hudController.controlsHud != null)
             {
                 tutorialController.hudController.controlsHud.OnControlsOpened -= ControlsHud_OnControlsOpened;
                 tutorialController.hudController.controlsHud.OnControlsClosed -= ControlsHud_OnControlsClosed;
@@ -50,7 +54,7 @@ namespace DCL.Tutorial
                 toggleControlsHud.isTriggerBlocked = originalControlsTriggerIsBlocked;
         }
 
-        private void ControlsHud_OnControlsOpened()
+        internal void ControlsHud_OnControlsOpened()
         {
             if (!controlsHasBeenOpened && mainSection.activeSelf)
                 controlsHasBeenOpened = true;
@@ -60,7 +64,7 @@ namespace DCL.Tutorial
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
 
-        private void ControlsHud_OnControlsClosed()
+        internal void ControlsHud_OnControlsClosed()
         {
             if (controlsHasBeenOpened && mainSection.activeSelf)
                 controlsHasBeenClosed = true;

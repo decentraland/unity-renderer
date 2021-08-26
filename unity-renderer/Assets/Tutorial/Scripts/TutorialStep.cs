@@ -23,10 +23,10 @@ namespace DCL.Tutorial
         [SerializeField] internal InputAction_Hold noSkipInputAction;
 
         protected TutorialController tutorialController;
-        protected Animator stepAnimator;
-        protected MouseCatcher mouseCatcher;
+        internal Animator stepAnimator;
+        internal MouseCatcher mouseCatcher;
         protected bool hideAnimationFinished = false;
-        protected bool blockSkipActions = false;
+        internal bool blockSkipActions = false;
 
         internal bool letInstantiation = true;
 
@@ -47,20 +47,21 @@ namespace DCL.Tutorial
             {
                 tutorialController.ShowTeacher3DModel(show3DTeacherAtStart);
 
-                if (tutorialController.teacher != null)
+                if (tutorialController.configuration.teacher != null)
                 {
                     if (tutorialController.currentStepIndex > 0)
-                        tutorialController.teacher.PlaySpeakSound();
+                        tutorialController.configuration.teacher.PlaySpeakSound();
                     else
-                        tutorialController.teacher.PlayHappySound(1f);
+                        tutorialController.configuration.teacher.PlayHappySound(1f);
                 }
 
                 if (show3DTeacherAtStart && teacherPositionRef != null)
                 {
                     tutorialController.SetTeacherPosition(teacherPositionRef.position);
 
-                    if (tutorialController.teacher.isHiddenByAnAnimation)
-                        tutorialController.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
+                    if (tutorialController.configuration.teacher != null &&
+                        tutorialController.configuration.teacher.isHiddenByAnAnimation)
+                        tutorialController.configuration.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
                 }
             }
 
@@ -101,12 +102,12 @@ namespace DCL.Tutorial
             }
         }
 
-        private void OnShowAnimationFinish() { OnShowAnimationFinished?.Invoke(); }
+        internal void OnShowAnimationFinish() { OnShowAnimationFinished?.Invoke(); }
 
         /// <summary>
         /// Warn about the finalization of the hide animation of the step
         /// </summary>
-        private void OnHideAnimationFinish() { hideAnimationFinished = true; }
+        internal void OnHideAnimationFinish() { hideAnimationFinished = true; }
 
         private IEnumerator PlayAndWaitForHideAnimation()
         {
@@ -137,7 +138,7 @@ namespace DCL.Tutorial
             }
         }
 
-        private void NoSkipInputAction_OnFinished(DCLAction_Hold action)
+        internal void NoSkipInputAction_OnFinished(DCLAction_Hold action)
         {
             if (blockSkipActions)
                 return;

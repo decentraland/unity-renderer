@@ -33,7 +33,7 @@ namespace DCL.Tutorial
             audioEventSuccess.Play(true);
         }
 
-        private void CameraMode_OnChange(CameraMode.ModeId current, CameraMode.ModeId previous)
+        internal void CameraMode_OnChange(CameraMode.ModeId current, CameraMode.ModeId previous)
         {
             if (current != previous && mainSection.activeSelf)
                 stepIsFinished = true;

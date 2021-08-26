@@ -9,13 +9,14 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_Welcome : TutorialStep
     {
-        [SerializeField] InputAction_Hold confirmInputAction;
+        [SerializeField] internal InputAction_Hold confirmInputAction;
         [SerializeField] TMP_Text descriptionText;
 
         public override void OnStepStart()
         {
             base.OnStepStart();
 
+            confirmInputAction.RaiseOnFinished();
             descriptionText.text = descriptionText.text.Replace("{userName}", UserProfile.GetOwnUserProfile().userName);
         }
 

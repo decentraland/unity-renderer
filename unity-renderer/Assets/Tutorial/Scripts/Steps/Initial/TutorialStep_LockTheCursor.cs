@@ -18,6 +18,6 @@ namespace DCL.Tutorial
             tutorialController?.hudController?.profileHud?.SetBackpackButtonVisibility(false);
         }
 
-        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher.isLocked); }
+        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher == null || mouseCatcher.isLocked); }
     }
 }
