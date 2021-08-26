@@ -34,17 +34,7 @@ namespace DCL
             webRequestAsyncOperation = webRequestController.GetAudioClip(url, audioType,
                 request =>
                 {
-                    bool supported = true;
-#if UNITY_EDITOR
-                    supported = audioType != AudioType.MPEG;
-#endif
-                    asset.audioClip = null;
-
-                    if (supported)
-                    {
-                        asset.audioClip = DownloadHandlerAudioClip.GetContent(request);
-                    }
-
+                    asset.audioClip = DownloadHandlerAudioClip.GetContent(request);
                     OnSuccess?.Invoke();
                 },
                 request =>
