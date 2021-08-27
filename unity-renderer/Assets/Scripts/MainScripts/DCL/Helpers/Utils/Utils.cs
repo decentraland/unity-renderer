@@ -210,43 +210,6 @@ namespace DCL.Helpers
             return component;
         }
 
-        public static WebRequestAsyncOperation FetchAudioClip(string url, AudioType audioType, Action<AudioClip> OnSuccess, Action<string> OnFail)
-        {
-            //NOTE(Brian): This closure is called when the download is a success.
-            Action<UnityWebRequest> OnSuccessInternal =
-                (request) =>
-                {
-                    if (OnSuccess != null)
-                    {
-                        bool supported = true;
-#if UNITY_EDITOR
-                        supported = audioType != AudioType.MPEG;
-#endif
-                        AudioClip ac = null;
-
-                        if (supported)
-                            ac = DownloadHandlerAudioClip.GetContent(request);
-
-                        OnSuccess.Invoke(ac);
-                    }
-                };
-
-            Action<UnityWebRequest> OnFailInternal =
-                (request) =>
-                {
-                    if (OnFail != null)
-                    {
-                        OnFail.Invoke(request.error);
-                    }
-                };
-
-            return DCL.Environment.i.platform.webRequest.GetAudioClip(
-                url: url,
-                audioType: audioType,
-                OnSuccess: OnSuccessInternal,
-                OnFail: OnFailInternal);
-        }
-
         public static WebRequestAsyncOperation FetchTexture(string textureURL, Action<Texture2D> OnSuccess, Action<UnityWebRequest> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
@@ -260,29 +223,6 @@ namespace DCL.Helpers
                 url: textureURL,
                 OnSuccess: SuccessInternal,
                 OnFail: OnFail);
-        }
-
-        public static AudioType GetAudioTypeFromUrlName(string url)
-        {
-            if (string.IsNullOrEmpty(url))
-            {
-                Debug.LogError("GetAudioTypeFromUrlName >>> Null url!");
-                return AudioType.UNKNOWN;
-            }
-
-            string ext = url.Substring(url.Length - 3).ToLower();
-
-            switch (ext)
-            {
-                case "mp3":
-                    return AudioType.MPEG;
-                case "wav":
-                    return AudioType.WAV;
-                case "ogg":
-                    return AudioType.OGGVORBIS;
-                default:
-                    return AudioType.UNKNOWN;
-            }
         }
 
         public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)
