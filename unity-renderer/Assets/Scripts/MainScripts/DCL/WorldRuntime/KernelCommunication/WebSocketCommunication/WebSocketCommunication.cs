@@ -41,6 +41,7 @@ public class WebSocketCommunication : IKernelCommunication
         }
         catch (InvalidOperationException e)
         {
+            ws.Stop();
             SocketException se = (SocketException)e.InnerException;
             if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
             {
@@ -222,5 +223,9 @@ public class WebSocketCommunication : IKernelCommunication
             }
             yield return null;
         }
+    }
+    public void Dispose()
+    {
+        ws.Stop();
     }
 }
