@@ -2,8 +2,6 @@
 using DCL.Bots;
 using System.Collections.Generic;
 using DCL.Helpers;
-using DCL.Interface;
-using UnityEngine.UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -51,6 +49,12 @@ namespace DCL
         {
             if (debugView != null)
                 debugView.ShowFPSPanel();
+        }
+
+        public void ShowInfoPanel(string network, string environment)
+        {
+            if (debugView != null)
+                debugView.ShowInfoPanel(network, environment);
         }
 
         public void SetSceneDebugPanel()

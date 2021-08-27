@@ -21,5 +21,6 @@ namespace DCL
         public void ClearBots();
         List<Vector3> GetTrackedTeleportPositions();
         List<Vector3> GetTrackedMovements();
+        void ShowInfoPanel(string network, string environment);
     }
 }

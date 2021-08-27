@@ -15,6 +15,8 @@ namespace DCL
         [SerializeField]
         private GameObject sceneDebugPanel;
 
+        [SerializeField] private InfoPanel infoPanel;
+
         public void ShowFPSPanel() { fpsPanel.SetActive(true); }
 
         public void HideFPSPanel() { fpsPanel.SetActive(false); }
@@ -29,6 +31,12 @@ namespace DCL
         {
             sceneDebugPanel.SetActive(false);
             engineDebugPanel.SetActive(true);
+        }
+        public void ShowInfoPanel(string network, string environment)
+        {
+            var info = $"{network}<br>{environment}";
+            infoPanel.Setup(info);
+            infoPanel.SetVisible(true);
         }
     }
 }
