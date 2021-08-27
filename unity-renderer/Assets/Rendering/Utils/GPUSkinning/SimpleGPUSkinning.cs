@@ -39,6 +39,7 @@ public class SimpleGPUSkinning
         meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
 
         Object.Destroy(skr);
+        Update(true); //Force an update to avoid giant avatars
     }
 
     /// <summary>
@@ -77,8 +78,11 @@ public class SimpleGPUSkinning
         skr.sharedMesh.SetUVs(1, bone23data);
     }
 
-    public void Update()
+    public void Update(bool forceUpdate = false)
     {
+        if (!forceUpdate && !renderer.isVisible)
+            return;
+
         int bonesLength = bones.Length;
 
         for (int i = 0; i < bonesLength; i++)
