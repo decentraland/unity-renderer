@@ -158,8 +158,6 @@ namespace DCL
         public void UpdateImpostorTint(float distanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue)
         {
             float initialStep = Mathf.Max(minImpostorTintDistance, distanceToMainPlayer);
-
-            // float tintStep = Mathf.InverseLerp(0, maxImpostorTintDistance, distanceToClosestPosition);
             float tintStep = Mathf.InverseLerp(minImpostorTintDistance, maxImpostorTintDistance, initialStep);
             float tintValue = Mathf.Lerp(nearestImpostorColorTint, farestImpostorColorTint, tintStep);
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
