@@ -40,6 +40,12 @@ To achieve this, you must replace all the includes of this file for just:
 
     #include "PBRForwardPass.hlsl"
 
+For the GPU skinning we need to do the same for the following passes:
+```    
+#include "DepthOnlyPass.hlsl"
+#include "DepthNormalsOnlyPass.hlsl"
+#include "ShadowCasterPass.hlsl"
+```
 > NOTE: If this is not done, avatars aren't going to look toon.
 
 ### You're done!.

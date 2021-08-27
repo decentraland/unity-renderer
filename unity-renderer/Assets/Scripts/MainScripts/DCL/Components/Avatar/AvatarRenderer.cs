@@ -24,6 +24,17 @@ namespace DCL
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
+        private SimpleGPUSkinning gpuSkinning = null;
+
+        private Renderer mainMeshRenderer
+        {
+            get
+            {
+                if (gpuSkinning != null)
+                    return gpuSkinning.renderer;
+                return avatarMeshCombiner.renderer;
+            }
+        }
 
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
@@ -46,8 +57,6 @@ namespace DCL
         private List<string> wearablesInUse = new List<string>();
         private AssetPromise_Texture bodySnapshotTexturePromise;
         private bool isDestroyed = false;
-
-        private List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>();
 
         private void Awake()
         {
@@ -149,9 +158,12 @@ namespace DCL
             if (!isDestroyed)
             {
                 SetGOVisibility(true);
-                SetImpostorVisibility(false);
+                if (lodRenderer != null)
+                    SetImpostorVisibility(false);
             }
 
+            avatarMeshCombiner.Dispose();
+            gpuSkinning = null;
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
 
@@ -434,9 +446,6 @@ namespace DCL
 
             CleanUpUnusedItems();
 
-            allRenderers = wearableControllers.SelectMany( x => x.Value.GetRenderers() ).ToList();
-            allRenderers.AddRange( bodyShapeController.GetRenderers() );
-
             isLoading = false;
 
             SetWearableBones();
@@ -444,9 +453,13 @@ namespace DCL
             // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
             UpdateExpression();
 
-            bool mergeSuccess = MergeAvatar();
+            var allRenderers = wearableControllers.SelectMany( x => x.Value.GetRenderers() ).ToList();
+            allRenderers.AddRange( bodyShapeController.GetRenderers() );
+            bool mergeSuccess = MergeAvatar(allRenderers);
 
-            if ( !mergeSuccess )
+            if (mergeSuccess)
+                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
+            else
                 loadSoftFailed = true;
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
@@ -590,10 +603,10 @@ namespace DCL
 
         public void SetRendererEnabled(bool newVisibility)
         {
-            if (avatarMeshCombiner.renderer == null)
+            if (mainMeshRenderer == null)
                 return;
 
-            avatarMeshCombiner.renderer.enabled = newVisibility;
+            mainMeshRenderer.enabled = newVisibility;
         }
 
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
@@ -604,7 +617,7 @@ namespace DCL
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
 
-            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            Material[] mats = mainMeshRenderer.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
@@ -646,7 +659,7 @@ namespace DCL
             if ( isLoading )
                 return;
 
-            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            Material[] mats = mainMeshRenderer.sharedMaterials;
 
             for (int j = 0; j < mats.Length; j++)
             {
@@ -657,19 +670,27 @@ namespace DCL
             }
         }
 
-        bool MergeAvatar()
+        private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
-            var renderersToCombine = new List<SkinnedMeshRenderer>( allRenderers );
-            renderersToCombine = renderersToCombine.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+            var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
 
             if ( success )
+            {
                 avatarMeshCombiner.container.transform.SetParent( transform, true );
+                avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
+            }
 
             return success;
         }
 
         void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
+
+        private void LateUpdate()
+        {
+            if (gpuSkinning != null && mainMeshRenderer.enabled)
+                gpuSkinning.Update();
+        }
 
         protected virtual void OnDestroy()
         {
