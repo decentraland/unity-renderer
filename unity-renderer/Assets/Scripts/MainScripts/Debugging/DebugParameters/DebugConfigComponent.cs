@@ -184,7 +184,7 @@ namespace DCL
             }
 
             Application.OpenURL(
-                $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.wssServerUrl}{DataStore.i.wsCommunication.wssServiceId}");
+                $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}");
 #endif
         }
         

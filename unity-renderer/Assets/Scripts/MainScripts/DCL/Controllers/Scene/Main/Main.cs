@@ -104,6 +104,7 @@ namespace DCL
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
             pluginSystem?.OnDestroy();
+            kernelCommunication.Dispose();
         }
         private void OnGUI() { pluginSystem.OnGUI(); }
     }
