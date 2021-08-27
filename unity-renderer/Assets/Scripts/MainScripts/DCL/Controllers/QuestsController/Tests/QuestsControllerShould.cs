@@ -114,6 +114,49 @@ namespace Tests.QuestsTrackerHUD
         }
 
         [Test]
+        public void UpdateQuestProgressUpdateQuest_NewReward()
+        {
+            quests.Add("0", new QuestModel
+            {
+                id = "0", status = QuestsLiterals.Status.NOT_STARTED,
+                sections = new [] { new QuestSection { id = "0_0", tasks = new [] { new QuestTask { id = "0_0_0" } } } },
+            });
+
+            QuestModel progressedQuest = new QuestModel
+            {
+                id = "0", status = QuestsLiterals.Status.NOT_STARTED,
+                sections = new [] { new QuestSection { id = "0_0", tasks = new [] { new QuestTask { id = "0_0_0" } } } },
+                rewards = new [] { new QuestReward { id = "reward0", status = QuestsLiterals.RewardStatus.NOT_GIVEN } }
+            };
+
+            bool newQuestReceived = false;
+            bool questUpdatedReceived = false;
+            bool rewardObtainedReceived = false;
+            questsController.OnNewQuest += (questId) => newQuestReceived = true;
+            questsController.OnQuestUpdated += (questId, hasProgressed) =>
+            {
+                questUpdatedReceived = true;
+            };
+            questsController.OnRewardObtained += (questId, rewardId) => rewardObtainedReceived = true;
+
+            questsController.UpdateQuestProgress(progressedQuest);
+
+            Assert.IsFalse(newQuestReceived);
+            Assert.IsTrue(questUpdatedReceived);
+            Assert.IsFalse(rewardObtainedReceived);
+
+            //Check progress flags are reverted
+            Assert.AreEqual(quests["0"].oldProgress, quests["0"].progress);
+            Assert.AreEqual(quests["0"].sections[0].tasks[0].oldProgress, quests["0"].sections[0].tasks[0].progress);
+            Assert.IsFalse(quests["0"].justProgressed);
+            Assert.IsFalse(quests["0"].sections[0].tasks[0].justProgressed);
+            Assert.IsFalse(quests["0"].sections[0].tasks[0].justUnlocked);
+            Assert.AreEqual(1, quests["0"].rewards.Length);
+            Assert.AreEqual("reward0", quests["0"].rewards[0].id);
+            Assert.AreEqual(QuestsLiterals.RewardStatus.NOT_GIVEN, quests["0"].rewards[0].status);
+        }
+
+        [Test]
         public void UpdateQuestProgressUpdateQuest()
         {
             quests.Add("0", new QuestModel
