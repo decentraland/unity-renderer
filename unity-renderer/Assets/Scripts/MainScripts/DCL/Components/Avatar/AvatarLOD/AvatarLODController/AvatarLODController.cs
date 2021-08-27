@@ -12,7 +12,7 @@ namespace DCL
         void SetSimpleAvatar();
         void SetImpostor();
         void SetInvisible();
-        void UpdateImpostorTint(float distanceToClosestPosition);
+        void UpdateImpostorTint(float distanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -24,13 +24,8 @@ namespace DCL
             SimpleAvatar,
             Impostor,
         }
-        
+
         private const float TRANSITION_DURATION = 0.5f;
-        private const float MAX_IMPOSTOR_TINT_DISTANCE = 32f;
-        private const float NEAREST_IMPOSTOR_COLOR_TINT_VALUE = 0.2f;
-        private const float FAREST_IMPOSTOR_COLOR_TINT_VALUE = 0.9f;
-        private const float NEAREST_IMPOSTOR_COLOR_ALPHA_VALUE = 1f;
-        private const float FAREST_IMPOSTOR_COLOR_ALPHA_VALUE = 0.75f;
 
         public Player player { get; }
 
@@ -160,16 +155,19 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float distanceToClosestPosition)
+        public void UpdateImpostorTint(float distanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue)
         {
-            float tintStep = Mathf.InverseLerp(0, MAX_IMPOSTOR_TINT_DISTANCE, distanceToClosestPosition);
-            float tintValue = Mathf.Lerp(NEAREST_IMPOSTOR_COLOR_TINT_VALUE, FAREST_IMPOSTOR_COLOR_TINT_VALUE, tintStep); // 20% to 90% alpha
+            float initialStep = Mathf.Max(minImpostorTintDistance, distanceToMainPlayer);
+
+            // float tintStep = Mathf.InverseLerp(0, maxImpostorTintDistance, distanceToClosestPosition);
+            float tintStep = Mathf.InverseLerp(minImpostorTintDistance, maxImpostorTintDistance, initialStep);
+            float tintValue = Mathf.Lerp(nearestImpostorColorTint, farestImpostorColorTint, tintStep);
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
-            newColor.a = Mathf.Lerp(NEAREST_IMPOSTOR_COLOR_ALPHA_VALUE, FAREST_IMPOSTOR_COLOR_ALPHA_VALUE, tintStep); // 100% to 75% alpha
+            newColor.a = Mathf.Lerp(nearestImpostorAlphaValue, farestImpostorAlphaValue, tintStep);
 
             player.renderer.SetImpostorColor(newColor);
         }
-        
+
         public void Dispose()
         {
             lastRequestedState = null;
