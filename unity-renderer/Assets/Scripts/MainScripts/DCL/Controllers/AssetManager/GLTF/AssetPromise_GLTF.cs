@@ -186,7 +186,7 @@ namespace DCL
 
             if (gltfComponent != null)
             {
-                gltfComponent.SetIgnoreDistanceTest();
+                gltfComponent.SetPrioritized();
             }
         }
 
