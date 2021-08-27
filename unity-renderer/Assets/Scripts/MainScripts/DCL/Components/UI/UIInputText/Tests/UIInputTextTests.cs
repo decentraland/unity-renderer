@@ -37,12 +37,8 @@ namespace Tests
                 DCL.Models.CLASS_ID.UI_INPUT_TEXT_SHAPE,
                 new UIInputText.Model()
                 {
-                    textModel = new DCL.Components.TextShape.Model()
-                    {
-                        color = Color.white,
-                        opacity = 1,
-                    },
-
+                    color = Color.white,
+                    opacity = 1,
                     isPointerBlocker = true,
                     placeholder = "Chat here!",
                     placeholderColor = Color.grey,
@@ -104,15 +100,15 @@ namespace Tests
         {
             yield return InputTextCreate();
 
-            Assert.AreEqual(Color.white, textInput.model.textModel.color);
-            Assert.AreEqual(1, textInput.model.textModel.opacity);
+            Assert.AreEqual(Color.white, textInput.model.color);
+            Assert.AreEqual(1, textInput.model.opacity);
             Assert.AreEqual("Chat here!", textInput.inputField.text);
             Assert.IsTrue(textInput.referencesContainer != null, "Ref container is null?!");
             Assert.AreEqual(textInput.referencesContainer.transform.parent, ssshape.childHookRectTransform);
             Assert.AreEqual(textInput.model.focusedBackground.r, textInput.referencesContainer.bgImage.color.r);
             Assert.AreEqual(textInput.model.focusedBackground.g, textInput.referencesContainer.bgImage.color.g);
             Assert.AreEqual(textInput.model.focusedBackground.b, textInput.referencesContainer.bgImage.color.b);
-            Assert.AreEqual(textInput.model.textModel.opacity, textInput.referencesContainer.bgImage.color.a);
+            Assert.AreEqual(textInput.model.opacity, textInput.referencesContainer.bgImage.color.a);
 
             ssshape.Dispose();
             textInput.Dispose();

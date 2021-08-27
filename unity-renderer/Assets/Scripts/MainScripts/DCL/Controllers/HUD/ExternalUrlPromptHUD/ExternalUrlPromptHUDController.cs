@@ -89,5 +89,9 @@ public class ExternalUrlPromptHUDController : IHUD
         }
     }
 
-    private void OpenUrl(string url) { WebInterface.OpenURL(url); }
+    private void OpenUrl(string url)
+    {
+        WebInterface.OpenURL(url);
+        AnalyticsHelper.SendExternalLinkAnalytic(url);
+    }
 }

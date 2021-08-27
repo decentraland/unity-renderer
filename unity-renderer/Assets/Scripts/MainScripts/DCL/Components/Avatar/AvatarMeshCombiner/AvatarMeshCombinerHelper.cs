@@ -21,10 +21,7 @@ namespace DCL
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
-        public AvatarMeshCombinerHelper (GameObject container = null)
-        {
-            this.container = container;
-        }
+        public AvatarMeshCombinerHelper (GameObject container = null) { this.container = container; }
 
         /// <summary>
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.

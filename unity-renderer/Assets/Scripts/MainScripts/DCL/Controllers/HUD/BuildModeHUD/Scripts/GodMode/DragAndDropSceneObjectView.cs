@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 
 public interface IDragAndDropSceneObjectView
 {
+    Canvas GetGeneralCanvas();
     event Action OnDrop;
 
     void Drop();
@@ -11,6 +12,7 @@ public interface IDragAndDropSceneObjectView
 
 public class DragAndDropSceneObjectView : MonoBehaviour, IDragAndDropSceneObjectView
 {
+    public Canvas generalCanvas;
     public event Action OnDrop;
 
     [SerializeField] internal EventTrigger dragAndDropEventTrigger;
@@ -26,7 +28,10 @@ public class DragAndDropSceneObjectView : MonoBehaviour, IDragAndDropSceneObject
     }
 
     private void Awake() { BIWUtils.ConfigureEventTrigger(dragAndDropEventTrigger, EventTriggerType.Drop, (eventData) => Drop()); }
+
     private void OnDestroy() { BIWUtils.RemoveEventTrigger(dragAndDropEventTrigger, EventTriggerType.Drop); }
+
+    public Canvas GetGeneralCanvas() { return generalCanvas; }
 
     public void Drop() { OnDrop?.Invoke(); }
 }
