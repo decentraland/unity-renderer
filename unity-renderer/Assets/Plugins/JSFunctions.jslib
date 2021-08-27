@@ -9,6 +9,9 @@ mergeInto(LibraryManager.library, {
 
     // We expose the GL object to be able to generate WebGL textures in kernel and use them in Unity
     window.DCL.GL = GL;
+    
+    // Cache query string to be consulted later
+    window.DCL.queryString = new URLSearchParams(window.location.search);
   },
   MessageFromEngine: function(type, message) {
     window.DCL.MessageFromEngine(Pointer_stringify(type), Pointer_stringify(message));
@@ -26,6 +29,9 @@ mergeInto(LibraryManager.library, {
   },
   ToggleFPSCap: function(useFPSCap) {
     window.capFPS = useFPSCap;
+  },
+  CheckURLParam: function(targetParam) {    
+    return window.DCL.queryString.has(Pointer_stringify(targetParam))
   }
 });
 

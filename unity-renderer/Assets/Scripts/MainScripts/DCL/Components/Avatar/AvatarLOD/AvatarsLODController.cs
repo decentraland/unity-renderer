@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DCL.Interface;
 
 namespace DCL
 {
@@ -38,6 +39,9 @@ namespace DCL
             }
             otherPlayers.OnAdded += RegisterAvatar;
             otherPlayers.OnRemoved += UnregisterAvatar;
+
+            if (WebInterface.CheckURLParam("AVATAR_IMPOSTORS_TEST_PANEL"))
+                LoadTestPanel();
         }
 
         public void RegisterAvatar(string id, Player player)
@@ -93,10 +97,16 @@ namespace DCL
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            //Cache .Get to boost performance. Also use squared values to boost distance comparison
+            //Cache .Get() to boost performance. Also use squared values to boost distance comparison
             float lodDistance = LODDistance.Get() * LODDistance.Get();
             float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
+            float tintMinDistance = DataStore.i.avatarsLOD.impostorSettings.tintMinDistance.Get();
+            float tintMaxDistance = DataStore.i.avatarsLOD.impostorSettings.tintMaxDistance.Get();
+            float tintNearestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintNearestBlackness.Get();
+            float tintFarestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintFarestBlackness.Get();
+            float alphaNearestValue = DataStore.i.avatarsLOD.impostorSettings.alphaNearestValue.Get();
+            float alphaFarestValue = DataStore.i.avatarsLOD.impostorSettings.alphaFarestValue.Get();
 
             (IAvatarLODController lodController, float sqrtDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
@@ -134,6 +144,16 @@ namespace DCL
                 if (impostorCount < maxImpostors)
                 {
                     lodController.SetImpostor();
+
+                    var distanceToPlayer = Mathf.Sqrt(sqrtDistance);
+                    lodController.UpdateImpostorTint(distanceToPlayer,
+                        tintMinDistance,
+                        tintMaxDistance,
+                        tintNearestBlackness,
+                        tintFarestBlackness,
+                        alphaNearestValue,
+                        alphaFarestValue);
+
                     impostorCount++;
                     continue;
                 }
@@ -163,6 +183,14 @@ namespace DCL
         }
 
         private bool IsInFrontOfCamera(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE; }
+
+        private void LoadTestPanel()
+        {
+            if (GameObject.Find("AvatarImpostorsTestPanel") != null)
+                return;
+
+            GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/AvatarImpostorsTestPanel"));
+        }
 
         public void Dispose()
         {

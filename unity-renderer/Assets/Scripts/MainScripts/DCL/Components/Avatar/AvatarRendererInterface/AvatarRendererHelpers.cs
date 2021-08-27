@@ -5,7 +5,7 @@ namespace DCL
     public static class AvatarRendererHelpers
     {
         private static readonly int IMPOSTOR_TEXTURE_PROPERTY = Shader.PropertyToID("_BaseMap");
-        private const bool ONLY_GENERIC_IMPOSTORS = false;
+        private static readonly int IMPOSTOR_TEXTURE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
 
         // 2048x2048 atlas with 8 512x1024 snapshot-sprites
         private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
@@ -37,12 +37,20 @@ namespace DCL
 
         public static void SetImpostorTexture(Texture2D impostorTexture, Mesh impostorMesh, Material impostorMaterial)
         {
-            if (ONLY_GENERIC_IMPOSTORS || impostorTexture == null)
+            if (impostorTexture == null)
                 return;
 
             ResetImpostorMeshUVs(impostorMesh);
 
             impostorMaterial.SetTexture(IMPOSTOR_TEXTURE_PROPERTY, impostorTexture);
+        }
+
+        public static void SetImpostorTintColor(Material impostorMaterial, Color newColor)
+        {
+            if (impostorMaterial == null)
+                return;
+
+            impostorMaterial.SetColor(IMPOSTOR_TEXTURE_COLOR_PROPERTY, newColor);
         }
     }
 }

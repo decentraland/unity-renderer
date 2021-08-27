@@ -610,10 +610,12 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
+    [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
 #else
         private static bool hasQueuedMessages = false;
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
-        public static void StartDecentraland() {}
+        public static void StartDecentraland() { }
+        public static bool CheckURLParam(string targetParam) { return false; }
         public static void MessageFromEngine(string type, string message)
         {
             if (OnMessageFromEngine != null)
@@ -632,7 +634,7 @@ namespace DCL.Interface
             {
                 lock (queuedMessages)
                 {
-                    queuedMessages.Add((type, message));                    
+                    queuedMessages.Add((type, message));
                 }
                 hasQueuedMessages = true;
             }
@@ -643,7 +645,7 @@ namespace DCL.Interface
             hasQueuedMessages = false;
             lock (queuedMessages)
             {
-                foreach((string type, string payload) in queuedMessages)
+                foreach ((string type, string payload) in queuedMessages)
                 {
                     MessageFromEngine(type, payload);
                 }
@@ -1050,10 +1052,7 @@ namespace DCL.Interface
             });
         }
 
-        public static void SendSystemInfoReport()
-        {
-            SendMessage("SystemInfoReport", new SystemInfoReportPayload());
-        }
+        public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)
         {

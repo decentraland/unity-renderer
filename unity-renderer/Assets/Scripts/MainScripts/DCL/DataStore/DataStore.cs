@@ -81,6 +81,19 @@ namespace DCL
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
             public readonly BaseVariable<int> maxAvatars = new BaseVariable<int>(DEFAULT_MAX_AVATAR);
             public readonly BaseVariable<int> maxImpostors = new BaseVariable<int>(DEFAULT_MAX_IMPOSTORS);
+            public readonly ImpostorSettings impostorSettings = new ImpostorSettings();
+
+            public class ImpostorSettings
+            {
+                // Manually fine-tuned values
+                public readonly BaseVariable<float> movementInterpolationWait = new BaseVariable<float>(1f);
+                public readonly BaseVariable<float> tintMinDistance = new BaseVariable<float>(30f);
+                public readonly BaseVariable<float> tintMaxDistance = new BaseVariable<float>(32f);
+                public readonly BaseVariable<float> tintNearestBlackness = new BaseVariable<float>(0f);
+                public readonly BaseVariable<float> tintFarestBlackness = new BaseVariable<float>(0.54f);
+                public readonly BaseVariable<float> alphaNearestValue = new BaseVariable<float>(1f);
+                public readonly BaseVariable<float> alphaFarestValue = new BaseVariable<float>(1f);
+            }
         }
 
         /// <summary>
@@ -104,12 +117,12 @@ namespace DCL
         {
             [System.NonSerialized]
             public string wssServerUrl = "ws://localhost:5000/";
-            
+
             [System.NonSerialized]
             public string wssServiceId = "dcl";
-            
+
             public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
             public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
-        }        
+        }
     }
 }

@@ -14,6 +14,9 @@ namespace DCL
         const float ROTATION_SPEED = 6.25f;
         const float SPEED_EPSILON = 0.0001f;
 
+        public float movementLerpWait = 0f;
+        private float movementLerpWaitCounter = 0f;
+
         Transform avatarTransform
         {
             get
@@ -149,7 +152,12 @@ namespace DCL
             if (avatarTransformValue == null)
                 return;
 
-            UpdateLerp(Time.deltaTime);
+            movementLerpWaitCounter += Time.deltaTime;
+            if (movementLerpWaitCounter >= movementLerpWait)
+            {
+                UpdateLerp(movementLerpWaitCounter);
+                movementLerpWaitCounter = 0f;
+            }
         }
     }
 }

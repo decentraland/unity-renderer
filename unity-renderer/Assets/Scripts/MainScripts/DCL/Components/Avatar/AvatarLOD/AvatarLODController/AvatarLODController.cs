@@ -12,6 +12,7 @@ namespace DCL
         void SetSimpleAvatar();
         void SetImpostor();
         void SetInvisible();
+        void UpdateImpostorTint(float distanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -152,6 +153,17 @@ namespace DCL
                 player.renderer.SetFacialFeaturesVisible(newFacialFeaturesEnabled);
                 facialFeaturesEnabled = newFacialFeaturesEnabled;
             }
+        }
+
+        public void UpdateImpostorTint(float distanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue)
+        {
+            float initialStep = Mathf.Max(minImpostorTintDistance, distanceToMainPlayer);
+            float tintStep = Mathf.InverseLerp(minImpostorTintDistance, maxImpostorTintDistance, initialStep);
+            float tintValue = Mathf.Lerp(nearestImpostorColorTint, farestImpostorColorTint, tintStep);
+            Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
+            newColor.a = Mathf.Lerp(nearestImpostorAlphaValue, farestImpostorAlphaValue, tintStep);
+
+            player.renderer.SetImpostorColor(newColor);
         }
 
         public void Dispose()

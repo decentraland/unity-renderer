@@ -27,6 +27,7 @@ namespace DCL
 
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
+        public event Action<float> OnImpostorAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
@@ -595,9 +596,12 @@ namespace DCL
 
             avatarMeshCombiner.renderer.enabled = newVisibility;
         }
-
+        
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
+
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
+
+        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
 
         public void SetAvatarFade(float avatarFade)
         {
@@ -617,6 +621,8 @@ namespace DCL
             Color current = lodRenderer.material.GetColor(BASE_COLOR_PROPERTY);
             current.a = impostorFade;
             lodRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
+
+            OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
 
         private void HideAll()
