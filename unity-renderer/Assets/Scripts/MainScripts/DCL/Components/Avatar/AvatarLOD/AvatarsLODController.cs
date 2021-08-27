@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DCL.Interface;
 
 namespace DCL
 {
@@ -38,6 +39,9 @@ namespace DCL
             }
             otherPlayers.OnAdded += RegisterAvatar;
             otherPlayers.OnRemoved += UnregisterAvatar;
+
+            if (WebInterface.CheckURLParam("AVATAR_IMPOSTORS_TEST_PANEL"))
+                LoadTestPanel();
         }
 
         public void RegisterAvatar(string id, Player player)
@@ -179,6 +183,14 @@ namespace DCL
         }
 
         private bool IsInFrontOfCamera(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE; }
+
+        private void LoadTestPanel()
+        {
+            if (GameObject.Find("AvatarImpostorsTestPanel") != null)
+                return;
+
+            GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/AvatarImpostorsTestPanel"));
+        }
 
         public void Dispose()
         {
