@@ -71,7 +71,6 @@ namespace DCL
             OnPreFinishEvent = null;
 
             Action<AssetType> finalEvent = isSuccess ? OnSuccessEvent : OnFailEvent;
-
             finalEvent?.Invoke(asset);
 
             ClearEvents();

@@ -11,9 +11,9 @@ public class WebSocketCommunication : IKernelCommunication
     WebSocketServer ws;
     private Coroutine updateCoroutine;
     private bool requestStop = false;
-    
+
     private Dictionary<string, GameObject> bridgeGameObjects = new Dictionary<string, GameObject>();
-    
+
     public Dictionary<string, string> messageTypeToBridgeName = new Dictionary<string, string>(); // Public to be able to modify it from `explorer-desktop`
 
     [System.NonSerialized]
@@ -21,7 +21,7 @@ public class WebSocketCommunication : IKernelCommunication
 
     [System.NonSerialized]
     public static volatile bool queuedMessagesDirty;
-    
+
     public bool isServerReady { get { return ws.IsListening; } }
 
     private bool CheckAvailableServerPort(int port)
@@ -68,23 +68,23 @@ public class WebSocketCommunication : IKernelCommunication
     public WebSocketCommunication()
     {
         InitMessageTypeToBridgeName();
-        
+
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
         int port = SearchUnusedPort();
-        
+
         string wssServerUrl = $"ws://localhost:{port}/";
         string wssServiceId = "dcl";
-        
+
         DataStore.i.wsCommunication.wssServerUrl = wssServerUrl;
         DataStore.i.wsCommunication.wssServiceId = wssServiceId;
 
         ws = new WebSocketServer(wssServerUrl);
         ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
         ws.Start();
-        
+
         DataStore.i.wsCommunication.communicationReady.Set(true);
-        
+
         updateCoroutine = CoroutineStarter.Start(ProcessMessages());
     }
 
@@ -132,6 +132,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["RunPerformanceMeterTool"] = "Main";
         messageTypeToBridgeName["InstantiateBotsAtWorldPos"] = "Main";
         messageTypeToBridgeName["InstantiateBotsAtCoords"] = "Main";
+        messageTypeToBridgeName["StartBotsRandomizedMovement"] = "Main";
+        messageTypeToBridgeName["StopBotsMovement"] = "Main";
         messageTypeToBridgeName["RemoveBot"] = "Main";
         messageTypeToBridgeName["ClearBots"] = "Main";
 
@@ -150,7 +152,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateBalanceOfMANA"] = "HUDController";
         messageTypeToBridgeName["SetPlayerTalking"] = "HUDController";
         messageTypeToBridgeName["SetVoiceChatEnabledByScene"] = "HUDController";
-        
+
         messageTypeToBridgeName["GetMousePosition"] = "BuilderController";
         messageTypeToBridgeName["SelectGizmo"] = "BuilderController";
         messageTypeToBridgeName["ResetObject"] = "BuilderController";
@@ -177,6 +179,9 @@ public class WebSocketCommunication : IKernelCommunication
 
     IEnumerator ProcessMessages()
     {
+        var hudControllerGO = GameObject.Find("HUDController");
+        var mainGO = GameObject.Find("Main");
+
         while (!requestStop)
         {
             lock (queuedMessages)
@@ -199,13 +204,13 @@ public class WebSocketCommunication : IKernelCommunication
                             case "SetVoiceChatEnabledByScene":
                                 if (int.TryParse(msg.payload, out int value)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
                                 {
-                                    GameObject.Find("HUDController").SendMessage(msg.type, value);
+                                    hudControllerGO.SendMessage(msg.type, value);
                                 }
                                 break;
                             case "RunPerformanceMeterTool":
                                 if (float.TryParse(msg.payload, out float durationInSeconds)) // The payload should be `string`, this will be changed in a `renderer-protocol` refactor
                                 {
-                                    GameObject.Find("Main").SendMessage(msg.type, durationInSeconds);
+                                    mainGO.SendMessage(msg.type, durationInSeconds);
                                 }
                                 break;
                             default:

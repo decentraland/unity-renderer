@@ -31,6 +31,8 @@ namespace DCL.Bots
         private List<string> feetWearableIds = new List<string>();
         private List<string> bodyshapeWearableIds = new List<string>();
 
+        private Coroutine movementRoutine = null;
+
         /// <summary>
         /// Makes sure the Catalogue with all the wearables has already been loaded, otherwise it loads it
         /// </summary>
@@ -112,7 +114,7 @@ namespace DCL.Bots
 
         private Vector3 playerUnityPosition => CommonScriptableObjects.playerUnityPosition.Get();
         private Vector3 playerWorldPosition => CommonScriptableObjects.playerWorldPosition.Get();
-
+        private WorldPosInstantiationConfig lastConfigUsed;
         /// <summary>
         /// Instantiates bots using the config file param values. It defaults some uninitialized values using the player's position
         /// </summary>
@@ -121,6 +123,27 @@ namespace DCL.Bots
         {
             yield return EnsureGlobalSceneAndCatalog();
 
+            PatchWorldPosInstantiationConfig(config);
+
+            Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xPos}, {config.yPos}, {config.zPos})...");
+
+            Vector3 randomizedAreaPosition = new Vector3();
+            for (int i = 0; i < config.amount; i++)
+            {
+                randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
+                InstantiateBot(randomizedAreaPosition);
+            }
+
+            Log($"Finished instantiating {config.amount} avatars. They may take some time to appear while their wearables are being loaded.");
+
+            lastConfigUsed = config;
+
+            // TODO: Remove this and add to new entrypoint call in DebugController...
+            // StartRandomMovement(0.5f);
+        }
+
+        private void PatchWorldPosInstantiationConfig(WorldPosInstantiationConfig config)
+        {
             // TODO(Brian): Use nullable types here, this may fail.
             if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
@@ -139,17 +162,6 @@ namespace DCL.Bots
                 Log($"Z Position value wasn't provided... using player's current Z Position.");
                 config.zPos = playerUnityPosition.z;
             }
-
-            Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xPos}, {config.yPos}, {config.zPos})...");
-
-            Vector3 randomizedAreaPosition = new Vector3();
-            for (int i = 0; i < config.amount; i++)
-            {
-                randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
-                InstantiateBot(randomizedAreaPosition);
-            }
-
-            Log($"Finished instantiating {config.amount} avatars. They may take some time to appear while their wearables are being loaded.");
         }
 
         /// <summary>
@@ -158,17 +170,7 @@ namespace DCL.Bots
         /// <param name="config">The config file to be used</param>
         public IEnumerator InstantiateBotsAtCoords(CoordsInstantiationConfig config)
         {
-            if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
-            {
-                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
-                config.xCoord = Mathf.Floor(playerWorldPosition.x / ParcelSettings.PARCEL_SIZE);
-            }
-
-            if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
-            {
-                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
-                config.yCoord = Mathf.Floor(playerWorldPosition.z / ParcelSettings.PARCEL_SIZE);
-            }
+            PatchCoordsInstantiationConfig(config);
 
             var worldPosConfig = new WorldPosInstantiationConfig()
             {
@@ -183,6 +185,22 @@ namespace DCL.Bots
             Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xCoord}, {config.yCoord}) coords...");
 
             yield return InstantiateBotsAtWorldPos(worldPosConfig);
+        }
+
+        private void PatchCoordsInstantiationConfig(CoordsInstantiationConfig config)
+        {
+            // TODO(Brian): Use nullable types here, this may fail.
+            if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
+                config.xCoord = Mathf.Floor(playerWorldPosition.x / ParcelSettings.PARCEL_SIZE);
+            }
+
+            if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
+                config.yCoord = Mathf.Floor(playerWorldPosition.z / ParcelSettings.PARCEL_SIZE);
+            }
         }
 
         /// <summary>
@@ -233,6 +251,7 @@ namespace DCL.Bots
             {
                 RemoveBot(instantiatedBots[0]);
             }
+            Log("Removed all bots.");
         }
 
         /// <summary>
@@ -270,6 +289,121 @@ namespace DCL.Bots
                 wearablesSet.Add(bodyshapeWearableIds[Random.Range(0, bodyshapeWearableIds.Count)]);
 
             return wearablesSet;
+        }
+
+        /// <summary>
+        /// Starts a coroutine that traverses a % of the instantiated population at that moment and updates their waypoint with a frequency of 'waypointsUpdateTime' in seconds 
+        /// </summary>
+        /// <param name="populationNormalizedPercentage">The population % that will start moving, expressed normalized e.g: 50% would be 0.5f</param>
+        /// <param name="waypointsUpdateTime">The time wait in seconds for each waypoints update</param>
+        public void StartRandomMovement(CoordsRandomMovementConfig config)
+        {
+            if (instantiatedBots.Count == 0)
+            {
+                Log($"Can't start randomized movement if there are no bots instantiated. Please first instantiate some bots.");
+                return;
+            }
+
+            PatchCoordsRandomMovementConfig(config);
+
+            Log($"Starting randomized movement on {(config.populationNormalizedPercentage * 100)}% of the current population. Randomized waypoints will be inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xCoord}, {config.yCoord}) coords. The waypoints update time is {config.waypointsUpdateTime} seconds.");
+
+            StopRandomMovement();
+
+            int instantiatedCount = instantiatedBots.Count;
+            int botsAmount = Mathf.Min(Mathf.FloorToInt(instantiatedCount * config.populationNormalizedPercentage), instantiatedCount);
+
+            List<int> randomBotIndices = new List<int>();
+            for (int i = 0; i < botsAmount; i++)
+            {
+                int randomIndex = Random.Range(0, instantiatedCount);
+
+                if (botsAmount == instantiatedCount)
+                {
+                    randomIndex = i;
+                }
+                else
+                {
+                    while (randomBotIndices.Contains(randomIndex))
+                    {
+                        randomIndex = Random.Range(0, instantiatedCount);
+                    }
+                }
+
+                randomBotIndices.Add(randomIndex);
+            }
+
+            movementRoutine = CoroutineStarter.Start(RandomMovementRoutine(randomBotIndices, config.waypointsUpdateTime));
+        }
+
+        private const float WAYPOINTS_UPDATE_DEFAULT_TIME = 5f;
+        private void PatchCoordsRandomMovementConfig(CoordsRandomMovementConfig config)
+        {
+            config.populationNormalizedPercentage = Mathf.Clamp(config.populationNormalizedPercentage, 0f, 1f);
+
+            // TODO(Brian): Use nullable types here, this may fail.
+            if (config.waypointsUpdateTime == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"waypointsUpdateTime value wasn't provided... using default time: {WAYPOINTS_UPDATE_DEFAULT_TIME}");
+                config.waypointsUpdateTime = WAYPOINTS_UPDATE_DEFAULT_TIME;
+            }
+
+            if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
+                config.xCoord = Mathf.Floor(playerWorldPosition.x / ParcelSettings.PARCEL_SIZE);
+            }
+
+            if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
+                config.yCoord = Mathf.Floor(playerWorldPosition.z / ParcelSettings.PARCEL_SIZE);
+            }
+
+            if (config.areaWidth == 0)
+            {
+                Log($"Area width provided is 0... will use last bots spawning area config width: {lastConfigUsed.areaWidth}");
+                config.areaWidth = lastConfigUsed.areaWidth;
+            }
+
+            if (config.areaDepth == 0)
+            {
+                Log($"Area depth provided is 0... will use last bots spawning area config depth: {lastConfigUsed.areaDepth}");
+                config.areaWidth = lastConfigUsed.areaDepth;
+            }
+        }
+
+        public void StopRandomMovement()
+        {
+            if (movementRoutine == null)
+                return;
+
+            CoroutineStarter.Stop(movementRoutine);
+            Log("Stopped bots movement.");
+        }
+
+        private float lastMovementUpdateTime;
+        IEnumerator RandomMovementRoutine(List<int> targetBots, float waypointsUpdateTime)
+        {
+            lastMovementUpdateTime = Time.timeSinceLevelLoad;
+            while (true)
+            {
+                float currentTime = Time.timeSinceLevelLoad;
+                if (currentTime - lastMovementUpdateTime >= waypointsUpdateTime)
+                {
+                    lastMovementUpdateTime = currentTime;
+                    foreach (int targetBotIndex in targetBots)
+                    {
+                        // Thanks to the avatars movement interpolation, we can just update their entity position to the target position.
+                        Vector3 randomizedAreaPosition = new Vector3(Random.Range(lastConfigUsed.xPos, lastConfigUsed.xPos + lastConfigUsed.areaWidth),
+                            lastConfigUsed.yPos, Random.Range(lastConfigUsed.zPos, lastConfigUsed.zPos + lastConfigUsed.areaDepth));
+
+                        UpdateEntityTransform(globalScene, instantiatedBots[targetBotIndex], randomizedAreaPosition, Quaternion.identity, Vector3.one);
+                    }
+                }
+
+                yield return null;
+            }
         }
 
         void UpdateEntityTransform(ParcelScene scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)

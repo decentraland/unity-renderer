@@ -74,6 +74,7 @@ namespace UnityGLTF
         [SerializeField] private float RetryTimeout = 2.0f;
         [SerializeField] public Shader shaderOverride = null;
         private bool initialVisibility = true;
+        private bool ignoreDistanceTest = false;
 
         private enum State
         {
@@ -100,10 +101,7 @@ namespace UnityGLTF
 
         public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void Initialize(IWebRequestController webRequestController)
-        {
-            this.webRequestController = webRequestController;
-        }
+        public void Initialize(IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
 
         public void LoadAsset(string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null)
         {
@@ -120,7 +118,8 @@ namespace UnityGLTF
 
             if (loadingRoutine != null)
             {
-                StopCoroutine(loadingRoutine);
+                Debug.LogError($"ERROR: trying to load GLTF when is already loading {idPrefix}");
+                return;
             }
 
             alreadyDecrementedRefCount = false;
@@ -168,6 +167,9 @@ namespace UnityGLTF
             }
 
             state = State.FAILED;
+
+            CoroutineStarter.Stop(loadingRoutine);
+            loadingRoutine = null;
 
             DecrementDownloadCount();
 
@@ -342,10 +344,12 @@ namespace UnityGLTF
                     }
 
                     alreadyLoadedAsset = true;
-                    OnFinishedLoadingAsset?.Invoke();
 
                     CoroutineStarter.Stop(loadingRoutine);
                     loadingRoutine = null;
+
+                    OnFinishedLoadingAsset?.Invoke();
+
                     Destroy(loadingPlaceholder);
                     Destroy(this);
                 }
@@ -365,6 +369,19 @@ namespace UnityGLTF
         {
             prioritizeDownload = true;
         }
+
+        public void CancelIfQueued()
+        {
+            if (prioritizeDownload)
+                return;
+            
+            if (state == State.QUEUED || state == State.NONE)
+            {
+                OnFail_Internal(null);
+            }
+        }
+
+        public void SetIgnoreDistanceTest() { ignoreDistanceTest = true; }
 
 #if UNITY_EDITOR
         // In production it will always be false
@@ -402,9 +419,13 @@ namespace UnityGLTF
 
             downloadQueueHandler.Dequeue(this);
 
+            if (loadingRoutine != null)
+            {
+                Debug.LogWarning($"ERROR: GLTF destroyed while loading -> {name}");
+            }
+
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
-                CoroutineStarter.Stop(loadingRoutine);
                 OnFail_Internal(null);
                 return;
             }

@@ -15,6 +15,8 @@ namespace DCL
         void RunPerformanceMeterTool(float durationInSeconds);
         void InstantiateBotsAtWorldPos(string config);
         void InstantiateBotsAtCoords(string config);
+        void StartBotsRandomizedMovement(string configJson);
+        void StopBotsMovement();
         public void RemoveBot(string targetEntityId);
         public void ClearBots();
         List<Vector3> GetTrackedTeleportPositions();
