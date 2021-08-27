@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,14 +7,17 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
+        internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
+
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
         private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
         private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
         private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
+        private Vector3 cameraPosition;
+        private Vector3 cameraForward;
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
-
         internal bool enabled;
 
         public AvatarsLODController()
@@ -62,6 +64,9 @@ namespace DCL
             if (!enabled)
                 return;
 
+            cameraPosition = CommonScriptableObjects.cameraPosition.Get();
+            cameraForward = CommonScriptableObjects.cameraForward.Get();
+
             UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
             UpdateLODsBillboard();
         }
@@ -70,9 +75,13 @@ namespace DCL
         {
             foreach (var kvp in lodControllers)
             {
-                otherPlayers.TryGetValue(kvp.Key, out Player player);
+                Player player = kvp.Value.player;
+
+                if (!IsInFrontOfCamera(player.worldPosition))
+                    continue;
+
                 Vector3 previousForward = player.forwardDirection;
-                Vector3 lookAtDir = (player.worldPosition - CommonScriptableObjects.cameraPosition).normalized;
+                Vector3 lookAtDir = (cameraPosition - player.worldPosition).normalized;
 
                 lookAtDir.y = previousForward.y;
                 player.renderer.SetImpostorForward(lookAtDir);
@@ -95,6 +104,7 @@ namespace DCL
                 (IAvatarLODController lodController, float sqrtDistance) = lodControllersByDistance[index];
                 if (sqrtDistance < 0) //Behind camera
                 {
+                    lodController.SetInvisible();
                     continue;
                 }
 
@@ -110,6 +120,7 @@ namespace DCL
                         avatarsCount++;
                         continue;
                     }
+
                     lodController.SetInvisible();
                     continue;
                 }
@@ -145,12 +156,13 @@ namespace DCL
         /// <returns></returns>
         private float SqrDistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
         {
-            if (player == null || !IsInFrontOfCamera(player))
+            if (player == null || !IsInFrontOfCamera(player.worldPosition))
                 return -1;
-            return Mathf.Abs(Vector3.SqrMagnitude(ownPlayerPosition - player.worldPosition));
+
+            return Vector3.SqrMagnitude(ownPlayerPosition - player.worldPosition);
         }
 
-        private bool IsInFrontOfCamera(Player player) => true;
+        private bool IsInFrontOfCamera(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE; }
 
         public void Dispose()
         {

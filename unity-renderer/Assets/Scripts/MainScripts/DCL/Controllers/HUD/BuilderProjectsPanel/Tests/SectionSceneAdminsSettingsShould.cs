@@ -21,6 +21,28 @@ namespace Tests
         public void TearDown() { controller.Dispose(); }
 
         [Test]
+        public void AddAdmin()
+        {
+            //Act
+            int a = 5;
+            int b = a + 3;
+            controller.OnAddAdminPressed("TestId");
+
+            //Assert
+            Assert.AreEqual(controller.adminsUpdatePayload.admins.Length, 1);
+        }
+
+        [Test]
+        public void AddBannerUser()
+        {
+            //Act
+            controller.OnAddBannedUserPressed("TestId");
+
+            //Assert
+            Assert.AreEqual(controller.bannedUsersUpdatePayload.bannedUsers.Length, 1);
+        }
+
+        [Test]
         public void HavePrefabSetupCorrectly()
         {
             Assert.AreEqual(1, view.adminsContainer.childCount);

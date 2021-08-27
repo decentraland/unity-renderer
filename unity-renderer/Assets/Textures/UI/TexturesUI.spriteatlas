@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7453135
+    totalSpriteSurfaceArea: 7460632
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -175,6 +175,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9af081c7b27544b809eda744a31a2889, type: 3}
   - {fileID: 21300000, guid: 0f4ebac7e595c4582aa0491ec5e6466a, type: 3}
   - {fileID: 21300000, guid: b0b580e7bcb4e4d1fb4fc635fd057a89, type: 3}
+  - {fileID: 21300000, guid: 9ef211f7dbe2c4e13911b4054a18334b, type: 3}
   - {fileID: 21300000, guid: e0fcedf7c3fa64d24b85a27aa8bb93a9, type: 3}
   - {fileID: 21300000, guid: 7fa4c0281629e43abbcb190d00fe187a, type: 3}
   - {fileID: 21300000, guid: 08d52e28c31ca4d049008be051e8b8a1, type: 3}
@@ -217,6 +218,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cda51e8a359aa4105bbb5f2b2e27dd10, type: 3}
   - {fileID: 21300000, guid: 8db90f8afd6a349dea8d959b88ddae43, type: 3}
   - {fileID: 21300000, guid: ad45379ab95744ed290d6c7808b89084, type: 3}
+  - {fileID: 21300000, guid: 63cedfaa776dc4d69a9f4848cd966364, type: 3}
   - {fileID: 21300000, guid: 96af52ba6c86845beb91f068f1cabe94, type: 3}
   - {fileID: 21300000, guid: 6c9da2cade77947d3bc10b1ad5c4f532, type: 3}
   - {fileID: 21300000, guid: 0b8573ead118a4e798b4fa5d8c93fe8c, type: 3}
@@ -243,6 +245,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 386f9e9b4e4fcc34299a279fe4eddeb3, type: 3}
   - {fileID: 21300000, guid: f3e766ab5571e436ebb74c06db87db7b, type: 3}
   - {fileID: 21300000, guid: da7e5aab6c83c471e9951b0ff723a822, type: 3}
+  - {fileID: 21300000, guid: b23d5fabe4435364292b363710d399aa, type: 3}
   - {fileID: 21300000, guid: 7bfca4cb270a343c682028817c0d5bf4, type: 3}
   - {fileID: 21300000, guid: fe4a00db663ed4d3abe06167ea5b3317, type: 3}
   - {fileID: 21300000, guid: 07a400eb205264a4f9e2aad5d599b4a3, type: 3}
@@ -399,17 +402,18 @@ SpriteAtlas:
   - ContainerRadius20Shadow
   - ProfileHudTopContainer
   - QuestIcon
-  - EllipticalSwitchBackground
+  - Switch32
   - ContainerRadius11Shadow
   - BuilderIcon
   - VoiceChatDisable
-  - RoundedContainerRadius23
+  - RoundedContainer23
   - MouseLocked
   - FriendsListImage
   - MagicWand
   - DayModeIcon
+  - AudioIcon
   - MapIcon
-  - SettingsGeneralIcon
+  - GeneralIcon
   - NFTFrame
   - NightModeIcon
   - NFTStarUniqueContainer
@@ -421,7 +425,7 @@ SpriteAtlas:
   - TaskBarSeparator
   - ScenesEmpty
   - PoapDefault
-  - Arrow
+  - ArrowBlack
   - RejectButton
   - ContainerRadius10
   - TutorialIcon
@@ -450,6 +454,7 @@ SpriteAtlas:
   - RectRadius16
   - ContainerRectLeft14
   - CardPassportIcon
+  - RoundedContainer34
   - MarketplaceEditorIcon
   - PassportIcon
   - ContainerRadius6Shadow
@@ -463,7 +468,7 @@ SpriteAtlas:
   - ContainerRadius12
   - ReportIcon
   - PinIconOff
-  - ArrowStrokee
+  - Arrow
   - EllipticalSwitchHanddle
   - RoundedContainer
   - ContainerTabsPassport
@@ -476,6 +481,7 @@ SpriteAtlas:
   - ContainerQuestEntryLoading
   - ToggleCheckOff
   - PoapIcon
+  - SoundIconWhite
   - SettingsVolumetricIcon
   - Compass
   - BackpackIconNew
@@ -518,7 +524,7 @@ SpriteAtlas:
   - PatternPC
   - DialogCornerLeft
   - LogOutIcon
-  - RoundedContainerWhite
+  - RoundedContainer44
   - ControlsIconNew
   - WarningIcon
   - CameraIcon

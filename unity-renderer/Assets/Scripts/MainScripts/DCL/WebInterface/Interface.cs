@@ -611,18 +611,43 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
 #else
-        public static void StartDecentraland() { }
-
+        private static bool hasQueuedMessages = false;
+        private static List<(string, string)> queuedMessages = new List<(string, string)>();
+        public static void StartDecentraland() {}
         public static void MessageFromEngine(string type, string message)
         {
             if (OnMessageFromEngine != null)
             {
+                if (hasQueuedMessages)
+                {
+                    ProcessQueuedMessages();
+                }
                 OnMessageFromEngine.Invoke(type, message);
+                if (VERBOSE)
+                {
+                    Debug.Log("MessageFromEngine called with: " + type + ", " + message);
+                }
             }
-
-            if (VERBOSE)
+            else
             {
-                Debug.Log("MessageFromEngine called with: " + type + ", " + message);
+                lock (queuedMessages)
+                {
+                    queuedMessages.Add((type, message));                    
+                }
+                hasQueuedMessages = true;
+            }
+        }
+
+        private static void ProcessQueuedMessages()
+        {
+            hasQueuedMessages = false;
+            lock (queuedMessages)
+            {
+                foreach((string type, string payload) in queuedMessages)
+                {
+                    MessageFromEngine(type, payload);
+                }
+                queuedMessages.Clear();
             }
         }
 
@@ -1025,7 +1050,10 @@ namespace DCL.Interface
             });
         }
 
-        public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
+        public static void SendSystemInfoReport()
+        {
+            SendMessage("SystemInfoReport", new SystemInfoReportPayload());
+        }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)
         {

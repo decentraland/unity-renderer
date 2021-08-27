@@ -7,6 +7,6 @@ namespace DCL
         
         public AssetPromiseKeeper_GLTF() : base(new AssetLibrary_GLTF()) { }
 
-        protected override void OnSilentForget(AssetPromise_GLTF promise) { promise.asset.Hide(); }
+        protected override void OnSilentForget(AssetPromise_GLTF promise) { promise.OnSilentForget(); }
     }
 }

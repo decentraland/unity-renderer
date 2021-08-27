@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -67,7 +68,7 @@ public class BIWCatalogShould
 
         QuickBarController quickBarController = new QuickBarController();
         sceneCatalogController.Initialize(sceneCatalogView, quickBarController);
-        quickBarController.Initialize(quickBarView, sceneCatalogController);
+        quickBarController.Initialize(quickBarView, Substitute.For<IDragAndDropSceneObjectController>());
         int slots = quickBarController.GetSlotsCount();
         quickBarView.shortcutsImgs = new QuickBarSlot[slots];
 

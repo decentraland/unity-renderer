@@ -147,24 +147,7 @@ public class BIWGodMode : BIWMode
         }
         else if (isSquareMultiSelectionInputActive && isMouseDragging)
         {
-            List<BIWEntity> allEntities = null;
-
-            allEntities = entityHandler.GetAllEntitiesFromCurrentScene();
-
-            foreach (BIWEntity entity in allEntities)
-            {
-                if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
-                    continue;
-
-                if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
-                {
-                    outlinerController.OutlineEntity(entity);
-                }
-                else
-                {
-                    outlinerController.CancelEntityOutline(entity);
-                }
-            }
+            CheckOutlineEntitiesInSquareSelection(Input.mousePosition);
         }
     }
 
@@ -176,6 +159,24 @@ public class BIWGodMode : BIWMode
             var rect = BIWUtils.GetScreenRect(lastMousePosition, Input.mousePosition);
             BIWUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.25f));
             BIWUtils.DrawScreenRectBorder(rect, 1, Color.white);
+        }
+    }
+
+    internal void CheckOutlineEntitiesInSquareSelection(Vector3 mousePosition)
+    {
+        List<BIWEntity> allEntities = null;
+
+        allEntities = entityHandler.GetAllEntitiesFromCurrentScene();
+
+        foreach (BIWEntity entity in allEntities)
+        {
+            if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
+                continue;
+
+            if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, mousePosition))
+                outlinerController.OutlineEntity(entity);
+            else
+                outlinerController.CancelEntityOutline(entity);
         }
     }
 
@@ -398,7 +399,7 @@ public class BIWGodMode : BIWMode
         if (isSquareMultiSelectionInputActive && mouseMainBtnPressed )
         {
             if (Vector3.Distance(lastMousePosition, position) >= BIWSettings.MOUSE_THRESHOLD_FOR_DRAG)
-                EndBoundMultiSelection();
+                EndBoundMultiSelection(Input.mousePosition);
 
             isSquareMultiSelectionInputActive = false;
             mouseMainBtnPressed = false;
@@ -441,7 +442,7 @@ public class BIWGodMode : BIWMode
         canDragSelectedEntities = false;
     }
 
-    private void EndBoundMultiSelection()
+    internal void EndBoundMultiSelection(Vector3 mousePosition)
     {
         freeCameraController.SetCameraCanMove(true);
         List<BIWEntity> allEntities = null;
@@ -458,7 +459,7 @@ public class BIWGodMode : BIWMode
         {
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
-                if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
+                if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, mousePosition)
                     && !entity.isLocked)
                 {
                     if (entity.isSelected)
@@ -618,7 +619,8 @@ public class BIWGodMode : BIWMode
     private void UpdateActionsInteractable()
     {
         bool areInteratable = selectedEntities.Count > 0;
-        HUDController.i.builderInWorldMainHud.SetActionsButtonsInteractable(areInteratable);
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.SetActionsButtonsInteractable(areInteratable);
     }
 
     public override bool ShouldCancelUndoAction()
@@ -716,7 +718,7 @@ public class BIWGodMode : BIWMode
         // }
     }
 
-    void OnGizmosTransformStart(string gizmoType)
+    internal void OnGizmosTransformStart(string gizmoType)
     {
         outlinerController.SetOutlineCheckActive(false);
         foreach (BIWEntity entity in selectedEntities)
@@ -725,7 +727,7 @@ public class BIWGodMode : BIWMode
         }
     }
 
-    void OnGizmosTransformEnd(string gizmoType)
+    internal void OnGizmosTransformEnd(string gizmoType)
     {
         outlinerController.SetOutlineCheckActive(true);
         foreach (BIWEntity entity in selectedEntities)

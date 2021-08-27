@@ -67,9 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: OK
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6b705423dc77d4fceb4122f6d7e571d6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 9d9df32282a3c40299019c36b2157d37, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -407,8 +406,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: You got
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 7dfa1f6019e8840a797a48955651317e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -616,8 +615,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Reward Received
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 131598e906f4d4a048cfa339caa74472, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 8f0c7039aba8d420aad6241bf1b80584, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0da28b1264c7140eda8582804e5d094b, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 263d3c969cdca4dfaaa71514f806a4c2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -897,8 +896,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Item Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 131598e906f4d4a048cfa339caa74472, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 8f0c7039aba8d420aad6241bf1b80584, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0da28b1264c7140eda8582804e5d094b, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 263d3c969cdca4dfaaa71514f806a4c2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
