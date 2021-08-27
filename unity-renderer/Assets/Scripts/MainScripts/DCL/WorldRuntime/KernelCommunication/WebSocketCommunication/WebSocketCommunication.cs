@@ -60,6 +60,8 @@ public class WebSocketCommunication : IKernelCommunication
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
         string url = StartServer(5000, 5100);
+
+        Debug.Log("WebSocket Server URL: " + url);
         
         DataStore.i.wsCommunication.url = url;
 
