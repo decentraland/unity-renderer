@@ -10,7 +10,7 @@ jobs:
     name: Decentraland Unity-Renderer Deployment Notification
     steps:
       - name: Comment PR
-        uses: thollander/actions-comment-pull-request@master
+        uses: thollander/actions-comment-pull-request@main
         with:
           message: |
             After the CI passes:
