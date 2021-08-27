@@ -86,6 +86,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
         InstantiatedGLTFObject trunk2 = null;
 
         PersistentAssetCache.ImageCacheByUri.Clear();
+        PersistentAssetCache.StreamCacheByUri.Clear();
 
         yield return LoadModel("/GLTF/Trunk/Trunk.gltf", (entity, m) => trunk1 = m);
         yield return LoadModel("/GLTF/Trunk2/Trunk.gltf", (entity, m) => trunk2 = m);
