@@ -74,7 +74,6 @@ namespace UnityGLTF
         [SerializeField] private float RetryTimeout = 2.0f;
         [SerializeField] public Shader shaderOverride = null;
         private bool initialVisibility = true;
-        private bool ignoreDistanceTest = false;
 
         private enum State
         {
@@ -380,8 +379,6 @@ namespace UnityGLTF
                 OnFail_Internal(null);
             }
         }
-
-        public void SetIgnoreDistanceTest() { ignoreDistanceTest = true; }
 
 #if UNITY_EDITOR
         // In production it will always be false
