@@ -9,7 +9,7 @@ public interface IQuickBarController
     event Action<CatalogItem> OnCatalogItemSelected;
     event Action<CatalogItem> OnCatalogItemAssigned;
 
-    void Initialize(IQuickBarView view, ISceneCatalogController sceneCatalogController);
+    void Initialize(IQuickBarView view, IDragAndDropSceneObjectController dragAndDropSceneObjectController);
     void Dispose();
     int GetSlotsCount();
     CatalogItem QuickBarObjectSelected(int index);
@@ -30,23 +30,23 @@ public class QuickBarController : IQuickBarController
     public event Action<CatalogItem> OnCatalogItemAssigned;
 
     internal IQuickBarView quickBarView;
-    internal ISceneCatalogController sceneCatalogController;
+    internal IDragAndDropSceneObjectController dragAndDropController;
 
     internal CatalogItem[] quickBarShortcutsCatalogItems = new CatalogItem[AMOUNT_OF_QUICK_SLOTS];
     internal AssetPromise_Texture[] quickBarShortcutsThumbnailPromises = new AssetPromise_Texture[AMOUNT_OF_QUICK_SLOTS];
     internal int lastIndexDroped = -1;
 
-    public void Initialize(IQuickBarView quickBarView, ISceneCatalogController sceneCatalogController)
+    public void Initialize(IQuickBarView quickBarView, IDragAndDropSceneObjectController dragAndDropController)
     {
         this.quickBarView = quickBarView;
-        this.sceneCatalogController = sceneCatalogController;
+        this.dragAndDropController = dragAndDropController;
 
         quickBarView.OnQuickBarObjectSelected += OnQuickBarObjectSelected;
         quickBarView.OnSetIndexToDrop += SetIndexToDrop;
         quickBarView.OnSceneObjectDroppedFromQuickBar += SceneObjectDroppedFromQuickBar;
         quickBarView.OnSceneObjectDroppedFromCatalog += SceneObjectDroppedFromCatalog;
         quickBarView.OnQuickBarInputTriggered += QuickBarInput;
-        sceneCatalogController.OnStopInput += CancelDragging;
+        dragAndDropController.OnStopInput += CancelDragging;
     }
 
     public void Dispose()
@@ -56,7 +56,7 @@ public class QuickBarController : IQuickBarController
         quickBarView.OnSceneObjectDroppedFromQuickBar -= SceneObjectDroppedFromQuickBar;
         quickBarView.OnSceneObjectDroppedFromCatalog -= SceneObjectDroppedFromCatalog;
         quickBarView.OnQuickBarInputTriggered -= QuickBarInput;
-        sceneCatalogController.OnStopInput -= CancelDragging;
+        dragAndDropController.OnStopInput -= CancelDragging;
 
         foreach (AssetPromise_Texture loadedThumbnailPromise in quickBarShortcutsThumbnailPromises)
         {
@@ -99,7 +99,7 @@ public class QuickBarController : IQuickBarController
 
     public void SceneObjectDroppedFromCatalog(BaseEventData data)
     {
-        CatalogItemAdapter adapter = sceneCatalogController.GetLastCatalogItemDragged();
+        CatalogItemAdapter adapter = dragAndDropController.GetLastAdapterDragged();
 
         if (adapter != null)
             SetCatalogItemToShortcut(adapter.GetContent());

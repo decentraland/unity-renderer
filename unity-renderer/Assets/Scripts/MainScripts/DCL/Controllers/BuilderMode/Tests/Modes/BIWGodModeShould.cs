@@ -55,6 +55,128 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.freeCameraController.Configure().gameObject.Returns(mockedGameObject);
     }
 
+    [UnityTest]
+    public IEnumerator EndMultiSelection()
+    {
+        //Arrange
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
+        entity.Init(rootEntity, null);
+        yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
+        rootEntity.gameObject.transform.position = Vector3.zero;
+        entities.Add(entity);
+        context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+        godMode.lastMousePosition = Vector3.zero;
+
+        //Act
+        godMode.EndBoundMultiSelection(Vector3.one * 9999);
+
+        //Assert
+        context.outlinerController.Received().CancelAllOutlines();
+        context.entityHandler.Received().SelectEntity(entity);
+    }
+
+    [Test]
+    public void StartMultiselection()
+    {
+        //Act
+        godMode.StartMultiSelection();
+
+        //Assert
+        Assert.IsNull(mockedGameObject.transform.parent);
+    }
+
+    [Test]
+    public void SelectEntity()
+    {
+        //Arrange
+        var entity = new BIWEntity();
+        entity.Init(Substitute.For<IDCLEntity>(), null);
+
+        //Act
+        godMode.SelectedEntity(entity);
+
+        //Assert
+        Assert.IsNull(mockedGameObject.transform.parent);
+    }
+
+    [Test]
+    public void CancelAction()
+    {
+        //Arrange
+        godMode.isPlacingNewObject = true;
+
+        //Act
+        var result = godMode.ShouldCancelUndoAction();
+
+        //Assert
+        Assert.IsTrue(result);
+    }
+
+    [Test]
+    public void CreateActionStart()
+    {
+        //Arrange
+        var result = godMode.actionList.Count;
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        var rootEntity = Substitute.For<IDCLEntity>();
+        rootEntity.Configure().gameObject.Returns(mockedGameObject);
+        entity.Init(rootEntity, null);
+        entities.Add(entity);
+        godMode.selectedEntities = entities;
+
+        //Act
+        godMode.OnGizmosTransformStart(BIWSettings.TRANSLATE_GIZMO_NAME);
+
+        //Assert
+        Assert.Greater(godMode.actionList.Count, result);
+    }
+
+    [Test]
+    public void CreateActionEnd()
+    {
+        //Arrange
+        var result = godMode.actionList;
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        var rootEntity = Substitute.For<IDCLEntity>();
+        rootEntity.Configure().gameObject.Returns(mockedGameObject);
+        entity.Init(rootEntity, null);
+        entities.Add(entity);
+        godMode.selectedEntities = entities;
+        godMode.OnGizmosTransformStart(BIWSettings.TRANSLATE_GIZMO_NAME);
+        mockedGameObject.transform.position = mockedGameObject.transform.position + Vector3.one;
+
+        //Act
+        godMode.OnGizmosTransformEnd(BIWSettings.TRANSLATE_GIZMO_NAME);
+
+        //Assert
+        Assert.AreNotSame(godMode.actionList, result);
+    }
+
+    [UnityTest]
+    public IEnumerator OutlineEntitiesInsideSquareSelection()
+    {
+        //Arrange
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
+        entity.Init(rootEntity, null);
+        yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
+        rootEntity.gameObject.transform.position = Vector3.zero;
+        entities.Add(entity);
+        context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+        godMode.lastMousePosition = Vector3.zero;
+
+        //Act
+        godMode.CheckOutlineEntitiesInSquareSelection(Vector3.one * 9999);
+
+        //Assert
+        context.outlinerController.Received().OutlineEntity(entity);
+    }
+
     [Test]
     public void GodModeActivation()
     {

@@ -84,6 +84,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     private IPromiseLike_TextureAsset imagePromise = null;
     private GifPlayer gifPlayer = null;
 
+    private string nftTokenId;
     bool backgroundColorSet = false;
     string marketUrl = null;
 
@@ -174,6 +175,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ShowMainLoading(false);
         nftContent.SetActive(true);
 
+        nftTokenId = info.tokenId;
         imageNftBackground.color = Color.white;
         backgroundColorSet = info.backgroundColor != null;
         if (backgroundColorSet)
@@ -372,6 +374,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         if (!string.IsNullOrEmpty(marketUrl))
         {
             WebInterface.OpenURL(marketUrl);
+            AnalyticsHelper.SendExternalLinkAnalytic(marketUrl, nftTokenId);
         }
         else
         {

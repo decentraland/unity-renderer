@@ -81,12 +81,12 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         this.controllers.tooltipController.Initialize(tooltipView);
         this.controllers.feedbackTooltipController.Initialize(feedbackTtooltipView);
         this.controllers.sceneCatalogController.Initialize(sceneCatalogView, this.controllers.quickBarController);
-        this.controllers.quickBarController.Initialize(quickBarView, this.controllers.sceneCatalogController);
+        this.controllers.quickBarController.Initialize(quickBarView, this.controllers.dragAndDropSceneObjectController);
         this.controllers.entityInformationController.Initialize(entityInformationView);
         this.controllers.firstPersonModeController.Initialize(firstPersonModeView, this.controllers.tooltipController);
         this.controllers.shortcutsController.Initialize(shortcutsView);
         this.controllers.publishPopupController.Initialize(publishPopupView);
-        this.controllers.dragAndDropSceneObjectController.Initialize(dragAndDropSceneObjectView);
+        this.controllers.dragAndDropSceneObjectController.Initialize(this.controllers.sceneCatalogController, dragAndDropSceneObjectView);
         this.controllers.publishBtnController.Initialize(publishBtnView, this.controllers.tooltipController, this.controllers.feedbackTooltipController);
         this.controllers.inspectorBtnController.Initialize(inspectorBtnView, this.controllers.tooltipController);
         this.controllers.catalogBtnController.Initialize(catalogBtnView, this.controllers.tooltipController);

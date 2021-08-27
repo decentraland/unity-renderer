@@ -168,6 +168,9 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
         instantiatedError.transform.SetParent(entity.rootEntity.gameObject.transform, true);
         instantiatedError.transform.localPosition = Vector3.zero;
 
+        var missingAsset = instantiatedError.GetComponent<MissingAsset>();
+        missingAsset.Configure(entity);
+
         errorGameObjects.Add(entity, instantiatedError);
         entity.OnDelete += DeleteErrorOnEntity;
     }

@@ -11,7 +11,6 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
     public System.Action<CatalogItem> OnCatalogItemClicked;
     public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
     public System.Action<CatalogItem, CatalogItemAdapter, BaseEventData> OnAdapterStartDragging;
-    public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
     public System.Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInAdapter;
     public System.Action<PointerEventData, CatalogItemAdapter> OnPointerExitInAdapter;
 
@@ -38,8 +37,6 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
         adapter.OnCatalogItemClicked += CatalogItemClicked;
         adapter.OnCatalogItemFavorite += CatalogItemFavorite;
         adapter.OnAdapterStartDrag += AdapterStartDragging;
-        adapter.OnAdapterDrag += OnDrag;
-        adapter.OnAdapterEndDrag += OnEndDrag;
         adapter.OnPointerEnterInAdapter += OnPointerEnter;
         adapter.OnPointerExitInAdapter += OnPointerExit;
     }
@@ -49,8 +46,6 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
         adapter.OnCatalogItemClicked -= CatalogItemClicked;
         adapter.OnCatalogItemFavorite -= CatalogItemFavorite;
         adapter.OnAdapterStartDrag -= AdapterStartDragging;
-        adapter.OnAdapterDrag -= OnDrag;
-        adapter.OnAdapterEndDrag -= OnEndDrag;
         adapter.OnPointerEnterInAdapter -= OnPointerEnter;
         adapter.OnPointerExitInAdapter -= OnPointerExit;
     }
@@ -67,10 +62,6 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
             }
         }
     }
-
-    private void OnDrag(PointerEventData eventData) { OnAdapterDrag?.Invoke(eventData); }
-
-    private void OnEndDrag(PointerEventData eventData) { OnAdapterEndDrag?.Invoke(eventData); }
 
     private void CatalogItemClicked(CatalogItem catalogItemClicked) { OnCatalogItemClicked?.Invoke(catalogItemClicked); }
 

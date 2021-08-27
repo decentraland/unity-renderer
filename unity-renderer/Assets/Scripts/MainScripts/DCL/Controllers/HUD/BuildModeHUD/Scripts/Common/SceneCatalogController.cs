@@ -2,6 +2,7 @@ using DCL.Configuration;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public enum BuildModeCatalogSection
@@ -19,6 +20,7 @@ public interface ISceneCatalogController
     event Action OnStopInput;
     event Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInCatalogItemAdapter;
     event Action<PointerEventData, CatalogItemAdapter> OnPointerExitInCatalogItemAdapter;
+    event Action<CatalogItem, CatalogItemAdapter> OnCatalogItemStartDrag;
     void Initialize(ISceneCatalogView view, IQuickBarController quickBarController);
     void Dispose();
     void AssetsPackFilter(bool isOn);
@@ -39,7 +41,6 @@ public interface ISceneCatalogController
     void CloseCatalog();
     void RefreshAssetPack();
     void RefreshCatalog();
-    CatalogItemAdapter GetLastCatalogItemDragged();
     void SetActive(bool isActive);
     BuildModeCatalogSection GetCurrentSection();
 }
@@ -54,6 +55,7 @@ public class SceneCatalogController : ISceneCatalogController
     public event Action OnStopInput;
     public event Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInCatalogItemAdapter;
     public event Action<PointerEventData, CatalogItemAdapter> OnPointerExitInCatalogItemAdapter;
+    public event Action<CatalogItem, CatalogItemAdapter> OnCatalogItemStartDrag;
 
     internal ISceneCatalogView sceneCatalogView;
     internal IQuickBarController quickBarController;
@@ -79,8 +81,7 @@ public class SceneCatalogController : ISceneCatalogController
         if (sceneCatalogView.catalogGroupList != null)
         {
             sceneCatalogView.catalogGroupList.OnCatalogItemClicked += CatalogItemSelected;
-            sceneCatalogView.catalogGroupList.OnResumeInput += ResumeInput;
-            sceneCatalogView.catalogGroupList.OnStopInput += StopInput;
+            sceneCatalogView.catalogGroupList.OnCatalogItemStarDragging += AdapterStartDrag;
             sceneCatalogView.catalogGroupList.OnPointerEnterInAdapter += OnPointerEnter;
             sceneCatalogView.catalogGroupList.OnPointerExitInAdapter += OnPointerExit;
         }
@@ -102,6 +103,8 @@ public class SceneCatalogController : ISceneCatalogController
         biwSearchBarController.OnFilterRemove += FilterRemoved;
     }
 
+    private void AdapterStartDrag(CatalogItem item, CatalogItemAdapter adapter) { OnCatalogItemStartDrag?.Invoke(item, adapter); }
+
     public void Dispose()
     {
         sceneCatalogView.OnHideCatalogClicked -= HideCatalogClicked;
@@ -112,8 +115,7 @@ public class SceneCatalogController : ISceneCatalogController
         if (sceneCatalogView.catalogGroupList != null)
         {
             sceneCatalogView.catalogGroupList.OnCatalogItemClicked -= CatalogItemSelected;
-            sceneCatalogView.catalogGroupList.OnResumeInput -= ResumeInput;
-            sceneCatalogView.catalogGroupList.OnStopInput -= StopInput;
+            sceneCatalogView.catalogGroupList.OnCatalogItemStarDragging -= AdapterStartDrag;
             sceneCatalogView.catalogGroupList.OnPointerEnterInAdapter -= OnPointerEnter;
             sceneCatalogView.catalogGroupList.OnPointerExitInAdapter -= OnPointerExit;
         }
@@ -188,13 +190,19 @@ public class SceneCatalogController : ISceneCatalogController
         sceneCatalogView.SetCatalogTitle(FAVORITE_NAME);
         ShowCatalogContent();
 
+        var favorites  = GenerateFavorites();
+
+        sceneCatalogView.catalogGroupList?.SetContent(favorites);
+        sceneCatalogView.ShowBackButton(false);
+    }
+
+    internal List<Dictionary<string, List<CatalogItem>>>  GenerateFavorites()
+    {
         List<Dictionary<string, List<CatalogItem>>> favorites = new List<Dictionary<string, List<CatalogItem>>>();
         Dictionary<string, List<CatalogItem>> groupedCategoryItems = new Dictionary<string, List<CatalogItem>>();
         groupedCategoryItems.Add(FAVORITE_NAME, favoritesController.GetFavorites());
         favorites.Add(groupedCategoryItems);
-
-        sceneCatalogView.catalogGroupList.SetContent(favorites);
-        sceneCatalogView.ShowBackButton(false);
+        return favorites;
     }
 
     public void CatalogItemSelected(CatalogItem catalogItem) { OnCatalogItemSelected?.Invoke(catalogItem); }
@@ -219,6 +227,14 @@ public class SceneCatalogController : ISceneCatalogController
     internal void SetCatalogAssetPackInListView(CatalogItemPack catalogItemPack)
     {
         sceneCatalogView.SetCatalogTitle(catalogItemPack.title);
+
+        var contentList = GenerateContentListForCatalogItemPack(catalogItemPack);
+
+        sceneCatalogView.catalogGroupList?.SetContent(contentList);
+    }
+
+    internal  List<Dictionary<string, List<CatalogItem>>> GenerateContentListForCatalogItemPack(CatalogItemPack catalogItemPack)
+    {
         Dictionary<string, List<CatalogItem>> groupedCatalogItem = new Dictionary<string, List<CatalogItem>>();
 
         foreach (CatalogItem sceneObject in catalogItemPack.assets)
@@ -236,7 +252,7 @@ public class SceneCatalogController : ISceneCatalogController
             groupedCatalogItem
         };
 
-        sceneCatalogView.catalogGroupList.SetContent(contentList);
+        return contentList;
     }
 
     internal List<CatalogItem> GetAssetsListByCategory(string category, CatalogItemPack sceneAssetPack)
@@ -345,14 +361,6 @@ public class SceneCatalogController : ISceneCatalogController
     {
         if (sceneCatalogView.catalogAssetPackList != null)
             sceneCatalogView.catalogAssetPackList.SetContent(BIWCatalogManager.GetCatalogItemPackList());
-    }
-
-    public CatalogItemAdapter GetLastCatalogItemDragged()
-    {
-        if (sceneCatalogView.catalogGroupList == null)
-            return null;
-
-        return sceneCatalogView.catalogGroupList.GetLastCatalogItemDragged();
     }
 
     private void ShowLastSelectedSection()

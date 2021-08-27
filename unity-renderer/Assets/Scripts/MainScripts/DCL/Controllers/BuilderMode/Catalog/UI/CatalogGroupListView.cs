@@ -9,15 +9,10 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
     public DynamicScrollSensitivity dynamicScrollSensitivity;
 
     public System.Action<CatalogItem> OnCatalogItemClicked;
+    public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemStarDragging;
     public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
     public System.Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInAdapter;
     public System.Action<PointerEventData, CatalogItemAdapter> OnPointerExitInAdapter;
-
-    public event System.Action OnResumeInput;
-    public event System.Action OnStopInput;
-
-    private GameObject draggedObject;
-    private CatalogItemAdapter catalogItemAdapterDragged;
 
     public override void AddAdapters()
     {
@@ -63,8 +58,6 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
         adapter.OnCatalogItemClicked += CatalogItemSelected;
         adapter.OnCatalogItemFavorite += CatalogItemFavorite;
         adapter.OnAdapterStartDragging += AdapterStartDragging;
-        adapter.OnAdapterDrag += OnDrag;
-        adapter.OnAdapterEndDrag += OnEndDrag;
         adapter.OnPointerEnterInAdapter += OnPointerEnter;
         adapter.OnPointerExitInAdapter += OnPointerExit;
     }
@@ -74,38 +67,11 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
         adapter.OnCatalogItemClicked -= CatalogItemSelected;
         adapter.OnCatalogItemFavorite -= CatalogItemFavorite;
         adapter.OnAdapterStartDragging -= AdapterStartDragging;
-        adapter.OnAdapterDrag -= OnDrag;
-        adapter.OnAdapterEndDrag -= OnEndDrag;
         adapter.OnPointerEnterInAdapter -= OnPointerEnter;
         adapter.OnPointerExitInAdapter -= OnPointerExit;
     }
 
-    private void OnDrag(PointerEventData data) { draggedObject.transform.position = data.position; }
-
-    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data)
-    {
-        PointerEventData eventData = data as PointerEventData;
-
-        if (draggedObject == null)
-            draggedObject = Instantiate(adapter.gameObject, generalCanvas.transform);
-
-        CatalogItemAdapter newAdapter = draggedObject.GetComponent<CatalogItemAdapter>();
-
-        RectTransform adapterRT = adapter.GetComponent<RectTransform>();
-        newAdapter.SetContent(adapter.GetContent());
-        newAdapter.EnableDragMode(adapterRT.sizeDelta);
-        catalogItemAdapterDragged = newAdapter;
-
-        OnStopInput?.Invoke();
-    }
-
-    private void OnEndDrag(PointerEventData data)
-    {
-        OnResumeInput?.Invoke();
-        Destroy(draggedObject);
-    }
-
-    public CatalogItemAdapter GetLastCatalogItemDragged() { return catalogItemAdapterDragged; }
+    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data) { OnCatalogItemStarDragging?.Invoke(catalogItemClicked, adapter); }
 
     private void CatalogItemSelected(CatalogItem sceneObject) { OnCatalogItemClicked?.Invoke(sceneObject); }
 

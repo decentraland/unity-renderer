@@ -104,11 +104,13 @@ public static class BIWAnalytics
         SendEditorEvent("end_scene_publish", events);
     }
 
-    public static void SceneLimitsOverPassed(SceneMetricsModel sceneLimits)
+    public static void SceneLimitsExceeded(SceneMetricsModel sceneUsage, SceneMetricsModel sceneLimits)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("limits_passed", GetLimitsPassedArray(sceneUsage, sceneLimits));
         events.Add("scene_limits", JsonConvert.SerializeObject(ConvertSceneMetricsModelToDictionary(sceneLimits)));
-        SendEditorEvent("scene_limits_over_passed", events);
+        events.Add("current_usage", JsonConvert.SerializeObject(ConvertSceneMetricsModelToDictionary(sceneUsage)));
+        SendEditorEvent("scene_limits_exceeded", events);
     }
 
     /// <summary>
@@ -207,6 +209,28 @@ public static class BIWAnalytics
         sceneLimitsDictionary.Add("scene_height", sceneLimits.sceneHeight.ToString());
 
         return sceneLimitsDictionary;
+    }
+
+    public static string GetLimitsPassedArray(SceneMetricsModel sceneUsage, SceneMetricsModel sceneLimits)
+    {
+        string limitsPassed = "[";
+
+        if (sceneUsage.bodies >= sceneLimits.bodies)
+            limitsPassed += "bodies,";
+        if (sceneUsage.entities >= sceneLimits.entities)
+            limitsPassed += "entities,";
+        if (sceneUsage.textures >= sceneLimits.textures)
+            limitsPassed += "textures,";
+        if (sceneUsage.triangles >= sceneLimits.triangles)
+            limitsPassed += "triangles,";
+        if (sceneUsage.materials >= sceneLimits.materials)
+            limitsPassed += "materials,";
+        if (sceneUsage.meshes >= sceneLimits.meshes)
+            limitsPassed += "meshes,";
+
+        limitsPassed = limitsPassed.Substring(0, limitsPassed.Length - 1);
+        limitsPassed += "]";
+        return limitsPassed;
     }
 
     #endregion

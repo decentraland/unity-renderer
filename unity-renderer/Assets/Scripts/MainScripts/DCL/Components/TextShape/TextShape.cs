@@ -14,6 +14,14 @@ namespace DCL.Components
         [Serializable]
         public class Model : BaseModel
         {
+
+            //These values exist in the SDK but we are doing nothing with these values
+            public string fontWeight = "normal";
+            public bool resizeToFit = false;
+            public float zIndex = 0;
+            public bool isPickable = false;
+            //
+
             public bool billboard;
 
             [Header("Font Properties")]
@@ -25,7 +33,6 @@ namespace DCL.Components
             public float opacity = 1f;
             public float fontSize = 100f;
             public bool fontAutoSize = false;
-            public string fontWeight = "normal";
             public string font;
 
             [Header("Text box properties")]
@@ -34,8 +41,6 @@ namespace DCL.Components
             public string vTextAlign = "left";
             public float width = 1f;
             public float height = 0.2f;
-            public bool adaptWidth = false;
-            public bool adaptHeight = false;
             public float paddingTop = 0f;
             public float paddingRight = 0f;
             public float paddingBottom = 0f;
