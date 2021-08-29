@@ -3,6 +3,7 @@ using DCL.Models;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using DCL.Controllers;
 using UnityEngine;
 using static BIWCompleteAction;
@@ -73,6 +74,7 @@ public class BIWActionController : BIWController, IBIWActionController
         currentRedoStepIndex = 0;
     }
 
+    [ExcludeFromCodeCoverage]
     public void GoToAction(BIWCompleteAction action)
     {
         int index = actionsMade.IndexOf(action);

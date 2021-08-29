@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -112,6 +113,8 @@ namespace Tests
         }
 
         [UnityTest]
+        [NUnit.Framework.Category("Explicit")]
+        [Explicit]
         public IEnumerator AudioIsLooped()
         {
             var entity = TestHelpers.CreateSceneEntity(scene);

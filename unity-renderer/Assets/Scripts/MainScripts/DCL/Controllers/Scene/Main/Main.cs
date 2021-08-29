@@ -16,10 +16,9 @@ namespace DCL
         public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
-        public DebugConfig debugConfig;
 
         private PerformanceMetricsController performanceMetricsController;
-        private EntryPoint_World worldEntryPoint;
+        private IKernelCommunication kernelCommunication;
 
         private PluginSystem pluginSystem;
 
@@ -33,11 +32,6 @@ namespace DCL
 
             i = this;
 
-            DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
-            DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
-            DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
-            DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
-
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
                 performanceMetricsController = new PerformanceMetricsController();
@@ -46,19 +40,26 @@ namespace DCL
             }
 
             pluginSystem = new PluginSystem();
-            DCL.Interface.WebInterface.SendSystemInfoReport();
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;
 
-            worldEntryPoint = new EntryPoint_World(Environment.i.world.sceneController);
+            kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
+#else
+            kernelCommunication = new WebSocketCommunication();
 #endif
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
+
+            // this event should be the last one to be executed after initialization
+            // it is used by the kernel to signal "EngineReady" or something like that
+            // to prevent race conditions like "SceneController is not an object",
+            // aka sending events before unity is ready
+            DCL.Interface.WebInterface.SendSystemInfoReport();
         }
 
         protected virtual void SetupEnvironment()
@@ -105,21 +106,5 @@ namespace DCL
             pluginSystem?.OnDestroy();
         }
         private void OnGUI() { pluginSystem.OnGUI(); }
-
-        #region RuntimeMessagingBridge
-
-        public void LoadParcelScenes(string payload) { Environment.i.world.sceneController.LoadParcelScenes(payload); }
-
-        public void SendSceneMessage(string payload) { Environment.i.world.sceneController.SendSceneMessage(payload); }
-
-        public void UnloadScene(string sceneId) { Environment.i.world.sceneController.UnloadScene(sceneId); }
-
-        public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }
-
-        public void UpdateParcelScenes(string payload) { Environment.i.world.sceneController.UpdateParcelScenes(payload); }
-
-        #endregion
-
-        public void BuilderReady() { UnityEngine.SceneManagement.SceneManager.LoadScene("BuilderScene", UnityEngine.SceneManagement.LoadSceneMode.Additive); }
     }
 }

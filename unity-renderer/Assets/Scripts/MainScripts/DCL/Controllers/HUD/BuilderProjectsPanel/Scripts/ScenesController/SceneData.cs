@@ -94,7 +94,7 @@ internal class SceneData : ISceneData
         name = deployedScene.title;
         description = deployedScene.description;
         thumbnailUrl = deployedScene.navmapThumbnail;
-        isOwner = deployedScene?.land.role == LandRole.OWNER;
+        isOwner = deployedScene?.land?.role == LandRole.OWNER;
         isOperator = !isOwner;
         isContributor = false;
         isDeployed = true;

@@ -76,7 +76,7 @@ namespace DCL.ABConverter
             return env;
         }
 
-        public static string BuildAllWearableCollectionsURL()
+        public static string BuildAllWearableCollectionsURL(Func<string, bool> collectionFilter = null)
         {
             UnityWebRequest w = UnityWebRequest.Get(COLLECTIONS_FETCH_URL);
             w.SendWebRequest();
@@ -92,10 +92,23 @@ namespace DCL.ABConverter
             var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(w.downloadHandler.text);
 
             string finalUrl = WEARABLES_FETCH_URL;
-            finalUrl += "collectionId=" + collectionsApiData.collections[0].id;
-            for (int i = 1; i < collectionsApiData.collections.Length; i++)
+            bool firstCollection = true;
+
+            for (int i = 0; i < collectionsApiData.collections.Length; i++)
             {
-                finalUrl += "&collectionId=" + collectionsApiData.collections[i].id;
+                string collectionId = collectionsApiData.collections[i].id;
+
+                if ( collectionFilter != null )
+                {
+                    if ( !collectionFilter.Invoke(collectionId) )
+                        continue;
+                }
+
+                if ( !firstCollection )
+                    finalUrl += "&";
+
+                finalUrl += "collectionId=" + collectionId;
+                firstCollection = false;
             }
 
             return finalUrl;
@@ -356,13 +369,13 @@ namespace DCL.ABConverter
         /// <summary>
         /// Dump all bodyshape wearables normally, including their imported skeleton 
         /// </summary>
-        public static void DumpAllBodiesWearables()
+        public static void DumpAllBodiesWearables(Func<string, bool> collectionFilter = null)
         {
             EnsureEnvironment();
 
-            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL())
-                                                .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
-                                                .ToList();
+            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL(collectionFilter))
+                .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
+                .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
             var settings = new Settings();
@@ -375,18 +388,19 @@ namespace DCL.ABConverter
             DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnBodyWearableLoad);
         }
 
+
         /// <summary>
         /// Dump all non-bodyshape wearables, optimized to remove the skeleton for the wearables ABs since that is
         /// only needed for the body shapes (and the WearablesController sets it up for non-bodyshapes in runtime) 
         /// </summary>
-        public static void DumpAllNonBodiesWearables()
+        public static void DumpAllNonBodiesWearables(Func<string, bool> collectionFilter = null)
         {
             EnsureEnvironment();
 
             // For debugging purposes we can intercept this item list with LinQ for specific wearables
-            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL())
-                                                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
-                                                .ToList();
+            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL(collectionFilter))
+                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
+                .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
             var settings = new Settings();

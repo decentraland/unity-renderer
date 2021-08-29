@@ -29,12 +29,12 @@ This is the recommended path for artists.
 
 1. Download and install Unity 2020.3.0f1
 2. Open the scene named `InitialScene`
-3. Within the scene, select the `WSSController` GameObject.
-4. On `WSSController` inspector, make sure that `Base url mode` is set to `Custom`
+3. Within the scene, select the `DebugConfig` GameObject.
+4. On `DebugConfig` inspector, make sure that `Base url mode` is set to `Custom`
    and `Base url custom` is set to `https://play.decentraland.zone/?`
 5. Run the Initial Scene in the Unity editor
 6. A browser tab with `explorer` should open automatically and steal your focus, don't close it!. Login with your wallet, go back to Unity and explorer should start running on the `Game View`.
-7. As you can see, `WSSController` has other special options like the starting position, etc. You are welcome to use them as you see fit, but you'll have to close the tab and restart the scene for them to make effect.
+7. As you can see, `DebugConfig` has other special options like the starting position, etc. You are welcome to use them as you see fit, but you'll have to close the tab and restart the scene for them to make effect.
 
 ### Troubleshooting
 
@@ -83,7 +83,7 @@ This is the most useful debugging scenario for advanced feature implementation.
 1. Make sure you have the proper Unity version up and running
 2. Make sure you have Kernel repository cloned and set up.
 3. Make sure you are running kernel through `make watch` command.
-4. Back in unity editor, open the `WSSController` component inspector of `InitialScene`
+4. Back in unity editor, open the `DebugConfig` component inspector of `InitialScene`
 5. Make sure that the component is setup correctly
 6. Hit 'Play' button
 
