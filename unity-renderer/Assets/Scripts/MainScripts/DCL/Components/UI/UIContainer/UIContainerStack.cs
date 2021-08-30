@@ -71,7 +71,7 @@ namespace DCL.Components
             referencesContainer.sizeFitter.adjustHeight = model.adaptHeight;
             referencesContainer.sizeFitter.adjustWidth = model.adaptWidth;
 
-            RefreshAll();
+            MarkLayoutDirty();
             return null;
         }
 
@@ -82,7 +82,7 @@ namespace DCL.Components
 
             if (((UIShape.Model) childComponent.GetModel()).parentComponent != id)
             {
-                RefreshAll();
+                MarkLayoutDirty();
                 return;
             }
 
@@ -106,7 +106,7 @@ namespace DCL.Components
                 stackContainer = stackContainers[childComponent.id];
             }
 
-            RefreshAll();
+            MarkLayoutDirty();
         }
 
         public override void OnChildAttached(UIShape parentComponent, UIShape childComponent)

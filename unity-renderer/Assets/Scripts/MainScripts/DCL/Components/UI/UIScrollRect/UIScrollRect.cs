@@ -58,10 +58,13 @@ namespace DCL.Components
 
         void RefreshContainerForShape(BaseDisposable updatedComponent)
         {
-            RefreshAll();
-            referencesContainer.fitter.RefreshRecursively();
-            AdjustChildHook();
-            referencesContainer.scrollRect.Rebuild(CanvasUpdate.MaxUpdateValue);
+            MarkLayoutDirty( () =>
+                {
+                    referencesContainer.fitter.RefreshRecursively();
+                    AdjustChildHook();
+                    referencesContainer.scrollRect.Rebuild(CanvasUpdate.MaxUpdateValue);
+                }
+            );
         }
 
         void AdjustChildHook()
@@ -100,9 +103,12 @@ namespace DCL.Components
 
             rc.scrollRect.onValueChanged.AddListener(OnChanged);
 
-            RefreshAll();
-            referencesContainer.fitter.RefreshRecursively();
-            AdjustChildHook();
+            MarkLayoutDirty( () =>
+                {
+                    referencesContainer.fitter.RefreshRecursively();
+                    AdjustChildHook();
+                }
+            );
             return null;
         }
 

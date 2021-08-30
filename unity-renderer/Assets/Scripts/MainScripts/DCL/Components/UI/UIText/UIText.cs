@@ -67,9 +67,15 @@ namespace DCL.Components
         {
             model = (Model) newModel;
 
-            yield return ApplyModelChanges(scene, referencesContainer.text, model);
+            // We avoid using even yield break; as this instruction skips a frame and we don't want that.
+            if ( !DCLFont.IsFontLoaded(scene, model.font) )
+            {
+                yield return DCLFont.WaitUntilFontIsReady(scene, model.font);
+            }
 
-            RefreshAll();
+            DCLFont.SetFontFromComponent(scene, model.font, referencesContainer.text);
+            ApplyModelChanges(referencesContainer.text, model);
+            MarkLayoutDirty();
         }
 
         protected override void RefreshDCLSize(RectTransform parentTransform = null)
@@ -116,13 +122,8 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        private static IEnumerator ApplyModelChanges(IParcelScene scene, TMP_Text text, Model model)
+        private static void ApplyModelChanges(TMP_Text text, Model model)
         {
-            if (!string.IsNullOrEmpty(model.font))
-            {
-                yield return DCLFont.SetFontFromComponent(scene, model.font, text);
-            }
-
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.visible ? model.opacity : 0);

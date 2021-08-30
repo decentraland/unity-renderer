@@ -57,6 +57,7 @@ namespace UnityGLTF.Loader
                     return result;
                 }
             }
+
             return uri;
         }
 
@@ -87,7 +88,7 @@ namespace UnityGLTF.Loader
 
             if (!asyncOp.isSucceded)
             {
-                Debug.LogError($"{asyncOp.webRequest.error} - {finalUrl}");
+                Debug.LogError($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
                 errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text}";
                 error = true;
             }
