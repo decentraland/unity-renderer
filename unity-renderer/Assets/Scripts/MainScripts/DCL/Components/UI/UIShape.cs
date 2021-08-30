@@ -149,7 +149,7 @@ namespace DCL.Components
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
-        protected bool isLayoutDirty = false;
+        public bool isLayoutDirty { get; protected set; }
         protected System.Action OnLayoutRefresh;
 
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
@@ -235,18 +235,12 @@ namespace DCL.Components
         {
             while (true)
             {
-                yield return new WaitForEndOfFrame();
+                // WaitForEndOfFrame doesn't work in batch mode
+                yield return Application.isBatchMode ? null : new WaitForEndOfFrame();
 
                 if ( !isLayoutDirty )
                     continue;
 
-                var root = GetRootParent();
-                int rootHashCode = -1;
-
-                if ( root != null )
-                    rootHashCode = root.GetHashCode();
-
-                Debug.Log($"Calling RefreshAll() {Time.frameCount} instance: {GetType().Name} rootId: {rootHashCode}");
                 RefreshAll();
             }
         }
@@ -259,6 +253,8 @@ namespace DCL.Components
             FixMaxStretchRecursively();
             RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
             isLayoutDirty = false;
+            OnLayoutRefresh?.Invoke();
+            OnLayoutRefresh = null;
         }
 
         public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
@@ -269,9 +265,6 @@ namespace DCL.Components
 
             if (rootParent.referencesContainer == null)
                 return;
-
-            if ( OnRefresh != null )
-                OnLayoutRefresh += OnRefresh;
 
             rootParent.isLayoutDirty = true;
 
