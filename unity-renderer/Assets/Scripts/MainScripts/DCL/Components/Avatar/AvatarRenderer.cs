@@ -74,6 +74,10 @@ namespace DCL
 
                 if (!wearablesChanged && expressionsChanged)
                 {
+                    this.model.expressionTriggerId = model.expressionTriggerId;
+                    this.model.expressionTriggerTimestamp = model.expressionTriggerTimestamp;
+                    this.model.stickerTriggerId = model.stickerTriggerId;
+                    this.model.stickerTriggerTimestamp = model.stickerTriggerTimestamp;
                     UpdateExpression();
                     onSuccess?.Invoke();
                     return;
