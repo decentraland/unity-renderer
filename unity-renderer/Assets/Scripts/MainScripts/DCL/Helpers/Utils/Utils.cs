@@ -218,14 +218,8 @@ namespace DCL.Helpers
                 {
                     if (OnSuccess != null)
                     {
-                        bool supported = true;
-#if UNITY_EDITOR
-                        supported = audioType != AudioType.MPEG;
-#endif
                         AudioClip ac = null;
-
-                        if (supported)
-                            ac = DownloadHandlerAudioClip.GetContent(request);
+                        ac = DownloadHandlerAudioClip.GetContent(request);
 
                         OnSuccess.Invoke(ac);
                     }

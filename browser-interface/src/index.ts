@@ -6,12 +6,6 @@ import { isMobile, isWebGLCompatible } from "validations"
 import { generatedFiles } from "../package.json"
 
 import Hls from "./hlsLoader"
-if (!Hls || !Hls.isSupported) {
-  throw new Error("HTTP Live Streaming did not load")
-}
-if (!Hls.isSupported()) {
-  throw new Error("HTTP Live Streaming is not supported in your browser")
-}
 
 // the following function is defined by unity, accessible via unity.loader.js
 // https://docs.unity3d.com/Manual/webgl-templates.html
@@ -68,8 +62,16 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     throw new Error(
       "A WebGL2 could not be created. It is necessary to make Decentraland run, your browser may not be compatible"
     )
-  
-}
+  }
+
+  if (!Hls || !Hls.isSupported) {
+    throw new Error("HTTP Live Streaming did not load")
+  }
+
+  if (!Hls.isSupported()) {
+    throw new Error("HTTP Live Streaming is not supported in your browser")
+  }
+
   const rendererVersion = options.versionQueryParam || performance.now()
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy } = options
   const resolveWithBaseUrl = (file: string) => new URL(file + "?v=" + rendererVersion, baseUrl).toString()
