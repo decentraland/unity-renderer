@@ -390,7 +390,7 @@ namespace Builder
                 CommonScriptableObjects.rendererState.RemoveLock(playerAvatarController);
             }
 
-            Environment.i.platform.debugController.HideFPSPanel();
+            DataStore.i.debugConfig.isFPSPanelVisible.Set(false);
             SetCaptureKeyboardInputEnabled(false);
         }
 

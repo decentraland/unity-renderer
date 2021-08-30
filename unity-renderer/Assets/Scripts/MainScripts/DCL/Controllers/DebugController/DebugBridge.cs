@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
@@ -12,25 +10,31 @@ namespace DCL
     public class DebugBridge : MonoBehaviour
     {
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
+        private IDebugController debugController;
 
+        public void Setup(IDebugController debugController)
+        {
+            this.debugController = debugController;
+        }
+        
         // Beware this SetDebug() may be called before Awake() somehow...
         [ContextMenu("Set Debug mode")]
-        public void SetDebug() { Environment.i.platform.debugController.SetDebug(); }
+        public void SetDebug() { debugController.SetDebug(); }
 
-        public void HideFPSPanel() { Environment.i.platform.debugController.HideFPSPanel(); }
+        public void HideFPSPanel() { debugController.HideFPSPanel(); }
 
-        public void ShowFPSPanel() { Environment.i.platform.debugController.ShowFPSPanel(); }
+        public void ShowFPSPanel() { debugController.ShowFPSPanel(); }
 
-        public void SetSceneDebugPanel() { Environment.i.platform.debugController.SetSceneDebugPanel(); }
+        public void SetSceneDebugPanel() { debugController.SetSceneDebugPanel(); }
 
-        public void SetEngineDebugPanel() { Environment.i.platform.debugController.SetEngineDebugPanel(); }
+        public void SetEngineDebugPanel() { debugController.SetEngineDebugPanel(); }
 
         [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
         {
             foreach (var kvp in DCL.Environment.i.world.state.loadedScenes)
             {
-                ParcelScene scene = kvp.Value as ParcelScene;
+                IParcelScene scene = kvp.Value;
                 debugLogger.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
                 scene.GetWaitingComponentsDebugInfo();
             }
@@ -65,8 +69,8 @@ namespace DCL
             var crashPayload = CrashPayloadUtils.ComputePayload
             (
                 DCL.Environment.i.world.state.loadedScenes,
-                Environment.i.platform.debugController.GetTrackedMovements(),
-                Environment.i.platform.debugController.GetTrackedTeleportPositions()
+                debugController.GetTrackedMovements(),
+                debugController.GetTrackedTeleportPositions()
             );
 
             CrashPayloadResponse(crashPayload);
@@ -84,8 +88,8 @@ namespace DCL
             var payload = CrashPayloadUtils.ComputePayload
             (
                 DCL.Environment.i.world.state.loadedScenes,
-                Environment.i.platform.debugController.GetTrackedMovements(),
-                Environment.i.platform.debugController.GetTrackedTeleportPositions()
+                debugController.GetTrackedMovements(),
+                debugController.GetTrackedTeleportPositions()
             );
 
             foreach ( var field in payload.fields)
@@ -98,15 +102,15 @@ namespace DCL
             debugLogger.Log($"Full crash payload size: {fullDump.Length}");
         }
 
-        public void RunPerformanceMeterTool(float durationInSeconds) { Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds); }
+        public void RunPerformanceMeterTool(float durationInSeconds) { debugController.RunPerformanceMeterTool(durationInSeconds); }
 
-        public void InstantiateBotsAtWorldPos(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtWorldPos(configJson); }
+        public void InstantiateBotsAtWorldPos(string configJson) { debugController.InstantiateBotsAtWorldPos(configJson); }
 
-        public void InstantiateBotsAtCoords(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtCoords(configJson); }
-        public void StartBotsRandomizedMovement(string configJson) { Environment.i.platform.debugController.StartBotsRandomizedMovement(configJson); }
-        public void StopBotsMovement() { Environment.i.platform.debugController.StopBotsMovement(); }
-        public void RemoveBot(string targetEntityId) { Environment.i.platform.debugController.RemoveBot(targetEntityId); }
-        public void ClearBots() { Environment.i.platform.debugController.ClearBots(); }
+        public void InstantiateBotsAtCoords(string configJson) { debugController.InstantiateBotsAtCoords(configJson); }
+        public void StartBotsRandomizedMovement(string configJson) { debugController.StartBotsRandomizedMovement(configJson); }
+        public void StopBotsMovement() { debugController.StopBotsMovement(); }
+        public void RemoveBot(string targetEntityId) { debugController.RemoveBot(targetEntityId); }
+        public void ClearBots() { debugController.ClearBots(); }
 
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
