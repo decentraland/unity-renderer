@@ -101,6 +101,7 @@ public class FacialFeatureController
 
         yield return mainTexturePromise;
         yield return maskTexturePromise;
+        yield return new DCL.WaitUntil( () => bodyShape.isReady );
 
         PrepareWearable();
     }
