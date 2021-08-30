@@ -458,7 +458,14 @@ namespace DCL
             bool mergeSuccess = MergeAvatar(allRenderers);
 
             if (mergeSuccess)
+            {
                 gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
+
+                // Sample the animation manually and force an update in the GPUSkinning to avoid giant avatars
+                animator.SetIdleFrame();
+                animator.animation.Sample();
+                gpuSkinning.Update(true);
+            }
             else
                 loadSoftFailed = true;
 

@@ -39,7 +39,6 @@ public class SimpleGPUSkinning
         meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
 
         Object.Destroy(skr);
-        Update(true); //Force an update to avoid giant avatars
     }
 
     /// <summary>
