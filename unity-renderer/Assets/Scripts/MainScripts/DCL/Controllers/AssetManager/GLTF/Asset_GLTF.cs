@@ -1,6 +1,7 @@
 using DCL.Configuration;
 using System.Collections;
 using UnityEngine;
+using UnityGLTF;
 
 namespace DCL
 {
@@ -30,8 +31,11 @@ namespace DCL
 
         public void Hide()
         {
-            container.transform.parent = null;
-            container.transform.position = EnvironmentSettings.MORDOR;
+            if (container != null)
+            {
+                container.transform.parent = null;
+                container.transform.position = EnvironmentSettings.MORDOR;
+            }
             visible = false;
         }
 
@@ -61,7 +65,6 @@ namespace DCL
                 return;
             }
 
-            container.SetActive(false);
             showCoroutine = CoroutineStarter.Start(ShowCoroutine(OnFinish));
         }
 
