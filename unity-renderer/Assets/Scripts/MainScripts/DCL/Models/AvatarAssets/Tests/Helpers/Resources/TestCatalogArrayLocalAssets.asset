@@ -1180,3 +1180,96 @@ MonoBehaviour:
     rarity: legendary
     description: VR Infused Beast Mask created by Marc0Matic
     issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: COLDIE_3D.glb
+        contents:
+        - key: COLDIE_3D.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces:
+        - helmet
+        - mask
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: COLDIE_3D.glb
+        contents:
+        - key: COLDIE_3D.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces:
+        - helmet
+        - mask
+      category: eyewear
+      tags:
+      - Coldie
+      - Sugarclub
+      - Glasses
+      replaces:
+      - helmet
+      - mask
+      hides: []
+    id: urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: COLDIE 3D shades
+    thumbnail: https://peer-eu1.decentraland.org/content/contents/QmUQkjk13EHRinBDABH4PVNx17xHMuVWVHfY6sQjqPjy7f
+    rarity: legendary
+    description: 'Legendary Coldie 3D shades designed by SugarClub '
+    issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: warrior.glb
+        contents:
+        - key: warrior.glb
+          hash: 
+        - key: thumbnail.png
+          hash: 
+        overrideHides:
+        - head
+        - facial_hair
+        - hair
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: warrior.glb
+        contents:
+        - key: warrior.glb
+          hash: 
+        - key: thumbnail.png
+          hash: 
+        overrideHides:
+        - head
+        - facial_hair
+        - hair
+        overrideReplaces: []
+      category: helmet
+      tags:
+      - Warrior
+      - Samurai
+      - Ninja
+      - Fire
+      - Red
+      - Glow
+      - Tribal
+      replaces: []
+      hides:
+      - head
+      - facial_hair
+      - hair
+    id: urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Fire Warrior Face
+    thumbnail: https://peer-eu1.decentraland.org/content/contents/QmZAo85c5kuu9YWLxypwBEf3kF3HXHjQ13GjL7FEi7ZSxE
+    rarity: legendary
+    description: Fire Warrior Face For Battle.
+    issuedId: 0
