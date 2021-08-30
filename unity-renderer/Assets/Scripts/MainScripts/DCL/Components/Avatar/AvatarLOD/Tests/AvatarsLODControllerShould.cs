@@ -234,6 +234,48 @@ namespace Tests.AvatarsLODController
         }
 
         [Test]
+        public void UpdateImpostorsTintAndInterpolationMovement()
+        {
+            Vector3 cameraPosition = Vector3.zero;
+            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
+            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
+            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+            float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
+            float tintMinDistance = DataStore.i.avatarsLOD.impostorSettings.tintMinDistance.Get();
+            float tintMaxDistance = DataStore.i.avatarsLOD.impostorSettings.tintMaxDistance.Get();
+            float tintNearestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintNearestBlackness.Get();
+            float tintFarestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintFarestBlackness.Get();
+            float alphaNearestValue = DataStore.i.avatarsLOD.impostorSettings.alphaNearestValue.Get();
+            float alphaFarestValue = DataStore.i.avatarsLOD.impostorSettings.alphaFarestValue.Get();
+
+            Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
+            IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
+            controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
+            fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f);
+
+            Player impostorAvatarPlayer = CreateMockPlayer("impostorAvatar");
+            IAvatarLODController impostorAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            impostorAvatarPlayerController.player.Returns(impostorAvatarPlayer);
+            controller.lodControllers.Add(impostorAvatarPlayer.id, impostorAvatarPlayerController);
+            impostorAvatarPlayer.worldPosition = Vector3.forward * tintMinDistance;
+
+            DataStore.i.avatarsLOD.maxAvatars.Set(1);
+            controller.enabled = true;
+            controller.Update();
+
+            impostorAvatarPlayerController.Received()
+                                          .UpdateImpostorTint(tintMinDistance,
+                                              tintMinDistance,
+                                              tintMaxDistance,
+                                              tintNearestBlackness,
+                                              tintFarestBlackness,
+                                              alphaNearestValue,
+                                              alphaFarestValue
+                                          );
+        }
+
+        [Test]
         public void SetNonRenderedAvatarsAsInvisible()
         {
             Vector3 cameraPosition = Vector3.zero;
