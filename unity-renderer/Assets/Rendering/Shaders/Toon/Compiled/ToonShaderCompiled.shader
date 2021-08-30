@@ -1301,8 +1301,8 @@
                 surface.Metallic = 0;
                 surface.Smoothness = 0;
                 surface.Occlusion = 1;
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -2677,8 +2677,8 @@
                 surface.Metallic = 0;
                 surface.Smoothness = 0;
                 surface.Occlusion = 1;
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -3881,9 +3881,6 @@
             {
                 SurfaceDescription surface = (SurfaceDescription)0;
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
@@ -3959,17 +3956,20 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
+                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -5167,9 +5167,6 @@
             {
                 SurfaceDescription surface = (SurfaceDescription)0;
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
@@ -5245,17 +5242,20 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
+                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -6468,9 +6468,6 @@
             {
                 SurfaceDescription surface = (SurfaceDescription)0;
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
@@ -6546,18 +6543,21 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
+                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
                 surface.NormalTS = IN.TangentSpaceNormal;
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -7839,14 +7839,14 @@
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.Emission = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2.xyz);
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -9125,13 +9125,13 @@
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -10501,7 +10501,7 @@
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
@@ -10511,8 +10511,8 @@
                 surface.Metallic = 0;
                 surface.Smoothness = 0;
                 surface.Occlusion = 1;
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -11713,9 +11713,6 @@
             {
                 SurfaceDescription surface = (SurfaceDescription)0;
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
@@ -11791,17 +11788,20 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
+                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -12998,9 +12998,6 @@
             {
                 SurfaceDescription surface = (SurfaceDescription)0;
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
@@ -13076,17 +13073,20 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
+                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -14298,9 +14298,6 @@
             {
                 SurfaceDescription surface = (SurfaceDescription)0;
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
-                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
@@ -14376,18 +14373,21 @@
                                                                _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
+                float _Property_1195242d2ce34fecbc775a3264cbab90_Out_0 = _DitherFade;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15) || defined(KEYWORD_PERMUTATION_16) || defined(KEYWORD_PERMUTATION_17) || defined(KEYWORD_PERMUTATION_18) || defined(KEYWORD_PERMUTATION_19) || defined(KEYWORD_PERMUTATION_20) || defined(KEYWORD_PERMUTATION_21) || defined(KEYWORD_PERMUTATION_22) || defined(KEYWORD_PERMUTATION_23) || defined(KEYWORD_PERMUTATION_24) || defined(KEYWORD_PERMUTATION_25) || defined(KEYWORD_PERMUTATION_26) || defined(KEYWORD_PERMUTATION_27) || defined(KEYWORD_PERMUTATION_28) || defined(KEYWORD_PERMUTATION_29) || defined(KEYWORD_PERMUTATION_30) || defined(KEYWORD_PERMUTATION_31)
                 Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
                     _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b;
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
                 surface.NormalTS = IN.TangentSpaceNormal;
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -15669,14 +15669,14 @@
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
                 surface.Emission = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Emission_2.xyz);
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
@@ -16956,13 +16956,13 @@
                 _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b.ScreenPosition = IN.ScreenPosition;
                 float _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_1195242d2ce34fecbc775a3264cbab90_Out_0,
-                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1,
+                                                                     _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b,
                                                                      _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1);
                 #endif
                 surface.BaseColor = (_ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Albedo_3.xyz);
-                surface.Alpha = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
-                surface.AlphaClipThreshold = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_AlphaThreshold_4;
+                surface.Alpha = _ToonShader_1d4fdd6709cf4e60838d8a57dfa1186d_Alpha_1;
+                surface.AlphaClipThreshold = _ToonShaderDither_05c042d7d9f4436b8f5459f213ab865b_OutAlpha_1;
                 return surface;
             }
 
