@@ -35,6 +35,7 @@ namespace DCL.Components
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = new Model();
 
+            Settings.i.OnAudioSettingsChanged += OnAudioSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
@@ -114,7 +115,13 @@ namespace DCL.Components
             }
         }
 
-        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) {
+        private void OnAudioSettingsChanged(SettingsData.AudioSettings settings)
+        {
+            UpdateAudioSourceVolume();
+        }
+
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue)
+        {
             UpdateAudioSourceVolume();
         }
 
@@ -160,6 +167,7 @@ namespace DCL.Components
             //NOTE(Brian): Unsuscribe events.
             InitDCLAudioClip(null);
 
+            Settings.i.OnAudioSettingsChanged -= OnAudioSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
         }
 
