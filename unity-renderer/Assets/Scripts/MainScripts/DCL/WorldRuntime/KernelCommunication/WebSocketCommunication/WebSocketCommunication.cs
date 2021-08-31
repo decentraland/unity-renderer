@@ -32,7 +32,7 @@ public class WebSocketCommunication : IKernelCommunication
         }
         string wssServerUrl = $"ws://localhost:{port}/";
         string wssServiceId = "dcl";
-        string wssUrl = wssServerUrl + wssServiceId; 
+        string wssUrl = wssServerUrl + wssServiceId;
         try
         {
             ws = new WebSocketServer(wssServerUrl);
@@ -62,7 +62,7 @@ public class WebSocketCommunication : IKernelCommunication
         string url = StartServer(5000, 5100);
 
         Debug.Log("WebSocket Server URL: " + url);
-        
+
         DataStore.i.wsCommunication.url = url;
 
         DataStore.i.wsCommunication.communicationReady.Set(true);
@@ -155,8 +155,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "BuilderController";
         messageTypeToBridgeName["AirdroppingRequest"] = "BuilderController";
 
-        messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
-        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
+        messageTypeToBridgeName["SetTutorialEnabled"] = "Tutorial";
+        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "Tutorial";
     }
 
     IEnumerator ProcessMessages()
@@ -226,8 +226,5 @@ public class WebSocketCommunication : IKernelCommunication
             yield return null;
         }
     }
-    public void Dispose()
-    {
-        ws.Stop();
-    }
+    public void Dispose() { ws.Stop(); }
 }
