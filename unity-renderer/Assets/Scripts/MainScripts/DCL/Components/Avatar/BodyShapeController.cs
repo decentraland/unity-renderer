@@ -58,7 +58,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupEyes(Material material, Texture texture, Texture mask, Color color)
     {
-        if (assetContainer != null && assetContainer.transform == null)
+        if (assetContainer == null || assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup eyes when the asset not ready");
             return;
