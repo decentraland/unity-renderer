@@ -241,12 +241,7 @@ namespace Tests.AvatarsLODController
             CommonScriptableObjects.cameraPosition.Set(cameraPosition);
             CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
             float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
-            float tintMinDistance = DataStore.i.avatarsLOD.impostorSettings.tintMinDistance.Get();
-            float tintMaxDistance = DataStore.i.avatarsLOD.impostorSettings.tintMaxDistance.Get();
-            float tintNearestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintNearestBlackness.Get();
-            float tintFarestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintFarestBlackness.Get();
-            float alphaNearestValue = DataStore.i.avatarsLOD.impostorSettings.alphaNearestValue.Get();
-            float alphaFarestValue = DataStore.i.avatarsLOD.impostorSettings.alphaFarestValue.Get();
+            float tintMinDistance = 30f; // default internal value
 
             Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
             IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
@@ -267,11 +262,11 @@ namespace Tests.AvatarsLODController
             impostorAvatarPlayerController.Received()
                                           .UpdateImpostorTint(tintMinDistance,
                                               tintMinDistance,
-                                              tintMaxDistance,
-                                              tintNearestBlackness,
-                                              tintFarestBlackness,
-                                              alphaNearestValue,
-                                              alphaFarestValue
+                                              32f,
+                                              0f,
+                                              0.54f,
+                                              1f,
+                                              1f
                                           );
         }
 

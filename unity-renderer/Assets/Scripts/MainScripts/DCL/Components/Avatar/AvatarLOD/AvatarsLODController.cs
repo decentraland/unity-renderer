@@ -8,6 +8,13 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
+        // Manually tweaked values
+        internal const float TINT_MIN_DISTANCE = 30f;
+        internal const float TINT_MAX_DISTANCE = 32f;
+        internal const float TINT_NEAREST_BLACKNESS = 0f;
+        internal const float TINT_FAREST_BLACKNESS = 0.54f;
+        internal const float ALPHA_NEAREST_VALUE = 1f;
+        internal const float ALPHA_FAREST_VALUE = 1f;
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
@@ -39,9 +46,6 @@ namespace DCL
             }
             otherPlayers.OnAdded += RegisterAvatar;
             otherPlayers.OnRemoved += UnregisterAvatar;
-
-            if (WebInterface.CheckURLParam("AVATAR_IMPOSTORS_TEST_PANEL"))
-                LoadTestPanel();
         }
 
         public void RegisterAvatar(string id, Player player)
@@ -101,12 +105,6 @@ namespace DCL
             float lodDistance = LODDistance.Get() * LODDistance.Get();
             float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
-            float tintMinDistance = DataStore.i.avatarsLOD.impostorSettings.tintMinDistance.Get();
-            float tintMaxDistance = DataStore.i.avatarsLOD.impostorSettings.tintMaxDistance.Get();
-            float tintNearestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintNearestBlackness.Get();
-            float tintFarestBlackness = DataStore.i.avatarsLOD.impostorSettings.tintFarestBlackness.Get();
-            float alphaNearestValue = DataStore.i.avatarsLOD.impostorSettings.alphaNearestValue.Get();
-            float alphaFarestValue = DataStore.i.avatarsLOD.impostorSettings.alphaFarestValue.Get();
 
             (IAvatarLODController lodController, float sqrtDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
@@ -147,12 +145,12 @@ namespace DCL
 
                     var distanceToPlayer = Mathf.Sqrt(sqrtDistance);
                     lodController.UpdateImpostorTint(distanceToPlayer,
-                        tintMinDistance,
-                        tintMaxDistance,
-                        tintNearestBlackness,
-                        tintFarestBlackness,
-                        alphaNearestValue,
-                        alphaFarestValue);
+                        TINT_MIN_DISTANCE,
+                        TINT_MAX_DISTANCE,
+                        TINT_NEAREST_BLACKNESS,
+                        TINT_FAREST_BLACKNESS,
+                        ALPHA_NEAREST_VALUE,
+                        ALPHA_FAREST_VALUE);
 
                     impostorCount++;
                     continue;
@@ -183,14 +181,6 @@ namespace DCL
         }
 
         private bool IsInFrontOfCamera(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE; }
-
-        private void LoadTestPanel()
-        {
-            if (GameObject.Find("AvatarImpostorsTestPanel") != null)
-                return;
-
-            GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/AvatarImpostorsTestPanel"));
-        }
 
         public void Dispose()
         {
