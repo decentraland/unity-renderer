@@ -155,16 +155,7 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float distanceToMainPlayer)
-        {
-            float initialStep = Mathf.Max(AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE, distanceToMainPlayer);
-            float tintStep = Mathf.InverseLerp(AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE, AvatarRendererHelpers.IMPOSTOR_TINT_MAX_DISTANCE, initialStep);
-            float tintValue = Mathf.Lerp(AvatarRendererHelpers.IMPOSTOR_TINT_NEAREST_BLACKNESS, AvatarRendererHelpers.IMPOSTOR_TINT_FAREST_BLACKNESS, tintStep);
-            Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
-            newColor.a = Mathf.Lerp(AvatarRendererHelpers.IMPOSTOR_ALPHA_NEAREST_VALUE, AvatarRendererHelpers.IMPOSTOR_ALPHA_FAREST_VALUE, tintStep);
-
-            player.renderer.SetImpostorColor(newColor);
-        }
+        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
 
         public void Dispose()
         {

@@ -4,17 +4,18 @@ namespace DCL
 {
     public static class AvatarRendererHelpers
     {
+        public static readonly float IMPOSTOR_MOVEMENT_INTERPOLATION = 1f;
+
         private static readonly int IMPOSTOR_TEXTURE_PROPERTY = Shader.PropertyToID("_BaseMap");
         private static readonly int IMPOSTOR_TEXTURE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
 
         // Manually tweaked values
-        public static readonly float IMPOSTOR_TINT_MIN_DISTANCE = 30f;
-        public static readonly float IMPOSTOR_TINT_MAX_DISTANCE = 32f;
-        public static readonly float IMPOSTOR_TINT_NEAREST_BLACKNESS = 0f;
-        public static readonly float IMPOSTOR_TINT_FAREST_BLACKNESS = 0.54f;
-        public static readonly float IMPOSTOR_ALPHA_NEAREST_VALUE = 1f;
-        public static readonly float IMPOSTOR_ALPHA_FAREST_VALUE = 1f;
-        public static readonly float IMPOSTOR_MOVEMENT_INTERPOLATION = 1f;
+        private const float IMPOSTOR_TINT_MIN_DISTANCE = 30f;
+        private const float IMPOSTOR_TINT_MAX_DISTANCE = 32f;
+        private const float IMPOSTOR_TINT_NEAREST_BLACKNESS = 0f;
+        private const float IMPOSTOR_TINT_FAREST_BLACKNESS = 0.54f;
+        private const float IMPOSTOR_ALPHA_NEAREST_VALUE = 1f;
+        private const float IMPOSTOR_ALPHA_FAREST_VALUE = 1f;
 
         // 2048x2048 atlas with 8 512x1024 snapshot-sprites
         private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
@@ -60,6 +61,17 @@ namespace DCL
                 return;
 
             impostorMaterial.SetColor(IMPOSTOR_TEXTURE_COLOR_PROPERTY, newColor);
+        }
+
+        public static Color CalculateImpostorTint(float distanceToMainPlayer)
+        {
+            float initialStep = Mathf.Max(IMPOSTOR_TINT_MIN_DISTANCE, distanceToMainPlayer);
+            float tintStep = Mathf.InverseLerp(IMPOSTOR_TINT_MIN_DISTANCE, IMPOSTOR_TINT_MAX_DISTANCE, initialStep);
+            float tintValue = Mathf.Lerp(IMPOSTOR_TINT_NEAREST_BLACKNESS, IMPOSTOR_TINT_FAREST_BLACKNESS, tintStep);
+            Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
+            newColor.a = Mathf.Lerp(IMPOSTOR_ALPHA_NEAREST_VALUE, IMPOSTOR_ALPHA_FAREST_VALUE, tintStep);
+
+            return newColor;
         }
     }
 }
