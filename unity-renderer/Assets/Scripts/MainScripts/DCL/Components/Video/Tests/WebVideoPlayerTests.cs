@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class WebVideoPlayerTests
+    public class WebVideoPlayerShould
     {
         private const string ID = "id";
         private const string ERROR_MESSAGE = "Error Message";
