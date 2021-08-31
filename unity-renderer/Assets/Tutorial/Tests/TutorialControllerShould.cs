@@ -12,7 +12,7 @@ namespace DCL.Tutorial_Tests
 {
     public class TutorialControllerShould : IntegrationTestSuite
     {
-        private TutorialConfigurator tutorialConfigurator;
+        private TutorialView tutorialView;
         private TutorialController tutorialController;
         private int currentStepIndex = 0;
         private List<TutorialStep> currentSteps = new List<TutorialStep>();
@@ -587,10 +587,13 @@ namespace DCL.Tutorial_Tests
 
         private void CreateAndConfigureTutorial()
         {
-            tutorialConfigurator = GameObject.Instantiate(Resources.Load<GameObject>("TutorialConfigurator")).GetComponent<TutorialConfigurator>();
-            tutorialConfigurator.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialConfiguration>("TutorialConfigurationForTests"));
-            tutorialConfigurator.ConfigureTutorial();
-            tutorialController = tutorialConfigurator.tutorialController;
+            tutorialController = new TutorialController();
+            tutorialController.tutorialView = tutorialController.CreateTutorialView();
+            tutorialView = tutorialController.tutorialView;
+            tutorialView.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialConfiguration>("TutorialConfigurationForTests"));
+            tutorialView.ConfigureView(tutorialController);
+            tutorialController.SetConfiguration(tutorialView.configuration);
+            tutorialController = tutorialView.tutorialController;
             tutorialController.configuration.timeBetweenSteps = 0f;
             tutorialController.configuration.sendStats = false;
             tutorialController.configuration.debugRunTutorial = false;
@@ -613,8 +616,6 @@ namespace DCL.Tutorial_Tests
                 GameObject.Destroy(step);
             }
 
-            GameObject.Destroy(tutorialConfigurator.gameObject);
-            GameObject.Destroy(tutorialController.tutorialContainerGO);
             tutorialController.Dispose();
             currentSteps.Clear();
             currentStepIndex = 0;
@@ -727,7 +728,7 @@ namespace DCL.Tutorial_Tests
         private TutorialStep_Mock CreateNewFakeStep()
         {
             GameObject newStepObject = new GameObject("FakeStep");
-            newStepObject.transform.parent = tutorialController.tutorialContainerGO.transform;
+            newStepObject.transform.parent = tutorialController.tutorialView.transform;
             TutorialStep_Mock newStep = newStepObject.AddComponent<TutorialStep_Mock>();
             newStep.letInstantiation = false;
             newStep.customOnStepStart = WaitForOnStepStart;

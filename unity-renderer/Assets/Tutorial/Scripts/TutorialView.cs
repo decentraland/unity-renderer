@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace DCL.Tutorial
 {
-    public class TutorialConfigurator : MonoBehaviour
+    public class TutorialView : MonoBehaviour
     {
         [Header("General Configuration")]
         [SerializeField]
@@ -29,20 +29,11 @@ namespace DCL.Tutorial
 
         internal TutorialController tutorialController;
 
-        private void Awake() { ConfigureTutorial(); }
-
-        private void OnDestroy() { tutorialController.Dispose(); }
-
-        internal void ConfigureTutorial()
+        internal void ConfigureView(TutorialController tutorialController)
         {
-            if (tutorialController != null)
-                tutorialController.Dispose();
-
+            this.tutorialController = tutorialController;
             configuration.ConfigureTeacher(teacherCamera, teacherRawImage, teacher, teacherCanvas);
             configuration.ConfigureEagleEyeCamera(eagleEyeCamera);
-
-            tutorialController = new TutorialController();
-            tutorialController.Initialize(configuration, gameObject);
         }
 
         public void SetTutorialEnabled(string json) { tutorialController.SetTutorialEnabled(json); }

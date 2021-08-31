@@ -38,8 +38,10 @@ public class WebSocketCommunication : IKernelCommunication
         IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
         IPEndPoint[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpListeners();
 
-        foreach (IPEndPoint endpoint in tcpConnInfoArray) {
-            if (endpoint.Port == port) {
+        foreach (IPEndPoint endpoint in tcpConnInfoArray)
+        {
+            if (endpoint.Port == port)
+            {
                 isAvailable = false;
                 break;
             }
@@ -173,8 +175,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "BuilderController";
         messageTypeToBridgeName["AirdroppingRequest"] = "BuilderController";
 
-        messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
-        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
+        messageTypeToBridgeName["SetTutorialEnabled"] = "Tutorial";
+        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "Tutorial";
     }
 
     IEnumerator ProcessMessages()

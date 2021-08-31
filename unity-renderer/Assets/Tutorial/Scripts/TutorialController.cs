@@ -11,7 +11,7 @@ namespace DCL.Tutorial
     /// <summary>
     /// Controller that handles all the flow related to the onboarding tutorial.
     /// </summary>
-    public class TutorialController
+    public class TutorialController : PluginFeature
     {
         [Serializable]
         public class TutorialInitializationMessage
@@ -55,7 +55,7 @@ namespace DCL.Tutorial
         private const string PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED = "VoiceChatFeatureShowed";
 
         internal TutorialConfiguration configuration;
-        internal GameObject tutorialContainerGO;
+        internal TutorialView tutorialView;
 
         internal bool isRunning = false;
         internal bool openedFromDeepLink = false;
@@ -73,10 +73,27 @@ namespace DCL.Tutorial
 
         internal bool userAlreadyDidTheTutorial { get; set; }
 
-        public void Initialize(TutorialConfiguration configuration, GameObject tutorialContainerGO)
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            tutorialView = CreateTutorialView();
+            SetConfiguration(tutorialView.configuration);
+        }
+
+        internal TutorialView CreateTutorialView()
+        {
+            GameObject tutorialGO = GameObject.Instantiate(Resources.Load<GameObject>("TutorialView"));
+            tutorialGO.name = "Tutorial";
+            TutorialView tutorialView = tutorialGO.GetComponent<TutorialView>();
+            tutorialView.ConfigureView(this);
+
+            return tutorialView;
+        }
+
+        public void SetConfiguration(TutorialConfiguration configuration)
         {
             this.configuration = configuration;
-            this.tutorialContainerGO = tutorialContainerGO;
 
             i = this;
             ShowTeacher3DModel(false);
@@ -96,8 +113,10 @@ namespace DCL.Tutorial
             }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
+
             SetTutorialDisabled();
 
             CommonScriptableObjects.isTaskbarHUDInitialized.OnChange -= IsTaskbarHUDInitialized_OnChange;
@@ -109,6 +128,8 @@ namespace DCL.Tutorial
             }
 
             NotificationsController.disableWelcomeNotification = false;
+
+            GameObject.Destroy(tutorialView.gameObject);
         }
 
         public void SetTutorialEnabled(string json)
@@ -417,7 +438,7 @@ namespace DCL.Tutorial
                     continue;
 
                 if (stepPrefab.letInstantiation)
-                    runningStep = GameObject.Instantiate(stepPrefab, tutorialContainerGO.transform).GetComponent<TutorialStep>();
+                    runningStep = GameObject.Instantiate(stepPrefab, tutorialView.transform).GetComponent<TutorialStep>();
                 else
                     runningStep = steps[i];
 
