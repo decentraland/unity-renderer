@@ -12,7 +12,7 @@ namespace DCL
         void SetSimpleAvatar();
         void SetImpostor();
         void SetInvisible();
-        void UpdateImpostorTint(float sqrDistanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue);
+        void UpdateImpostorTint(float sqrDistanceToMainPlayer);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -155,17 +155,17 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float sqrDistanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue)
+        public void UpdateImpostorTint(float sqrDistanceToMainPlayer)
         {
             // We need to correct distance values as the distance to main player is squared 
-            minImpostorTintDistance *= minImpostorTintDistance;
-            maxImpostorTintDistance *= maxImpostorTintDistance;
+            float minImpostorTintDistance = AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE * AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE;
+            float maxImpostorTintDistance = AvatarRendererHelpers.IMPOSTOR_TINT_MAX_DISTANCE * AvatarRendererHelpers.IMPOSTOR_TINT_MAX_DISTANCE;
 
             float initialStep = Mathf.Max(minImpostorTintDistance, sqrDistanceToMainPlayer);
             float tintStep = Mathf.InverseLerp(minImpostorTintDistance, maxImpostorTintDistance, initialStep);
-            float tintValue = Mathf.Lerp(nearestImpostorColorTint, farestImpostorColorTint, tintStep);
+            float tintValue = Mathf.Lerp(AvatarRendererHelpers.IMPOSTOR_TINT_NEAREST_BLACKNESS, AvatarRendererHelpers.IMPOSTOR_TINT_FAREST_BLACKNESS, tintStep);
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
-            newColor.a = Mathf.Lerp(nearestImpostorAlphaValue, farestImpostorAlphaValue, tintStep);
+            newColor.a = Mathf.Lerp(AvatarRendererHelpers.IMPOSTOR_ALPHA_NEAREST_VALUE, AvatarRendererHelpers.IMPOSTOR_ALPHA_FAREST_VALUE, tintStep);
 
             player.renderer.SetImpostorColor(newColor);
         }

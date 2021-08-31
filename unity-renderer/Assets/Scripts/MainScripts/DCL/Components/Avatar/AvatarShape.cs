@@ -36,7 +36,7 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-            avatarRenderer.OnImpostorAlphaValueUpdate += (newAlphaValue) => avatarMovementController.movementLerpWait = newAlphaValue > 0.1f ? 1 : 0f;
+            avatarRenderer.OnImpostorAlphaValueUpdate += (newAlphaValue) => avatarMovementController.movementLerpWait = newAlphaValue > 0.1f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f;
         }
 
         private void PlayerClicked()

@@ -8,13 +8,6 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        // Manually tweaked values
-        internal const float TINT_MIN_DISTANCE = 30f;
-        internal const float TINT_MAX_DISTANCE = 32f;
-        internal const float TINT_NEAREST_BLACKNESS = 0f;
-        internal const float TINT_FAREST_BLACKNESS = 0.54f;
-        internal const float ALPHA_NEAREST_VALUE = 1f;
-        internal const float ALPHA_FAREST_VALUE = 1f;
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
@@ -143,13 +136,7 @@ namespace DCL
                 {
                     lodController.SetImpostor();
 
-                    lodController.UpdateImpostorTint(sqrtDistance,
-                        TINT_MIN_DISTANCE,
-                        TINT_MAX_DISTANCE,
-                        TINT_NEAREST_BLACKNESS,
-                        TINT_FAREST_BLACKNESS,
-                        ALPHA_NEAREST_VALUE,
-                        ALPHA_FAREST_VALUE);
+                    lodController.UpdateImpostorTint(sqrtDistance);
 
                     impostorCount++;
                     continue;

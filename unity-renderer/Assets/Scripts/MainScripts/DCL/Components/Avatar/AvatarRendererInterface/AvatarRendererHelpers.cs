@@ -7,6 +7,15 @@ namespace DCL
         private static readonly int IMPOSTOR_TEXTURE_PROPERTY = Shader.PropertyToID("_BaseMap");
         private static readonly int IMPOSTOR_TEXTURE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
 
+        // Manually tweaked values
+        public static readonly float IMPOSTOR_TINT_MIN_DISTANCE = 30f;
+        public static readonly float IMPOSTOR_TINT_MAX_DISTANCE = 32f;
+        public static readonly float IMPOSTOR_TINT_NEAREST_BLACKNESS = 0f;
+        public static readonly float IMPOSTOR_TINT_FAREST_BLACKNESS = 0.54f;
+        public static readonly float IMPOSTOR_ALPHA_NEAREST_VALUE = 1f;
+        public static readonly float IMPOSTOR_ALPHA_FAREST_VALUE = 1f;
+        public static readonly float IMPOSTOR_MOVEMENT_INTERPOLATION = 1f;
+
         // 2048x2048 atlas with 8 512x1024 snapshot-sprites
         private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
         private const int GENERIC_IMPOSTORS_ATLAS_ROWS = 2;

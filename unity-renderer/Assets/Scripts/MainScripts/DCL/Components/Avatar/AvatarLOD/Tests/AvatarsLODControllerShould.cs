@@ -261,7 +261,7 @@ namespace Tests.AvatarsLODController
             controller.Update();
 
             impostorAvatarPlayerController.ReceivedWithAnyArgs()
-                                          .UpdateImpostorTint(default, default, default, default, default, default, default);
+                                          .UpdateImpostorTint(default);
         }
 
         [Test]
