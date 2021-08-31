@@ -12,7 +12,7 @@ namespace DCL
         void SetSimpleAvatar();
         void SetImpostor();
         void SetInvisible();
-        void UpdateImpostorTint(float sqrDistanceToMainPlayer);
+        void UpdateImpostorTint(float distanceToMainPlayer);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -155,14 +155,10 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float sqrDistanceToMainPlayer)
+        public void UpdateImpostorTint(float distanceToMainPlayer)
         {
-            // We need to correct distance values as the distance to main player is squared 
-            float minImpostorTintDistance = AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE * AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE;
-            float maxImpostorTintDistance = AvatarRendererHelpers.IMPOSTOR_TINT_MAX_DISTANCE * AvatarRendererHelpers.IMPOSTOR_TINT_MAX_DISTANCE;
-
-            float initialStep = Mathf.Max(minImpostorTintDistance, sqrDistanceToMainPlayer);
-            float tintStep = Mathf.InverseLerp(minImpostorTintDistance, maxImpostorTintDistance, initialStep);
+            float initialStep = Mathf.Max(AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE, distanceToMainPlayer);
+            float tintStep = Mathf.InverseLerp(AvatarRendererHelpers.IMPOSTOR_TINT_MIN_DISTANCE, AvatarRendererHelpers.IMPOSTOR_TINT_MAX_DISTANCE, initialStep);
             float tintValue = Mathf.Lerp(AvatarRendererHelpers.IMPOSTOR_TINT_NEAREST_BLACKNESS, AvatarRendererHelpers.IMPOSTOR_TINT_FAREST_BLACKNESS, tintStep);
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
             newColor.a = Mathf.Lerp(AvatarRendererHelpers.IMPOSTOR_ALPHA_NEAREST_VALUE, AvatarRendererHelpers.IMPOSTOR_ALPHA_FAREST_VALUE, tintStep);

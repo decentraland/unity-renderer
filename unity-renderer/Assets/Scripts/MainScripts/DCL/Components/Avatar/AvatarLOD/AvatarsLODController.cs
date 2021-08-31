@@ -136,7 +136,7 @@ namespace DCL
                 {
                     lodController.SetImpostor();
 
-                    lodController.UpdateImpostorTint(sqrtDistance);
+                    lodController.UpdateImpostorTint(Mathf.Sqrt(sqrtDistance));
 
                     impostorCount++;
                     continue;
