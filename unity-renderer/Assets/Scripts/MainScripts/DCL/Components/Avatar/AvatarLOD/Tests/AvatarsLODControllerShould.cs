@@ -2,6 +2,7 @@
 using KernelConfigurationTypes;
 using NSubstitute;
 using NSubstitute.Extensions;
+using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -259,15 +260,8 @@ namespace Tests.AvatarsLODController
             controller.enabled = true;
             controller.Update();
 
-            impostorAvatarPlayerController.Received()
-                                          .UpdateImpostorTint(tintMinDistance,
-                                              tintMinDistance,
-                                              32f,
-                                              0f,
-                                              0.54f,
-                                              1f,
-                                              1f
-                                          );
+            impostorAvatarPlayerController.ReceivedWithAnyArgs()
+                                          .UpdateImpostorTint(default, default, default, default, default, default, default);
         }
 
         [Test]
