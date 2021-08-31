@@ -39,8 +39,6 @@ namespace DCL
 
         internal void Initialize(KernelConfigModel config)
         {
-            if (enabled == config.features.enableBuilderInWorld)
-                enabled = config.features.enableAvatarLODs;
             if (!enabled)
                 return;
 
