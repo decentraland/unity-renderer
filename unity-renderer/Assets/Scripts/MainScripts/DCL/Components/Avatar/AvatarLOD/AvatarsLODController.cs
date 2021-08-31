@@ -39,6 +39,7 @@ namespace DCL
 
         internal void Initialize(KernelConfigModel config)
         {
+            enabled = config.features.enableAvatarLODs;
             if (!enabled)
                 return;
 
