@@ -118,7 +118,7 @@ namespace Tests
             var wasEventSent = false;
             yield return TestHelpers.WaitForMessageFromEngine("VideoProgressEvent", json,
                 () => { },
-                () =>wasEventSent = true);
+                () => wasEventSent = true);
 
             Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
         }
