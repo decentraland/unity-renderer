@@ -12,7 +12,7 @@ namespace DCL
         void SetSimpleAvatar();
         void SetImpostor();
         void SetInvisible();
-        void UpdateImpostorTint(float distanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue);
+        void UpdateImpostorTint(float sqrDistanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -155,9 +155,13 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float distanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue)
+        public void UpdateImpostorTint(float sqrDistanceToMainPlayer, float minImpostorTintDistance, float maxImpostorTintDistance, float nearestImpostorColorTint, float farestImpostorColorTint, float nearestImpostorAlphaValue, float farestImpostorAlphaValue)
         {
-            float initialStep = Mathf.Max(minImpostorTintDistance, distanceToMainPlayer);
+            // We need to correct distance values as the distance to main player is squared 
+            minImpostorTintDistance *= minImpostorTintDistance;
+            maxImpostorTintDistance *= maxImpostorTintDistance;
+
+            float initialStep = Mathf.Max(minImpostorTintDistance, sqrDistanceToMainPlayer);
             float tintStep = Mathf.InverseLerp(minImpostorTintDistance, maxImpostorTintDistance, initialStep);
             float tintValue = Mathf.Lerp(nearestImpostorColorTint, farestImpostorColorTint, tintStep);
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);

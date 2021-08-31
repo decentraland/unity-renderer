@@ -143,8 +143,7 @@ namespace DCL
                 {
                     lodController.SetImpostor();
 
-                    var distanceToPlayer = Mathf.Sqrt(sqrtDistance);
-                    lodController.UpdateImpostorTint(distanceToPlayer,
+                    lodController.UpdateImpostorTint(sqrtDistance,
                         TINT_MIN_DISTANCE,
                         TINT_MAX_DISTANCE,
                         TINT_NEAREST_BLACKNESS,
