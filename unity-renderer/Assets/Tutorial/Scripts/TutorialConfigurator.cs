@@ -44,5 +44,9 @@ namespace DCL.Tutorial
             tutorialController = new TutorialController();
             tutorialController.Initialize(configuration, gameObject);
         }
+
+        public void SetTutorialEnabled(string json) { tutorialController.SetTutorialEnabled(json); }
+
+        public void SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(string json) { tutorialController.SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(json); }
     }
 }
