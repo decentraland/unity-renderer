@@ -1,7 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using DCL;
 using UnityEngine;
 using WebSocketSharp.Server;
@@ -22,49 +22,35 @@ public class WebSocketCommunication : IKernelCommunication
     [System.NonSerialized]
     public static volatile bool queuedMessagesDirty;
 
-    public bool isServerReady { get { return ws.IsListening; } }
+    public bool isServerReady => ws.IsListening;
 
-    private bool CheckAvailableServerPort(int port)
+    private string StartServer(int port, int maxPort)
     {
-#if UNITY_EDITOR_OSX
-        return true;
-#else
-        bool isAvailable = true;
-
-        // Evaluate current system tcp connections. This is the same information provided
-        // by the netstat command line application, just in .Net strongly-typed object
-        // form.  We will look through the list, and if our port we would like to use
-        // in our TcpClient is occupied, we will set isAvailable to false.
-        IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-        IPEndPoint[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpListeners();
-
-        foreach (IPEndPoint endpoint in tcpConnInfoArray)
+        if (port > maxPort)
         {
-            if (endpoint.Port == port)
+            throw new SocketException((int)SocketError.AddressAlreadyInUse);
+        }
+        string wssServerUrl = $"ws://localhost:{port}/";
+        string wssServiceId = "dcl";
+        string wssUrl = wssServerUrl + wssServiceId; 
+        try
+        {
+            ws = new WebSocketServer(wssServerUrl);
+            ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
+            ws.Start();
+        }
+        catch (InvalidOperationException e)
+        {
+            ws.Stop();
+            SocketException se = (SocketException)e.InnerException;
+            if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
             {
-                isAvailable = false;
-                break;
+                return StartServer(port + 1, maxPort);
             }
+            throw new InvalidOperationException(e.Message, e.InnerException);
         }
 
-        return isAvailable;
-#endif
-    }
-
-    private int SearchUnusedPort()
-    {
-        const int minPort = 5000;
-        const int maxPort = 6000;
-
-        for (int i = minPort; i < maxPort; ++i)
-        {
-            if (CheckAvailableServerPort(i))
-            {
-                return i;
-            }
-        }
-        Debug.LogError("There are not unused ports.");
-        return minPort; // error
+        return wssUrl;
     }
 
     public WebSocketCommunication()
@@ -73,17 +59,11 @@ public class WebSocketCommunication : IKernelCommunication
 
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-        int port = SearchUnusedPort();
+        string url = StartServer(5000, 5100);
 
-        string wssServerUrl = $"ws://localhost:{port}/";
-        string wssServiceId = "dcl";
-
-        DataStore.i.wsCommunication.wssServerUrl = wssServerUrl;
-        DataStore.i.wsCommunication.wssServiceId = wssServiceId;
-
-        ws = new WebSocketServer(wssServerUrl);
-        ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
-        ws.Start();
+        Debug.Log("WebSocket Server URL: " + url);
+        
+        DataStore.i.wsCommunication.url = url;
 
         DataStore.i.wsCommunication.communicationReady.Set(true);
 
@@ -175,8 +155,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "BuilderController";
         messageTypeToBridgeName["AirdroppingRequest"] = "BuilderController";
 
-        messageTypeToBridgeName["SetTutorialEnabled"] = "Tutorial";
-        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "Tutorial";
+        messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
+        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
     }
 
     IEnumerator ProcessMessages()
@@ -245,5 +225,9 @@ public class WebSocketCommunication : IKernelCommunication
             }
             yield return null;
         }
+    }
+    public void Dispose()
+    {
+        ws.Stop();
     }
 }

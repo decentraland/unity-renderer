@@ -54,6 +54,10 @@ public class NativeBridgeCommunication : IKernelCommunication
         SetCallback_Query(Query);
 #endif
     }
+    public void Dispose()
+    {
+        
+    }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VSSS))]
     internal static void OpenNftDialog(string contactAddress, string comment, string tokenId)

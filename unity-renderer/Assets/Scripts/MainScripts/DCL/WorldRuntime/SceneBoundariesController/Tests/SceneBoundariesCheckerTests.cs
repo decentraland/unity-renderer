@@ -40,17 +40,14 @@ namespace SceneBoundariesCheckerTests
 
         [UnityTest]
         [Category("Explicit")]
-        [Explicit]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
         [Category("Explicit")]
-        [Explicit]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
         [Category("Explicit")]
-        [Explicit]
         public IEnumerator NFTShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
