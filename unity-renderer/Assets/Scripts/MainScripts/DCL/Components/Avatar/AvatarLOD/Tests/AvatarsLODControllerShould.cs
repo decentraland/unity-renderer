@@ -260,8 +260,7 @@ namespace Tests.AvatarsLODController
             controller.enabled = true;
             controller.Update();
 
-            impostorAvatarPlayerController.ReceivedWithAnyArgs()
-                                          .UpdateImpostorTint(default);
+            impostorAvatarPlayerController.ReceivedWithAnyArgs().UpdateImpostorTint(default);
         }
 
         [Test]

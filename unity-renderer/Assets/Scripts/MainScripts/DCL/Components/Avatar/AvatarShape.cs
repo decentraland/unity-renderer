@@ -36,7 +36,7 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-            avatarRenderer.OnImpostorAlphaValueUpdate += (newAlphaValue) => avatarMovementController.movementLerpWait = newAlphaValue > 0.1f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f;
+            avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
         }
 
         private void PlayerClicked()
@@ -179,6 +179,8 @@ namespace DCL
             player = null;
         }
 
+        void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.1f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
+
         public override void Cleanup()
         {
             base.Cleanup();
@@ -203,6 +205,8 @@ namespace DCL
                 entity.OnTransformChange = null;
                 entity = null;
             }
+
+            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
