@@ -75,7 +75,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupEyebrows(Material material, Texture texture, Color color)
     {
-        if (assetContainer != null && assetContainer.transform == null)
+        if (assetContainer == null || assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup eyebrows when the asset not ready");
             return;
