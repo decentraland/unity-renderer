@@ -62,7 +62,7 @@ public class PluginSystem
     public void ApplyFeaturesConfig(KernelConfigModel config)
     {
         HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
-        HandleFeature<TutorialController>(true);
+        HandleFeature<TutorialController>(config.features.enableTutorial);
         currentConfig = config;
     }
 
