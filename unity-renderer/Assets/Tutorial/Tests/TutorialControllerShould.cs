@@ -590,7 +590,7 @@ namespace DCL.Tutorial_Tests
             tutorialController = new TutorialController();
             tutorialController.tutorialView = tutorialController.CreateTutorialView();
             tutorialView = tutorialController.tutorialView;
-            tutorialView.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialConfiguration>("TutorialConfigurationForTests"));
+            tutorialView.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialSettings>("TutorialConfigurationForTests"));
             tutorialView.ConfigureView(tutorialController);
             tutorialController.SetConfiguration(tutorialView.configuration);
             tutorialController = tutorialView.tutorialController;

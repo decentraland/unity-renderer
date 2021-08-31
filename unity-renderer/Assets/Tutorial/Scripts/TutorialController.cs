@@ -54,7 +54,7 @@ namespace DCL.Tutorial
 
         private const string PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED = "VoiceChatFeatureShowed";
 
-        internal TutorialConfiguration configuration;
+        internal TutorialSettings configuration;
         internal TutorialView tutorialView;
 
         internal bool isRunning = false;
@@ -91,7 +91,7 @@ namespace DCL.Tutorial
             return tutorialView;
         }
 
-        public void SetConfiguration(TutorialConfiguration configuration)
+        public void SetConfiguration(TutorialSettings configuration)
         {
             this.configuration = configuration;
 
@@ -129,7 +129,8 @@ namespace DCL.Tutorial
 
             NotificationsController.disableWelcomeNotification = false;
 
-            GameObject.Destroy(tutorialView.gameObject);
+            if (tutorialView != null)
+                GameObject.Destroy(tutorialView.gameObject);
         }
 
         public void SetTutorialEnabled(string json)
@@ -546,7 +547,7 @@ namespace DCL.Tutorial
             }));
         }
 
-        private bool IsPlayerInsideGenesisPlaza()
+        public bool IsPlayerInsideGenesisPlaza()
         {
             if (Environment.i.world == null)
                 return false;

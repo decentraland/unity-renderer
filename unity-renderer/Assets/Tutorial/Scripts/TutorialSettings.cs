@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 namespace DCL.Tutorial
 {
-    [CreateAssetMenu(fileName = "TutorialConfiguration", menuName = "TutorialConfiguration")]
-    public class TutorialConfiguration : ScriptableObject
+    [CreateAssetMenu(fileName = "TutorialSettings", menuName = "TutorialSettings")]
+    public class TutorialSettings : ScriptableObject
     {
         [Header("General Configuration")]
         public int tutorialVersion = 1;

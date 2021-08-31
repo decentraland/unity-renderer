@@ -8,7 +8,7 @@ namespace DCL.Tutorial
     {
         [Header("General Configuration")]
         [SerializeField]
-        internal TutorialConfiguration configuration;
+        internal TutorialSettings configuration;
 
         [Header("3D Model Teacher references")]
         [SerializeField]
