@@ -155,8 +155,8 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "BuilderController";
         messageTypeToBridgeName["AirdroppingRequest"] = "BuilderController";
 
-        messageTypeToBridgeName["SetTutorialEnabled"] = "Tutorial";
-        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "Tutorial";
+        messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
+        messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";
     }
 
     IEnumerator ProcessMessages()
