@@ -95,7 +95,7 @@ namespace DCL.Components
 
                 string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
                 texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
-                texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
+                texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
                 scene.OnEntityRemoved += OnEntityRemoved;
@@ -178,33 +178,42 @@ namespace DCL.Components
             texture.Apply(unitySamplingMode != FilterMode.Point, true);
         }
 
-        private IEnumerator VideoTextureUpdate()
+        private IEnumerator OnUpdate()
         {
             while (true)
             {
-                if (isPlayStateDirty)
-                {
-                    CalculateVideoVolumeAndPlayStatus();
-                    isPlayStateDirty = false;
-                }
-
-                if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
-                {
-                    currUpdateIntervalTime += Time.unscaledDeltaTime;
-                }
-                else if (texturePlayer != null && !isTest)
-                {
-                    currUpdateIntervalTime = 0;
-                    texturePlayer.UpdateWebVideoTexture();
-                }
-
-                if (texturePlayer.playing && IsTimeToReportVideoProgress())
-                {
-                    lastVideoProgressReportTime = Time.unscaledTime;
-                    ReportVideoProgress();
-                }
-
+                UpdateDirtyState();
+                UpdateVideoTexture();
+                UpdateProgressReport();
                 yield return null;
+            }
+        }
+        private void UpdateDirtyState()
+        {
+            if (isPlayStateDirty)
+            {
+                CalculateVideoVolumeAndPlayStatus();
+                isPlayStateDirty = false;
+            }
+        }
+        private void UpdateVideoTexture()
+        {
+            if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
+            {
+                currUpdateIntervalTime += Time.unscaledDeltaTime;
+            }
+            else if (texturePlayer != null && !isTest)
+            {
+                currUpdateIntervalTime = 0;
+                texturePlayer.UpdateWebVideoTexture();
+            }
+        }
+        private void UpdateProgressReport()
+        {
+            if (texturePlayer.playing && IsTimeToReportVideoProgress())
+            {
+                lastVideoProgressReportTime = Time.unscaledTime;
+                ReportVideoProgress();
             }
         }
         private void ReportVideoProgress()
