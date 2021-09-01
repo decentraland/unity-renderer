@@ -209,5 +209,15 @@ namespace Tests
             
             Assert.AreEqual(VideoState.READY, state);
         }
+        
+        [Test]
+        public void WhenVideoDurationIsNaNReturnAValidNumber()
+        {
+            plugin.GetDuration(ID).Returns(float.NaN);
+
+            var duration = webVideoPlayer.GetDuration();
+            
+            Assert.AreEqual(-1, duration);
+        }
     }
 }

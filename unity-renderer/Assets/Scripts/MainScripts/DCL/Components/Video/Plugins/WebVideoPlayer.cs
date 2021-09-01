@@ -144,7 +144,12 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return 0;
 
-            return plugin.GetDuration(videoPlayerId);
+            float duration = plugin.GetDuration(videoPlayerId);
+            
+            if (float.IsNaN(duration))
+                duration = -1;
+            
+            return duration;
         }
 
         public VideoState GetState()
