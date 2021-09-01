@@ -547,7 +547,7 @@ namespace DCL.Tutorial
             }));
         }
 
-        public bool IsPlayerInsideGenesisPlaza()
+        internal static bool IsPlayerInsideGenesisPlaza()
         {
             if (Environment.i.world == null)
                 return false;
