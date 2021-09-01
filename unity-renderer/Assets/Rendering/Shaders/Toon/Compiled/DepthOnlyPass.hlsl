@@ -7,7 +7,7 @@ PackedVaryings vert(Attributes input)
 {
     Varyings output = (Varyings)0;
     #ifdef _GPU_SKINNING 
-    input.positionOS = GetSkinnedPos(input.positionOS, input.tangentOS, input.uv1);
+    ApplyGPUSkinning(input, input.tangentOS, input.uv1);
     #endif
     output = BuildVaryings(input);
     PackedVaryings packedOutput = (PackedVaryings)0;
