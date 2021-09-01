@@ -52,6 +52,8 @@ namespace DCL
 
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
+
+            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -205,8 +207,6 @@ namespace DCL
                 entity.OnTransformChange = null;
                 entity = null;
             }
-
-            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }

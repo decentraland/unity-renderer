@@ -333,7 +333,7 @@ namespace DCL.Bots
                 randomBotIndices.Add(randomIndex);
             }
 
-            movementRoutine = CoroutineStarter.Start(RandomMovementRoutine(randomBotIndices, config.waypointsUpdateTime));
+            movementRoutine = CoroutineStarter.Start(RandomMovementRoutine(randomBotIndices, config));
         }
 
         private const float WAYPOINTS_UPDATE_DEFAULT_TIME = 5f;
@@ -344,32 +344,32 @@ namespace DCL.Bots
             // TODO(Brian): Use nullable types here, this may fail.
             if (config.waypointsUpdateTime == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"waypointsUpdateTime value wasn't provided... using default time: {WAYPOINTS_UPDATE_DEFAULT_TIME}");
                 config.waypointsUpdateTime = WAYPOINTS_UPDATE_DEFAULT_TIME;
+                Log($"waypointsUpdateTime value wasn't provided... using default time: {config.waypointsUpdateTime}");
             }
 
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
-                config.xCoord = Mathf.Floor(playerWorldPosition.x / ParcelSettings.PARCEL_SIZE);
+                config.xCoord = Mathf.Floor(lastConfigUsed.xPos / ParcelSettings.PARCEL_SIZE);
+                Log($"X Coordinate value wasn't provided... using last bots spawning X coordinate: {config.xCoord}");
             }
 
             if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
             {
-                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
-                config.yCoord = Mathf.Floor(playerWorldPosition.z / ParcelSettings.PARCEL_SIZE);
+                config.yCoord = Mathf.Floor(lastConfigUsed.zPos / ParcelSettings.PARCEL_SIZE);
+                Log($"Y Coordinate value wasn't provided... using last bots spawning Y coordinate: {config.yCoord}");
             }
 
             if (config.areaWidth == 0)
             {
-                Log($"Area width provided is 0... will use last bots spawning area config width: {lastConfigUsed.areaWidth}");
                 config.areaWidth = lastConfigUsed.areaWidth;
+                Log($"Area width provided is 0... using last bots spawning area config width: {config.areaWidth}");
             }
 
             if (config.areaDepth == 0)
             {
-                Log($"Area depth provided is 0... will use last bots spawning area config depth: {lastConfigUsed.areaDepth}");
                 config.areaWidth = lastConfigUsed.areaDepth;
+                Log($"Area depth provided is 0... using last bots spawning area config depth: {config.areaWidth}");
             }
         }
 
@@ -383,20 +383,23 @@ namespace DCL.Bots
         }
 
         private float lastMovementUpdateTime;
-        IEnumerator RandomMovementRoutine(List<int> targetBots, float waypointsUpdateTime)
+        IEnumerator RandomMovementRoutine(List<int> targetBots, CoordsRandomMovementConfig config)
         {
             lastMovementUpdateTime = Time.timeSinceLevelLoad;
             while (true)
             {
                 float currentTime = Time.timeSinceLevelLoad;
-                if (currentTime - lastMovementUpdateTime >= waypointsUpdateTime)
+                if (currentTime - lastMovementUpdateTime >= config.waypointsUpdateTime)
                 {
                     lastMovementUpdateTime = currentTime;
                     foreach (int targetBotIndex in targetBots)
                     {
                         // Thanks to the avatars movement interpolation, we can just update their entity position to the target position.
-                        Vector3 randomizedAreaPosition = new Vector3(Random.Range(lastConfigUsed.xPos, lastConfigUsed.xPos + lastConfigUsed.areaWidth),
-                            lastConfigUsed.yPos, Random.Range(lastConfigUsed.zPos, lastConfigUsed.zPos + lastConfigUsed.areaDepth));
+
+                        Vector3 position = new Vector3(config.xCoord * ParcelSettings.PARCEL_SIZE, lastConfigUsed.yPos, config.yCoord * ParcelSettings.PARCEL_SIZE);
+                        Vector3 randomizedAreaPosition = new Vector3(Random.Range(position.x, position.x + config.areaWidth),
+                            position.y, Random.Range(position.z, position.z + config.areaDepth));
+
 
                         UpdateEntityTransform(globalScene, instantiatedBots[targetBotIndex], randomizedAreaPosition, Quaternion.identity, Vector3.one);
                     }
