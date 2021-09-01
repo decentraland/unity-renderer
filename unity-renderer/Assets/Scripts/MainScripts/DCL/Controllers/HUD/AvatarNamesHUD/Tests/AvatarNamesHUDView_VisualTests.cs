@@ -12,14 +12,13 @@ namespace Tests.AvatarNamesHUD
 {
     public class AvatarNamesHUDView_VisualTests : VisualTestsBase
     {
-        private const int MAX_AVATAR_NAMES = 3;
         private AvatarNamesHUDView hudView;
 
         protected override IEnumerator InitScene(bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false, bool reloadUnityScene = true)
         {
             yield return base.InitScene(spawnCharController, spawnTestScene, spawnUIScene, debugMode, reloadUnityScene);
             hudView = Object.Instantiate(Resources.Load<GameObject>("AvatarNamesHUD")).GetComponent<AvatarNamesHUDView>();
-            hudView.Initialize(MAX_AVATAR_NAMES);
+            hudView.Initialize();
         }
 
         [UnityTest, VisualTest]

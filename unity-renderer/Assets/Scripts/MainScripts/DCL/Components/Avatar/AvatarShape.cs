@@ -31,6 +31,7 @@ namespace DCL
 
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private BaseHashSet<string> visibleNames => DataStore.i.avatarsLOD.visibleNames;
 
         private void Awake()
         {
@@ -132,7 +133,10 @@ namespace DCL
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
             if (isNew)
+            {
+                visibleNames.Add(player.id);
                 otherPlayers.Add(player.id, player);
+            }
         }
 
         private void Update()

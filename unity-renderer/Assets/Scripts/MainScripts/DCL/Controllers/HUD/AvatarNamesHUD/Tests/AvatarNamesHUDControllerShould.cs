@@ -18,7 +18,7 @@ namespace Tests.AvatarNamesHUD
         public void SetUp()
         {
             hudView = Substitute.For<IAvatarNamesHUDView>();
-            hudController = Substitute.ForPartsOf<AvatarNamesHUDController>(MAX_AVATAR_NAMES);
+            hudController = Substitute.ForPartsOf<AvatarNamesHUDController>();
             hudController.Configure().CreateView().Returns(info => hudView);
         }
 
@@ -27,7 +27,7 @@ namespace Tests.AvatarNamesHUD
         {
             hudController.Initialize();
             Assert.AreEqual(hudView, hudController.view);
-            hudView.Received().Initialize(MAX_AVATAR_NAMES);
+            hudView.Received().Initialize();
         }
 
         [Test]
@@ -40,12 +40,11 @@ namespace Tests.AvatarNamesHUD
 
             hudController.Initialize();
 
-            Assert.AreEqual(3, hudController.trackingPlayers.Count);
+            Assert.AreEqual(4, hudController.trackingPlayers.Count);
             Assert.IsTrue(hudController.trackingPlayers.Contains("user0"));
             Assert.IsTrue(hudController.trackingPlayers.Contains("user1"));
             Assert.IsTrue(hudController.trackingPlayers.Contains("user2"));
-            Assert.AreEqual(1, hudController.reservePlayers.Count);
-            Assert.IsTrue(hudController.reservePlayers.Contains("user3"));
+            Assert.IsTrue(hudController.trackingPlayers.Contains("user3"));
         }
 
         [Test]
@@ -83,34 +82,12 @@ namespace Tests.AvatarNamesHUD
         }
 
         [Test]
-        public void TrackPlayersProperly_TrackingFull()
-        {
-            hudController.Initialize();
-            hudController.trackingPlayers.Add("user0");
-            hudController.trackingPlayers.Add("user1");
-            hudController.trackingPlayers.Add("user2");
-
-            var user3 = new Player { id = "user3", name = "user3" };
-            var user4 = new Player { id = "user4", name = "user4" };
-            hudController.OnOtherPlayersStatusAdded("user3", user3);
-            hudController.OnOtherPlayersStatusAdded("user4", user4);
-
-            Assert.AreEqual(2, hudController.reservePlayers.Count);
-            Assert.IsTrue(hudController.reservePlayers.Contains("user3"));
-            Assert.IsTrue(hudController.reservePlayers.Contains("user4"));
-            hudView.DidNotReceive().TrackPlayer(user3);
-            hudView.DidNotReceive().TrackPlayer(user4);
-        }
-
-        [Test]
         public void UntrackPlayersProperly_TrackedPlayer()
         {
             hudController.Initialize();
             hudController.trackingPlayers.Add("user0");
             hudController.trackingPlayers.Add("user1");
             hudController.trackingPlayers.Add("user2");
-            hudController.reservePlayers.AddLast("user3");
-            hudController.reservePlayers.AddLast("user4");
 
             hudController.OnOtherPlayersStatusRemoved("user0", new Player { id = "user0", name = "user0" });
 
@@ -118,30 +95,6 @@ namespace Tests.AvatarNamesHUD
             Assert.AreEqual(3, hudController.trackingPlayers.Count);
             Assert.IsTrue(hudController.trackingPlayers.Contains("user1"));
             Assert.IsTrue(hudController.trackingPlayers.Contains("user2"));
-            Assert.IsTrue(hudController.trackingPlayers.Contains("user3"));
-            Assert.AreEqual(1, hudController.reservePlayers.Count);
-            Assert.IsTrue(hudController.reservePlayers.Contains("user4"));
-        }
-
-        [Test]
-        public void UntrackPlayersProperly_ReservePlayer()
-        {
-            hudController.Initialize();
-            hudController.trackingPlayers.Add("user0");
-            hudController.trackingPlayers.Add("user1");
-            hudController.trackingPlayers.Add("user2");
-            hudController.reservePlayers.AddLast("user3");
-            hudController.reservePlayers.AddLast("user4");
-
-            hudController.OnOtherPlayersStatusRemoved("user3", new Player { id = "user3", name = "user3" });
-
-            hudView.DidNotReceive().UntrackPlayer("user3");
-            Assert.AreEqual(3, hudController.trackingPlayers.Count);
-            Assert.IsTrue(hudController.trackingPlayers.Contains("user0"));
-            Assert.IsTrue(hudController.trackingPlayers.Contains("user1"));
-            Assert.IsTrue(hudController.trackingPlayers.Contains("user2"));
-            Assert.AreEqual(1, hudController.reservePlayers.Count);
-            Assert.IsTrue(hudController.reservePlayers.Contains("user4"));
         }
 
         [TearDown]

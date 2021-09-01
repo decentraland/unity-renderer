@@ -30,12 +30,21 @@ namespace AvatarNamesHUD
             name = nameRect.GetComponent<TextMeshProUGUI>();
             voiceChatCanvasGroup = voiceChatRect.GetComponent<CanvasGroup>();
             voiceChatAnimator = voiceChatRect.GetComponent<Animator>();
+
+            visibility = false;
+            UpdateElementsVisibility();
         }
 
         public void SetVisibility(bool visible)
         {
+            if (visibility == visible)
+                return;
             visibility = visible;
+            UpdateElementsVisibility();
+        }
 
+        private void UpdateElementsVisibility()
+        {
             if ( background != null )
                 background.gameObject.SetActive(visibility);
 

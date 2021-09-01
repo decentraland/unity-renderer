@@ -14,6 +14,7 @@ namespace DCL
         private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
         private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
         private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
+        private BaseHashSet<string> visibleNames => DataStore.i.avatarsLOD.visibleNames;
         private Vector3 cameraPosition;
         private Vector3 cameraForward;
 
@@ -104,6 +105,7 @@ namespace DCL
                 (IAvatarLODController lodController, float sqrtDistance) = lodControllersByDistance[index];
                 if (sqrtDistance < 0) //Behind camera
                 {
+                    visibleNames.Remove(lodController.player.id);
                     lodController.SetInvisible();
                     continue;
                 }
@@ -118,13 +120,16 @@ namespace DCL
                         else
                             lodController.SetSimpleAvatar();
                         avatarsCount++;
+                        visibleNames.Add(lodController.player.id);
                         continue;
                     }
 
                     lodController.SetInvisible();
+                    visibleNames.Remove(lodController.player.id);
                     continue;
                 }
 
+                visibleNames.Remove(lodController.player.id);
                 if (avatarsCount < maxAvatars)
                 {
                     lodController.SetSimpleAvatar();
