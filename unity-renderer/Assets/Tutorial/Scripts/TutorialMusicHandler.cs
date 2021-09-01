@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TutorialMusicHandler : MonoBehaviour
 {
-    [SerializeField] DCL.Tutorial.TutorialController tutorialController;
     [SerializeField] AudioEvent tutorialMusic, avatarEditorMusic;
 
     bool rendererIsReady = false, tutorialHasBeenEnabled = false;
@@ -50,7 +49,7 @@ public class TutorialMusicHandler : MonoBehaviour
 
     void TryPlayingMusic()
     {
-        if (tutorialController.userAlreadyDidTheTutorial)
+        if (DCL.Tutorial.TutorialController.i.userAlreadyDidTheTutorial)
             return;
 
         if (rendererIsReady && tutorialHasBeenEnabled && !tutorialMusic.source.isPlaying)

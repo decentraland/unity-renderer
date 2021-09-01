@@ -15,6 +15,7 @@ public class PluginSystemShould : IntegrationTestSuite
         //Arrange
         PluginSystem pluginSystem = new PluginSystem();
         KernelConfigModel currentConfig = new KernelConfigModel();
+        currentConfig.features.enableTutorial = false;
 
         //Act
         pluginSystem.ApplyFeaturesConfig(currentConfig);
@@ -29,7 +30,9 @@ public class PluginSystemShould : IntegrationTestSuite
         //Arrange
         PluginSystem pluginSystem = new PluginSystem();
         KernelConfigModel currentConfig = new KernelConfigModel();
+        currentConfig.features.enableTutorial = false;
         KernelConfigModel oldConfig = new KernelConfigModel();
+        oldConfig.features.enableTutorial = false;
         pluginSystem.ApplyFeaturesConfig(oldConfig);
 
         //Act
