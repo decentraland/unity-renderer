@@ -4,16 +4,15 @@ namespace DCL
 {
     public static class AvatarRendererHelpers
     {
-        public static readonly float IMPOSTOR_MOVEMENT_INTERPOLATION = 1f;
-
         private static readonly int IMPOSTOR_TEXTURE_PROPERTY = Shader.PropertyToID("_BaseMap");
         private static readonly int IMPOSTOR_TEXTURE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
 
         // Manually tweaked values
+        public static readonly float IMPOSTOR_MOVEMENT_INTERPOLATION = 1.79f;
         private const float IMPOSTOR_TINT_MIN_DISTANCE = 30f;
-        private const float IMPOSTOR_TINT_MAX_DISTANCE = 32f;
+        private const float IMPOSTOR_TINT_MAX_DISTANCE = 81.33f;
         private const float IMPOSTOR_TINT_NEAREST_BLACKNESS = 0f;
-        private const float IMPOSTOR_TINT_FAREST_BLACKNESS = 0.54f;
+        private const float IMPOSTOR_TINT_FAREST_BLACKNESS = 0.74f;
         private const float IMPOSTOR_ALPHA_NEAREST_VALUE = 1f;
         private const float IMPOSTOR_ALPHA_FAREST_VALUE = 1f;
 

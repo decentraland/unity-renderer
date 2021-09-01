@@ -59,9 +59,7 @@ namespace DCL
             audioMixer = Resources.Load<AudioMixer>("AudioMixer");
         }
 
-        public void Dispose() {
-            UnsubscribeFromVirtualAudioMixerEvents();
-        }
+        public void Dispose() { UnsubscribeFromVirtualAudioMixerEvents(); }
 
         private void LoadQualitySettings()
         {
@@ -149,7 +147,7 @@ namespace DCL
                 mouseSensitivity = 0.6f,
                 scenesLoadRadius = 4,
                 avatarsLODDistance = 16,
-                maxNonLODAvatars = 20,
+                maxNonLODAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
                 voiceChatVolume = 1,
                 voiceChatAllow = SettingsData.GeneralSettings.VoiceChatAllow.ALL_USERS,
                 autoqualityOn = false
@@ -217,21 +215,24 @@ namespace DCL
             OnAudioSettingsChanged?.Invoke(settings);
         }
 
-        private void SubscribeToVirtualAudioMixerEvents() {
+        private void SubscribeToVirtualAudioMixerEvents()
+        {
             DataStore.i.virtualAudioMixer.voiceChatVolume.OnChange += ApplyVoiceChatSettings;
             DataStore.i.virtualAudioMixer.musicVolume.OnChange += ApplyMusicVolume;
             DataStore.i.virtualAudioMixer.avatarSFXVolume.OnChange += ApplyAvatarSFXVolume;
             DataStore.i.virtualAudioMixer.uiSFXVolume.OnChange += ApplyUISFXVolume;
         }
 
-        private void UnsubscribeFromVirtualAudioMixerEvents() {
+        private void UnsubscribeFromVirtualAudioMixerEvents()
+        {
             DataStore.i.virtualAudioMixer.voiceChatVolume.OnChange -= ApplyVoiceChatSettings;
             DataStore.i.virtualAudioMixer.musicVolume.OnChange -= ApplyMusicVolume;
             DataStore.i.virtualAudioMixer.avatarSFXVolume.OnChange -= ApplyAvatarSFXVolume;
             DataStore.i.virtualAudioMixer.uiSFXVolume.OnChange -= ApplyUISFXVolume;
         }
 
-        public void ApplyMasterVolume() {
+        public void ApplyMasterVolume()
+        {
             // Update the "All" mixer group
             audioMixer.SetFloat("AllBusVolume", Utils.ToAudioMixerGroupVolume(currentAudioSettings.masterVolume));
 
@@ -239,22 +240,17 @@ namespace DCL
             ApplyVoiceChatSettings();
         }
 
-        public void ApplyVoiceChatSettings(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) {
+        public void ApplyVoiceChatSettings(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f)
+        {
             float calculatedVolume = Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.voiceChatVolume.Get() * currentAudioSettings.voiceChatVolume * currentAudioSettings.masterVolume);
             WebInterface.ApplySettings(calculatedVolume, (int)currentGeneralSettings.voiceChatAllow);
         }
 
-        public void ApplyAvatarSFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) {
-            audioMixer.SetFloat("AvatarSFXBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.avatarSFXVolume.Get() * currentAudioSettings.avatarSFXVolume));
-        }
+        public void ApplyAvatarSFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("AvatarSFXBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.avatarSFXVolume.Get() * currentAudioSettings.avatarSFXVolume)); }
 
-        public void ApplyUISFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) {
-            audioMixer.SetFloat("UIBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * currentAudioSettings.uiSFXVolume));
-        }
+        public void ApplyUISFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("UIBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * currentAudioSettings.uiSFXVolume)); }
 
-        public void ApplyMusicVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) {
-            audioMixer.SetFloat("MusicBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * currentAudioSettings.musicVolume));
-        }
+        public void ApplyMusicVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("MusicBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * currentAudioSettings.musicVolume)); }
 
         public void SaveSettings()
         {
@@ -304,14 +300,15 @@ namespace DCL.SettingsData
         public float musicVolume;
         public bool chatSFXEnabled;
 
-        public bool Equals(AudioSettings settings) {
+        public bool Equals(AudioSettings settings)
+        {
             return masterVolume == settings.masterVolume
-                && voiceChatVolume == settings.voiceChatVolume
-                && avatarSFXVolume == settings.avatarSFXVolume
-                && uiSFXVolume == settings.uiSFXVolume
-                && sceneSFXVolume == settings.sceneSFXVolume
-                && musicVolume == settings.musicVolume
-                && chatSFXEnabled == settings.chatSFXEnabled;
+                   && voiceChatVolume == settings.voiceChatVolume
+                   && avatarSFXVolume == settings.avatarSFXVolume
+                   && uiSFXVolume == settings.uiSFXVolume
+                   && sceneSFXVolume == settings.sceneSFXVolume
+                   && musicVolume == settings.musicVolume
+                   && chatSFXEnabled == settings.chatSFXEnabled;
         }
     }
 }
