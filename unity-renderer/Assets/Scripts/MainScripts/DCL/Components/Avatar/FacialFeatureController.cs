@@ -20,6 +20,7 @@ public class FacialFeatureController
     private Color color;
     private IBodyShapeController bodyShape;
     internal Material baseMaterialCopy;
+    private Coroutine fetchTextureCoroutine;
 
     public FacialFeatureController(WearableItem wearableItem, Material baseMaterial)
     {
@@ -39,7 +40,7 @@ public class FacialFeatureController
         }
 
         this.bodyShape = loadedBody;
-        CoroutineStarter.Start(FetchTextures());
+        fetchTextureCoroutine = CoroutineStarter.Start(FetchTextures());
     }
 
     void PrepareWearable()
@@ -101,7 +102,6 @@ public class FacialFeatureController
 
         yield return mainTexturePromise;
         yield return maskTexturePromise;
-        yield return new DCL.WaitUntil( () => bodyShape.isReady );
 
         PrepareWearable();
     }
@@ -120,6 +120,10 @@ public class FacialFeatureController
             baseMaterialCopy = null;
         }
 
+        CoroutineStarter.Stop(fetchTextureCoroutine);
+
+        mainTexture = null;
+        maskTexture = null;
         isReady = false;
     }
 
