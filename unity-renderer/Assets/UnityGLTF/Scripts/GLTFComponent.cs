@@ -12,13 +12,11 @@ namespace UnityGLTF
     /// <summary>
     /// Component to load a GLTF scene with
     /// </summary>
-    public class GLTFComponent : MonoBehaviour, ILoadable
+    public class GLTFComponent : MonoBehaviour, ILoadable, IDownloadQueueElement
     {
         public static bool VERBOSE = false;
 
         public static int maxSimultaneousDownloads = 10;
-        public static float nearestDistance = float.MaxValue;
-        public static GLTFComponent nearestGLTFComponent;
 
         public static int downloadingCount;
         public static event Action OnDownloadingProgressUpdate;
@@ -26,13 +24,14 @@ namespace UnityGLTF
         public static int totalDownloadedCount;
         public static int queueCount;
 
+        private static DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxSimultaneousDownloads, () => downloadingCount);
+
         public class Settings
         {
             public bool? useVisualFeedback;
             public bool? initialVisibility;
             public Shader shaderOverride;
             public bool addMaterialsToPersistentCaching;
-            public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
         }
 
         public string GLTFUri = null;
@@ -74,7 +73,7 @@ namespace UnityGLTF
         [SerializeField] private float RetryTimeout = 2.0f;
         [SerializeField] public Shader shaderOverride = null;
         private bool initialVisibility = true;
-        private bool ignoreDistanceTest = false;
+        private AssetIdConverter fileToHashConverter;
 
         private enum State
         {
@@ -93,8 +92,8 @@ namespace UnityGLTF
         private GLTFSceneImporter sceneImporter;
         private Camera mainCamera;
         private IWebRequestController webRequestController;
-
-        public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
+        private bool prioritizeDownload = false;
+        private string baseUrl = "";
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -102,7 +101,7 @@ namespace UnityGLTF
 
         public void Initialize(IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
 
-        public void LoadAsset(string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null)
+        public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
         {
             if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded)
             {
@@ -124,13 +123,16 @@ namespace UnityGLTF
             alreadyDecrementedRefCount = false;
             state = State.NONE;
             mainCamera = Camera.main;
+            this.baseUrl = baseUrl ?? "";
 
             if (settings != null)
             {
                 ApplySettings(settings);
             }
 
-            loadingRoutine = CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
+            this.fileToHashConverter = fileToHashConverter;
+
+            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
         }
 
         void ApplySettings(Settings settings)
@@ -148,11 +150,6 @@ namespace UnityGLTF
             if (settings.shaderOverride != null)
             {
                 this.shaderOverride = settings.shaderOverride;
-            }
-
-            if (settings.OnWebRequestStartEvent != null)
-            {
-                OnWebRequestStartEvent = settings.OnWebRequestStartEvent;
             }
 
             this.addMaterialsToPersistentCaching = settings.addMaterialsToPersistentCaching;
@@ -247,12 +244,9 @@ namespace UnityGLTF
                     }
                     else
                     {
-                        loader = new WebRequestLoader("", webRequestController);
+                        loader = new WebRequestLoader(baseUrl, webRequestController, fileToHashConverter);
 
                         string id = string.IsNullOrEmpty(idPrefix) ? GLTFUri : idPrefix;
-
-                        if (OnWebRequestStartEvent != null)
-                            (loader as WebRequestLoader).OnLoadStreamStart += OnWebRequestStartEvent;
 
                         sceneImporter = new GLTFSceneImporter(
                             id,
@@ -283,9 +277,9 @@ namespace UnityGLTF
                     queueCount++;
 
                     state = State.QUEUED;
+                    downloadQueueHandler.Queue(this);
 
-                    Func<bool> funcTestDistance = () => TestDistance();
-                    yield return new WaitUntil(funcTestDistance);
+                    yield return new WaitUntil(() => downloadQueueHandler.CanDownload(this));
 
                     queueCount--;
                     totalDownloadedCount++;
@@ -296,6 +290,7 @@ namespace UnityGLTF
                     IncrementDownloadCount();
 
                     state = State.DOWNLOADING;
+                    downloadQueueHandler.Dequeue(this);
 
                     if (transform != null)
                     {
@@ -332,12 +327,6 @@ namespace UnityGLTF
                             sceneImporter = null;
                         }
 
-                        if (OnWebRequestStartEvent != null)
-                        {
-                            (loader as WebRequestLoader).OnLoadStreamStart -= OnWebRequestStartEvent;
-                            OnWebRequestStartEvent = null;
-                        }
-
                         loader = null;
                     }
 
@@ -358,46 +347,26 @@ namespace UnityGLTF
             }
         }
 
-        private bool TestDistance()
+        public void Load(string url)
         {
-            if (mainCamera == null || this == null)
-                return true;
-
-            if (ignoreDistanceTest)
-                return true;
-
-            float dist = Vector3.Distance(mainCamera.transform.position, transform.position);
-
-            if (dist < nearestDistance)
-            {
-                nearestDistance = dist;
-                nearestGLTFComponent = this;
-            }
-
-            bool result = nearestGLTFComponent == this && downloadingCount < maxSimultaneousDownloads;
-
-            if (result)
-            {
-                //NOTE(Brian): Reset values so the other GLTFComponents running this coroutine compete again
-                //             for distance.
-                nearestGLTFComponent = null;
-                nearestDistance = float.MaxValue;
-            }
-
-            return result;
+            throw new NotImplementedException();
         }
 
-        public void Load(string url) { throw new NotImplementedException(); }
+        public void SetPrioritized()
+        {
+            prioritizeDownload = true;
+        }
 
         public void CancelIfQueued()
         {
+            if (prioritizeDownload)
+                return;
+            
             if (state == State.QUEUED || state == State.NONE)
             {
                 OnFail_Internal(null);
             }
         }
-
-        public void SetIgnoreDistanceTest() { ignoreDistanceTest = true; }
 
 #if UNITY_EDITOR
         // In production it will always be false
@@ -406,7 +375,10 @@ namespace UnityGLTF
         // We need to check if application is quitting in editor
         // to prevent the pool from releasing objects that are
         // being destroyed 
-        void Awake() { Application.quitting += OnIsQuitting; }
+        void Awake()
+        {
+            Application.quitting += OnIsQuitting;
+        }
 
         void OnIsQuitting()
         {
@@ -425,6 +397,13 @@ namespace UnityGLTF
                 sceneImporter.Dispose();
             }
 
+            if (state == State.QUEUED)
+            {
+                queueCount--;
+            }
+
+            downloadQueueHandler.Dequeue(this);
+
             if (loadingRoutine != null)
             {
                 Debug.LogWarning($"ERROR: GLTF destroyed while loading -> {name}");
@@ -437,6 +416,25 @@ namespace UnityGLTF
             }
 
             DecrementDownloadCount();
+        }
+
+        bool IDownloadQueueElement.ShouldPrioritizeDownload()
+        {
+            return prioritizeDownload;
+        }
+
+        bool IDownloadQueueElement.ShouldForceDownload()
+        {
+            return mainCamera == null;
+        }
+
+        float IDownloadQueueElement.GetSqrDistance()
+        {
+            Vector3 cameraPosition = mainCamera.transform.position;
+            Vector3 gltfPosition = transform.position;
+            gltfPosition.y = cameraPosition.y;
+
+            return (gltfPosition - cameraPosition).sqrMagnitude;
         }
     }
 }

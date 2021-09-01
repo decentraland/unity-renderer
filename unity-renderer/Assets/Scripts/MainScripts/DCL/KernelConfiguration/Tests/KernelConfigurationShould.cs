@@ -30,7 +30,8 @@ public class KernelConfigurationShould
             },
             features = new Features()
             {
-                enableBuilderInWorld = builderInWorldEnabledTestValue
+                enableBuilderInWorld = builderInWorldEnabledTestValue,
+                enableTutorial = false
             },
         });
 
@@ -85,7 +86,8 @@ public class KernelConfigurationShould
             },
             features = new Features()
             {
-                enableBuilderInWorld = builderInWorldEnabledTestValue
+                enableBuilderInWorld = builderInWorldEnabledTestValue,
+                enableTutorial = false
             },
         };
 
@@ -139,7 +141,8 @@ public class KernelConfigurationShould
             },
             features = new Features()
             {
-                enableBuilderInWorld = builderInWorldEnabledTestValue2
+                enableBuilderInWorld = builderInWorldEnabledTestValue2,
+                enableTutorial = false
             },
         });
         Assert.IsTrue(onChangePass);

@@ -10,7 +10,7 @@ namespace DCL
         protected string assetDirectoryPath;
 
         protected ContentProvider provider = null;
-        public string url { get; private set; }
+        public string fileName { get; private set; }
 
         GLTFComponent gltfComponent = null;
         IWebRequestController webRequestController = null;
@@ -22,22 +22,20 @@ namespace DCL
         private bool waitingAssetLoad = false;
 
         public AssetPromise_GLTF(string url, IWebRequestController webRequestController)
-        {
-            this.provider = new ContentProvider_Dummy();
-            this.url = url.Substring(url.LastIndexOf('/') + 1);
-            this.id = url;
-            this.webRequestController = webRequestController;
-            // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
-            // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
-            assetDirectoryPath = URIHelper.GetDirectoryName(url);
-        }
+            : this(new ContentProvider_Dummy(), url, null, webRequestController) { }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash = null)
+            : this(provider, url, hash, Environment.i.platform.webRequest) { }
+
+        public AssetPromise_GLTF(ContentProvider provider, string url, IWebRequestController webRequestController)
+            : this(provider, url, null, webRequestController) { }
+
+        public AssetPromise_GLTF(ContentProvider provider, string url, string hash, IWebRequestController webRequestController)
         {
             this.provider = provider;
-            this.url = url.Substring(url.LastIndexOf('/') + 1);
+            this.fileName = url.Substring(url.LastIndexOf('/') + 1);
             this.id = hash ?? url;
-            this.webRequestController = Environment.i.platform.webRequest;
+            this.webRequestController = webRequestController;
             // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
             // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
             assetDirectoryPath = URIHelper.GetDirectoryName(url);
@@ -79,12 +77,11 @@ namespace DCL
                 useVisualFeedback = settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION,
                 initialVisibility = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE,
                 shaderOverride = settings.shaderOverride,
-                addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0
+                addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
             };
 
-            tmpSettings.OnWebRequestStartEvent += ParseGLTFWebRequestedFile;
-
-            gltfComponent.LoadAsset(url, GetId() as string, false, tmpSettings);
+            gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
+                false, tmpSettings, FileToHash);
 
             this.OnSuccess = OnSuccess;
             this.OnFail = OnFail;
@@ -92,10 +89,13 @@ namespace DCL
             gltfComponent.OnSuccess += this.OnSuccess;
             gltfComponent.OnFail += this.OnFail;
 
-            asset.name = url;
+            asset.name = fileName;
         }
 
-        void ParseGLTFWebRequestedFile(ref string requestedFileName) { provider.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out requestedFileName); }
+        bool FileToHash(string fileName, out string hash)
+        {
+            return provider.TryGetContentHash(assetDirectoryPath + fileName, out hash);
+        }
 
         protected override void OnReuse(Action OnSuccess)
         {
@@ -186,7 +186,7 @@ namespace DCL
 
             if (gltfComponent != null)
             {
-                gltfComponent.SetIgnoreDistanceTest();
+                gltfComponent.SetPrioritized();
             }
         }
 
