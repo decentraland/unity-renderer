@@ -28,18 +28,18 @@ public class FacialFeatureController
         this.wearableItem = wearableItem;
     }
 
-    public void Load(IBodyShapeController loadedBody, Color color)
+    public IEnumerator Load(IBodyShapeController loadedBody, Color color)
     {
         this.color = color;
 
         if (isReady)
         {
             PrepareWearable();
-            return;
+            yield break;
         }
 
         this.bodyShape = loadedBody;
-        CoroutineStarter.Start(FetchTextures());
+        yield return CoroutineStarter.Start(FetchTextures());
     }
 
     void PrepareWearable()
@@ -63,7 +63,7 @@ public class FacialFeatureController
         isReady = true;
     }
 
-    public IEnumerator FetchTextures()
+    private IEnumerator FetchTextures()
     {
         if (mainTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
