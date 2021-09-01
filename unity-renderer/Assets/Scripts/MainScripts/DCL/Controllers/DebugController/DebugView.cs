@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DCL
 {
@@ -17,6 +18,8 @@ namespace DCL
 
         [SerializeField] private InfoPanel infoPanel;
 
+        private void Awake() { infoPanel.SetVisible(false); }
+
         public void ShowFPSPanel() { fpsPanel.SetActive(true); }
 
         public void HideFPSPanel() { fpsPanel.SetActive(false); }
@@ -34,7 +37,7 @@ namespace DCL
         }
         public void ShowInfoPanel(string network, string environment)
         {
-            var info = $"{network}<br>{environment}";
+            var info = $"{network} / {environment}";
             infoPanel.Setup(info);
             infoPanel.SetVisible(true);
         }
