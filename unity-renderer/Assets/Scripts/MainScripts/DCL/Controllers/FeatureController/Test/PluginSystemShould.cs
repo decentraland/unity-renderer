@@ -8,7 +8,20 @@ using UnityEngine.TestTools;
 
 public class PluginSystemShould : IntegrationTestSuite
 {
+    private GameObject _main;
 
+    [SetUp]
+    public void Setup()
+    {
+        _main = new GameObject("Main");
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Object.DestroyImmediate(_main);
+    }
+    
     [Test]
     public void TestFeatureControllerApplyConfig()
     {

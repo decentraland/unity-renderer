@@ -1,4 +1,5 @@
 using DCL.Bots;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -15,7 +16,9 @@ namespace DCL
             debugController = new DebugController(botsController);
             debugBridge = GameObject.Find("Main").AddComponent<DebugBridge>(); // todo: unuglyfy this
             debugBridge.Setup(debugController);
-            KernelConfig.i.EnsureConfigInitialized().Then(OnKernelConfigChanged);
+            Promise<KernelConfigModel> configPromise = KernelConfig.i.EnsureConfigInitialized();
+            configPromise.Catch(Debug.Log);
+            configPromise.Then(OnKernelConfigChanged);
             //DataStore.i.debugConfig.isDebugMode.Set(true);
         }
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig)

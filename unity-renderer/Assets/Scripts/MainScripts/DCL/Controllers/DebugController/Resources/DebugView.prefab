@@ -285,7 +285,7 @@ MonoBehaviour:
   fpsPanel: {fileID: 6029074987226566430}
   engineDebugPanel: {fileID: 4052897789001779810}
   sceneDebugPanel: {fileID: 7513702706707179732}
-  infoPanel: {fileID: 0}
+  infoPanel: {fileID: 8145903452484258711}
 --- !u!225 &-3744381046855113647
 CanvasGroup:
   m_ObjectHideFlags: 0
