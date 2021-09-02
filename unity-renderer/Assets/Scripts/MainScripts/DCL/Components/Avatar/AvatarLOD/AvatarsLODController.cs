@@ -116,7 +116,7 @@ namespace DCL
             float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
-            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
+            (IAvatarLODController lodController, float sqrDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
                 (IAvatarLODController lodController, float sqrtDistance) = lodControllersByDistance[index];
@@ -163,10 +163,10 @@ namespace DCL
             }
         }
 
-        private (IAvatarLODController lodController, float sqrtDistance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
+        private (IAvatarLODController lodController, float sqrDistance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
         {
-            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersWithDistance = lodControllers.Select(x => (x, SqrtDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
-            Array.Sort(lodControllersWithDistance, (x, y) => x.sqrtDistance.CompareTo(y.sqrtDistance));
+            (IAvatarLODController lodController, float sqrDistance)[] lodControllersWithDistance = lodControllers.Select(x => (x, SqrDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
+            Array.Sort(lodControllersWithDistance, (x, y) => x.sqrDistance.CompareTo(y.sqrDistance));
             return lodControllersWithDistance;
         }
 
@@ -175,7 +175,7 @@ namespace DCL
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        private float SqrtDistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
+        private float SqrDistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
         {
             if (player == null || !IsInFrontOfCamera(player.worldPosition))
                 return -1;
