@@ -47,7 +47,12 @@ namespace DCL
 
             kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
 #else
-            kernelCommunication = new WebSocketCommunication();
+            // TODO(Brian): Remove this branching once we finish migrating all tests out of the
+            //              IntegrationTestSuite_Legacy base class.
+            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
+            {
+                kernelCommunication = new WebSocketCommunication();
+            }
 #endif
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
@@ -104,8 +109,9 @@ namespace DCL
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
             pluginSystem?.OnDestroy();
-            kernelCommunication.Dispose();
+            kernelCommunication?.Dispose();
         }
+
         private void OnGUI() { pluginSystem.OnGUI(); }
     }
 }
