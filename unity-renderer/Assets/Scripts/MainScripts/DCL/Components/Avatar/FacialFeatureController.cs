@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using DCL;
 
-public class FacialFeatureController
+public class FacialFeatureController : CustomYieldInstruction
 {
     public bool isReady { get; private set; }
     public string wearableId => wearableItem?.id;
@@ -29,19 +29,18 @@ public class FacialFeatureController
         this.wearableItem = wearableItem;
     }
 
-    public IEnumerator Load(IBodyShapeController loadedBody, Color color)
+    public void Load(IBodyShapeController loadedBody, Color color)
     {
         this.color = color;
 
         if (isReady)
         {
             PrepareWearable();
-            yield break;
+            return;
         }
 
         this.bodyShape = loadedBody;
         fetchTextureCoroutine = CoroutineStarter.Start(FetchTextures());
-        yield return fetchTextureCoroutine;
     }
 
     void PrepareWearable()
@@ -140,4 +139,6 @@ public class FacialFeatureController
 
         return new FacialFeatureController(wearable, material);
     }
+
+    public override bool keepWaiting => !isReady;
 }

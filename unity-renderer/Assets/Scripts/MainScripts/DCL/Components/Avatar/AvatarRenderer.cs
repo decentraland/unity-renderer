@@ -402,13 +402,13 @@ namespace DCL
             // TODO(Brian): Evaluate using UniTask<T> instead of this way.
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
-            var eyesLoader = eyesController.Load(bodyShapeController, model.eyeColor);
-            var eyebrowsLoader = eyebrowsController.Load(bodyShapeController, model.hairColor);
-            var mouthLoader = mouthController.Load(bodyShapeController, model.skinColor);
+            eyesController.Load(bodyShapeController, model.eyeColor);
+            eyebrowsController.Load(bodyShapeController, model.hairColor);
+            mouthController.Load(bodyShapeController, model.skinColor);
 
-            yield return eyesLoader;
-            yield return eyebrowsLoader;
-            yield return mouthLoader;
+            yield return eyesController;
+            yield return eyebrowsController;
+            yield return mouthController;
 
             if (bodyIsDirty || wearablesIsDirty)
             {
