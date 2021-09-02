@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using KernelConfigurationTypes;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -25,7 +25,7 @@ namespace Tests.AvatarsLODController
         [Test]
         public void BeInitializedProperly()
         {
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true } });
+            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(0, controller.lodControllers.Count);
@@ -38,7 +38,7 @@ namespace Tests.AvatarsLODController
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
 
             otherPlayers.Add("player0", new Player { name = "player0", id = "player0", renderer = Substitute.For<IAvatarRenderer>() });
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true } });
+            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(1, controller.lodControllers.Count);
@@ -50,7 +50,7 @@ namespace Tests.AvatarsLODController
         {
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true } });
+            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
 
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
 
@@ -64,7 +64,7 @@ namespace Tests.AvatarsLODController
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true } });
+            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
 
             otherPlayers.Remove("player0");
 

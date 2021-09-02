@@ -5,6 +5,7 @@ using UnityEngine;
 
 public interface IBodyShapeController
 {
+    bool isReady { get; }
     string bodyShapeId { get; }
     void SetupEyes(Material material, Texture texture, Texture mask, Color color);
     void SetupEyebrows(Material material, Texture texture, Color color);

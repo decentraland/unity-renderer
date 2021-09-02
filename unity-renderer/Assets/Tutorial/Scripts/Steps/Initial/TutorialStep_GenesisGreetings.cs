@@ -32,17 +32,19 @@ namespace DCL.Tutorial
 
             okButton.onClick.AddListener(OnOkButtonClick);
 
-            if (tutorialController)
+            if (tutorialController != null)
             {
                 tutorialController.SetEagleEyeCameraActive(true);
 
-                defaultTeacherCanvasSortOrder = tutorialController.teacherCanvas.sortingOrder;
+                if (tutorialController.configuration.teacherCanvas != null)
+                    defaultTeacherCanvasSortOrder = tutorialController.configuration.teacherCanvas.sortingOrder;
+
                 tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
 
                 tutorialController.hudController?.taskbarHud?.SetVisibility(false);
                 tutorialController.hudController?.profileHud?.SetBackpackButtonVisibility(false);
 
-                if (Environment.i != null)
+                if (Environment.i != null && Environment.i.world != null)
                 {
                     WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "begin");
                 }
@@ -63,6 +65,6 @@ namespace DCL.Tutorial
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
         }
 
-        private void OnOkButtonClick() { stepIsFinished = true; }
+        internal void OnOkButtonClick() { stepIsFinished = true; }
     }
 }

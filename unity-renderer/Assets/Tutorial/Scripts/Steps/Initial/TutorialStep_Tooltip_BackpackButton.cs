@@ -37,20 +37,21 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
+                tutorialController.hudController.profileHud != null &&
                 tutorialController.hudController.profileHud.backpackTooltipReference)
             {
                 tooltipTransform.position = tutorialController.hudController.profileHud.backpackTooltipReference.position;
             }
         }
 
-        private void ProfileHud_OnOpen()
+        internal void ProfileHud_OnOpen()
         {
             isRelatedFeatureActived = true;
             stepIsFinished = true;
             tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
 
-        private void ProfileHud_OnClose()
+        internal void ProfileHud_OnClose()
         {
             if (isRelatedFeatureActived)
                 isRelatedFeatureActived = false;

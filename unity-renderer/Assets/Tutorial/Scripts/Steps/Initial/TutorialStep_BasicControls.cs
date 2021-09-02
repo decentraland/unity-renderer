@@ -14,7 +14,7 @@ namespace DCL.Tutorial
         [SerializeField] AudioEvent audioEventSuccess;
         [SerializeField] Button okButton;
 
-        private bool stepIsFinished = false;
+        internal bool stepIsFinished = false;
         private int defaultTeacherCanvasSortOrder;
 
         public override void OnStepStart()
@@ -25,7 +25,9 @@ namespace DCL.Tutorial
 
             okButton.onClick.AddListener(OnOkButtonClick);
 
-            defaultTeacherCanvasSortOrder = tutorialController.teacherCanvas.sortingOrder;
+            if (tutorialController.configuration.teacherCanvas != null)
+                defaultTeacherCanvasSortOrder = tutorialController.configuration.teacherCanvas.sortingOrder;
+
             tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
 
             tutorialController.hudController?.taskbarHud?.SetVisibility(false);
@@ -47,6 +49,6 @@ namespace DCL.Tutorial
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
 
-        private void OnOkButtonClick() { stepIsFinished = true; }
+        internal void OnOkButtonClick() { stepIsFinished = true; }
     }
 }
