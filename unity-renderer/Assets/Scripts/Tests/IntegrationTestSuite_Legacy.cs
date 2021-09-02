@@ -37,10 +37,12 @@ public class IntegrationTestSuite_Legacy
     protected virtual bool enableSceneIntegrityChecker => true;
 
     protected TestSceneIntegrityChecker testSceneIntegrityChecker;
+    private GameObject _mainGameObject;
 
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
+        _mainGameObject = new GameObject("Main");
         DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
 
         if (!sceneInitialized)
@@ -106,7 +108,9 @@ public class IntegrationTestSuite_Legacy
     protected virtual IEnumerator TearDown()
     {
         yield return null;
-
+        
+        Object.Destroy(_mainGameObject);
+        
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
