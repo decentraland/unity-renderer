@@ -12,14 +12,22 @@ namespace DCL
         public override void Initialize()
         {
             base.Initialize();
+            SetupSystems();
+            SetupKernelConfig();
+        }
+        private void SetupSystems()
+        {
             var botsController = new BotsController();
             debugController = new DebugController(botsController);
             debugBridge = GameObject.Find("Main").AddComponent<DebugBridge>(); // todo: unuglyfy this
             debugBridge.Setup(debugController);
+        }
+        private void SetupKernelConfig()
+        {
             Promise<KernelConfigModel> configPromise = KernelConfig.i.EnsureConfigInitialized();
             configPromise.Catch(Debug.Log);
             configPromise.Then(OnKernelConfigChanged);
-            //DataStore.i.debugConfig.isDebugMode.Set(true);
+            KernelConfig.i.OnChange += (current, previous) => OnKernelConfigChanged(current);
         }
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
         {
