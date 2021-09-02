@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DCL.Interface;
 
 namespace DCL
 {
@@ -110,7 +111,7 @@ namespace DCL
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            //Cache .Get to boost performance. Also use squared values to boost distance comparison
+            //Cache .Get() to boost performance. Also use squared values to boost distance comparison
             float lodDistance = LODDistance.Get() * LODDistance.Get();
             float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
@@ -151,6 +152,9 @@ namespace DCL
                 if (impostorCount < maxImpostors)
                 {
                     lodController.SetImpostor();
+
+                    lodController.UpdateImpostorTint(Mathf.Sqrt(sqrtDistance));
+
                     impostorCount++;
                     continue;
                 }
