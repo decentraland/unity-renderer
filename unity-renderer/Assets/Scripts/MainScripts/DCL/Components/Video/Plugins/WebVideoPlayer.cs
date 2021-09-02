@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using System.Runtime.InteropServices;
 
 namespace DCL.Components.Video.Plugin
 {
@@ -13,70 +12,22 @@ namespace DCL.Components.Video.Plugin
         public bool visible { get; set; }
         public bool isError { get; private set; }
 
-        private enum VideoState { NONE = 0, ERROR = 1, LOADING = 2, READY = 3, PLAYING = 4, BUFFERING = 5 };
-
         private static bool isWebGL1 => SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2;
 
         private string videoPlayerId;
+        private readonly IWebVideoPlayerPlugin plugin;
         private IntPtr textureNativePtr;
         private bool initialized = false;
         private bool shouldBePlaying = false;
         private float pausedAtTime = -1;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerCreate(string id, string url, bool useHls);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerRemove(string id);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerTextureUpdate(string id, IntPtr texturePtr, bool isWebGL1);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerPlay(string id, float startTime);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerPause(string id);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerVolume(string id, float volume);
-    [DllImport("__Internal")]
-    private static extern int WebVideoPlayerGetHeight(string id);
-    [DllImport("__Internal")]
-    private static extern int WebVideoPlayerGetWidth(string id);
-    [DllImport("__Internal")]
-    private static extern float WebVideoPlayerGetTime(string id);
-    [DllImport("__Internal")]
-    private static extern float WebVideoPlayerGetDuration(string id);
-    [DllImport("__Internal")]
-    private static extern int WebVideoPlayerGetState(string id);
-    [DllImport("__Internal")]
-    private static extern string WebVideoPlayerGetError(string id);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerSetTime(string id, float second);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerSetPlaybackRate(string id, float playbackRate);
-    [DllImport("__Internal")]
-    private static extern void WebVideoPlayerSetLoop(string id, bool loop);
-#else
-        private static void WebVideoPlayerCreate(string id, string url, bool useHls) { }
-        private static void WebVideoPlayerRemove(string id) { }
-        private static void WebVideoPlayerTextureUpdate(string id, IntPtr texturePtr, bool isWebGL1) { }
-        private static void WebVideoPlayerPlay(string id, float startTime) { }
-        private static void WebVideoPlayerPause(string id) { }
-        private static void WebVideoPlayerVolume(string id, float volume) { }
-        private static int WebVideoPlayerGetHeight(string id) { return 0; }
-        private static int WebVideoPlayerGetWidth(string id) { return 0; }
-        private static float WebVideoPlayerGetTime(string id) { return 0; }
-        private static float WebVideoPlayerGetDuration(string id) { return 0; }
-        private static int WebVideoPlayerGetState(string id) { return (int)VideoState.ERROR; }
-        private static string WebVideoPlayerGetError(string id) { return "WebVideoPlayer: Platform not supported"; }
-        private static void WebVideoPlayerSetTime(string id, float second) { }
-        private static void WebVideoPlayerSetPlaybackRate(string id, float playbackRate) { }
-        private static void WebVideoPlayerSetLoop(string id, bool loop) { }
-#endif
 
-        public WebVideoPlayer(string id, string url, bool useHls)
+        public WebVideoPlayer(string id, string url, bool useHls, IWebVideoPlayerPlugin plugin)
         {
             videoPlayerId = id;
+            this.plugin = plugin;
 
-            WebVideoPlayerCreate(id, url, useHls);
+            plugin.Create(id, url, useHls);
         }
 
         public void UpdateWebVideoTexture()
@@ -86,17 +37,17 @@ namespace DCL.Components.Video.Plugin
                 return;
             }
 
-            switch (WebVideoPlayerGetState(videoPlayerId))
+            switch (plugin.GetState(videoPlayerId))
             {
                 case (int)VideoState.ERROR:
-                    Debug.LogError(WebVideoPlayerGetError(videoPlayerId));
+                    Debug.LogError(plugin.GetError(videoPlayerId));
                     isError = true;
                     break;
                 case (int)VideoState.READY:
                     if (!initialized)
                     {
                         initialized = true;
-                        texture = CreateTexture(WebVideoPlayerGetWidth(videoPlayerId), WebVideoPlayerGetHeight(videoPlayerId));
+                        texture = CreateTexture(plugin.GetWidth(videoPlayerId), plugin.GetHeight(videoPlayerId));
                         textureNativePtr = texture.GetNativeTexturePtr();
                         OnTextureReady?.Invoke(texture);
                     }
@@ -104,8 +55,8 @@ namespace DCL.Components.Video.Plugin
                 case (int)VideoState.PLAYING:
                     if (shouldBePlaying && visible)
                     {
-                        int width = WebVideoPlayerGetWidth(videoPlayerId);
-                        int height = WebVideoPlayerGetHeight(videoPlayerId);
+                        int width = plugin.GetWidth(videoPlayerId);
+                        int height = plugin.GetHeight(videoPlayerId);
                         if (texture.width != width || texture.height != height)
                         {
                             if (texture.Resize(width, height))
@@ -116,7 +67,7 @@ namespace DCL.Components.Video.Plugin
                         }
                         if (texture.width > 0 && texture.height > 0)
                         {
-                            WebVideoPlayerTextureUpdate(videoPlayerId, textureNativePtr, isWebGL1);
+                            plugin.TextureUpdate(videoPlayerId, textureNativePtr, isWebGL1);
                         }
                     }
                     break;
@@ -128,7 +79,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            WebVideoPlayerPlay(videoPlayerId, pausedAtTime);
+            plugin.Play(videoPlayerId, pausedAtTime);
             pausedAtTime = -1;
 
             shouldBePlaying = true;
@@ -139,8 +90,8 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            pausedAtTime = WebVideoPlayerGetTime(videoPlayerId);
-            WebVideoPlayerPause(videoPlayerId);
+            pausedAtTime = plugin.GetTime(videoPlayerId);
+            plugin.Pause(videoPlayerId);
             shouldBePlaying = false;
         }
 
@@ -151,7 +102,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            WebVideoPlayerVolume(videoPlayerId, volume);
+            plugin.SetVolume(videoPlayerId, volume);
             this.volume = volume;
         }
 
@@ -161,7 +112,7 @@ namespace DCL.Components.Video.Plugin
                 return;
 
             pausedAtTime = timeSecs;
-            WebVideoPlayerSetTime(videoPlayerId, timeSecs);
+            plugin.SetTime(videoPlayerId, timeSecs);
         }
 
         public void SetLoop(bool loop)
@@ -169,7 +120,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            WebVideoPlayerSetLoop(videoPlayerId, loop);
+            plugin.SetLoop(videoPlayerId, loop);
         }
 
         public void SetPlaybackRate(float playbackRate)
@@ -177,7 +128,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            WebVideoPlayerSetPlaybackRate(videoPlayerId, playbackRate);
+            plugin.SetPlaybackRate(videoPlayerId, playbackRate);
         }
 
         public float GetTime()
@@ -185,7 +136,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return 0;
 
-            return WebVideoPlayerGetTime(videoPlayerId);
+            return plugin.GetTime(videoPlayerId);
         }
 
         public float GetDuration()
@@ -193,12 +144,22 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return 0;
 
-            return WebVideoPlayerGetDuration(videoPlayerId);
+            float duration = plugin.GetDuration(videoPlayerId);
+            
+            if (float.IsNaN(duration))
+                duration = -1;
+            
+            return duration;
+        }
+
+        public VideoState GetState()
+        {
+            return (VideoState)plugin.GetState(videoPlayerId);
         }
 
         public void Dispose()
         {
-            WebVideoPlayerRemove(videoPlayerId);
+            plugin.Remove(videoPlayerId);
             UnityEngine.Object.Destroy(texture);
             texture = null;
         }

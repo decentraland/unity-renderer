@@ -148,17 +148,25 @@ namespace DCL.Components
         public virtual string referencesContainerPrefabName => "";
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
-        
+
+        public bool isLayoutDirty { get; protected set; }
+        protected System.Action OnLayoutRefresh;
+
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
 
         public UIShape parentUIComponent { get; protected set; }
 
+        private Coroutine layoutRefreshWatcher;
+
         public UIShape()
         {
             screenSize.OnChange += OnScreenResize;
-            model = new Model(); 
+            model = new Model();
+
+            if ( layoutRefreshWatcher == null )
+                layoutRefreshWatcher = CoroutineStarter.Start(LayoutRefreshWatcher());
         }
-        
+
         private void OnScreenResize(Vector2Int current, Vector2Int previous) => RefreshAll();
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
@@ -166,6 +174,7 @@ namespace DCL.Components
         public string GetDebugName()
         {
             Model model = (Model) this.model;
+
             if (string.IsNullOrEmpty(model.name))
             {
                 return GetType().Name;
@@ -176,12 +185,17 @@ namespace DCL.Components
             }
         }
 
-        public override IEnumerator ApplyChanges(BaseModel newJson) { return null; }
+        public override IEnumerator ApplyChanges(BaseModel newJson)
+        {
+            return null;
+        }
 
         internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
             Model model = (Model) this.model;
+
             GameObject uiGameObject = null;
+
             bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) &&
                                       scene.disposableComponents.ContainsKey(model.parentComponent);
 
@@ -202,9 +216,10 @@ namespace DCL.Components
             }
 
             uiGameObject =
-                UnityEngine.Object.Instantiate(
+                Object.Instantiate(
                     Resources.Load(prefabPath),
                     parentUIComponent != null ? parentUIComponent.childHookRectTransform : null) as GameObject;
+
             referencesContainer = uiGameObject.GetComponent<T>();
 
             referencesContainer.rectTransform.SetToMaxStretch();
@@ -216,11 +231,45 @@ namespace DCL.Components
             return referencesContainer as T;
         }
 
+        IEnumerator LayoutRefreshWatcher()
+        {
+            while (true)
+            {
+                // WaitForEndOfFrame doesn't work in batch mode
+                yield return Application.isBatchMode ? null : new WaitForEndOfFrame();
+
+                if ( !isLayoutDirty )
+                    continue;
+
+                RefreshAll();
+            }
+        }
+
         public virtual void RefreshAll()
         {
+            // We are not using the _Internal here because the method is overridden
+            // by some UI shapes.
             RefreshDCLLayoutRecursively(refreshSize: true, refreshAlignmentAndPosition: false);
             FixMaxStretchRecursively();
             RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
+            isLayoutDirty = false;
+            OnLayoutRefresh?.Invoke();
+            OnLayoutRefresh = null;
+        }
+
+        public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
+        {
+            UIShape rootParent = GetRootParent();
+
+            Assert.IsTrue(rootParent != null, "root parent must never be null");
+
+            if (rootParent.referencesContainer == null)
+                return;
+
+            rootParent.isLayoutDirty = true;
+
+            if ( OnRefresh != null )
+                rootParent.OnLayoutRefresh += OnRefresh;
         }
 
         public void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
@@ -242,9 +291,7 @@ namespace DCL.Components
         protected virtual void RefreshDCLSize(RectTransform parentTransform = null)
         {
             if (parentTransform == null)
-            {
                 parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
-            }
 
             Model model = (Model) this.model;
 
@@ -257,9 +304,7 @@ namespace DCL.Components
         public void RefreshDCLAlignmentAndPosition(RectTransform parentTransform = null)
         {
             if (parentTransform == null)
-            {
                 parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
-            }
 
             referencesContainer.layoutElement.ignoreLayout = false;
             ConfigureAlignment(referencesContainer.layoutGroup);
@@ -267,6 +312,7 @@ namespace DCL.Components
             referencesContainer.layoutElement.ignoreLayout = true;
 
             Model model = (Model) this.model;
+
             // Reposition
             Vector3 position = Vector3.zero;
             position.x = model.positionX.GetScaledValue(parentTransform.rect.width);
@@ -291,14 +337,12 @@ namespace DCL.Components
 
             if (rootParent.referencesContainer == null)
                 return;
-            
+
             Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
                     if (x.owner != null)
-                    {
                         x.owner.RefreshDCLLayout(refreshSize, refreshAlignmentAndPosition);
-                    }
                 },
                 rootParent.referencesContainer.transform);
         }
@@ -308,10 +352,10 @@ namespace DCL.Components
             UIShape rootParent = GetRootParent();
 
             Assert.IsTrue(rootParent != null, "root parent must never be null");
-            
+
             if (rootParent.referencesContainer == null)
                 return;
-            
+
             Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
@@ -444,6 +488,9 @@ namespace DCL.Components
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
             screenSize.OnChange -= OnScreenResize;
+
+            if ( layoutRefreshWatcher != null )
+                CoroutineStarter.Stop(layoutRefreshWatcher);
 
             base.Dispose();
         }
