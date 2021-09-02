@@ -74,7 +74,10 @@ namespace AvatarNamesHUD
                 return;
 
             Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(player.worldPosition + OFFSET);
-            float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / DataStore.i.avatarsLOD.LODDistance.Get()));
+            float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
+            float startingFade = lodDistance * 0.75f;
+            float alpha = Mathf.Lerp(1, 0, (screenPoint.z - startingFade) / (lodDistance - startingFade)); //Lerp just at the last quarter of distance
+
 
             screenPoint.Scale(canvasRect.rect.size);
             name.rectTransform.anchoredPosition = screenPoint;
