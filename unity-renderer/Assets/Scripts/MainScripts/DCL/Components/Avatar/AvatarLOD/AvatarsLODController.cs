@@ -23,7 +23,18 @@ namespace DCL
         public AvatarsLODController()
         {
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(Initialize);
+                        .Then(config =>
+                        {
+                            KernelConfig.i.OnChange += OnKernelConfigChanged;
+                            OnKernelConfigChanged(config, null);
+                        });
+        }
+
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        {
+            if (enabled == current.features.enableAvatarLODs)
+                return;
+            Initialize(current);
         }
 
         internal void Initialize(KernelConfigModel config)
@@ -31,6 +42,12 @@ namespace DCL
             enabled = config.features.enableAvatarLODs;
             if (!enabled)
                 return;
+
+            foreach (IAvatarLODController lodController in lodControllers.Values)
+            {
+                lodController.Dispose();
+            }
+            lodControllers.Clear();
 
             foreach (var keyValuePair in otherPlayers.Get())
             {
@@ -166,6 +183,7 @@ namespace DCL
 
         public void Dispose()
         {
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
             foreach (IAvatarLODController lodController in lodControllers.Values)
             {
                 lodController.Dispose();
