@@ -5,16 +5,18 @@ namespace DCL
 {
     public class InfoPanel : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI infoText;
+        [SerializeField] private TextMeshProUGUI networkText;
+        [SerializeField] private TextMeshProUGUI realmText;
 
         public void SetVisible(bool active)
         {
             gameObject.SetActive(active);
         }
 
-        public void Setup(string info)
+        public void Setup(string network, string realm)
         {
-            infoText.text = info;
+            networkText.text = network;
+            realmText.text = realm;
         }
     }
 }

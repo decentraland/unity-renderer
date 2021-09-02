@@ -32,7 +32,8 @@ namespace DCL
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
         {
             var network = kernelConfig.network;
-            debugController.ShowInfoPanel(network, "");
+            var realm = DataStore.i.playerRealm.Get().serverName;
+            debugController.ShowInfoPanel(network, realm);
         }
     }
 }

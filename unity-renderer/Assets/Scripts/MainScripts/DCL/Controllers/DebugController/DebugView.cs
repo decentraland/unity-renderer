@@ -35,10 +35,9 @@ namespace DCL
             sceneDebugPanel.SetActive(false);
             engineDebugPanel.SetActive(true);
         }
-        public void ShowInfoPanel(string network, string environment)
+        public void ShowInfoPanel(string network, string realm)
         {
-            var info = $"{network} / {environment}";
-            infoPanel.Setup(info);
+            infoPanel.Setup(network, realm);
             infoPanel.SetVisible(true);
         }
     }

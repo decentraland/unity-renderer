@@ -68,10 +68,10 @@ namespace DCL
 
         public void ShowFPSPanel() { isFPSPanelVisible.Set(true); }
 
-        public void ShowInfoPanel(string network, string environment)
+        public void ShowInfoPanel(string network, string realm)
         {
             if (debugView != null)
-                debugView.ShowInfoPanel(network, environment);
+                debugView.ShowInfoPanel(network, realm);
         }
 
         public void SetSceneDebugPanel()
