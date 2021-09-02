@@ -92,7 +92,7 @@ namespace Tests.AvatarNamesHUD
             hudController.OnOtherPlayersStatusRemoved("user0", new Player { id = "user0", name = "user0" });
 
             hudView.Received().UntrackPlayer("user0");
-            Assert.AreEqual(3, hudController.trackingPlayers.Count);
+            Assert.AreEqual(2, hudController.trackingPlayers.Count);
             Assert.IsTrue(hudController.trackingPlayers.Contains("user1"));
             Assert.IsTrue(hudController.trackingPlayers.Contains("user2"));
         }
