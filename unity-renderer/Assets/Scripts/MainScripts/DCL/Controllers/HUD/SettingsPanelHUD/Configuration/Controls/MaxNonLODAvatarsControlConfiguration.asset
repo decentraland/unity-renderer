@@ -21,6 +21,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5932aa2a572cf43a189edf2072b323d6, type: 2}
   isBeta: 0
   sliderMinValue: 5
-  sliderMaxValue: 80
+  sliderMaxValue: 100
   storeValueAsNormalized: 0
   wholeNumbers: 1
