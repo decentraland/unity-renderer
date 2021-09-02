@@ -129,15 +129,14 @@ namespace DCL
                     continue;
                 }
 
+                visibleNames.Remove(lodController.player.id);
                 if (avatarsCount < maxAvatars)
                 {
                     lodController.SetSimpleAvatar();
                     avatarsCount++;
-                    visibleNames.Add(lodController.player.id);
                     continue;
                 }
 
-                visibleNames.Remove(lodController.player.id);
                 if (impostorCount < maxImpostors)
                 {
                     lodController.SetImpostor();

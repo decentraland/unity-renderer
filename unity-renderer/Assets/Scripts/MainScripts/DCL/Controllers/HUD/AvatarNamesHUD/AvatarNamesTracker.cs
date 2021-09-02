@@ -1,3 +1,4 @@
+using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,6 @@ namespace AvatarNamesHUD
     {
         private static readonly Vector3 OFFSET = new Vector3(0, 3f, 0);
         private static readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
-        private const float NAME_VANISHING_POINT_DISTANCE = 15.0f;
 
         internal readonly RectTransform canvasRect;
         internal readonly Image background;
@@ -74,33 +74,24 @@ namespace AvatarNamesHUD
                 return;
 
             Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(player.worldPosition + OFFSET);
-            float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
+            float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / DataStore.i.avatarsLOD.LODDistance.Get()));
 
-            if (screenPoint.z > 0)
-            {
-                screenPoint.Scale(canvasRect.rect.size);
-                name.rectTransform.anchoredPosition = screenPoint;
-                background.rectTransform.anchoredPosition = screenPoint;
-                background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
-                Vector2 voiceChatOffset = -Vector2.Scale(Vector2.right, background.rectTransform.sizeDelta) * 0.5f;
-                (voiceChatCanvasGroup.transform as RectTransform).anchoredPosition = background.rectTransform.anchoredPosition + voiceChatOffset;
+            screenPoint.Scale(canvasRect.rect.size);
+            name.rectTransform.anchoredPosition = screenPoint;
+            background.rectTransform.anchoredPosition = screenPoint;
+            background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
+            Vector2 voiceChatOffset = -Vector2.Scale(Vector2.right, background.rectTransform.sizeDelta) * 0.5f;
+            (voiceChatCanvasGroup.transform as RectTransform).anchoredPosition = background.rectTransform.anchoredPosition + voiceChatOffset;
 
-                voiceChatCanvasGroup.alpha = alpha;
-                name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
-                backgroundCanvasGroup.alpha = alpha;
-                voiceChatCanvasGroup?.gameObject.SetActive(visibility && (player?.isTalking ?? false));
-                voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, player.isTalking);
+            voiceChatCanvasGroup.alpha = alpha;
+            name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
+            backgroundCanvasGroup.alpha = alpha;
+            voiceChatCanvasGroup?.gameObject.SetActive(visibility && (player?.isTalking ?? false));
+            voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, player.isTalking);
 
-                background.gameObject.SetActive(visibility);
-                name.gameObject.SetActive(visibility);
-                voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
-            }
-            else
-            {
-                background.gameObject.SetActive(false);
-                name.gameObject.SetActive(false);
-                voiceChatCanvasGroup.gameObject.SetActive(false);
-            }
+            background.gameObject.SetActive(visibility);
+            name.gameObject.SetActive(visibility);
+            voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
         }
 
         public void DestroyUIElements()
