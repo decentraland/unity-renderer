@@ -56,7 +56,7 @@ namespace DCL
 
         public static void SetImpostorTintColor(Material impostorMaterial, Color newColor)
         {
-            if (impostorMaterial == null)
+            if (impostorMaterial == null || !impostorMaterial.GetTexture(IMPOSTOR_TEXTURE_PROPERTY) is Texture2D)
                 return;
 
             impostorMaterial.SetColor(IMPOSTOR_TEXTURE_COLOR_PROPERTY, newColor);
