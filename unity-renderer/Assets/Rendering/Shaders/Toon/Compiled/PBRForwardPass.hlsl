@@ -45,6 +45,7 @@ PackedVaryings vert(Attributes input)
     #endif
 
     output = BuildVaryings(input);
+    output.normalWS = input.normalOS;
     PackedVaryings packedOutput = (PackedVaryings)0;
     packedOutput = PackVaryings(output);
     return packedOutput;

@@ -9,6 +9,7 @@ PackedVaryings vert(Attributes input)
     ApplyGPUSkinning(input, input.tangentOS, input.uv1);
     #endif
     output = BuildVaryings(input);
+    output.normalWS = input.normalOS;
     PackedVaryings packedOutput = (PackedVaryings)0;
     packedOutput = PackVaryings(output);
     return packedOutput;
@@ -24,9 +25,9 @@ half4 frag(PackedVaryings packedInput) : SV_TARGET
     SurfaceDescription surfaceDescription = SurfaceDescriptionFunction(surfaceDescriptionInputs);
 
     #if _AlphaClip
-        clip(surfaceDescription.Alpha - surfaceDescription.AlphaClipThreshold);
+    clip(surfaceDescription.Alpha - surfaceDescription.AlphaClipThreshold);
     #endif
-    
+
     return float4(PackNormalOctRectEncode(TransformWorldToViewDir(unpacked.normalWS, true)), 0.0, 0.0);
 }
 
