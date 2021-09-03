@@ -81,6 +81,7 @@ namespace DCL
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(30f);
             public readonly BaseVariable<int> maxAvatars = new BaseVariable<int>(DEFAULT_MAX_AVATAR);
             public readonly BaseVariable<int> maxImpostors = new BaseVariable<int>(DEFAULT_MAX_IMPOSTORS);
+            public readonly BaseHashSet<string> visibleNames = new BaseHashSet<string>();
         }
 
         /// <summary>
