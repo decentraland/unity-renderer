@@ -113,54 +113,36 @@ namespace DCL
             int impostorCount = 0; //Impostor
 
             //Cache .Get() to boost performance. Also use squared values to boost distance comparison
-            float lodDistance = LODDistance.Get() * LODDistance.Get();
             float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
             (IAvatarLODController lodController, float sqrDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
-                (IAvatarLODController lodController, float sqrtDistance) = lodControllersByDistance[index];
-                if (sqrtDistance < 0) //Behind camera
+                (IAvatarLODController lodController, float sqrDistance) = lodControllersByDistance[index];
+                if (sqrDistance < 0) //Behind camera
                 {
                     visibleNames.Remove(lodController.player.id);
                     lodController.SetInvisible();
                     continue;
                 }
 
-                //Nearby player
-                if (sqrtDistance < lodDistance)
+                if (avatarsCount < maxAvatars)
                 {
-                    if (avatarsCount < maxAvatars)
-                    {
-                        if (sqrtDistance < squaredSimpleAvatarDistance)
-                            lodController.SetFullAvatar();
-                        else
-                            lodController.SetSimpleAvatar();
-                        avatarsCount++;
-                        visibleNames.Add(lodController.player.id);
-                        continue;
-                    }
-
-                    lodController.SetInvisible();
-                    visibleNames.Remove(lodController.player.id);
+                    if (sqrDistance < squaredSimpleAvatarDistance)
+                        lodController.SetFullAvatar();
+                    else
+                        lodController.SetSimpleAvatar();
+                    avatarsCount++;
+                    visibleNames.Add(lodController.player.id);
                     continue;
                 }
 
                 visibleNames.Remove(lodController.player.id);
-                if (avatarsCount < maxAvatars)
-                {
-                    lodController.SetSimpleAvatar();
-                    avatarsCount++;
-                    continue;
-                }
-
                 if (impostorCount < maxImpostors)
                 {
                     lodController.SetImpostor();
-
-                    lodController.UpdateImpostorTint(Mathf.Sqrt(sqrtDistance));
-
+                    lodController.UpdateImpostorTint(Mathf.Sqrt(sqrDistance));
                     impostorCount++;
                     continue;
                 }
