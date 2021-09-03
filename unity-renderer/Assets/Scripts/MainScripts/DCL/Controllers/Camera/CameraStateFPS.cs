@@ -45,6 +45,8 @@ namespace DCL.Camera
         }
         private void OnMovingPlatformRotate(Quaternion current, Quaternion previous)
         {
+            // Disabled camera rotation on moving platforms because this was causing issues for some scenes
+            return;
             Vector3 diff = current.eulerAngles;
             if (pov != null)
             {
