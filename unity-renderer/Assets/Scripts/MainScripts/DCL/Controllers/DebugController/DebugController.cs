@@ -85,6 +85,12 @@ namespace DCL
             if (debugView != null)
                 debugView.SetEngineDebugPanel();
         }
+        
+        public void HideInfoPanel()
+        {
+            if (debugView != null)
+                debugView.HideInfoPanel();
+        }
 
         public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
 
@@ -130,5 +136,6 @@ namespace DCL
             if (debugView != null)
                 Object.Destroy(debugView.gameObject);
         }
+        
     }
 }

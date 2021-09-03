@@ -34,8 +34,22 @@ namespace DCL
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
         {
             var network = kernelConfig.network;
-            var realm = GetRealmName();
-            debugController.ShowInfoPanel(network, realm);
+            if (IsInfoPanelVisible(network))
+            {
+                var realm = GetRealmName();
+                debugController.ShowInfoPanel(network, realm);
+            }
+            else
+            {
+                debugController.HideInfoPanel();
+            }
+        }
+        private bool IsInfoPanelVisible(string network)
+        {
+            #if UNITY_EDITOR
+                return true;
+            #endif
+            return !network.ToLower().Contains("mainnet");
         }
         private static string GetRealmName() { return DataStore.i.playerRealm.Get()?.serverName; }
 

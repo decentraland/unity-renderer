@@ -40,5 +40,10 @@ namespace DCL
             infoPanel.Setup(network, realm);
             infoPanel.SetVisible(true);
         }
+
+        public void HideInfoPanel()
+        {
+            infoPanel.SetVisible(false);
+        }
     }
 }
