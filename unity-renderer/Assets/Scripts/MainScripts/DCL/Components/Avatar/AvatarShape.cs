@@ -37,6 +37,7 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+            avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
         }
 
         private void PlayerClicked()
@@ -52,6 +53,8 @@ namespace DCL
 
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
+
+            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -182,10 +185,11 @@ namespace DCL
             player = null;
         }
 
+        void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
+
         public override void Cleanup()
         {
             base.Cleanup();
-
 
             if (player != null)
             {

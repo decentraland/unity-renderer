@@ -23,6 +23,7 @@ namespace DCL.Components
             public float maxWidth = 100f;
             public bool autoStretchWidth = true;
             public Color background = Color.black;
+
             public string fontWeight = "normal";
             //
 
@@ -92,7 +93,14 @@ namespace DCL.Components
             inputField.onSubmit.AddListener(OnSubmit);
             inputField.onValueChanged.AddListener(OnChanged);
 
-            yield return ApplyModelChanges(scene, tmpText, model);
+            // We avoid using even yield break; as this instruction skips a frame and we don't want that.
+            if ( !DCLFont.IsFontLoaded(scene, model.font) )
+            {
+                yield return DCLFont.WaitUntilFontIsReady(scene, model.font);
+            }
+
+            DCLFont.SetFontFromComponent(scene, model.font, referencesContainer.text);
+            ApplyModelChanges(tmpText, model);
 
             inputField.text = model.placeholder;
             inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g,
@@ -183,13 +191,8 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        private IEnumerator ApplyModelChanges(IParcelScene scene, TMP_Text text, Model model)
+        private void ApplyModelChanges(TMP_Text text, Model model)
         {
-            if (!string.IsNullOrEmpty(model.font))
-            {
-                yield return DCLFont.SetFontFromComponent(scene, model.font, text);
-            }
-
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.visible ? model.opacity : 0);

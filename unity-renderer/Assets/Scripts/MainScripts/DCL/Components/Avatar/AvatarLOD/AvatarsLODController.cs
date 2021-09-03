@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DCL.Interface;
 
 namespace DCL
 {
@@ -24,7 +25,18 @@ namespace DCL
         public AvatarsLODController()
         {
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(Initialize);
+                        .Then(config =>
+                        {
+                            KernelConfig.i.OnChange += OnKernelConfigChanged;
+                            OnKernelConfigChanged(config, null);
+                        });
+        }
+
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        {
+            if (enabled == current.features.enableAvatarLODs)
+                return;
+            Initialize(current);
         }
 
         internal void Initialize(KernelConfigModel config)
@@ -32,6 +44,12 @@ namespace DCL
             enabled = config.features.enableAvatarLODs;
             if (!enabled)
                 return;
+
+            foreach (IAvatarLODController lodController in lodControllers.Values)
+            {
+                lodController.Dispose();
+            }
+            lodControllers.Clear();
 
             foreach (var keyValuePair in otherPlayers.Get())
             {
@@ -94,12 +112,12 @@ namespace DCL
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            //Cache .Get to boost performance. Also use squared values to boost distance comparison
+            //Cache .Get() to boost performance. Also use squared values to boost distance comparison
             float lodDistance = LODDistance.Get() * LODDistance.Get();
             float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
-            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
+            (IAvatarLODController lodController, float sqrDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
                 (IAvatarLODController lodController, float sqrtDistance) = lodControllersByDistance[index];
@@ -140,6 +158,9 @@ namespace DCL
                 if (impostorCount < maxImpostors)
                 {
                     lodController.SetImpostor();
+
+                    lodController.UpdateImpostorTint(Mathf.Sqrt(sqrtDistance));
+
                     impostorCount++;
                     continue;
                 }
@@ -148,10 +169,10 @@ namespace DCL
             }
         }
 
-        private (IAvatarLODController lodController, float sqrtDistance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
+        private (IAvatarLODController lodController, float sqrDistance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
         {
-            (IAvatarLODController lodController, float sqrtDistance)[] lodControllersWithDistance = lodControllers.Select(x => (x, SqrtDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
-            Array.Sort(lodControllersWithDistance, (x, y) => x.sqrtDistance.CompareTo(y.sqrtDistance));
+            (IAvatarLODController lodController, float sqrDistance)[] lodControllersWithDistance = lodControllers.Select(x => (x, SqrDistanceToOwnPlayer(x.player, ownPlayerPosition))).ToArray();
+            Array.Sort(lodControllersWithDistance, (x, y) => x.sqrDistance.CompareTo(y.sqrDistance));
             return lodControllersWithDistance;
         }
 
@@ -160,7 +181,7 @@ namespace DCL
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        private float SqrtDistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
+        private float SqrDistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
         {
             if (player == null || !IsInFrontOfCamera(player.worldPosition))
                 return -1;
@@ -172,6 +193,7 @@ namespace DCL
 
         public void Dispose()
         {
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
             foreach (IAvatarLODController lodController in lodControllers.Values)
             {
                 lodController.Dispose();

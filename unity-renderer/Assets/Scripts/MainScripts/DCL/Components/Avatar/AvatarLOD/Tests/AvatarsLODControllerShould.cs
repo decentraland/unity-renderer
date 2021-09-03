@@ -2,6 +2,7 @@ using DCL;
 using KernelConfigurationTypes;
 using NSubstitute;
 using NSubstitute.Extensions;
+using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -231,6 +232,35 @@ namespace Tests.AvatarsLODController
             simpleAvatarPlayerController.Received().SetSimpleAvatar();
             impostorAvatarPlayerController.Received().SetImpostor();
             invisibleAvatarPlayerController.Received().SetInvisible();
+        }
+
+        [Test]
+        public void UpdateImpostorsTintAndInterpolationMovement()
+        {
+            Vector3 cameraPosition = Vector3.zero;
+            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
+            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
+            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+            float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
+            float tintMinDistance = 30f; // default internal value
+
+            Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
+            IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
+            controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
+            fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f);
+
+            Player impostorAvatarPlayer = CreateMockPlayer("impostorAvatar");
+            IAvatarLODController impostorAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            impostorAvatarPlayerController.player.Returns(impostorAvatarPlayer);
+            controller.lodControllers.Add(impostorAvatarPlayer.id, impostorAvatarPlayerController);
+            impostorAvatarPlayer.worldPosition = Vector3.forward * tintMinDistance;
+
+            DataStore.i.avatarsLOD.maxAvatars.Set(1);
+            controller.enabled = true;
+            controller.Update();
+
+            impostorAvatarPlayerController.ReceivedWithAnyArgs().UpdateImpostorTint(default);
         }
 
         [Test]

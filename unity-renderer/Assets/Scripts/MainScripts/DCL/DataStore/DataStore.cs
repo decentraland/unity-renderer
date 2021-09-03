@@ -78,7 +78,7 @@ namespace DCL
             public const int DEFAULT_MAX_IMPOSTORS = 70;
 
             public readonly BaseVariable<float> simpleAvatarDistance = new BaseVariable<float>(15f);
-            public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
+            public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(30f);
             public readonly BaseVariable<int> maxAvatars = new BaseVariable<int>(DEFAULT_MAX_AVATAR);
             public readonly BaseVariable<int> maxImpostors = new BaseVariable<int>(DEFAULT_MAX_IMPOSTORS);
             public readonly BaseHashSet<string> visibleNames = new BaseHashSet<string>();
@@ -108,6 +108,6 @@ namespace DCL
 
             public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
             public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
-        }
+        } 
     }
 }

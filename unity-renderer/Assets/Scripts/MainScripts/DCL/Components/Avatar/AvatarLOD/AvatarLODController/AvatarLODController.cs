@@ -12,6 +12,7 @@ namespace DCL
         void SetSimpleAvatar();
         void SetImpostor();
         void SetInvisible();
+        void UpdateImpostorTint(float distanceToMainPlayer);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -153,6 +154,8 @@ namespace DCL
                 facialFeaturesEnabled = newFacialFeaturesEnabled;
             }
         }
+
+        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
 
         public void Dispose()
         {
