@@ -8,6 +8,7 @@ namespace DCL
     {
         private DebugController debugController;
         private DebugBridge debugBridge;
+        private Promise<KernelConfigModel> kernelConfigPromise;
 
         public override void Initialize()
         {
@@ -24,16 +25,25 @@ namespace DCL
         }
         private void SetupKernelConfig()
         {
-            Promise<KernelConfigModel> configPromise = KernelConfig.i.EnsureConfigInitialized();
-            configPromise.Catch(Debug.Log);
-            configPromise.Then(OnKernelConfigChanged);
-            KernelConfig.i.OnChange += (current, previous) => OnKernelConfigChanged(current);
+            kernelConfigPromise = KernelConfig.i.EnsureConfigInitialized();
+            kernelConfigPromise.Catch(Debug.Log);
+            kernelConfigPromise.Then(OnKernelConfigChanged);
+            KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { OnKernelConfigChanged(current); }
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
         {
             var network = kernelConfig.network;
-            var realm = DataStore.i.playerRealm.Get().serverName;
+            var realm = GetRealmName();
             debugController.ShowInfoPanel(network, realm);
+        }
+        private static string GetRealmName() { return DataStore.i.playerRealm.Get()?.serverName; }
+
+        public override void Dispose()
+        {
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            kernelConfigPromise?.Dispose();
+            base.Dispose();
         }
     }
 }
