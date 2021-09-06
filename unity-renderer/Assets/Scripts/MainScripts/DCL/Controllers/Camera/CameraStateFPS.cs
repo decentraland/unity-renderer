@@ -17,44 +17,7 @@ namespace DCL.Camera
             if (defaultVirtualCamera is CinemachineVirtualCamera vcamera)
                 pov = vcamera.GetCinemachineComponent<CinemachinePOV>();
         }
-
-        public override void OnSelect()
-        {
-            base.OnSelect();
-            CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += OnMovingPlatformStart;
-            if (CommonScriptableObjects.playerIsOnMovingPlatform.Get())
-                OnMovingPlatformStart(true, true);
-        }
-
-        public override void OnUnselect()
-        {
-            base.OnUnselect();
-            CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= OnMovingPlatformStart;
-            CommonScriptableObjects.movingPlatformRotationDelta.OnChange -= OnMovingPlatformRotate;
-        }
-        private void OnMovingPlatformStart(bool current, bool previous)
-        {
-            if (current)
-            {
-                CommonScriptableObjects.movingPlatformRotationDelta.OnChange += OnMovingPlatformRotate;
-            }
-            else
-            {
-                CommonScriptableObjects.movingPlatformRotationDelta.OnChange -= OnMovingPlatformRotate;
-            }
-        }
-        private void OnMovingPlatformRotate(Quaternion current, Quaternion previous)
-        {
-            // Disabled camera rotation on moving platforms because this was causing issues for some scenes
-            return;
-            Vector3 diff = current.eulerAngles;
-            if (pov != null)
-            {
-                pov.m_HorizontalAxis.Value += diff.y;
-                pov.m_VerticalAxis.Value += diff.x;
-            }
-        }
-
+        
         public override void OnUpdate()
         {
             var xzPlaneForward = Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1));
