@@ -28,7 +28,7 @@ namespace DCL
             lastSortFrame = 0;
             enabled = true;
 
-            Environment.i.platform.debugController.OnDebugModeSet += OnDebugModeSet;
+            DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
             WebInterface.StartDecentraland();
@@ -47,8 +47,20 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
         }
+        private void OnDebugModeSet(bool current, bool previous)
+        {
+            if (current == previous)
+                return;
 
-        private void OnDebugModeSet() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker()); }
+            if (current)
+            {
+                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
+            }
+            else
+            {
+                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
+            }
+        }
 
         public void Start()
         {
@@ -74,7 +86,7 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
-            Environment.i.platform.debugController.OnDebugModeSet -= OnDebugModeSet;
+            DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
 
             UnloadAllScenes(includePersistent: true);
 
@@ -535,7 +547,7 @@ namespace DCL
                 }
             }
 
-            if (!DataStore.i.debugConfig.isDebugMode && string.IsNullOrEmpty(worldState.currentSceneId))
+            if (!DataStore.i.debugConfig.isDebugMode.Get() && string.IsNullOrEmpty(worldState.currentSceneId))
             {
                 // When we don't know the current scene yet, we must lock the rendering from enabling until it is set
                 CommonScriptableObjects.rendererState.AddLock(this);
@@ -608,7 +620,7 @@ namespace DCL
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 newScene.SetData(sceneToLoad);
 
-                if (debugConfig.isDebugMode)
+                if (debugConfig.isDebugMode.Get())
                 {
                     newScene.InitializeDebugPlane();
                 }

@@ -63,6 +63,7 @@ public class PluginSystem
     {
         HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
         HandleFeature<TutorialController>(config.features.enableTutorial);
+        HandleFeature<DebugPluginFeature>(true);
         currentConfig = config;
     }
 
