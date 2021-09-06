@@ -8,18 +8,18 @@ using UnityEngine.TestTools;
 
 public class PluginSystemShould : IntegrationTestSuite
 {
-    private GameObject _main;
+    private GameObject main;
 
     [SetUp]
     public void Setup()
     {
-        _main = new GameObject("Main");
+        main = new GameObject("Main");
     }
 
     [TearDown]
     public void TearDown()
     {
-        Object.DestroyImmediate(_main);
+        Object.DestroyImmediate(main);
     }
     
     [Test]

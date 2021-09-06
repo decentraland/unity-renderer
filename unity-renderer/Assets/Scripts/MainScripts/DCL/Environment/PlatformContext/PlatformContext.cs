@@ -51,7 +51,6 @@ namespace DCL
             memoryManager.Dispose();
             parcelScenesCleaner.Dispose();
             cullingController.Dispose();
-            //botsController.Dispose()?
             webRequest.Dispose();
             serviceProviders.Dispose();
             avatarsLODController.Dispose();
