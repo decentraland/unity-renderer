@@ -13,8 +13,6 @@ public class SimpleGPUSkinning
     private Transform[] bones;
     private Matrix4x4[] boneMatrices;
 
-    private static HashSet<Mesh> processedBindPoses = new HashSet<Mesh>();
-
     public SimpleGPUSkinning (SkinnedMeshRenderer skr)
     {
         ConfigureBindPoses(skr);
@@ -47,12 +45,7 @@ public class SimpleGPUSkinning
     /// <param name="skr"></param>
     private static void ConfigureBindPoses(SkinnedMeshRenderer skr)
     {
-        if ( processedBindPoses.Contains(skr.sharedMesh))
-            return;
-
         Mesh sharedMesh = skr.sharedMesh;
-        processedBindPoses.Add(sharedMesh);
-
         int vertexCount = sharedMesh.vertexCount;
         Vector4[] bone01data = new Vector4[vertexCount];
         Vector4[] bone23data = new Vector4[vertexCount];
@@ -89,10 +82,11 @@ public class SimpleGPUSkinning
             Transform bone = bones[i];
             boneMatrices[i] = bone.localToWorldMatrix;
         }
-        foreach (Material material in renderer.sharedMaterials)
+        for (int index = 0; index < renderer.sharedMaterials.Length; index++)
         {
+            Material material = renderer.sharedMaterials[index];
             material.SetMatrix(RENDERER_WORLD_INVERSE, renderer.transform.worldToLocalMatrix);
-            material.SetMatrixArray(BONE_MATRICES, boneMatrices.ToArray());
+            material.SetMatrixArray(BONE_MATRICES, boneMatrices);
         }
     }
 }
