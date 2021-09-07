@@ -139,6 +139,16 @@ namespace Tests.AvatarLODController
             Assert.Null(controller.currentTransition);
         }
 
+        [Test]
+        [TestCase(IAvatarRenderer.AnimationThrottling.Full)]
+        [TestCase(IAvatarRenderer.AnimationThrottling.Near)]
+        [TestCase(IAvatarRenderer.AnimationThrottling.FarAway)]
+        public void SetAnimationThrottling(IAvatarRenderer.AnimationThrottling throttling)
+        {
+            controller.SetThrottling(throttling);
+            renderer.Received().SetThrottling(throttling);
+        }
+
         [UnityTest]
         public IEnumerator TransitionProperly()
         {

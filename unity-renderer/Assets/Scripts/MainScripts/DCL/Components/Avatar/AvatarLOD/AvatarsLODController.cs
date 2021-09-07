@@ -113,7 +113,8 @@ namespace DCL
             int impostorCount = 0; //Impostor
 
             //Cache .Get() to boost performance. Also use squared values to boost distance comparison
-            float squaredSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
+            float sqrLodDistance = LODDistance.Get() * LODDistance.Get();
+            float sqrSimpleAvatarDistance = simpleAvatarDistance.Get() * simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
             (IAvatarLODController lodController, float sqrDistance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
@@ -129,10 +130,16 @@ namespace DCL
 
                 if (avatarsCount < maxAvatars)
                 {
-                    if (sqrDistance < squaredSimpleAvatarDistance)
+                    if (sqrDistance < sqrSimpleAvatarDistance)
+                    {
+                        lodController.SetThrottling(IAvatarRenderer.AnimationThrottling.Full);
                         lodController.SetFullAvatar();
+                    }
                     else
+                    {
+                        lodController.SetThrottling(sqrDistance < sqrLodDistance ? IAvatarRenderer.AnimationThrottling.Near : IAvatarRenderer.AnimationThrottling.FarAway);
                         lodController.SetSimpleAvatar();
+                    }
                     avatarsCount++;
                     visibleNames.Add(lodController.player.id);
                     continue;

@@ -375,6 +375,57 @@ namespace Tests.AvatarsLODController
             controller.lodControllers["player4"].Received().SetInvisible();
         }
 
+        [Test]
+        public void UpdateThrottling()
+        {
+            Vector3 cameraPosition = Vector3.zero;
+            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
+            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
+            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+            float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
+            float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
+
+            Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
+            IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
+            controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
+            fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f); //Close player => Full Avatar
+
+            Player simpleAvatarPlayer = CreateMockPlayer("simpleAvatar");
+            IAvatarLODController simpleAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            simpleAvatarPlayerController.player.Returns(simpleAvatarPlayer);
+            controller.lodControllers.Add(simpleAvatarPlayer.id, simpleAvatarPlayerController);
+            simpleAvatarPlayer.worldPosition = Vector3.forward * (simpleAvatarDistance * 1.05f); //Near By player => Simple Avatar
+
+            Player farawaySimpleAvatar = CreateMockPlayer("farawaySimpleAvatar");
+            IAvatarLODController farawaySimpleAvatarController = Substitute.For<IAvatarLODController>();
+            farawaySimpleAvatarController.player.Returns(farawaySimpleAvatar);
+            controller.lodControllers.Add(farawaySimpleAvatar.id, farawaySimpleAvatarController);
+            farawaySimpleAvatar.worldPosition = Vector3.forward * (lodDistance * 1.05f); //Far Away player => Simple avatar (due to maxAvatars)
+
+            Player farAwayImpostor = CreateMockPlayer("farAwayImpostor");
+            IAvatarLODController farAwayImpostorController = Substitute.For<IAvatarLODController>();
+            farAwayImpostorController.player.Returns(farAwayImpostor);
+            controller.lodControllers.Add(farAwayImpostor.id, farAwayImpostorController);
+            farAwayImpostor.worldPosition = Vector3.forward * (lodDistance * 1.10f); //Far Away player => Impostor (due to maxAvatars)
+
+            Player invisibleAvatarPlayer = CreateMockPlayer("invisibleAvatar");
+            IAvatarLODController invisibleAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            invisibleAvatarPlayerController.player.Returns(invisibleAvatarPlayer);
+            controller.lodControllers.Add(invisibleAvatarPlayer.id, invisibleAvatarPlayerController);
+            invisibleAvatarPlayer.worldPosition = -Vector3.forward * 10f; //player behind camera => Invisible
+
+            DataStore.i.avatarsLOD.maxAvatars.Set(3);
+            controller.enabled = true;
+            controller.Update();
+
+            fullAvatarPlayerController.Received().SetThrottling(IAvatarRenderer.AnimationThrottling.Full);
+            simpleAvatarPlayerController.Received().SetThrottling(IAvatarRenderer.AnimationThrottling.Near);
+            farawaySimpleAvatarController.Received().SetThrottling(IAvatarRenderer.AnimationThrottling.FarAway);
+            farAwayImpostorController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<IAvatarRenderer.AnimationThrottling>());
+            invisibleAvatarPlayerController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<IAvatarRenderer.AnimationThrottling>());
+        }
+
         private Player CreateMockPlayer(string id) => CreateMockPlayer(id, out IAvatarRenderer renderer);
         private Player CreateMockPlayer(string id, Vector3 position) => CreateMockPlayer(id, position, out IAvatarRenderer renderer);
 

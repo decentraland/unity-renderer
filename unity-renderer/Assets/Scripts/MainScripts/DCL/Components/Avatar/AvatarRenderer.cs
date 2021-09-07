@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
-using UnityEditor;
+using GPUSkinning;
 using UnityEngine;
 using static WearableLiterals;
 
@@ -25,6 +25,8 @@ namespace DCL
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
         private SimpleGPUSkinning gpuSkinning = null;
+        private GPUSkinningThrottler gpuSkinningThrottler = null;
+        private IAvatarRenderer.AnimationThrottling currentThrottling = IAvatarRenderer.AnimationThrottling.Full;
 
         private Renderer mainMeshRenderer
         {
@@ -167,6 +169,7 @@ namespace DCL
             }
 
             avatarMeshCombiner.Dispose();
+            gpuSkinningThrottler = null;
             gpuSkinning = null;
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
@@ -464,11 +467,13 @@ namespace DCL
             if (mergeSuccess)
             {
                 gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
-
                 // Sample the animation manually and force an update in the GPUSkinning to avoid giant avatars
                 animator.SetIdleFrame();
                 animator.animation.Sample();
                 gpuSkinning.Update(true);
+
+                gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
+                gpuSkinningThrottler.SetThrottling((int)currentThrottling);
             }
             else
                 loadSoftFailed = true;
@@ -625,6 +630,11 @@ namespace DCL
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
 
         public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
+        public void SetThrottling(IAvatarRenderer.AnimationThrottling throttling)
+        {
+            currentThrottling = throttling;
+            gpuSkinningThrottler?.SetThrottling((int) throttling);
+        }
 
         public void SetAvatarFade(float avatarFade)
         {
@@ -705,7 +715,7 @@ namespace DCL
         private void LateUpdate()
         {
             if (gpuSkinning != null && mainMeshRenderer.enabled)
-                gpuSkinning.Update();
+                gpuSkinningThrottler.TryUpdate();
         }
 
         protected virtual void OnDestroy()
