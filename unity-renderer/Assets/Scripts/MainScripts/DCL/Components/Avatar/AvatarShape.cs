@@ -38,7 +38,6 @@ namespace DCL
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
-            // avatarMovementController.OnMovedAvatar += () => { avatarRenderer.SetImpostorFade(1f); };
         }
 
         private void PlayerClicked()

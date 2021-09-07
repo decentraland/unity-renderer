@@ -112,9 +112,6 @@ namespace DCL
             StartTransition(0, 0);
         }
 
-        private float currentTargetAvatarFade;
-        private float currentTargetImpostorFade;
-
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
             CoroutineStarter.Stop(currentTransition);
@@ -127,9 +124,6 @@ namespace DCL
             {
                 yield return null;
             }
-
-            currentTargetAvatarFade = targetAvatarFade;
-            currentTargetImpostorFade = targetImpostorFade;
 
             player.renderer.SetAvatarFade(avatarFade);
             player.renderer.SetImpostorFade(impostorFade);
