@@ -23,7 +23,7 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
     {
         cachedAxisToMeasurableActions = axisToMeasurableActions.ToDictionary(x => x.axisName, x => x.measurableAction);
         CinemachineCore.GetInputAxis = OverrideGetAxis;
-        inputSpikeFixer = new InputSpikeFixer();
+        inputSpikeFixer = new InputSpikeFixer(() => Cursor.lockState);
     }
 
     private float OverrideGetAxis(string axisName)

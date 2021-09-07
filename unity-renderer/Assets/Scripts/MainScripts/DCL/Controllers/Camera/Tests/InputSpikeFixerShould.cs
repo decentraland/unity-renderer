@@ -26,8 +26,7 @@ namespace CameraController_Test
         [TestCase(0.5f, 0.5f)]
         public void WhenLockStateIsNotChangedValueWontChange(float inputValue, float expectedInputValue)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            var inputSpikeFixer = new InputSpikeFixer();
+            var inputSpikeFixer = new InputSpikeFixer(() => CursorLockMode.Locked);
             var returnValue = inputSpikeFixer.GetValue(inputValue);
             
             Assert.AreEqual(expectedInputValue, returnValue);
@@ -36,10 +35,10 @@ namespace CameraController_Test
         [Test]
         public void WhenLockStateIsChangedAndValueIsHigherThanToleranceReturnValueIsZero()
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            var inputSpikeFixer = new InputSpikeFixer();
+            var lockState = CursorLockMode.Locked;
+            var inputSpikeFixer = new InputSpikeFixer(() => lockState);
+            lockState = CursorLockMode.Confined;
             
-            Cursor.lockState = CursorLockMode.Confined;
             var returnValue = inputSpikeFixer.GetValue(10);
             
             Assert.AreEqual(0, returnValue);
@@ -48,10 +47,10 @@ namespace CameraController_Test
         [Test]
         public void WhenLockStateIsChangedAndValueIsLowerThanToleranceReturnValueIsZeroJustOnce()
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            var inputSpikeFixer = new InputSpikeFixer();
+            var lockState = CursorLockMode.Locked;
+            var inputSpikeFixer = new InputSpikeFixer(() => lockState);
+            lockState = CursorLockMode.Confined;
             
-            Cursor.lockState = CursorLockMode.Confined;
             var returnValue = inputSpikeFixer.GetValue(0.4f);
             Assert.AreEqual(0, returnValue);
             

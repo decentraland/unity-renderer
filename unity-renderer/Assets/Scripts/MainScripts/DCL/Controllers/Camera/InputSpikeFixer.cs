@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace DCL.Camera
@@ -5,16 +6,17 @@ namespace DCL.Camera
     public class InputSpikeFixer
     {
         private const float INPUT_SPIKE_TOLERANCE = 0.5f;
+        private readonly Func<CursorLockMode> getLockMode;
 
         private CursorLockMode lastLockState;
         private bool isLockStateDirty;
 
-        public InputSpikeFixer()
+        public InputSpikeFixer(Func<CursorLockMode> getLockMode)
         {
-            lastLockState = Cursor.lockState;
+            this.getLockMode = getLockMode;
+            lastLockState = getLockMode();
             isLockStateDirty = false;
         }
-
         public float GetValue(float currentValue)
         {
             CheckLockState();
@@ -35,7 +37,7 @@ namespace DCL.Camera
 
         private void CheckLockState()
         {
-            var currentLockState = Cursor.lockState;
+            var currentLockState = getLockMode();
 
             if (currentLockState != lastLockState)
             {

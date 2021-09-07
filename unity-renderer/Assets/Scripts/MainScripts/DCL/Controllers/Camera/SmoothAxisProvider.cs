@@ -21,8 +21,8 @@ public class SmoothAxisProvider : MonoBehaviour, AxisState.IInputAxisProvider
     {
         inputSpikeFixer = new []
         {
-            new InputSpikeFixer(),
-            new InputSpikeFixer()
+            new InputSpikeFixer(() => Cursor.lockState),
+            new InputSpikeFixer(() => Cursor.lockState)
         };
     }
     void Update()
