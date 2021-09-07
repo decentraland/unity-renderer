@@ -78,23 +78,31 @@ namespace AvatarNamesHUD
             float startingFade = lodDistance * 0.75f;
             float alpha = Mathf.Lerp(1, 0, (screenPoint.z - startingFade) / (lodDistance - startingFade)); //Lerp just at the last quarter of distance
 
+            if (screenPoint.z > 0)
+            {
+                screenPoint.Scale(canvasRect.rect.size);
+                name.rectTransform.anchoredPosition = screenPoint;
+                background.rectTransform.anchoredPosition = screenPoint;
+                background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
+                Vector2 voiceChatOffset = -Vector2.Scale(Vector2.right, background.rectTransform.sizeDelta) * 0.5f;
+                (voiceChatCanvasGroup.transform as RectTransform).anchoredPosition = background.rectTransform.anchoredPosition + voiceChatOffset;
 
-            screenPoint.Scale(canvasRect.rect.size);
-            name.rectTransform.anchoredPosition = screenPoint;
-            background.rectTransform.anchoredPosition = screenPoint;
-            background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
-            Vector2 voiceChatOffset = -Vector2.Scale(Vector2.right, background.rectTransform.sizeDelta) * 0.5f;
-            (voiceChatCanvasGroup.transform as RectTransform).anchoredPosition = background.rectTransform.anchoredPosition + voiceChatOffset;
+                voiceChatCanvasGroup.alpha = alpha;
+                name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
+                backgroundCanvasGroup.alpha = alpha;
+                voiceChatCanvasGroup?.gameObject.SetActive(visibility && (player?.isTalking ?? false));
+                voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, player.isTalking);
 
-            voiceChatCanvasGroup.alpha = alpha;
-            name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
-            backgroundCanvasGroup.alpha = alpha;
-            voiceChatCanvasGroup?.gameObject.SetActive(visibility && (player?.isTalking ?? false));
-            voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, player.isTalking);
-
-            background.gameObject.SetActive(visibility);
-            name.gameObject.SetActive(visibility);
-            voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
+                background.gameObject.SetActive(visibility);
+                name.gameObject.SetActive(visibility);
+                voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
+            }
+            else
+            {
+                background.gameObject.SetActive(false);
+                name.gameObject.SetActive(false);
+                voiceChatCanvasGroup.gameObject.SetActive(false);
+            }
         }
 
         public void DestroyUIElements()
