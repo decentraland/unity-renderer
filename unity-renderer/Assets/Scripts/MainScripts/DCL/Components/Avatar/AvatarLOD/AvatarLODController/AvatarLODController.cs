@@ -10,7 +10,7 @@ namespace DCL
         Player player { get; }
         void SetFullAvatar();
         void SetSimpleAvatar();
-        void SetImpostor();
+        void SetImpostor(bool forced = false);
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
     }
@@ -49,6 +49,24 @@ namespace DCL
                 return;
             player.renderer.SetAvatarFade(avatarFade);
             player.renderer.SetImpostorFade(impostorFade);
+
+            player.avatarMovementController.OnMovedAvatar += () =>
+            {
+                if (lastRequestedState == State.Impostor)
+                {
+                    impostorFade = 0f;
+                    SetImpostor(true);
+                }
+            };
+
+            player.avatarMovementController.OnAvatarMovementWait += () =>
+            {
+                if (lastRequestedState == State.Impostor)
+                {
+                    // impostorFade = 1f;
+                    SetInvisible();
+                }
+            };
         }
 
         public void SetFullAvatar()
@@ -77,9 +95,9 @@ namespace DCL
             StartTransition(1, 0);
         }
 
-        public void SetImpostor()
+        public void SetImpostor(bool forced = false)
         {
-            if (lastRequestedState == State.Impostor)
+            if (!forced && lastRequestedState == State.Impostor)
                 return;
 
             lastRequestedState = State.Impostor;
@@ -103,8 +121,14 @@ namespace DCL
             StartTransition(0, 0);
         }
 
+        private float currentTargetAvatarFade;
+        private float currentTargetImpostorFade;
+
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
+            if (Mathf.Approximately(newTargetAvatarFade, currentTargetAvatarFade) && Mathf.Approximately(newTargetImpostorFade, currentTargetImpostorFade))
+                return;
+
             CoroutineStarter.Stop(currentTransition);
             currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
         }
@@ -115,6 +139,9 @@ namespace DCL
             {
                 yield return null;
             }
+
+            currentTargetAvatarFade = targetAvatarFade;
+            currentTargetImpostorFade = targetImpostorFade;
 
             player.renderer.SetAvatarFade(avatarFade);
             player.renderer.SetImpostorFade(impostorFade);

@@ -1,11 +1,12 @@
-﻿using DCL.Components;
+﻿using System;
+using DCL.Components;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
 {
     [RequireComponent(typeof(AvatarShape))]
-    public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler
+    public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler, IAvatarMovementController
     {
         const float SPEED_SLOW = 2.0f;
         const float SPEED_FAST = 4.0f;
@@ -16,6 +17,9 @@ namespace DCL
 
         public float movementLerpWait = 0f;
         private float movementLerpWaitCounter = 0f;
+
+        public event Action OnMovedAvatar;
+        public event Action OnAvatarMovementWait;
 
         Transform avatarTransform
         {
@@ -145,6 +149,8 @@ namespace DCL
             }
 
             currentPosition += delta;
+
+            OnMovedAvatar?.Invoke();
         }
 
         void Update()
@@ -157,6 +163,11 @@ namespace DCL
             {
                 UpdateLerp(movementLerpWaitCounter);
                 movementLerpWaitCounter = 0f;
+            }
+            else if (Vector3.SqrMagnitude(currentPosition - targetPosition) > SPEED_EPSILON)
+            {
+                // Start fading out
+                OnAvatarMovementWait?.Invoke();
             }
         }
     }
