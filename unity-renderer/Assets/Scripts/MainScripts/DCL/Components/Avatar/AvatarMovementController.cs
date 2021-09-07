@@ -18,8 +18,7 @@ namespace DCL
         public float movementLerpWait = 0f;
         private float movementLerpWaitCounter = 0f;
 
-        public event Action OnMovedAvatar;
-        public event Action OnAvatarMovementWait;
+        public event Action OnAvatarMove;
 
         Transform avatarTransform
         {
@@ -124,6 +123,8 @@ namespace DCL
 
         private void UpdateMovement(float deltaTime)
         {
+            OnAvatarMove?.Invoke();
+
             Vector3 flattenedDiff = targetPosition - currentPosition;
             flattenedDiff.y = 0;
 
@@ -149,8 +150,6 @@ namespace DCL
             }
 
             currentPosition += delta;
-
-            OnMovedAvatar?.Invoke();
         }
 
         void Update()
@@ -163,11 +162,6 @@ namespace DCL
             {
                 UpdateLerp(movementLerpWaitCounter);
                 movementLerpWaitCounter = 0f;
-            }
-            else if (Vector3.SqrMagnitude(currentPosition - targetPosition) > SPEED_EPSILON)
-            {
-                // Start fading out
-                OnAvatarMovementWait?.Invoke();
             }
         }
     }

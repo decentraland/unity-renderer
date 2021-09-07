@@ -50,21 +50,12 @@ namespace DCL
             player.renderer.SetAvatarFade(avatarFade);
             player.renderer.SetImpostorFade(impostorFade);
 
-            player.avatarMovementController.OnMovedAvatar += () =>
+            player.avatarMovementController.OnAvatarMove += () =>
             {
                 if (lastRequestedState == State.Impostor)
                 {
                     impostorFade = 0f;
                     SetImpostor(true);
-                }
-            };
-
-            player.avatarMovementController.OnAvatarMovementWait += () =>
-            {
-                if (lastRequestedState == State.Impostor)
-                {
-                    // impostorFade = 1f;
-                    SetInvisible();
                 }
             };
         }
@@ -126,9 +117,6 @@ namespace DCL
 
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
-            if (Mathf.Approximately(newTargetAvatarFade, currentTargetAvatarFade) && Mathf.Approximately(newTargetImpostorFade, currentTargetImpostorFade))
-                return;
-
             CoroutineStarter.Stop(currentTransition);
             currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
         }
