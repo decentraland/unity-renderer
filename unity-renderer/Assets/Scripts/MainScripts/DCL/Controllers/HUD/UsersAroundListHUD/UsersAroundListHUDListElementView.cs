@@ -40,7 +40,11 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         });
     }
 
-    private void OnEnable() { talkingAnimator.SetBool(talkingAnimation, isRecording); }
+    private void OnEnable()
+    {
+        if ( talkingAnimator.isActiveAndEnabled )
+            talkingAnimator.SetBool(talkingAnimation, isRecording);
+    }
 
     public void SetUserProfile(UserProfile profile)
     {
@@ -69,7 +73,9 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
     public void SetRecording(bool isRecording)
     {
         this.isRecording = isRecording;
-        talkingAnimator.SetBool(talkingAnimation, isRecording);
+
+        if ( talkingAnimator.isActiveAndEnabled )
+            talkingAnimator.SetBool(talkingAnimation, isRecording);
     }
 
     public void SetBlocked(bool blocked) { blockedGO.SetActive(blocked); }
