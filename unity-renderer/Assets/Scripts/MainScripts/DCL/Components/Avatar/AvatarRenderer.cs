@@ -132,6 +132,9 @@ namespace DCL
 
         public void InitializeImpostor()
         {
+            // The fetched snapshot can take its time so it's better to assign a generic impostor first.
+            AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
+
             UserProfile userProfile = null;
             if (!string.IsNullOrEmpty(model?.id))
                 userProfile = UserProfileController.GetProfileByUserId(model.id);
@@ -142,10 +145,6 @@ namespace DCL
                 bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
                 bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
-            }
-            else
-            {
-                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
             }
         }
 
@@ -620,7 +619,7 @@ namespace DCL
 
             mainMeshRenderer.enabled = newVisibility;
         }
-        
+
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
 
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
