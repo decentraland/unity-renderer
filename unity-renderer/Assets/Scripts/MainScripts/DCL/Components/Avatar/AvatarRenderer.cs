@@ -26,7 +26,7 @@ namespace DCL
         private AvatarMeshCombinerHelper avatarMeshCombiner;
         private SimpleGPUSkinning gpuSkinning = null;
         private GPUSkinningThrottler gpuSkinningThrottler = null;
-        private IAvatarRenderer.AnimationThrottling currentThrottling = IAvatarRenderer.AnimationThrottling.Full;
+        private int gpuSkinningFramesBetweenUpdates = 1;
 
         private Renderer mainMeshRenderer
         {
@@ -473,7 +473,7 @@ namespace DCL
                 gpuSkinning.Update(true);
 
                 gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
-                gpuSkinningThrottler.SetThrottling((int)currentThrottling);
+                gpuSkinningThrottler.SetThrottling(gpuSkinningFramesBetweenUpdates);
             }
             else
                 loadSoftFailed = true;
@@ -630,10 +630,10 @@ namespace DCL
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
 
         public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
-        public void SetThrottling(IAvatarRenderer.AnimationThrottling throttling)
+        public void SetThrottling(int framesBetweenUpdates)
         {
-            currentThrottling = throttling;
-            gpuSkinningThrottler?.SetThrottling((int) throttling);
+            gpuSkinningFramesBetweenUpdates = framesBetweenUpdates;
+            gpuSkinningThrottler?.SetThrottling(gpuSkinningFramesBetweenUpdates);
         }
 
         public void SetAvatarFade(float avatarFade)

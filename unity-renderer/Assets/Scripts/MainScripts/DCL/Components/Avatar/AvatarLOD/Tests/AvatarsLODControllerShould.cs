@@ -378,6 +378,8 @@ namespace Tests.AvatarsLODController
         [Test]
         public void UpdateThrottling()
         {
+            var gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
+
             Vector3 cameraPosition = Vector3.zero;
             CommonScriptableObjects.cameraForward.Set(Vector3.forward);
             CommonScriptableObjects.cameraPosition.Set(cameraPosition);
@@ -419,11 +421,11 @@ namespace Tests.AvatarsLODController
             controller.enabled = true;
             controller.Update();
 
-            fullAvatarPlayerController.Received().SetThrottling(IAvatarRenderer.AnimationThrottling.Full);
-            simpleAvatarPlayerController.Received().SetThrottling(IAvatarRenderer.AnimationThrottling.Near);
-            farawaySimpleAvatarController.Received().SetThrottling(IAvatarRenderer.AnimationThrottling.FarAway);
-            farAwayImpostorController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<IAvatarRenderer.AnimationThrottling>());
-            invisibleAvatarPlayerController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<IAvatarRenderer.AnimationThrottling>());
+            fullAvatarPlayerController.Received().SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(Vector3.Distance(fullAvatarPlayerController.player.worldPosition, Vector3.zero)));
+            simpleAvatarPlayerController.Received().SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(Vector3.Distance(simpleAvatarPlayerController.player.worldPosition, Vector3.zero)));
+            farawaySimpleAvatarController.Received().SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(Vector3.Distance(farawaySimpleAvatarController.player.worldPosition, Vector3.zero)));
+            farAwayImpostorController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<int>());
+            invisibleAvatarPlayerController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<int>());
         }
 
         private Player CreateMockPlayer(string id) => CreateMockPlayer(id, out IAvatarRenderer renderer);

@@ -11,14 +11,6 @@ namespace DCL
             Loaded
         }
 
-        public enum AnimationThrottling
-        {
-            //We set the value to the amount of frames between Updates
-            Full = 1,
-            Near = 2,
-            FarAway = 6
-        }
-
         bool isReady { get; }
         event Action<VisualCue> OnVisualCue;
         void CleanupAvatar();
@@ -32,6 +24,6 @@ namespace DCL
         void SetFacialFeaturesVisible(bool visible);
         void SetSSAOEnabled(bool enabled);
         void SetImpostorColor(Color newColor);
-        void SetThrottling(AnimationThrottling throttling);
+        void SetThrottling(int framesBetweenUpdates);
     }
 }

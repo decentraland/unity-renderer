@@ -140,13 +140,13 @@ namespace Tests.AvatarLODController
         }
 
         [Test]
-        [TestCase(IAvatarRenderer.AnimationThrottling.Full)]
-        [TestCase(IAvatarRenderer.AnimationThrottling.Near)]
-        [TestCase(IAvatarRenderer.AnimationThrottling.FarAway)]
-        public void SetAnimationThrottling(IAvatarRenderer.AnimationThrottling throttling)
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(6)]
+        public void SetAnimationThrottling(int framesBetweenUpdates)
         {
-            controller.SetThrottling(throttling);
-            renderer.Received().SetThrottling(throttling);
+            controller.SetThrottling(framesBetweenUpdates);
+            renderer.Received().SetThrottling(framesBetweenUpdates);
         }
 
         [UnityTest]
