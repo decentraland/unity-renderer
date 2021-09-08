@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 
@@ -29,7 +30,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     internal Dictionary<string, int> inventory = new Dictionary<string, int>();
 
-    public ILazyTextureObserver snapshotObserver = new LazyTextureObserver(AssetPromiseKeeper_Texture.i);
+    public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
 
     internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
     {

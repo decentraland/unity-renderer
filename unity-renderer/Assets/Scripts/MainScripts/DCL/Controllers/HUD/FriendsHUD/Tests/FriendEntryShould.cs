@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -26,7 +27,7 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void BePopulatedCorrectly()
     {
-        var mockSnapshotObserver = new LazyTextureObserver(null);
+        var mockSnapshotObserver = new LazyTextureObserver();
         mockSnapshotObserver.RefreshWithTexture(Texture2D.whiteTexture);
 
         FriendEntry.Model model = new FriendEntry.Model()

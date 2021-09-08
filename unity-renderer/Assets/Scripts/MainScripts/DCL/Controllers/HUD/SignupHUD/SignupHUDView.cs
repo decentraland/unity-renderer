@@ -1,6 +1,7 @@
 using System;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
