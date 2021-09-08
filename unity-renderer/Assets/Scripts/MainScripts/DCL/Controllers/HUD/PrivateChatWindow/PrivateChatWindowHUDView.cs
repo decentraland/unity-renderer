@@ -68,7 +68,7 @@ public class PrivateChatWindowHUDView : MonoBehaviour
 
     public void ConfigureTitle(string targetUserName) { windowTitleText.text = targetUserName; }
 
-    public void ConfigureProfilePicture(Texture2D texture) { profilePictureImage.texture = texture; }
+    public void ConfigureAvatarSnapshot(Texture2D texture) { profilePictureImage.texture = texture; }
 
     public void ConfigureUserId(string userId)
     {

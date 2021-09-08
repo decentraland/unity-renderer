@@ -52,7 +52,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
         }
 
         [UnityTearDown]
@@ -74,7 +74,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             var categoriesEquiped = controller.myModel.wearables.Select(x => x.data.category).ToArray();
             foreach (string category in controller.myCategoriesThatMustHaveSelection)
@@ -101,7 +101,7 @@ namespace AvatarEditorHUD_Tests
                         FEMALE_CATGLASSES_ID
                     },
                 }
-            }, false);
+            });
 
             controller.WearableClicked(WearableLiterals.BodyShapes.MALE);
 
@@ -132,7 +132,7 @@ namespace AvatarEditorHUD_Tests
                     hairColor = hairColorList.colors[0],
                     eyeColor = eyeColorList.colors[0],
                 }
-            }, false);
+            });
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
         }
@@ -161,7 +161,7 @@ namespace AvatarEditorHUD_Tests
                     hairColor = hairColorList.colors[0],
                     eyeColor = eyeColorList.colors[0],
                 }
-            }, false);
+            });
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
         }
@@ -270,7 +270,7 @@ namespace AvatarEditorHUD_Tests
                     hairColor = hairColorList.colors[0],
                     eyeColor = eyeColorList.colors[0],
                 }
-            }, false);
+            });
 
             controller.WearableClicked(WearableLiterals.BodyShapes.MALE);
             controller.WearableClicked("urn:decentraland:off-chain:base-avatars:eyebrows_01");
