@@ -26,7 +26,7 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void BePopulatedCorrectly()
     {
-        var mockSnapshotObserver = new LazyTextureObserver();
+        var mockSnapshotObserver = new LazyTextureObserver(null);
         mockSnapshotObserver.RefreshWithTexture(Texture2D.whiteTexture);
 
         FriendEntry.Model model = new FriendEntry.Model()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using DCL;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public interface ILazyTextureObserver
 {
@@ -71,13 +72,21 @@ public class LazyTextureObserver : ILazyTextureObserver
     private Action<Texture2D> OnLoaded;
     private HashSet<Action<Texture2D>> subscriptions = new HashSet<Action<Texture2D>>();
     private AssetPromise_Texture currentPromise;
-
+    private AssetPromiseKeeper_Texture promiseKeeperTexture;
     private Texture2D texture;
     private string uri;
 
+    public LazyTextureObserver (AssetPromiseKeeper_Texture promiseKeeperTexture)
+    {
+        this.promiseKeeperTexture = promiseKeeperTexture;
+    }
+
     public void AddListener(Action<Texture2D> listener)
     {
-        if ( listener == null || subscriptions.Contains(listener))
+        Assert.IsNotNull(listener, "Listener can't be null!");
+
+        // Not using assert here because this case is more probable, I want to fail silently in this case.
+        if (subscriptions.Contains(listener))
             return;
 
         subscriptions.Add(listener);
@@ -109,14 +118,17 @@ public class LazyTextureObserver : ILazyTextureObserver
 
     public void RemoveListener(Action<Texture2D> listener)
     {
-        if ( listener == null || !subscriptions.Contains(listener))
+        Assert.IsNotNull(listener, "Listener can't be null!");
+
+        // Not using assert here because this case is more probable, I want to fail silently in this case.
+        if (!subscriptions.Contains(listener))
             return;
 
         this.OnLoaded -= listener;
         subscriptions.Remove(listener);
 
         if ( subscriptions.Count == 0 )
-            AssetPromiseKeeper_Texture.i.Forget(currentPromise);
+            promiseKeeperTexture.Forget(currentPromise);
     }
 
     public void RefreshWithUri(string uri)
@@ -138,7 +150,7 @@ public class LazyTextureObserver : ILazyTextureObserver
 
         if ( currentPromise != null )
         {
-            AssetPromiseKeeper_Texture.i.Forget(currentPromise);
+            promiseKeeperTexture.Forget(currentPromise);
             currentPromise = null;
         }
 
@@ -176,7 +188,7 @@ public class LazyTextureObserver : ILazyTextureObserver
         AssetPromise_Texture oldPromise = currentPromise;
 
         if ( oldPromise != null )
-            AssetPromiseKeeper_Texture.i.Forget(oldPromise);
+            promiseKeeperTexture.Forget(oldPromise);
 
         currentPromise = new AssetPromise_Texture(uri);
         currentPromise.OnSuccessEvent += (x) =>
@@ -193,28 +205,30 @@ public class LazyTextureObserver : ILazyTextureObserver
         };
 
         state = State.IN_PROGRESS;
-        AssetPromiseKeeper_Texture.i.Keep(currentPromise);
+        promiseKeeperTexture.Keep(currentPromise);
         return true;
     }
 
     public void Dispose()
     {
         if ( currentPromise != null )
-            AssetPromiseKeeper_Texture.i.Forget(currentPromise);
+            promiseKeeperTexture.Forget(currentPromise);
 
         state = State.NONE;
     }
 
-    public static LazyTextureObserver CreateWithUri(string uri)
+    public static LazyTextureObserver CreateWithUri(string uri, AssetPromiseKeeper_Texture apk = null)
     {
-        var result = new LazyTextureObserver();
+        apk ??= AssetPromiseKeeper_Texture.i;
+        var result = new LazyTextureObserver(apk);
         result.RefreshWithUri(uri);
         return result;
     }
 
-    public static LazyTextureObserver CreateWithTexture(Texture2D texture)
+    public static LazyTextureObserver CreateWithTexture(Texture2D texture, AssetPromiseKeeper_Texture apk = null)
     {
-        var result = new LazyTextureObserver();
+        apk ??= AssetPromiseKeeper_Texture.i;
+        var result = new LazyTextureObserver(apk);
         result.RefreshWithTexture(texture);
         return result;
     }
