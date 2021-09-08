@@ -109,15 +109,11 @@ public class MinimapHUDController : IHUD
     /// <param name="controller">Controller for the players' list HUD</param>
     public void AddUsersAroundIndicator(UsersAroundListHUDController controller)
     {
-        if (kernelConfig.features.enablePeopleCounter)
-        {
-            view.usersAroundListHudButton.gameObject.SetActive(true);
-            controller.SetButtonView(view.usersAroundListHudButton);
-        }
-        else
-        {
-            view.usersAroundListHudButton.gameObject.SetActive(false);
-        }
+        bool peopleCounterEnabled = kernelConfig.features.enablePeopleCounter;
+        
+        view.usersAroundListHudButton.gameObject.SetActive(true);
+        controller.SetButtonView(view.usersAroundListHudButton);
+        controller.ToggleUsersCount(peopleCounterEnabled);
     }
 
     private void OnOnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
