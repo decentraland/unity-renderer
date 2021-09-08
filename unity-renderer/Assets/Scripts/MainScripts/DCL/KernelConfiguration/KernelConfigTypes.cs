@@ -10,8 +10,13 @@ namespace KernelConfigurationTypes
         public bool enableTutorial = true;
         public bool enablePeopleCounter = false;
 
-        public bool Equals(Features other) { return enableBuilderInWorld == other?.enableBuilderInWorld; }
-
+        protected bool Equals(Features other)
+        {
+            return enableBuilderInWorld == other.enableBuilderInWorld 
+                   && enableAvatarLODs == other.enableAvatarLODs 
+                   && enableTutorial == other.enableTutorial 
+                   && enablePeopleCounter == other.enablePeopleCounter;
+        }
         public Features Clone()
         {
             Features clone = (Features) this.MemberwiseClone();
