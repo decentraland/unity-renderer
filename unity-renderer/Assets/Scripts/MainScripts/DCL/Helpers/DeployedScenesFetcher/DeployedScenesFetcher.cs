@@ -20,7 +20,7 @@ public static class DeployedScenesFetcher
         return promise;
     }
 
-    public static Promise<LandWithAccess[]> FetchLandsFromOwner(ICatalyst catalyst, ITheGraph theGraph, string ethAddress, string tld,
+    public static Promise<LandWithAccess[]> FetchLandsFromOwner(ICatalyst catalyst, ITheGraph theGraph, string ethAddress, string network,
         float cacheMaxAgeSecondsLand = DEFAULT_LAND_CACHE_TIME, float cacheMaxAgeSecondsScenes = DEFAULT_SCENES_CACHE_TIME)
     {
         Promise<LandWithAccess[]> resultPromise = new Promise<LandWithAccess[]>();
@@ -29,7 +29,7 @@ public static class DeployedScenesFetcher
 
         Promise<string[]> getOwnedParcelsPromise = new Promise<string[]>();
         Promise<DeployedScene[]> getDeployedScenesPromise = new Promise<DeployedScene[]>();
-        theGraph.QueryLands(tld, ethAddress, cacheMaxAgeSecondsLand)
+        theGraph.QueryLands(network, ethAddress, cacheMaxAgeSecondsLand)
                 .Then(landsReceived =>
                 {
                     lands = landsReceived;

@@ -30,6 +30,7 @@ public interface IBIWModeController
 
     bool ShouldCancelUndoAction();
     void MouseClickDetected();
+    void TakeSceneScreenshotForExit();
 }
 
 public class BIWModeController : BIWController, IBIWModeController
@@ -48,7 +49,7 @@ public class BIWModeController : BIWController, IBIWModeController
     private IBIWEntityHandler entityHandler;
 
     private BIWFirstPersonMode firstPersonMode;
-    private BIWGodMode godMode;
+    internal BIWGodMode godMode;
 
     private InputAction_Trigger toggleSnapModeInputAction;
 

@@ -24,5 +24,6 @@ namespace DCL.Controllers
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
         void CalculateSceneLoadingState();
+        void GetWaitingComponentsDebugInfo();
     }
 }

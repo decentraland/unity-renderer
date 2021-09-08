@@ -59,4 +59,4 @@ jobs:
           # Rollout information
           deploymentDomain: "play.decentraland.org"
           deploymentName: "@dcl/unity-renderer"
-          percentage: 10
+          percentage: 0

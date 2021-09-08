@@ -52,7 +52,7 @@ namespace DCL.Components
         {
             if (forceRefresh)
             {
-                owner.RefreshDCLLayoutRecursively();
+                owner.RefreshAll();
                 forceRefresh = false;
             }
         }

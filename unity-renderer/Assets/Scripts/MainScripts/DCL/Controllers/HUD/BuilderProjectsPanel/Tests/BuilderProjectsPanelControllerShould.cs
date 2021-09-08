@@ -5,6 +5,7 @@ using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -14,6 +15,8 @@ namespace Tests
         private ISectionsController sectionsController;
         private IScenesViewController scenesViewController;
         private ILandController landsController;
+
+        private bool condtionMet = false;
 
         [SetUp]
         public void SetUp()
@@ -40,7 +43,87 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown() { controller.Dispose(); }
+        public void TearDown()
+        {
+            controller.OnJumpInOrEdit -= AssertJump;
+
+            controller.Dispose();
+        }
+
+        [Test]
+        public void GiveErrorOnFailLandsFetched()
+        {
+            //Arrange
+            controller.isFetching = true;
+            var error =  "TestError";
+
+            //Act
+            controller.LandsFetchedError(error);
+
+            //Assert
+            Assert.IsFalse(controller.isFetching);
+            LogAssert.Expect(LogType.Error, error);
+        }
+
+        [Test]
+        public void FetchLands()
+        {
+            //Arrange
+            Parcel parcel = new Parcel();
+            parcel.x = 0;
+            parcel.y = 0;
+
+            Vector2Int parcelCoords = new Vector2Int(0, 0);
+            Land land = new Land();
+            land.parcels = new List<Parcel>() { parcel };
+
+            LandWithAccess landWithAccess = new LandWithAccess(land);
+            DeployedScene deployedScene = new DeployedScene();
+            deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
+            deployedScene.deploymentSource = DeployedScene.Source.SDK;
+
+            landWithAccess.scenes = new List<DeployedScene>() { deployedScene };
+            var lands = new LandWithAccess[]
+            {
+                landWithAccess
+            };
+
+            //Act
+            controller.LandsFetched(lands);
+
+            //Assert
+            landsController.Received().SetLands(lands);
+        }
+
+        [Test]
+        public void GoToCoords()
+        {
+            //Arrange
+            condtionMet = false;
+            controller.OnJumpInOrEdit += AssertJump;
+
+            //Act
+            controller.GoToCoords(new Vector2Int(0, 0));
+
+            //Assert
+            Assert.IsTrue(condtionMet);
+        }
+
+        [Test]
+        public void GoToEditScene()
+        {
+            //Arrange
+            condtionMet = false;
+            controller.OnJumpInOrEdit += AssertJump;
+
+            //Act
+            controller.OnGoToEditScene(new Vector2Int(0, 0));
+
+            //Assert
+            Assert.IsTrue(condtionMet);
+        }
+
+        private void AssertJump() { condtionMet = true; }
 
         [Test]
         public void ViewCreatedCorrectly() { Assert.IsNotNull(controller.view); }

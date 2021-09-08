@@ -30,25 +30,47 @@ namespace DCL.Components
 
         public override int GetClassId() { return (int) CLASS_ID.FONT; }
 
-        public static IEnumerator SetFontFromComponent(IParcelScene scene, string componentId, TMP_Text text)
+        public static bool IsFontLoaded(IParcelScene scene, string componentId)
         {
+            if ( string.IsNullOrEmpty(componentId))
+                return true;
+
             if (!scene.disposableComponents.ContainsKey(componentId))
             {
                 Debug.Log($"couldn't fetch font, the DCLFont component with id {componentId} doesn't exist");
-                yield break;
+                return false;
             }
 
             DCLFont fontComponent = scene.disposableComponents[componentId] as DCLFont;
+
             if (fontComponent == null)
             {
                 Debug.Log($"couldn't fetch font, the shared component with id {componentId} is NOT a DCLFont");
-                yield break;
+                return false;
             }
+
+            return true;
+        }
+
+        public static IEnumerator WaitUntilFontIsReady(IParcelScene scene, string componentId)
+        {
+            if ( string.IsNullOrEmpty(componentId))
+                yield break;
+
+            DCLFont fontComponent = scene.disposableComponents[componentId] as DCLFont;
 
             while (!fontComponent.loaded && !fontComponent.error)
             {
                 yield return null;
             }
+        }
+
+        public static void SetFontFromComponent(IParcelScene scene, string componentId, TMP_Text text)
+        {
+            if ( string.IsNullOrEmpty(componentId))
+                return;
+
+            DCLFont fontComponent = scene.disposableComponents[componentId] as DCLFont;
 
             if (!fontComponent.error)
             {

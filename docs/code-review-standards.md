@@ -44,14 +44,14 @@ We can inspect the code to look for bugs, and we can also:
 
 * **Ensure the code has enough testing coverage:** *All pull requests* that add new features should introduce tests. If the change is a fix, check if a test can be made to cover it.
 
-* **Check API usages are following good practices:** Not keeping good API practices can introduce performance issues down the road. In the worst of cases they can introduce bugs.
+* **Check Unity API usages are following good practices:** Not keeping good Unity API practices can introduce performance issues down the road. In the worst of cases they can introduce bugs.
 
 ### Prevent unnecessary technical debt
 #### KISS and good engineering principles
-Contributions should follow good engineering principles like KISS, DRY and SOLID when is sensible to do so. Bad practices lead to [come smell](https://refactoring.guru/refactoring/smells). Always remember that code smell [increases the cost](https://martinfowler.com/articles/is-quality-worth-cost.html) of improving any software project, so we should avoid it.
+Contributions should follow good engineering principles like KISS, DRY and SOLID when is sensible to do so. Bad practices lead to [code smell](https://refactoring.guru/refactoring/smells). Always remember that code smell [increases the cost](https://martinfowler.com/articles/is-quality-worth-cost.html) of improving any software project, so we should avoid it.
 
 #### If it can't be prevented, let's track it
-Sometimes, a request for improvement can't be made because of dangling technical debt that comes from a previous change or time constraints. When this is the case, make sure the issue gets tracked to approach it later.
+Sometimes, a request for improvement can't be made because of dangling technical debt that comes from a previous change or time constraints. When this is the case, make sure the issue gets tracked to approach it later. Just make sure this is the last resort and not the standard.
 
 ### Improve transparency of the codebase, raise code standards
 By requesting a code review, the knowledge of the changes are shared and the collaborators will stay up to date with the codebase. This is important for our productivity as this enables informed decision making and effective ownership. 
@@ -79,7 +79,7 @@ Reviews are more effective on small pull requests. [A Cisco study on code review
 
 * If everything fails and the PR came out big, bring more reviewers and try to add a guide on the PR description that guides the reviewer through the code. Live meetings to explain the code are very welcome as well. 
 
-* Bonus advice: some auditors use our commit throughput to correlate with MANA performance. So smaller commits indirectly contribute to MANA performance. *(please don't take this too serious)*  
+* Bonus advice: some auditors use our commit throughput to correlate with MANA performance. So smaller commits indirectly contribute to MANA performance. *(please don't take this too seriously)*  
 
 ### Bring critical reviewers on board
 

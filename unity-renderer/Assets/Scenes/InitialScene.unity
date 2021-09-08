@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0, g: 0.99999905, b: 0.99999905, a: 1}
+  m_IndirectSpecularColor: {r: 0.10252202, g: 0.24458984, b: 0.36489132, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -136,75 +136,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &178011607
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4142882636063433730, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_Name
-      value: TutorialController
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 565584806d4534293a4045912564288e, type: 3}
 --- !u!1001 &287244850
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -220,7 +151,7 @@ PrefabInstance:
     - target: {fileID: 7246472424111214353, guid: a9c131371473347fab2b6a6dbfe8c13b,
         type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7246472424111214353, guid: a9c131371473347fab2b6a6dbfe8c13b,
         type: 3}
@@ -274,12 +205,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9c131371473347fab2b6a6dbfe8c13b, type: 3}
---- !u!1 &287244851 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6401575379531892522, guid: a9c131371473347fab2b6a6dbfe8c13b,
-    type: 3}
-  m_PrefabInstance: {fileID: 287244850}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &312495477
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,22 +322,28 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 322303337}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 322303339}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c96c5543d89960749bdf3025e5fc122b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &322303339 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1629508456149027013, guid: b387035aa46399445bdc7951a41d5213,
+--- !u!1 &322303339 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1387384965948666, guid: b387035aa46399445bdc7951a41d5213,
     type: 3}
   m_PrefabInstance: {fileID: 322303337}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+--- !u!114 &322303340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 322303339}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c1e443212437a148b1a6f54aea2ab71, type: 3}
+  m_Script: {fileID: 11500000, guid: d9024a40a1dcb4b35ac2457b21e792b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &491237585
@@ -604,7 +535,7 @@ PrefabInstance:
     - target: {fileID: 3444591781619110103, guid: e399265a17d26494da5c9fe6063ea2d2,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3444591781619110103, guid: e399265a17d26494da5c9fe6063ea2d2,
         type: 3}
@@ -1081,7 +1012,7 @@ GameObject:
   - component: {fileID: 1444882337}
   - component: {fileID: 1444882336}
   m_Layer: 0
-  m_Name: WSSController
+  m_Name: DebugConfig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1096,20 +1027,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1444882335}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b5e6e1eec417844b92edd6ca2f8a2b2, type: 3}
+  m_Script: {fileID: 11500000, guid: 73b83adac0a4ddd039a0a1c9c2a9a163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderingController: {fileID: 322303339}
-  characterController: {fileID: 1989862556}
-  cameraController: {fileID: 1608366483}
-  bridgesGameObject: {fileID: 287244851}
-  wssServerUrl: ws://localhost:4999/
+  debugConfig:
+    soloScene: 0
+    soloSceneCoords: {x: 0, y: 0}
+    ignoreGlobalScenes: 0
+    msgStepByStep: 0
   openBrowserWhenStart: 1
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 1
   baseUrlCustom: https://play.decentraland.zone/?
   environment: 4
+  realm: fenrir-amber
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
   allWearables: 0
@@ -1208,18 +1140,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 326638024064006570}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1989862556 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7249126750621343183, guid: b0965b55b892d438da492708ea09799c,
-    type: 3}
-  m_PrefabInstance: {fileID: 326638024064006570}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1d0821bf5c3e3f47ba67e483803236d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2021276774 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1312815038965150261, guid: b0965b55b892d438da492708ea09799c,
@@ -1558,7 +1478,7 @@ PrefabInstance:
     - target: {fileID: 7150802491235533513, guid: 3cc27a6e023896e4598ba0a69519d17a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7150802491235533513, guid: 3cc27a6e023896e4598ba0a69519d17a,
         type: 3}

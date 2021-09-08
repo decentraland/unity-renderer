@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using DCL;
 
-public class FacialFeatureController
+public class FacialFeatureController : CustomYieldInstruction
 {
     public bool isReady { get; private set; }
     public string wearableId => wearableItem?.id;
@@ -20,6 +20,7 @@ public class FacialFeatureController
     private Color color;
     private IBodyShapeController bodyShape;
     internal Material baseMaterialCopy;
+    private Coroutine fetchTextureCoroutine;
 
     public FacialFeatureController(WearableItem wearableItem, Material baseMaterial)
     {
@@ -39,7 +40,7 @@ public class FacialFeatureController
         }
 
         this.bodyShape = loadedBody;
-        CoroutineStarter.Start(FetchTextures());
+        fetchTextureCoroutine = CoroutineStarter.Start(FetchTextures());
     }
 
     void PrepareWearable()
@@ -63,7 +64,7 @@ public class FacialFeatureController
         isReady = true;
     }
 
-    public IEnumerator FetchTextures()
+    private IEnumerator FetchTextures()
     {
         if (mainTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
@@ -113,8 +114,16 @@ public class FacialFeatureController
         if (maskTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
 
-        Object.Destroy(baseMaterialCopy);
+        if ( baseMaterialCopy != null )
+        {
+            Object.Destroy(baseMaterialCopy);
+            baseMaterialCopy = null;
+        }
 
+        CoroutineStarter.Stop(fetchTextureCoroutine);
+
+        mainTexture = null;
+        maskTexture = null;
         isReady = false;
     }
 
@@ -130,4 +139,6 @@ public class FacialFeatureController
 
         return new FacialFeatureController(wearable, material);
     }
+
+    public override bool keepWaiting => !isReady;
 }

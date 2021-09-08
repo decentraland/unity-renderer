@@ -29,6 +29,8 @@ namespace DCL
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
         public readonly DataStore_AvatarsLOD avatarsLOD = new DataStore_AvatarsLOD();
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
+        public readonly DataStore_Screen screen = new DataStore_Screen();
+        public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
 
         public class DataStore_BuilderInWorld
         {
@@ -72,8 +74,14 @@ namespace DCL
 
         public class DataStore_AvatarsLOD
         {
-            public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
-            public readonly BaseVariable<int> maxNonLODAvatars = new BaseVariable<int>(20);
+            public const int DEFAULT_MAX_AVATAR = 50;
+            public const int DEFAULT_MAX_IMPOSTORS = 70;
+
+            public readonly BaseVariable<float> simpleAvatarDistance = new BaseVariable<float>(15f);
+            public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(30f);
+            public readonly BaseVariable<int> maxAvatars = new BaseVariable<int>(DEFAULT_MAX_AVATAR);
+            public readonly BaseVariable<int> maxImpostors = new BaseVariable<int>(DEFAULT_MAX_IMPOSTORS);
+            public readonly BaseHashSet<string> visibleNames = new BaseHashSet<string>();
         }
 
         /// <summary>
@@ -87,5 +95,19 @@ namespace DCL
             public readonly BaseVariable<float> uiSFXVolume = new BaseVariable<float>(1f);
             public readonly BaseVariable<float> avatarSFXVolume = new BaseVariable<float>(1f);
         }
+
+        public class DataStore_Screen
+        {
+            public readonly BaseVariable<Vector2Int> size = new BaseVariable<Vector2Int>(Vector2Int.zero);
+        }
+
+        public class DataStore_WSCommunication
+        {
+            [System.NonSerialized]
+            public string url = "ws://localhost:5000/";
+
+            public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
+            public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
+        } 
     }
 }

@@ -40,8 +40,6 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            var model = (Model) newModel;
-
             if (!initialized)
             {
                 InitializeCanvas();
@@ -69,16 +67,16 @@ namespace DCL.Components
 
         void OnCharacterMoved(DCLCharacterPosition newCharacterPosition)
         {
-            if (canvas != null)
+            if (canvas == null)
+                return;
+
+            currentCharacterPosition = newCharacterPosition;
+
+            UpdateCanvasVisibility();
+
+            if (VERBOSE)
             {
-                currentCharacterPosition = newCharacterPosition;
-
-                UpdateCanvasVisibility();
-
-                if (VERBOSE)
-                {
-                    Debug.Log($"set screenspace = {currentCharacterPosition}");
-                }
+                Debug.Log($"set screenspace = {currentCharacterPosition}");
             }
         }
 
@@ -86,15 +84,16 @@ namespace DCL.Components
 
         private void UpdateCanvasVisibility()
         {
-            if (canvas != null && scene != null)
-            {
-                var model = (Model) this.model;
+            if (canvas == null || scene == null)
+                return;
 
-                bool isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(currentCharacterPosition.worldPosition));
-                bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get());
-                canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
-                canvasGroup.blocksRaycasts = shouldBeVisible;
-            }
+            var model = (Model) this.model;
+
+            bool isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(currentCharacterPosition.worldPosition));
+            bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get());
+
+            canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
+            canvasGroup.blocksRaycasts = shouldBeVisible;
         }
 
         void InitializeCanvas()

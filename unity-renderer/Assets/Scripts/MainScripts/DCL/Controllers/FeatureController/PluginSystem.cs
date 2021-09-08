@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Tutorial;
 using UnityEngine;
 
 /// <summary>
@@ -61,6 +62,8 @@ public class PluginSystem
     public void ApplyFeaturesConfig(KernelConfigModel config)
     {
         HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
+        HandleFeature<TutorialController>(config.features.enableTutorial);
+        HandleFeature<DebugPluginFeature>(true);
         currentConfig = config;
     }
 

@@ -47,7 +47,7 @@ namespace DCL.Components
         {
             DCLTransform.model = model as Model;
 
-            if (entity.OnTransformChange != null)
+            if (entity.OnTransformChange != null) // AvatarShape interpolation hack
             {
                 entity.OnTransformChange.Invoke(DCLTransform.model);
             }

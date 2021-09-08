@@ -13,7 +13,7 @@ public static class BIWUrlUtils
 
     private static string GetEnvBase()
     {
-        if (KernelConfig.i.Get().tld == "org")
+        if (KernelConfig.i.Get().network == "mainnet")
             return "org";
 
         return "io";

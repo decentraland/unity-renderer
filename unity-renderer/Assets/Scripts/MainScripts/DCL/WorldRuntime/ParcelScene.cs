@@ -5,12 +5,13 @@ using DCL.Models;
 using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
 using System.Linq;
+using MainScripts.DCL.WorldRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace DCL.Controllers
 {
-    public class ParcelScene : MonoBehaviour, IParcelScene
+    public class ParcelScene : MonoBehaviour, IParcelScene, ISceneMessageProcessor
     {
         public static bool VERBOSE = false;
         public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
