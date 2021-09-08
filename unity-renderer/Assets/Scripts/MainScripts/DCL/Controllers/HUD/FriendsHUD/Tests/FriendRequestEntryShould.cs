@@ -26,15 +26,17 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void BePopulatedCorrectly()
     {
-        var model1 = new FriendEntry.Model() { userName = "test1", avatarImage = Texture2D.whiteTexture };
-        var model2 = new FriendEntry.Model() { userName = "test2", avatarImage = Texture2D.blackTexture };
+        var model1snapshot = Texture2D.whiteTexture;
+        var model2snapshot = Texture2D.blackTexture;
+        var model1 = new FriendEntry.Model() { userName = "test1", avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model1snapshot) };
+        var model2 = new FriendEntry.Model() { userName = "test2", avatarSnapshotObserver = LazyTextureObserver.CreateWithTexture(model2snapshot) };
 
         entry.userId = "userId1";
         entry.Populate(model1);
         entry.SetReceived(true);
 
         Assert.AreEqual(model1.userName, entry.playerNameText.text);
-        Assert.AreEqual(model1.avatarImage, entry.playerImage.texture);
+        Assert.AreEqual(model1snapshot, entry.playerImage.texture);
 
         Assert.IsFalse(entry.cancelButton.gameObject.activeSelf);
         Assert.IsTrue(entry.acceptButton.gameObject.activeSelf);
@@ -45,7 +47,7 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         entry.SetReceived(false);
 
         Assert.AreEqual(model2.userName, entry.playerNameText.text);
-        Assert.AreEqual(model2.avatarImage, entry.playerImage.texture);
+        Assert.AreEqual(model2snapshot, entry.playerImage.texture);
 
         Assert.IsTrue(entry.cancelButton.gameObject.activeSelf);
         Assert.IsFalse(entry.acceptButton.gameObject.activeSelf);
@@ -116,5 +118,4 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         entry.rejectButton.onClick.Invoke();
         Assert.IsTrue(buttonPressed);
     }
-
 }

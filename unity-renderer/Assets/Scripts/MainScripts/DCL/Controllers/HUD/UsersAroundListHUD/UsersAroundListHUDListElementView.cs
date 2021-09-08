@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using DCL;
 using DCL.Components;
 using TMPro;
 using UnityEngine;
@@ -48,20 +49,15 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
 
     public void SetUserProfile(UserProfile profile)
     {
-        this.profile = profile;
-
         userName.text = profile.userName;
 
-        if (profile.faceSnapshot)
-        {
-            SetAvatarPreviewImage(profile.faceSnapshot);
-        }
-        else
-        {
-            profile.OnFaceSnapshotReadyEvent += SetAvatarPreviewImage;
-        }
-
+        profile.snapshotObserver.AddListener(SetAvatarSnapshotImage);
         SetupFriends(profile.userId);
+
+        if ( this.profile != null )
+            this.profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
+
+        this.profile = profile;
     }
 
     public void SetMuted(bool isMuted)
@@ -89,7 +85,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
 
         if (profile)
         {
-            profile.OnFaceSnapshotReadyEvent -= SetAvatarPreviewImage;
+            profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
             profile = null;
         }
 
@@ -136,7 +132,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
     }
 
-    void SetAvatarPreviewImage(Texture texture) { avatarPreview.texture = texture; }
+    void SetAvatarSnapshotImage(Texture2D texture) { avatarPreview.texture = texture; }
 
     void OnSoundButtonPressed()
     {

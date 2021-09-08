@@ -163,47 +163,56 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         }
     }
 
+    public void SetFaceSnapshot(Texture2D texture)
+    {
+        avatarPicture.texture = texture;
+    }
+
     public void SetUserProfile(UserProfile userProfile)
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        currentUserProfile = userProfile;
-        name.text = currentUserProfile.userName;
-        description.text = currentUserProfile.description;
-        avatarPicture.texture = currentUserProfile.faceSnapshot;
+        name.text = userProfile.userName;
+        description.text = userProfile.description;
+        userProfile.snapshotObserver.AddListener(SetFaceSnapshot);
 
         ClearCollectibles();
 
         CatalogController.RequestOwnedWearables(userProfile.userId)
-                         .Then((ownedWearables) =>
-                         {
-                             currentUserProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                             loadedWearables.AddRange(ownedWearables.Select(x => x.id));
+            .Then((ownedWearables) =>
+            {
+                userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                loadedWearables.AddRange(ownedWearables.Select(x => x.id));
 
-                             var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
-                             for (int index = 0; index < collectiblesIds.Length; index++)
-                             {
-                                 string collectibleId = collectiblesIds[index];
-                                 CatalogController.wearableCatalog.TryGetValue(collectibleId, out WearableItem collectible);
-                                 if (collectible == null)
-                                     continue;
+                var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
+                for (int index = 0; index < collectiblesIds.Length; index++)
+                {
+                    string collectibleId = collectiblesIds[index];
+                    CatalogController.wearableCatalog.TryGetValue(collectibleId, out WearableItem collectible);
+                    if (collectible == null)
+                        continue;
 
-                                 var playerInfoCollectible =
-                                     collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(collectible.rarity,
-                                         wearablesContainer.transform);
-                                 if (playerInfoCollectible == null)
-                                     continue;
-                                 playerInfoCollectibles.Add(playerInfoCollectible);
-                                 playerInfoCollectible.Initialize(collectible);
-                             }
+                    var playerInfoCollectible =
+                        collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(collectible.rarity,
+                            wearablesContainer.transform);
+                    if (playerInfoCollectible == null)
+                        continue;
+                    playerInfoCollectibles.Add(playerInfoCollectible);
+                    playerInfoCollectible.Initialize(collectible);
+                }
 
-                             emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
-                         })
-                         .Catch((error) => Debug.Log(error));
+                emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
+            })
+            .Catch((error) => Debug.Log(error));
 
         SetIsBlocked(IsBlocked(userProfile.userId));
-
         UpdateFriendButton();
+
+        // Remove old profile listener and set the new one
+        if ( currentUserProfile != null )
+            currentUserProfile.snapshotObserver.RemoveListener(SetFaceSnapshot);
+
+        currentUserProfile = userProfile;
     }
 
     private void UpdateFriendButton()
@@ -254,11 +263,19 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
     public void SetVisibility(bool visible)
     {
-        if (gameObject.activeSelf && !visible)
-            AudioScriptableObjects.dialogClose.Play(true);
-
-        if (!gameObject.activeSelf && visible)
-            AudioScriptableObjects.dialogOpen.Play(true);
+        if (gameObject.activeSelf != visible)
+        {
+            if ( visible )
+            {
+                AudioScriptableObjects.dialogOpen.Play(true);
+                currentUserProfile.snapshotObserver.AddListener(SetFaceSnapshot);
+            }
+            else
+            {
+                AudioScriptableObjects.dialogClose.Play(true);
+                currentUserProfile.snapshotObserver.RemoveListener(SetFaceSnapshot);
+            }
+        }
 
         gameObject.SetActive(visible);
     }
@@ -291,6 +308,9 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
     private void OnDestroy()
     {
+        if ( currentUserProfile != null )
+            currentUserProfile.snapshotObserver.RemoveListener(SetFaceSnapshot);
+
         if (mouseCatcher != null)
             mouseCatcher.OnMouseDown -= OnPointerDown;
     }

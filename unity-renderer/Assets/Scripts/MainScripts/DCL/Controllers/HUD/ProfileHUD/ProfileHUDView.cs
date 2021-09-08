@@ -184,20 +184,8 @@ internal class ProfileHUDView : MonoBehaviour
 
     private void HandleProfileSnapshot(UserProfile userProfile)
     {
-        if (profile)
-        {
-            profile.OnFaceSnapshotReadyEvent -= SetProfileImage;
-        }
-
-        if (userProfile.faceSnapshot != null)
-        {
-            SetProfileImage(userProfile.faceSnapshot);
-        }
-        else
-        {
-            loadingSpinner.SetActive(true);
-            userProfile.OnFaceSnapshotReadyEvent += SetProfileImage;
-        }
+        loadingSpinner.SetActive(true);
+        userProfile.snapshotObserver.AddListener(SetProfileImage);
     }
 
     private void HandleClaimedProfileName(UserProfile userProfile)
@@ -246,17 +234,14 @@ internal class ProfileHUDView : MonoBehaviour
 
     private void SetProfileImage(Texture2D texture)
     {
-        profile.OnFaceSnapshotReadyEvent -= SetProfileImage;
-        imageAvatarThumbnail.texture = texture;
         loadingSpinner.SetActive(false);
+        imageAvatarThumbnail.texture = texture;
     }
 
     private void OnDestroy()
     {
         if (profile)
-        {
-            profile.OnFaceSnapshotReadyEvent -= SetProfileImage;
-        }
+            profile.snapshotObserver.RemoveListener(SetProfileImage);
     }
 
     private void CopyAddress()

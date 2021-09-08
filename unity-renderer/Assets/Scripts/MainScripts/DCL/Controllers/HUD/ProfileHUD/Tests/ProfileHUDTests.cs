@@ -77,26 +77,27 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
             hasClaimedName = true
         };
         UserProfile profile = UserProfile.GetOwnUserProfile();
-        profile.UpdateData(profileModel, false);
+        profile.UpdateData(profileModel);
 
         for (int i = 0; i < controller.view.hideOnNameClaimed.Length; i++)
         {
             Assert.AreEqual(false, controller.view.hideOnNameClaimed[i].gameObject.activeSelf);
         }
+
         Assert.AreEqual(profileModel.name, controller.view.textName.text);
 
         profileModel.name += "#1234";
         profileModel.hasClaimedName = false;
-        profile.UpdateData(profileModel, true);
+        profile.UpdateData(profileModel);
 
         for (int i = 0; i < controller.view.hideOnNameClaimed.Length; i++)
         {
             Assert.AreEqual(true, controller.view.hideOnNameClaimed[i].gameObject.activeSelf);
         }
+
         Assert.AreEqual(testUserName, controller.view.textName.text);
         Assert.AreEqual($"#{addressEnd}", controller.view.textPostfix.text);
         Assert.AreEqual(addressFormatted, controller.view.textAddress.text);
-
     }
 
     [Test]

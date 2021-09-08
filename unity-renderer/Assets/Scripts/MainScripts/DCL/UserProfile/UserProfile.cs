@@ -5,12 +5,12 @@ using DCL;
 using DCL.Interface;
 using UnityEngine;
 
+
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject //TODO Move to base variable
 {
     static DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public event Action<UserProfile> OnUpdate;
-    public event Action<Texture2D> OnFaceSnapshotReadyEvent;
     public event Action<string, long> OnAvatarExpressionSet;
 
     public string userId => model.userId;
@@ -26,25 +26,25 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public bool hasClaimedName => model.hasClaimedName;
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
+
     internal Dictionary<string, int> inventory = new Dictionary<string, int>();
 
-    public Texture2D faceSnapshot { get; private set; }
-    private AssetPromise_Texture thumbnailPromise;
+    public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
 
     internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
     {
         avatar = new AvatarModel()
     };
 
-    public void UpdateData(UserProfileModel newModel, bool downloadAssets = true)
+    public void UpdateData(UserProfileModel newModel)
     {
-        faceSnapshot = null;
-
         if (newModel == null)
         {
             model = null;
             return;
         }
+
+        bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
 
         model.userId = newModel.userId;
         model.ethAddress = newModel.ethAddress;
@@ -66,17 +66,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             SetInventory(model.inventory);
         }
 
-        if (downloadAssets && model.snapshots != null)
+        if (model.snapshots != null && faceSnapshotDirty)
         {
-            //NOTE(Brian): Get before forget to prevent referenceCount == 0 and asset unload
-            var newThumbnailPromise = ThumbnailsManager.GetThumbnail(model.snapshots.face256, OnFaceSnapshotReady);
-            ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-            thumbnailPromise = newThumbnailPromise;
-        }
-        else
-        {
-            ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-            thumbnailPromise = null;
+            this.snapshotObserver.RefreshWithUri(model.snapshots.face256);
         }
 
         OnUpdate?.Invoke(this);
@@ -90,35 +82,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         return inventory[itemId];
     }
 
-    private void OnFaceSnapshotReady(Asset_Texture texture)
-    {
-        if (faceSnapshot != null)
-            Destroy(faceSnapshot);
-
-        if (texture != null)
-            faceSnapshot = texture.texture;
-
-        OnUpdate?.Invoke(this);
-        OnFaceSnapshotReadyEvent?.Invoke(faceSnapshot);
-    }
-
     public void OverrideAvatar(AvatarModel newModel, Texture2D newFaceSnapshot)
     {
-        if (model?.snapshots != null)
-        {
-            if (thumbnailPromise != null)
-            {
-                ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-                thumbnailPromise = null;
-            }
-
-            OnFaceSnapshotReady(null);
-        }
-
         model.avatar.CopyFrom(newModel);
-        this.faceSnapshot = newFaceSnapshot;
+        this.snapshotObserver.RefreshWithTexture(newFaceSnapshot);
+
         OnUpdate?.Invoke(this);
-        OnFaceSnapshotReadyEvent?.Invoke(faceSnapshot);
     }
 
     public void SetAvatarExpression(string id)

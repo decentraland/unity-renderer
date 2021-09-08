@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
@@ -14,15 +15,8 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         public string realm;
         public string realmServerName;
         public string realmLayerName;
-        public Texture2D avatarImage;
+        public ILazyTextureObserver avatarSnapshotObserver;
         public bool blocked;
-
-        public event System.Action<Texture2D> OnTextureUpdateEvent;
-        public void OnSpriteUpdate(Texture2D texture)
-        {
-            avatarImage = texture;
-            OnTextureUpdateEvent?.Invoke(texture);
-        }
     }
 
     public Model model { get; private set; } = new Model();
@@ -65,7 +59,10 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     protected virtual void OnDisable() { OnPointerExit(null); }
 
-    protected void OnDestroy() { model.OnTextureUpdateEvent -= OnAvatarImageChange; }
+    protected void OnDestroy()
+    {
+        model.avatarSnapshotObserver.RemoveListener(OnAvatarImageChange);
+    }
 
     public virtual void Populate(Model model)
     {
@@ -74,15 +71,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (playerNameText.text != model.userName)
             playerNameText.text = model.userName;
 
-        if (model.avatarImage == null)
-        {
-            model.OnTextureUpdateEvent -= OnAvatarImageChange;
-            model.OnTextureUpdateEvent += OnAvatarImageChange;
-        }
-
-        if (model.avatarImage != playerImage.texture)
-            OnAvatarImageChange(model.avatarImage);
-
+        model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
         playerBlockedImage.enabled = model.blocked;
     }
 

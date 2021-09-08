@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DCL;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -15,33 +16,26 @@ internal class ExploreFriendsView : MonoBehaviour
     public void SetUserProfile(UserProfile profile, Color backgroundColor)
     {
         userProfile = profile;
-        friendPortrait.texture = profile.faceSnapshot;
         friendName.text = profile.userName;
         friendBackground.color = backgroundColor;
-
-        if (profile.faceSnapshot == null)
-        {
-            profile.OnFaceSnapshotReadyEvent += OnFaceSnapshotReadyEvent;
-        }
+        userProfile.snapshotObserver.AddListener(OnFaceSnapshotLoaded);
         gameObject.SetActive(true);
     }
 
-    void OnFaceSnapshotReadyEvent(Texture2D texture)
+    void OnFaceSnapshotLoaded(Texture2D texture)
     {
-        userProfile.OnFaceSnapshotReadyEvent -= OnFaceSnapshotReadyEvent;
-        friendPortrait.texture = userProfile.faceSnapshot;
+        friendPortrait.texture = texture;
     }
 
     void OnHeadHoverEnter()
     {
-        if (userProfile)
-        {
-            if (!showHideAnimator.gameObject.activeSelf)
-            {
-                showHideAnimator.gameObject.SetActive(true);
-            }
-            showHideAnimator.Show();
-        }
+        if (!userProfile)
+            return;
+
+        if (!showHideAnimator.gameObject.activeSelf)
+            showHideAnimator.gameObject.SetActive(true);
+
+        showHideAnimator.Show();
     }
 
     void OnHeadHoverExit() { showHideAnimator.Hide(); }
@@ -55,10 +49,8 @@ internal class ExploreFriendsView : MonoBehaviour
 
     void OnDestroy()
     {
-        if (userProfile)
-        {
-            userProfile.OnFaceSnapshotReadyEvent -= OnFaceSnapshotReadyEvent;
-        }
+        if (userProfile != null)
+            userProfile.snapshotObserver.RemoveListener(OnFaceSnapshotLoaded);
 
         if (hoverCallback)
         {

@@ -27,7 +27,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         ownProfileModel = new UserProfileModel();
         ownProfileModel.userId = "my-user-id";
         ownProfileModel.name = "NO_USER";
-        ownProfile.UpdateData(ownProfileModel, false);
+        ownProfile.UpdateData(ownProfileModel);
 
         testProfileModel = new UserProfileModel();
         testProfileModel.userId = "my-user-id-2";
@@ -59,12 +59,12 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     {
         IChatController chatController = Substitute.For<IChatController>();
         chatController.GetEntries()
-                      .ReturnsForAnyArgs(new List<ChatMessage>
-                      {
-                          new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1"),
-                          new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2"),
-                          new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3"),
-                      });
+            .ReturnsForAnyArgs(new List<ChatMessage>
+            {
+                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1"),
+                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2"),
+                new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3"),
+            });
         InitializeChatWindowController(chatController);
 
         Assert.AreEqual(3, controller.view.chatHudView.entries.Count);

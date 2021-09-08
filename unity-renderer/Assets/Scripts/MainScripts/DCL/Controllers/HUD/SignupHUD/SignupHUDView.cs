@@ -10,6 +10,7 @@ namespace SignupHUD
     public interface ISignupHUDView : IDisposable
     {
         delegate void NameScreenDone(string newName, string newEmail);
+
         event NameScreenDone OnNameScreenNext;
         event Action OnEditAvatar;
         event Action OnTermsOfServiceAgreed;
@@ -32,6 +33,7 @@ namespace SignupHUD
 
         [Header("Name and Email Screen")]
         [SerializeField] internal RectTransform nameAndEmailPanel;
+
         [SerializeField] internal Button nameAndEmailNextButton;
         [SerializeField] internal TMP_InputField nameInputField;
         [SerializeField] internal GameObject nameInputFieldFullOrInvalid;
@@ -44,11 +46,14 @@ namespace SignupHUD
 
         [Header("Terms of Service Screen")]
         [SerializeField] internal RectTransform termsOfServicePanel;
+
         [SerializeField] internal Button editAvatarButton;
         [SerializeField] internal ScrollRect termsOfServiceScrollView;
         [SerializeField] internal Button termsOfServiceBackButton;
         [SerializeField] internal Button termsOfServiceAgreeButton;
         [SerializeField] internal RawImage avatarPic;
+
+        private ILazyTextureObserver snapshotTextureObserver;
 
         private void Awake()
         {
@@ -59,8 +64,8 @@ namespace SignupHUD
         private void InitNameAndEmailScreen()
         {
             UserProfile userProfile = UserProfile.GetOwnUserProfile();
-            OnFaceSnapshotReady(userProfile.faceSnapshot);
-            userProfile.OnFaceSnapshotReadyEvent += OnFaceSnapshotReady;
+            snapshotTextureObserver = userProfile.snapshotObserver;
+            snapshotTextureObserver.AddListener(OnFaceSnapshotReady);
 
             nameAndEmailNextButton.interactable = false;
             nameCurrentCharacters.text = $"{0}/{MAX_NAME_LENGTH}";
@@ -78,12 +83,14 @@ namespace SignupHUD
                 nameInputInvalidLabel.SetActive(!IsValidName(text));
                 nameInputFieldFullOrInvalid.SetActive(text.Length >= MAX_NAME_LENGTH || !IsValidName(text));
             });
+
             emailInputField.onValueChanged.AddListener((text) =>
             {
                 emailInputFieldInvalid.SetActive(!IsValidEmail(text));
                 emailInputInvalidLabel.SetActive(!IsValidEmail(text));
                 UpdateNameAndEmailNextButton();
             });
+
             nameAndEmailNextButton.onClick.AddListener(() => OnNameScreenNext?.Invoke(nameInputField.text, emailInputField.text));
             editAvatarButton.onClick.AddListener(() => OnEditAvatar?.Invoke());
         }
@@ -95,6 +102,7 @@ namespace SignupHUD
                 if (pos.y <= 0.1f)
                     termsOfServiceAgreeButton.interactable = true;
             });
+
             termsOfServiceAgreeButton.interactable = false;
             termsOfServiceBackButton.onClick.AddListener(() => OnTermsOfServiceBack?.Invoke());
             termsOfServiceAgreeButton.onClick.AddListener(() => OnTermsOfServiceAgreed?.Invoke());
@@ -125,6 +133,8 @@ namespace SignupHUD
 
         public void Dispose()
         {
+            snapshotTextureObserver.RemoveListener(OnFaceSnapshotReady);
+
             if (this != null)
                 Destroy(gameObject);
         }

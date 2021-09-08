@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL;
+using NSubstitute;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -43,44 +44,40 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
     private void OnDestroy()
     {
         isDestroyed = true;
+
         if (profile != null)
-        {
-            profile.OnFaceSnapshotReadyEvent -= SetThumbnail;
-        }
+            profile.snapshotObserver.RemoveListener(SetThumbnail);
     }
 
     public void Dispose()
     {
-        if (!isDestroyed)
-        {
-            ClearThumbnail();
-            Destroy(gameObject);
-        }
+        if (isDestroyed)
+            return;
+
+        ClearThumbnail();
+        Destroy(gameObject);
+
+        if (profile != null)
+            profile.snapshotObserver.RemoveListener(SetThumbnail);
     }
 
     public void SetUserProfile(UserProfile userProfile)
     {
+        if ( profile == userProfile )
+            return;
+
+        SetUserId(userProfile.userId);
+        SetUserName(userProfile.userName);
+
+        userProfile.snapshotObserver.AddListener(SetThumbnail);
+
         if (profile != null)
-        {
-            profile.OnFaceSnapshotReadyEvent -= SetThumbnail;
-        }
+            profile.snapshotObserver.RemoveListener(SetThumbnail);
 
         profile = userProfile;
-
-        SetUserId(profile.userId);
-        SetUserName(profile.userName);
-
-        if (profile.faceSnapshot != null)
-        {
-            SetThumbnail(profile.faceSnapshot);
-        }
-        else
-        {
-            profile.OnFaceSnapshotReadyEvent += SetThumbnail;
-        }
     }
 
-    public void SetUserProfile(UserProfileModel profileModel)
+    public void SetUserProfileModel(UserProfileModel profileModel)
     {
         profile = null;
 
@@ -92,6 +89,7 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
             thumbnailPromise.OnFailEvent += (asset => ClearThumbnail());
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
+
         AssetPromiseKeeper_Texture.i.Forget(prevThumbnailPromise);
 
         SetUserId(profileModel.userId);
@@ -144,14 +142,14 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
     public void ClearThumbnail()
     {
         if (profile != null)
-        {
-            profile.OnFaceSnapshotReadyEvent -= SetThumbnail;
-        }
+            profile.snapshotObserver.RemoveListener(SetThumbnail);
+
         if (thumbnailPromise != null)
         {
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
             thumbnailPromise = null;
         }
+
         userThumbnail.texture = null;
     }
 
