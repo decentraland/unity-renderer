@@ -6,7 +6,6 @@ public class MinimapHUDController : IHUD
     private static bool VERBOSE = false;
 
     public MinimapHUDView view;
-    private KernelConfigModel kernelConfig = new KernelConfigModel();
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
 
@@ -24,9 +23,6 @@ public class MinimapHUDController : IHUD
 
         view = MinimapHUDView.Create(this);
         UpdateData(model);
-        
-        KernelConfig.i.EnsureConfigInitialized().Then( kc => kernelConfig = kc);
-        KernelConfig.i.OnChange += (current,previous) => kernelConfig = current;
     }
 
     public void Dispose()
@@ -109,11 +105,10 @@ public class MinimapHUDController : IHUD
     /// <param name="controller">Controller for the players' list HUD</param>
     public void AddUsersAroundIndicator(UsersAroundListHUDController controller)
     {
-        bool peopleCounterEnabled = kernelConfig.features.enablePeopleCounter;
-        
         view.usersAroundListHudButton.gameObject.SetActive(true);
         controller.SetButtonView(view.usersAroundListHudButton);
-        controller.ToggleUsersCount(peopleCounterEnabled);
+        controller.ToggleUsersCount(false);
+        KernelConfig.i.EnsureConfigInitialized().Then(kc => controller.ToggleUsersCount(kc.features.enablePeopleCounter));
     }
 
     private void OnOnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
