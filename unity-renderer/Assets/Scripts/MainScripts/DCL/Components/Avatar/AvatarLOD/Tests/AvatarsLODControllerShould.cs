@@ -308,7 +308,7 @@ namespace Tests.AvatarsLODController
 
             controller.lodControllers["player0"].Received().SetFullAvatar();
             controller.lodControllers["player1"].Received().SetFullAvatar();
-            controller.lodControllers["player2"].Received().SetInvisible();
+            controller.lodControllers["player2"].Received().SetImpostor();
         }
 
         [Test]
@@ -327,7 +327,7 @@ namespace Tests.AvatarsLODController
 
             controller.lodControllers["player0"].Received().SetSimpleAvatar();
             controller.lodControllers["player1"].Received().SetSimpleAvatar();
-            controller.lodControllers["player2"].Received().SetInvisible();
+            controller.lodControllers["player2"].Received().SetImpostor();
         }
 
         [Test]
@@ -344,7 +344,7 @@ namespace Tests.AvatarsLODController
             controller.enabled = true;
             controller.Update();
 
-            controller.lodControllers["player0"].Received().SetInvisible();
+            controller.lodControllers["player0"].Received().SetImpostor();
             controller.lodControllers["player1"].Received().SetFullAvatar();
             controller.lodControllers["player2"].Received().SetFullAvatar();
         }
