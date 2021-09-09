@@ -8,6 +8,7 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
+using Newtonsoft.Json;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.UI;

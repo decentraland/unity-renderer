@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Analytics;
 
 namespace DCL
 {
@@ -12,9 +13,11 @@ namespace DCL
         private InputAction_Hold.Finished voiceChatFinishedDelegate;
         private InputAction_Trigger.Triggered voiceChatToggleDelegate;
 
+        private bool firstTimeVoiceRecorded = true;
+
         void Awake()
         {
-            voiceChatStartedDelegate = (action) => DCL.Interface.WebInterface.SendSetVoiceChatRecording(true);
+            voiceChatStartedDelegate = (action) => StartVoiceChatRecording();
             voiceChatFinishedDelegate = (action) => DCL.Interface.WebInterface.SendSetVoiceChatRecording(false);
             voiceChatToggleDelegate = (action) => DCL.Interface.WebInterface.ToggleVoiceChatRecording();
             voiceChatAction.OnStarted += voiceChatStartedDelegate;
@@ -34,5 +37,15 @@ namespace DCL
         void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableVoiceChat(current.comms.voiceChatEnabled); }
 
         void EnableVoiceChat(bool enable) { CommonScriptableObjects.voiceChatDisabled.Set(!enable); }
+
+        private void StartVoiceChatRecording()
+        {
+            DCL.Interface.WebInterface.SendSetVoiceChatRecording(true);
+            if (firstTimeVoiceRecorded)
+            {
+                AnalyticsHelper.SendVoiceChatStartedAnalytic();
+                firstTimeVoiceRecorded = false;
+            }
+        }
     }
 }

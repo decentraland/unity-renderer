@@ -19,17 +19,17 @@ namespace Tests
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
-            UIScrollRect scrRect =
+            UIScrollRect scrollRect =
                 TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
-            yield return scrRect.routine;
+            yield return scrollRect.routine;
 
             // Force a new update to pass the first apply
-            yield return TestHelpers.SharedComponentUpdate(scrRect, new UIScrollRect.Model
+            yield return TestHelpers.SharedComponentUpdate(scrollRect, new UIScrollRect.Model
             {
                 name = "newName"
             });
 
-            var refC = scrRect.referencesContainer;
+            var refC = scrollRect.referencesContainer;
 
             Assert.IsTrue(refC.canvasGroup.blocksRaycasts);
             //Canvas group is disabled on first apply
@@ -48,7 +48,7 @@ namespace Tests
             Assert.AreEqual(0, refC.VScrollbar.value);
 
             // Update UIScrollRect properties
-            yield return TestHelpers.SharedComponentUpdate(scrRect,
+            yield return TestHelpers.SharedComponentUpdate(scrollRect,
                 new UIScrollRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -61,19 +61,23 @@ namespace Tests
                     vAlign = "bottom"
                 });
 
+            yield return null;
+            yield return new WaitUntil( () => !scrollRect.isLayoutDirty );
+
+
             // Check updated properties are applied correctly
-            Assert.IsTrue(scrRect.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
-            Assert.IsFalse(scrRect.referencesContainer.canvasGroup.blocksRaycasts);
-            Assert.AreEqual(275f, scrRect.childHookRectTransform.rect.width);
-            Assert.AreEqual(130f, scrRect.childHookRectTransform.rect.height);
-            Assert.IsTrue(scrRect.referencesContainer.layoutGroup.childAlignment == TextAnchor.LowerRight);
+            Assert.IsTrue(scrollRect.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
+            Assert.IsFalse(scrollRect.referencesContainer.canvasGroup.blocksRaycasts);
+            Assert.AreEqual(275f, scrollRect.childHookRectTransform.rect.width);
+            Assert.AreEqual(130f, scrollRect.childHookRectTransform.rect.height);
+            Assert.IsTrue(scrollRect.referencesContainer.layoutGroup.childAlignment == TextAnchor.LowerRight);
 
             Vector2 alignedPosition = CalculateAlignedAnchoredPosition(screenSpaceShape.childHookRectTransform.rect,
-                scrRect.childHookRectTransform.rect, "bottom", "right");
+                scrollRect.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-30, -15); // apply offset position
 
             Assert.AreEqual(alignedPosition.ToString(),
-                scrRect.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+                scrollRect.referencesContainer.layoutElementRT.anchoredPosition.ToString());
 
             screenSpaceShape.Dispose();
         }

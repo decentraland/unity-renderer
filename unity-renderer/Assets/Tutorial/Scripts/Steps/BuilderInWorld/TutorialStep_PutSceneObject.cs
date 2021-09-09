@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using DCL.Tutorial;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 public class TutorialStep_PutSceneObject : TutorialStep
 {
     [SerializeField] AudioEvent audioEventSuccess;

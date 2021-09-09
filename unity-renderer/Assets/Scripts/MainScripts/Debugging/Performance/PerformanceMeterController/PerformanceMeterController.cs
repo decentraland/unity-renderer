@@ -249,7 +249,7 @@ namespace DCL
                                     + "\n "
                                     + "{\"frame-samples\": " + JsonConvert.SerializeObject(samples) + "}";
 
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL && UNITY_EDITOR
             string targetFilePath = Application.persistentDataPath + "/PerformanceMeterRawFrames.txt";
             Log("Data report step 3 - Trying to dump raw samples JSON at: " + targetFilePath);
             System.IO.File.WriteAllText (targetFilePath, rawSamplesJSON);

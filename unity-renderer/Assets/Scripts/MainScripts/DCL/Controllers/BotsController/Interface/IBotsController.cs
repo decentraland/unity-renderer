@@ -7,6 +7,8 @@ namespace DCL.Bots
     {
         IEnumerator InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config);
         IEnumerator InstantiateBotsAtCoords(CoordsInstantiationConfig config);
+        void StartRandomMovement(CoordsRandomMovementConfig config);
+        void StopRandomMovement();
         void ClearBots();
         void RemoveBot(string targetEntityId);
     }
@@ -42,6 +44,26 @@ namespace DCL.Bots
         public override string ToString()
         {
             return $"amount: {amount}" +
+                   $"\n xCoord: {xCoord}" +
+                   $"\n yCoord: {yCoord}" +
+                   $"\n areaWidth: {areaWidth}" +
+                   $"\n areaDepth: {areaDepth}";
+        }
+    }
+
+    public class CoordsRandomMovementConfig
+    {
+        public float populationNormalizedPercentage = EnvironmentSettings.UNINITIALIZED_FLOAT;
+        public float waypointsUpdateTime = EnvironmentSettings.UNINITIALIZED_FLOAT;
+        public float xCoord = EnvironmentSettings.UNINITIALIZED_FLOAT;
+        public float yCoord = EnvironmentSettings.UNINITIALIZED_FLOAT;
+        public float areaWidth = ParcelSettings.PARCEL_SIZE;
+        public float areaDepth = ParcelSettings.PARCEL_SIZE;
+
+        public override string ToString()
+        {
+            return $"populationNormalizedPercentage: {populationNormalizedPercentage}" +
+                   $"waypointsUpdateTime: {waypointsUpdateTime}" +
                    $"\n xCoord: {xCoord}" +
                    $"\n yCoord: {yCoord}" +
                    $"\n areaWidth: {areaWidth}" +

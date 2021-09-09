@@ -1,3 +1,4 @@
+using DCL.Bots;
 using DCL.Rendering;
 
 namespace DCL
@@ -13,7 +14,6 @@ namespace DCL
         public readonly IParcelScenesCleaner parcelScenesCleaner;
         public readonly IClipboard clipboard;
         public readonly IPhysicsSyncController physicsSyncController;
-        public readonly IDebugController debugController;
         public readonly IWebRequestController webRequest;
         public readonly IServiceProviders serviceProviders;
         public readonly IIdleChecker idleChecker;
@@ -24,7 +24,6 @@ namespace DCL
             IClipboard clipboard,
             IPhysicsSyncController physicsSyncController,
             IParcelScenesCleaner parcelScenesCleaner,
-            IDebugController debugController,
             IWebRequestController webRequest,
             IServiceProviders serviceProviders,
             IIdleChecker idleChecker,
@@ -35,7 +34,6 @@ namespace DCL
             this.clipboard = clipboard;
             this.physicsSyncController = physicsSyncController;
             this.parcelScenesCleaner = parcelScenesCleaner;
-            this.debugController = debugController;
             this.webRequest = webRequest;
             this.serviceProviders = serviceProviders;
             this.idleChecker = idleChecker;
@@ -53,7 +51,6 @@ namespace DCL
             memoryManager.Dispose();
             parcelScenesCleaner.Dispose();
             cullingController.Dispose();
-            debugController.Dispose();
             webRequest.Dispose();
             serviceProviders.Dispose();
             avatarsLODController.Dispose();

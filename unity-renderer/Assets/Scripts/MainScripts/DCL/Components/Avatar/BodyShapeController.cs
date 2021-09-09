@@ -5,6 +5,7 @@ using UnityEngine;
 
 public interface IBodyShapeController
 {
+    bool isReady { get; }
     string bodyShapeId { get; }
     void SetupEyes(Material material, Texture texture, Texture mask, Color color);
     void SetupEyebrows(Material material, Texture texture, Color color);
@@ -24,6 +25,8 @@ public class BodyShapeController : WearableController, IBodyShapeController
     private bool lowerBodyActive = true;
     private bool upperBodyActive = true;
     private bool feetActive = true;
+
+    private AvatarAnimationEventAudioHandler animEventAudioHandler;
 
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
@@ -58,7 +61,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupEyes(Material material, Texture texture, Texture mask, Color color)
     {
-        if (assetContainer != null && assetContainer.transform == null)
+        if (assetContainer == null || assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup eyes when the asset not ready");
             return;
@@ -75,7 +78,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupEyebrows(Material material, Texture texture, Color color)
     {
-        if (assetContainer != null && assetContainer.transform == null)
+        if (assetContainer == null || assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup eyebrows when the asset not ready");
             return;
@@ -93,7 +96,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupMouth(Material material, Texture texture, Texture mask, Color color)
     {
-        if (assetContainer != null && assetContainer.transform == null)
+        if (assetContainer == null || assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup mouth when the asset not ready");
             return;
@@ -231,10 +234,13 @@ public class BodyShapeController : WearableController, IBodyShapeController
                 audioHandlerRemote.Init(createdAnimation.gameObject, bodyPartReferenceHandler);
             }
         }
+
+        animEventAudioHandler = animationEventAudioHandler;
     }
 
     public override void CleanUp()
     {
+        UnityEngine.Object.Destroy(animEventAudioHandler);
         facialFeaturesVisible = true;
         base.CleanUp();
     }

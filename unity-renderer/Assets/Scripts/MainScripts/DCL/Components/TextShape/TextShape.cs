@@ -14,6 +14,14 @@ namespace DCL.Components
         [Serializable]
         public class Model : BaseModel
         {
+            //These values exist in the SDK but we are doing nothing with these values
+            public string fontWeight = "normal";
+            public bool resizeToFit = false;
+            public float zIndex = 0;
+
+            public bool isPickable = false;
+            //
+
             public bool billboard;
 
             [Header("Font Properties")]
@@ -25,7 +33,6 @@ namespace DCL.Components
             public float opacity = 1f;
             public float fontSize = 100f;
             public bool fontAutoSize = false;
-            public string fontWeight = "normal";
             public string font;
 
             [Header("Text box properties")]
@@ -34,8 +41,6 @@ namespace DCL.Components
             public string vTextAlign = "left";
             public float width = 1f;
             public float height = 0.2f;
-            public bool adaptWidth = false;
-            public bool adaptHeight = false;
             public float paddingTop = 0f;
             public float paddingRight = 0f;
             public float paddingBottom = 0f;
@@ -91,19 +96,23 @@ namespace DCL.Components
             cachedModel = model;
             PrepareRectTransform();
 
-            yield return ApplyModelChanges(scene, text, model);
+            // We avoid using even yield break; as this instruction skips a frame and we don't want that.
+            if ( !DCLFont.IsFontLoaded(scene, model.font) )
+            {
+                yield return DCLFont.WaitUntilFontIsReady(scene, model.font);
+            }
+
+            DCLFont.SetFontFromComponent(scene, model.font, text);
+            ApplyModelChanges(text, model);
+
             if (entity.meshRootGameObject == null)
                 entity.meshesInfo.meshRootGameObject = gameObject;
+
             entity.OnShapeUpdated?.Invoke(entity);
         }
 
-        public static IEnumerator ApplyModelChanges(IParcelScene scene, TMP_Text text, Model model)
+        public static void ApplyModelChanges(TMP_Text text, Model model)
         {
-            if (!string.IsNullOrEmpty(model.font))
-            {
-                yield return DCLFont.SetFontFromComponent(scene, model.font, text);
-            }
-
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.visible ? model.opacity : 0);
@@ -199,8 +208,6 @@ namespace DCL.Components
                     }
             }
         }
-
-        private void ApplyCurrentModel() { ApplyModelChanges(scene, text, cachedModel); }
 
         private void PrepareRectTransform()
         {

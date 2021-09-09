@@ -31,11 +31,13 @@ namespace DCL
 
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private BaseHashSet<string> visibleNames => DataStore.i.avatarsLOD.visibleNames;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+            avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
         }
 
         private void PlayerClicked()
@@ -51,6 +53,8 @@ namespace DCL
 
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
+
+            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -132,7 +136,10 @@ namespace DCL
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
             if (isNew)
+            {
+                visibleNames.Add(player.id);
                 otherPlayers.Add(player.id, player);
+            }
         }
 
         private void Update()
@@ -178,10 +185,11 @@ namespace DCL
             player = null;
         }
 
+        void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
+
         public override void Cleanup()
         {
             base.Cleanup();
-
 
             if (player != null)
             {

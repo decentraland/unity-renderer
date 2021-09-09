@@ -39,6 +39,11 @@ namespace GLTF
 
         public static void ParseJson(Stream stream, out GLTFRoot gltfRoot, long startPosition = 0)
         {
+            if (stream == null)
+            {
+                throw new Exception("GLTFParser.ParseJson stream == null");
+            }
+            
             stream.Position = startPosition;
             bool isGLB = IsGLB(stream);
 

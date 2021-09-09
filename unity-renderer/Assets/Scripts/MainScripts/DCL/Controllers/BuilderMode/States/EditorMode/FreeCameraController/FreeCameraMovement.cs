@@ -592,7 +592,7 @@ namespace DCL.Camera
 
         private IEnumerator TakeSceneScreenshotCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
         {
-            UnityEngine.Camera camera = UnityEngine.Camera.current;
+            UnityEngine.Camera camera = UnityEngine.Camera.main;
             if (screenshotCamera != null)
                 camera = screenshotCamera;
 

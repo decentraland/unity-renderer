@@ -123,8 +123,8 @@ namespace Tests
         {
             int widthPercent = 50;
             int heightPercent = 30;
-            Vector2Int desiredScreenSize = new Vector2Int(500,500);
-            
+            Vector2Int desiredScreenSize = new Vector2Int(500, 500);
+
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
@@ -144,24 +144,24 @@ namespace Tests
             //check sizes before resizing
             var previousSize = uiContainerStack.childHookRectTransform.rect.size;
             Vector2 parentSize =  screenSpaceShape.childHookRectTransform.rect.size;
-            Assert.AreEqual(parentSize.x * widthPercent/100f, previousSize.x, 0.01f, "UIContainer width before screen resize");
-            Assert.AreEqual(parentSize.y * heightPercent/100f, previousSize.y, 0.01f, "UIContainer height before screen resize");
+            Assert.AreEqual(parentSize.x * widthPercent / 100f, previousSize.x, 0.01f, "UIContainer width before screen resize");
+            Assert.AreEqual(parentSize.y * heightPercent / 100f, previousSize.y, 0.01f, "UIContainer height before screen resize");
 
             // we simulate first that the UI container now has the desired screen size            
             screenSpaceShape.childHookRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, desiredScreenSize.x);
             screenSpaceShape.childHookRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, desiredScreenSize.y);
-            
+
             //Screen resize event
             DataStore.i.screen.size.Set(desiredScreenSize);
-            
+
             var currentSize = uiContainerStack.childHookRectTransform.rect.size;
-            Assert.AreEqual(desiredScreenSize.x * widthPercent/100f, currentSize.x, 0.01f, "UIContainer width after screen resize");
-            Assert.AreEqual(desiredScreenSize.y * heightPercent/100f, currentSize.y, 0.01f, "UIContainer height after screen resize");
-            
+            Assert.AreEqual(desiredScreenSize.x * widthPercent / 100f, currentSize.x, 0.01f, "UIContainer width after screen resize");
+            Assert.AreEqual(desiredScreenSize.y * heightPercent / 100f, currentSize.y, 0.01f, "UIContainer height after screen resize");
+
             screenSpaceShape.Dispose();
         }
 
-        
+
         [UnityTest]
         public IEnumerator TestChildrenAreHandledCorrectly()
         {
@@ -281,6 +281,8 @@ namespace Tests
             RectTransform child2RT = childComponent2.referencesContainer.transform.parent as RectTransform;
             RectTransform child3RT = childComponent3.referencesContainer.transform.parent as RectTransform;
 
+            yield return new WaitUntil( () => !uiContainerStack.isLayoutDirty );
+
             Assert.AreEqual(new Vector2(65, -35).ToString(), child1RT.anchoredPosition.ToString());
             Assert.AreEqual(new Vector2(37.5f, -87.5f).ToString(), child2RT.anchoredPosition.ToString());
             Assert.AreEqual(new Vector2(75, -130).ToString(), child3RT.anchoredPosition.ToString());
@@ -365,6 +367,8 @@ namespace Tests
             RectTransform child2RT = childComponent2.referencesContainer.transform.parent as RectTransform;
             RectTransform child3RT = childComponent3.referencesContainer.transform.parent as RectTransform;
 
+            yield return new WaitUntil( () => !uiContainerStack.isLayoutDirty );
+
             Assert.AreEqual(new Vector2(65, -35).ToString(), child1RT.anchoredPosition.ToString());
             Assert.AreEqual(new Vector2(167.5f, -17.5f).ToString(), child2RT.anchoredPosition.ToString());
             Assert.AreEqual(new Vector2(280, -25).ToString(), child3RT.anchoredPosition.ToString());
@@ -442,13 +446,15 @@ namespace Tests
 
             yield return null;
 
+            yield return new WaitUntil( () => !uiContainerStack.isLayoutDirty );
+
             // Check stacked components position
             Assert.AreEqual(150f, uiContainerStack.childHookRectTransform.rect.width, 0.01f);
             Assert.AreEqual(
                 childComponent1.referencesContainer.rectTransform.rect.height + childComponent2.referencesContainer
-                                                                                               .rectTransform.rect.height
+                                                                                  .rectTransform.rect.height
                                                                               + childComponent3.referencesContainer
-                                                                                               .rectTransform.rect.height,
+                                                                                  .rectTransform.rect.height,
                 uiContainerStack.childHookRectTransform.rect.height, 0.01f);
 
             screenSpaceShape.Dispose();

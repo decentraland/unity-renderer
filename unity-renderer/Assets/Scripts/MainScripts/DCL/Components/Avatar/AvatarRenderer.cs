@@ -24,9 +24,21 @@ namespace DCL
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
+        private SimpleGPUSkinning gpuSkinning = null;
+
+        private Renderer mainMeshRenderer
+        {
+            get
+            {
+                if (gpuSkinning != null)
+                    return gpuSkinning.renderer;
+                return avatarMeshCombiner.renderer;
+            }
+        }
 
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
+        public event Action<float> OnImpostorAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
@@ -46,8 +58,6 @@ namespace DCL
         private List<string> wearablesInUse = new List<string>();
         private AssetPromise_Texture bodySnapshotTexturePromise;
         private bool isDestroyed = false;
-
-        private List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>();
 
         private void Awake()
         {
@@ -74,6 +84,10 @@ namespace DCL
 
                 if (!wearablesChanged && expressionsChanged)
                 {
+                    this.model.expressionTriggerId = model.expressionTriggerId;
+                    this.model.expressionTriggerTimestamp = model.expressionTriggerTimestamp;
+                    this.model.stickerTriggerId = model.stickerTriggerId;
+                    this.model.stickerTriggerTimestamp = model.stickerTriggerTimestamp;
                     UpdateExpression();
                     onSuccess?.Invoke();
                     return;
@@ -148,10 +162,13 @@ namespace DCL
             StopLoadingCoroutines();
             if (!isDestroyed)
             {
-                SetVisibility(true);
-                SetImpostorVisibility(false);
+                SetGOVisibility(true);
+                if (lodRenderer != null)
+                    SetImpostorVisibility(false);
             }
 
+            avatarMeshCombiner.Dispose();
+            gpuSkinning = null;
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
 
@@ -338,12 +355,6 @@ namespace DCL
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
                 mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
             }
-            else
-            {
-                //If bodyShape is downloading will call OnWearableLoadingSuccess (and therefore SetupDefaultMaterial) once ready
-                if (bodyShapeController.isReady)
-                    bodyShapeController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
-            }
 
             //TODO(Brian): This logic should be performed in a testeable pure function instead of this inline approach.
             //             Moreover, this function should work against data, not wearableController instances.
@@ -359,9 +370,7 @@ namespace DCL
                 unusedCategories.Remove(wearable.data.category);
                 if (wearableControllers.ContainsKey(wearable))
                 {
-                    if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
-                        UpdateWearableController(wearable);
-                    else
+                    if (!wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
                         wearableControllers[wearable].CleanUp();
                 }
                 else
@@ -406,15 +415,13 @@ namespace DCL
             // TODO(Brian): Evaluate using UniTask<T> instead of this way.
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
-            eyesController?.Load(bodyShapeController, model.eyeColor);
-            eyebrowsController?.Load(bodyShapeController, model.hairColor);
-            mouthController?.Load(bodyShapeController, model.skinColor);
+            eyesController.Load(bodyShapeController, model.eyeColor);
+            eyebrowsController.Load(bodyShapeController, model.hairColor);
+            mouthController.Load(bodyShapeController, model.skinColor);
 
-            //TODO(Brian): Evaluate using UniTask<T> instead of this way.
-            yield return new WaitUntil(() =>
-                (eyebrowsController == null || (eyebrowsController != null && eyebrowsController.isReady)) &&
-                (eyesController == null || (eyesController != null && eyesController.isReady)) &&
-                (mouthController == null || (mouthController != null && mouthController.isReady)));
+            yield return eyesController;
+            yield return eyebrowsController;
+            yield return mouthController;
 
             if (bodyIsDirty || wearablesIsDirty)
             {
@@ -434,19 +441,28 @@ namespace DCL
 
             CleanUpUnusedItems();
 
-            allRenderers = wearableControllers.SelectMany( x => x.Value.GetRenderers() ).ToList();
-            allRenderers.AddRange( bodyShapeController.GetRenderers() );
-
             isLoading = false;
 
+            SetupHairAndSkinColors();
             SetWearableBones();
 
             // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
             UpdateExpression();
 
-            bool mergeSuccess = MergeAvatar();
+            var allRenderers = wearableControllers.SelectMany( x => x.Value.GetRenderers() ).ToList();
+            allRenderers.AddRange( bodyShapeController.GetRenderers() );
+            bool mergeSuccess = MergeAvatar(allRenderers);
 
-            if ( !mergeSuccess )
+            if (mergeSuccess)
+            {
+                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
+
+                // Sample the animation manually and force an update in the GPUSkinning to avoid giant avatars
+                animator.SetIdleFrame();
+                animator.animation.Sample();
+                gpuSkinning.Update(true);
+            }
+            else
                 loadSoftFailed = true;
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
@@ -462,16 +478,23 @@ namespace DCL
             }
         }
 
+        void SetupHairAndSkinColors()
+        {
+            bodyShapeController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
+
+            foreach ( var wearable in wearableControllers )
+            {
+                wearable.Value.SetupHairAndSkinColors(model.skinColor, model.hairColor);
+            }
+        }
+
         void OnWearableLoadingSuccess(WearableController wearableController)
         {
             if (wearableController == null || model == null)
             {
                 Debug.LogWarning($"WearableSuccess was called wrongly: IsWearableControllerNull=>{wearableController == null}, IsModelNull=>{model == null}");
                 OnWearableLoadingFail(wearableController, 0);
-                return;
             }
-
-            wearableController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
         }
 
         void OnBodyShapeLoadingFail(WearableController wearableController)
@@ -552,24 +575,6 @@ namespace DCL
             }
         }
 
-        private void UpdateWearableController(WearableItem wearable)
-        {
-            var wearableController = wearableControllers[wearable];
-            switch (wearableController.category)
-            {
-                case Categories.EYES:
-                case Categories.EYEBROWS:
-                case Categories.MOUTH:
-                case Categories.BODY_SHAPE:
-                    break;
-                default:
-                    //If wearable is downloading will call OnWearableLoadingSuccess(and therefore SetupDefaultMaterial) once ready
-                    if (wearableController.isReady)
-                        wearableController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
-                    break;
-            }
-        }
-
         //TODO: Remove/replace once the class is easily mockable.
         protected void CopyFrom(AvatarRenderer original)
         {
@@ -580,7 +585,7 @@ namespace DCL
             this.eyesController = original.eyesController;
         }
 
-        public void SetVisibility(bool newVisibility)
+        public void SetGOVisibility(bool newVisibility)
         {
             //NOTE(Brian): Avatar being loaded needs the renderer.enabled as false until the loading finishes.
             //             So we can' manipulate the values because it'd show an incomplete avatar. Its easier to just deactivate the gameObject.
@@ -588,15 +593,26 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
+        public void SetRendererEnabled(bool newVisibility)
+        {
+            if (mainMeshRenderer == null)
+                return;
+
+            mainMeshRenderer.enabled = newVisibility;
+        }
+        
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
+
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
+
+        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
 
         public void SetAvatarFade(float avatarFade)
         {
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
 
-            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            Material[] mats = mainMeshRenderer.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
@@ -609,6 +625,8 @@ namespace DCL
             Color current = lodRenderer.material.GetColor(BASE_COLOR_PROPERTY);
             current.a = impostorFade;
             lodRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
+
+            OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
 
         private void HideAll()
@@ -638,7 +656,7 @@ namespace DCL
             if ( isLoading )
                 return;
 
-            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+            Material[] mats = mainMeshRenderer.sharedMaterials;
 
             for (int j = 0; j < mats.Length; j++)
             {
@@ -649,19 +667,27 @@ namespace DCL
             }
         }
 
-        bool MergeAvatar()
+        private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
-            var renderersToCombine = new List<SkinnedMeshRenderer>( allRenderers );
-            renderersToCombine = renderersToCombine.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+            var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
 
             if ( success )
+            {
                 avatarMeshCombiner.container.transform.SetParent( transform, true );
+                avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
+            }
 
             return success;
         }
 
         void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
+
+        private void LateUpdate()
+        {
+            if (gpuSkinning != null && mainMeshRenderer.enabled)
+                gpuSkinning.Update();
+        }
 
         protected virtual void OnDestroy()
         {

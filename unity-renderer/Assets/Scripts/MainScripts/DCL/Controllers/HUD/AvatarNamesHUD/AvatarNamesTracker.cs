@@ -1,3 +1,4 @@
+using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,6 @@ namespace AvatarNamesHUD
     {
         private static readonly Vector3 OFFSET = new Vector3(0, 3f, 0);
         private static readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
-        private const float NAME_VANISHING_POINT_DISTANCE = 15.0f;
 
         internal readonly RectTransform canvasRect;
         internal readonly Image background;
@@ -30,12 +30,21 @@ namespace AvatarNamesHUD
             name = nameRect.GetComponent<TextMeshProUGUI>();
             voiceChatCanvasGroup = voiceChatRect.GetComponent<CanvasGroup>();
             voiceChatAnimator = voiceChatRect.GetComponent<Animator>();
+
+            visibility = false;
+            UpdateElementsVisibility();
         }
 
         public void SetVisibility(bool visible)
         {
+            if (visibility == visible)
+                return;
             visibility = visible;
+            UpdateElementsVisibility();
+        }
 
+        private void UpdateElementsVisibility()
+        {
             if ( background != null )
                 background.gameObject.SetActive(visibility);
 
@@ -65,7 +74,9 @@ namespace AvatarNamesHUD
                 return;
 
             Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(player.worldPosition + OFFSET);
-            float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
+            float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
+            float startingFade = lodDistance * 0.75f;
+            float alpha = Mathf.Lerp(1, 0, (screenPoint.z - startingFade) / (lodDistance - startingFade)); //Lerp just at the last quarter of distance
 
             if (screenPoint.z > 0)
             {

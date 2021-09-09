@@ -106,7 +106,7 @@ public class IntegrationTestSuite_Legacy
     protected virtual IEnumerator TearDown()
     {
         yield return null;
-
+        
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
@@ -235,8 +235,7 @@ public class IntegrationTestSuite_Legacy
     {
         yield return InitUnityScene(TEST_SCENE_NAME);
 
-        if (debugMode)
-            Environment.i.platform.debugController.SetDebug();
+        DataStore.i.debugConfig.isDebugMode.Set(debugMode);
 
         SetUp_SceneController();
 

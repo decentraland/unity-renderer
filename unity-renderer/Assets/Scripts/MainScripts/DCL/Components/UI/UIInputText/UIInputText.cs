@@ -12,7 +12,38 @@ namespace DCL.Components
         [System.Serializable]
         new public class Model : UIShape.Model
         {
-            public TextShape.Model textModel;
+            public float outlineWidth = 0f;
+            public Color outlineColor = Color.white;
+
+            public Color color = Color.white;
+
+            //These values exist in the SDK but we are doing nothing with these values
+            public float thickness = 1f;
+            public Color placeHolderColor = Color.white;
+            public float maxWidth = 100f;
+            public bool autoStretchWidth = true;
+            public Color background = Color.black;
+
+            public string fontWeight = "normal";
+            //
+
+            public float fontSize = 100f;
+            public string font;
+            public string value = "";
+            public string hTextAlign = "bottom";
+            public string vTextAlign = "left";
+            public bool textWrapping = false;
+
+            public float shadowBlur = 0f;
+            public float shadowOffsetX = 0f;
+            public float shadowOffsetY = 0f;
+            public Color shadowColor = new Color(1, 1, 1);
+
+            public float paddingTop = 0f;
+            public float paddingRight = 0f;
+            public float paddingBottom = 0f;
+            public float paddingLeft = 0f;
+
             public string placeholder;
             public Color placeholderColor = Color.white;
             public Color focusedBackground = Color.black;
@@ -25,10 +56,6 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json)
             {
                 Model model = Utils.SafeFromJson<Model>(json);
-                // SDK is sending the textModel as fields in the upper (UIInputText) model
-                // so our current model hierarchy in Unity does not represent what SDK send
-                // therefore having to parse this twice
-                model.textModel = Utils.SafeFromJson<TextShape.Model>(json);
                 return model;
             }
         }
@@ -66,7 +93,14 @@ namespace DCL.Components
             inputField.onSubmit.AddListener(OnSubmit);
             inputField.onValueChanged.AddListener(OnChanged);
 
-            yield return DCL.Components.TextShape.ApplyModelChanges(scene, tmpText, model.textModel);
+            // We avoid using even yield break; as this instruction skips a frame and we don't want that.
+            if ( !DCLFont.IsFontLoaded(scene, model.font) )
+            {
+                yield return DCLFont.WaitUntilFontIsReady(scene, model.font);
+            }
+
+            DCLFont.SetFontFromComponent(scene, model.font, referencesContainer.text);
+            ApplyModelChanges(tmpText, model);
 
             inputField.text = model.placeholder;
             inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g,
@@ -155,6 +189,55 @@ namespace DCL.Components
         {
             UnsuscribeFromEvents();
             base.Dispose();
+        }
+
+        private void ApplyModelChanges(TMP_Text text, Model model)
+        {
+            text.text = model.value;
+
+            text.color = new Color(model.color.r, model.color.g, model.color.b, model.visible ? model.opacity : 0);
+            text.fontSize = (int) model.fontSize;
+            text.richText = true;
+            text.overflowMode = TextOverflowModes.Overflow;
+
+            text.margin =
+                new Vector4
+                (
+                    (int) model.paddingLeft,
+                    (int) model.paddingTop,
+                    (int) model.paddingRight,
+                    (int) model.paddingBottom
+                );
+
+            text.alignment = TextShape.GetAlignment(model.vTextAlign, model.hTextAlign);
+            text.lineSpacing = 0f;
+
+            text.maxVisibleLines = int.MaxValue;
+
+
+            text.enableWordWrapping = model.textWrapping && !text.enableAutoSizing;
+
+            if (model.shadowOffsetX != 0 || model.shadowOffsetY != 0)
+            {
+                text.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
+                text.fontSharedMaterial.SetColor("_UnderlayColor", model.shadowColor);
+                text.fontSharedMaterial.SetFloat("_UnderlaySoftness", model.shadowBlur);
+            }
+            else if (text.fontSharedMaterial.IsKeywordEnabled("UNDERLAY_ON"))
+            {
+                text.fontSharedMaterial.DisableKeyword("UNDERLAY_ON");
+            }
+
+            if (model.outlineWidth > 0f)
+            {
+                text.fontSharedMaterial.EnableKeyword("OUTLINE_ON");
+                text.outlineWidth = model.outlineWidth;
+                text.outlineColor = model.outlineColor;
+            }
+            else if (text.fontSharedMaterial.IsKeywordEnabled("OUTLINE_ON"))
+            {
+                text.fontSharedMaterial.DisableKeyword("OUTLINE_ON");
+            }
         }
     }
 }

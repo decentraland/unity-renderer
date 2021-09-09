@@ -610,19 +610,46 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
+    [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
 #else
+        private static bool hasQueuedMessages = false;
+        private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
-
+        public static bool CheckURLParam(string targetParam) { return false; }
         public static void MessageFromEngine(string type, string message)
         {
             if (OnMessageFromEngine != null)
             {
+                if (hasQueuedMessages)
+                {
+                    ProcessQueuedMessages();
+                }
                 OnMessageFromEngine.Invoke(type, message);
+                if (VERBOSE)
+                {
+                    Debug.Log("MessageFromEngine called with: " + type + ", " + message);
+                }
             }
-
-            if (VERBOSE)
+            else
             {
-                Debug.Log("MessageFromEngine called with: " + type + ", " + message);
+                lock (queuedMessages)
+                {
+                    queuedMessages.Add((type, message));
+                }
+                hasQueuedMessages = true;
+            }
+        }
+
+        private static void ProcessQueuedMessages()
+        {
+            hasQueuedMessages = false;
+            lock (queuedMessages)
+            {
+                foreach ((string type, string payload) in queuedMessages)
+                {
+                    MessageFromEngine(type, payload);
+                }
+                queuedMessages.Clear();
             }
         }
 
@@ -979,6 +1006,17 @@ namespace DCL.Interface
             public string newUnverifiedName;
         }
 
+        [Serializable]
+        public class SendVideoProgressEvent
+        {
+            public string componentId;
+            public string sceneId;
+            public string videoTextureId;
+            public int status;
+            public float currentOffset;
+            public float videoLength;
+        }
+
         public static void RequestOwnProfileUpdate() { SendMessage("RequestOwnProfileUpdate"); }
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
@@ -1239,6 +1277,26 @@ namespace DCL.Interface
         {
             stringPayload.value = message;
             SendMessage("NotifyStatusThroughChat", stringPayload);
+        }
+        public static void ReportVideoProgressEvent(
+            string componentId,
+            string sceneId,
+            string videoClipId, 
+            int videoStatus, 
+            float currentOffset,
+            float length)
+        {
+            SendVideoProgressEvent progressEvent = new SendVideoProgressEvent()
+            {
+                componentId = componentId,
+                sceneId = sceneId,
+                videoTextureId = videoClipId,
+                status = videoStatus,
+                currentOffset =  currentOffset,
+                videoLength = length
+            };
+
+            SendMessage("VideoProgressEvent", progressEvent);
         }
     }
 }
