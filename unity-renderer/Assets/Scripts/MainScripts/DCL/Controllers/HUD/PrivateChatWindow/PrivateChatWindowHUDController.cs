@@ -110,13 +110,13 @@ public class PrivateChatWindowHUDController : IHUD
             // The messages from 'conversationUserId' are marked as read once the private chat is opened
             MarkUserChatMessagesAsRead(conversationUserId);
             view.chatHudView.scrollRect.verticalNormalizedPosition = 0;
-            conversationSnapshot.AddListener(view.ConfigureAvatarSnapshot);
+            conversationSnapshot?.AddListener(view.ConfigureAvatarSnapshot);
 
             AudioScriptableObjects.dialogOpen.Play(true);
         }
         else
         {
-            conversationSnapshot.RemoveListener(view.ConfigureAvatarSnapshot);
+            conversationSnapshot?.RemoveListener(view.ConfigureAvatarSnapshot);
             AudioScriptableObjects.dialogClose.Play(true);
         }
     }

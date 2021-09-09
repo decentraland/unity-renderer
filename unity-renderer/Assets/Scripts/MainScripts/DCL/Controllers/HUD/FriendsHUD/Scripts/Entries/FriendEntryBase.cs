@@ -61,7 +61,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     protected void OnDestroy()
     {
-        model.avatarSnapshotObserver.RemoveListener(OnAvatarImageChange);
+        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
     }
 
     public virtual void Populate(Model model)
