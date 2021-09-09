@@ -73,11 +73,6 @@ var WebVideoPlayer = {
             console.log("video: Playing ");
             videoData.state = videoState.PLAYING;
         };
-        
-        vid.addEventListener("pause", function() {
-            console.log("EVENT LISTENER video: Paused ");
-            videoData.state = videoState.PAUSED;
-        });
 
         vid.onpause = function () {
             console.log("video: Paused ");
@@ -174,10 +169,10 @@ var WebVideoPlayer = {
 
     WebVideoPlayerPause: function (videoId) {
         const videoData = videos[Pointer_stringify(videoId)];
+        videoData.video.pause();
         if (videoData.hlsInstance !== undefined) {
             videoData.hlsInstance.detachMedia(videoData.video);
         }
-        videoData.video.pause();
     },
 
     WebVideoPlayerVolume: function (videoId, volume) {
