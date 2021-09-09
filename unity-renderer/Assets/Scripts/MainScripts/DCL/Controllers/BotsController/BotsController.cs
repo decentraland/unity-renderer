@@ -7,6 +7,7 @@ using DCL.Helpers;
 using Google.Protobuf;
 using UnityEngine;
 using DCL.Configuration;
+using MainScripts.DCL.WorldRuntime;
 using Random = UnityEngine.Random;
 
 namespace DCL.Bots
@@ -18,7 +19,7 @@ namespace DCL.Bots
     /// </summary>
     public class BotsController : IBotsController
     {
-        private ParcelScene globalScene;
+        private ISceneMessageProcessor globalScene;
         private List<string> randomizedCollections = new List<string>();
         private List<string> instantiatedBots = new List<string>();
         private List<string> eyesWearableIds = new List<string>();
@@ -41,7 +42,7 @@ namespace DCL.Bots
             if (globalScene != null)
                 yield break;
 
-            globalScene = Environment.i.world.state.loadedScenes[Environment.i.world.state.globalSceneIds[0]] as ParcelScene;
+            globalScene = Environment.i.world.state.loadedScenes[Environment.i.world.state.globalSceneIds[0]] as ISceneMessageProcessor;
 
             CatalogController.wearableCatalog.Clear();
 
@@ -176,7 +177,7 @@ namespace DCL.Bots
             {
                 amount = config.amount,
                 xPos = config.xCoord * ParcelSettings.PARCEL_SIZE,
-                yPos = playerUnityPosition.y - DCLCharacterController.i.characterController.height / 2,
+                yPos = playerUnityPosition.y - CHARACTER_HEIGHT / 2,
                 zPos = config.yCoord * ParcelSettings.PARCEL_SIZE,
                 areaWidth = config.areaWidth,
                 areaDepth = config.areaDepth
@@ -337,6 +338,7 @@ namespace DCL.Bots
         }
 
         private const float WAYPOINTS_UPDATE_DEFAULT_TIME = 5f;
+        private const float CHARACTER_HEIGHT = 1.6f;
         private void PatchCoordsRandomMovementConfig(CoordsRandomMovementConfig config)
         {
             config.populationNormalizedPercentage = Mathf.Clamp(config.populationNormalizedPercentage, 0f, 1f);
@@ -409,7 +411,7 @@ namespace DCL.Bots
             }
         }
 
-        void UpdateEntityTransform(ParcelScene scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)
+        void UpdateEntityTransform(ISceneMessageProcessor scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.EntityComponentCreateOrUpdate(

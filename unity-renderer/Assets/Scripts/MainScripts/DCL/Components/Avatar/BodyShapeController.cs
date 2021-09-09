@@ -26,6 +26,8 @@ public class BodyShapeController : WearableController, IBodyShapeController
     private bool upperBodyActive = true;
     private bool feetActive = true;
 
+    private AvatarAnimationEventAudioHandler animEventAudioHandler;
+
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
     protected BodyShapeController(BodyShapeController original) : base(original)
@@ -229,10 +231,13 @@ public class BodyShapeController : WearableController, IBodyShapeController
                 audioHandlerRemote.Init(createdAnimation.gameObject);
             }
         }
+
+        animEventAudioHandler = animationEventAudioHandler;
     }
 
     public override void CleanUp()
     {
+        UnityEngine.Object.Destroy(animEventAudioHandler);
         facialFeaturesVisible = true;
         base.CleanUp();
     }

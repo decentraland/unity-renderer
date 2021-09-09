@@ -41,6 +41,7 @@ namespace DCL
 
         public Asset_AB()
         {
+            assetsByExtension = new Dictionary<string, List<Object>>();
         }
 
         public override object Clone() => (Asset_AB) MemberwiseClone();

@@ -50,6 +50,28 @@ namespace Tests.AvatarNamesHUD
         }
 
         [Test]
+        public void HideNamesOutsideFrustrum()
+        {
+            var camera = new GameObject().AddComponent<Camera>();
+            camera.tag = "MainCamera";
+
+            Player user0 = new Player { id = "user0", name = "user0", isTalking = false, worldPosition = (Camera.main.transform.position - Camera.main.transform.forward) };
+            hudView.TrackPlayer(user0);
+
+            AvatarNamesTracker tracker = hudView.trackers["user0"];
+            Assert.AreEqual(user0, tracker.player);
+            Assert.NotNull(tracker);
+
+            tracker.UpdatePosition();
+
+            Assert.False(tracker.background.gameObject.activeSelf);
+            Assert.False(tracker.name.gameObject.activeSelf);
+            Assert.False(tracker.voiceChatCanvasGroup.gameObject.activeSelf);
+
+            Object.Destroy(camera.gameObject);
+        }
+
+        [Test]
         public void UntrackPlayer()
         {
             Player user0 = new Player { id = "user0", name = "user0" };

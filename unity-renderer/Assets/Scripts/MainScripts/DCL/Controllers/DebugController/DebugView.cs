@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DCL
 {
@@ -15,6 +16,10 @@ namespace DCL
         [SerializeField]
         private GameObject sceneDebugPanel;
 
+        [SerializeField] private InfoPanel infoPanel;
+
+        private void Awake() { infoPanel.SetVisible(false); }
+
         public void ShowFPSPanel() { fpsPanel.SetActive(true); }
 
         public void HideFPSPanel() { fpsPanel.SetActive(false); }
@@ -29,6 +34,16 @@ namespace DCL
         {
             sceneDebugPanel.SetActive(false);
             engineDebugPanel.SetActive(true);
+        }
+        public void ShowInfoPanel(string network, string realm)
+        {
+            infoPanel.Setup(network, realm);
+            infoPanel.SetVisible(true);
+        }
+
+        public void HideInfoPanel()
+        {
+            infoPanel.SetVisible(false);
         }
     }
 }

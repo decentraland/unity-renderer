@@ -40,10 +40,13 @@ namespace DCL
             OnSetVisibility?.Invoke(visibility);
         }
 
-        private void SetVisibilityForGameObjects(bool value)
+        internal void SetVisibilityForGameObjects(bool value)
         {
             foreach (GameObject gameObject in gameObjectsToToggle)
             {
+                if (gameObject == null)
+                    continue;
+
                 gameObject.SetActive(value);
             }
         }

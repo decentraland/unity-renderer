@@ -21,7 +21,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            Environment.i.platform.debugController.SetDebug();
+            DataStore.i.debugConfig.isDebugMode.Set(true);
             DCL.Configuration.EnvironmentSettings.DEBUG = true;
         }
 

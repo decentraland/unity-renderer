@@ -14,7 +14,6 @@ namespace DCL.Tests
             IParcelScenesCleaner parcelScenesCleaner = Substitute.For<IParcelScenesCleaner>();
             IClipboard clipboard = Substitute.For<IClipboard>();
             IPhysicsSyncController physicsSyncController = Substitute.For<IPhysicsSyncController>();
-            IDebugController debugController = Substitute.For<IDebugController>();
             IWebRequestController webRequest = Substitute.For<IWebRequestController>();
             IServiceProviders serviceProviders = Substitute.For<IServiceProviders>();
             IIdleChecker idleChecker = Substitute.For<IIdleChecker>();
@@ -39,9 +38,6 @@ namespace DCL.Tests
                     case IParcelScenesCleaner pscc:
                         parcelScenesCleaner = pscc;
                         break;
-                    case IDebugController dc:
-                        debugController = dc;
-                        break;
                     case IWebRequestController wrc:
                         webRequest = wrc;
                         break;
@@ -61,8 +57,7 @@ namespace DCL.Tests
                 cullingController,
                 clipboard,
                 physicsSyncController,
-                parcelScenesCleaner,
-                debugController,
+                parcelScenesCleaner, 
                 webRequest,
                 serviceProviders,
                 idleChecker,
@@ -75,7 +70,6 @@ namespace DCL.Tests
             IClipboard clipboard = null,
             IPhysicsSyncController physicsSyncController = null,
             IParcelScenesCleaner parcelScenesCleaner = null,
-            IDebugController debugController = null,
             IWebRequestController webRequestController = null,
             IServiceProviders serviceProviders = null,
             IIdleChecker idleChecker = null,
@@ -86,8 +80,7 @@ namespace DCL.Tests
                 cullingController: cullingController ?? Substitute.For<ICullingController>(),
                 clipboard: clipboard ?? Substitute.For<IClipboard>(),
                 physicsSyncController: physicsSyncController ?? Substitute.For<IPhysicsSyncController>(),
-                parcelScenesCleaner: parcelScenesCleaner ?? Substitute.For<IParcelScenesCleaner>(),
-                debugController: debugController ?? Substitute.For<IDebugController>(),
+                parcelScenesCleaner: parcelScenesCleaner ?? Substitute.For<IParcelScenesCleaner>(), 
                 webRequest: webRequestController ?? GetWebRequestControllerMock(),
                 serviceProviders: serviceProviders ?? GetServiceProvidersMock(),
                 idleChecker: idleChecker ?? Substitute.For<IIdleChecker>(),
