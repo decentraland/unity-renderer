@@ -83,8 +83,8 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         if (this.model != null && isActiveAndEnabled)
         {
-            model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
-            this.model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+            this.model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+            model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
         }
 
         this.model = model;
