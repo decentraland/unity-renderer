@@ -30,11 +30,13 @@ namespace Tests
         }
 
         [Test]
-        public void IgnoresCullingController()
+        public void SetLayersProperly()
         {
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
             Assert.AreEqual(avatar.gameObject.layer, LayerMask.NameToLayer("ViewportCullingIgnored"));
+            Assert.AreEqual(avatar.avatarCollider.gameObject.layer, LayerMask.NameToLayer("AvatarTriggerDetection"));
+            Assert.AreEqual(avatar.onPointerDown.gameObject.layer, LayerMask.NameToLayer("OnPointerEvent"));
         }
 
         [UnityTest]

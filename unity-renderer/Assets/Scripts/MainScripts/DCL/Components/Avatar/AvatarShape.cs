@@ -18,7 +18,7 @@ namespace DCL
         public AvatarMovementController avatarMovementController;
 
         [SerializeField]
-        private AvatarOnPointerDown onPointerDown;
+        internal AvatarOnPointerDown onPointerDown;
 
         private StringVariable currentPlayerInfoCardId;
 
