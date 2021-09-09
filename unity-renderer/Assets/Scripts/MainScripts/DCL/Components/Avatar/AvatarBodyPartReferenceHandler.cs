@@ -11,6 +11,7 @@ public class AvatarBodyPartReferenceHandler : MonoBehaviour
         // Find body parts
         Transform[] children = GetComponentsInChildren<Transform>();
         for (int i = 0; i < children.Length; i++) {
+            Debug.Log(children[i].name);
             if (children[i].name == "Avatar_LeftToeBase")
                 footL = children[i];
             if (children[i].name == "Avatar_RightToeBase")

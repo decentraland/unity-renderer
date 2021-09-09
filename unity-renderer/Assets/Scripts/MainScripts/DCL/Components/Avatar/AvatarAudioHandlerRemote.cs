@@ -72,7 +72,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
                 footstepJump.Play(true);
             if (bodyPartReferenceHandler != null) {
                 if (particleSystemsHandler != null)
-                    particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, 5);
+                    particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, Vector3.up, 5);
             }
         }
 
@@ -82,7 +82,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
                 footstepLand.Play(true);
             if (bodyPartReferenceHandler != null) {
                 if (particleSystemsHandler != null)
-                    particleSystemsHandler.EmitFootstepParticles(Vector3.Lerp(bodyPartReferenceHandler.footL.position, bodyPartReferenceHandler.footR.position, 0.5f), 10);
+                    particleSystemsHandler.EmitFootstepParticles(Vector3.Lerp(bodyPartReferenceHandler.footL.position, bodyPartReferenceHandler.footR.position, 0.5f), Vector3.up, 10);
             }
         }
 

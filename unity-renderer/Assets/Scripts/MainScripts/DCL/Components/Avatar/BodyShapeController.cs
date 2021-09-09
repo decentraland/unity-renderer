@@ -26,7 +26,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
     private bool upperBodyActive = true;
     private bool feetActive = true;
 
-    private AvatarAnimationEventAudioHandler animEventAudioHandler;
+    private AvatarAnimationEventHandler animEventHandler;
 
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
@@ -221,11 +221,11 @@ public class BodyShapeController : WearableController, IBodyShapeController
         AvatarBodyPartReferenceHandler bodyPartReferenceHandler = createdAnimation.gameObject.AddComponent<AvatarBodyPartReferenceHandler>();
 
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
-        AvatarAnimationEventHandler animationEventAudioHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
+        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = container.transform.parent.parent.GetComponentInChildren<AudioContainer>();
         if (audioContainer != null)
         {
-            animationEventAudioHandler.Init(audioContainer);
+            animationEventHandler.Init(audioContainer);
 
             //NOTE(Mordi): If this is a remote avatar, pass the animation component so we can keep track of whether it is culled (off-screen) or not
             AvatarAudioHandlerRemote audioHandlerRemote = audioContainer.GetComponent<AvatarAudioHandlerRemote>();
@@ -235,12 +235,12 @@ public class BodyShapeController : WearableController, IBodyShapeController
             }
         }
 
-        animEventAudioHandler = animationEventAudioHandler;
+        animEventHandler = animationEventHandler;
     }
 
     public override void CleanUp()
     {
-        UnityEngine.Object.Destroy(animEventAudioHandler);
+        UnityEngine.Object.Destroy(animEventHandler);
         facialFeaturesVisible = true;
         base.CleanUp();
     }

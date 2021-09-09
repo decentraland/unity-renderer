@@ -5,6 +5,8 @@ using DCL.Helpers;
 
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
+    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap";
+
     AudioEvent footstepLight;
     AudioEvent footstepSlide;
     AudioEvent footstepWalk;
@@ -17,7 +19,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     AvatarParticleSystemsHandler particleSystemsHandler;
     AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
 
-    Animation debug;
+    Animation anim;
 
     public void Init(AudioContainer audioContainer)
     {
@@ -36,11 +38,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         particleSystemsHandler = FindObjectOfType<AvatarParticleSystemsHandler>();
         bodyPartReferenceHandler = GetComponent<AvatarBodyPartReferenceHandler>();
 
-        debug = GetComponent<Animation>();
-    }
-
-    private void Update() {
-        Debug.Log($"IsPlaying = {debug.isPlaying}");
+        anim = GetComponent<Animation>();
     }
 
     public void AnimEvent_FootstepLight() { TryPlayingEvent(footstepLight); }
@@ -54,38 +52,69 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     public void AnimEvent_FootstepRunLeft()
     {
         TryPlayingEvent(footstepRun);
-        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footL.position, 3);
+        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footL.position, Vector3.up, 3);
     }
 
     public void AnimEvent_FootstepRunRight() {
         TryPlayingEvent(footstepRun);
-        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, 3);
+        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, Vector3.up, 3);
     }
 
     public void AnimEvent_ClothesRustleShort() { TryPlayingEvent(clothesRustleShort); }
 
     public void AnimEvent_Clap()
     {
+        if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_CLAP))
+            return;
+
         TryPlayingEvent(clap);
+        particleSystemsHandler.EmitClapParticles(bodyPartReferenceHandler.handR.position, Vector3.up, 1);
     }
 
     public void AnimEvent_ThrowMoney()
     {
+        if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_MONEY))
+            return;
+
         TryPlayingEvent(throwMoney);
-        particleSystemsHandler.EmitMoneyParticles(bodyPartReferenceHandler.handL.position, 1);
-        Debug.Log("Moeny!");
+        particleSystemsHandler.EmitMoneyParticles(bodyPartReferenceHandler.handL.position, bodyPartReferenceHandler.handL.rotation.eulerAngles, 1);
     }
 
     public void AnimEvent_BlowKiss()
     {
+        if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_KISS))
+            return;
+
         TryPlayingEvent(blowKiss);
-        particleSystemsHandler.EmitHeartParticles(bodyPartReferenceHandler.handR.position, 1);
-        Debug.Log("Kiss!");
+        StartCoroutine(EmitHeartParticle());
+    }
+
+    IEnumerator EmitHeartParticle()
+    {
+        yield return new WaitForSeconds(0.8f);
+
+        particleSystemsHandler.EmitHeartParticles(bodyPartReferenceHandler.handR.position, transform.rotation.eulerAngles, 1);
     }
 
     void TryPlayingEvent(AudioEvent audioEvent)
     {
         if (audioEvent != null)
             audioEvent.Play(true);
+    }
+
+    bool AnimationWeightIsOverThreshold(float threshold, string animationName) {
+        if (anim != null) {
+            if (anim.isPlaying) {
+                foreach (AnimationState state in anim) {
+                    if (state.name == animationName) {
+                        if (state.weight > threshold)
+                            return true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

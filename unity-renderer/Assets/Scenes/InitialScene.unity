@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.10252202, g: 0.24458984, b: 0.36489132, a: 1}
+  m_IndirectSpecularColor: {r: 0.00076876703, g: 0.8351885, b: 0.8361403, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -402,6 +402,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b4489d3b0fae4f40ba54a2e85c1a5dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &542936184
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352784, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642226795009352790, guid: 05734408021eafb4b8b10211cdc978ef,
+        type: 3}
+      propertyPath: m_Name
+      value: AvatarParticleSystems
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 05734408021eafb4b8b10211cdc978ef, type: 3}
 --- !u!1 &929297252 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 54063241633877533, guid: b0965b55b892d438da492708ea09799c,
@@ -1048,7 +1117,7 @@ MonoBehaviour:
   testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
-  soloScene: 0
+  soloScene: 1
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
@@ -1117,7 +1186,7 @@ MonoBehaviour:
   inputControllerReference: {fileID: 326638024064006571}
   cursorCanvasReference: {fileID: 326638024064006572}
   builderInWorldBridgeReference: {fileID: 322303338}
-  playerAvatarControllerReference: {fileID: 2021276774}
+  playerAvatarControllerReference: {fileID: 0}
   cameraControllerReference: {fileID: 1608366483}
   mainCameraReference: {fileID: 326638024064006573}
 --- !u!4 &1886716058
@@ -1140,18 +1209,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 326638024064006570}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2021276774 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1312815038965150261, guid: b0965b55b892d438da492708ea09799c,
-    type: 3}
-  m_PrefabInstance: {fileID: 326638024064006570}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f6940e8f999878409de9cb43a484943, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2038581388 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4563922593988327124, guid: b0965b55b892d438da492708ea09799c,
