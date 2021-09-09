@@ -60,32 +60,26 @@ var WebVideoPlayer = {
         }
 
         vid.oncanplay = function () {
-            console.log("video: CanPlay ");
             videoData.state = videoState.READY;
         };
 
         vid.loadstart = function () {
-            console.log("video: Loading ");
             videoData.state = videoState.LOADING;
         };
 
         vid.onplaying = function () {
-            console.log("video: Playing ");
             videoData.state = videoState.PLAYING;
         };
 
         vid.onpause = function () {
-            console.log("video: Paused ");
             videoData.state = videoState.PAUSED;
         };
 
         vid.onwaiting = function () {
-            console.log("video: Buffering ");
             videoData.state = videoState.BUFFERING;
         };
 
         vid.onseeking = function () {
-            console.log("video: Seeking ");
             videoData.state = videoState.SEEKING;
         };
 
@@ -169,10 +163,11 @@ var WebVideoPlayer = {
 
     WebVideoPlayerPause: function (videoId) {
         const videoData = videos[Pointer_stringify(videoId)];
-        videoData.video.pause();
         if (videoData.hlsInstance !== undefined) {
             videoData.hlsInstance.detachMedia(videoData.video);
         }
+        videoData.video.pause();
+        videoData.state = videoState.PAUSED;
     },
 
     WebVideoPlayerVolume: function (videoId, volume) {
