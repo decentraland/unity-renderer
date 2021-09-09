@@ -610,9 +610,6 @@ namespace DCL
 
         public void SetImpostorVisibility(bool impostorVisibility)
         {
-            if (isLoading)
-                return;
-            
             if (impostorVisibility && !initializedImpostor)
                 InitializeImpostor();
             
