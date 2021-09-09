@@ -6,6 +6,7 @@ using DCL.Helpers;
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
     const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap";
+    const float MIN_EVENT_WAIT_TIME = 0.1f;
 
     AudioEvent footstepLight;
     AudioEvent footstepSlide;
@@ -20,6 +21,8 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
 
     Animation anim;
+
+    float lastEventTime;
 
     public void Init(AudioContainer audioContainer)
     {
@@ -64,29 +67,41 @@ public class AvatarAnimationEventHandler : MonoBehaviour
 
     public void AnimEvent_Clap()
     {
+        if (LastEventWasTooRecent())
+            return;
+
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_CLAP))
             return;
 
         TryPlayingEvent(clap);
         particleSystemsHandler.EmitClapParticles(bodyPartReferenceHandler.handR.position, Vector3.up, 1);
+        UpdateEventTime();
     }
 
     public void AnimEvent_ThrowMoney()
     {
+        if (LastEventWasTooRecent())
+            return;
+
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_MONEY))
             return;
 
         TryPlayingEvent(throwMoney);
         particleSystemsHandler.EmitMoneyParticles(bodyPartReferenceHandler.handL.position, bodyPartReferenceHandler.handL.rotation.eulerAngles, 1);
+        UpdateEventTime();
     }
 
     public void AnimEvent_BlowKiss()
     {
+        if (LastEventWasTooRecent())
+            return;
+
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_KISS))
             return;
 
         TryPlayingEvent(blowKiss);
         StartCoroutine(EmitHeartParticle());
+        UpdateEventTime();
     }
 
     IEnumerator EmitHeartParticle()
@@ -102,7 +117,8 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             audioEvent.Play(true);
     }
 
-    bool AnimationWeightIsOverThreshold(float threshold, string animationName) {
+    bool AnimationWeightIsOverThreshold(float threshold, string animationName)
+    {
         if (anim != null) {
             if (anim.isPlaying) {
                 foreach (AnimationState state in anim) {
@@ -116,5 +132,15 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         }
 
         return false;
+    }
+
+    void UpdateEventTime()
+    {
+        lastEventTime = Time.realtimeSinceStartup;
+    }
+
+    bool LastEventWasTooRecent()
+    {
+        return lastEventTime + MIN_EVENT_WAIT_TIME >= Time.realtimeSinceStartup;
     }
 }
