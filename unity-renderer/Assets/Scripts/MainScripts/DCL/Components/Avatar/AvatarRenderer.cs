@@ -27,6 +27,7 @@ namespace DCL
         private SimpleGPUSkinning gpuSkinning = null;
         private GPUSkinningThrottler gpuSkinningThrottler = null;
         private int gpuSkinningFramesBetweenUpdates = 1;
+        private bool initializedImpostor = false;
 
         private Renderer mainMeshRenderer
         {
@@ -134,6 +135,8 @@ namespace DCL
 
         public void InitializeImpostor()
         {
+            initializedImpostor = true;   
+            
             // The fetched snapshot can take its time so it's better to assign a generic impostor first.
             AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
 
@@ -605,7 +608,16 @@ namespace DCL
             mainMeshRenderer.enabled = newVisibility;
         }
 
-        public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
+        public void SetImpostorVisibility(bool impostorVisibility)
+        {
+            if (isLoading)
+                return;
+            
+            if (impostorVisibility && !initializedImpostor)
+                InitializeImpostor();
+            
+            lodRenderer.gameObject.SetActive(impostorVisibility);
+        }
 
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
 
