@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.Helpers;
 using TMPro;
@@ -57,7 +58,16 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         menuButton.gameObject.SetActive(false);
     }
 
-    protected virtual void OnDisable() { OnPointerExit(null); }
+    private void OnEnable()
+    {
+        model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+    }
+
+    protected virtual void OnDisable()
+    {
+        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        OnPointerExit(null);
+    }
 
     protected void OnDestroy()
     {
@@ -66,13 +76,18 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public virtual void Populate(Model model)
     {
-        this.model = model;
-
         if (playerNameText.text != model.userName)
             playerNameText.text = model.userName;
 
-        model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
         playerBlockedImage.enabled = model.blocked;
+
+        if (this.model != null && isActiveAndEnabled)
+        {
+            model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+            this.model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+        }
+
+        this.model = model;
     }
 
     private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }

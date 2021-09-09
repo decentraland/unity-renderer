@@ -43,19 +43,36 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
 
     private void OnEnable()
     {
+        if ( profile != null )
+            profile.snapshotObserver.AddListener(SetAvatarSnapshotImage);
+
         if ( talkingAnimator.isActiveAndEnabled )
             talkingAnimator.SetBool(talkingAnimation, isRecording);
+    }
+
+    private void OnDisable()
+    {
+        if ( profile != null )
+            profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
+    }
+
+    private void OnDestroy()
+    {
+        if ( profile != null )
+            profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
     }
 
     public void SetUserProfile(UserProfile profile)
     {
         userName.text = profile.userName;
 
-        profile.snapshotObserver.AddListener(SetAvatarSnapshotImage);
         SetupFriends(profile.userId);
 
-        if ( this.profile != null )
+        if (this.profile != null && isActiveAndEnabled)
+        {
             this.profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
+            profile.snapshotObserver.AddListener(SetAvatarSnapshotImage);
+        }
 
         this.profile = profile;
     }
@@ -83,9 +100,9 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         isMuted = false;
         isRecording = false;
 
-        if (profile)
+        if (profile != null)
         {
-            profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
+            profile.snapshotObserver?.RemoveListener(SetAvatarSnapshotImage);
             profile = null;
         }
 

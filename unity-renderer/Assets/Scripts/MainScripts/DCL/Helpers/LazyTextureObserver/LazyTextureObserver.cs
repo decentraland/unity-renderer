@@ -148,7 +148,10 @@ namespace DCL.Helpers
             subscriptions.Remove(listener);
 
             if ( subscriptions.Count == 0 )
+            {
                 textureLoader.Unload();
+                state = State.NONE;
+            }
         }
 
         public void RefreshWithUri(string uri)
@@ -169,6 +172,7 @@ namespace DCL.Helpers
                 return;
 
             textureLoader.Unload();
+            state = State.NONE;
 
             this.uri = null;
             this.texture = texture;
@@ -209,6 +213,8 @@ namespace DCL.Helpers
         {
             state = State.NONE;
             textureLoader.Unload();
+            subscriptions.Clear();
+            OnLoaded = null;
         }
 
         public static LazyTextureObserver CreateWithUri(string uri)

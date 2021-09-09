@@ -174,7 +174,6 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
         name.text = userProfile.userName;
         description.text = userProfile.description;
-        userProfile.snapshotObserver.AddListener(SetFaceSnapshot);
 
         ClearCollectibles();
 
@@ -212,14 +211,26 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         if ( currentUserProfile != null )
             currentUserProfile.snapshotObserver.RemoveListener(SetFaceSnapshot);
 
+        userProfile.snapshotObserver.AddListener(SetFaceSnapshot);
+
         currentUserProfile = userProfile;
     }
 
     private void UpdateFriendButton()
     {
+        if (currentUserProfile == null)
+        {
+            requestReceivedContainer.SetActive(false);
+            addFriendButton.gameObject.SetActive(false);
+            alreadyFriendsContainer.SetActive(false);
+            requestSentButton.gameObject.SetActive(false);
+            return;
+        }
+
         bool canUseFriendButton = FriendsController.i != null && FriendsController.i.isInitialized && currentUserProfile.hasConnectedWeb3;
 
         friendStatusContainer.SetActive(canUseFriendButton);
+
         if (!canUseFriendButton)
         {
             addFriendButton.gameObject.SetActive(false);
@@ -227,9 +238,6 @@ public class PlayerInfoCardHUDView : MonoBehaviour
             requestSentButton.gameObject.SetActive(false);
             return;
         }
-
-        if (currentUserProfile == null)
-            return;
 
         var status = FriendsController.i.GetUserStatus(currentUserProfile.userId);
 
