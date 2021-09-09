@@ -13,6 +13,7 @@ namespace DCL
         void SetImpostor();
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
+        void SetThrottling(int framesBetweenUpdates);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -102,6 +103,8 @@ namespace DCL
             SetAvatarFeatures(false, false);
             StartTransition(0, 0);
         }
+
+        public void SetThrottling(int framesBetweenUpdates) { player?.renderer?.SetThrottling(framesBetweenUpdates); }
 
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
