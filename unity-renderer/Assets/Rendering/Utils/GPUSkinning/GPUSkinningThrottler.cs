@@ -23,6 +23,5 @@ namespace GPUSkinning
             if (currentFrame % framesBetweenUpdates == 0)
                 gpuSkinning.Update();
         }
-
     }
 }
