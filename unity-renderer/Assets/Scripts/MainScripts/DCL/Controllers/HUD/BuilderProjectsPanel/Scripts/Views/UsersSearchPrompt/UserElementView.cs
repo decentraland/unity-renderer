@@ -1,6 +1,5 @@
 ﻿using System;
 using DCL;
-using NSubstitute;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
