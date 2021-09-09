@@ -48,6 +48,7 @@ namespace DCL.Components
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
         private string lastVideoClipID;
+        private VideoState previousVideoState;
 
         public DCLVideoTexture()
         {
@@ -152,7 +153,7 @@ namespace DCL.Components
                 {
                     texturePlayer.Pause();
                 }
-                
+
                 ReportVideoProgress();
 
                 if (baseVolume != model.volume)
@@ -210,9 +211,12 @@ namespace DCL.Components
         }
         private void UpdateProgressReport()
         {
-            if (texturePlayer.playing && IsTimeToReportVideoProgress())
+            var currentState = texturePlayer.GetState();
+            if ( currentState == VideoState.PLAYING && IsTimeToReportVideoProgress()
+                 || previousVideoState != currentState)
             {
                 lastVideoProgressReportTime = Time.unscaledTime;
+                previousVideoState = currentState;
                 ReportVideoProgress();
             }
         }
