@@ -167,7 +167,7 @@ var WebVideoPlayer = {
             videoData.hlsInstance.detachMedia(videoData.video);
         }
         videoData.video.pause();
-        videoData.state = videoState.PAUSED;
+        videoData.state = 7; //PAUSED
     },
 
     WebVideoPlayerVolume: function (videoId, volume) {
