@@ -29,6 +29,14 @@ namespace Tests
             }
         }
 
+        [Test]
+        public void IgnoresCullingController()
+        {
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
+            Assert.AreEqual(avatar.gameObject.layer, LayerMask.NameToLayer("ViewportCullingIgnored"));
+        }
+
         [UnityTest]
         public IEnumerator DestroyWhileLoading()
         {
