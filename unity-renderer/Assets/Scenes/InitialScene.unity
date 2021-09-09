@@ -1510,7 +1510,7 @@ PrefabInstance:
     - target: {fileID: 8462884469031320405, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
         type: 3}
       propertyPath: m_ApplyActiveColorSpace
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8462884469031320405, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
         type: 3}
@@ -1525,6 +1525,16 @@ PrefabInstance:
     - target: {fileID: 8462884469031320405, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
         type: 3}
       propertyPath: m_VertexStreams.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8462884469031320405, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[1]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8462884469031320405, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[2]
       value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1866,6 +1876,11 @@ PrefabInstance:
       propertyPath: m_OcclusionCulling
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3666597879787490177, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_Lens.m_SensorSize.x
+      value: 1.6322795
+      objectReference: {fileID: 0}
     - target: {fileID: 4037588735475582821, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1881,6 +1896,31 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 1.8401191
       objectReference: {fileID: 0}
+    - target: {fileID: 4037588735475582821, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.3915296
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037588735475582821, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.15186195
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037588735475582821, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.8461299
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037588735475582821, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.32818705
+      objectReference: {fileID: 0}
+    - target: {fileID: 5653062585339158197, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: particleSystemsHandler
+      value: 
+      objectReference: {fileID: 1103781732}
     - target: {fileID: 6384478764905876486, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_Name
@@ -2198,8 +2238,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2676670020973430371, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
         type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676670020973430371, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676670020973430371, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.minScalar
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676670020973430371, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
+        type: 3}
       propertyPath: InitialModule.startColor.maxColor.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676670020973430371, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2946294826394735053, guid: 4c4c6e9b81255bb4682339e6b6194ccf,
         type: 3}

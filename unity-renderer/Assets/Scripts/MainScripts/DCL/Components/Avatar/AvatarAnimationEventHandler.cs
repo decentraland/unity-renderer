@@ -5,8 +5,6 @@ using DCL.Helpers;
 
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
-    Transform leftFoot, rightFoot, leftHand;
-
     AudioEvent footstepLight;
     AudioEvent footstepSlide;
     AudioEvent footstepWalk;
@@ -17,6 +15,9 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     AudioEvent blowKiss;
 
     AvatarParticleSystemsHandler particleSystemsHandler;
+    AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
+
+    Animation debug;
 
     public void Init(AudioContainer audioContainer)
     {
@@ -32,18 +33,14 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         throwMoney = audioContainer.GetEvent("ExpressionThrowMoney");
         blowKiss = audioContainer.GetEvent("ExpressionBlowKiss");
 
-        // Find body parts
-        Transform[] children = GetComponentsInChildren<Transform>();
-        for (int i = 0; i < children.Length; i++) {
-            if (children[i].name == "Avatar_LeftToeBase")
-                leftFoot = children[i];
-            if (children[i].name == "Avatar_RightToeBase")
-                rightFoot = children[i];
-            if (children[i].name == "Avatar_LeftHand")
-                leftHand = children[i];
-        }
-
         particleSystemsHandler = FindObjectOfType<AvatarParticleSystemsHandler>();
+        bodyPartReferenceHandler = GetComponent<AvatarBodyPartReferenceHandler>();
+
+        debug = GetComponent<Animation>();
+    }
+
+    private void Update() {
+        Debug.Log($"IsPlaying = {debug.isPlaying}");
     }
 
     public void AnimEvent_FootstepLight() { TryPlayingEvent(footstepLight); }
@@ -57,12 +54,12 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     public void AnimEvent_FootstepRunLeft()
     {
         TryPlayingEvent(footstepRun);
-        particleSystemsHandler.EmitFootstepParticles(leftFoot.position, 3);
+        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footL.position, 3);
     }
 
     public void AnimEvent_FootstepRunRight() {
         TryPlayingEvent(footstepRun);
-        particleSystemsHandler.EmitFootstepParticles(rightFoot.position, 3);
+        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, 3);
     }
 
     public void AnimEvent_ClothesRustleShort() { TryPlayingEvent(clothesRustleShort); }
@@ -75,13 +72,15 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     public void AnimEvent_ThrowMoney()
     {
         TryPlayingEvent(throwMoney);
-        particleSystemsHandler.EmitMoneyParticles(leftHand.position, 1);
+        particleSystemsHandler.EmitMoneyParticles(bodyPartReferenceHandler.handL.position, 1);
+        Debug.Log("Moeny!");
     }
 
     public void AnimEvent_BlowKiss()
     {
         TryPlayingEvent(blowKiss);
-        particleSystemsHandler.EmitHeartParticles(leftHand.position, 1);
+        particleSystemsHandler.EmitHeartParticles(bodyPartReferenceHandler.handR.position, 1);
+        Debug.Log("Kiss!");
     }
 
     void TryPlayingEvent(AudioEvent audioEvent)

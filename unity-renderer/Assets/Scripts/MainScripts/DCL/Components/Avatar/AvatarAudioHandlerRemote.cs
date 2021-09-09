@@ -24,6 +24,8 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     bool globalRendererIsReady;
 
     private Camera mainCamera;
+    private AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
+    private AvatarParticleSystemsHandler particleSystemsHandler;
 
     private void Start()
     {
@@ -46,11 +48,17 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
 
         globalRendererIsReady = CommonScriptableObjects.rendererState.Get();
         CommonScriptableObjects.rendererState.OnChange += OnGlobalRendererStateChange;
+
+        particleSystemsHandler = FindObjectOfType<AvatarParticleSystemsHandler>();
     }
 
     void OnGlobalRendererStateChange(bool current, bool previous) { globalRendererIsReady = current; }
 
-    public void Init(GameObject rendererContainer) { this.rendererContainer = rendererContainer; }
+    public void Init(GameObject rendererContainer, AvatarBodyPartReferenceHandler bodyPartReferenceHandler)
+    {
+        this.rendererContainer = rendererContainer;
+        this.bodyPartReferenceHandler = bodyPartReferenceHandler;
+    }
 
     private void Update()
     {
@@ -62,13 +70,20 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         {
             if (footstepJump != null)
                 footstepJump.Play(true);
+            if (bodyPartReferenceHandler != null) {
+                if (particleSystemsHandler != null)
+                    particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, 5);
+            }
         }
 
         // Landed
-        if (blackBoard.isGrounded && !isGroundedPrevious)
-        {
+        if (blackBoard.isGrounded && !isGroundedPrevious) {
             if (footstepLand != null)
                 footstepLand.Play(true);
+            if (bodyPartReferenceHandler != null) {
+                if (particleSystemsHandler != null)
+                    particleSystemsHandler.EmitFootstepParticles(Vector3.Lerp(bodyPartReferenceHandler.footL.position, bodyPartReferenceHandler.footR.position, 0.5f), 10);
+            }
         }
 
         // Simulate footsteps when avatar is not visible

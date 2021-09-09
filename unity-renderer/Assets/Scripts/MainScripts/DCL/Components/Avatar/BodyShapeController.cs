@@ -186,7 +186,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
         var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
         animator.BindBodyShape(animation, bodyShapeId, animationTarget);
 
-        InitializeAvatarAudioHandlers(assetContainer, animation);
+        InitializeAvatarAudioAndParticleHandlers(assetContainer, animation);
     }
 
     public SkinnedMeshRenderer headRenderer { get; private set; }
@@ -212,9 +212,12 @@ public class BodyShapeController : WearableController, IBodyShapeController
         lowerBodyRenderer.enabled = lowerBodyActive && !currentHiddenList.Contains(WearableLiterals.Categories.LOWER_BODY);
     }
 
-    private void InitializeAvatarAudioHandlers(GameObject container, Animation createdAnimation)
+    private void InitializeAvatarAudioAndParticleHandlers(GameObject container, Animation createdAnimation)
     {
-        //NOTE(Mordi): Adds audio handler for animation events, and passes in the audioContainer for the avatar
+        //NOTE(Mordi): Adds handler for determining where the different body parts are, for particle effects to spawn at the right place
+        AvatarBodyPartReferenceHandler bodyPartReferenceHandler = createdAnimation.gameObject.AddComponent<AvatarBodyPartReferenceHandler>();
+
+        //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
         AvatarAnimationEventHandler animationEventAudioHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = container.transform.parent.parent.GetComponentInChildren<AudioContainer>();
         if (audioContainer != null)
@@ -225,7 +228,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
             AvatarAudioHandlerRemote audioHandlerRemote = audioContainer.GetComponent<AvatarAudioHandlerRemote>();
             if (audioHandlerRemote != null)
             {
-                audioHandlerRemote.Init(createdAnimation.gameObject);
+                audioHandlerRemote.Init(createdAnimation.gameObject, bodyPartReferenceHandler);
             }
         }
     }
