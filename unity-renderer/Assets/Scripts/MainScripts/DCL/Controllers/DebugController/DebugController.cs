@@ -2,8 +2,6 @@
 using DCL.Bots;
 using System.Collections.Generic;
 using DCL.Helpers;
-using DCL.Interface;
-using UnityEngine.UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -18,39 +16,62 @@ namespace DCL
         public DebugView debugView;
 
         public readonly CrashPayloadPositionTracker positionTracker;
+        private BaseVariable<bool> isFPSPanelVisible;
 
         public event Action OnDebugModeSet;
 
         public DebugController(IBotsController botsController)
         {
             positionTracker = new CrashPayloadPositionTracker();
-
+            isFPSPanelVisible = DataStore.i.debugConfig.isFPSPanelVisible;
+            isFPSPanelVisible.OnChange += OnFPSPanelToggle;
             GameObject view = Object.Instantiate(UnityEngine.Resources.Load("DebugView")) as GameObject;
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
         }
-
-        public void SetDebug()
+        private void OnFPSPanelToggle(bool current, bool previous)
         {
-            Debug.unityLogger.logEnabled = true;
+            if (current == previous || debugView == null)
+                return;
+            if (current)
+            {
+                debugView.ShowFPSPanel();
+            }
+            else
+            {
+                debugView.HideFPSPanel();
+            }
+        }
 
-            debugConfig.isDebugMode = true;
-
-            ShowFPSPanel();
-
+        private void OnToggleDebugMode(bool current, bool previous)
+        {
+            if (current == previous)
+                return;
+            
+            if (current)
+            {
+                Debug.unityLogger.logEnabled = true;
+                ShowFPSPanel();
+            }
+            else
+            {
+                Debug.unityLogger.logEnabled = false;
+                HideFPSPanel();
+            }
+            
             OnDebugModeSet?.Invoke();
         }
 
-        public void HideFPSPanel()
-        {
-            if (debugView != null)
-                debugView.HideFPSPanel();
-        }
+        public void SetDebug() { debugConfig.isDebugMode.Set(true); }
 
-        public void ShowFPSPanel()
+        public void HideFPSPanel() { isFPSPanelVisible.Set(false); }
+
+        public void ShowFPSPanel() { isFPSPanelVisible.Set(true); }
+
+        public void ShowInfoPanel(string network, string realm)
         {
             if (debugView != null)
-                debugView.ShowFPSPanel();
+                debugView.ShowInfoPanel(network, realm);
         }
 
         public void SetSceneDebugPanel()
@@ -63,6 +84,12 @@ namespace DCL
         {
             if (debugView != null)
                 debugView.SetEngineDebugPanel();
+        }
+        
+        public void HideInfoPanel()
+        {
+            if (debugView != null)
+                debugView.HideInfoPanel();
         }
 
         public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
@@ -104,8 +131,11 @@ namespace DCL
         public void Dispose()
         {
             positionTracker.Dispose();
+            isFPSPanelVisible.OnChange -= OnFPSPanelToggle;
+
             if (debugView != null)
                 Object.Destroy(debugView.gameObject);
         }
+        
     }
 }

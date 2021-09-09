@@ -20,7 +20,10 @@ namespace DCL
         /// Enabled when SetDebug() is sent by kernel. Usually coupled with the DEBUG_MODE url param.
         /// </summary>
         [System.NonSerialized]
-        public bool isDebugMode;
+        public BaseVariable<bool> isDebugMode = new BaseVariable<bool>();
+        
+        [System.NonSerialized]
+        public BaseVariable<bool> isFPSPanelVisible = new BaseVariable<bool>();
 
         /// <summary>
         /// True when WSS message pipeline is enabled

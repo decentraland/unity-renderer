@@ -1,4 +1,3 @@
-using DCL.Bots;
 using DCL.Rendering;
 
 namespace DCL
@@ -13,7 +12,6 @@ namespace DCL
                 clipboard: Clipboard.Create(),
                 physicsSyncController: new PhysicsSyncController(),
                 parcelScenesCleaner: new ParcelScenesCleaner(),
-                debugController: new DebugController(new BotsController()),
                 webRequest: WebRequestController.Create(),
                 serviceProviders: new ServiceProviders(),
                 idleChecker: new IdleChecker(),

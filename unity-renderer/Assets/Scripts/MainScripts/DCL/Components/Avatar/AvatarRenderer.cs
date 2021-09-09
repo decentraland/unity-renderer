@@ -357,12 +357,6 @@ namespace DCL
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
                 mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
             }
-            else
-            {
-                //If bodyShape is downloading will call OnWearableLoadingSuccess (and therefore SetupDefaultMaterial) once ready
-                if (bodyShapeController.isReady)
-                    bodyShapeController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
-            }
 
             //TODO(Brian): This logic should be performed in a testeable pure function instead of this inline approach.
             //             Moreover, this function should work against data, not wearableController instances.
@@ -378,9 +372,7 @@ namespace DCL
                 unusedCategories.Remove(wearable.data.category);
                 if (wearableControllers.ContainsKey(wearable))
                 {
-                    if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
-                        UpdateWearableController(wearable);
-                    else
+                    if (!wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
                         wearableControllers[wearable].CleanUp();
                 }
                 else
@@ -425,15 +417,13 @@ namespace DCL
             // TODO(Brian): Evaluate using UniTask<T> instead of this way.
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
-            eyesController?.Load(bodyShapeController, model.eyeColor);
-            eyebrowsController?.Load(bodyShapeController, model.hairColor);
-            mouthController?.Load(bodyShapeController, model.skinColor);
+            eyesController.Load(bodyShapeController, model.eyeColor);
+            eyebrowsController.Load(bodyShapeController, model.hairColor);
+            mouthController.Load(bodyShapeController, model.skinColor);
 
-            //TODO(Brian): Evaluate using UniTask<T> instead of this way.
-            yield return new WaitUntil(() =>
-                (eyebrowsController == null || (eyebrowsController != null && eyebrowsController.isReady)) &&
-                (eyesController == null || (eyesController != null && eyesController.isReady)) &&
-                (mouthController == null || (mouthController != null && mouthController.isReady)));
+            yield return eyesController;
+            yield return eyebrowsController;
+            yield return mouthController;
 
             if (bodyIsDirty || wearablesIsDirty)
             {
@@ -455,6 +445,7 @@ namespace DCL
 
             isLoading = false;
 
+            SetupHairAndSkinColors();
             SetWearableBones();
 
             // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
@@ -491,16 +482,23 @@ namespace DCL
             }
         }
 
+        void SetupHairAndSkinColors()
+        {
+            bodyShapeController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
+
+            foreach ( var wearable in wearableControllers )
+            {
+                wearable.Value.SetupHairAndSkinColors(model.skinColor, model.hairColor);
+            }
+        }
+
         void OnWearableLoadingSuccess(WearableController wearableController)
         {
             if (wearableController == null || model == null)
             {
                 Debug.LogWarning($"WearableSuccess was called wrongly: IsWearableControllerNull=>{wearableController == null}, IsModelNull=>{model == null}");
                 OnWearableLoadingFail(wearableController, 0);
-                return;
             }
-
-            wearableController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
         }
 
         void OnBodyShapeLoadingFail(WearableController wearableController)
@@ -577,24 +575,6 @@ namespace DCL
                 default:
                     var wearableController = new WearableController(wearable);
                     wearableControllers.Add(wearable, wearableController);
-                    break;
-            }
-        }
-
-        private void UpdateWearableController(WearableItem wearable)
-        {
-            var wearableController = wearableControllers[wearable];
-            switch (wearableController.category)
-            {
-                case Categories.EYES:
-                case Categories.EYEBROWS:
-                case Categories.MOUTH:
-                case Categories.BODY_SHAPE:
-                    break;
-                default:
-                    //If wearable is downloading will call OnWearableLoadingSuccess(and therefore SetupDefaultMaterial) once ready
-                    if (wearableController.isReady)
-                        wearableController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
                     break;
             }
         }

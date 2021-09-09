@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using DCL;
 
-public class FacialFeatureController
+public class FacialFeatureController : CustomYieldInstruction
 {
     public bool isReady { get; private set; }
     public string wearableId => wearableItem?.id;
@@ -64,7 +64,7 @@ public class FacialFeatureController
         isReady = true;
     }
 
-    public IEnumerator FetchTextures()
+    private IEnumerator FetchTextures()
     {
         if (mainTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
@@ -139,4 +139,6 @@ public class FacialFeatureController
 
         return new FacialFeatureController(wearable, material);
     }
+
+    public override bool keepWaiting => !isReady;
 }

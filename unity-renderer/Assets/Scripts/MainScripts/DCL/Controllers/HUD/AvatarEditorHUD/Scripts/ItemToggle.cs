@@ -114,9 +114,11 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private void OnEnable() { GetThumbnail(); }
 
-    private void OnDisable() { ForgetThumbnail(); }
-
-    protected virtual void OnDestroy() { OnClicked = null; }
+    protected virtual void OnDestroy()
+    {
+        ForgetThumbnail();
+        OnClicked = null;
+    }
 
     protected void CallOnSellClicked() { OnSellClicked?.Invoke(this); }
 
