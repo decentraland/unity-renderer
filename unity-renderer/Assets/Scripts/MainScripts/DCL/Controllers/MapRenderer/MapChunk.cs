@@ -27,7 +27,7 @@ namespace DCL
 
             string url = $"{MAP_API_BASE}?center={center.x},{center.y}&width={size.x}&height={size.y}&size={tileSize}";
 
-            Texture result = null;
+            Texture2D result = null;
 
             return Utils.FetchTexture(url, (x) =>
             {
@@ -35,9 +35,9 @@ namespace DCL
 
                 if (result != null)
                 {
-                    result.filterMode = FilterMode.Trilinear;
+                    result.filterMode = FilterMode.Bilinear;
                     result.wrapMode = TextureWrapMode.Clamp;
-                    result.anisoLevel = 16;
+                    result.Apply(false, true);
 
                     targetImage.texture = result;
                     targetImage.SetNativeSize();
