@@ -1,0 +1,44 @@
+﻿using System;
+using UnityEngine;
+
+namespace DCL.Helpers
+{
+    internal class TextureLoader : ITextureLoader
+    {
+        private AssetPromise_Texture currentPromise;
+        public event Action<Texture2D> OnSuccess;
+        public event Action OnFail;
+
+        public Texture2D GetTexture()
+        {
+            return currentPromise.asset.texture;
+        }
+
+        public void Load(string uri)
+        {
+            if ( currentPromise != null )
+                AssetPromiseKeeper_Texture.i.Forget(currentPromise);
+
+            currentPromise = new AssetPromise_Texture(uri);
+
+            currentPromise.OnSuccessEvent += (x) =>
+            {
+                OnSuccess?.Invoke(x.texture);
+            };
+
+            currentPromise.OnFailEvent += (x) =>
+            {
+                OnFail?.Invoke();
+                Debug.LogError($"Texture loading failed! {uri}");
+            };
+
+            AssetPromiseKeeper_Texture.i.Keep(currentPromise);
+        }
+
+        public void Unload()
+        {
+            if ( currentPromise != null )
+                AssetPromiseKeeper_Texture.i.Forget(currentPromise);
+        }
+    }
+}

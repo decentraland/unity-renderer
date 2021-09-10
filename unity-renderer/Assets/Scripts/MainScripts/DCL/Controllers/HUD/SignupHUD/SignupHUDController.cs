@@ -17,6 +17,7 @@ namespace SignupHUD
         public void Initialize(IHUD avatarEditorHUD)
         {
             view = CreateView();
+
             if (view == null)
                 return;
 
@@ -29,8 +30,8 @@ namespace SignupHUD
             view.OnEditAvatar += OnEditAvatar;
             view.OnTermsOfServiceAgreed += OnTermsOfServiceAgreed;
             view.OnTermsOfServiceBack += OnTermsOfServiceBack;
-
         }
+
         private void OnSignupVisibleChanged(bool current, bool previous) { SetVisibility(current); }
 
         internal void StartSignupProcess()

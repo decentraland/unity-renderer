@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using DCL;
 using DCL.Components;
 using TMPro;
 using UnityEngine;
@@ -40,24 +41,40 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         });
     }
 
-    private void OnEnable() { talkingAnimator.SetBool(talkingAnimation, isRecording); }
+    private void OnEnable()
+    {
+        if ( profile != null )
+            profile.snapshotObserver.AddListener(SetAvatarSnapshotImage);
+
+        if ( talkingAnimator.isActiveAndEnabled )
+            talkingAnimator.SetBool(talkingAnimation, isRecording);
+    }
+
+    private void OnDisable()
+    {
+        if ( profile != null )
+            profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
+    }
+
+    private void OnDestroy()
+    {
+        if ( profile != null )
+            profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
+    }
 
     public void SetUserProfile(UserProfile profile)
     {
-        this.profile = profile;
-
         userName.text = profile.userName;
 
-        if (profile.faceSnapshot)
+        SetupFriends(profile.userId);
+
+        if (this.profile != null && isActiveAndEnabled)
         {
-            SetAvatarPreviewImage(profile.faceSnapshot);
-        }
-        else
-        {
-            profile.OnFaceSnapshotReadyEvent += SetAvatarPreviewImage;
+            this.profile.snapshotObserver.RemoveListener(SetAvatarSnapshotImage);
+            profile.snapshotObserver.AddListener(SetAvatarSnapshotImage);
         }
 
-        SetupFriends(profile.userId);
+        this.profile = profile;
     }
 
     public void SetMuted(bool isMuted)
@@ -69,7 +86,9 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
     public void SetRecording(bool isRecording)
     {
         this.isRecording = isRecording;
-        talkingAnimator.SetBool(talkingAnimation, isRecording);
+
+        if ( talkingAnimator.isActiveAndEnabled )
+            talkingAnimator.SetBool(talkingAnimation, isRecording);
     }
 
     public void SetBlocked(bool blocked) { blockedGO.SetActive(blocked); }
@@ -81,9 +100,9 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         isMuted = false;
         isRecording = false;
 
-        if (profile)
+        if (profile != null)
         {
-            profile.OnFaceSnapshotReadyEvent -= SetAvatarPreviewImage;
+            profile.snapshotObserver?.RemoveListener(SetAvatarSnapshotImage);
             profile = null;
         }
 
@@ -130,7 +149,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
     }
 
-    void SetAvatarPreviewImage(Texture texture) { avatarPreview.texture = texture; }
+    void SetAvatarSnapshotImage(Texture2D texture) { avatarPreview.texture = texture; }
 
     void OnSoundButtonPressed()
     {

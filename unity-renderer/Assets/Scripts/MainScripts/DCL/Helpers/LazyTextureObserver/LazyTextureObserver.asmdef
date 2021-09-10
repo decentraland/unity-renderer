@@ -1,0 +1,16 @@
+{
+  "name": "LazyTextureObserver",
+  "rootNamespace": "",
+  "references": [
+    "GUID:a3ceb534947fac14da25035bc5c24788"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

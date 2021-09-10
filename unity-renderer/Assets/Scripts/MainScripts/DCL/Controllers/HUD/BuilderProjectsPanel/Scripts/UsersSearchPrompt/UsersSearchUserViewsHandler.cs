@@ -32,6 +32,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
         {
             userView.Dispose();
         }
+
         userElementViews.Clear();
 
         while (viewPool.Count > 0)
@@ -71,10 +72,11 @@ internal class UsersSearchUserViewsHandler : IDisposable
             var userElementView = SetUserViewList(profile.userId,
                 view =>
                 {
-                    view.SetUserProfile(profile);
+                    view.SetUserProfileModel(profile);
                 });
             newUserList.Add(userElementView);
         }
+
         SetVisibleList(newUserList);
     }
 
@@ -97,6 +99,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
         {
             userElementView.SetActive(false);
         }
+
         for (int i = 0; i < viewsList.Count; i++)
         {
             viewsList[i].SetActive(true);
@@ -133,6 +136,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
         {
             userView = Object.Instantiate(userElementViewBase, elementsParent);
         }
+
         userView.ClearThumbnail();
 
         userView.OnAddPressed -= OnAddUserPressed;

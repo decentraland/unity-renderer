@@ -40,7 +40,7 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>()
                         { }
                 }
-            }, false);
+            });
 
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();

@@ -1,3 +1,5 @@
+using System;
+using DCL;
 using DCL.Helpers;
 using TMPro;
 using UnityEngine;
@@ -14,15 +16,8 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         public string realm;
         public string realmServerName;
         public string realmLayerName;
-        public Texture2D avatarImage;
+        public ILazyTextureObserver avatarSnapshotObserver;
         public bool blocked;
-
-        public event System.Action<Texture2D> OnTextureUpdateEvent;
-        public void OnSpriteUpdate(Texture2D texture)
-        {
-            avatarImage = texture;
-            OnTextureUpdateEvent?.Invoke(texture);
-        }
     }
 
     public Model model { get; private set; } = new Model();
@@ -63,27 +58,36 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         menuButton.gameObject.SetActive(false);
     }
 
-    protected virtual void OnDisable() { OnPointerExit(null); }
+    private void OnEnable()
+    {
+        model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
+    }
 
-    protected void OnDestroy() { model.OnTextureUpdateEvent -= OnAvatarImageChange; }
+    protected virtual void OnDisable()
+    {
+        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+        OnPointerExit(null);
+    }
+
+    protected void OnDestroy()
+    {
+        model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+    }
 
     public virtual void Populate(Model model)
     {
-        this.model = model;
-
         if (playerNameText.text != model.userName)
             playerNameText.text = model.userName;
 
-        if (model.avatarImage == null)
+        playerBlockedImage.enabled = model.blocked;
+
+        if (this.model != null && isActiveAndEnabled)
         {
-            model.OnTextureUpdateEvent -= OnAvatarImageChange;
-            model.OnTextureUpdateEvent += OnAvatarImageChange;
+            this.model.avatarSnapshotObserver?.RemoveListener(OnAvatarImageChange);
+            model.avatarSnapshotObserver?.AddListener(OnAvatarImageChange);
         }
 
-        if (model.avatarImage != playerImage.texture)
-            OnAvatarImageChange(model.avatarImage);
-
-        playerBlockedImage.enabled = model.blocked;
+        this.model = model;
     }
 
     private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }
