@@ -148,6 +148,7 @@ namespace DCL
             }
 
             finalMesh.Optimize();
+            finalMesh.UploadMeshData(true);
 
             result.mesh = finalMesh;
             result.materials = flattenedMaterialsData.materials.ToArray();

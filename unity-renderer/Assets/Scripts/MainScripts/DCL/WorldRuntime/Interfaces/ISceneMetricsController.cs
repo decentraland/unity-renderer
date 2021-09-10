@@ -1,6 +1,8 @@
-﻿namespace DCL
+﻿using System;
+
+namespace DCL
 {
-    public interface ISceneMetricsController
+    public interface ISceneMetricsController : IDisposable
     {
         SceneMetricsModel GetLimits();
         SceneMetricsModel GetModel();

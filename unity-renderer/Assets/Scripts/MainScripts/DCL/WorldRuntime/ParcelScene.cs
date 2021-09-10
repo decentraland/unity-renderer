@@ -60,13 +60,18 @@ namespace DCL.Controllers
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
         }
 
-        private void OnDestroy() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
+        private void OnDestroy()
+        {
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
+            metricsController.Dispose();
+        }
 
         void OnDisable() { metricsController.Disable(); }
 
         private void Update()
         {
-            if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY && CommonScriptableObjects.rendererState.Get())
+            if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY
+                && CommonScriptableObjects.rendererState.Get())
                 SendMetricsEvent();
         }
 

@@ -1,5 +1,6 @@
 using System;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 using UnityGLTF;
 
@@ -78,6 +79,7 @@ namespace DCL
                 initialVisibility = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE,
                 shaderOverride = settings.shaderOverride,
                 addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
+                forceGPUOnlyMesh = settings.forceGPUOnlyMesh
             };
 
             gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
@@ -85,7 +87,8 @@ namespace DCL
 
             gltfComponent.OnSuccess += OnSuccess;
             gltfComponent.OnFail += OnFail;
-
+            gltfComponent.sceneImporter.OnWillUploadMeshToGPU += (x) => RenderingGlobalEvents.OnWillUploadMeshToGPU(x);
+            
             asset.name = fileName;
         }
 

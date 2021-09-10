@@ -5,7 +5,6 @@ namespace DCL
 {
     public class Asset_AB : Asset
     {
-        public int referenceCount = 0;
         public AssetBundle ownerAssetBundle;
         public string assetBundleAssetName;
 

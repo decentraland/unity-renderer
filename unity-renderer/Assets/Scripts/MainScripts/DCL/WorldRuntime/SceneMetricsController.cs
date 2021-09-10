@@ -49,6 +49,7 @@ namespace DCL
         protected Dictionary<IDCLEntity, EntityMetrics> entitiesMetrics;
         private Dictionary<Mesh, int> uniqueMeshesRefCount;
         private Dictionary<Material, int> uniqueMaterialsRefCount;
+        private Dictionary<Mesh, int> meshToTriangleCount;
 
         public bool isDirty { get; protected set; }
 
@@ -61,7 +62,10 @@ namespace DCL
             uniqueMeshesRefCount = new Dictionary<Mesh, int>();
             uniqueMaterialsRefCount = new Dictionary<Material, int>();
             entitiesMetrics = new Dictionary<IDCLEntity, EntityMetrics>();
+            meshToTriangleCount = new Dictionary<Mesh, int>();
             model = new SceneMetricsModel();
+
+            RenderingGlobalEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
 
             if (VERBOSE)
             {
@@ -71,6 +75,9 @@ namespace DCL
 
         public void Enable()
         {
+            RenderingGlobalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
+            RenderingGlobalEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
+
             if (scene == null)
                 return;
 
@@ -82,6 +89,8 @@ namespace DCL
 
         public void Disable()
         {
+            RenderingGlobalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
+
             if (scene == null)
                 return;
 
@@ -223,29 +232,44 @@ namespace DCL
 
             int visualMeshRawTriangles = 0;
 
-            //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
+            // If this proves to be too slow we can spread it with a Coroutine spooler.
             MeshFilter[] meshFilters = entity.meshesInfo.meshFilters;
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
                 MeshFilter mf = meshFilters[i];
+                Mesh sharedMesh = mf.sharedMesh;
 
-                if (mf != null && mf.sharedMesh != null)
+                if (mf == null || sharedMesh == null)
+                    continue;
+
+                if ( !meshToTriangleCount.ContainsKey(sharedMesh) )
+                    continue;
+
+                // We have to use meshToTriangleCount because if meshes are uploaded to GPU at
+                // this stage, sharedMesh.triangles doesn't work.
+                int triangleCount = 0;
+
+                if ( sharedMesh.isReadable )
+                    triangleCount = sharedMesh.triangles.Length;
+                else
+                    triangleCount = meshToTriangleCount[sharedMesh];
+
+                visualMeshRawTriangles += triangleCount;
+                AddMesh(entityMetrics, sharedMesh);
+
+                if (VERBOSE)
                 {
-                    visualMeshRawTriangles += mf.sharedMesh.triangles.Length;
-                    AddMesh(entityMetrics, mf.sharedMesh);
-                    if (VERBOSE)
-                    {
-                        Debug.Log("SceneMetrics: tris count " + mf.sharedMesh.triangles.Length + " from mesh " + mf.sharedMesh.name + " of entity " + entity.entityId);
-                        Debug.Log("SceneMetrics: mesh " + mf.sharedMesh.name + " of entity " + entity.entityId);
-                    }
+                    Debug.Log("SceneMetrics: tris count " + triangleCount + " from mesh " + sharedMesh.name + " of entity " + entity.entityId);
+                    Debug.Log("SceneMetrics: mesh " + mf.sharedMesh.name + " of entity " + entity.entityId);
                 }
             }
 
             CalculateMaterials(entity, entityMetrics);
 
-            //The array is a list of triangles that contains indices into the vertex array. The size of the triangle array must always be a multiple of 3.
-            //Vertices can be shared by simply indexing into the same vertex.
+            // The array is a list of triangles that contains indices into the vertex array.
+            // The size of the triangle array must always be a multiple of 3.
+            // Vertices can be shared by simply indexing into the same vertex.
             entityMetrics.triangles = visualMeshRawTriangles / 3;
             entityMetrics.bodies = entity.meshesInfo.meshFilters.Length;
 
@@ -316,12 +340,18 @@ namespace DCL
             {
                 while (iterator.MoveNext())
                 {
-                    if (uniqueMeshesRefCount.ContainsKey(iterator.Current.Key))
+                    Mesh key = iterator.Current.Key;
+
+                    if (uniqueMeshesRefCount.ContainsKey(key))
                     {
-                        uniqueMeshesRefCount[iterator.Current.Key] -= iterator.Current.Value;
-                        if (uniqueMeshesRefCount[iterator.Current.Key] <= 0)
+                        uniqueMeshesRefCount[key] -= iterator.Current.Value;
+
+                        if (uniqueMeshesRefCount[key] <= 0)
                         {
-                            uniqueMeshesRefCount.Remove(iterator.Current.Key);
+                            uniqueMeshesRefCount.Remove(key);
+
+                            if ( meshToTriangleCount.ContainsKey(key) )
+                                meshToTriangleCount.Remove(key);
                         }
                     }
                 }
@@ -369,6 +399,23 @@ namespace DCL
                     }
                 }
             }
+        }
+
+        public void OnWillUploadMeshToGPU(Mesh mesh)
+        {
+            if ( !meshToTriangleCount.ContainsKey(mesh) )
+                meshToTriangleCount.Add(mesh, mesh.triangles.Length);
+        }
+
+        public void Dispose()
+        {
+            RenderingGlobalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
+
+            if (scene == null)
+                return;
+
+            scene.OnEntityAdded -= OnEntityAdded;
+            scene.OnEntityRemoved -= OnEntityRemoved;
         }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine.Assertions;
 
 namespace DCL.Components
 {
-
     public class LoadWrapper_GLTF : LoadWrapper
     {
         static readonly bool VERBOSE = false;
@@ -30,7 +29,7 @@ namespace DCL.Components
             else
                 loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
 
-
+            loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;
 
             if (initialVisibility == false)

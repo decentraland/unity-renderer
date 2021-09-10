@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Configuration;
 using UnityEngine;
 using System.Collections.Generic;
+using DCL.Models;
 
 namespace DCL
 {
@@ -140,10 +141,22 @@ namespace DCL
                     break;
 
                 GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i], asset.container.transform);
-                var list = new List<Renderer>(assetBundleModelGO.GetComponentsInChildren<Renderer>(true));
+
+                List<Renderer> rendererList = assetBundleModelGO.GetComponentsInChildren<Renderer>(true).ToList();
+
+                List<Mesh> meshesList = ExtractMeshes(assetBundleModelGO);
+
+                foreach ( Mesh m in meshesList )
+                {
+                    if ( !m.isReadable )
+                        continue;
+
+                    RenderingGlobalEvents.OnWillUploadMeshToGPU.Invoke(m);
+                    m.UploadMeshData(true);
+                }
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
-                yield return MaterialCachingHelper.Process(list, enableRenderers: false, settings.cachingFlags);
+                yield return MaterialCachingHelper.Process(rendererList, enableRenderers: false, settings.cachingFlags);
 
                 var animators = assetBundleModelGO.GetComponentsInChildren<Animation>(true);
 
@@ -159,6 +172,31 @@ namespace DCL
                 assetBundleModelGO.transform.ResetLocalTRS();
                 yield return null;
             }
+        }
+
+        private static List<Mesh> ExtractMeshes(GameObject assetBundleModelGO)
+        {
+            List<Mesh> result = new List<Mesh>();
+            List<SkinnedMeshRenderer> skrList = assetBundleModelGO.GetComponentsInChildren<SkinnedMeshRenderer>(true).ToList();
+            List<MeshFilter> meshFilterList = assetBundleModelGO.GetComponentsInChildren<MeshFilter>(true).ToList();
+
+            foreach ( var skr in skrList )
+            {
+                if ( skr.sharedMesh == null )
+                    continue;
+
+                result.Add(skr.sharedMesh);
+            }
+
+            foreach ( var meshFilter in meshFilterList )
+            {
+                if ( meshFilter.mesh == null )
+                    continue;
+
+                result.Add( meshFilter.mesh );
+            }
+
+            return result;
         }
 
         protected override Asset_AB_GameObject GetAsset(object id)
