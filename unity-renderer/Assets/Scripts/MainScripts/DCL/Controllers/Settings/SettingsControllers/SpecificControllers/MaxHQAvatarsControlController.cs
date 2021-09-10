@@ -2,8 +2,8 @@
 
 namespace DCL.SettingsControls
 {
-    [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Max Non-LOD Avatars", fileName = "MaxNonLODAvatarsControlController")]
-    public class MaxNonLODAvatarsControlController : SliderSettingsControlController
+    [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Max HQ Avatars", fileName = "MaxHQAvatarsControlController")]
+    public class MaxHQAvatarsControlController : SliderSettingsControlController
     {
         public override void Initialize()
         {
@@ -16,12 +16,17 @@ namespace DCL.SettingsControls
                             OnKernelConfigChanged(config, null);
                         });
 
-            UpdateSetting(currentGeneralSettings.maxNonLODAvatars);
+            DataStore.i.avatarsLOD.maxAvatars.Set(currentQualitySetting.maxHQAvatars);
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { Resources.Load<BooleanVariable>("ScriptableObjects/AvatarLODsDisabled").Set(!current.features.enableAvatarLODs); }
-        public override object GetStoredValue() { return currentGeneralSettings.maxNonLODAvatars; }
+        public override object GetStoredValue() { return currentQualitySetting.maxHQAvatars; }
 
-        public override void UpdateSetting(object newValue) { DataStore.i.avatarsLOD.maxAvatars.Set((int)((float)newValue)); }
+        public override void UpdateSetting(object newValue)
+        {
+            int valueAsInt = (int)(float)newValue;
+            currentQualitySetting.maxHQAvatars = valueAsInt;
+            DataStore.i.avatarsLOD.maxAvatars.Set(valueAsInt);
+        }
     }
 }

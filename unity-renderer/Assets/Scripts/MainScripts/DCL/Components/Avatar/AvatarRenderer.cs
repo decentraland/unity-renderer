@@ -458,11 +458,10 @@ namespace DCL
 
             if (mergeSuccess)
             {
-                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
                 // Sample the animation manually and force an update in the GPUSkinning to avoid giant avatars
                 animator.SetIdleFrame();
                 animator.animation.Sample();
-                gpuSkinning.Update(true);
+                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
 
                 gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
                 gpuSkinningThrottler.SetThrottling(gpuSkinningFramesBetweenUpdates);
