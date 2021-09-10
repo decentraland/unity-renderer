@@ -48,6 +48,21 @@ For the GPU skinning we need to do the same for the following passes:
 ```
 > NOTE: If this is not done, avatars aren't going to look toon.
 
+#### Replace the absolutes paths to relative paths
+
+Search
+```
+#include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
+```
+
+and replace it for
+
+```
+#include "../ShaderGraph/Includes/SampleTexture.hlsl"
+```
+
+> NOTE: If this is not done, the shader will fail on the project `explorer-desktop`.
+
 ### You're done!.
 
 Yes, the project needs a tool for automating this.  
