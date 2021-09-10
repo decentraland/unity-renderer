@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class CharacterPreviewController : MonoBehaviour
 {
-    private const int SNAPSHOT_BODY_WIDTH_RES = 512;
-    private const int SNAPSHOT_BODY_HEIGHT_RES = 1024;
+    private const int SNAPSHOT_BODY_WIDTH_RES = 256;
+    private const int SNAPSHOT_BODY_HEIGHT_RES = 512;
 
     private const int SNAPSHOT_FACE_WIDTH_RES = 512;
     private const int SNAPSHOT_FACE_HEIGHT_RES = 512;
