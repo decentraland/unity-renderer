@@ -33,7 +33,7 @@ namespace CameraController_Test
         }
         
         [Test]
-        public void WhenLockStateIsChangedAndValueIsHigherThanToleranceReturnValueIsZero()
+        public void ReturnZeroWhenLockStateIsChangedAndValueIsHigherThanTolerance()
         {
             var lockState = CursorLockMode.Locked;
             var inputSpikeFixer = new InputSpikeFixer(() => lockState);
