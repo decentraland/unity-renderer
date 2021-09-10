@@ -212,17 +212,19 @@ namespace DCL.Components
         private void UpdateProgressReport()
         {
             var currentState = texturePlayer.GetState();
-            if ( currentState == VideoState.PLAYING && IsTimeToReportVideoProgress()
+            if ( currentState == VideoState.PLAYING 
+                 && IsTimeToReportVideoProgress()
                  || previousVideoState != currentState)
             {
-                lastVideoProgressReportTime = Time.unscaledTime;
-                previousVideoState = currentState;
                 ReportVideoProgress();
             }
         }
         private void ReportVideoProgress()
         {
-            var videoStatus = (int)texturePlayer.GetState();
+            lastVideoProgressReportTime = Time.unscaledTime;
+            VideoState videoState = texturePlayer.GetState();
+            previousVideoState = videoState;
+            var videoStatus = (int)videoState;
             var currentOffset = texturePlayer.GetTime();
             var length = texturePlayer.GetDuration();
             WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
