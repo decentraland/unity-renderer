@@ -4,14 +4,19 @@ using Object = UnityEngine.Object;
 
 namespace GPUSkinning
 {
+    public interface IGPUSkinning
+    {
+        Renderer renderer { get; }
+        void Update();
+    }
 
-    public class SimpleGPUSkinning
+    public class SimpleGPUSkinning : IGPUSkinning
     {
         private static readonly int BONE_MATRICES = Shader.PropertyToID("_Matrices");
         private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
         private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
 
-        public MeshRenderer renderer { get; }
+        public Renderer renderer { get; }
 
         private Transform[] bones;
         private Matrix4x4[] boneMatrices;
@@ -46,7 +51,7 @@ namespace GPUSkinning
         /// This must be done once per SkinnedMeshRenderer before animating.
         /// </summary>
         /// <param name="skr"></param>
-        private static void ConfigureBindPoses(SkinnedMeshRenderer skr)
+        private void ConfigureBindPoses(SkinnedMeshRenderer skr)
         {
             Mesh sharedMesh = skr.sharedMesh;
             int vertexCount = sharedMesh.vertexCount;
@@ -73,13 +78,17 @@ namespace GPUSkinning
             skr.sharedMesh.SetUVs(1, bone23data);
         }
 
-        public void Update(bool forceUpdate = false)
+        public void Update()
         {
-            if (!forceUpdate && !renderer.isVisible)
+            if (!renderer.isVisible)
                 return;
 
-            int bonesLength = bones.Length;
+            UpdateMatrices();
+        }
 
+        private void UpdateMatrices()
+        {
+            int bonesLength = bones.Length;
             for (int i = 0; i < bonesLength; i++)
             {
                 Transform bone = bones[i];

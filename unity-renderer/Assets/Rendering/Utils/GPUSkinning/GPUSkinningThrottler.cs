@@ -4,11 +4,11 @@ namespace GPUSkinning
     {
         internal static int startingFrame = 0;
 
-        internal readonly SimpleGPUSkinning gpuSkinning;
+        internal readonly IGPUSkinning gpuSkinning;
         internal int framesBetweenUpdates;
         internal int currentFrame;
 
-        public GPUSkinningThrottler(SimpleGPUSkinning gpuSkinning)
+        public GPUSkinningThrottler(IGPUSkinning gpuSkinning)
         {
             this.gpuSkinning = gpuSkinning;
             framesBetweenUpdates = 1;
@@ -23,6 +23,5 @@ namespace GPUSkinning
             if (currentFrame % framesBetweenUpdates == 0)
                 gpuSkinning.Update();
         }
-
     }
 }
