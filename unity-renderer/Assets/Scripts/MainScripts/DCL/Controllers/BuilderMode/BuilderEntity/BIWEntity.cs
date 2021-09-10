@@ -647,6 +647,7 @@ public class BIWEntity
             t.ResetLocalTRS();
 
             var meshCollider = entityColliderChildren.AddComponent<MeshCollider>();
+            meshCollider.cookingOptions = MeshColliderCookingOptions.None;
 
             if (meshInfo.renderers[i] is SkinnedMeshRenderer)
             {

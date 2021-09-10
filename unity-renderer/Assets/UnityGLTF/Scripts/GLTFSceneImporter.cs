@@ -2142,6 +2142,7 @@ namespace UnityGLTF
             if (forceGPUOnlyMesh)
             {
                 OnWillUploadMeshToGPU?.Invoke(mesh);
+                Physics.BakeMesh(mesh.GetInstanceID(), false);
                 mesh.UploadMeshData(true);
             }
         }

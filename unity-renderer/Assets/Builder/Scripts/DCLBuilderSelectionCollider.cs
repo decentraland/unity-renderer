@@ -24,6 +24,7 @@ namespace Builder
             t.ResetLocalTRS();
 
             var meshCollider = gameObject.AddComponent<MeshCollider>();
+            meshCollider.cookingOptions = MeshColliderCookingOptions.None;
 
             if (renderer is SkinnedMeshRenderer)
             {
@@ -31,6 +32,7 @@ namespace Builder
                 {
                     Object.Destroy(meshColliderForSkinnedMesh);
                 }
+
                 meshColliderForSkinnedMesh = new Mesh();
                 (renderer as SkinnedMeshRenderer).BakeMesh(meshColliderForSkinnedMesh);
                 meshCollider.sharedMesh = meshColliderForSkinnedMesh;
@@ -40,6 +42,7 @@ namespace Builder
             {
                 meshCollider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
             }
+
             meshCollider.enabled = renderer.enabled;
         }
 

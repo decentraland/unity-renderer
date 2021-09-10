@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Configuration;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using DCL.Models;
 
 namespace DCL
@@ -172,6 +173,7 @@ namespace DCL
                 if ( !m.isReadable )
                     continue;
 
+                Physics.BakeMesh(m.GetInstanceID(), false);
                 RenderingGlobalEvents.OnWillUploadMeshToGPU.Invoke(m);
                 m.UploadMeshData(true);
             }
