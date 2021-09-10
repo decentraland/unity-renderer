@@ -144,16 +144,7 @@ namespace DCL
 
                 List<Renderer> rendererList = assetBundleModelGO.GetComponentsInChildren<Renderer>(true).ToList();
 
-                List<Mesh> meshesList = ExtractMeshes(assetBundleModelGO);
-
-                foreach ( Mesh m in meshesList )
-                {
-                    if ( !m.isReadable )
-                        continue;
-
-                    RenderingGlobalEvents.OnWillUploadMeshToGPU.Invoke(m);
-                    m.UploadMeshData(true);
-                }
+                UploadMeshesToGPU(MeshesInfoUtils.ExtractMeshes(assetBundleModelGO));
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
                 yield return MaterialCachingHelper.Process(rendererList, enableRenderers: false, settings.cachingFlags);
@@ -174,29 +165,16 @@ namespace DCL
             }
         }
 
-        private static List<Mesh> ExtractMeshes(GameObject assetBundleModelGO)
+        private static void UploadMeshesToGPU(List<Mesh> meshesList)
         {
-            List<Mesh> result = new List<Mesh>();
-            List<SkinnedMeshRenderer> skrList = assetBundleModelGO.GetComponentsInChildren<SkinnedMeshRenderer>(true).ToList();
-            List<MeshFilter> meshFilterList = assetBundleModelGO.GetComponentsInChildren<MeshFilter>(true).ToList();
-
-            foreach ( var skr in skrList )
+            foreach ( Mesh m in meshesList )
             {
-                if ( skr.sharedMesh == null )
+                if ( !m.isReadable )
                     continue;
 
-                result.Add(skr.sharedMesh);
+                RenderingGlobalEvents.OnWillUploadMeshToGPU.Invoke(m);
+                m.UploadMeshData(true);
             }
-
-            foreach ( var meshFilter in meshFilterList )
-            {
-                if ( meshFilter.mesh == null )
-                    continue;
-
-                result.Add( meshFilter.mesh );
-            }
-
-            return result;
         }
 
         protected override Asset_AB_GameObject GetAsset(object id)

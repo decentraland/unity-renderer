@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace DCL.Models
 {
@@ -38,6 +40,32 @@ namespace DCL.Models
                 return new Bounds( Vector3.one * POSITION_OVERFLOW_LIMIT, Vector3.one * 0.1f );
 
             return renderer.bounds;
+        }
+
+
+        public static List<Mesh> ExtractMeshes(GameObject gameObject)
+        {
+            List<Mesh> result = new List<Mesh>();
+            List<SkinnedMeshRenderer> skrList = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).ToList();
+            List<MeshFilter> meshFilterList = gameObject.GetComponentsInChildren<MeshFilter>(true).ToList();
+
+            foreach ( var skr in skrList )
+            {
+                if ( skr.sharedMesh == null )
+                    continue;
+
+                result.Add(skr.sharedMesh);
+            }
+
+            foreach ( var meshFilter in meshFilterList )
+            {
+                if ( meshFilter.mesh == null )
+                    continue;
+
+                result.Add( meshFilter.mesh );
+            }
+
+            return result;
         }
     }
 }
