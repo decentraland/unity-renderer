@@ -10,6 +10,10 @@ namespace KernelConfigurationTypes
         public bool enableTutorial = true;
         public bool enablePeopleCounter = false;
 
+        public override bool Equals(object obj)
+        {
+            return obj is Features other && Equals(other);
+        }
         protected bool Equals(Features other)
         {
             return enableBuilderInWorld == other.enableBuilderInWorld 
