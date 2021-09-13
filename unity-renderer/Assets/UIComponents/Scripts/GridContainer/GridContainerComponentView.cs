@@ -157,5 +157,5 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         GameObject newGO = Instantiate(newItem.gameObject, parent);
         newGO.name = name;
     }
-}
 #endif
+}
