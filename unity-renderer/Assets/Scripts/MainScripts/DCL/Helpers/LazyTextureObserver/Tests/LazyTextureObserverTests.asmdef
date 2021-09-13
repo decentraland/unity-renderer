@@ -1,0 +1,25 @@
+{
+  "name": "LazyTextureObserverTests",
+  "rootNamespace": "",
+  "references": [
+    "GUID:27619889b8ba8c24980f49ee34dbb44a",
+    "GUID:0acc523941302664db1f4e527237feb3",
+    "GUID:82a93299762ed164a99e475bc89d323c",
+    "GUID:a3ceb534947fac14da25035bc5c24788"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "NSubstitute.dll",
+    "System.Threading.Tasks.Extensions.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

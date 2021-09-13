@@ -35,7 +35,7 @@ namespace Tests
                 email = "mail",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL")
-            }, false);
+            });
 
             Assert.AreEqual("name", userProfile.model.name);
             Assert.AreEqual("mail", userProfile.model.email);
@@ -63,7 +63,7 @@ namespace Tests
                 email = "mail2",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL2")
-            }, false);
+            });
 
             Assert.AreEqual("name2", userProfile.model.name);
             Assert.AreEqual("mail2", userProfile.model.email);
@@ -80,7 +80,7 @@ namespace Tests
                 email = "mail",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL")
-            }, false);
+            });
 
             userProfile.UpdateData(new UserProfileModel()
             {
@@ -88,7 +88,7 @@ namespace Tests
                 email = "mail2",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL2")
-            }, false);
+            });
 
             Assert.AreEqual("name2", userProfile.model.name);
             Assert.AreEqual("mail2", userProfile.model.email);
@@ -107,6 +107,7 @@ namespace Tests
             {
                 inventory[i] = "nft";
             }
+
             userProfile.SetInventory(inventory);
             userProfile.UpdateData(model);
 

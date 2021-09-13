@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -26,11 +27,13 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
     [Test]
     public void BePopulatedCorrectly()
     {
+        var mockSnapshotObserver = new LazyTextureObserver();
+        mockSnapshotObserver.RefreshWithTexture(Texture2D.whiteTexture);
 
         FriendEntry.Model model = new FriendEntry.Model()
         {
             coords = Vector2.one,
-            avatarImage = Texture2D.whiteTexture,
+            avatarSnapshotObserver = mockSnapshotObserver,
             realm = "realm-test",
             realmServerName = "realm-test",
             realmLayerName = "realm-layer-test",

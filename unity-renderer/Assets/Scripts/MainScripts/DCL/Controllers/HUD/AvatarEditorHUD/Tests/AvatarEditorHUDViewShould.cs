@@ -47,7 +47,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
@@ -68,7 +68,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = bodyShape,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
             var category = catalog.Get(wearableId).data.category;
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
@@ -96,7 +96,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = bodyShape,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             var category = catalog.Get(wearableId).data.category;
 
@@ -132,7 +132,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             Assert.IsTrue(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
         }
@@ -183,7 +183,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject.activeSelf);
         }
@@ -206,7 +206,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY].itemToggles[wearableId];
 
@@ -232,7 +232,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             var itemToggle = controller.myView.collectiblesItemSelector.itemToggles[wearableId];
 
@@ -273,7 +273,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-            }, false);
+            });
 
             catalog.Remove(dummyItem.id);
             catalog.Add(dummyItem.id, dummyItem);

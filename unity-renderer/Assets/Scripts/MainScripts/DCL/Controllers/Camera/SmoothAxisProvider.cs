@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using Cinemachine.Utility;
+using DCL.Camera;
 using UnityEngine;
 
 public class SmoothAxisProvider : MonoBehaviour, AxisState.IInputAxisProvider
@@ -13,7 +15,16 @@ public class SmoothAxisProvider : MonoBehaviour, AxisState.IInputAxisProvider
 
     public InputAction_Measurable axisX;
     public InputAction_Measurable axisY;
+    private InputSpikeFixer[] inputSpikeFixer;
 
+    private void Awake()
+    {
+        inputSpikeFixer = new []
+        {
+            new InputSpikeFixer(() => Cursor.lockState),
+            new InputSpikeFixer(() => Cursor.lockState)
+        };
+    }
     void Update()
     {
         axisTarget[0] = axisX.GetValue();
@@ -23,6 +34,6 @@ public class SmoothAxisProvider : MonoBehaviour, AxisState.IInputAxisProvider
 
     public float GetAxisValue(int axis)
     {
-        return this.axis[axis];
+        return inputSpikeFixer[axis].GetValue(this.axis[axis]);
     }
 }

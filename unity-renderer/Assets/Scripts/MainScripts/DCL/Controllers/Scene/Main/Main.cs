@@ -22,7 +22,7 @@ namespace DCL
 
         private PluginSystem pluginSystem;
 
-        void Awake()
+        protected virtual void Awake()
         {
             if (i != null)
             {
@@ -104,7 +104,7 @@ namespace DCL
             pluginSystem.LateUpdate();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();

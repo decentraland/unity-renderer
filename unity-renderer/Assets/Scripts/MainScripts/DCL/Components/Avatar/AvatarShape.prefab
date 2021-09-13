@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 4331657482804467835}
   - component: {fileID: 3865137627712764486}
   - component: {fileID: 1314168606903342224}
-  m_Layer: 23
+  m_Layer: 9
   m_Name: PointerEventCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +409,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6301578636949877838}
   - component: {fileID: 7755590202629118220}
-  m_Layer: 23
+  m_Layer: 21
   m_Name: AvatarCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
