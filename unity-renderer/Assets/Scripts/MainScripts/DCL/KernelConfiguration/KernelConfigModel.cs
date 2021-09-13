@@ -1,6 +1,7 @@
 using KernelConfigurationTypes;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class KernelConfigModel
@@ -12,6 +13,10 @@ public class KernelConfigModel
     public string network = "mainnet";
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
 
+    public override bool Equals(object obj)
+    {
+        return obj is KernelConfigModel other && Equals(other);
+    }
     public bool Equals(KernelConfigModel other)
     {
         if (other == null)
@@ -25,12 +30,12 @@ public class KernelConfigModel
             if (!validWorldRanges[i].Equals(other.validWorldRanges[i]))
                 return false;
         }
-
-        return this.comms.Equals(other.comms) &&
-               this.profiles.Equals(other.profiles) &&
-               this.features.Equals(other.features) &&
-               this.gifSupported == other.gifSupported &&
-               this.network == other.network;
+        
+        return comms.Equals(other.comms) &&
+               profiles.Equals(other.profiles) &&
+               features.Equals(other.features) &&
+               gifSupported == other.gifSupported &&
+               network == other.network;
     }
 
     public KernelConfigModel Clone()
