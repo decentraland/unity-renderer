@@ -31,6 +31,7 @@ public interface IBaseComponentView
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]
+[RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
     private ShowHideAnimator showHideAnimator;

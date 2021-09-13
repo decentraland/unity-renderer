@@ -48,6 +48,9 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public override void RefreshControl()
     {
+        if (model == null)
+            return;
+
         SetText(model.text);
         SetIcon(model.icon);
         SetOnClickAction(model.onClickAction);

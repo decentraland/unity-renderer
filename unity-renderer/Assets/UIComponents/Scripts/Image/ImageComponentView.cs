@@ -37,7 +37,13 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
         RefreshControl();
     }
 
-    public override void RefreshControl() { SetImage(model.sprite); }
+    public override void RefreshControl()
+    {
+        if (model == null)
+            return;
+
+        SetImage(model.sprite);
+    }
 
     public void SetImage(Sprite sprite)
     {

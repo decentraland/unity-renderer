@@ -62,6 +62,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public override void RefreshControl()
     {
+        if (model == null)
+            return;
+
         SetNumColumns(model.numColumns);
         SetItemSize(model.itemSize);
         SetSpaceBetweenItems(model.spaceBetweensItems);
