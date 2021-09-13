@@ -121,29 +121,17 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         return instantiatedItems[index];
     }
 
-    internal void RemoveAllIntantiatedItems()
-    {
-        foreach (Transform child in transform)
-        {
-#if UNITY_EDITOR
-            if (isActiveAndEnabled)
-                StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
-#else
-            Destroy(child.gameObject);
-#endif
-        }
-
-        instantiatedItems.Clear();
-    }
-
     internal void CreateItem(BaseComponentView newItem, string name)
     {
-#if UNITY_EDITOR
-        if (isActiveAndEnabled)
-            StartCoroutine(IntantiateItemOnEditor(newItem, name));
-#else
-        IntantiateItem(newItem, name);
-#endif
+        if (Application.isEditor)
+        {
+            if (isActiveAndEnabled)
+                StartCoroutine(IntantiateItemOnEditor(newItem, name));
+        }
+        else
+        {
+            IntantiateItem(newItem, name);
+        }
     }
 
     internal void IntantiateItem(BaseComponentView newItem, string name)
@@ -153,14 +141,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         instantiatedItems.Add(newGO);
     }
 
-#if UNITY_EDITOR
-    private IEnumerator DestroyGameObjectOnEditor(GameObject go)
-    {
-        yield return null;
-        DestroyImmediate(go);
-    }
-
-    private IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
+    internal IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
     {
         if (newItem == null)
             yield break;
@@ -168,5 +149,28 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         yield return null;
         IntantiateItem(newItem, name);
     }
-#endif
+
+    internal void RemoveAllIntantiatedItems()
+    {
+        foreach (Transform child in transform)
+        {
+            if (Application.isEditor)
+            {
+                if (isActiveAndEnabled)
+                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+            }
+            else
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        instantiatedItems.Clear();
+    }
+
+    internal IEnumerator DestroyGameObjectOnEditor(GameObject go)
+    {
+        yield return null;
+        DestroyImmediate(go);
+    }
 }

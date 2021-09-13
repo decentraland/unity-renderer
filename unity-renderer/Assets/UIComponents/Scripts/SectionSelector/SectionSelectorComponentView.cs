@@ -68,32 +68,17 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         return instantiatedSections[index];
     }
 
-    internal void RemoveAllIntantiatedSections()
-    {
-        foreach (Transform child in transform)
-        {
-            if (child.gameObject.GetInstanceID() == sectionToggleTemplate.gameObject.GetInstanceID())
-                continue;
-
-#if UNITY_EDITOR
-            if (isActiveAndEnabled)
-                StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
-#else
-            Destroy(child.gameObject);
-#endif
-        }
-
-        instantiatedSections.Clear();
-    }
-
     internal void CreateSection(SectionToggleModel newSectionToggle, string name)
     {
-#if UNITY_EDITOR
-        if (isActiveAndEnabled)
-            StartCoroutine(IntantiateSectionToggleOnEditor(sectionToggleTemplate, newSectionToggle, name));
-#else
-        IntantiateSectionToggle(newSectionToggle, name);
-#endif
+        if (Application.isEditor)
+        {
+            if (isActiveAndEnabled)
+                StartCoroutine(IntantiateSectionToggleOnEditor(sectionToggleTemplate, newSectionToggle, name));
+        }
+        else
+        {
+            IntantiateSectionToggle(newSectionToggle, name);
+        }
     }
 
     internal void IntantiateSectionToggle(SectionToggleModel newSectionModel, string name)
@@ -105,14 +90,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         instantiatedSections.Add(newGO);
     }
 
-#if UNITY_EDITOR
-    private IEnumerator DestroyGameObjectOnEditor(GameObject go)
-    {
-        yield return null;
-        DestroyImmediate(go);
-    }
-
-    private IEnumerator IntantiateSectionToggleOnEditor(SectionToggle newToggle, SectionToggleModel sectionModel, string name)
+    internal IEnumerator IntantiateSectionToggleOnEditor(SectionToggle newToggle, SectionToggleModel sectionModel, string name)
     {
         if (newToggle == null)
             yield break;
@@ -120,5 +98,31 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         yield return null;
         IntantiateSectionToggle(sectionModel, name);
     }
-#endif
+
+    internal void RemoveAllIntantiatedSections()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.GetInstanceID() == sectionToggleTemplate.gameObject.GetInstanceID())
+                continue;
+
+            if (Application.isEditor)
+            {
+                if (isActiveAndEnabled)
+                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+            }
+            else
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        instantiatedSections.Clear();
+    }
+
+    internal IEnumerator DestroyGameObjectOnEditor(GameObject go)
+    {
+        yield return null;
+        DestroyImmediate(go);
+    }
 }
