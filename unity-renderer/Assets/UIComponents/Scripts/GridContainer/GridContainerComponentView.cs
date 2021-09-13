@@ -52,7 +52,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     [Header("Configuration")]
     [SerializeField] protected GridContainerComponentModel model;
 
-    private List<BaseComponentView> currentItems = new List<BaseComponentView>();
+    private List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
 
     public void Configure(GridContainerComponentModel model)
     {
@@ -109,16 +109,16 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         for (int i = 0; i < items.Count; i++)
         {
-            InstantiateItem(items[i], $"Item{i}");
+            CreateItem(items[i], $"Item{i}");
         }
     }
 
     public BaseComponentView GetItem(int index)
     {
-        if (index >= currentItems.Count)
+        if (index >= instantiatedItems.Count)
             return null;
 
-        return currentItems[index];
+        return instantiatedItems[index];
     }
 
     internal void RemoveAllIntantiatedItems()
@@ -132,16 +132,25 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             Destroy(child.gameObject);
 #endif
         }
+
+        instantiatedItems.Clear();
     }
 
-    internal void InstantiateItem(BaseComponentView newItem, string name)
+    internal void CreateItem(BaseComponentView newItem, string name)
     {
 #if UNITY_EDITOR
         if (isActiveAndEnabled)
-            StartCoroutine(IntantiateGameObjectOnEditor(newItem, transform, name));
+            StartCoroutine(IntantiateItemOnEditor(newItem, name));
 #else
-        Instantiate(newItem.gameObject, transform);
+        IntantiateItem(newItem, name);
 #endif
+    }
+
+    internal void IntantiateItem(BaseComponentView newItem, string name)
+    {
+        BaseComponentView newGO = Instantiate(newItem, transform);
+        newGO.name = name;
+        instantiatedItems.Add(newGO);
     }
 
 #if UNITY_EDITOR
@@ -151,14 +160,13 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         DestroyImmediate(go);
     }
 
-    private IEnumerator IntantiateGameObjectOnEditor(BaseComponentView newItem, Transform parent, string name)
+    private IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
     {
         if (newItem == null)
             yield break;
 
         yield return null;
-        GameObject newGO = Instantiate(newItem.gameObject, parent);
-        newGO.name = name;
+        IntantiateItem(newItem, name);
     }
 #endif
 }
