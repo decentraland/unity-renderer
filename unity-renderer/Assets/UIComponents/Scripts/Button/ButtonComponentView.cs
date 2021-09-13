@@ -50,6 +50,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
     {
         SetText(model.text);
         SetIcon(model.icon);
+        SetOnClickAction(model.onClickAction);
     }
 
     public override void Dispose()
@@ -62,25 +63,29 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public void SetText(string newText)
     {
+        model.text = newText;
+
         if (text == null)
             return;
 
-        model.text = newText;
         text.text = newText;
     }
 
     public void SetIcon(Sprite newIcon)
     {
+        model.icon = newIcon;
+
         if (icon == null)
             return;
 
-        model.icon = newIcon;
         icon.enabled = newIcon != null;
         icon.sprite = newIcon;
     }
 
     public void SetOnClickAction(Action action)
     {
+        model.onClickAction = action;
+
         if (button == null)
             return;
 

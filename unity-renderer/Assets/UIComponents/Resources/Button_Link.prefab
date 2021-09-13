@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 088742d917e2891499ac6de2a9078f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  button: {fileID: 5736161931655279129}
-  urlToGo: https://www.google.com
+  urlToGo: https://decentraland.org
 --- !u!1001 &6601945259168165492
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -166,15 +165,3 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6601945259168165492}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5736161931655279129 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1442316120381234285, guid: fb037d81b9c10ad439a13e356a17bab6,
-    type: 3}
-  m_PrefabInstance: {fileID: 6601945259168165492}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171146819627042931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
