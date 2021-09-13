@@ -1,10 +1,14 @@
 using DCL;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Interface;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class TaskbarMoreMenu : MonoBehaviour
 {
+    private const string ReportBugURL = "https://github.com/decentraland/issues/issues/new?assignees=&labels=new%2Cexplorer&template=bug_report.yml";
+    
     [Header("Menu Animation")]
     [SerializeField] internal ShowHideAnimator moreMenuAnimator;
     [SerializeField] internal float timeBetweenAnimations = 0.01f;
@@ -24,6 +28,7 @@ public class TaskbarMoreMenu : MonoBehaviour
     [SerializeField] internal TaskbarMoreMenuButton tutorialButton;
     [SerializeField] internal TaskbarMoreMenuButton dayModeButton;
     [SerializeField] internal TaskbarMoreMenuButton nightModeButton;
+    [SerializeField] internal TaskbarMoreMenuButton reportBugButton;
 
     private TaskbarHUDView view;
     protected internal List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
@@ -43,6 +48,7 @@ public class TaskbarMoreMenu : MonoBehaviour
         controlsButton.gameObject.SetActive(false);
         helpAndSupportButton.gameObject.SetActive(false);
         tutorialButton.gameObject.SetActive(true);
+        reportBugButton.gameObject.SetActive(true);
 
         SortButtonsAnimations();
 
@@ -63,16 +69,19 @@ public class TaskbarMoreMenu : MonoBehaviour
             view.moreButton.SetToggleState(false);
         });
 
-        collapseBarButton.mainButton.onClick.AddListener(() => { ToggleCollapseBar(); });
+        collapseBarButton.mainButton.onClick.AddListener(ToggleCollapseBar);
 
-        hideUIButton.mainButton.onClick.AddListener(() => { ToggleHideUI(); });
+        hideUIButton.mainButton.onClick.AddListener(ToggleHideUI);
 
         tutorialButton.mainButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
+
+        reportBugButton.mainButton.onClick.AddListener( ReportBug);
     }
 
     protected void SortButtonsAnimations()
     {
         sortedButtonsAnimations.Add(helpAndSupportButton);
+        sortedButtonsAnimations.Add(reportBugButton);
         sortedButtonsAnimations.Add(controlsButton);
         sortedButtonsAnimations.Add(hideUIButton);
         sortedButtonsAnimations.Add(nightModeButton);
@@ -205,5 +214,15 @@ public class TaskbarMoreMenu : MonoBehaviour
 
         CommonScriptableObjects.allUIHidden.Set(!CommonScriptableObjects.allUIHidden.Get());
         view.moreButton.SetToggleState(false);
+    }
+    private void ReportBug()
+    {
+        var userProfile = UserProfile.GetOwnUserProfile();
+
+        var unityVersion = "";
+        var kernelVersion = "";
+        var systemInfo = $"{SystemInfo.processorType}, {SystemInfo.systemMemorySize}MB RAM, {SystemInfo.graphicsDeviceName} {SystemInfo.graphicsMemorySize}MB";
+        var nametag = UnityWebRequest.EscapeURL(userProfile.userName);
+        WebInterface.OpenURL($"{ReportBugURL}&unity={unityVersion}&kernel={kernelVersion}&nametag={nametag}&sysinfo={systemInfo}");
     }
 }
