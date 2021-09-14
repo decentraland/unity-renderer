@@ -12,6 +12,12 @@ public class KernelConfigModel
     public bool gifSupported = false;
     public string network = "mainnet";
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
+    public string kernelURL;
+    public string rendererURL;
+    public override bool Equals(object obj)
+    {
+        return obj is KernelConfigModel other && Equals(other);
+    }
 
     public override bool Equals(object obj)
     {
