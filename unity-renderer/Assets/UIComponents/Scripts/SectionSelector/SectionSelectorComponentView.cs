@@ -21,7 +21,7 @@ public interface ISectionSelectorComponentView
     /// </summary>
     /// <param name="index">Index of the list of sections.</param>
     /// <returns>A specific section toggle.</returns>
-    SectionToggle GetSection(int index);
+    ISectionToggle GetSection(int index);
 }
 
 public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView
@@ -32,7 +32,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
     [Header("Configuration")]
     [SerializeField] protected SectionSelectorComponentModel model;
 
-    private List<SectionToggle> instantiatedSections = new List<SectionToggle>();
+    private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
     public override void Initialize()
     {
@@ -66,7 +66,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         }
     }
 
-    public SectionToggle GetSection(int index)
+    public ISectionToggle GetSection(int index)
     {
         if (index >= instantiatedSections.Count)
             return null;
