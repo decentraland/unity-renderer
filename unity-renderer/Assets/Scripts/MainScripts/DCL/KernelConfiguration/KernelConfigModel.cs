@@ -18,11 +18,6 @@ public class KernelConfigModel
     {
         return obj is KernelConfigModel other && Equals(other);
     }
-
-    public override bool Equals(object obj)
-    {
-        return obj is KernelConfigModel other && Equals(other);
-    }
     public bool Equals(KernelConfigModel other)
     {
         if (other == null)
@@ -37,11 +32,13 @@ public class KernelConfigModel
                 return false;
         }
         
-        return comms.Equals(other.comms) &&
-               profiles.Equals(other.profiles) &&
-               features.Equals(other.features) &&
-               gifSupported == other.gifSupported &&
-               network == other.network;
+        return comms.Equals(other.comms) 
+               && profiles.Equals(other.profiles) 
+               && features.Equals(other.features) 
+               && gifSupported == other.gifSupported 
+               && network == other.network
+               && kernelURL == other.kernelURL
+               && rendererURL == other.rendererURL;
     }
 
     public KernelConfigModel Clone()
