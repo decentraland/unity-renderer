@@ -10,10 +10,10 @@ public class GoToLinkAction : MonoBehaviour
     private void Start()
     {
         button = GetComponent<ButtonComponentView>();
-        button.onButtonClick.AddListener(GoToUrl);
+        button.onClick.AddListener(GoToUrl);
     }
 
-    private void OnDestroy() { button.onButtonClick.RemoveAllListeners(); }
+    private void OnDestroy() { button.onClick.RemoveAllListeners(); }
 
     internal void GoToUrl()
     {

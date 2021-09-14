@@ -47,5 +47,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose() { }
 
     private void Awake() { Initialize(); }
+
     private void OnDestroy() { Dispose(); }
 }

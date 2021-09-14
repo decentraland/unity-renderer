@@ -8,7 +8,7 @@ public interface ISectionToggle
     /// <summary>
     /// Event that will be triggered when the toggle is selected.
     /// </summary>
-    ToggleEvent onSelectSectionToggle { get; set; }
+    ToggleEvent onSelect { get; set; }
 
     /// <summary>
     /// Set the toggle info.
@@ -28,7 +28,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     [SerializeField] private TMP_Text sectionText;
     [SerializeField] private Image sectionImage;
 
-    public ToggleEvent onSelectSectionToggle
+    public ToggleEvent onSelect
     {
         get { return toggle?.onValueChanged; }
         set
@@ -58,7 +58,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             sectionImage.sprite = model.icon;
         }
 
-        onSelectSectionToggle = model.onSelectEvent;
+        onSelect = model.onSelectEvent;
     }
 
     public void SelectToggle()

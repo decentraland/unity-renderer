@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public interface IButtonComponentView
 {
     /// <summary>
-    /// Event that will be triggered when the buttons is clicked.
+    /// Event that will be triggered when the button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onButtonClick { get; set; }
+    Button.ButtonClickedEvent onClick { get; set; }
 
     /// <summary>
     /// Fill the model and updates the button with this data.
@@ -39,7 +39,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
     [Header("Configuration")]
     [SerializeField] protected ButtonComponentModel model;
 
-    public Button.ButtonClickedEvent onButtonClick
+    public Button.ButtonClickedEvent onClick
     {
         get { return button?.onClick; }
         set
@@ -72,7 +72,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         SetText(model.text);
         SetIcon(model.icon);
-        onButtonClick = model.onClickEvent;
+        onClick = model.onClickEvent;
     }
 
     public override void Dispose()
