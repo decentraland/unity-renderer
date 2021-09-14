@@ -177,7 +177,6 @@ public class MaterialTransitionController : MonoBehaviour
         {
             case State.NOT_LOADED:
                 {
-                    Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} State Not Loaded");
                     currentCullYPlane += (topYRendererBounds - currentCullYPlane) * 0.1f;
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
                     time += Time.deltaTime;
@@ -201,7 +200,6 @@ public class MaterialTransitionController : MonoBehaviour
 
             case State.SHOWING_LOADED:
                 {
-                    Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Showing Loaded");
                     currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
 
@@ -210,6 +208,7 @@ public class MaterialTransitionController : MonoBehaviour
 
                     if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
                     {
+                        Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Showing Loaded -> Finished");
                         // We don't update the culling value in the final material to avoid affecting the already-loaded meshes
                         PopulateTargetRendererWithMaterial(finalMaterials);
 
