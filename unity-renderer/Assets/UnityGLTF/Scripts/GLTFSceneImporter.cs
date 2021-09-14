@@ -1669,11 +1669,7 @@ namespace UnityGLTF
             }
         }
 
-        void Log(string msg, string parentName)
-        {
-            if (parentName == "Plane1401")
-                Debug.Log(msg);
-        }
+        void Log(string msg, string parentName) { Debug.Log(msg); }
 
         protected virtual IEnumerator ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
         {

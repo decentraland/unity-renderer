@@ -294,9 +294,5 @@ public class MaterialTransitionController : MonoBehaviour
         }
     }
 
-    public void Log(string msg)
-    {
-        if (transform.parent.name == "Plane1401")
-            Debug.Log(msg);
-    }
+    public void Log(string msg) { Debug.Log(msg); }
 }
