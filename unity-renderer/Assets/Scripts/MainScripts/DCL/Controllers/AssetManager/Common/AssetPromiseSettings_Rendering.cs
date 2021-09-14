@@ -13,7 +13,7 @@ namespace DCL
             VISIBLE_WITH_TRANSITION
         }
 
-        public VisibleFlags visibleFlags = VisibleFlags.VISIBLE_WITHOUT_TRANSITION; // temporarily disabled holograms
+        public VisibleFlags visibleFlags = VisibleFlags.INVISIBLE; // temporarily disabled holograms
         public MaterialCachingHelper.Mode cachingFlags = MaterialCachingHelper.Mode.CACHE_EVERYTHING;
         public Shader shaderOverride;
 
