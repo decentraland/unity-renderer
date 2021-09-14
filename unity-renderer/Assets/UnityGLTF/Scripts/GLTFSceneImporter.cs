@@ -1640,7 +1640,6 @@ namespace UnityGLTF
             if (useMaterialTransition && initialVisibility)
             {
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                matController.useHologram = false; //Disable hologram temporarily
                 var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
 
                 if (_asyncCoroutineHelper != null)
