@@ -110,6 +110,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log($"MaterialTransitionController: {transform.parent.name} Awake");
         state = State.NOT_LOADED;
         time = 0;
         materialReady = false;
@@ -117,6 +118,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"MaterialTransitionController: {transform.parent.name} Start");
         Renderer tr = targetRenderer;
 
         if (float.IsInfinity(tr.bounds.min.y) || float.IsNaN(tr.bounds.min.y))
@@ -145,6 +147,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     void InitHologram()
     {
+        Debug.Log($"MaterialTransitionController: {transform.parent.name} Init Hologram");
         placeholder = new GameObject("Load Placeholder");
 
         placeholder.transform.SetParent(transform, false);
@@ -174,6 +177,7 @@ public class MaterialTransitionController : MonoBehaviour
         {
             case State.NOT_LOADED:
                 {
+                    Debug.Log($"MaterialTransitionController: {transform.parent.name} State Not Loaded");
                     currentCullYPlane += (topYRendererBounds - currentCullYPlane) * 0.1f;
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
                     time += Time.deltaTime;
@@ -182,6 +186,7 @@ public class MaterialTransitionController : MonoBehaviour
 
                     if (materialReady && time > delay)
                     {
+                        Debug.Log($"MaterialTransitionController: {transform.parent.name} State Not Loaded: Material ready");
                         currentCullYPlane = topYRendererBounds;
                         targetRendererValue.enabled = true;
 
@@ -196,6 +201,7 @@ public class MaterialTransitionController : MonoBehaviour
 
             case State.SHOWING_LOADED:
                 {
+                    Debug.Log($"MaterialTransitionController: {transform.parent.name} Showing Loaded");
                     currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
 
@@ -216,6 +222,7 @@ public class MaterialTransitionController : MonoBehaviour
 
             case State.FINISHED:
                 {
+                    Debug.Log($"MaterialTransitionController: {transform.parent.name} Finished");
                     onFinishedLoading?.Invoke();
                     Destroy(this);
                     break;
