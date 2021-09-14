@@ -296,7 +296,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     public void Log(string msg)
     {
-        if (transform.parent.name == "Cylinder372")
+        if (transform.parent.name == "Plane1401")
             Debug.Log(msg);
     }
 }
