@@ -1,10 +1,11 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 [Serializable]
 public class ButtonComponentModel
 {
     public string text;
     public Sprite icon;
-    public Action onClickAction;
+    public Button.ButtonClickedEvent onClickEvent;
 }

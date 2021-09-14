@@ -6,6 +6,11 @@ using UnityEngine.UI;
 public interface IButtonComponentView
 {
     /// <summary>
+    /// Event that will be triggered when the buttons is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onButtonClick { get; set; }
+
+    /// <summary>
     /// Fill the model and updates the button with this data.
     /// </summary>
     /// <param name="model">Data to configure the button.</param>
@@ -22,12 +27,6 @@ public interface IButtonComponentView
     /// </summary>
     /// <param name="newIcon">New Icon. Null for hide the icon.</param>
     void SetIcon(Sprite newIcon);
-
-    /// <summary>
-    /// Set an action on the onClick button.
-    /// </summary>
-    /// <param name="action">Action to call after clicking the button.</param>
-    void SetOnClickAction(Action action);
 }
 
 public class ButtonComponentView : BaseComponentView, IButtonComponentView
@@ -39,6 +38,26 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     [Header("Configuration")]
     [SerializeField] protected ButtonComponentModel model;
+
+    public Button.ButtonClickedEvent onButtonClick
+    {
+        get { return button?.onClick; }
+        set
+        {
+            model.onClickEvent = value;
+            button?.onClick.RemoveAllListeners();
+            button?.onClick.AddListener(() =>
+            {
+                value.Invoke();
+            });
+        }
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        Configure(model);
+    }
 
     public virtual void Configure(ButtonComponentModel model)
     {
@@ -53,7 +72,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         SetText(model.text);
         SetIcon(model.icon);
-        SetOnClickAction(model.onClickAction);
+        onButtonClick = model.onClickEvent;
     }
 
     public override void Dispose()
@@ -83,16 +102,5 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         icon.enabled = newIcon != null;
         icon.sprite = newIcon;
-    }
-
-    public void SetOnClickAction(Action action)
-    {
-        model.onClickAction = action;
-
-        if (button == null)
-            return;
-
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => action?.Invoke());
     }
 }

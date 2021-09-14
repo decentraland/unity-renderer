@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [Serializable]
 public class SectionSelectorComponentModel
@@ -13,5 +14,5 @@ public class SectionToggleModel
 {
     public Sprite icon;
     public string title;
-    public Action onClickAction;
+    public Toggle.ToggleEvent onSelectEvent;
 }

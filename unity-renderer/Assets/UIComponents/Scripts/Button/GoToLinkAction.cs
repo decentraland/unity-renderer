@@ -7,11 +7,13 @@ public class GoToLinkAction : MonoBehaviour
 
     private ButtonComponentView button;
 
-    private void Awake()
+    private void Start()
     {
         button = GetComponent<ButtonComponentView>();
-        button.SetOnClickAction(GoToUrl);
+        button.onButtonClick.AddListener(GoToUrl);
     }
+
+    private void OnDestroy() { button.onButtonClick.RemoveAllListeners(); }
 
     internal void GoToUrl()
     {

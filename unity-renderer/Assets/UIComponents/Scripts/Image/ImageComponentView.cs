@@ -31,6 +31,12 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
     [Header("Configuration")]
     [SerializeField] protected ImageComponentModel model;
 
+    public override void Initialize()
+    {
+        base.Initialize();
+        Configure(model);
+    }
+
     public void Configure(ImageComponentModel model)
     {
         this.model = model;

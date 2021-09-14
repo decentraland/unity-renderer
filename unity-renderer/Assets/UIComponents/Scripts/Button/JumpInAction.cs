@@ -10,11 +10,13 @@ public class JumpInAction : MonoBehaviour
 
     private ButtonComponentView button;
 
-    private void Awake()
+    private void Start()
     {
         button = GetComponent<ButtonComponentView>();
-        button.SetOnClickAction(JumpIn);
+        button.onButtonClick.AddListener(JumpIn);
     }
+
+    private void OnDestroy() { button.onButtonClick.RemoveAllListeners(); }
 
     internal void JumpIn()
     {

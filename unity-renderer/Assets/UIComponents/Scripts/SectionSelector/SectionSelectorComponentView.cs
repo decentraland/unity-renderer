@@ -34,6 +34,12 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     private List<SectionToggle> instantiatedSections = new List<SectionToggle>();
 
+    public override void Initialize()
+    {
+        base.Initialize();
+        Configure(model);
+    }
+
     public void Configure(SectionSelectorComponentModel model)
     {
         this.model = model;
@@ -68,21 +74,24 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         return instantiatedSections[index];
     }
 
-    internal void CreateSection(SectionToggleModel newSectionToggle, string name)
+    internal void CreateSection(SectionToggleModel newSectionModel, string name)
     {
         if (Application.isEditor)
         {
             if (isActiveAndEnabled)
-                StartCoroutine(IntantiateSectionToggleOnEditor(sectionToggleTemplate, newSectionToggle, name));
+                StartCoroutine(IntantiateSectionToggleOnEditor(newSectionModel, name));
         }
         else
         {
-            IntantiateSectionToggle(newSectionToggle, name);
+            IntantiateSectionToggle(newSectionModel, name);
         }
     }
 
     internal void IntantiateSectionToggle(SectionToggleModel newSectionModel, string name)
     {
+        if (sectionToggleTemplate == null)
+            return;
+
         SectionToggle newGO = Instantiate(sectionToggleTemplate, transform);
         newGO.name = name;
         newGO.SetInfo(newSectionModel);
@@ -90,11 +99,8 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         instantiatedSections.Add(newGO);
     }
 
-    internal IEnumerator IntantiateSectionToggleOnEditor(SectionToggle newToggle, SectionToggleModel sectionModel, string name)
+    internal IEnumerator IntantiateSectionToggleOnEditor(SectionToggleModel sectionModel, string name)
     {
-        if (newToggle == null)
-            yield break;
-
         yield return null;
         IntantiateSectionToggle(sectionModel, name);
     }
@@ -125,4 +131,6 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         yield return null;
         DestroyImmediate(go);
     }
+
+    public void HasClicked() { Debug.Log("CLICKED!!"); }
 }

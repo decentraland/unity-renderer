@@ -1,21 +1,20 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.UI.Toggle;
 
 public interface ISectionToggle
 {
+    /// <summary>
+    /// Event that will be triggered when the toggle is selected.
+    /// </summary>
+    ToggleEvent onSelectSectionToggle { get; set; }
+
     /// <summary>
     /// Set the toggle info.
     /// </summary>
     /// <param name="model">Model with all the toggle info.</param>
     void SetInfo(SectionToggleModel model);
-
-    /// <summary>
-    /// Set an action on the toggle onClick.
-    /// </summary>
-    /// <param name="action">Action to call after clicking the toggle.</param>
-    void SetOnClickAction(Action action);
 
     /// <summary>
     /// Invoke the action of selecting the toggle.
@@ -28,6 +27,22 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     [SerializeField] private Toggle toggle;
     [SerializeField] private TMP_Text sectionText;
     [SerializeField] private Image sectionImage;
+
+    public ToggleEvent onSelectSectionToggle
+    {
+        get { return toggle?.onValueChanged; }
+        set
+        {
+            toggle?.onValueChanged.RemoveAllListeners();
+            toggle?.onValueChanged.AddListener((isOn) =>
+            {
+                if (isOn)
+                    value.Invoke(isOn);
+            });
+        }
+    }
+
+    delegate void Logger(string str);
 
     public void SetInfo(SectionToggleModel model)
     {
@@ -43,20 +58,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             sectionImage.sprite = model.icon;
         }
 
-        SetOnClickAction(model.onClickAction);
-    }
-
-    public void SetOnClickAction(Action action)
-    {
-        if (toggle == null)
-            return;
-
-        toggle.onValueChanged.RemoveAllListeners();
-        toggle.onValueChanged.AddListener((isOn) =>
-        {
-            if (isOn)
-                action?.Invoke();
-        });
+        onSelectSectionToggle = model.onSelectEvent;
     }
 
     public void SelectToggle()
