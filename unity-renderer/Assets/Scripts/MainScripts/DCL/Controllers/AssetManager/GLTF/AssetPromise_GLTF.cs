@@ -193,14 +193,17 @@ namespace DCL
         private void OnLoadedAfterForget(bool success, Asset_GLTF loadedAsset)
         {
             asset = loadedAsset;
+            waitingAssetLoad = false;
 
             if (success && asset != null)
             {
+                bool alreadyInLibrary = library.Contains(loadedAsset);
                 AddToLibrary();
+                
+                if (alreadyInLibrary)
+                    loadedAsset.Cleanup();
             }
 
-            ClearEvents();
-            CallAndClearEvents(success);
             Cleanup();
         }
     }
