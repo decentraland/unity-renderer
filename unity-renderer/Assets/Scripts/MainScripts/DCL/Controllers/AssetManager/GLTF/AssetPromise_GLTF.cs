@@ -194,10 +194,11 @@ namespace DCL
         {
             asset = loadedAsset;
             waitingAssetLoad = false;
+            bool alreadyInLibrary = false;
 
             if (success && asset != null)
             {
-                bool alreadyInLibrary = library.Contains(asset);
+                alreadyInLibrary = library.Contains(asset);
                 if (alreadyInLibrary)
                 {
                     asset.Cleanup();
@@ -210,7 +211,10 @@ namespace DCL
             }
 
             ClearEvents();
-            CallAndClearEvents(success);
+            if (!alreadyInLibrary)
+            {
+                CallAndClearEvents(success);
+            }
             Cleanup();
         }
     }
