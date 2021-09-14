@@ -22,7 +22,7 @@ public class MaterialTransitionController : MonoBehaviour
     Material loadingMaterial;
 
     [System.NonSerialized] public float delay = 0.5f;
-    [System.NonSerialized] public bool useHologram = false;
+    [System.NonSerialized] public bool useHologram = false; // temporarily disabled
     [System.NonSerialized] public float fadeThickness = 10;
     [System.NonSerialized] public System.Action onFinishedLoading;
 
