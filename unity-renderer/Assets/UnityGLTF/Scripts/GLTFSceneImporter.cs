@@ -1639,6 +1639,7 @@ namespace UnityGLTF
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)
             {
+                Debug.Log($"ConstructPrimitiveMaterials With MatController: {renderer.transform.parent.name} {materialIndex}");
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
                 var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
 
@@ -1658,6 +1659,7 @@ namespace UnityGLTF
                     renderer.sharedMaterial = LoadingTextureMaterial;
                 }
 
+                Debug.Log($"ConstructPrimitiveMaterials without MatController: {renderer.transform.parent.name} {materialIndex}");
                 yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
 
                 if (LoadingTextureMaterial == null)
@@ -1675,12 +1677,13 @@ namespace UnityGLTF
             {
                 _assetCache.MeshCache[meshId] = new MeshCacheData[mesh.Primitives.Count];
             }
-
+            Debug.Log($"Constructing Mesh {parent.gameObject.name}");
             for (int i = 0; i < mesh.Primitives.Count; ++i)
             {
                 var primitive = mesh.Primitives[i];
                 int materialIndex = primitive.Material != null ? primitive.Material.Id : -1;
 
+                Debug.Log($"Constructing Mesh {parent.gameObject.name}: primitive{i}");
                 // NOTE(Brian): Submesh loading
                 yield return ConstructMeshPrimitive(primitive, meshId, i, materialIndex);
 
@@ -1719,7 +1722,7 @@ namespace UnityGLTF
                         renderer = meshRenderer;
                         renderer.enabled = initialVisibility;
                     }
-
+                    Debug.Log($"Constructing Mesh {parent.gameObject.name}: primitive{i} ConstructPrimitiveMaterials");
                     yield return ConstructPrimitiveMaterials(mesh, meshId, i);
                 }
                 else
