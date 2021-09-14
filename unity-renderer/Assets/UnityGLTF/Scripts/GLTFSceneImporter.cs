@@ -1639,7 +1639,7 @@ namespace UnityGLTF
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)
             {
-                Debug.Log($"ConstructPrimitiveMaterials With MatController: {renderer.transform.parent.name} {materialIndex}");
+                Log($"ConstructPrimitiveMaterials With MatController: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
                 var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
 
@@ -1659,7 +1659,7 @@ namespace UnityGLTF
                     renderer.sharedMaterial = LoadingTextureMaterial;
                 }
 
-                Debug.Log($"ConstructPrimitiveMaterials without MatController: {renderer.transform.parent.name} {materialIndex}");
+                Log($"ConstructPrimitiveMaterials without MatController: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
                 yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
 
                 if (LoadingTextureMaterial == null)
@@ -1667,6 +1667,12 @@ namespace UnityGLTF
                     primitiveObj.SetActive(true);
                 }
             }
+        }
+
+        void Log(string msg, string parentName)
+        {
+            if (parentName == "Plane1401")
+                Debug.Log(msg);
         }
 
         protected virtual IEnumerator ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
@@ -1677,13 +1683,13 @@ namespace UnityGLTF
             {
                 _assetCache.MeshCache[meshId] = new MeshCacheData[mesh.Primitives.Count];
             }
-            Debug.Log($"Constructing Mesh {parent.gameObject.name}");
+            Log($"Constructing Mesh {parent.gameObject.name}", parent.gameObject.name);
             for (int i = 0; i < mesh.Primitives.Count; ++i)
             {
                 var primitive = mesh.Primitives[i];
                 int materialIndex = primitive.Material != null ? primitive.Material.Id : -1;
 
-                Debug.Log($"Constructing Mesh {parent.gameObject.name}: primitive{i}");
+                Log($"Constructing Mesh {parent.gameObject.name}: primitive{i}", parent.gameObject.name);
                 // NOTE(Brian): Submesh loading
                 yield return ConstructMeshPrimitive(primitive, meshId, i, materialIndex);
 
@@ -1722,7 +1728,7 @@ namespace UnityGLTF
                         renderer = meshRenderer;
                         renderer.enabled = initialVisibility;
                     }
-                    Debug.Log($"Constructing Mesh {parent.gameObject.name}: primitive{i} ConstructPrimitiveMaterials");
+                    Log($"Constructing Mesh {parent.gameObject.name}: primitive{i} ConstructPrimitiveMaterials", parent.gameObject.name);
                     yield return ConstructPrimitiveMaterials(mesh, meshId, i);
                 }
                 else
@@ -1752,7 +1758,7 @@ namespace UnityGLTF
 
         IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
         {
-            Debug.Log($"DownloadAndConstructMaterial starting: {renderer.transform.parent.name} {materialIndex}");
+            Log($"DownloadAndConstructMaterial starting: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
             bool shouldUseDefaultMaterial = primitive.Material == null;
 
             GLTFMaterial materialToLoad = shouldUseDefaultMaterial ? DefaultMaterial : primitive.Material.Value;
@@ -1760,7 +1766,7 @@ namespace UnityGLTF
             if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
                 (!shouldUseDefaultMaterial && _assetCache.MaterialCache[materialIndex] == null))
             {
-                Debug.Log($"DownloadAndConstructMaterial Constructing: {renderer.transform.parent.name} {materialIndex}");
+                Log($"DownloadAndConstructMaterial Constructing: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
                 yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex);
             }
 
@@ -1775,7 +1781,7 @@ namespace UnityGLTF
 
             if (!alreadyUsedMaterial)
             {
-                Debug.Log($"DownloadAndConstructMaterial already used material: {renderer.transform.parent.name} {materialIndex}");
+                Log($"DownloadAndConstructMaterial already used material: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
                 if (useVertexColors)
                     materialCacheData.CachedMaterialWithVertexColor.IncreaseRefCount();
                 else
@@ -1788,12 +1794,12 @@ namespace UnityGLTF
 
             if (matController != null)
             {
-                Debug.Log($"DownloadAndConstructMaterial OnDidFinishLoading: {renderer.transform.parent.name} {materialIndex}");
+                Log($"DownloadAndConstructMaterial OnDidFinishLoading: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
                 matController.OnDidFinishLoading(material);
             }
             else
             {
-                Debug.Log($"DownloadAndConstructMaterial No matController: {renderer.transform.parent.name} {materialIndex}");
+                Log($"DownloadAndConstructMaterial No matController: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
                 renderer.sharedMaterial = material;
             }
         }
