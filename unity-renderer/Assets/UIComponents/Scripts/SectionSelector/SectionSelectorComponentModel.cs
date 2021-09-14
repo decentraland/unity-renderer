@@ -13,4 +13,5 @@ public class SectionToggleModel
 {
     public Sprite icon;
     public string title;
+    public Action onClickAction;
 }
