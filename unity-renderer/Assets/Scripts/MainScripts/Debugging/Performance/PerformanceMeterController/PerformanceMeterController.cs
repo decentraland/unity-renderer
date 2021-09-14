@@ -290,6 +290,7 @@ namespace DCL
             Debug.Log("PerformanceMeter - " + message);
 
             Debug.unityLogger.logEnabled = originalLogEnabled;
+            Debug.unityLogger.logEnabled = true;
         }
     }
 }

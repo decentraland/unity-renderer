@@ -47,7 +47,7 @@ namespace DCL
         {
             if (current == previous)
                 return;
-            
+
             if (current)
             {
                 Debug.unityLogger.logEnabled = true;
@@ -55,10 +55,10 @@ namespace DCL
             }
             else
             {
-                Debug.unityLogger.logEnabled = false;
+                Debug.unityLogger.logEnabled = true;
                 HideFPSPanel();
             }
-            
+
             OnDebugModeSet?.Invoke();
         }
 
@@ -85,7 +85,7 @@ namespace DCL
             if (debugView != null)
                 debugView.SetEngineDebugPanel();
         }
-        
+
         public void HideInfoPanel()
         {
             if (debugView != null)
@@ -136,6 +136,6 @@ namespace DCL
             if (debugView != null)
                 Object.Destroy(debugView.gameObject);
         }
-        
+
     }
 }

@@ -50,7 +50,7 @@ namespace UnityGLTF
 
     public class GLTFSceneImporter : IDisposable
     {
-        public static bool VERBOSE = false;
+        public static bool VERBOSE = true;
         public static bool PROFILING_ENABLED = false;
 
         public enum ColliderType
@@ -1749,6 +1749,7 @@ namespace UnityGLTF
 
         IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
         {
+            Debug.Log($"DownloadAndConstructMaterial starting: {renderer.name} {materialIndex}");
             bool shouldUseDefaultMaterial = primitive.Material == null;
 
             GLTFMaterial materialToLoad = shouldUseDefaultMaterial ? DefaultMaterial : primitive.Material.Value;
@@ -1756,6 +1757,7 @@ namespace UnityGLTF
             if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
                 (!shouldUseDefaultMaterial && _assetCache.MaterialCache[materialIndex] == null))
             {
+                Debug.Log($"DownloadAndConstructMaterial Constructing: {renderer.name} {materialIndex}");
                 yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex);
             }
 
@@ -1770,6 +1772,7 @@ namespace UnityGLTF
 
             if (!alreadyUsedMaterial)
             {
+                Debug.Log($"DownloadAndConstructMaterial already used material: {renderer.name} {materialIndex}");
                 if (useVertexColors)
                     materialCacheData.CachedMaterialWithVertexColor.IncreaseRefCount();
                 else
@@ -1782,10 +1785,12 @@ namespace UnityGLTF
 
             if (matController != null)
             {
+                Debug.Log($"DownloadAndConstructMaterial OnDidFinishLoading: {renderer.name} {materialIndex}");
                 matController.OnDidFinishLoading(material);
             }
             else
             {
+                Debug.Log($"DownloadAndConstructMaterial No matController: {renderer.name} {materialIndex}");
                 renderer.sharedMaterial = material;
             }
         }

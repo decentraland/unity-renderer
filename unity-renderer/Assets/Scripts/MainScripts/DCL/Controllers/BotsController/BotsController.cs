@@ -451,6 +451,7 @@ namespace DCL.Bots
             Debug.Log("BotsController - " + message);
 
             Debug.unityLogger.logEnabled = originalLogEnabled;
+            Debug.unityLogger.logEnabled = true;
         }
     }
 }
