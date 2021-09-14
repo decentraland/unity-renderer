@@ -42,6 +42,7 @@ namespace DCL.Controllers.ParcelSceneDebug
                 {
                     Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
                     var matTransition = plane.AddComponent<MaterialTransitionController>();
+                    Debug.Log($"SceneDebugPlane Adding Material Transition: {matTransition.GetInstanceID()}");
                     matTransition.delay = 0;
                     matTransition.useHologram = false;
                     matTransition.fadeThickness = 20;

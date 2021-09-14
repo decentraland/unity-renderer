@@ -286,6 +286,7 @@ public class MaterialTransitionController : MonoBehaviour
                 continue;
 
             MaterialTransitionController transition = r.gameObject.AddComponent<MaterialTransitionController>();
+            Debug.Log($"MaterialTransitionController.ApplyToLoadedObject Adding Material Transition: {transition.GetInstanceID()}");
             Material finalMaterial = r.sharedMaterial;
             transition.delay = delay;
             transition.useHologram = useHologram;

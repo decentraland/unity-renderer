@@ -1641,6 +1641,7 @@ namespace UnityGLTF
             {
                 Log($"ConstructPrimitiveMaterials With MatController: {renderer.transform.parent.name} {materialIndex}", renderer.transform.parent.name);
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
+                Debug.Log($"GLTFSceneImporter Adding Material Transition: {matController.GetInstanceID()}");
                 var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
 
                 if (_asyncCoroutineHelper != null)

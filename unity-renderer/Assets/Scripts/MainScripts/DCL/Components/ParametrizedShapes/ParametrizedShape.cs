@@ -81,6 +81,7 @@ namespace DCL.Components
             if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
             {
                 MaterialTransitionController transition = entity.meshRootGameObject.AddComponent<MaterialTransitionController>();
+                Debug.Log($"ParametrizedShape Adding Material Transition: {transition.GetInstanceID()}");
                 Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
                 transition.delay = 0;
                 transition.useHologram = false;
