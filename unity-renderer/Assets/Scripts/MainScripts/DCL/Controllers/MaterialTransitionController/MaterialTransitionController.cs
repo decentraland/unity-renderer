@@ -110,7 +110,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Awake");
+        Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Awake");
         state = State.NOT_LOADED;
         time = 0;
         materialReady = false;
@@ -118,7 +118,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Start");
+        Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Start");
         Renderer tr = targetRenderer;
 
         if (float.IsInfinity(tr.bounds.min.y) || float.IsNaN(tr.bounds.min.y))
@@ -147,7 +147,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     void InitHologram()
     {
-        Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Init Hologram");
+        Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Init Hologram");
         placeholder = new GameObject("Load Placeholder");
 
         placeholder.transform.SetParent(transform, false);
@@ -185,7 +185,7 @@ public class MaterialTransitionController : MonoBehaviour
 
                     if (materialReady && time > delay)
                     {
-                        Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} State Not Loaded: Material ready");
+                        Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} State Not Loaded: Material ready");
                         currentCullYPlane = topYRendererBounds;
                         targetRendererValue.enabled = true;
 
@@ -208,7 +208,7 @@ public class MaterialTransitionController : MonoBehaviour
 
                     if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
                     {
-                        Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Showing Loaded -> Finished");
+                        Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Showing Loaded -> Finished");
                         // We don't update the culling value in the final material to avoid affecting the already-loaded meshes
                         PopulateTargetRendererWithMaterial(finalMaterials);
 
@@ -221,7 +221,7 @@ public class MaterialTransitionController : MonoBehaviour
 
             case State.FINISHED:
                 {
-                    Debug.Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Finished");
+                    Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Finished");
                     onFinishedLoading?.Invoke();
                     Destroy(this);
                     break;
@@ -293,5 +293,11 @@ public class MaterialTransitionController : MonoBehaviour
             transition.fadeThickness = fadeThickness;
             transition.OnDidFinishLoading(finalMaterial);
         }
+    }
+
+    public void Log(string msg)
+    {
+        if (transform.parent.name == "Cylinder372")
+            Debug.Log(msg);
     }
 }
