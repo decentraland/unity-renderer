@@ -57,7 +57,7 @@ public class MaterialTransitionController : MonoBehaviour
     float currentCullYPlane;
     float time;
 
-    public bool materialReady { get; private set; }
+    public bool materialReady { get; private set; } = false;
     public bool canSwitchMaterial { get { return materialReady && state != State.FINISHED; } }
 
     public void PopulateTargetRendererWithMaterial(Material[] newMaterials, bool updateCulling = false)
@@ -110,6 +110,12 @@ public class MaterialTransitionController : MonoBehaviour
 
     private void Awake()
     {
+        if (materialReady)
+        {
+            Destroy(this);
+            return;
+        }
+
         Log($"MaterialTransitionController: {transform.parent.name}:{GetInstanceID()} Awake");
         state = State.NOT_LOADED;
         time = 0;
