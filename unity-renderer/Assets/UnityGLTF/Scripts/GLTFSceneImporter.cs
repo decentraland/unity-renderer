@@ -1639,8 +1639,8 @@ namespace UnityGLTF
             //// NOTE(Brian): Texture loading
             if (useMaterialTransition && initialVisibility)
             {
-                //var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                MaterialTransitionController matController = null; // Disable MaterialTransitionController temporarily
+                var matController = primitiveObj.AddComponent<MaterialTransitionController>();
+                matController.useHologram = false; //Disable hologram temporarily
                 var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
 
                 if (_asyncCoroutineHelper != null)
