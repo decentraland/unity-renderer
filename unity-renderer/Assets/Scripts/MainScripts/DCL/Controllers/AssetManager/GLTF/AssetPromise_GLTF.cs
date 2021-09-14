@@ -197,13 +197,20 @@ namespace DCL
 
             if (success && asset != null)
             {
-                bool alreadyInLibrary = library.Contains(loadedAsset);
-                AddToLibrary();
-                
+                bool alreadyInLibrary = library.Contains(asset);
                 if (alreadyInLibrary)
-                    loadedAsset.Cleanup();
+                {
+                    asset.Cleanup();
+                    asset = null;
+                }
+                else
+                {
+                    AddToLibrary();
+                }
             }
 
+            ClearEvents();
+            CallAndClearEvents(success);
             Cleanup();
         }
     }
