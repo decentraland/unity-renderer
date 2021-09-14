@@ -110,5 +110,10 @@ public class KernelConfig
         }
     }
 
+    public void ClearPromises()
+    {
+        initializationPromises?.Clear();
+    }
+
     private KernelConfig() { }
 }

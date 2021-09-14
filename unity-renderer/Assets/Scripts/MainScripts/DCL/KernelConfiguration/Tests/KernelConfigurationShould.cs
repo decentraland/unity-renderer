@@ -4,6 +4,12 @@ using KernelConfigurationTypes;
 
 public class KernelConfigurationShould
 {
+    [SetUp]
+    public void SetUp()
+    {
+        KernelConfig.i.ClearPromises();
+    }
+    
     [Test]
     public void TriggerInitializePromiseCorrectly()
     {

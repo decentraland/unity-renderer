@@ -10,6 +10,10 @@ public class UsersAroundListHUDButtonView : MonoBehaviour, IUsersAroundListHUDBu
     public void SetUsersCount(int count) { usersCountText.text = count.ToString(); }
 
     public event Action OnClick;
+    public void ToggleUsersCount(bool isEnabled)
+    {
+        usersCountText.gameObject.SetActive(isEnabled);
+    }
 
     void IPointerDownHandler.OnPointerDown(PointerEventData eventData) { OnClick?.Invoke(); }
 }

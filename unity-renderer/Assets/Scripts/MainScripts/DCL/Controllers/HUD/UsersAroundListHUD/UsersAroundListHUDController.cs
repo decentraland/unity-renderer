@@ -243,4 +243,8 @@ public class UsersAroundListHUDController : IHUD
         ReportMuteStatuses();
         updateMuteStatusRoutine = null;
     }
+    public void ToggleUsersCount(bool isEnabled)
+    {
+        usersButtonView.ToggleUsersCount(isEnabled);
+    }
 }
