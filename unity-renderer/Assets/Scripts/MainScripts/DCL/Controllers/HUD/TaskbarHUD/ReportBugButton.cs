@@ -61,7 +61,7 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
 
         private string GetMemoryInfo()
         {
-            return $"{SystemInfo.systemMemorySize}MB RAM";
+            return $"{SystemInfo.systemMemorySize}MB";
         }
 
         private string GetGraphicsCardInfo()
