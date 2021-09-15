@@ -3,9 +3,6 @@ using UnityEngine;
 
 public interface IBaseComponentView
 {
-    event Action OnInitialized;
-    bool isInitialized { get; }
-
     /// <summary>
     /// It will be triggered after the UI component is initialized (it is called on the Start Unity event).
     /// </summary>
@@ -52,7 +49,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public bool isInitialized { get; private set; }
 
     private ShowHideAnimator showHideAnimator;
-    private bool alreadyInitialized = false;
 
     public virtual void Initialize()
     {
