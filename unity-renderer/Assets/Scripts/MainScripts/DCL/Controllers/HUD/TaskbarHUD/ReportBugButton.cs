@@ -24,10 +24,10 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
             var unityVersion = kernelConfig.rendererVersion;
             var kernelVersion = kernelConfig.kernelVersion;
             
-            var os = GetOSInfo();
-            var cpu = GetCPUInfo();
-            var ram = GetMemoryInfo();
-            var gpu = GetGraphicsCardInfo();
+            var os = UnityWebRequest.EscapeURL(GetOSInfo());
+            var cpu = UnityWebRequest.EscapeURL(GetCPUInfo());
+            var ram = UnityWebRequest.EscapeURL(GetMemoryInfo());
+            var gpu = UnityWebRequest.EscapeURL(GetGraphicsCardInfo());
 
             string url = $"{ReportBugURL}" +
                          $"&unity={unityVersion}" +
