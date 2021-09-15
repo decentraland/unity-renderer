@@ -41,6 +41,12 @@ public interface IGridContainerComponentView
     /// <param name="index">Index of the list of items.</param>
     /// <returns>A specific UI component.</returns>
     BaseComponentView GetItem(int index);
+
+    /// <summary>
+    /// Get all the items of the grid.
+    /// </summary>
+    /// <returns>The list of items.</returns>
+    List<BaseComponentView> GetAllItems();
 }
 
 public class GridContainerComponentView : BaseComponentView, IGridContainerComponentView
@@ -126,16 +132,18 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         return instantiatedItems[index];
     }
 
+    public List<BaseComponentView> GetAllItems() { return instantiatedItems; }
+
     internal void CreateItem(BaseComponentView newItem, string name)
     {
-        if (Application.isEditor)
+        if (Application.isPlaying)
         {
-            if (isActiveAndEnabled)
-                StartCoroutine(IntantiateItemOnEditor(newItem, name));
+            IntantiateItem(newItem, name);
         }
         else
         {
-            IntantiateItem(newItem, name);
+            if (isActiveAndEnabled)
+                StartCoroutine(IntantiateItemOnEditor(newItem, name));
         }
     }
 
@@ -159,14 +167,14 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         foreach (Transform child in transform)
         {
-            if (Application.isEditor)
+            if (Application.isPlaying)
             {
-                if (isActiveAndEnabled)
-                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                Destroy(child.gameObject);
             }
             else
             {
-                Destroy(child.gameObject);
+                if (isActiveAndEnabled)
+                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
             }
         }
 

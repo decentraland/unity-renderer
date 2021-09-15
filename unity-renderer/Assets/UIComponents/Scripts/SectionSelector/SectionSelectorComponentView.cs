@@ -11,9 +11,9 @@ public interface ISectionSelectorComponentView
     void Configure(SectionSelectorComponentModel model);
 
     /// <summary>
-    /// Set the items of the grid.
+    /// Set the sections of the selector.
     /// </summary>
-    /// <param name="items">List of UI components.</param>
+    /// <param name="sections">List of UI components.</param>
     void SetSections(List<SectionToggleModel> sections);
 
     /// <summary>
@@ -22,6 +22,12 @@ public interface ISectionSelectorComponentView
     /// <param name="index">Index of the list of sections.</param>
     /// <returns>A specific section toggle.</returns>
     ISectionToggle GetSection(int index);
+
+    /// <summary>
+    /// Get all the sections of the section selector.
+    /// </summary>
+    /// <returns>The list of sections.</returns>
+    List<ISectionToggle> GetAllSections();
 }
 
 public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView
@@ -74,16 +80,18 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         return instantiatedSections[index];
     }
 
+    public List<ISectionToggle> GetAllSections() { return instantiatedSections; }
+
     internal void CreateSection(SectionToggleModel newSectionModel, string name)
     {
-        if (Application.isEditor)
+        if (Application.isPlaying)
         {
-            if (isActiveAndEnabled)
-                StartCoroutine(IntantiateSectionToggleOnEditor(newSectionModel, name));
+            IntantiateSectionToggle(newSectionModel, name);
         }
         else
         {
-            IntantiateSectionToggle(newSectionModel, name);
+            if (isActiveAndEnabled)
+                StartCoroutine(IntantiateSectionToggleOnEditor(newSectionModel, name));
         }
     }
 
@@ -112,14 +120,14 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
             if (child.gameObject.GetInstanceID() == sectionToggleTemplate.gameObject.GetInstanceID())
                 continue;
 
-            if (Application.isEditor)
+            if (Application.isPlaying)
             {
-                if (isActiveAndEnabled)
-                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                Destroy(child.gameObject);
             }
             else
             {
-                Destroy(child.gameObject);
+                if (isActiveAndEnabled)
+                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
             }
         }
 
@@ -131,6 +139,4 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         yield return null;
         DestroyImmediate(go);
     }
-
-    public void HasClicked() { Debug.Log("CLICKED!!"); }
 }
