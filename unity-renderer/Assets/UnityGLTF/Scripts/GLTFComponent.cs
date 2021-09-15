@@ -310,6 +310,9 @@ namespace UnityGLTF
                     state = State.COMPLETED;
 
                     DecrementDownloadCount();
+                    
+                    // We need to wait 1 frame for the hologram material to finish being destroyed
+                    yield return null;
                 }
                 finally
                 {
