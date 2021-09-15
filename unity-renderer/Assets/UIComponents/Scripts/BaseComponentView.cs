@@ -1,7 +1,18 @@
+using System;
 using UnityEngine;
 
 public interface IBaseComponentView
 {
+    /// <summary>
+    /// It will be triggered after the UI component is initialized (it is called on the Start Unity event).
+    /// </summary>
+    event Action OnInitialized;
+
+    /// <summary>
+    /// Returns true if the UI component is already initialized.
+    /// </summary>
+    bool isInitialized { get; }
+
     /// <summary>
     /// It is called when the UI component game object awakes.
     /// </summary>
@@ -34,9 +45,16 @@ public interface IBaseComponentView
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
+    public event Action OnInitialized;
+    public bool isInitialized { get; private set; }
+
     private ShowHideAnimator showHideAnimator;
 
-    public virtual void Initialize() { showHideAnimator = GetComponent<ShowHideAnimator>(); }
+    public virtual void Initialize()
+    {
+        isInitialized = false;
+        showHideAnimator = GetComponent<ShowHideAnimator>();
+    }
 
     public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
 
@@ -47,6 +65,12 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose() { }
 
     private void Awake() { Initialize(); }
+
+    private void Start()
+    {
+        isInitialized = true;
+        OnInitialized?.Invoke();
+    }
 
     private void OnDestroy() { Dispose(); }
 }
