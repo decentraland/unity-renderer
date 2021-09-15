@@ -1,3 +1,7 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
+
 namespace MainScripts.DCL.WebPlugin
 {
     public static class WebGLPlugin
