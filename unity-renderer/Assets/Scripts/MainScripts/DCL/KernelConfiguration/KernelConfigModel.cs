@@ -1,7 +1,6 @@
 using KernelConfigurationTypes;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class KernelConfigModel
@@ -12,8 +11,8 @@ public class KernelConfigModel
     public bool gifSupported = false;
     public string network = "mainnet";
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
-    public string kernelVersion;
-    public string rendererVersion;
+    public string kernelVersion = string.Empty;
+    public string rendererVersion = string.Empty;
     public override bool Equals(object obj)
     {
         return obj is KernelConfigModel other && Equals(other);
@@ -51,6 +50,8 @@ public class KernelConfigModel
         clone.gifSupported = gifSupported;
         clone.network = network;
         clone.validWorldRanges = new List<WorldRange>(validWorldRanges);
+        clone.kernelVersion = kernelVersion;
+        clone.rendererVersion = rendererVersion;
         return clone;
     }
 }
