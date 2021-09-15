@@ -48,7 +48,6 @@ namespace DCL.Helpers
         void RefreshWithTexture(Texture2D texture);
     }
 
-
     /// <summary>
     /// The LazyTextureObserver class is a reactive texture loader wrapper.
     /// <br/> <br/>
@@ -80,9 +79,7 @@ namespace DCL.Helpers
         private string uri;
         private ITextureLoader textureLoader;
 
-        public LazyTextureObserver () : this(new TextureLoader())
-        {
-        }
+        public LazyTextureObserver () : this(new TextureLoader()) { }
 
         internal LazyTextureObserver (ITextureLoader textureLoader)
         {
@@ -105,12 +102,11 @@ namespace DCL.Helpers
         {
             Assert.IsNotNull(listener, "Listener can't be null!");
 
-            // Not using assert here because this case is more probable, I want to fail silently in this case.
-            if (subscriptions.Contains(listener))
-                return;
-
-            subscriptions.Add(listener);
-            this.OnLoaded += listener;
+            if (!subscriptions.Contains(listener))
+            {
+                subscriptions.Add(listener);
+                this.OnLoaded += listener;
+            }
 
             // First, check if we did set a texture directly and return it if so.
             if ( texture != null )
