@@ -7,6 +7,16 @@ public interface IBaseComponentView
     bool isInitialized { get; }
 
     /// <summary>
+    /// It will be triggered after the UI component is initialized (it is called on the Start Unity event).
+    /// </summary>
+    event Action OnInitialized;
+
+    /// <summary>
+    /// Returns true if the UI component is already initialized.
+    /// </summary>
+    bool isInitialized { get; }
+
+    /// <summary>
     /// It is called when the UI component game object awakes.
     /// </summary>
     void Initialize();
@@ -44,7 +54,11 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     private ShowHideAnimator showHideAnimator;
     private bool alreadyInitialized = false;
 
-    public virtual void Initialize() { showHideAnimator = GetComponent<ShowHideAnimator>(); }
+    public virtual void Initialize()
+    {
+        isInitialized = false;
+        showHideAnimator = GetComponent<ShowHideAnimator>();
+    }
 
     public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
 
