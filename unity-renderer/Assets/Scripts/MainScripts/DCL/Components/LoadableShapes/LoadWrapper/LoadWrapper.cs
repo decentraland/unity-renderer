@@ -5,8 +5,8 @@ namespace DCL.Components
 {
     public abstract class LoadWrapper
     {
-        public bool useVisualFeedback = false; // TODO: temporarily disabled, re-enable when GLTFs hologram loading gets fixed
-        public bool initialVisibility = false; // TODO: temporarily disabled, re-enable when GLTFs hologram loading gets fixed
+        public bool useVisualFeedback = true;
+        public bool initialVisibility = true;
         public bool alreadyLoaded = false;
 
         public IDCLEntity entity;
