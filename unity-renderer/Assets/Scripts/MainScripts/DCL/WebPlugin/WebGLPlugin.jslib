@@ -1,7 +1,11 @@
 var WebInfo = {
     GetUserAgent: function () {
-        return navigator.userAgent;
+        var ua = navigator.userAgent;
+        var bufferSize = lengthBytesUTF8(returnStr) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(ua, buffer, bufferSize);
+        return buffer;
     },
 };
-autoAddDeps(WebInfo, "$info");
+
 mergeInto(LibraryManager.library, WebInfo);
