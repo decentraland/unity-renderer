@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using MainScripts.DCL.WebPlugin;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -22,19 +23,51 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
             var realm = DataStore.i.playerRealm.Get()?.serverName;
             var unityVersion = kernelConfig.rendererVersion;
             var kernelVersion = kernelConfig.kernelVersion;
-            var systemInfo = $"{SystemInfo.processorType}, " +
-                             $"{SystemInfo.systemMemorySize}MB RAM, " +
-                             $"{SystemInfo.graphicsDeviceName} " +
-                             $"{SystemInfo.graphicsMemorySize}MB";
+            
+            var os = GetOSInfo();
+            var cpu = GetCPUInfo();
+            var ram = GetMemoryInfo();
+            var gpu = GetGraphicsCardInfo();
 
             string url = $"{ReportBugURL}" +
                          $"&unity={unityVersion}" +
                          $"&kernel={kernelVersion}" +
+                         $"&os={os}" +
+                         $"&cpu={cpu}" +
+                         $"&ram={ram}" +
+                         $"&gpu={gpu}" +
                          $"&nametag={nametag}" +
-                         $"&sysinfo={systemInfo}" +
                          $"&realm={realm}";
 
             WebInterface.OpenURL(url);
+        }
+        private string GetOSInfo()
+        {
+#if UNITY_WEBGL
+            return WebGLPlugin.GetUserAgent();
+#else
+            return SystemInfo.operatingSystem;
+#endif
+        }
+
+        private string GetCPUInfo()
+        {
+#if UNITY_WEBGL
+            return "";
+#else
+            return SystemInfo.processorType;
+#endif
+        }
+
+        private string GetMemoryInfo()
+        {
+            return $"{SystemInfo.systemMemorySize}MB RAM";
+        }
+
+        private string GetGraphicsCardInfo()
+        {
+            return $"{SystemInfo.graphicsDeviceName} " +
+                   $"{SystemInfo.graphicsMemorySize}MB";
         }
     }
 }
