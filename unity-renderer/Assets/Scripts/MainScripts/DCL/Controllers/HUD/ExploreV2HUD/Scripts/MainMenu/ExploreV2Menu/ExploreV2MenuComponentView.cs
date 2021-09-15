@@ -44,7 +44,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         base.Initialize();
         Configure(model);
-        CreateSectionSelectorMappings();
+
+        if (sectionSelector.isInitialized)
+            CreateSectionSelectorMappings();
+        else
+            sectionSelector.OnInitialized += CreateSectionSelectorMappings;
     }
 
     public void Configure(ExploreV2MenuComponentModel model)
@@ -62,7 +66,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         SetProfileInfo(model.profileInfo);
     }
 
-    public override void Dispose() { RemoveSectionSelectorMappings(); }
+    public override void Dispose()
+    {
+        sectionSelector.OnInitialized -= CreateSectionSelectorMappings;
+        RemoveSectionSelectorMappings();
+    }
 
     public void SetRealmInfo(RealmViewerComponentModel realmInfo) { realmViewer.Configure(realmInfo); }
 
@@ -77,6 +85,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection(4)?.onSelect.AddListener((isOn) => builderSection.gameObject.SetActive(isOn));
         sectionSelector.GetSection(5)?.onSelect.AddListener((isOn) => marketSection.gameObject.SetActive(isOn));
         sectionSelector.GetSection(6)?.onSelect.AddListener((isOn) => settingsSection.gameObject.SetActive(isOn));
+
+        ShowDefaultSection();
     }
 
     internal void RemoveSectionSelectorMappings()
@@ -89,4 +99,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection(5)?.onSelect.RemoveAllListeners();
         sectionSelector.GetSection(6)?.onSelect.RemoveAllListeners();
     }
+
+    internal void ShowDefaultSection() { exploreSection.gameObject.SetActive(true); }
 }

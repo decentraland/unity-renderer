@@ -66,7 +66,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         if (toggle == null)
             return;
 
-        toggle.Select();
+        toggle.isOn = true;
     }
 
     private void OnDestroy()
