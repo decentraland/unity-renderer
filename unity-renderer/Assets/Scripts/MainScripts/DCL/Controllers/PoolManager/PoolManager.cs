@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -218,26 +219,49 @@ namespace DCL
             return pool.Get();
         }
 
-        public void Cleanup()
+        public IEnumerator CleanupAsync(bool unusedOnly = false, bool nonPersistentOnly = false, bool immediate = false)
         {
-            if (pools == null)
-                return;
-
-            List<object> idsToRemove = new List<object>(10);
+            List<object> idsToRemove = new List<object>(pools.Count);
 
             using (var iterator = pools.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    idsToRemove.Add(iterator.Current.Key);
+                    Pool pool = iterator.Current.Value;
+                    bool unusedPool = pool.usedObjectsCount == 0 && pool.unusedObjectsCount > 0;
+                    bool isNonPersistent = !pool.persistent;
+
+                    if (!unusedOnly) unusedPool = true;
+                    if (!nonPersistentOnly) isNonPersistent = true;
+
+                    bool shouldRemove = unusedPool && isNonPersistent;
+
+                    if ( shouldRemove )
+                        idsToRemove.Add(iterator.Current.Key);
                 }
             }
 
             for (int i = 0; i < idsToRemove.Count; i++)
             {
                 RemovePool(idsToRemove[i]);
-            }
 
+                if ( !immediate )
+                    yield return null;
+            }
+        }
+
+        public void Cleanup()
+        {
+            if (pools == null)
+                return;
+
+            // The immediate mode doesn't return a IEnumerator, so yield is not needed.
+            CleanupAsync( unusedOnly: false, nonPersistentOnly: false, immediate: true );
+        }
+
+        public void Dispose()
+        {
+            Cleanup();
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         }
 

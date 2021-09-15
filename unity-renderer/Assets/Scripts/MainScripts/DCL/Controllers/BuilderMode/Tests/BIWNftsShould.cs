@@ -82,6 +82,6 @@ public class BIWNftsShould : IntegrationTestSuite
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
         yield return base.TearDown();
-        PoolManager.i.Cleanup();
+        PoolManager.i.Dispose();
     }
 }

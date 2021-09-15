@@ -144,6 +144,7 @@ namespace DCL.Controllers
             if (immediate) //!CommonScriptableObjects.rendererState.Get())
             {
                 RemoveAllEntitiesImmediate();
+                Environment.i.platform.memoryManager.CleanPoolManager(false, true);
             }
             else
             {

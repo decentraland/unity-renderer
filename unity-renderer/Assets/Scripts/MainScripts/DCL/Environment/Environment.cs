@@ -58,7 +58,6 @@ namespace DCL
 
             // Platform systems
             model.platform.parcelScenesCleaner.Start();
-            model.platform.memoryManager.Initialize(model.platform.parcelScenesCleaner);
             model.platform.cullingController.Start();
 
             // World context systems
@@ -69,7 +68,7 @@ namespace DCL
                 model.world.state, model.platform.cullingController);
             model.world.sceneBoundsChecker.Start();
             model.world.componentFactory.Initialize();
-            
+
             // HUD context system
             model.hud.controller.Initialize(model.hud.factory);
         }

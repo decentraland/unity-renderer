@@ -106,7 +106,7 @@ public class IntegrationTestSuite_Legacy
     protected virtual IEnumerator TearDown()
     {
         yield return null;
-        
+
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
@@ -141,10 +141,10 @@ public class IntegrationTestSuite_Legacy
         TearDown_PromiseKeepers();
 
         if (Environment.i.platform.memoryManager != null)
-            yield return Environment.i.platform.memoryManager.CleanupPoolsIfNeeded(true);
+            yield return Environment.i.platform.memoryManager.CleanPoolManager(true);
 
         if (PoolManager.i != null)
-            PoolManager.i.Cleanup();
+            PoolManager.i.Dispose();
 
         Caching.ClearCache();
         Resources.UnloadUnusedAssets();
