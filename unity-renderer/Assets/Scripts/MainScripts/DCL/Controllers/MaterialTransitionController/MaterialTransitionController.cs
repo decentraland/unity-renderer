@@ -22,7 +22,7 @@ public class MaterialTransitionController : MonoBehaviour
     Material loadingMaterial;
 
     [System.NonSerialized] public float delay = 0.5f;
-    [System.NonSerialized] public bool useHologram = false; // TODO: temporarily disabled, re-enable when GLTFs hologram loading gets fixed
+    [System.NonSerialized] public bool useHologram = true;
     [System.NonSerialized] public float fadeThickness = 10;
     [System.NonSerialized] public System.Action onFinishedLoading;
 
