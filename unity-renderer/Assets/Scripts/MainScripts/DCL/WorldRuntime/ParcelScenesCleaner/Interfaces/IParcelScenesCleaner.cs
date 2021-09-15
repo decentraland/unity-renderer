@@ -6,8 +6,7 @@ namespace DCL
 {
     public interface IParcelScenesCleaner : IDisposable
     {
-        void Start();
-        void Stop();
+        void Initialize();
         void MarkForCleanup(IDCLEntity entity);
         void MarkRootEntityForCleanup(IParcelScene scene, IDCLEntity entity);
         void MarkDisposableComponentForCleanup(IParcelScene scene, string componentId);

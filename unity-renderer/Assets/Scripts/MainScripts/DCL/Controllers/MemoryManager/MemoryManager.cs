@@ -15,6 +15,8 @@ namespace DCL
         private uint memoryThresholdForCleanup = 0;
         private float cleanupInterval;
 
+        public event System.Action OnCriticalMemory;
+
         public MemoryManager (uint memoryThresholdForCleanup, float cleanupInterval)
         {
             this.memoryThresholdForCleanup = this.memoryThresholdForCleanup;
@@ -37,20 +39,7 @@ namespace DCL
                 CoroutineStarter.Stop(autoCleanupCoroutine);
 
             autoCleanupCoroutine = null;
-
-            // CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
         }
-
-        // public MemoryManager() { CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange; }
-        //
-        // private void OnRendererStateChange(bool isEnable, bool prevState)
-        // {
-        //     if (!isEnable)
-        //     {
-        //         parcelScenesCleaner?.ForceCleanup();
-        //         Resources.UnloadUnusedAssets();
-        //     }
-        // }
 
         bool NeedsMemoryCleanup()
         {
@@ -64,7 +53,9 @@ namespace DCL
             {
                 if (NeedsMemoryCleanup())
                 {
+                    OnCriticalMemory?.Invoke();
                     yield return CleanPoolManager();
+                    Resources.UnloadUnusedAssets();
                 }
 
                 yield return new WaitForSecondsRealtime(TIME_FOR_NEW_MEMORY_CHECK);

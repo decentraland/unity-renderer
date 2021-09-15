@@ -41,12 +41,24 @@ namespace DCL
 
         Coroutine removeEntitiesCoroutine;
 
-        public void Start() { removeEntitiesCoroutine = CoroutineStarter.Start(CleanupEntitiesCoroutine()); }
-
-        public void Stop()
+        public ParcelScenesCleaner ()
         {
-            if (removeEntitiesCoroutine != null)
-                CoroutineStarter.Stop(removeEntitiesCoroutine);
+            removeEntitiesCoroutine = CoroutineStarter.Start(CleanupEntitiesCoroutine());
+            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
+        }
+
+        public void Initialize()
+        {
+            Environment.i.platform.memoryManager.OnCriticalMemory += ForceCleanup;
+        }
+
+        private void OnRendererStateChange(bool isEnable, bool prevState)
+        {
+            if (!isEnable)
+            {
+                ForceCleanup();
+                Resources.UnloadUnusedAssets();
+            }
         }
 
         public void MarkForCleanup(IDCLEntity entity)
@@ -179,7 +191,12 @@ namespace DCL
         public void Dispose()
         {
             ForceCleanup();
-            Stop();
+
+            if (removeEntitiesCoroutine != null)
+                CoroutineStarter.Stop(removeEntitiesCoroutine);
+
+            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
+            Environment.i.platform.memoryManager.OnCriticalMemory -= ForceCleanup;
         }
     }
 }
