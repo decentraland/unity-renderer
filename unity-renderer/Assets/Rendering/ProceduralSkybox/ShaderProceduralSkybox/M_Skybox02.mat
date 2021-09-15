@@ -132,8 +132,12 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_1: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
-    - _dayTime: 2
-    - _fadeTime_0: 1
+    - _RenderDistance_0: 20
+    - _RenderDistance_1: 0
+    - _RenderDistance_2: 0
+    - _dayTime: 0
+    - _distance_0: 20
+    - _fadeTime_0: 0
     - _fadeTime_1: 0
     - _fadeTime_2: 0
     - _hasFade00: 0
@@ -143,7 +147,7 @@ Material:
     - _hasFade_1: 0
     - _hasFade_2: 0
     - _horizonHeight: 0
-    - _horizonWidth: 0
+    - _horizonWidth: -0.085
     - _isRadial00: 0
     - _isRadial01: 1
     - _isRadial02: 0
@@ -195,9 +199,9 @@ Material:
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
-    - _color_0: {r: 0.5918476, g: 0.78365403, b: 0.9433962, a: 1}
-    - _color_1: {r: 0.17572784, g: 0, b: 1, a: 1}
-    - _color_2: {r: 0.09558091, g: 0, b: 0.7264151, a: 0.72156864}
+    - _color_0: {r: 1, g: 1, b: 1, a: 1}
+    - _color_1: {r: 0.17572784, g: 0, b: 1, a: 0}
+    - _color_2: {r: 0.09558091, g: 0, b: 0.7264151, a: 0}
     - _groundColor: {r: 0.002669996, g: 0.27660105, b: 0.5660378, a: 1}
     - _horizonColor: {r: 1, g: 0, b: 0.63411707, a: 1}
     - _lightDirection: {r: 0.5, g: -0.5, b: 0.5, a: 0}
@@ -212,7 +216,7 @@ Material:
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
-    - _timeFrame_0: {r: 1, g: 3, b: 0, a: 0}
+    - _timeFrame_0: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_1: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

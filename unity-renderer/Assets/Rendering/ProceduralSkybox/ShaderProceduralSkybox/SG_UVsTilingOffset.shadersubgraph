@@ -1564,14 +1564,14 @@
     "m_ObjectId": "959e0f733f18481eabe37c0b96c031cb",
     "m_Title": "Radial UV",
     "m_Content": "For the radial UV mode to work correctly, the texture of the layer needs to have unchecked the \"Generate Mip Maps\" property",
-    "m_TextSize": 0,
+    "m_TextSize": 1,
     "m_Theme": 0,
     "m_Position": {
         "serializedVersion": "2",
-        "x": -281.0,
-        "y": -539.0,
-        "width": 188.0,
-        "height": 160.0
+        "x": -436.0,
+        "y": -468.0,
+        "width": 340.0,
+        "height": 207.0
     },
     "m_Group": {
         "m_Id": ""
