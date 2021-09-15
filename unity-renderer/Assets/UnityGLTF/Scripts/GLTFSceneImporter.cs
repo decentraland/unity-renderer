@@ -310,15 +310,12 @@ namespace UnityGLTF
 
                 if (matTransitions != null && matTransitions.Length > 0)
                 {
-                    float bailout = 0;
                     //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
                     yield return new WaitUntil(
                         () =>
                         {
-                            bailout += Time.deltaTime;
-
-                            if (bailout > 5.0f)
-                                return true;
+                            // IMPORTANT: We shouldn't bail out of this waiting, as that will provoke the asset saved in
+                            // the library to have the hologram material and trigger further problems
 
                             bool finishedTransition = true;
 
