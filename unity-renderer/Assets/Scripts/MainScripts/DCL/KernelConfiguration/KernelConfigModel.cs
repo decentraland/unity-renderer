@@ -12,8 +12,8 @@ public class KernelConfigModel
     public bool gifSupported = false;
     public string network = "mainnet";
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
-    public string kernelURL;
-    public string rendererURL;
+    public string kernelVersion;
+    public string rendererVersion;
     public override bool Equals(object obj)
     {
         return obj is KernelConfigModel other && Equals(other);
@@ -37,8 +37,8 @@ public class KernelConfigModel
                && features.Equals(other.features) 
                && gifSupported == other.gifSupported 
                && network == other.network
-               && kernelURL == other.kernelURL
-               && rendererURL == other.rendererURL;
+               && kernelVersion == other.kernelVersion
+               && rendererVersion == other.rendererVersion;
     }
 
     public KernelConfigModel Clone()

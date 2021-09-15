@@ -8,9 +8,6 @@ using UnityEngine.Networking;
 
 public class TaskbarMoreMenu : MonoBehaviour
 {
-    private const string ReportBugURL = "https://github.com/decentraland/issues/issues/new?assignees=&labels=new%2Cexplorer&template=bug_report.yml";
-    private const string VERSION_PATTERN = @"\d.*[^\/]";
-
     [Header("Menu Animation")]
     [SerializeField] internal ShowHideAnimator moreMenuAnimator;
     [SerializeField] internal float timeBetweenAnimations = 0.01f;
@@ -76,8 +73,6 @@ public class TaskbarMoreMenu : MonoBehaviour
         hideUIButton.mainButton.onClick.AddListener(ToggleHideUI);
 
         tutorialButton.mainButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
-
-        reportBugButton.mainButton.onClick.AddListener( ReportBug);
     }
 
     protected void SortButtonsAnimations()
@@ -216,36 +211,5 @@ public class TaskbarMoreMenu : MonoBehaviour
 
         CommonScriptableObjects.allUIHidden.Set(!CommonScriptableObjects.allUIHidden.Get());
         view.moreButton.SetToggleState(false);
-    }
-    private void ReportBug()
-    {
-        var userProfile = UserProfile.GetOwnUserProfile();
-        var nametag = UnityWebRequest.EscapeURL(userProfile.userName);
-        var kernelConfig = KernelConfig.i.Get();
-        var realm = DataStore.i.playerRealm.Get()?.serverName;
-        var unityVersion = GetVersion(kernelConfig.rendererURL);
-        var kernelVersion = GetVersion(kernelConfig.kernelURL);
-        var systemInfo = $"{SystemInfo.processorType}, " +
-                         $"{SystemInfo.systemMemorySize}MB RAM, " +
-                         $"{SystemInfo.graphicsDeviceName} " +
-                         $"{SystemInfo.graphicsMemorySize}MB";
-        
-        string url = $"{ReportBugURL}" +
-                     $"&unity={unityVersion}" +
-                     $"&kernel={kernelVersion}" +
-                     $"&nametag={nametag}" +
-                     $"&sysinfo={systemInfo}" +
-                     $"&realm={realm}";
-        
-        WebInterface.OpenURL(url);
-    }
-
-    private string GetVersion(string raw)
-    {
-        var match = Regex.Match(raw, VERSION_PATTERN);
-        if (!match.Success)
-            return raw;
-
-        return match.Value;
     }
 }

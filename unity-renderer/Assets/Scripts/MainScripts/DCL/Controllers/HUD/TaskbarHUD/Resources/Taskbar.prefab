@@ -6739,6 +6739,7 @@ GameObject:
   - component: {fileID: 6388269930482451853}
   - component: {fileID: 5588688695022271758}
   - component: {fileID: 7981679545077609529}
+  - component: {fileID: 6919810968481567875}
   m_Layer: 5
   m_Name: ReportBugIcon
   m_TagString: Untagged
@@ -6914,6 +6915,19 @@ MonoBehaviour:
   buttonAnimator: {fileID: 6388269930482451853}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 0000000001000000
+--- !u!114 &6919810968481567875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7607542287175850528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8d9095da2ec459a940d51d68404eef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 2495329973874895014}
 --- !u!1 &7715259356979369317
 GameObject:
   m_ObjectHideFlags: 0
