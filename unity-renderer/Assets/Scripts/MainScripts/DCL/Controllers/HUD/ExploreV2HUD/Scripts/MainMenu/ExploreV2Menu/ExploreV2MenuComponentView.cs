@@ -27,6 +27,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] private SectionSelectorComponentView sectionSelector;
     [SerializeField] private ProfileCardComponentView profileCard;
     [SerializeField] private RealmViewerComponentView realmViewer;
+    [SerializeField] private ButtonComponentView closeMenuButton;
 
     [Header("Sections")]
     [SerializeField] private ExploreSectionComponentView exploreSection;
@@ -49,6 +50,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             CreateSectionSelectorMappings();
         else
             sectionSelector.OnInitialized += CreateSectionSelectorMappings;
+
+        closeMenuButton.onClick.AddListener(() => gameObject.SetActive(false));
     }
 
     public void Configure(ExploreV2MenuComponentModel model)
@@ -70,6 +73,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         sectionSelector.OnInitialized -= CreateSectionSelectorMappings;
         RemoveSectionSelectorMappings();
+        closeMenuButton.onClick.RemoveAllListeners();
     }
 
     public void SetRealmInfo(RealmViewerComponentModel realmInfo) { realmViewer.Configure(realmInfo); }
