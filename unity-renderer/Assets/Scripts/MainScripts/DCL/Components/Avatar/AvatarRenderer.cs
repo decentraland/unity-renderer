@@ -471,6 +471,7 @@ namespace DCL
                 animator.SetIdleFrame();
                 animator.animation.Sample();
                 gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
+                avatarMeshCombiner.renderer.sharedMesh.UploadMeshData(true);
 
                 gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
                 gpuSkinningThrottler.SetThrottling(gpuSkinningFramesBetweenUpdates);
