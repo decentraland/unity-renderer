@@ -61,7 +61,11 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
 
         private string GetMemoryInfo()
         {
+#if UNITY_WEBGL
+            return "";
+#else
             return $"{SystemInfo.systemMemorySize}MB";
+#endif
         }
 
         private string GetGraphicsCardInfo()
