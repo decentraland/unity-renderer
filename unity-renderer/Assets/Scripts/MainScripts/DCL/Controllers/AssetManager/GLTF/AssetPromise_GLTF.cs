@@ -105,8 +105,11 @@ namespace DCL
 
         protected override bool AddToLibrary()
         {
-            if (!library.Add(asset))
-                return false;
+            if (!library.Contains(asset.id))
+            {
+                if (!library.Add(asset))
+                    return false;
+            }
 
             //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
             //             So it keeps being there. As master gltfs can't be in the world.
@@ -194,28 +197,22 @@ namespace DCL
         {
             asset = loadedAsset;
             waitingAssetLoad = false;
-            bool alreadyInLibrary = false;
-
-            if (success && asset != null)
-            {
-                alreadyInLibrary = library.Contains(asset);
-                if (alreadyInLibrary)
-                {
-                    asset.Cleanup();
-                    asset = null;
-                }
-                else
-                {
-                    AddToLibrary();
-                }
-            }
+            bool alreadyInLibrary = asset != null && library.Contains(asset);
 
             ClearEvents();
-            if (!alreadyInLibrary)
+
+            if (alreadyInLibrary)
             {
-                CallAndClearEvents(success);
+                asset.Cleanup();
+                asset = null;
+                return;
             }
-            Cleanup();
+            
+            if (success && asset != null)
+            {
+                library.Add(asset);
+                CallAndClearEvents();
+            }
         }
     }
 }
