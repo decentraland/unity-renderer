@@ -96,9 +96,9 @@ public class PluginSystem
         {
             if (activeFeatures[i].GetType() == typeof(T))
             {
+                DataStore.i.loadedPluginFeatures.Remove(activeFeatures[i]);
                 activeFeatures[i].Dispose();
                 activeFeatures.Remove(activeFeatures[i]);
-                DataStore.i.loadedPluginFeatures.Remove(activeFeatures[i]);
             }
         }
     }
