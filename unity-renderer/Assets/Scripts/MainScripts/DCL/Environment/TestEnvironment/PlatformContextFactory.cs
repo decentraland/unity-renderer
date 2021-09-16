@@ -100,7 +100,7 @@ namespace DCL.Tests
             webRequestControllerMock.Initialize(
                 genericWebRequest: Substitute.For<IWebRequest>(),
                 assetBundleWebRequest: Substitute.For<IWebRequestAssetBundle>(),
-                textureWebRequest: Substitute.For<IWebRequest>(),
+                textureWebRequest: Substitute.For<IWebRequestTexture>(),
                 audioWebRequest: Substitute.For<IWebRequestAudio>());
 
             return webRequestControllerMock;
