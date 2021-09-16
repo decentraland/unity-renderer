@@ -1,12 +1,34 @@
+using System;
 using UnityEngine;
 
 public interface IExploreV2MenuComponentView
 {
     /// <summary>
+    /// It will be triggered when the close button is clicked.
+    /// </summary>
+    event Action OnCloseButtonPressed;
+
+    /// <summary>
+    /// Game object of the explore menu.
+    /// </summary>
+    GameObject go { get; }
+
+    /// <summary>
+    /// Returns true if the game object is activated.
+    /// </summary>
+    bool isActive { get; }
+
+    /// <summary>
     /// Fill the model and updates the explore menu with this data.
     /// </summary>
     /// <param name="model">Data to configure the explore menu.</param>
     void Configure(ExploreV2MenuComponentModel model);
+
+    /// <summary>
+    /// Activates/Deactivates the game object of the explore menu.
+    /// </summary>
+    /// <param name="isActive">True to activate it.</param>
+    void SetActive(bool isActive);
 
     /// <summary>
     /// Set the realm info.
@@ -41,6 +63,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [Header("Configuration")]
     [SerializeField] protected ExploreV2MenuComponentModel model;
 
+    public bool isActive => gameObject.activeSelf;
+
+    public GameObject go => gameObject;
+
+    public event Action OnCloseButtonPressed;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -51,7 +79,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         else
             sectionSelector.OnInitialized += CreateSectionSelectorMappings;
 
-        closeMenuButton.onClick.AddListener(() => gameObject.SetActive(false));
+        if (closeMenuButton.isInitialized)
+            ConfigureCloseButton();
+        else
+            closeMenuButton.OnInitialized += ConfigureCloseButton;
     }
 
     public void Configure(ExploreV2MenuComponentModel model)
@@ -75,6 +106,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
     }
+
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
     public void SetRealmInfo(RealmViewerComponentModel realmInfo) { realmViewer.Configure(realmInfo); }
 
@@ -104,5 +137,22 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection(6)?.onSelect.RemoveAllListeners();
     }
 
+    internal void ConfigureCloseButton()
+    {
+        closeMenuButton.onClick.AddListener(() =>
+        {
+            SetActive(false);
+            OnCloseButtonPressed?.Invoke();
+        });
+    }
+
     internal void ShowDefaultSection() { exploreSection.gameObject.SetActive(true); }
+
+    internal static ExploreV2MenuComponentView Create()
+    {
+        ExploreV2MenuComponentView exploreV2View = Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>();
+        exploreV2View.name = "_ExploreV2";
+
+        return exploreV2View;
+    }
 }

@@ -9,17 +9,16 @@ namespace KernelConfigurationTypes
         public bool enableAvatarLODs = false;
         public bool enableTutorial = true;
         public bool enablePeopleCounter = false;
+        public bool enableExploreV2 = true;
 
-        public override bool Equals(object obj)
-        {
-            return obj is Features other && Equals(other);
-        }
+        public override bool Equals(object obj) { return obj is Features other && Equals(other); }
         protected bool Equals(Features other)
         {
-            return enableBuilderInWorld == other.enableBuilderInWorld 
-                   && enableAvatarLODs == other.enableAvatarLODs 
-                   && enableTutorial == other.enableTutorial 
-                   && enablePeopleCounter == other.enablePeopleCounter;
+            return enableBuilderInWorld == other.enableBuilderInWorld
+                   && enableAvatarLODs == other.enableAvatarLODs
+                   && enableTutorial == other.enableTutorial
+                   && enablePeopleCounter == other.enablePeopleCounter
+                   && enableExploreV2 == other.enableExploreV2;
         }
         public Features Clone()
         {

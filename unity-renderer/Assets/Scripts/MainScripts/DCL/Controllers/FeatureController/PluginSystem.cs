@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Tutorial;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// This class is used to handle a feature that needs the MonoBehaviour callbacks.
@@ -64,6 +62,7 @@ public class PluginSystem
         HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
         HandleFeature<TutorialController>(config.features.enableTutorial);
         HandleFeature<DebugPluginFeature>(true);
+        HandleFeature<ExploreV2Feature>(config.features.enableExploreV2);
         currentConfig = config;
     }
 
@@ -88,6 +87,7 @@ public class PluginSystem
         PluginFeature pluginFeature = new T();
         pluginFeature.Initialize();
         activeFeatures.Add(pluginFeature);
+        DataStore.i.loadedPluginFeatures.Add(pluginFeature);
     }
 
     private void RemoveFeature<T>() where T : PluginFeature
@@ -98,6 +98,7 @@ public class PluginSystem
             {
                 activeFeatures[i].Dispose();
                 activeFeatures.Remove(activeFeatures[i]);
+                DataStore.i.loadedPluginFeatures.Remove(activeFeatures[i]);
             }
         }
     }

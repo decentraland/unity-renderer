@@ -25,6 +25,7 @@ public class TaskbarHUDController : IHUD
     public FriendsHUDController friendsHud;
     public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
+    public ExploreV2Feature exploreV2Feature;
     public HelpAndSupportHUDController helpAndSupportHud;
 
     IMouseCatcher mouseCatcher;
@@ -88,6 +89,8 @@ public class TaskbarHUDController : IHUD
         view.OnBuilderInWorldToggleOn += View_OnBuilderInWorldToggleOn;
         view.OnExploreToggleOff += View_OnExploreToggleOff;
         view.OnExploreToggleOn += View_OnExploreToggleOn;
+        view.OnExploreV2ToggleOff += View_OnExploreV2ToggleOff;
+        view.OnExploreV2ToggleOn += View_OnExploreV2ToggleOn;
         view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
         view.OnQuestPanelToggled += View_OnQuestPanelToggled;
 
@@ -128,6 +131,8 @@ public class TaskbarHUDController : IHUD
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
         DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
+
+        ConfigureExploreV2Feature();
     }
 
     private void View_OnQuestPanelToggled(bool value)
@@ -228,6 +233,14 @@ public class TaskbarHUDController : IHUD
     }
 
     private void View_OnExploreToggleOff() { exploreHud.SetVisibility(false); }
+
+    private void View_OnExploreV2ToggleOn()
+    {
+        exploreV2Feature.SetVisibility(true);
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnExploreV2ToggleOff() { exploreV2Feature.SetVisibility(false); }
 
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
 
@@ -402,6 +415,44 @@ public class TaskbarHUDController : IHUD
         };
     }
 
+    private void ConfigureExploreV2Feature()
+    {
+        var alreadyLoadedExploreV2Feature = DataStore.i.loadedPluginFeatures.Get().FirstOrDefault(x => x is ExploreV2Feature);
+        if (alreadyLoadedExploreV2Feature != null)
+            AddExploreV2Window((ExploreV2Feature)alreadyLoadedExploreV2Feature);
+        else
+            DataStore.i.loadedPluginFeatures.OnAdded += OnNewPluginFeatureLoaded;
+    }
+
+    private void OnNewPluginFeatureLoaded(PluginFeature newPluginFeature)
+    {
+        if (newPluginFeature is ExploreV2Feature)
+        {
+            DataStore.i.loadedPluginFeatures.OnAdded -= OnNewPluginFeatureLoaded;
+            AddExploreV2Window((ExploreV2Feature)newPluginFeature);
+        }
+    }
+
+    public void AddExploreV2Window(ExploreV2Feature controller)
+    {
+        if (controller == null)
+        {
+            Debug.LogWarning("AddExploreV2Window >>> Explore V2 window doesn't exist yet!");
+            return;
+        }
+
+        exploreV2Feature = controller;
+        view.OnAddExploreV2Window();
+        exploreV2Feature.OnOpen += () =>
+        {
+            view.exploreV2Button.SetToggleState(true, false);
+        };
+        exploreV2Feature.OnClose += () =>
+        {
+            view.exploreV2Button.SetToggleState(false, false);
+        };
+    }
+
     public void AddHelpAndSupportWindow(HelpAndSupportHUDController controller)
     {
         if (controller == null || controller.view == null)
@@ -450,6 +501,8 @@ public class TaskbarHUDController : IHUD
             view.OnBuilderInWorldToggleOn -= View_OnBuilderInWorldToggleOn;
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
+            view.OnExploreV2ToggleOff -= View_OnExploreV2ToggleOff;
+            view.OnExploreV2ToggleOn -= View_OnExploreV2ToggleOn;
             view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
 
             CoroutineStarter.Stop(view.moreMenu.moreMenuAnimationsCoroutine);
@@ -483,6 +536,7 @@ public class TaskbarHUDController : IHUD
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
+        DataStore.i.loadedPluginFeatures.OnAdded -= OnNewPluginFeatureLoaded;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
