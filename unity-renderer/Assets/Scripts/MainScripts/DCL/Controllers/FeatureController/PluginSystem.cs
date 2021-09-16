@@ -64,10 +64,11 @@ public class PluginSystem
         HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
         HandleFeature<TutorialController>(config.features.enableTutorial);
         HandleFeature<DebugPluginFeature>(true);
+        HandleFeature<SkyboxController>(config.features.enableProceduralSkybox);
         currentConfig = config;
     }
 
-    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new ()
+    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new()
     {
         if (isActive)
             InitializeFeature<T>();
@@ -75,7 +76,7 @@ public class PluginSystem
             RemoveFeature<T>();
     }
 
-    private void InitializeFeature<T>() where T : PluginFeature, new ()
+    private void InitializeFeature<T>() where T : PluginFeature, new()
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {

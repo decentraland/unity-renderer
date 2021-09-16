@@ -9,6 +9,7 @@ namespace KernelConfigurationTypes
         public bool enableAvatarLODs = false;
         public bool enableTutorial = true;
         public bool enablePeopleCounter = false;
+        public bool enableProceduralSkybox = false;
 
         public override bool Equals(object obj)
         {
@@ -16,14 +17,15 @@ namespace KernelConfigurationTypes
         }
         protected bool Equals(Features other)
         {
-            return enableBuilderInWorld == other.enableBuilderInWorld 
-                   && enableAvatarLODs == other.enableAvatarLODs 
-                   && enableTutorial == other.enableTutorial 
-                   && enablePeopleCounter == other.enablePeopleCounter;
+            return enableBuilderInWorld == other.enableBuilderInWorld
+                   && enableAvatarLODs == other.enableAvatarLODs
+                   && enableTutorial == other.enableTutorial
+                   && enablePeopleCounter == other.enablePeopleCounter
+                   && enableProceduralSkybox == other.enableProceduralSkybox;
         }
         public Features Clone()
         {
-            Features clone = (Features) this.MemberwiseClone();
+            Features clone = (Features)this.MemberwiseClone();
             return clone;
         }
     }
@@ -42,7 +44,7 @@ namespace KernelConfigurationTypes
 
         public Comms Clone()
         {
-            Comms clone = (Comms) this.MemberwiseClone();
+            Comms clone = (Comms)this.MemberwiseClone();
             return clone;
         }
     }
@@ -61,7 +63,7 @@ namespace KernelConfigurationTypes
 
         public Profiles Clone()
         {
-            Profiles clone = (Profiles) this.MemberwiseClone();
+            Profiles clone = (Profiles)this.MemberwiseClone();
             return clone;
         }
     }
@@ -84,7 +86,7 @@ namespace KernelConfigurationTypes
 
         public WorldRange Clone()
         {
-            WorldRange clone = (WorldRange) this.MemberwiseClone();
+            WorldRange clone = (WorldRange)this.MemberwiseClone();
             return clone;
         }
         public WorldRange(int xMin, int yMin, int xMax, int yMax)
