@@ -5,20 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
-using UnityEngine.Networking;
-using WaitUntil = DCL.WaitUntil;
-using DCL;
-using Environment = System.Environment;
 
 public static class DependencyMapLoadHelper
 {
     static bool VERBOSE = false;
+    
+    private const string PERSISTENT_CACHE_KEY_FISRT_PART = "DepMapCache_V";
 
-    private const string PERSISTENT_CACHE_KEY = "DepMapCache_V2";
-    private const float MIN_TIME_BETWEEN_SAVING_PERSISTENT_CACHE = 300.0f;
-
+    private static string persistentCacheKey = null;
     private static bool persistentCacheLoaded = false;
-    private static float lastTimeSavedPersistentCache = 0;
+    private static int cacheVersion = 0;
 
     public static Dictionary<string, List<string>> dependenciesMap = new Dictionary<string, List<string>>();
 
@@ -49,6 +45,8 @@ public static class DependencyMapLoadHelper
     {
         string url = baseUrl + hash + ".depmap";
 
+        SetupCacheVersion(baseUrl);
+        
         LoadPersistentCache();
 
         if (dependenciesMap.ContainsKey(hash))
@@ -75,10 +73,7 @@ public static class DependencyMapLoadHelper
 
                 downloadingDepmap.Remove(hash);
 
-                if (DCLTime.realtimeSinceStartup - lastTimeSavedPersistentCache >= MIN_TIME_BETWEEN_SAVING_PERSISTENT_CACHE)
-                {
-                    SavePersistentCache();
-                }
+                SavePersistentCache();
             },
             OnFail: (depmapRequest) =>
             {
@@ -87,39 +82,51 @@ public static class DependencyMapLoadHelper
             });
     }
 
+    private static void SetupCacheVersion(string baseUrl)
+    {
+        // The asset bundles base url follows the format "https://url/v4324234/" indicating the cache version at the end.
+        int versionIndex = baseUrl.LastIndexOf('v')+1;
+        int versionLength = baseUrl.Length - versionIndex - 1;
+        string versionString = baseUrl.Substring(versionIndex, versionLength);
+        cacheVersion = Int32.Parse(versionString);
+        if (cacheVersion < 0)
+            cacheVersion = 0;
+        
+        persistentCacheKey = PERSISTENT_CACHE_KEY_FISRT_PART + cacheVersion;
+    }
+
     private static void SavePersistentCache()
     {
-        lastTimeSavedPersistentCache = DCLTime.realtimeSinceStartup;
-
+        // As a new dependenciesMap will be stored in playerprefs, we delete the old ones that won't be used anymore.
+        ClearOldCachedDevmaps();
+        
         //NOTE(Brian): Use JsonConvert because unity JsonUtility doesn't support dictionaries
         string cacheJson = JsonConvert.SerializeObject(dependenciesMap);
-        PlayerPrefsUtils.SetString(PERSISTENT_CACHE_KEY, cacheJson);
+        PlayerPrefsUtils.SetString(persistentCacheKey, cacheJson);
+    }
+
+    private static void ClearOldCachedDevmaps()
+    {
+        int previousCacheToCleanAmount = 2;
+        for (int i = cacheVersion-1; i >= cacheVersion-previousCacheToCleanAmount; i--)
+        {
+            PlayerPrefs.DeleteKey(PERSISTENT_CACHE_KEY_FISRT_PART + i);   
+        }
     }
 
     private static void LoadPersistentCache()
     {
         if (persistentCacheLoaded)
             return;
-
         persistentCacheLoaded = true;
-        CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
-
+        
         // Beware that if a wrongly-constructed depmap was created previously, this will always load that depmap
         // when testing a new dump process locally it's safer to first run Edit->ClearAllPlayerPrefs from UnityEditor
-        string depMapCache = PlayerPrefs.GetString(PERSISTENT_CACHE_KEY, String.Empty);
+        string depMapCache = PlayerPrefs.GetString(persistentCacheKey, String.Empty);
 
         if (!string.IsNullOrEmpty(depMapCache))
         {
             dependenciesMap = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(depMapCache);
-        }
-    }
-
-    private static void RendererState_OnChange(bool current, bool previous)
-    {
-        if (persistentCacheLoaded)
-        {
-            // Once the persistent cache has been loaded the first time, it will go being saved each time the RendererState be changed
-            SavePersistentCache();
         }
     }
 }
