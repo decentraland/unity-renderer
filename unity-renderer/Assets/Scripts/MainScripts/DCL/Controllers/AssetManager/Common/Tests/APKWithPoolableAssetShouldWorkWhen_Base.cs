@@ -86,7 +86,7 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(keeper.library.Contains(loadedAsset.id), "Asset should be still in library, it only should be removed from library when the Pool is cleaned by the MemoryManager");
             Assert.AreEqual(1, keeper.library.masterAssets.Count, "Asset should be still in library, it only should be removed from library when the Pool is cleaned by the MemoryManager");
 
-            yield return Environment.i.platform.memoryManager.CleanPoolManager(true);
+            yield return PoolManager.i.CleanupAsync(false, false);
 
             Assert.AreEqual(0, keeper.library.masterAssets.Count, "After MemoryManager clear the pools, the asset should be removed from the library");
             Assert.IsTrue(!keeper.library.Contains(loadedAsset.id), "After MemoryManager clear the pools, the asset should be removed from the library");
@@ -141,7 +141,7 @@ namespace AssetPromiseKeeper_Tests
 
             keeper.Forget(prom2);
 
-            yield return Environment.i.platform.memoryManager.CleanPoolManager(true);
+            yield return PoolManager.i.CleanupAsync(false, false);
 
             Assert.IsTrue(asset.container == null);
             Assert.IsTrue(!keeper.library.Contains(asset));

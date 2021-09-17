@@ -219,7 +219,7 @@ namespace DCL
             return pool.Get();
         }
 
-        public IEnumerator CleanupAsync(bool unusedOnly = false, bool nonPersistentOnly = false, bool immediate = false)
+        public IEnumerator CleanupAsync(bool unusedOnly = true, bool nonPersistentOnly = true, bool immediate = false)
         {
             List<object> idsToRemove = new List<object>(pools.Count);
 

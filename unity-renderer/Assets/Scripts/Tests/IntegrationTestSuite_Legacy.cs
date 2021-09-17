@@ -121,7 +121,7 @@ public class IntegrationTestSuite_Legacy
 
         Environment.Dispose();
 
-        yield return TearDown_Memory();
+        TearDown_Memory();
 
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();
@@ -136,12 +136,9 @@ public class IntegrationTestSuite_Legacy
         AssetPromiseKeeper_AB.i?.Cleanup();
     }
 
-    protected IEnumerator TearDown_Memory()
+    protected void TearDown_Memory()
     {
         TearDown_PromiseKeepers();
-
-        if (Environment.i.platform.memoryManager != null)
-            yield return Environment.i.platform.memoryManager.CleanPoolManager(true);
 
         if (PoolManager.i != null)
             PoolManager.i.Dispose();
