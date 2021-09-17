@@ -24,7 +24,12 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
-        context = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
+        var biwCreatorController = new BIWCreatorController();
+        context = BIWTestUtils.CreateContextWithGenericMocks(
+            InitialSceneReferences.i.data, biwCreatorController);
+
+        biwCreatorController.Initialize(context);
+
         mainController = new BuilderInWorld(context);
         BuilderInWorld.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize();
@@ -404,6 +409,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
         mainController.creatorController.sceneToEdit = scene;
         mainController.floorHandler.sceneToEdit = scene;
+        mainController.sceneToEdit = scene;
 
         // Act
         mainController.SetupNewScene();
