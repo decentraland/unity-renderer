@@ -43,13 +43,13 @@ public interface IProfileCardComponentView
 public class ProfileCardComponentView : BaseComponentView, IProfileCardComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] private Button button;
-    [SerializeField] private ImageComponentView profileImage;
-    [SerializeField] private TMP_Text profileName;
-    [SerializeField] private TMP_Text profileAddress;
+    [SerializeField] internal Button button;
+    [SerializeField] internal ImageComponentView profileImage;
+    [SerializeField] internal TMP_Text profileName;
+    [SerializeField] internal TMP_Text profileAddress;
 
     [Header("Configuration")]
-    [SerializeField] protected ProfileCardComponentModel model;
+    [SerializeField] internal ProfileCardComponentModel model;
 
     public Button.ButtonClickedEvent onClick
     {
