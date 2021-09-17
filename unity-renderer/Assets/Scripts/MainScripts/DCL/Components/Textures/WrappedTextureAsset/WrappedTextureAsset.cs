@@ -52,7 +52,7 @@ namespace DCL
             }
             else
             {
-                AssetPromise_Texture texturePromise = new AssetPromise_Texture(url, storeTexAsNonReadable: false);
+                AssetPromise_Texture texturePromise = new AssetPromise_Texture(url);
                 texturePromise.OnSuccessEvent += texture => { OnSuccess?.Invoke(new PromiseLike_Texture(texturePromise)); };
                 texturePromise.OnFailEvent += (x) => OnFail?.Invoke();
 
