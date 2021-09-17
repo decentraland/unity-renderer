@@ -89,7 +89,7 @@ public class ButtonComponentViewTests
     public void SetButtonIconCorrectly(bool isNullIcon)
     {
         // Arrange
-        Sprite testSprite = isNullIcon ? Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero) : null;
+        Sprite testSprite = isNullIcon ? null : Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
 
         // Act
         buttonComponent.SetIcon(testSprite);
@@ -99,8 +99,8 @@ public class ButtonComponentViewTests
         Assert.AreEqual(testSprite, buttonComponent.icon.sprite, "The button icon does not match.");
 
         if (isNullIcon)
-            Assert.IsTrue(buttonComponent.icon.enabled);
-        else
             Assert.IsFalse(buttonComponent.icon.enabled);
+        else
+            Assert.IsTrue(buttonComponent.icon.enabled);
     }
 }

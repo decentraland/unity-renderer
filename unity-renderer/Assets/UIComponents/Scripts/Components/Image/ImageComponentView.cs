@@ -25,11 +25,11 @@ public interface IImageComponentView
 public class ImageComponentView : BaseComponentView, IImageComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] private Image image;
-    [SerializeField] private GameObject loadingIndicator;
+    [SerializeField] internal Image image;
+    [SerializeField] internal GameObject loadingIndicator;
 
     [Header("Configuration")]
-    [SerializeField] protected ImageComponentModel model;
+    [SerializeField] internal ImageComponentModel model;
 
     public override void Initialize()
     {
