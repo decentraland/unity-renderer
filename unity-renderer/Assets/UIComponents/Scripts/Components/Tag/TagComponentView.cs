@@ -26,11 +26,11 @@ public interface ITagComponentView
 public class TagComponentView : BaseComponentView, ITagComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] private Image icon;
-    [SerializeField] private TMP_Text text;
+    [SerializeField] internal Image icon;
+    [SerializeField] internal TMP_Text text;
 
     [Header("Configuration")]
-    [SerializeField] protected TagComponentModel model;
+    [SerializeField] internal TagComponentModel model;
 
     public override void Initialize()
     {
