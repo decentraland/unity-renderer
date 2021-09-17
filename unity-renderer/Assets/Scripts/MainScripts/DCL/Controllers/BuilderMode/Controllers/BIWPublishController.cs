@@ -1,7 +1,9 @@
 using DCL;
 using UnityEngine;
 
-public interface IBIWPublishController { }
+public interface IBIWPublishController
+{
+}
 
 public class BIWPublishController : BIWController, IBIWPublishController
 {
@@ -19,9 +21,9 @@ public class BIWPublishController : BIWController, IBIWPublishController
 
     private float startPublishingTimestamp = 0;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
 
         entityHandler = context.entityHandler;
         creatorController = context.creatorController;
@@ -61,6 +63,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
             HUDController.i.builderInWorldMainHud.OnPublishAction -= StartPublishFlow;
             HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= StartPublishScene;
         }
+
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnPublishEnd -= PublishEnd;
     }

@@ -7,6 +7,7 @@ using UnityEngine;
 public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 {
     private BIWModeController biwModeController;
+    private BIWContext context;
 
     protected override IEnumerator SetUp()
     {
@@ -15,14 +16,14 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
         biwModeController = new BIWModeController();
 
         BIWActionController actionController = new BIWActionController();
-        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             actionController,
             biwModeController,
             InitialSceneReferences.i
         );
 
-        biwModeController.Init(referencesController);
-        actionController.Init(referencesController);
+        biwModeController.Initialize(context);
+        actionController.Initialize(context);
 
         biwModeController.EnterEditMode(scene);
         actionController.EnterEditMode(scene);
@@ -72,7 +73,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        biwModeController.Dispose();
+        context.Dispose();
         yield return base.TearDown();
     }
 }

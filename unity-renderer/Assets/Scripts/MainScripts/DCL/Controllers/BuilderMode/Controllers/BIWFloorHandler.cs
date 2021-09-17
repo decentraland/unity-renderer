@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface IBIWFloorHandler
+public interface IBIWFloorHandler : IDisposable
 {
+    void EnterEditMode( IParcelScene scene );
     void CreateDefaultFloor();
     void CreateFloor(CatalogItem floorSceneObject);
     bool IsCatalogItemFloor(CatalogItem floorSceneObject);
@@ -35,9 +36,9 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private readonly List<string> loadedFloorEntities = new List<string>();
     private Camera mainCamera;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
         actionController = context.actionController;
 
         entityHandler = context.entityHandler;
@@ -173,6 +174,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         {
             GameObject.Destroy(gameObject);
         }
+
         floorPlaceHolderDict.Clear();
     }
 

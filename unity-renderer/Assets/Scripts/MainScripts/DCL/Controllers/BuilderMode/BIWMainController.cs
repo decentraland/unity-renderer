@@ -123,7 +123,6 @@ public class BIWMainController : PluginFeature
 
     public void InitReferences(InitialSceneReferences initalReference)
     {
-
         builderInWorldBridge = initalReference.builderInWorldBridge;
         cursorGO = initalReference.cursorCanvas;
         inputController = initalReference.inputController;
@@ -133,6 +132,7 @@ public class BIWMainController : PluginFeature
         {
             grounds.Add(InitialSceneReferences.i.groundVisual.transform.transform.GetChild(i).gameObject);
         }
+
         groundVisualsGO = grounds.ToArray();
 
         context = new BIWContext();
@@ -382,7 +382,7 @@ public class BIWMainController : PluginFeature
 
     public void InitController(IBIWController controller)
     {
-        controller.Init(context);
+        controller.Initialize(context);
         controllers.Add(controller);
     }
 
@@ -393,14 +393,16 @@ public class BIWMainController : PluginFeature
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.Dispose();
 
-        if (Camera.main != null)
+        Camera camera = Camera.main;
+
+        if (camera != null)
         {
-            BIWOutline outliner = Camera.main.GetComponent<BIWOutline>();
+            BIWOutline outliner = camera.GetComponent<BIWOutline>();
             GameObject.Destroy(outliner);
         }
 
         floorHandler?.Clean();
-        creatorController?.Clean();
+        creatorController?.CleanUp();
     }
 
     public void ChangeEditModeStatusByShortcut(DCLAction_Trigger action)
@@ -439,6 +441,7 @@ public class BIWMainController : PluginFeature
             ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
             return;
         }
+
         if (IsParcelSceneDeployedFromSDK(sceneToEdit))
         {
             ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
@@ -640,6 +643,7 @@ public class BIWMainController : PluginFeature
         {
             groundVisual.SetActive(false);
         }
+
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
         BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
@@ -751,6 +755,7 @@ public class BIWMainController : PluginFeature
         {
             controller.EnterEditMode(sceneToEdit);
         }
+
         //Note: This audio should inside the controllers, it is here because it is still a monobehaviour
         biwAudioHandler.EnterEditMode(sceneToEdit);
     }
@@ -802,6 +807,7 @@ public class BIWMainController : PluginFeature
                 return sceneToEdit;
             }
         }
+
         return null;
     }
 
@@ -810,7 +816,7 @@ public class BIWMainController : PluginFeature
         if (activeFeature)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             TryStartEnterEditMode(targetScene);
         }
     }
@@ -840,22 +846,23 @@ public class BIWMainController : PluginFeature
             return;
 
         DeployedScenesFetcher.FetchLandsFromOwner(
-                                 Environment.i.platform.serviceProviders.catalyst,
-                                 Environment.i.platform.serviceProviders.theGraph,
-                                 userProfile.ethAddress,
-                                 KernelConfig.i.Get().network,
-                                 BIWSettings.CACHE_TIME_LAND,
-                                 BIWSettings.CACHE_TIME_SCENES)
-                             .Then(lands =>
-                             {
-                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                                 {
-                                     CheckSceneToEditByShorcut();
-                                 }
-                                 isWaitingForPermission = false;
-                                 alreadyAskedForLandPermissions = true;
-                             });
+                Environment.i.platform.serviceProviders.catalyst,
+                Environment.i.platform.serviceProviders.theGraph,
+                userProfile.ethAddress,
+                KernelConfig.i.Get().network,
+                BIWSettings.CACHE_TIME_LAND,
+                BIWSettings.CACHE_TIME_SCENES)
+            .Then(lands =>
+            {
+                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                {
+                    CheckSceneToEditByShorcut();
+                }
+
+                isWaitingForPermission = false;
+                alreadyAskedForLandPermissions = true;
+            });
     }
 
     private static void ShowGenericNotification(string message, NotificationFactory.Type type = NotificationFactory.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )

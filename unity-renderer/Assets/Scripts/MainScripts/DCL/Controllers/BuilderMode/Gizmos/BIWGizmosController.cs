@@ -51,9 +51,9 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private GameObject gizmosGO;
     private FreeCameraMovement freeCameraMovement;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
         gizmosGO = GameObject.Instantiate(context.projectReferencesAsset.gizmosPrefab, context.projectReferencesAsset.gizmosPrefab.transform.position, context.projectReferencesAsset.gizmosPrefab.transform.rotation);
         gizmos = gizmosGO.GetComponentsInChildren<IBIWGizmos>(true);
 
@@ -227,6 +227,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         selectedEntitiesParent = selectionParent;
         GizmoStatusUpdate();
     }
+
     private void OnGizmosAxisPressed(BIWGizmosAxis pressedAxis) { OnBeginDrag(pressedAxis); }
 
     internal void OnMouseUp(int buttonId, Vector3 mousePosition)

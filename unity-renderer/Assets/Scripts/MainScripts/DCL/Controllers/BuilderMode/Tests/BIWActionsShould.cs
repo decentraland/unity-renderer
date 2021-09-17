@@ -11,31 +11,28 @@ using UnityEngine.TestTools;
 public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    private BIWActionController biwActionController;
-    private BIWEntityHandler entityHandler;
-    private BIWFloorHandler biwFloorHandler;
-    private BIWCreatorController biwCreatorController;
+    private BIWContext context;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
-        biwActionController = new BIWActionController();
-        entityHandler = new BIWEntityHandler();
-        biwFloorHandler = new BIWFloorHandler();
-        biwCreatorController = new BIWCreatorController();
+        var biwActionController = new BIWActionController();
+        var entityHandler = new BIWEntityHandler();
+        var biwFloorHandler = new BIWFloorHandler();
+        var biwCreatorController = new BIWCreatorController();
 
-        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             biwActionController,
             entityHandler,
             biwFloorHandler,
             biwCreatorController
         );
 
-        biwActionController.Init(referencesController);
-        entityHandler.Init(referencesController);
-        biwFloorHandler.Init(referencesController);
-        biwCreatorController.Init(referencesController);
+        biwActionController.Initialize(context);
+        entityHandler.Initialize(context);
+        biwFloorHandler.Initialize(context);
+        biwCreatorController.Initialize(context);
 
         biwActionController.EnterEditMode(scene);
         entityHandler.EnterEditMode(scene);
@@ -58,12 +55,12 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.MOVE);
 
         scene.entities[ENTITY_ID].gameObject.transform.position = newPosition;
-        biwActionController.AddAction(buildModeAction);
+        context.actionController.AddAction(buildModeAction);
 
-        biwActionController.TryToUndoAction();
+        context.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.position == oldPosition);
 
-        biwActionController.TryToRedoAction();
+        context.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.position == newPosition);
     }
 
@@ -82,12 +79,12 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.ROTATE);
 
         scene.entities[ENTITY_ID].gameObject.transform.rotation = Quaternion.Euler(newRotation);
-        biwActionController.AddAction(buildModeAction);
+        context.actionController.AddAction(buildModeAction);
 
-        biwActionController.TryToUndoAction();
+        context.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.rotation.eulerAngles == oldRotation);
 
-        biwActionController.TryToRedoAction();
+        context.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.rotation.eulerAngles == newRotation);
     }
 
@@ -106,33 +103,33 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.SCALE);
 
         scene.entities[ENTITY_ID].gameObject.transform.localScale = newScale;
-        biwActionController.AddAction(buildModeAction);
+        context.actionController.AddAction(buildModeAction);
 
-        biwActionController.TryToUndoAction();
+        context.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.localScale == oldScale);
 
-        biwActionController.TryToRedoAction();
+        context.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.localScale == newScale);
     }
 
     [Test]
     public void UndoRedoCreateDeleteActions()
     {
-        biwActionController.CreateActionEntityCreated(scene.entities[ENTITY_ID]);
-        biwActionController.TryToUndoAction();
+        context.actionController.CreateActionEntityCreated(scene.entities[ENTITY_ID]);
+        context.actionController.TryToUndoAction();
         Assert.IsFalse(scene.entities.ContainsKey(ENTITY_ID));
 
-        biwActionController.TryToRedoAction();
+        context.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
         BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[ENTITY_ID], null);
 
-        biwActionController.CreateActionEntityDeleted(biwEntity);
-        biwActionController.TryToUndoAction();
+        context.actionController.CreateActionEntityDeleted(biwEntity);
+        context.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
-        biwActionController.TryToRedoAction();
+        context.actionController.TryToRedoAction();
         Assert.IsFalse(scene.entities.ContainsKey(ENTITY_ID));
     }
 
@@ -141,22 +138,22 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     {
         BIWCatalogManager.Init();
 
-        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
 
         CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
         BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
-        biwCreatorController.EnterEditMode(scene);
-        biwFloorHandler.EnterEditMode(scene);
+        context.creatorController.EnterEditMode(scene);
+        context.floorHandler.EnterEditMode(scene);
 
-        biwFloorHandler.CreateFloor(oldFloor);
-        biwFloorHandler.ChangeFloor(newFloor);
+        context.floorHandler.CreateFloor(oldFloor);
+        context.floorHandler.ChangeFloor(newFloor);
 
         buildModeAction.CreateChangeFloorAction(oldFloor, newFloor);
-        biwActionController.AddAction(buildModeAction);
+        context.actionController.AddAction(buildModeAction);
 
-        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in context.entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -165,9 +162,9 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
             }
         }
 
-        biwActionController.TryToUndoAction();
+        context.actionController.TryToUndoAction();
 
-        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in context.entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -177,9 +174,9 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
             }
         }
 
-        biwActionController.TryToRedoAction();
+        context.actionController.TryToRedoAction();
 
-        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in context.entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -193,10 +190,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     {
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
-        entityHandler.Dispose();
-        biwActionController.Dispose();
-        biwFloorHandler.Dispose();
-        biwCreatorController.Dispose();
+        context.Dispose();
         yield return base.TearDown();
     }
 }

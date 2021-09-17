@@ -40,5 +40,11 @@ namespace DCL
         }
 
         void OnDestroy() { i = null; }
+
+        public static InitialSceneReferences Create()
+        {
+            var gameObject = new GameObject("_SceneReferences");
+            return gameObject.AddComponent<InitialSceneReferences>();
+        }
     }
 }

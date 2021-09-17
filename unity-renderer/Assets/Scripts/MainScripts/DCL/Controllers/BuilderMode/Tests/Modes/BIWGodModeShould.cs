@@ -33,7 +33,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         raycastController = new BIWRaycastController();
         gizmosController = new BIWGizmosController();
         selectedEntities = new List<BIWEntity>();
-        context = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             modeController,
             raycastController,
             gizmosController,
@@ -42,9 +42,9 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         mockedGameObject = new GameObject("MockedGameObject");
         entityGameObject = new GameObject("EntityGameObject");
-        modeController.Init(context);
-        raycastController.Init(context);
-        gizmosController.Init(context);
+        modeController.Initialize(context);
+        raycastController.Initialize(context);
+        gizmosController.Initialize(context);
         modeController.EnterEditMode(scene);
         raycastController.EnterEditMode(scene);
         gizmosController.EnterEditMode(scene);
@@ -598,14 +598,12 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnFinished();
-        raycastController.Dispose();
-        modeController.Dispose();
-        gizmosController.Dispose();
 
         context.Dispose();
 
-        GameObject.Destroy(mockedGameObject);
-        GameObject.Destroy(entityGameObject);
+        Object.Destroy(mockedGameObject);
+        Object.Destroy(entityGameObject);
+
         return base.TearDown();
     }
 }

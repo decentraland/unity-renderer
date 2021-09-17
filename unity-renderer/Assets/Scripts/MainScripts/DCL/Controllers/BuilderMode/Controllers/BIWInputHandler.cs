@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public interface IBIWInputHandler { }
+public interface IBIWInputHandler
+{
+}
 
 public class BIWInputHandler : BIWController, IBIWInputHandler
 {
@@ -31,9 +33,9 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
 
     private float nexTimeToReceiveInput;
 
-    public override void Init(BIWContext biwContext)
+    public override void Initialize(BIWContext biwContext)
     {
-        base.Init(biwContext);
+        base.Initialize(biwContext);
 
         actionController = biwContext.actionController;
         modeController = biwContext.modeController;
@@ -145,6 +147,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
                 InputDone();
                 return;
             }
+
             outlinerController.CheckOutline();
         }
     }

@@ -72,6 +72,6 @@ public class BIWContext
         godModeDynamicVariablesAsset = null;
         firstPersonDynamicVariablesAsset = null;
         inputsReferencesAsset = null;
+        UnityEngine.Object.Destroy(sceneReferences.gameObject);
     }
-
 }

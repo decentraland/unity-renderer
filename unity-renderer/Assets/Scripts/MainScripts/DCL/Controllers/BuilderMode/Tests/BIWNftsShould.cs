@@ -35,7 +35,7 @@ public class BIWNftsShould : IntegrationTestSuite
         scene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene();
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
         BIWCatalogManager.Init();
-        BIWTestHelper.CreateNFT();
+        BIWTestUtils.CreateNFT();
     }
 
     [Test]
@@ -55,7 +55,7 @@ public class BIWNftsShould : IntegrationTestSuite
     [Test]
     public void NftComponent()
     {
-        BIWTestHelper.CreateNFT();
+        BIWTestUtils.CreateNFT();
         CatalogItem catalogItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         BIWEntity biwEntity = new BIWEntity();

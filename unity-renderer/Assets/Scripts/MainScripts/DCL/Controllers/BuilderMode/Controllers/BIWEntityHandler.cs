@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public interface IBIWEntityHandler
+public interface IBIWEntityHandler : IDisposable
 {
     event Action<BIWEntity> OnEntityDeselected;
     event Action OnEntitySelected;
@@ -92,9 +92,9 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private BIWEntity lastClickedEntity;
     private float lastTimeEntityClicked;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
         if (HUDController.i.builderInWorldMainHud != null)
         {
             hudController = HUDController.i.builderInWorldMainHud;
@@ -223,7 +223,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void SetMultiSelectionActive(bool isActive) { isMultiSelectionActive = isActive; }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public override void EnterEditMode(IParcelScene scene)
     {
         base.EnterEditMode(scene);
 

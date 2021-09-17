@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class BuilderInWorldAudioHandler : MonoBehaviour

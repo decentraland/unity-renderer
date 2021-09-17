@@ -24,7 +24,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         mainController = new BIWMainController();
-        context = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        context = BIWTestUtils.CreateContextWithGenericMocks(
         );
         BIWMainController.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize();
@@ -74,10 +74,10 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
         //act 
         mainController.InitController(controller);
-        controller.Init(context);
+        controller.Initialize(context);
 
         //Assert
-        controller.Received(1).Init(context);
+        controller.Received(1).Initialize(context);
     }
 
     [Test]
@@ -417,7 +417,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
         mainController.creatorController.sceneToEdit = scene;
         mainController.floorHandler.sceneToEdit = scene;
 
