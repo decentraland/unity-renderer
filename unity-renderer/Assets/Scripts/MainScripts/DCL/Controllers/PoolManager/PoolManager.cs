@@ -228,7 +228,7 @@ namespace DCL
                 while (iterator.MoveNext())
                 {
                     Pool pool = iterator.Current.Value;
-                    bool unusedPool = pool.usedObjectsCount == 0 && pool.unusedObjectsCount > 0;
+                    bool unusedPool = pool.usedObjectsCount == 0; // && pool.unusedObjectsCount > 0;
                     bool isNonPersistent = !pool.persistent;
 
                     if (!unusedOnly) unusedPool = true;

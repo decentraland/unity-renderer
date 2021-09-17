@@ -28,7 +28,7 @@ namespace Tests
 
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
             {
-                states = new DCLAnimator.Model.DCLAnimationState[]
+                states = new []
                 {
                     new DCLAnimator.Model.DCLAnimationState
                     {

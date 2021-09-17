@@ -119,9 +119,9 @@ public class IntegrationTestSuite_Legacy
                 DCLCharacterController.i.characterController.enabled = true;
         }
 
-        TearDown_Memory();
-
         Environment.Dispose();
+
+        TearDown_Memory();
 
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();
@@ -252,13 +252,7 @@ public class IntegrationTestSuite_Legacy
         }
     }
 
-    protected IEnumerator WaitForUICanvasUpdate() { yield break; }
-
-    public static T Reflection_GetStaticField<T>(System.Type baseType, string fieldName) { return (T) baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null); }
-
     public static T Reflection_GetField<T>(object instance, string fieldName) { return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance); }
-
-    public static void Reflection_SetField<T>(object instance, string fieldName, T newValue) { instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue); }
 
     protected GameObject CreateTestGameObject(string name) { return CreateTestGameObject(name, Vector3.zero); }
 

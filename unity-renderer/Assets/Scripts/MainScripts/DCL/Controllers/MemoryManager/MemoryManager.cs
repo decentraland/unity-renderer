@@ -33,8 +33,6 @@ namespace DCL
 
         public void Dispose()
         {
-            PoolManager.i.Cleanup();
-
             if (autoCleanupCoroutine != null)
                 CoroutineStarter.Stop(autoCleanupCoroutine);
 
