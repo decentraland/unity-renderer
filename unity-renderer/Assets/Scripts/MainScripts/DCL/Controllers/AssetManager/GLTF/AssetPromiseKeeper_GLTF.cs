@@ -33,7 +33,7 @@ namespace DCL
                     return base.Forget(promise);
                 }
 
-                if (promise.CanForget())
+                if (!isMasterPromise && promise.CanForget())
                 {
                     return base.Forget(promise);
                 }
