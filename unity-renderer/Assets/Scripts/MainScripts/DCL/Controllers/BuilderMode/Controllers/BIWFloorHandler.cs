@@ -8,13 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface IBIWFloorHandler : IDisposable
+public interface IBIWFloorHandler : IBIWController
 {
-    void EnterEditMode( IParcelScene scene );
     void CreateDefaultFloor();
     void CreateFloor(CatalogItem floorSceneObject);
     bool IsCatalogItemFloor(CatalogItem floorSceneObject);
     void ChangeFloor(CatalogItem newFloorObject);
+    event Action OnAllParcelsFloorLoaded;
+    Dictionary<string, GameObject> floorPlaceHolderDict { get; set; }
+    void CleanUp();
 }
 
 public class BIWFloorHandler : BIWController, IBIWFloorHandler
@@ -32,21 +34,19 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private int numberOfParcelsLoaded;
 
     private CatalogItem lastFloorCalalogItemUsed;
-    internal readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> floorPlaceHolderDict { get; set; } = new Dictionary<string, GameObject>();
     private readonly List<string> loadedFloorEntities = new List<string>();
     private Camera mainCamera;
 
     public override void Initialize(BIWContext context)
     {
         base.Initialize(context);
+
         actionController = context.actionController;
-
         entityHandler = context.entityHandler;
-
         creatorController = context.creatorController;
         saveController = context.saveController;
         mainCamera = context.sceneReferences.mainCamera;
-
         floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
@@ -55,7 +55,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     public override void Dispose()
     {
         entityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
-        Clean();
+        CleanUp();
     }
 
     private void OnFloorEntityDeleted(BIWEntity entity)
@@ -64,7 +64,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
             RemovePlaceHolder(entity);
     }
 
-    public void Clean() { RemoveAllPlaceHolders(); }
+    public void CleanUp() { RemoveAllPlaceHolders(); }
 
     public bool ExistsFloorPlaceHolderForEntity(string entityId) { return floorPlaceHolderDict.ContainsKey(entityId); }
 

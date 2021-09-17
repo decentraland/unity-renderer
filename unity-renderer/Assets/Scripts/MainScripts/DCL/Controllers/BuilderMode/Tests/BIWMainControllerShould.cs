@@ -25,14 +25,22 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         var biwCreatorController = new BIWCreatorController();
-        context = BIWTestUtils.CreateContextWithGenericMocks(
-            InitialSceneReferences.i.data, biwCreatorController);
+        var floorHandler = new BIWFloorHandler();
+        var entityHandler = new BIWEntityHandler();
 
-        biwCreatorController.Initialize(context);
+        context = BIWTestUtils.CreateContextWithGenericMocks(
+            InitialSceneReferences.i.data,
+            biwCreatorController,
+            floorHandler,
+            entityHandler);
 
         mainController = new BuilderInWorld(context);
         BuilderInWorld.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize();
+
+        biwCreatorController.EnterEditMode(scene);
+        floorHandler.EnterEditMode(scene);
+        entityHandler.EnterEditMode(scene);
     }
 
     [Test]
@@ -407,8 +415,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         BIWCatalogManager.Init();
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
-        mainController.creatorController.sceneToEdit = scene;
-        mainController.floorHandler.sceneToEdit = scene;
+
         mainController.sceneToEdit = scene;
 
         // Act

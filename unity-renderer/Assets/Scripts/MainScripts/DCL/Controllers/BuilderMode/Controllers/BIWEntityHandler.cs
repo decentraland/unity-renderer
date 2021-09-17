@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public interface IBIWEntityHandler : IDisposable
+public interface IBIWEntityHandler : IBIWController
 {
     event Action<BIWEntity> OnEntityDeselected;
     event Action OnEntitySelected;
@@ -670,10 +670,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     BIWEntity SetupEntityToEdit(IDCLEntity entity, bool hasBeenCreated = false)
     {
-        if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
-        {
-            return convertedEntities[GetConvertedUniqueKeyForEntity(entity)];
-        }
+        string biwEntityId = GetConvertedUniqueKeyForEntity(entity);
+
+        if (convertedEntities.ContainsKey(biwEntityId))
+            return convertedEntities[biwEntityId];
 
         BIWEntity entityToEdit = new BIWEntity();
         entityToEdit.Initialize(entity, editMaterial);

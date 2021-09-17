@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
-public interface IBIWModeController : IDisposable
+public interface IBIWModeController : IBIWController
 {
     event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
     event Action OnInputDone;
+    BIWGodMode godMode { get; set; }
     Vector3 GetCurrentEditionPosition();
     void CreatedEntity(BIWEntity entity);
 
@@ -31,6 +32,8 @@ public interface IBIWModeController : IDisposable
     bool ShouldCancelUndoAction();
     void MouseClickDetected();
     void TakeSceneScreenshotForExit();
+    void ActivateCamera(ParcelScene sceneToEdit);
+    void OpenNewProjectDetails();
 }
 
 public class BIWModeController : BIWController, IBIWModeController
@@ -49,7 +52,7 @@ public class BIWModeController : BIWController, IBIWModeController
     private IBIWEntityHandler entityHandler;
 
     private BIWFirstPersonMode firstPersonMode;
-    internal BIWGodMode godMode;
+    public BIWGodMode godMode { get; set; }
 
     private InputAction_Trigger toggleSnapModeInputAction;
 

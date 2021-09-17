@@ -5,7 +5,7 @@ using DCL;
 using DCL.Configuration;
 using UnityEngine;
 
-public interface IBIWRaycastController : IDisposable
+public interface IBIWRaycastController : IBIWController
 {
     event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
     bool RayCastFloor(out Vector3 position);

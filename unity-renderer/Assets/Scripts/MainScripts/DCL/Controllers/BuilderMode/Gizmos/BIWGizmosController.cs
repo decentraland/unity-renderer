@@ -5,7 +5,7 @@ using DCL;
 using DCL.Camera;
 using UnityEngine;
 
-public interface IBIWGizmosController : IDisposable
+public interface IBIWGizmosController : IBIWController
 {
     delegate void GizmoTransformDelegate(string gizmoType);
 

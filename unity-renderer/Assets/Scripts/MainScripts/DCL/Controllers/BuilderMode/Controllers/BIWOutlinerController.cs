@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public interface IBIWOutlinerController : IDisposable
+public interface IBIWOutlinerController : IBIWController
 {
     void OutlineEntity(BIWEntity entity);
     void CancelEntityOutline(BIWEntity entityToQuitOutline);

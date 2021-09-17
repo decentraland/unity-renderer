@@ -20,18 +20,18 @@ public class BuilderInWorld : PluginFeature
     private InputController inputController;
     private GameObject[] groundVisualsGO;
 
-    internal BIWOutlinerController outlinerController;
-    internal BIWInputHandler inputHandler;
-    internal BIWPublishController publishController;
-    internal BIWCreatorController creatorController;
-    internal BIWModeController modeController;
-    internal BIWFloorHandler floorHandler;
-    internal BIWEntityHandler entityHandler;
-    internal BIWActionController actionController;
-    internal BIWSaveController saveController;
-    internal BIWInputWrapper inputWrapper;
-    internal BIWRaycastController raycastController;
-    internal BIWGizmosController gizmosController;
+    internal IBIWOutlinerController outlinerController => context.outlinerController;
+    internal IBIWInputHandler inputHandler => context.inputHandler;
+    internal IBIWPublishController publishController => context.publishController;
+    internal IBIWCreatorController creatorController => context.creatorController;
+    internal IBIWModeController modeController => context.modeController;
+    internal IBIWFloorHandler floorHandler => context.floorHandler;
+    internal IBIWEntityHandler entityHandler => context.entityHandler;
+    internal IBIWActionController actionController => context.actionController;
+    internal IBIWSaveController saveController => context.saveController;
+    internal IBIWInputWrapper inputWrapper => context.inputWrapper;
+    internal IBIWRaycastController raycastController => context.raycastController;
+    internal IBIWGizmosController gizmosController => context.gizmosController;
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
@@ -114,7 +114,6 @@ public class BuilderInWorld : PluginFeature
 
         BIWCatalogManager.Init();
 
-        CreateControllers();
         InitReferences(InitialSceneReferences.i.data);
 
         if (builderInWorldBridge != null)
@@ -161,22 +160,6 @@ public class BuilderInWorld : PluginFeature
 
         groundVisualsGO = grounds.ToArray();
         skyBoxMaterial = context.projectReferencesAsset.skyBoxMaterial;
-    }
-
-    private void CreateControllers()
-    {
-        outlinerController = new BIWOutlinerController();
-        inputHandler = new BIWInputHandler();
-        publishController = new BIWPublishController();
-        creatorController = new BIWCreatorController();
-        modeController = new BIWModeController();
-        floorHandler = new BIWFloorHandler();
-        entityHandler = new BIWEntityHandler();
-        actionController = new BIWActionController();
-        saveController = new BIWSaveController();
-        inputWrapper = new BIWInputWrapper();
-        raycastController = new BIWRaycastController();
-        gizmosController = new BIWGizmosController();
     }
 
     private void InitBuilderProjectPanel()
@@ -407,10 +390,10 @@ public class BuilderInWorld : PluginFeature
         if (camera != null)
         {
             BIWOutline outliner = camera.GetComponent<BIWOutline>();
-            GameObject.Destroy(outliner);
+            UnityEngine.Object.Destroy(outliner);
         }
 
-        floorHandler?.Clean();
+        floorHandler?.CleanUp();
         creatorController?.CleanUp();
     }
 

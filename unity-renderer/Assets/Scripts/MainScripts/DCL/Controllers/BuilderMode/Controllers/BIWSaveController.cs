@@ -3,19 +3,20 @@ using DCL;
 using DCL.Controllers;
 using UnityEngine;
 
-public interface IBIWSaveController : IDisposable
+public interface IBIWSaveController : IBIWController
 {
     int GetSaveTimes();
     void SetSaveActivation(bool isActive, bool tryToSave = false);
     void TryToSave();
     void ForceSave();
+    int numberOfSaves { get; set; }
 }
 
 public class BIWSaveController : BIWController, IBIWSaveController
 {
     private const float MS_BETWEEN_SAVES = 5000f;
 
-    internal int numberOfSaves { get; set; } = 0;
+    public int numberOfSaves { get; set; } = 0;
 
     private BuilderInWorldBridge bridge;
 

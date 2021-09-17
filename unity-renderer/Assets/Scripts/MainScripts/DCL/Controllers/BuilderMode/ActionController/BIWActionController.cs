@@ -8,7 +8,7 @@ using DCL.Controllers;
 using UnityEngine;
 using static BIWCompleteAction;
 
-public interface IBIWActionController : IDisposable
+public interface IBIWActionController : IBIWController
 {
     event System.Action OnRedo;
     event System.Action OnUndo;
@@ -18,6 +18,7 @@ public interface IBIWActionController : IDisposable
     void CreateActionEntityDeleted(List<BIWEntity> entityList);
     void CreateActionEntityDeleted(BIWEntity entity);
     void CreateActionEntityCreated(IDCLEntity entity);
+    void Clear();
 }
 
 public class BIWActionController : BIWController, IBIWActionController

@@ -8,9 +8,8 @@ using UnityEngine;
 
 namespace DCL
 {
-    public interface IBIWCreatorController : IDisposable
+    public interface IBIWCreatorController : IBIWController
     {
-        void EnterEditMode(IParcelScene scene);
         event Action OnCatalogItemPlaced;
         event Action OnInputDone;
         void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false);
@@ -19,6 +18,7 @@ namespace DCL
         void RemoveLoadingObjectInmediate(string entityId);
         bool IsAnyErrorOnEntities();
         void CreateLoadingObject(BIWEntity entity);
+        void CleanUp();
     }
 
     public class BIWCreatorController : BIWController, IBIWCreatorController
@@ -51,7 +51,6 @@ namespace DCL
             modeController = biwContext.modeController;
             floorHandler = biwContext.floorHandler;
             entityHandler = biwContext.entityHandler;
-
             loadingObjectPrefab = biwContext.projectReferencesAsset.loadingPrefab;
             errorPrefab = biwContext.projectReferencesAsset.errorPrefab;
 

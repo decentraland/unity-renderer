@@ -5,7 +5,7 @@ using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public interface IBIWInputWrapper : IDisposable
+public interface IBIWInputWrapper : IBIWController
 {
     public void StopInput();
 

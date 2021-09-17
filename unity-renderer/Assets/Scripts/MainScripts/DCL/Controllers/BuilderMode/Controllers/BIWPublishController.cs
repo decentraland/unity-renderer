@@ -2,7 +2,7 @@ using System;
 using DCL;
 using UnityEngine;
 
-public interface IBIWPublishController : IDisposable
+public interface IBIWPublishController : IBIWController
 {
 }
 
