@@ -2320,6 +2320,10 @@ namespace UnityGLTF
             for (int i = 0; i < 2; i++)
             {
                 string materialCRC = material[i].ComputeCRC().ToString();
+                if (def.Name.Contains("Hair"))
+                    materialCRC += "Hair";
+                else if (def.Name.Contains("Skin"))
+                    materialCRC += "Skin";
 
                 if (!addMaterialsToPersistentCaching)
                 {
