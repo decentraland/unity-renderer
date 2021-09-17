@@ -1,7 +1,10 @@
 using DCL;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using DCL.Interface;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class TaskbarMoreMenu : MonoBehaviour
 {
@@ -24,6 +27,7 @@ public class TaskbarMoreMenu : MonoBehaviour
     [SerializeField] internal TaskbarMoreMenuButton tutorialButton;
     [SerializeField] internal TaskbarMoreMenuButton dayModeButton;
     [SerializeField] internal TaskbarMoreMenuButton nightModeButton;
+    [SerializeField] internal TaskbarMoreMenuButton reportBugButton;
 
     private TaskbarHUDView view;
     protected internal List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
@@ -43,6 +47,7 @@ public class TaskbarMoreMenu : MonoBehaviour
         controlsButton.gameObject.SetActive(false);
         helpAndSupportButton.gameObject.SetActive(false);
         tutorialButton.gameObject.SetActive(true);
+        reportBugButton.gameObject.SetActive(true);
 
         SortButtonsAnimations();
 
@@ -63,9 +68,9 @@ public class TaskbarMoreMenu : MonoBehaviour
             view.moreButton.SetToggleState(false);
         });
 
-        collapseBarButton.mainButton.onClick.AddListener(() => { ToggleCollapseBar(); });
+        collapseBarButton.mainButton.onClick.AddListener(ToggleCollapseBar);
 
-        hideUIButton.mainButton.onClick.AddListener(() => { ToggleHideUI(); });
+        hideUIButton.mainButton.onClick.AddListener(ToggleHideUI);
 
         tutorialButton.mainButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
     }
@@ -73,6 +78,7 @@ public class TaskbarMoreMenu : MonoBehaviour
     protected void SortButtonsAnimations()
     {
         sortedButtonsAnimations.Add(helpAndSupportButton);
+        sortedButtonsAnimations.Add(reportBugButton);
         sortedButtonsAnimations.Add(controlsButton);
         sortedButtonsAnimations.Add(hideUIButton);
         sortedButtonsAnimations.Add(nightModeButton);

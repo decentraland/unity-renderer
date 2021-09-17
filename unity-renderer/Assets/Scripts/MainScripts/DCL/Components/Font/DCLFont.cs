@@ -10,8 +10,24 @@ namespace DCL.Components
 {
     public class DCLFont : BaseDisposable
     {
-        const string RESOURCE_FONT_PREFIX = "builtin:";
         const string RESOURCE_FONT_FOLDER = "Fonts & Materials";
+
+        private const string DEFAULT_SANS_SERIF_HEAVY = "Inter-Heavy SDF";
+        private const string DEFAULT_SANS_SERIF_BOLD = "Inter-Bold SDF";
+        private const string DEFAULT_SANS_SERIF_SEMIBOLD = "Inter-SemiBold SDF";
+        private const string DEFAULT_SANS_SERIF = "Inter-Regular SDF";
+
+        private readonly Dictionary<string, string> fontsMapping = new Dictionary<string, string>()
+        {
+            { "builtin:SF-UI-Text-Regular SDF", DEFAULT_SANS_SERIF },
+            { "builtin:SF-UI-Text-Heavy SDF", DEFAULT_SANS_SERIF_HEAVY },
+            { "builtin:SF-UI-Text-Semibold SDF", DEFAULT_SANS_SERIF_SEMIBOLD },
+            { "builtin:LiberationSans SDF", "LiberationSans SDF" },
+            { "SansSerif", DEFAULT_SANS_SERIF },
+            { "SansSerif_Heavy", DEFAULT_SANS_SERIF_HEAVY },
+            { "SansSerif_Bold", DEFAULT_SANS_SERIF_BOLD },
+            { "SansSerif_SemiBold", DEFAULT_SANS_SERIF_SEMIBOLD },
+        };
 
         [System.Serializable]
         public class Model : BaseModel
@@ -88,11 +104,11 @@ namespace DCL.Components
                 yield break;
             }
 
-            if (model.src.StartsWith(RESOURCE_FONT_PREFIX))
+            if (fontsMapping.TryGetValue(model.src, out string fontResourceName))
             {
-                string resourceName = model.src.Substring(RESOURCE_FONT_PREFIX.Length);
-
-                ResourceRequest request = Resources.LoadAsync(string.Format("{0}/{1}", RESOURCE_FONT_FOLDER, resourceName), typeof(TMP_FontAsset));
+                ResourceRequest request = Resources.LoadAsync($"{RESOURCE_FONT_FOLDER}/{fontResourceName}", 
+                    typeof(TMP_FontAsset));
+                
                 yield return request;
 
                 if (request.asset != null)
@@ -101,7 +117,7 @@ namespace DCL.Components
                 }
                 else
                 {
-                    Debug.Log($"couldn't fetch font from resources {resourceName}");
+                    Debug.Log($"couldn't fetch font from resources {fontResourceName}");
                 }
 
                 loaded = true;
