@@ -1,5 +1,6 @@
 using System;
 using DCL.Helpers;
+using UnityEngine;
 using UnityGLTF;
 
 namespace DCL
@@ -105,12 +106,9 @@ namespace DCL
 
         protected override bool AddToLibrary()
         {
-            if (!library.Contains(asset.id))
-            {
-                if (!library.Add(asset))
-                    return false;
-            }
-
+            if (!library.Add(asset))
+                return false;
+            
             //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
             //             So it keeps being there. As master gltfs can't be in the world.
             //
@@ -166,7 +164,7 @@ namespace DCL
             
             asset.Hide();
             settings.parent = null;
-
+            
             if (gltfComponent != null)
             {
                 waitingAssetLoad = true;
@@ -183,13 +181,20 @@ namespace DCL
             }
         }
 
-        internal bool IsCancellable()
+        internal bool CanForget()
+        {
+            return gltfComponent == null;
+        }
+
+        internal bool CanCancel()
         {
             return gltfComponent != null && gltfComponent.IsInQueue() && !waitingAssetLoad;
         }
 
         internal void Cancel()
         {
+            asset.Hide();
+            settings.parent = null;
             gltfComponent.CancelIfQueued();
             Cleanup();
         }
@@ -199,24 +204,19 @@ namespace DCL
             asset = loadedAsset;
             waitingAssetLoad = false;
             
-            bool alreadyInLibrary = asset != null && library.Contains(asset);
             bool isSuccess = success && asset != null;
-
-            ClearEvents();
-
-            if (alreadyInLibrary)
+            
+            if (isSuccess)
             {
-                asset.Cleanup();
-                asset = null;
-            }
-            else if (isSuccess)
-            {
-                library.Add(asset);
+                AddToLibrary();
             }
 
             state = isSuccess ? AssetPromiseState.FINISHED : AssetPromiseState.IDLE_AND_EMPTY;
             
             CallAndClearEvents(isSuccess);
+            
+            asset?.Cleanup();
+            asset = null;
         }
     }
 }

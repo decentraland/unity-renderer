@@ -67,7 +67,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             var pool = PoolManager.i.GetPool(keeper.library.AssetIdToPoolId(promise1.GetId()));
             
-            Assert.AreEqual(1, pool.objectsCount);
+            Assert.AreEqual(2, pool.objectsCount);
             keeper.Cleanup();
         }
 

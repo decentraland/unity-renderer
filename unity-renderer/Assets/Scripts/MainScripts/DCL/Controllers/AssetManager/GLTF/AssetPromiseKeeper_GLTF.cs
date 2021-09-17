@@ -27,9 +27,14 @@ namespace DCL
 
                 promise.OnForget();
 
-                if (!isMasterPromise && promise.IsCancellable())
+                if (!isMasterPromise && promise.CanCancel())
                 {
                     promise.Cancel();
+                    return base.Forget(promise);
+                }
+
+                if (promise.CanForget())
+                {
                     return base.Forget(promise);
                 }
 
