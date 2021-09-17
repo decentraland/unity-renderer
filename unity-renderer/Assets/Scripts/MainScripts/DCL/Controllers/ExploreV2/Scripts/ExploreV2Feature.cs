@@ -22,7 +22,7 @@ public class ExploreV2Feature : PluginFeature
     {
         base.Dispose();
 
-        if (view != null)
+        if (view != null && view.go != null)
             GameObject.Destroy(view.go);
     }
 
