@@ -65,7 +65,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public bool isActive => gameObject.activeSelf;
 
-    public GameObject go => gameObject;
+    public GameObject go => this != null ? gameObject : null;
 
     public event Action OnCloseButtonPressed;
 
