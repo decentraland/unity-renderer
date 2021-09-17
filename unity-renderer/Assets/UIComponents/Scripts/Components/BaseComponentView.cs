@@ -73,4 +73,10 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     }
 
     private void OnDestroy() { Dispose(); }
+
+    internal static T Create<T>(string resourceName) where T : BaseComponentView
+    {
+        T buttonComponentView = Instantiate(Resources.Load<GameObject>(resourceName)).GetComponent<T>();
+        return buttonComponentView;
+    }
 }
