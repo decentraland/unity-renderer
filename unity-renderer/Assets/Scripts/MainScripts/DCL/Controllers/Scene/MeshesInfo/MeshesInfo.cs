@@ -7,11 +7,6 @@ using UnityEngine;
 
 namespace DCL.Models
 {
-    public static class RenderingGlobalEvents
-    {
-        public static Action<Mesh> OnWillUploadMeshToGPU = (x) => { };
-    }
-
     [Serializable]
     public class MeshesInfo
     {

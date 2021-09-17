@@ -10,6 +10,7 @@ namespace DCL
     {
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         protected string assetDirectoryPath;
+        public event System.Action<Mesh> OnWillUploadMeshToGPU;
 
         protected ContentProvider provider = null;
         public string fileName { get; private set; }

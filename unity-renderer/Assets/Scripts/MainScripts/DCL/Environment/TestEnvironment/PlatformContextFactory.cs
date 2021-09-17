@@ -18,9 +18,10 @@ namespace DCL.Tests
             IServiceProviders serviceProviders = Substitute.For<IServiceProviders>();
             IIdleChecker idleChecker = Substitute.For<IIdleChecker>();
             IAvatarsLODController avatarsLODController = Substitute.For<IAvatarsLODController>();
+            IGlobalAssetEvents globalAssetEvents = Substitute.For<IGlobalAssetEvents>();
             IFeatureFlagController featureFlagController = Substitute.For<IFeatureFlagController>();
 
-            foreach ( var mock in mocks)
+            foreach (var mock in mocks)
             {
                 switch ( mock )
                 {
@@ -51,13 +52,17 @@ namespace DCL.Tests
                     case IAvatarsLODController alodc:
                         avatarsLODController = alodc;
                         break;
+                    case IGlobalAssetEvents g:
+                        globalAssetEvents = g;
+                        break;
                     case IFeatureFlagController iffc:
                         featureFlagController = iffc;
                         break;
                 }
             }
 
-            return new PlatformContext(memoryManager,
+            return new PlatformContext(
+                memoryManager,
                 cullingController,
                 clipboard,
                 physicsSyncController,
@@ -66,7 +71,8 @@ namespace DCL.Tests
                 serviceProviders,
                 idleChecker,
                 avatarsLODController,
-                featureFlagController);
+                featureFlagController,
+                globalAssetEvents);
         }
 
         public static PlatformContext CreateWithCustomMocks(
@@ -79,7 +85,8 @@ namespace DCL.Tests
             IServiceProviders serviceProviders = null,
             IIdleChecker idleChecker = null,
             IAvatarsLODController avatarsLODController = null,
-            IFeatureFlagController featureFlagController = null)
+            IFeatureFlagController featureFlagController = null,
+            IGlobalAssetEvents globalAssetEvents = null)
         {
             return new PlatformContext(
                 memoryManager: memoryManager ?? Substitute.For<IMemoryManager>(),
@@ -91,7 +98,8 @@ namespace DCL.Tests
                 serviceProviders: serviceProviders ?? GetServiceProvidersMock(),
                 idleChecker: idleChecker ?? Substitute.For<IIdleChecker>(),
                 avatarsLODController: avatarsLODController ?? Substitute.For<IAvatarsLODController>(),
-                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>());
+                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>(),
+                globalAssetEvents: globalAssetEvents ?? Substitute.For<IGlobalAssetEvents>());
         }
 
         private static IWebRequestController GetWebRequestControllerMock()

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -79,8 +78,8 @@ namespace DCL.Components
             this.bundlesContentUrl = bundlesContentUrl;
         }
 
-        public event Action<GameObject> OnSuccessEvent;
-        public event Action OnFailEvent;
+        public event System.Action<GameObject> OnSuccessEvent;
+        public event System.Action OnFailEvent;
 
         public void Load(string targetUrl)
         {
@@ -104,16 +103,33 @@ namespace DCL.Components
 
         public void Unload()
         {
-            AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
-            AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
+            UnloadAB();
+            UnloadGLTF();
         }
 
-        void LoadAssetBundle(string targetUrl, Action<GameObject> OnSuccess, Action OnFail)
+        void UnloadAB()
+        {
+            if ( abPromise != null )
+            {
+                abPromise.OnWillUploadMeshToGPU -= RaiseOnWillUploadMeshToGPU;
+                AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
+            }
+        }
+
+        void UnloadGLTF()
+        {
+            if ( gltfPromise != null )
+            {
+                gltfPromise.OnWillUploadMeshToGPU -= RaiseOnWillUploadMeshToGPU;
+                AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+            }
+        }
+
+        void LoadAssetBundle(string targetUrl, System.Action<GameObject> OnSuccess, System.Action OnFail)
         {
             if (abPromise != null)
             {
-                AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
-
+                UnloadAB();
                 if (VERBOSE)
                     Debug.Log("Forgetting not null promise..." + targetUrl);
             }
@@ -133,6 +149,7 @@ namespace DCL.Components
             }
 
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
+            abPromise.OnWillUploadMeshToGPU += RaiseOnWillUploadMeshToGPU;
             abPromise.settings = this.settings;
 
             abPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
@@ -141,11 +158,16 @@ namespace DCL.Components
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
-        void LoadGltf(string targetUrl, Action<GameObject> OnSuccess, Action OnFail)
+        private void RaiseOnWillUploadMeshToGPU(Mesh mesh)
+        {
+            DCL.Environment.i.platform.globalAssetEvents.RaiseWillUploadMeshToGPU(mesh);
+        }
+
+        void LoadGltf(string targetUrl, System.Action<GameObject> OnSuccess, System.Action OnFail)
         {
             if (gltfPromise != null)
             {
-                AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+                UnloadGLTF();
 
                 if (VERBOSE)
                     Debug.Log("Forgetting not null promise... " + targetUrl);
@@ -158,6 +180,7 @@ namespace DCL.Components
             }
 
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
+            gltfPromise.OnWillUploadMeshToGPU += RaiseOnWillUploadMeshToGPU;
             gltfPromise.settings = this.settings;
 
             gltfPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
@@ -166,7 +189,7 @@ namespace DCL.Components
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
 
-        private void OnFailWrapper(Asset_WithPoolableContainer loadedAsset, Action OnFail)
+        private void OnFailWrapper(Asset_WithPoolableContainer loadedAsset, System.Action OnFail)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
@@ -177,7 +200,7 @@ namespace DCL.Components
             ClearEvents();
         }
 
-        private void OnSuccessWrapper(Asset_WithPoolableContainer loadedAsset, Action<GameObject> OnSuccess)
+        private void OnSuccessWrapper(Asset_WithPoolableContainer loadedAsset, System.Action<GameObject> OnSuccess)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;

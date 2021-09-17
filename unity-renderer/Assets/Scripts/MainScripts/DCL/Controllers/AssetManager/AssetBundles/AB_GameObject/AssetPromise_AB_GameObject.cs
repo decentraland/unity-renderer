@@ -13,6 +13,7 @@ namespace DCL
     public class AssetPromise_AB_GameObject : AssetPromise_WithUrl<Asset_AB_GameObject>
     {
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
+        public event System.Action<Mesh> OnWillUploadMeshToGPU;
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
 
@@ -166,7 +167,7 @@ namespace DCL
             }
         }
 
-        private static void UploadMeshesToGPU(List<Mesh> meshesList)
+        private void UploadMeshesToGPU(List<Mesh> meshesList)
         {
             foreach ( Mesh m in meshesList )
             {
@@ -174,7 +175,7 @@ namespace DCL
                     continue;
 
                 Physics.BakeMesh(m.GetInstanceID(), false);
-                RenderingGlobalEvents.OnWillUploadMeshToGPU.Invoke(m);
+                OnWillUploadMeshToGPU?.Invoke(m);
                 m.UploadMeshData(true);
             }
         }

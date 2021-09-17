@@ -16,7 +16,8 @@ namespace DCL
                 serviceProviders: new ServiceProviders(),
                 idleChecker: new IdleChecker(),
                 avatarsLODController: new AvatarsLODController(),
-                featureFlagController: new FeatureFlagController());
+                featureFlagController: new FeatureFlagController(),
+                globalAssetEvents: new GlobalAssetEvents());
         }
     }
 }
