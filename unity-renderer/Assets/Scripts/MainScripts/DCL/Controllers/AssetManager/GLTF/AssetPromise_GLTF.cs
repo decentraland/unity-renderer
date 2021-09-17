@@ -154,30 +154,6 @@ namespace DCL
             if (waitingAssetLoad)
                 return;
 
-            settings.parent = null;
-
-            // NOTE: if Unload is called before finish loading we wait until gltf is loaded or failed before unloading it
-            if (state == AssetPromiseState.LOADING && gltfComponent != null)
-            {
-                waitingAssetLoad = true;
-
-                state = AssetPromiseState.IDLE_AND_EMPTY;
-
-                var pendingAsset = asset;
-                asset.Hide();
-                asset = null;
-
-                gltfComponent.OnSuccess -= OnSuccess;
-                gltfComponent.OnFail -= OnFail;
-
-                gltfComponent.OnSuccess += () => OnLoadedAfterForget(true, pendingAsset);
-                gltfComponent.OnFail += () => OnLoadedAfterForget(false, pendingAsset);
-
-                gltfComponent.CancelIfQueued();
-
-                return;
-            }
-
             base.Unload();
         }
 
@@ -185,19 +161,46 @@ namespace DCL
         // other promises are waiting for them
         internal void OnSilentForget()
         {
+            if (waitingAssetLoad)
+                return;
+            
             asset.Hide();
+            settings.parent = null;
 
             if (gltfComponent != null)
             {
+                waitingAssetLoad = true;
                 gltfComponent.SetPrioritized();
+                
+                var pendingAsset = asset;
+                asset = null;
+
+                gltfComponent.OnSuccess -= OnSuccess;
+                gltfComponent.OnFail -= OnFail;
+
+                gltfComponent.OnSuccess += () => OnLoadedAfterForget(true, pendingAsset);
+                gltfComponent.OnFail += () => OnLoadedAfterForget(false, pendingAsset);                
             }
+        }
+
+        internal bool IsCancellable()
+        {
+            return gltfComponent != null && gltfComponent.IsInQueue() && !waitingAssetLoad;
+        }
+
+        internal void Cancel()
+        {
+            gltfComponent.CancelIfQueued();
+            Cleanup();
         }
 
         private void OnLoadedAfterForget(bool success, Asset_GLTF loadedAsset)
         {
             asset = loadedAsset;
             waitingAssetLoad = false;
+            
             bool alreadyInLibrary = asset != null && library.Contains(asset);
+            bool isSuccess = success && asset != null;
 
             ClearEvents();
 
@@ -205,14 +208,15 @@ namespace DCL
             {
                 asset.Cleanup();
                 asset = null;
-                return;
             }
-            
-            if (success && asset != null)
+            else if (isSuccess)
             {
                 library.Add(asset);
-                CallAndClearEvents();
             }
+
+            state = isSuccess ? AssetPromiseState.FINISHED : AssetPromiseState.IDLE_AND_EMPTY;
+            
+            CallAndClearEvents(isSuccess);
         }
     }
 }

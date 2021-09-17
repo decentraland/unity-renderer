@@ -37,7 +37,7 @@ namespace DCL
         HashSet<AssetPromiseType> blockedPromises = new HashSet<AssetPromiseType>();
 
         //NOTE(Brian): Master promise id -> blocked promises HashSet
-        Dictionary<object, HashSet<AssetPromiseType>> masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>(100);
+        protected Dictionary<object, HashSet<AssetPromiseType>> masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>(100);
 
         public bool useTimeBudget => CommonScriptableObjects.rendererState.Get();
 
@@ -111,7 +111,7 @@ namespace DCL
             return promise;
         }
 
-        public AssetPromiseType Forget(AssetPromiseType promise)
+        public virtual AssetPromiseType Forget(AssetPromiseType promise)
         {
             if (promise == null)
                 return null;
