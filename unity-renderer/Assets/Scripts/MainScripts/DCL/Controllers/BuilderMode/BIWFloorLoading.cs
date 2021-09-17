@@ -12,10 +12,17 @@ public class BIWFloorLoading : MonoBehaviour
 
     private void LateUpdate()
     {
-        transform.LookAt(transform.position + builderCamera.transform.rotation * Vector3.forward,
-            builderCamera.transform.rotation * Vector3.up);
+        if ( builderCamera == null )
+            return;
 
-        float dist = GetCameraPlaneDistance(builderCamera, transform.position);
+        Transform cameraTransform = builderCamera.transform;
+        Quaternion cameraRotation = cameraTransform.rotation;
+        Vector3 position = transform.position;
+
+        transform.LookAt(position + cameraRotation * Vector3.forward,
+            cameraRotation * Vector3.up);
+
+        float dist = GetCameraPlaneDistance(builderCamera, position);
         transform.localScale = new Vector3(RELATIVE_SCALE_RATIO * dist, RELATIVE_SCALE_RATIO * dist, RELATIVE_SCALE_RATIO * dist);
     }
 
@@ -24,5 +31,4 @@ public class BIWFloorLoading : MonoBehaviour
         Plane plane = new Plane(camera.transform.forward, camera.transform.position);
         return plane.GetDistanceToPoint(objectPosition);
     }
-
 }

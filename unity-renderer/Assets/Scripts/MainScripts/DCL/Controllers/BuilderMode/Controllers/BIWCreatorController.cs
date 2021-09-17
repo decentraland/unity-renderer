@@ -163,7 +163,7 @@ namespace DCL
             if (errorGameObjects.ContainsKey(entity))
                 return;
 
-            GameObject instantiatedError = GameObject.Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
+            GameObject instantiatedError = UnityEngine.Object.Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
             instantiatedError.transform.SetParent(entity.rootEntity.gameObject.transform, true);
             instantiatedError.transform.localPosition = Vector3.zero;
 
@@ -206,10 +206,9 @@ namespace DCL
                 CreateLoadingObject(entity);
 
             entity.rootEntity.OnShapeUpdated += (entity) => onFloorLoadedAction?.Invoke(entity);
+
             AddShape(catalogItem, entity);
-
             AddEntityNameComponent(catalogItem, entity);
-
             AddLockedComponent(entity);
 
             if (catalogItem.IsSmartItem())
@@ -248,7 +247,7 @@ namespace DCL
             if (loadingGameObjects.ContainsKey(entity.rootEntity.entityId))
                 return;
 
-            BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.rootEntity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
+            BIWLoadingPlaceHolder loadingPlaceHolder = UnityEngine.Object.Instantiate(loadingObjectPrefab, entity.rootEntity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
             loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
             entity.OnShapeFinishLoading += OnShapeLoadFinish;
         }

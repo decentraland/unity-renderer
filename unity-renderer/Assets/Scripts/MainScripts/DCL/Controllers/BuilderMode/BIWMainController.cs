@@ -136,7 +136,7 @@ public class BIWMainController : PluginFeature
         groundVisualsGO = grounds.ToArray();
 
         context = new BIWContext();
-        context.Init(
+        context.Initialize(
             outlinerController,
             inputHandler,
             inputWrapper,

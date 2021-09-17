@@ -32,7 +32,7 @@ public class BIWContext
     public InitialSceneReferences sceneReferences { get; private set; }
 
 
-    public void Init(IBIWOutlinerController outlinerController,
+    public void Initialize(IBIWOutlinerController outlinerController,
         IBIWInputHandler inputHandler,
         IBIWInputWrapper inputWrapper,
         IBIWPublishController publishController,

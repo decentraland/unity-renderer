@@ -120,7 +120,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         foreach (Vector2Int parcel in parcelsPoints)
         {
-            BIWEntity decentralandEntity = creatorController.CreateCatalogItem(
+            BIWEntity entity = creatorController.CreateCatalogItem(
                 floorSceneObject,
                 WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel),
                 false,
@@ -128,12 +128,12 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
                 OnFloorLoaded);
 
             // It may happen that when you get here, the floor entity is already loaded and it wouldn't be necessary to show its loading indicator.
-            if (!loadedFloorEntities.Contains(decentralandEntity.rootEntity.entityId))
+            if (!loadedFloorEntities.Contains(entity.rootEntity.entityId))
             {
-                GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
+                GameObject floorPlaceHolder = UnityEngine.Object.Instantiate(floorPrefab, entity.rootEntity.gameObject.transform.position, Quaternion.identity);
                 floorPlaceHolder.GetComponentInChildren<BIWFloorLoading>().Initialize(mainCamera);
-                floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
-                decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
+                floorPlaceHolderDict.Add(entity.rootEntity.entityId, floorPlaceHolder);
+                entity.OnShapeFinishLoading += RemovePlaceHolder;
             }
         }
 
@@ -165,14 +165,14 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         GameObject floorPlaceHolder = floorPlaceHolderDict[entityId];
         floorPlaceHolderDict.Remove(entityId);
-        GameObject.Destroy(floorPlaceHolder);
+        UnityEngine.Object.Destroy(floorPlaceHolder);
     }
 
     private void RemoveAllPlaceHolders()
     {
         foreach (GameObject gameObject in floorPlaceHolderDict.Values)
         {
-            GameObject.Destroy(gameObject);
+            UnityEngine.Object.Destroy(gameObject);
         }
 
         floorPlaceHolderDict.Clear();

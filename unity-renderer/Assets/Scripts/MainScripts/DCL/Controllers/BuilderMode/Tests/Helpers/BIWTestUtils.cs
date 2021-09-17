@@ -14,7 +14,7 @@ public static class BIWTestUtils
     public static BIWContext CreateMockedContext()
     {
         BIWContext context = new BIWContext();
-        context.Init(
+        context.Initialize(
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
             Substitute.For<IBIWInputWrapper>(),
@@ -95,7 +95,7 @@ public static class BIWTestUtils
         }
 
         BIWContext context = new BIWContext();
-        context.Init(
+        context.Initialize(
             outliner,
             inputHandler,
             inputWrapper,
