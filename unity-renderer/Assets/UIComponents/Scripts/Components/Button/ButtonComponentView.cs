@@ -31,12 +31,12 @@ public interface IButtonComponentView
 public class ButtonComponentView : BaseComponentView, IButtonComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] private Button button;
-    [SerializeField] private TMP_Text text;
-    [SerializeField] private Image icon;
+    [SerializeField] internal Button button;
+    [SerializeField] internal TMP_Text text;
+    [SerializeField] internal Image icon;
 
     [Header("Configuration")]
-    [SerializeField] protected ButtonComponentModel model;
+    [SerializeField] internal ButtonComponentModel model;
 
     public Button.ButtonClickedEvent onClick
     {
@@ -101,5 +101,13 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         icon.enabled = newIcon != null;
         icon.sprite = newIcon;
+    }
+
+    internal static ButtonComponentView Create()
+    {
+        ButtonComponentView buttonComponentView = Instantiate(Resources.Load<GameObject>("Button_Common")).GetComponent<ButtonComponentView>();
+        buttonComponentView.name = "_ButtonComponent";
+
+        return buttonComponentView;
     }
 }

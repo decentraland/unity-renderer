@@ -48,7 +48,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public event Action OnInitialized;
     public bool isInitialized { get; private set; }
 
-    private ShowHideAnimator showHideAnimator;
+    internal ShowHideAnimator showHideAnimator;
 
     public virtual void Initialize()
     {
