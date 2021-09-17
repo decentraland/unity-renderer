@@ -18,29 +18,14 @@ using Environment = DCL.Environment;
 public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 {
     private BuilderInWorld mainController;
-    private BIWContext context;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        var biwCreatorController = new BIWCreatorController();
-        var floorHandler = new BIWFloorHandler();
-        var entityHandler = new BIWEntityHandler();
-
-        context = BIWTestUtils.CreateContextWithGenericMocks(
-            InitialSceneReferences.i.data,
-            biwCreatorController,
-            floorHandler,
-            entityHandler);
-
-        mainController = new BuilderInWorld(context);
+        mainController = new BuilderInWorld();
         BuilderInWorld.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize();
-
-        biwCreatorController.EnterEditMode(scene);
-        floorHandler.EnterEditMode(scene);
-        entityHandler.EnterEditMode(scene);
     }
 
     [Test]
@@ -89,7 +74,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         mainController.InitController(controller);
 
         // Assert
-        controller.Received(1).Initialize(context);
+        controller.Received(1).Initialize(mainController.context);
     }
 
     [Test]
@@ -417,6 +402,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
 
         mainController.sceneToEdit = scene;
+        mainController.EnterBiwControllers();
 
         // Act
         mainController.SetupNewScene();

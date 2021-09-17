@@ -15,7 +15,7 @@ public class BIWAudioShould : IntegrationTestSuite
         var context =  BIWTestUtils.CreateMockedContext();
         gameObjectToDestroy = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab);
         audioHandler = gameObjectToDestroy.GetComponent<BuilderInWorldAudioHandler>();
-        audioHandler.Init(context);
+        audioHandler.Initialize(context);
     }
 
     [Test]

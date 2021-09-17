@@ -35,7 +35,7 @@ public class BuilderInWorld : PluginFeature
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
-    private BIWContext context;
+    internal BIWContext context;
 
     private readonly List<IBIWController> controllers = new List<IBIWController>();
 
@@ -78,18 +78,18 @@ public class BuilderInWorld : PluginFeature
     {
         context = new BIWContext();
         context.Initialize(
-            outlinerController,
-            inputHandler,
-            inputWrapper,
-            publishController,
-            creatorController,
-            modeController,
-            floorHandler,
-            entityHandler,
-            actionController,
-            saveController,
-            raycastController,
-            gizmosController,
+            new BIWOutlinerController(),
+            new BIWInputHandler(),
+            new BIWInputWrapper(),
+            new BIWPublishController(),
+            new BIWCreatorController(),
+            new BIWModeController(),
+            new BIWFloorHandler(),
+            new BIWEntityHandler(),
+            new BIWActionController(),
+            new BIWSaveController(),
+            new BIWRaycastController(),
+            new BIWGizmosController(),
             InitialSceneReferences.i.data
         );
     }
@@ -141,7 +141,7 @@ public class BuilderInWorld : PluginFeature
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
         biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
-        biwAudioHandler.Init(context);
+        biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
 
