@@ -35,7 +35,7 @@ namespace SceneBoundariesCheckerTests
 
             TestHelpers.RemoveSceneEntity(scene, entity2.entityId);
 
-            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+            Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
 
             Assert.AreEqual(0, scene.entities.Count, "entity count should be zero");
             Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.entitiesToCheckCount, "entities to check should be zero!");
@@ -158,7 +158,7 @@ namespace SceneBoundariesCheckerTests
             nftInfo.previewImageUrl = localAsset;
 
             nftFetcher.When((x) => x.FetchNFTImage(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Action<NFTInfo>>(), Arg.Any<Action>()))
-                      .Do(info => info.Arg<Action<NFTInfo>>().Invoke(nftInfo));
+                .Do(info => info.Arg<Action<NFTInfo>>().Invoke(nftInfo));
 
             wrapperNFT.loaderController.LoadAsset(model.src, true);
         }

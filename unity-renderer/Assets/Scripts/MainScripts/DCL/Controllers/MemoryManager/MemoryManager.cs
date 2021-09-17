@@ -75,7 +75,7 @@ namespace DCL
 
             if ( immediate )
             {
-                PoolManager.i.CleanupAsync(unusedOnly, nonPersistentOnly, true);
+                PoolManager.i.Cleanup(unusedOnly, nonPersistentOnly);
             }
             else
             {

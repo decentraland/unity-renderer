@@ -119,9 +119,9 @@ public class IntegrationTestSuite_Legacy
                 DCLCharacterController.i.characterController.enabled = true;
         }
 
-        Environment.Dispose();
-
         TearDown_Memory();
+
+        Environment.Dispose();
 
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();

@@ -250,13 +250,12 @@ namespace DCL
             }
         }
 
-        public void Cleanup()
+        public void Cleanup( bool unusedOnly = false, bool nonPersistentOnly = false )
         {
             if (pools == null)
                 return;
 
-            // The immediate mode doesn't return a IEnumerator, so yield is not needed.
-            CleanupAsync( unusedOnly: false, nonPersistentOnly: false, immediate: true );
+            CleanupAsync( unusedOnly: unusedOnly, nonPersistentOnly: nonPersistentOnly, immediate: true ).MoveNext();
         }
 
         public void Dispose()

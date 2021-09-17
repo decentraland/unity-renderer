@@ -49,14 +49,14 @@ namespace DCL
 
         public void Initialize()
         {
-            Environment.i.platform.memoryManager.OnCriticalMemory += ForceCleanup;
+            Environment.i.platform.memoryManager.OnCriticalMemory += CleanMarkedEntities;
         }
 
         private void OnRendererStateChange(bool isEnable, bool prevState)
         {
             if (!isEnable)
             {
-                ForceCleanup();
+                CleanMarkedEntities();
                 Resources.UnloadUnusedAssets();
             }
         }
@@ -85,12 +85,25 @@ namespace DCL
 
         public void MarkDisposableComponentForCleanup(IParcelScene scene, string componentId) { disposableComponentsMarkedForCleanup.Enqueue(new MarkedSharedComponentInfo((ParcelScene)scene, componentId)); }
 
-        public void ForceCleanup()
+        public void CleanMarkedEntities()
         {
+            CleanMarkedEntitiesAsync(true).MoveNext();
+        }
+
+        public IEnumerator CleanMarkedEntitiesAsync(bool immediate = false)
+        {
+            float lastTime = Time.unscaledTime;
+
             while (disposableComponentsMarkedForCleanup.Count > 0)
             {
                 MarkedSharedComponentInfo markedSharedComponentInfo = disposableComponentsMarkedForCleanup.Dequeue();
                 markedSharedComponentInfo.scene.SharedComponentDispose(markedSharedComponentInfo.componentId);
+
+                if (DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET && !immediate)
+                {
+                    yield return null;
+                    lastTime = Time.unscaledTime;
+                }
             }
 
             HashSet<ParcelScene> scenesToRemove = new HashSet<ParcelScene>();
@@ -104,6 +117,12 @@ namespace DCL
 
                 if (!scenesToRemove.Contains(markedEntityInfo.scene))
                     scenesToRemove.Add(markedEntityInfo.scene);
+
+                if (!immediate && DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
+                {
+                    yield return null;
+                    lastTime = Time.unscaledTime;
+                }
             }
 
             while (entitiesMarkedForCleanup.Count > 0)
@@ -111,12 +130,24 @@ namespace DCL
                 IDCLEntity entity = entitiesMarkedForCleanup.Dequeue();
                 entity.SetParent(null);
                 entity.Cleanup();
+
+                if (!immediate && DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
+                {
+                    yield return null;
+                    lastTime = Time.unscaledTime;
+                }
             }
 
             foreach (var scene in scenesToRemove)
             {
                 if (scene != null && !Environment.i.world.state.loadedScenes.ContainsKey(scene.sceneData.id))
                     Object.Destroy(scene.gameObject);
+
+                if (!immediate && DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
+                {
+                    yield return null;
+                    lastTime = Time.unscaledTime;
+                }
             }
         }
 
@@ -124,79 +155,20 @@ namespace DCL
         {
             while (true)
             {
-                float lastTime = Time.unscaledTime;
-
-                while (disposableComponentsMarkedForCleanup.Count > 0)
-                {
-                    MarkedSharedComponentInfo markedSharedComponentInfo = disposableComponentsMarkedForCleanup.Dequeue();
-                    markedSharedComponentInfo.scene.SharedComponentDispose(markedSharedComponentInfo.componentId);
-
-                    if (DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
-                    {
-                        yield return null;
-                        lastTime = Time.unscaledTime;
-                    }
-                }
-
-                HashSet<ParcelScene> scenesToRemove = new HashSet<ParcelScene>();
-
-                // If we have root entities queued for removal, we call Parcel Scene's RemoveEntity()
-                // so that the child entities end up recursively in the entitiesMarkedForCleanup queue
-                while (rootEntitiesMarkedForCleanup.Count > 0)
-                {
-                    MarkedEntityInfo markedEntityInfo = rootEntitiesMarkedForCleanup.Dequeue();
-                    markedEntityInfo.scene.RemoveEntity(markedEntityInfo.entity.entityId, false);
-
-                    if (!scenesToRemove.Contains(markedEntityInfo.scene))
-                        scenesToRemove.Add(markedEntityInfo.scene);
-
-                    if (DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
-                    {
-                        yield return null;
-                        lastTime = Time.unscaledTime;
-                    }
-                }
-
-                while (entitiesMarkedForCleanup.Count > 0)
-                {
-                    IDCLEntity entity = entitiesMarkedForCleanup.Dequeue();
-                    entity.SetParent(null);
-                    entity.Cleanup();
-
-                    if (DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
-                    {
-                        yield return null;
-                        lastTime = Time.unscaledTime;
-                    }
-                }
-
-                foreach (var scene in scenesToRemove)
-                {
-                    if (scene != null && !Environment.i.world.state.loadedScenes.ContainsKey(scene.sceneData.id))
-                    {
-                        Object.Destroy(scene.gameObject);
-
-                        if (DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
-                        {
-                            yield return null;
-                            lastTime = Time.unscaledTime;
-                        }
-                    }
-                }
-
+                yield return CleanMarkedEntitiesAsync();
                 yield return null;
             }
         }
 
         public void Dispose()
         {
-            ForceCleanup();
+            CleanMarkedEntities();
 
             if (removeEntitiesCoroutine != null)
                 CoroutineStarter.Stop(removeEntitiesCoroutine);
 
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
-            Environment.i.platform.memoryManager.OnCriticalMemory -= ForceCleanup;
+            Environment.i.platform.memoryManager.OnCriticalMemory -= CleanMarkedEntities;
         }
     }
 }
