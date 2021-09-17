@@ -127,8 +127,10 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
                 true,
                 OnFloorLoaded);
 
+            string rootEntityId = entity.rootEntity.entityId;
+
             // It may happen that when you get here, the floor entity is already loaded and it wouldn't be necessary to show its loading indicator.
-            if (!loadedFloorEntities.Contains(entity.rootEntity.entityId))
+            if (!loadedFloorEntities.Contains(rootEntityId))
             {
                 GameObject floorPlaceHolder = UnityEngine.Object.Instantiate(floorPrefab, entity.rootEntity.gameObject.transform.position, Quaternion.identity);
                 floorPlaceHolder.GetComponentInChildren<BIWFloorLoading>().Initialize(mainCamera);

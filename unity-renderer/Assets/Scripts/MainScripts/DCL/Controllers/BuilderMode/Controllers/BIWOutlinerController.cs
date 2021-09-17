@@ -1,10 +1,11 @@
+using System;
 using DCL.Configuration;
 using DCL.Controllers;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public interface IBIWOutlinerController
+public interface IBIWOutlinerController : IDisposable
 {
     void OutlineEntity(BIWEntity entity);
     void CancelEntityOutline(BIWEntity entityToQuitOutline);

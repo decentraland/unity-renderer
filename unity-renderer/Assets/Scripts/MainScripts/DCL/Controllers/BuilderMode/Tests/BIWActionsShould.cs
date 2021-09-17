@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityGLTF;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
@@ -16,7 +18,9 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
+
         var biwActionController = new BIWActionController();
         var entityHandler = new BIWEntityHandler();
         var biwFloorHandler = new BIWFloorHandler();
@@ -123,7 +127,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
         BIWEntity biwEntity = new BIWEntity();
-        biwEntity.Init(scene.entities[ENTITY_ID], null);
+        biwEntity.Initialize(scene.entities[ENTITY_ID], null);
 
         context.actionController.CreateActionEntityDeleted(biwEntity);
         context.actionController.TryToUndoAction();
@@ -133,8 +137,8 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(scene.entities.ContainsKey(ENTITY_ID));
     }
 
-    [Test]
-    public void UndoRedoChangeFloorAction()
+    [UnityTest]
+    public IEnumerator UndoRedoChangeFloorAction()
     {
         BIWCatalogManager.Init();
 
@@ -144,14 +148,13 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
         BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
-        context.creatorController.EnterEditMode(scene);
-        context.floorHandler.EnterEditMode(scene);
-
         context.floorHandler.CreateFloor(oldFloor);
         context.floorHandler.ChangeFloor(newFloor);
 
         buildModeAction.CreateChangeFloorAction(oldFloor, newFloor);
         context.actionController.AddAction(buildModeAction);
+
+        yield return new WaitUntil( () => GLTFComponent.downloadingCount == 0 );
 
         foreach (BIWEntity entity in context.entityHandler.GetAllEntitiesFromCurrentScene())
         {
@@ -169,7 +172,6 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
             if (entity.isFloor)
             {
                 Assert.AreEqual(entity.GetCatalogItemAssociated().id, oldFloor.id);
-
                 break;
             }
         }
@@ -184,6 +186,8 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
                 break;
             }
         }
+
+        context.floorHandler.Dispose();
     }
 
     protected override IEnumerator TearDown()

@@ -8,6 +8,7 @@ using DCL.Models;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityGLTF;
 
 public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
 {
@@ -109,6 +110,8 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
+
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
         entityHandler.Dispose();

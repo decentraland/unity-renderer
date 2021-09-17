@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using NSubstitute;
 using UnityEngine;
 
 public class BIWContext
@@ -29,7 +30,7 @@ public class BIWContext
     public IBIWSaveController saveController { get; private set; }
     public IBIWRaycastController raycastController { get; private set; }
     public IBIWGizmosController gizmosController { get; private set; }
-    public InitialSceneReferences sceneReferences { get; private set; }
+    public InitialSceneReferences.Data sceneReferences { get; private set; }
 
 
     public void Initialize(IBIWOutlinerController outlinerController,
@@ -44,7 +45,7 @@ public class BIWContext
         IBIWSaveController saveController,
         IBIWRaycastController raycastController,
         IBIWGizmosController gizmosController,
-        InitialSceneReferences sceneReferences)
+        InitialSceneReferences.Data sceneReferences)
     {
         projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
         godModeDynamicVariablesAsset = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
@@ -68,10 +69,22 @@ public class BIWContext
 
     public void Dispose()
     {
+        outlinerController.Dispose();
+        inputHandler.Dispose();
+        inputWrapper.Dispose();
+        publishController.Dispose();
+        creatorController.Dispose();
+        modeController.Dispose();
+        floorHandler.Dispose();
+        entityHandler.Dispose();
+        actionController.Dispose();
+        saveController.Dispose();
+        raycastController.Dispose();
+        gizmosController.Dispose();
+
         projectReferencesAsset = null;
         godModeDynamicVariablesAsset = null;
         firstPersonDynamicVariablesAsset = null;
         inputsReferencesAsset = null;
-        UnityEngine.Object.Destroy(sceneReferences.gameObject);
     }
 }

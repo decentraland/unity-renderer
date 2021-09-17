@@ -5,7 +5,7 @@ using DCL;
 using DCL.Camera;
 using UnityEngine;
 
-public interface IBIWGizmosController
+public interface IBIWGizmosController : IDisposable
 {
     delegate void GizmoTransformDelegate(string gizmoType);
 
@@ -62,6 +62,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         raycastController.OnGizmosAxisPressed += OnGizmosAxisPressed;
         BIWInputWrapper.OnMouseUp += OnMouseUp;
         BIWInputWrapper.OnMouseDrag += OnMouseDrag;
+
         if (context.sceneReferences.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraMovement = (FreeCameraMovement)cameraState;
 
@@ -73,8 +74,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     public override void Dispose()
     {
         base.Dispose();
-        if (gizmosGO != null)
-            GameObject.Destroy(gizmosGO);
+        UnityEngine.Object.Destroy(gizmosGO);
         raycastController.OnGizmosAxisPressed -= OnGizmosAxisPressed;
         BIWInputWrapper.OnMouseUp -= OnMouseUp;
         BIWInputWrapper.OnMouseDrag -= OnMouseDrag;

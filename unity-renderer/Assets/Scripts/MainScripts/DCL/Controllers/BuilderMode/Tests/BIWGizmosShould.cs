@@ -27,7 +27,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
         gizmosAxis = mockedGameObject.AddComponent<BIWGizmosAxis>();
         gizmosAxis.SetGizmo(gizmo);
 
-        var referencesController = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i);
+        var referencesController = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
         gizmosController = new BIWGizmosController();
         gizmosController.Initialize(referencesController);
         gizmosController.EnterEditMode(scene);

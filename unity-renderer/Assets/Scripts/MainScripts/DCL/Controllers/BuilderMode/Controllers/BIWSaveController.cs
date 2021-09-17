@@ -1,8 +1,9 @@
+using System;
 using DCL;
 using DCL.Controllers;
 using UnityEngine;
 
-public interface IBIWSaveController
+public interface IBIWSaveController : IDisposable
 {
     int GetSaveTimes();
     void SetSaveActivation(bool isActive, bool tryToSave = false);

@@ -10,7 +10,7 @@ using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class BIWMainController : PluginFeature
+public class BuilderInWorld : PluginFeature
 {
     internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
     private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
@@ -74,6 +74,31 @@ public class BIWMainController : PluginFeature
     private bool alreadyAskedForLandPermissions = false;
     private Vector3 askPermissionLastPosition;
 
+    public BuilderInWorld()
+    {
+        context = new BIWContext();
+        context.Initialize(
+            outlinerController,
+            inputHandler,
+            inputWrapper,
+            publishController,
+            creatorController,
+            modeController,
+            floorHandler,
+            entityHandler,
+            actionController,
+            saveController,
+            raycastController,
+            gizmosController,
+            InitialSceneReferences.i.data
+        );
+    }
+
+    public BuilderInWorld (BIWContext context)
+    {
+        this.context = context;
+    }
+
     public override void Initialize()
     {
         base.Initialize();
@@ -90,7 +115,7 @@ public class BIWMainController : PluginFeature
         BIWCatalogManager.Init();
 
         CreateControllers();
-        InitReferences(InitialSceneReferences.i);
+        InitReferences(InitialSceneReferences.i.data);
 
         if (builderInWorldBridge != null)
         {
@@ -116,42 +141,25 @@ public class BIWMainController : PluginFeature
         editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
-        biwAudioHandler = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
+        biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Init(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    public void InitReferences(InitialSceneReferences initalReference)
+    public void InitReferences(InitialSceneReferences.Data sceneReferences)
     {
-        builderInWorldBridge = initalReference.builderInWorldBridge;
-        cursorGO = initalReference.cursorCanvas;
-        inputController = initalReference.inputController;
+        builderInWorldBridge = sceneReferences.builderInWorldBridge;
+        cursorGO = sceneReferences.cursorCanvas;
+        inputController = sceneReferences.inputController;
 
         List<GameObject> grounds = new List<GameObject>();
-        for (int i = 0; i < InitialSceneReferences.i.groundVisual.transform.transform.childCount; i++)
+
+        for (int i = 0; i < sceneReferences.groundVisual.transform.transform.childCount; i++)
         {
-            grounds.Add(InitialSceneReferences.i.groundVisual.transform.transform.GetChild(i).gameObject);
+            grounds.Add(sceneReferences.groundVisual.transform.transform.GetChild(i).gameObject);
         }
 
         groundVisualsGO = grounds.ToArray();
-
-        context = new BIWContext();
-        context.Initialize(
-            outlinerController,
-            inputHandler,
-            inputWrapper,
-            publishController,
-            creatorController,
-            modeController,
-            floorHandler,
-            entityHandler,
-            actionController,
-            saveController,
-            raycastController,
-            gizmosController,
-            InitialSceneReferences.i
-        );
-
         skyBoxMaterial = context.projectReferencesAsset.skyBoxMaterial;
     }
 
@@ -238,8 +246,9 @@ public class BIWMainController : PluginFeature
         editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
 
         biwAudioHandler.Dispose();
+
         if (biwAudioHandler.gameObject != null)
-            GameObject.Destroy(biwAudioHandler.gameObject);
+            UnityEngine.Object.Destroy(biwAudioHandler.gameObject);
 
         foreach (var controller in controllers)
         {

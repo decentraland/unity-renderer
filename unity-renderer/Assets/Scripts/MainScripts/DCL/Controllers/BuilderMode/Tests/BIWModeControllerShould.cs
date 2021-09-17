@@ -16,10 +16,11 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
         biwModeController = new BIWModeController();
 
         BIWActionController actionController = new BIWActionController();
+
         context = BIWTestUtils.CreateContextWithGenericMocks(
             actionController,
             biwModeController,
-            InitialSceneReferences.i
+            InitialSceneReferences.i.data
         );
 
         biwModeController.Initialize(context);

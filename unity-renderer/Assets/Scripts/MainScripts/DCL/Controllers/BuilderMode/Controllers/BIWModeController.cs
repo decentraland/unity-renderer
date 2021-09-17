@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
-public interface IBIWModeController
+public interface IBIWModeController : IDisposable
 {
     event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
     event Action OnInputDone;

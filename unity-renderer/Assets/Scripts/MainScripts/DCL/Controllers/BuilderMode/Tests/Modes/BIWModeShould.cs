@@ -68,7 +68,7 @@ public class BIWModeShould
         GameObject rootGameObject = new GameObject("Entity");
         rootEntity.Configure().gameObject.Returns(rootGameObject);
         selectedEntities.Add(entity);
-        entity.Init(rootEntity, null);
+        entity.Initialize(rootEntity, null);
 
         //Act
         mode.SelectedEntity(entity);

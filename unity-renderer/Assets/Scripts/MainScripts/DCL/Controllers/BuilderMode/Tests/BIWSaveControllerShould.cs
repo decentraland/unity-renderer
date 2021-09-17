@@ -8,6 +8,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 {
     public BIWSaveController biwSaveController;
     public BuilderInWorldBridge builderInWorldBridge;
+    public BIWContext context;
 
     private GameObject gameObject;
 
@@ -15,10 +16,11 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         gameObject = new GameObject();
-
         builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
+        context = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
+
         biwSaveController = new BIWSaveController();
-        biwSaveController.Initialize( BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i));
+        biwSaveController.Initialize(context);
         biwSaveController.EnterEditMode(scene);
     }
 
@@ -57,8 +59,8 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        if (gameObject != null)
-            Object.Destroy(gameObject);
+        context.Dispose();
+        Object.Destroy(gameObject);
         yield return base.TearDown();
     }
 }

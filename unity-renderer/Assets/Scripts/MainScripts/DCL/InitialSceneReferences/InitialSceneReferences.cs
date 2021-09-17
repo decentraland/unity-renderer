@@ -1,3 +1,4 @@
+using System.Data.Common;
 using DCL.Camera;
 using DCL.Helpers;
 using UnityEngine;
@@ -6,6 +7,38 @@ namespace DCL
 {
     public class InitialSceneReferences : MonoBehaviour
     {
+        public class Data
+        {
+            public MouseCatcher mouseCatcher;
+            public GameObject groundVisual;
+            public GameObject cameraParent;
+            public InputController inputController;
+            public GameObject cursorCanvas;
+            public BuilderInWorldBridge builderInWorldBridge;
+            public PlayerAvatarController playerAvatarController;
+            public CameraController cameraController;
+            public UnityEngine.Camera mainCamera;
+
+            public Data ()
+            {
+            }
+
+            public Data(InitialSceneReferences component)
+            {
+                cameraController = component.cameraControllerReference;
+                cameraParent = component.cameraParentReference;
+                cursorCanvas = component.cursorCanvasReference;
+                groundVisual = component.groundVisualReference;
+                inputController = component.inputControllerReference;
+                mainCamera = component.mainCameraReference;
+                builderInWorldBridge = component.builderInWorldBridgeReference;
+                playerAvatarController = component.playerAvatarControllerReference;
+                mouseCatcher = component.mouseCatcherReference;
+            }
+        }
+
+        public Data data;
+
         [SerializeField] private MouseCatcher mouseCatcherReference;
         [SerializeField] private GameObject groundVisualReference;
         [SerializeField] private GameObject cameraParentReference;
@@ -16,14 +49,14 @@ namespace DCL
         [SerializeField] private CameraController cameraControllerReference;
         [SerializeField] private UnityEngine.Camera mainCameraReference;
 
-        public GameObject groundVisual { get { return groundVisualReference; } }
-        public GameObject cameraParent { get { return cameraParentReference; } }
-        public GameObject cursorCanvas { get { return cursorCanvasReference; } }
-        public MouseCatcher mouseCatcher { get { return mouseCatcherReference; } }
-        public InputController inputController { get { return inputControllerReference; } }
-        public BuilderInWorldBridge builderInWorldBridge { get { return builderInWorldBridgeReference; } }
-        public PlayerAvatarController playerAvatarController { get { return playerAvatarControllerReference; } }
-        public CameraController cameraController { get { return cameraControllerReference; } }
+        public GameObject groundVisual => data.groundVisual;
+        public GameObject cameraParent => data.cameraParent;
+        public GameObject cursorCanvas => data.cursorCanvas;
+        public MouseCatcher mouseCatcher => data.mouseCatcher;
+        public InputController inputController => data.inputController;
+        public BuilderInWorldBridge builderInWorldBridge => data.builderInWorldBridge;
+        public PlayerAvatarController playerAvatarController => data.playerAvatarController;
+        public CameraController cameraController => data.cameraController;
         public UnityEngine.Camera mainCamera { get { return mainCameraReference; } }
 
         public static InitialSceneReferences i { get; private set; }
@@ -37,14 +70,9 @@ namespace DCL
             }
 
             i = this;
+            data = new Data(this);
         }
 
         void OnDestroy() { i = null; }
-
-        public static InitialSceneReferences Create()
-        {
-            var gameObject = new GameObject("_SceneReferences");
-            return gameObject.AddComponent<InitialSceneReferences>();
-        }
     }
 }

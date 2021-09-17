@@ -27,7 +27,7 @@ public static class BIWTestUtils
             Substitute.For<IBIWSaveController>(),
             Substitute.For<IBIWRaycastController>(),
             Substitute.For<IBIWGizmosController>(),
-            InitialSceneReferences.Create()
+            new InitialSceneReferences.Data()
         );
         return context;
     }
@@ -46,7 +46,7 @@ public static class BIWTestUtils
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
-        InitialSceneReferences sceneReferences = InitialSceneReferences.Create();
+        InitialSceneReferences.Data sceneReferences = new InitialSceneReferences.Data();
 
         foreach (var mock in mocks)
         {
@@ -88,7 +88,7 @@ public static class BIWTestUtils
                 case IBIWGizmosController gc:
                     gizmosController = gc;
                     break;
-                case InitialSceneReferences isr:
+                case InitialSceneReferences.Data isr:
                     sceneReferences = isr;
                     break;
             }

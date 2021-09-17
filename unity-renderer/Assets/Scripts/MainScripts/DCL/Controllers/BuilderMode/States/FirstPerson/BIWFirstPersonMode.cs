@@ -62,7 +62,8 @@ public class BIWFirstPersonMode : BIWMode
     public override void LateUpdate()
     {
         base.LateUpdate();
-        if (selectedEntities.Count == 0 || isMultiSelectionActive)
+
+        if (selectedEntities == null || selectedEntities.Count == 0 || isMultiSelectionActive)
             return;
 
         if (isSnapActiveValue)
@@ -120,6 +121,7 @@ public class BIWFirstPersonMode : BIWMode
             UndoSelection();
             return true;
         }
+
         return false;
     }
 
@@ -204,6 +206,7 @@ public class BIWFirstPersonMode : BIWMode
             snapObjectAlreadyMoved = false;
             snapGO.transform.SetParent(Camera.main.transform);
         }
+
         SetObjectIfSnapOrNot();
     }
 
@@ -298,7 +301,6 @@ public class BIWFirstPersonMode : BIWMode
                 if (freeMovementGO != null)
                     parentToAsign = freeMovementGO.transform;
             }
-
         }
         else
         {

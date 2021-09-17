@@ -670,33 +670,31 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     BIWEntity SetupEntityToEdit(IDCLEntity entity, bool hasBeenCreated = false)
     {
-        if (!convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
-        {
-            BIWEntity entityToEdit = new BIWEntity();
-            entityToEdit.Init(entity, editMaterial);
-            convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
-            entity.OnRemoved += RemoveConvertedEntity;
-            entityToEdit.isNew = hasBeenCreated;
-
-            string entityName = entityToEdit.GetDescriptiveName();
-            var catalogItem = entityToEdit.GetCatalogItemAssociated();
-
-            if ((string.IsNullOrEmpty(entityName) || entityNameList.Contains(entityName)) && catalogItem != null)
-            {
-                entityName = GetNewNameForEntity(catalogItem);
-                SetEntityName(entityToEdit, entityName);
-            }
-            else if (!string.IsNullOrEmpty(entityName) && !entityNameList.Contains(entityName))
-            {
-                entityNameList.Add(entityName);
-            }
-
-            return entityToEdit;
-        }
-        else
+        if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
         {
             return convertedEntities[GetConvertedUniqueKeyForEntity(entity)];
         }
+
+        BIWEntity entityToEdit = new BIWEntity();
+        entityToEdit.Initialize(entity, editMaterial);
+        convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
+        entity.OnRemoved += RemoveConvertedEntity;
+        entityToEdit.isNew = hasBeenCreated;
+
+        string entityName = entityToEdit.GetDescriptiveName();
+        var catalogItem = entityToEdit.GetCatalogItemAssociated();
+
+        if ((string.IsNullOrEmpty(entityName) || entityNameList.Contains(entityName)) && catalogItem != null)
+        {
+            entityName = GetNewNameForEntity(catalogItem);
+            SetEntityName(entityToEdit, entityName);
+        }
+        else if (!string.IsNullOrEmpty(entityName) && !entityNameList.Contains(entityName))
+        {
+            entityNameList.Add(entityName);
+        }
+
+        return entityToEdit;
     }
 
     internal void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)

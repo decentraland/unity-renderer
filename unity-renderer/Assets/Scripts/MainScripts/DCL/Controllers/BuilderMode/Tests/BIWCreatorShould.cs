@@ -8,6 +8,7 @@ using DCL.Models;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityGLTF;
 
 public class BIWCreatorShould : IntegrationTestSuite_Legacy
 {
@@ -112,17 +113,17 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     [Test]
     public void ErrorGameObjectCreation()
     {
-        //Arrange
+        // Arrange
         BIWCatalogManager.Init();
         BIWTestUtils.CreateTestCatalogLocalSingleObject();
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         biwCreatorController.CreateCatalogItem(item);
         BIWEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
 
-        //Act
+        // Act
         biwCreatorController.CreateErrorOnEntity(entity);
 
-        //Assert
+        // Assert
         Assert.IsTrue(biwCreatorController.IsAnyErrorOnEntities());
     }
 
@@ -145,7 +146,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void CatalogItemAddMapings()
+    public void CatalogItemAddMappings()
     {
         //Arrange
         BIWCatalogManager.Init();
@@ -178,6 +179,9 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
+        yield return null;
+
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
 

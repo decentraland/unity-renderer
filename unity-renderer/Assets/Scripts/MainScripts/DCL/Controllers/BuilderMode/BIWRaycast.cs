@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using UnityEngine;
 
-public interface IBIWRaycastController
+public interface IBIWRaycastController : IDisposable
 {
     event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
     bool RayCastFloor(out Vector3 position);

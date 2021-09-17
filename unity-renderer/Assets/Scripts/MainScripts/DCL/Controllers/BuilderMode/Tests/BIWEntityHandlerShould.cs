@@ -348,7 +348,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
-        newEntity.Init(entity.rootEntity, null);
+        newEntity.Initialize(entity.rootEntity, null);
         entityHandler.SelectEntity(newEntity);
 
         //Act
@@ -363,7 +363,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
-        newEntity.Init(entity.rootEntity, null);
+        newEntity.Initialize(entity.rootEntity, null);
         entityHandler.SelectEntity(newEntity);
         int selectedCount = entityHandler.GetCurrentSceneEntityCount();
 
@@ -379,7 +379,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
-        newEntity.Init(entity.rootEntity, null);
+        newEntity.Initialize(entity.rootEntity, null);
         int selectedCount = entityHandler.GetSelectedEntityList().Count;
 
         //Act
