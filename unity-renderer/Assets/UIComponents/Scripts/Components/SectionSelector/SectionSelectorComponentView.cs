@@ -33,10 +33,10 @@ public interface ISectionSelectorComponentView
 public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] private SectionToggle sectionToggleTemplate;
+    [SerializeField] internal SectionToggle sectionToggleTemplate;
 
     [Header("Configuration")]
-    [SerializeField] protected SectionSelectorComponentModel model;
+    [SerializeField] internal SectionSelectorComponentModel model;
 
     private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
