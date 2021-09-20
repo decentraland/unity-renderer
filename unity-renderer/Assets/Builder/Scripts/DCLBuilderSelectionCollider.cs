@@ -24,7 +24,6 @@ namespace Builder
             t.ResetLocalTRS();
 
             var meshCollider = gameObject.AddComponent<MeshCollider>();
-            meshCollider.cookingOptions = MeshColliderCookingOptions.None;
 
             if (renderer is SkinnedMeshRenderer)
             {
