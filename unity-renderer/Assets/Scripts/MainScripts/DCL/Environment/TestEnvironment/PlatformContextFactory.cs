@@ -18,7 +18,6 @@ namespace DCL.Tests
             IServiceProviders serviceProviders = Substitute.For<IServiceProviders>();
             IIdleChecker idleChecker = Substitute.For<IIdleChecker>();
             IAvatarsLODController avatarsLODController = Substitute.For<IAvatarsLODController>();
-            GlobalEvents globalEvents = Substitute.ForPartsOf<GlobalEvents>();
             IFeatureFlagController featureFlagController = Substitute.For<IFeatureFlagController>();
 
             foreach (var mock in mocks)
@@ -52,9 +51,6 @@ namespace DCL.Tests
                     case IAvatarsLODController alodc:
                         avatarsLODController = alodc;
                         break;
-                    case GlobalEvents g:
-                        globalEvents = g;
-                        break;
                     case IFeatureFlagController iffc:
                         featureFlagController = iffc;
                         break;
@@ -71,8 +67,7 @@ namespace DCL.Tests
                 serviceProviders,
                 idleChecker,
                 avatarsLODController,
-                featureFlagController,
-                globalEvents);
+                featureFlagController);
         }
 
         public static PlatformContext CreateWithCustomMocks(
@@ -85,8 +80,7 @@ namespace DCL.Tests
             IServiceProviders serviceProviders = null,
             IIdleChecker idleChecker = null,
             IAvatarsLODController avatarsLODController = null,
-            IFeatureFlagController featureFlagController = null,
-            GlobalEvents globalEvents = null)
+            IFeatureFlagController featureFlagController = null)
         {
             return new PlatformContext(
                 memoryManager: memoryManager ?? Substitute.For<IMemoryManager>(),
@@ -98,8 +92,7 @@ namespace DCL.Tests
                 serviceProviders: serviceProviders ?? GetServiceProvidersMock(),
                 idleChecker: idleChecker ?? Substitute.For<IIdleChecker>(),
                 avatarsLODController: avatarsLODController ?? Substitute.For<IAvatarsLODController>(),
-                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>(),
-                globalEvents: globalEvents ?? Substitute.ForPartsOf<GlobalEvents>());
+                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>() );,
         }
 
         private static IWebRequestController GetWebRequestControllerMock()

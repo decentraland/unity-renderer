@@ -3,6 +3,7 @@ using DCL.Interface;
 using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace DCL
 {
@@ -53,6 +54,20 @@ namespace DCL
 
         public bool isDirty { get; protected set; }
 
+        public BaseDictionary<Mesh, int> sceneMeshData
+        {
+            get
+            {
+                string sceneId = scene.sceneData.id;
+                var sceneRenderingData = DataStore.i.sceneRendering.sceneData;
+
+                if ( sceneRenderingData.ContainsKey(sceneId) )
+                    return sceneRenderingData[sceneId].refCountedMeshes;
+
+                return null;
+            }
+        }
+
         public SceneMetricsModel GetModel() { return model.Clone(); }
 
         public SceneMetricsController(IParcelScene sceneOwner)
@@ -65,7 +80,8 @@ namespace DCL
             meshToTriangleCount = new Dictionary<Mesh, int>();
             model = new SceneMetricsModel();
 
-            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
+            sceneMeshData.OnAdded += OnWillAddMesh;
+            sceneMeshData.OnRemoved += OnWillRemoveMesh;
 
             if (VERBOSE)
             {
@@ -75,12 +91,13 @@ namespace DCL
 
         public void Enable()
         {
-            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
-            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
-
             if (scene == null)
                 return;
 
+            sceneMeshData.OnAdded -= OnWillAddMesh;
+            sceneMeshData.OnAdded += OnWillAddMesh;
+            sceneMeshData.OnRemoved -= OnWillRemoveMesh;
+            sceneMeshData.OnRemoved += OnWillRemoveMesh;
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;
             scene.OnEntityAdded += OnEntityAdded;
@@ -89,10 +106,11 @@ namespace DCL
 
         public void Disable()
         {
-            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
-
             if (scene == null)
                 return;
+
+            sceneMeshData.OnAdded -= OnWillAddMesh;
+            sceneMeshData.OnRemoved -= OnWillRemoveMesh;
 
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;
@@ -357,9 +375,6 @@ namespace DCL
                         if (uniqueMeshesRefCount[key] <= 0)
                         {
                             uniqueMeshesRefCount.Remove(key);
-
-                            if ( meshToTriangleCount.ContainsKey(key) )
-                                meshToTriangleCount.Remove(key);
                         }
                     }
                 }
@@ -409,22 +424,38 @@ namespace DCL
             }
         }
 
-        public void OnWillUploadMeshToGPU(Mesh mesh)
+        public void OnWillAddMesh(Mesh mesh, int refCount)
         {
+            Assert.IsTrue(refCount == 0);
+
             if ( meshToTriangleCount.ContainsKey(mesh) )
                 meshToTriangleCount.Remove(mesh);
 
             int triangleCount = mesh.triangles.Length;
-            Debug.Log($"Adding triangle count {triangleCount}");
             meshToTriangleCount.Add(mesh, triangleCount);
         }
 
+        private void OnWillRemoveMesh(Mesh mesh, int refCount)
+        {
+            Assert.IsTrue(refCount == 0);
+
+            if ( !meshToTriangleCount.ContainsKey(mesh) )
+                return;
+
+            meshToTriangleCount.Remove(mesh);
+        }
+
+
         public void Dispose()
         {
-            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
-
             if (scene == null)
                 return;
+
+            if (sceneMeshData != null)
+            {
+                sceneMeshData.OnAdded -= OnWillAddMesh;
+                sceneMeshData.OnRemoved -= OnWillRemoveMesh;
+            }
 
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;

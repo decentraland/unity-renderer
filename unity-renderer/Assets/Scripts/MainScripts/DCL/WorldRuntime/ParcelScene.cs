@@ -19,7 +19,6 @@ namespace DCL.Controllers
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
         public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
-        public SceneController ownerController;
         public ISceneMetricsController metricsController { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
@@ -53,10 +52,6 @@ namespace DCL.Controllers
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-
-            metricsController = new SceneMetricsController(this);
-            metricsController.Enable();
-
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
         }
 
@@ -91,13 +86,22 @@ namespace DCL.Controllers
             contentProvider.BakeHashes();
 
             parcels.Clear();
+
             for (int i = 0; i < sceneData.parcels.Length; i++)
             {
                 parcels.Add(sceneData.parcels[i]);
             }
 
             if (DCLCharacterController.i != null)
+            {
                 gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
+            }
+
+            if ( !DataStore.i.sceneRendering.sceneData.ContainsKey(data.id))
+                DataStore.i.sceneRendering.sceneData.Add(data.id, new DataStore.DataStore_Rendering.SceneData());
+
+            metricsController = new SceneMetricsController(this);
+            metricsController.Enable();
 
             OnSetData?.Invoke(data);
         }
@@ -165,6 +169,9 @@ namespace DCL.Controllers
                     Destroy(this.gameObject);
                 }
             }
+
+            if ( DataStore.i.sceneRendering.sceneData.ContainsKey(sceneData.id))
+                DataStore.i.sceneRendering.sceneData.Remove(sceneData.id);
 
             isReleased = true;
         }

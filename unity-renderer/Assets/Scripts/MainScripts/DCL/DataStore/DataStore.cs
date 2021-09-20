@@ -31,20 +31,19 @@ namespace DCL
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
         public readonly DataStore_Screen screen = new DataStore_Screen();
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
-        public readonly DataStore_RenderingData sceneRenderingData = new DataStore_RenderingData();
+        public readonly DataStore_Rendering sceneRendering = new DataStore_Rendering();
         public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
         public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
 
-        public class DataStore_RenderingData
+        public class DataStore_Rendering
         {
-            public class SceneRenderingData
+            public class SceneData
             {
-                public string sceneId;
-                public readonly BaseCollection<Mesh> meshes = new BaseCollection<Mesh>();
+                public readonly BaseDictionary<Mesh, int> refCountedMeshes = new BaseDictionary<Mesh, int>();
             }
 
-            public readonly BaseCollection<SceneRenderingData> sceneRenderingData = new BaseCollection<SceneRenderingData>();
+            public readonly BaseDictionary<string, SceneData> sceneData = new BaseDictionary<string, SceneData>();
         }
 
         public class DataStore_BuilderInWorld

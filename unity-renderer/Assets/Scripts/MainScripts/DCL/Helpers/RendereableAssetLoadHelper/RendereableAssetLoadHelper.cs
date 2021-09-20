@@ -80,6 +80,7 @@ namespace DCL.Components
 
         public event System.Action<GameObject> OnSuccessEvent;
         public event System.Action OnFailEvent;
+        public event System.Action<Mesh> OnMeshAdded;
 
         public void Load(string targetUrl)
         {
@@ -111,7 +112,7 @@ namespace DCL.Components
         {
             if ( abPromise != null )
             {
-                abPromise.OnWillUploadMeshToGPU -= RaiseOnWillUploadMeshToGPU;
+                abPromise.OnWillUploadMeshToGPU -= RaiseOnMeshAdded;
                 AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
             }
         }
@@ -120,7 +121,7 @@ namespace DCL.Components
         {
             if ( gltfPromise != null )
             {
-                gltfPromise.OnWillUploadMeshToGPU -= RaiseOnWillUploadMeshToGPU;
+                gltfPromise.OnWillUploadMeshToGPU -= RaiseOnMeshAdded;
                 AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
             }
         }
@@ -149,7 +150,7 @@ namespace DCL.Components
             }
 
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
-            abPromise.OnWillUploadMeshToGPU += RaiseOnWillUploadMeshToGPU;
+            abPromise.OnWillUploadMeshToGPU += RaiseOnMeshAdded;
             abPromise.settings = this.settings;
 
             abPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
@@ -158,9 +159,9 @@ namespace DCL.Components
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
-        private void RaiseOnWillUploadMeshToGPU(Mesh mesh)
+        private void RaiseOnMeshAdded(Mesh mesh)
         {
-            DCL.Environment.i.platform.globalEvents.RaiseWillUploadMeshToGPU(mesh);
+            OnMeshAdded?.Invoke(mesh);
         }
 
         void LoadGltf(string targetUrl, System.Action<GameObject> OnSuccess, System.Action OnFail)
@@ -180,7 +181,7 @@ namespace DCL.Components
             }
 
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
-            gltfPromise.OnWillUploadMeshToGPU += RaiseOnWillUploadMeshToGPU;
+            gltfPromise.OnWillUploadMeshToGPU += RaiseOnMeshAdded;
             gltfPromise.settings = this.settings;
 
             gltfPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);

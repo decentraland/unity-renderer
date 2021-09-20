@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.Assertions;
 
 namespace DCL.Components
@@ -9,6 +12,11 @@ namespace DCL.Components
         static readonly bool VERBOSE = false;
         RendereableAssetLoadHelper loadHelper;
         public ContentProvider customContentProvider;
+
+        /// <summary>
+        /// Tracked meshes to persist in DataStore_SceneRendering
+        /// </summary>
+        public HashSet<Mesh> trackedMeshes = new HashSet<Mesh>();
 
         public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail)
         {
@@ -49,12 +57,23 @@ namespace DCL.Components
 
             loadHelper.OnSuccessEvent += (x) => OnSuccessWrapper(OnSuccess);
             loadHelper.OnFailEvent += () => OnFailWrapper(OnFail);
+            loadHelper.OnMeshAdded += OnMeshAdded;
             loadHelper.Load(targetUrl);
+        }
+
+        private void OnMeshAdded(Mesh mesh)
+        {
+            if ( trackedMeshes.Contains(mesh) )
+                return;
+
+            trackedMeshes.Add(mesh);
+            DataStore.i.sceneRendering.AddMesh(entity, mesh);
         }
 
         private void OnFailWrapper(Action<LoadWrapper> OnFail)
         {
             alreadyLoaded = true;
+            loadHelper.OnMeshAdded -= OnMeshAdded;
             this.entity.OnCleanupEvent -= OnEntityCleanup;
             OnFail?.Invoke(this);
         }
@@ -62,6 +81,7 @@ namespace DCL.Components
         private void OnSuccessWrapper(Action<LoadWrapper> OnSuccess)
         {
             alreadyLoaded = true;
+            loadHelper.OnMeshAdded -= OnMeshAdded;
             OnSuccess?.Invoke(this);
         }
 
@@ -69,8 +89,15 @@ namespace DCL.Components
 
         public override void Unload()
         {
+            foreach ( var mesh in trackedMeshes )
+            {
+                DataStore.i.sceneRendering.RemoveMesh(entity, mesh);
+            }
+
+            trackedMeshes.Clear();
             loadHelper.Unload();
             this.entity.OnCleanupEvent -= OnEntityCleanup;
+            loadHelper.OnMeshAdded -= OnMeshAdded;
         }
 
         public override string ToString() { return $"LoadWrapper ... {loadHelper.ToString()}"; }

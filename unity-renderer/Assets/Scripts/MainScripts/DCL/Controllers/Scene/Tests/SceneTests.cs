@@ -105,7 +105,6 @@ namespace Tests
                 radiusBottom = 0
             });
 
-
             var planeShape = TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, DCL.Models.CLASS_ID.PLANE_SHAPE, new PlaneShape.Model()
             {
                 height = 1.5f,
@@ -122,21 +121,19 @@ namespace Tests
                 segmentsHeight = 1.5f
             }));
 
-
             TestHelpers.DetachSharedComponent(scene, shapeEntity.entityId, coneShape.id);
             TestHelpers.SharedComponentAttach(planeShape, shapeEntity);
 
             yield return new WaitForAllMessagesProcessed();
             yield return null;
-            Debug.Log(scene.metricsController.GetModel());
 
             var lanternEntity = TestHelpers.CreateSceneEntity(scene);
             var lanternShape = TestHelpers.AttachGLTFShape(lanternEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             });
+
             yield return TestHelpers.WaitForGLTFLoad(lanternEntity);
-            Debug.Log(scene.metricsController.GetModel());
 
             var shapeEntity2 = TestHelpers.CreateSceneEntity(scene);
             var shape = TestHelpers.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
@@ -144,11 +141,9 @@ namespace Tests
                 src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
             });
             yield return TestHelpers.WaitForGLTFLoad(shapeEntity2);
-            Debug.Log(scene.metricsController.GetModel());
 
             TestHelpers.RemoveSceneEntity(scene, lanternEntity);
             yield return null;
-            Debug.Log(scene.metricsController.GetModel());
 
             TestHelpers.DetachSharedComponent(scene, shapeEntity2.entityId, shape.id);
             shape = TestHelpers.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
