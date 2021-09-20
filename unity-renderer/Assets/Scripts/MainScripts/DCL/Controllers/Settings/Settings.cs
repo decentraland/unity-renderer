@@ -148,7 +148,8 @@ namespace DCL
                 scenesLoadRadius = 4,
                 voiceChatVolume = 1,
                 voiceChatAllow = SettingsData.GeneralSettings.VoiceChatAllow.ALL_USERS,
-                autoqualityOn = false
+                autoqualityOn = false,
+                namesOpacity = 1
             };
         }
 
@@ -272,6 +273,7 @@ namespace DCL.SettingsData
         public VoiceChatAllow voiceChatAllow;
         public bool autoqualityOn;
         public float scenesLoadRadius;
+        public float namesOpacity;
 
         public bool Equals(GeneralSettings settings)
         {
@@ -279,7 +281,8 @@ namespace DCL.SettingsData
                    && scenesLoadRadius == settings.scenesLoadRadius
                    && voiceChatVolume == settings.voiceChatVolume
                    && voiceChatAllow == settings.voiceChatAllow
-                   && autoqualityOn == settings.autoqualityOn;
+                   && autoqualityOn == settings.autoqualityOn
+                   && namesOpacity == settings.namesOpacity;
         }
     }
 

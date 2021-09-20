@@ -53,6 +53,8 @@ namespace DCL
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
             public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
             public class LoadingHUD
@@ -108,6 +110,6 @@ namespace DCL
 
             public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
             public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
-        } 
+        }
     }
 }
