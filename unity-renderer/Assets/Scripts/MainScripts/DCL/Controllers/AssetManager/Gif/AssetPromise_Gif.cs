@@ -14,15 +14,15 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
-            var processor = new GifProcessor(url);
-            asset.processor = processor;
-            loadingRoutine = CoroutineStarter.Start(
-                processor.Load(
-                    frames =>
-                    {
-                        asset.frames = frames;
-                        OnSuccess?.Invoke();
-                    }, OnFail));
+            // var processor = new GifProcessor(url);
+            // asset.processor = processor;
+            // loadingRoutine = CoroutineStarter.Start(
+            //     processor.Load(
+            //         frames =>
+            //         {
+            //             asset.frames = frames;
+            //             OnSuccess?.Invoke();
+            //         }, OnFail));
         }
 
         protected override void OnCancelLoading() { CoroutineStarter.Stop(loadingRoutine); }
