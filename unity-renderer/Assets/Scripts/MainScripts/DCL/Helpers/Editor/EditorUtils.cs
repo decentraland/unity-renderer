@@ -5,6 +5,13 @@ public static class EditorUtils
 {
     [MenuItem("Decentraland/Clear Player Prefs")]
     public static void ClearAllPlayerPrefs() { PlayerPrefs.DeleteAll(); }
+
+    [MenuItem("Decentraland/Clear Asset Bundles Cache")]
+    public static void ClearAssetBundlesCache()
+    {
+        AssetBundle.UnloadAllAssetBundles(true);
+        Caching.ClearCache();
+    }
 }
 
 public static class CompilerOptions
