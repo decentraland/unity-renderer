@@ -65,7 +65,7 @@ namespace DCL
             meshToTriangleCount = new Dictionary<Mesh, int>();
             model = new SceneMetricsModel();
 
-            Environment.i.platform.globalAssetEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
+            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
 
             if (VERBOSE)
             {
@@ -75,8 +75,8 @@ namespace DCL
 
         public void Enable()
         {
-            Environment.i.platform.globalAssetEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
-            Environment.i.platform.globalAssetEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
+            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
+            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU += OnWillUploadMeshToGPU;
 
             if (scene == null)
                 return;
@@ -89,7 +89,7 @@ namespace DCL
 
         public void Disable()
         {
-            Environment.i.platform.globalAssetEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
+            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
 
             if (scene == null)
                 return;
@@ -409,7 +409,7 @@ namespace DCL
 
         public void Dispose()
         {
-            Environment.i.platform.globalAssetEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
+            Environment.i.platform.globalEvents.OnWillUploadMeshToGPU -= OnWillUploadMeshToGPU;
 
             if (scene == null)
                 return;

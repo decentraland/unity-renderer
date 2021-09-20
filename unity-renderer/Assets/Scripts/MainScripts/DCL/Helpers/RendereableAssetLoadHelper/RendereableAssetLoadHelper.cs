@@ -160,7 +160,7 @@ namespace DCL.Components
 
         private void RaiseOnWillUploadMeshToGPU(Mesh mesh)
         {
-            DCL.Environment.i.platform.globalAssetEvents.RaiseWillUploadMeshToGPU(mesh);
+            DCL.Environment.i.platform.globalEvents.RaiseWillUploadMeshToGPU(mesh);
         }
 
         void LoadGltf(string targetUrl, System.Action<GameObject> OnSuccess, System.Action OnFail)

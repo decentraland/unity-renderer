@@ -9,7 +9,7 @@ namespace DCL
     /// </summary>
     public class PlatformContext : System.IDisposable
     {
-        public readonly IGlobalAssetEvents globalAssetEvents;
+        public readonly GlobalEvents globalEvents;
         public readonly IMemoryManager memoryManager;
         public readonly ICullingController cullingController;
         public readonly IParcelScenesCleaner parcelScenesCleaner;
@@ -30,8 +30,8 @@ namespace DCL
             IServiceProviders serviceProviders,
             IIdleChecker idleChecker,
             IAvatarsLODController avatarsLODController,
-            IFeatureFlagController featureFlagController
-            IGlobalAssetEvents globalAssetEvents)
+            IFeatureFlagController featureFlagController,
+            GlobalEvents globalEvents)
         {
             this.memoryManager = memoryManager;
             this.cullingController = cullingController;
@@ -43,7 +43,7 @@ namespace DCL
             this.idleChecker = idleChecker;
             this.avatarsLODController = avatarsLODController;
             this.featureFlagController = featureFlagController;
-            this.globalAssetEvents = globalAssetEvents;
+            this.globalEvents = globalEvents;
         }
 
         public void Update()

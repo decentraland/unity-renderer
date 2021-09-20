@@ -17,7 +17,7 @@ namespace DCL
                 idleChecker: new IdleChecker(),
                 avatarsLODController: new AvatarsLODController(),
                 featureFlagController: new FeatureFlagController(),
-                globalAssetEvents: new GlobalAssetEvents());
+                globalEvents: new GlobalEvents());
         }
     }
 }
