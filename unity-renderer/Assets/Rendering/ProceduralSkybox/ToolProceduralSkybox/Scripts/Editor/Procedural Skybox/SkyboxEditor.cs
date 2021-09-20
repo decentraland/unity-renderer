@@ -192,45 +192,47 @@ namespace DCL.Skybox
             {
                 UpdateConfigurationsList();
             }
-            //UpdateConfigurationsList();
 
-            //// Assign the required material to Render Settings
-            //if (selectedMat == null || selectedMat != MaterialReferenceContainer.i.materials[0].material || RenderSettings.skybox != selectedMat)
-            //{
-            //    selectedMat = MaterialReferenceContainer.i.materials[0].material;
-            //    RenderSettings.skybox = selectedMat;
-            //}
             UpdateMaterial();
 
             EditorUtility.SetDirty(selectedConfiguration);
 
             // Cache directional light reference
-            directionalLight = GameObject.FindObjectsOfType<Light>().Where(s => s.type == LightType.Directional).FirstOrDefault();
+            directionalLight = GameObject.FindObjectsOfType<Light>(true).Where(s => s.type == LightType.Directional).FirstOrDefault();
         }
 
-        float lastLayerCount;
+        float lastLayerCount = 0;
+        //bool initialized = false;
+        MaterialReferenceContainer.Mat_Layer matLayer = null;
+
+        void InitializeMaterial()
+        {
+            lastLayerCount = selectedConfiguration.textureLayers.Count;
+            matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(selectedConfiguration.textureLayers.Count);
+
+            if (matLayer == null)
+            {
+                matLayer = MaterialReferenceContainer.i.materials[0];
+            }
+
+            selectedMat = matLayer.material;
+            selectedConfiguration.ResetMaterial(selectedMat, matLayer.maxLayer);
+
+            //initialized = true;
+        }
 
         private void UpdateMaterial()
         {
-            // Choose material depending on number of texture layer(For now only texture layer)
-            selectedMat = MaterialReferenceContainer.i.GetMaterialForLayers(selectedConfiguration.textureLayers.Count);
-
-            if (selectedMat == null)
+            if (lastLayerCount == selectedConfiguration.textureLayers.Count)
             {
-                selectedMat = MaterialReferenceContainer.i.materials[0].material;
+                return;
             }
+            InitializeMaterial();
 
             if (RenderSettings.skybox != selectedMat)
             {
                 RenderSettings.skybox = selectedMat;
             }
-
-            if (lastLayerCount != selectedConfiguration.textureLayers.Count)
-            {
-
-            }
-
-            lastLayerCount = selectedConfiguration.textureLayers.Count;
         }
 
         SkyboxConfiguration AddNewConfiguration(string name)
@@ -332,6 +334,8 @@ namespace DCL.Skybox
                     selectedConfigurationIndex = i;
                 }
             }
+
+            InitializeMaterial();
         }
 
         private void RenderTimePanel()
@@ -364,7 +368,7 @@ namespace DCL.Skybox
             RenderTransitioningFloat(selectedConfiguration.horizonHeight, "Horizon Height");
 
             EditorGUILayout.Separator();
-            RenderTransitioningFloat(selectedConfiguration.horizonHeight, "Horizon Width");
+            RenderTransitioningFloat(selectedConfiguration.horizonWidth, "Horizon Width");
         }
 
         void RenderAmbientLayer()
@@ -500,9 +504,9 @@ namespace DCL.Skybox
 
             // Tint
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            //EditorGUILayout.LabelField("Fading", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+
             layer.tintercentage = EditorGUILayout.FloatField("Tint", layer.tintercentage, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            //EditorGUILayout.FloatField("Out", layer.fadingOut, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+
             GUILayout.EndHorizontal();
 
             EditorGUILayout.Separator();
@@ -598,7 +602,7 @@ namespace DCL.Skybox
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField("Color", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            EditorGUILayout.GradientField(layer.color, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            EditorGUILayout.GradientField(new GUIContent(""), layer.color, true, GUILayout.Width(200), GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
         }
 

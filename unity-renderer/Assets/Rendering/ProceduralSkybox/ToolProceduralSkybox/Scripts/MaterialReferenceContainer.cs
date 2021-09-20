@@ -11,6 +11,7 @@ public class MaterialReferenceContainer : ScriptableObject
     {
         public int numberOfLayers;
         public Material material;
+        public int maxLayer;
     }
 
     private static MaterialReferenceContainer instance;
@@ -35,6 +36,18 @@ public class MaterialReferenceContainer : ScriptableObject
             if (numOfLayer <= materials[i].numberOfLayers)
             {
                 return materials[i].material;
+            }
+        }
+        return null;
+    }
+
+    public Mat_Layer GetMat_LayerForLayers(int numOfLayer)
+    {
+        for (int i = 0; i < materials.Length; i++)
+        {
+            if (numOfLayer <= materials[i].numberOfLayers)
+            {
+                return materials[i];
             }
         }
         return null;

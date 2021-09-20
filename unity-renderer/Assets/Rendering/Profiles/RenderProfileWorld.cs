@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -17,7 +17,8 @@ public class RenderProfileWorld : ScriptableObject
 {
     [Header("Loading Blocker")] public GameObject loadingBlockerPrefab;
 
-    [Header("Ambient And Reflection")] [SerializeField]
+    [Header("Ambient And Reflection")]
+    [SerializeField]
     private Material skyboxMaterial;
 
     [SerializeField] private Cubemap reflectionCubemap;
@@ -26,7 +27,8 @@ public class RenderProfileWorld : ScriptableObject
     [SerializeField] private Color groundColor;
     [SerializeField] private Color fogColor;
 
-    [Header("Directional Light")] [SerializeField]
+    [Header("Directional Light")]
+    [SerializeField]
     private Color directionalColorLight;
 
     [SerializeField] private Vector3 directionalColorAngle;
@@ -80,6 +82,13 @@ public class RenderProfileWorld : ScriptableObject
 
     public void Apply(bool verbose = false)
     {
+        avatarProfile.Apply();
+
+        if (DataStore.i.isProceduralSkyboxInUse.Get())
+        {
+            return;
+        }
+
         RenderSettings.ambientMode = AmbientMode.Trilight;
 
         RenderSettings.skybox = skyboxMaterial;
@@ -96,8 +105,6 @@ public class RenderProfileWorld : ScriptableObject
         }
 
         RenderSettings.customReflection = reflectionCubemap;
-
-        avatarProfile.Apply();
 
         if (verbose)
             Debug.Log("Applying profile... " + name);
