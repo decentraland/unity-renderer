@@ -1,74 +1,13 @@
 using NUnit.Framework;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.TestTools;
 using UnityEngine.UI;
-
-public class BaseComponentViewTests
-{
-    private BaseComponentView baseComponent;
-    private CanvasGroup baseComponentCanvas;
-
-    [SetUp]
-    public void SetUp()
-    {
-        baseComponent = ButtonComponentView.Create();
-        baseComponentCanvas = baseComponent.GetComponent<CanvasGroup>();
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        baseComponent.Dispose();
-        GameObject.Destroy(baseComponent.gameObject);
-    }
-
-    [Test]
-    public void InitializeComponentCorrectly()
-    {
-        // Act
-        baseComponent.Initialize();
-
-        // Assert
-        Assert.IsFalse(baseComponent.isInitialized, "The base component should not be initialized yet.");
-        Assert.IsNotNull(baseComponent.showHideAnimator, "The base component show/hide animator is null.");
-    }
-
-    [UnityTest]
-    public IEnumerator ShowComponentCorrectly()
-    {
-        // Arrange
-        baseComponentCanvas.alpha = 0f;
-
-        // Act
-        baseComponent.Show(true);
-        yield return null;
-
-        // Assert
-        Assert.IsTrue(baseComponent.showHideAnimator.isVisible, "The base component should be visible.");
-    }
-
-    [UnityTest]
-    public IEnumerator HideComponentCorrectly()
-    {
-        // Arrange
-        baseComponentCanvas.alpha = 1f;
-
-        // Act
-        baseComponent.Hide(true);
-        yield return null;
-
-        // Assert
-        Assert.IsFalse(baseComponent.showHideAnimator.isVisible, "The base component should not be visible.");
-    }
-}
 
 public class ButtonComponentViewTests
 {
     private ButtonComponentView buttonComponent;
 
     [SetUp]
-    public void SetUp() { buttonComponent = ButtonComponentView.Create(); }
+    public void SetUp() { buttonComponent = BaseComponentView.Create<ButtonComponentView>("Button_Common"); }
 
     [TearDown]
     public void TearDown()
@@ -150,7 +89,7 @@ public class ButtonComponentViewTests
     public void SetButtonIconCorrectly(bool isNullIcon)
     {
         // Arrange
-        Sprite testSprite = isNullIcon ? Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero) : null;
+        Sprite testSprite = isNullIcon ? null : Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
 
         // Act
         buttonComponent.SetIcon(testSprite);
@@ -160,8 +99,8 @@ public class ButtonComponentViewTests
         Assert.AreEqual(testSprite, buttonComponent.icon.sprite, "The button icon does not match.");
 
         if (isNullIcon)
-            Assert.IsTrue(buttonComponent.icon.enabled);
-        else
             Assert.IsFalse(buttonComponent.icon.enabled);
+        else
+            Assert.IsTrue(buttonComponent.icon.enabled);
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class GridContainerComponentModel
 {
     public int numColumns;
-    public Vector2Int itemSize;
-    public Vector2Int spaceBetweensItems;
+    public Vector2 itemSize;
+    public Vector2 spaceBetweenItems;
     public List<BaseComponentView> items;
 }

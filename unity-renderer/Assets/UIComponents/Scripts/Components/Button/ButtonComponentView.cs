@@ -102,12 +102,4 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
         icon.enabled = newIcon != null;
         icon.sprite = newIcon;
     }
-
-    internal static ButtonComponentView Create()
-    {
-        ButtonComponentView buttonComponentView = Instantiate(Resources.Load<GameObject>("Button_Common")).GetComponent<ButtonComponentView>();
-        buttonComponentView.name = "_ButtonComponent";
-
-        return buttonComponentView;
-    }
 }

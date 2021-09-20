@@ -21,13 +21,13 @@ public interface IGridContainerComponentView
     /// Set the size of each child item.
     /// </summary>
     /// <param name="newItemSize">Size of each child.</param>
-    void SetItemSize(Vector2Int newItemSize);
+    void SetItemSize(Vector2 newItemSize);
 
     /// <summary>
     /// Set the space between child items.
     /// </summary>
     /// <param name="newSpace">Space between children.</param>
-    void SetSpaceBetweenItems(Vector2Int newSpace);
+    void SetSpaceBetweenItems(Vector2 newSpace);
 
     /// <summary>
     /// Set the items of the grid.
@@ -52,10 +52,10 @@ public interface IGridContainerComponentView
 public class GridContainerComponentView : BaseComponentView, IGridContainerComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] private GridLayoutGroup gridLayoutGroup;
+    [SerializeField] internal GridLayoutGroup gridLayoutGroup;
 
     [Header("Configuration")]
-    [SerializeField] protected GridContainerComponentModel model;
+    [SerializeField] internal GridContainerComponentModel model;
 
     private List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
 
@@ -78,8 +78,15 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         SetNumColumns(model.numColumns);
         SetItemSize(model.itemSize);
-        SetSpaceBetweenItems(model.spaceBetweensItems);
+        SetSpaceBetweenItems(model.spaceBetweenItems);
         SetItems(model.items);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        RemoveAllInstantiatedItems();
     }
 
     public void SetNumColumns(int newNumColumns)
@@ -92,7 +99,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         gridLayoutGroup.constraintCount = newNumColumns;
     }
 
-    public void SetItemSize(Vector2Int newItemSize)
+    public void SetItemSize(Vector2 newItemSize)
     {
         model.itemSize = newItemSize;
 
@@ -102,9 +109,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         gridLayoutGroup.cellSize = newItemSize;
     }
 
-    public void SetSpaceBetweenItems(Vector2Int newSpace)
+    public void SetSpaceBetweenItems(Vector2 newSpace)
     {
-        model.spaceBetweensItems = newSpace;
+        model.spaceBetweenItems = newSpace;
 
         if (gridLayoutGroup == null)
             return;
@@ -116,7 +123,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         model.items = items;
 
-        RemoveAllIntantiatedItems();
+        RemoveAllInstantiatedItems();
 
         for (int i = 0; i < items.Count; i++)
         {
@@ -138,7 +145,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         if (Application.isPlaying)
         {
-            IntantiateItem(newItem, name);
+            InstantiateItem(newItem, name);
         }
         else
         {
@@ -147,7 +154,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         }
     }
 
-    internal void IntantiateItem(BaseComponentView newItem, string name)
+    internal void InstantiateItem(BaseComponentView newItem, string name)
     {
         if (newItem == null)
             return;
@@ -160,10 +167,10 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     internal IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
     {
         yield return null;
-        IntantiateItem(newItem, name);
+        InstantiateItem(newItem, name);
     }
 
-    internal void RemoveAllIntantiatedItems()
+    internal void RemoveAllInstantiatedItems()
     {
         foreach (Transform child in transform)
         {

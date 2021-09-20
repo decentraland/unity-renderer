@@ -11,6 +11,12 @@ public interface ISectionToggle
     ToggleEvent onSelect { get; set; }
 
     /// <summary>
+    /// Get the toggle info.
+    /// </summary>
+    /// <returns>Model with all the toggle info.</returns>
+    SectionToggleModel GetInfo();
+
+    /// <summary>
     /// Set the toggle info.
     /// </summary>
     /// <param name="model">Model with all the toggle info.</param>
@@ -43,6 +49,16 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     }
 
     delegate void Logger(string str);
+
+    public SectionToggleModel GetInfo()
+    {
+        return new SectionToggleModel
+        {
+            icon = sectionImage.sprite,
+            title = sectionText.text,
+            onSelectEvent = onSelect
+        };
+    }
 
     public void SetInfo(SectionToggleModel model)
     {
