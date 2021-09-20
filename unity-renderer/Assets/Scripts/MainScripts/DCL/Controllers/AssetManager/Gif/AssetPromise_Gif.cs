@@ -29,7 +29,7 @@ namespace DCL
         {
             CoroutineStarter.Stop(loadingRoutine);
             
-            asset.Dispose();
+            asset?.Dispose();
         }
 
         protected override bool AddToLibrary()
