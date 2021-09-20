@@ -15,6 +15,7 @@ namespace DCL
         public void Setup(IDebugController debugController)
         {
             this.debugController = debugController;
+            WebInterface.SetDebugBridgeReady();
         }
         
         // Beware this SetDebug() may be called before Awake() somehow...

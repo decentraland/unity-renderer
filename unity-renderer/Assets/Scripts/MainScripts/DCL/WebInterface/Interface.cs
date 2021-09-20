@@ -1298,5 +1298,10 @@ namespace DCL.Interface
 
             SendMessage("VideoProgressEvent", progressEvent);
         }
+
+        public static void SetDebugBridgeReady()
+        {
+            SendMessage("SetDebugBridgeReady");
+        }
     }
 }
