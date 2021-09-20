@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class PoolManagerTests : IntegrationTestSuite_Legacy
+    public class PoolManagerShould
     {
         public class PooledObjectInstantiator : IPooledObjectInstantiator
         {
@@ -21,14 +21,14 @@ namespace Tests
         }
 
         [Test]
-        public void PoolManagerShouldHandleNullArgsGracefully()
+        public void HandleNullArgsGracefully()
         {
             var thisShouldBeNull = PoolManager.i.GetPoolable(null);
             Assert.IsTrue(thisShouldBeNull == null);
         }
 
         [UnityTest]
-        public IEnumerator PooledGameObjectDestroyed()
+        public IEnumerator CountUsedAndUnusedObjectsWhenGetAndReleaseIsCalled()
         {
             PooledObjectInstantiator instantiator = new PooledObjectInstantiator();
 
@@ -63,14 +63,14 @@ namespace Tests
             Assert.AreEqual(1, pool.usedObjectsCount, "Alive objects count should be 1");
             Assert.AreEqual(1, pool.unusedObjectsCount, "Inactive objects count should be 1");
 
-            PoolManager.i.Cleanup();
+            PoolManager.i.Dispose();
 
             Assert.AreEqual(0, pool.usedObjectsCount, "Alive objects count should be 0");
             Assert.AreEqual(0, pool.unusedObjectsCount, "Inactive objects count should be 0");
         }
 
         [Test]
-        public void GetPoolableObject()
+        public void GetPoolableObjectsWhenGetIsCalled()
         {
             PooledObjectInstantiator instantiator = new PooledObjectInstantiator();
 
@@ -109,7 +109,7 @@ namespace Tests
         }
 
         [Test]
-        public void PoolIsNotBeingInitializedAgainAfterRendererWasToggled()
+        public void InitializeOnlyOnceAfterRendererIsToggled()
         {
             PooledObjectInstantiator instantiator = new PooledObjectInstantiator();
             GameObject original = new GameObject("Original");
@@ -119,10 +119,10 @@ namespace Tests
 
             // When teleporting this is false
             CommonScriptableObjects.rendererState.Set(false);
-            
+
             pool.Get().Release();
             pool.Get().Release();
-            
+
             UnityEngine.Assertions.Assert.AreEqual(1, pool.unusedObjectsCount, "Unused objects pool");
         }
     }
