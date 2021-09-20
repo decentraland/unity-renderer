@@ -155,14 +155,8 @@ namespace DCL
 
         public void Cleanup()
         {
-            if (state == AssetPromiseState.LOADING)
-            {
-                OnCancelLoading();
-                ClearEvents();
-            }
-
-            state = AssetPromiseState.IDLE_AND_EMPTY;
-
+            // Important: Asset destruction must be the first thing to happen here or else
+            // we risk leaking memory when the asset loading is canceled mid-loading
             if (asset != null)
             {
                 if (library.Contains(asset))
@@ -172,6 +166,14 @@ namespace DCL
 
                 asset = null;
             }
+            
+            if (state == AssetPromiseState.LOADING)
+            {
+                OnCancelLoading();
+                ClearEvents();
+            }
+
+            state = AssetPromiseState.IDLE_AND_EMPTY;
         }
 
         internal virtual void OnForget()

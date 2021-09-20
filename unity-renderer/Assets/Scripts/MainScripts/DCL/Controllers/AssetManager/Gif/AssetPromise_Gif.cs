@@ -28,8 +28,6 @@ namespace DCL
         protected override void OnCancelLoading()
         {
             CoroutineStarter.Stop(loadingRoutine);
-            
-            asset?.Dispose();
         }
 
         protected override bool AddToLibrary()
