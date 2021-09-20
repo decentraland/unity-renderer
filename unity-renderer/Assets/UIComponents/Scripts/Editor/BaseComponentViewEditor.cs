@@ -1,7 +1,9 @@
 #if UNITY_EDITOR
+using System.Diagnostics.CodeAnalysis;
 using UnityEditor;
 using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 [CustomEditor(typeof(BaseComponentView), true)]
 public class BaseComponentViewEditor : Editor
 {
