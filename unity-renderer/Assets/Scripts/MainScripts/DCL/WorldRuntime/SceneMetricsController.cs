@@ -229,7 +229,6 @@ namespace DCL
             }
 
             EntityMetrics entityMetrics = new EntityMetrics();
-
             int visualMeshRawTriangles = 0;
 
             // If this proves to be too slow we can spread it with a Coroutine spooler.
@@ -243,17 +242,26 @@ namespace DCL
                 if (mf == null || sharedMesh == null)
                     continue;
 
-                if ( !meshToTriangleCount.ContainsKey(sharedMesh) )
-                    continue;
-
                 // We have to use meshToTriangleCount because if meshes are uploaded to GPU at
                 // this stage, sharedMesh.triangles doesn't work.
                 int triangleCount = 0;
 
                 if ( sharedMesh.isReadable )
+                {
                     triangleCount = sharedMesh.triangles.Length;
+                }
                 else
+                {
+                    if ( !meshToTriangleCount.ContainsKey(sharedMesh) )
+                    {
+                        Debug.LogError("This shouldnt happen!");
+                        continue;
+                    }
+
+
                     triangleCount = meshToTriangleCount[sharedMesh];
+                }
+
 
                 visualMeshRawTriangles += triangleCount;
                 AddMesh(entityMetrics, sharedMesh);
@@ -403,8 +411,12 @@ namespace DCL
 
         public void OnWillUploadMeshToGPU(Mesh mesh)
         {
-            if ( !meshToTriangleCount.ContainsKey(mesh) )
-                meshToTriangleCount.Add(mesh, mesh.triangles.Length);
+            if ( meshToTriangleCount.ContainsKey(mesh) )
+                meshToTriangleCount.Remove(mesh);
+
+            int triangleCount = mesh.triangles.Length;
+            Debug.Log($"Adding triangle count {triangleCount}");
+            meshToTriangleCount.Add(mesh, triangleCount);
         }
 
         public void Dispose()

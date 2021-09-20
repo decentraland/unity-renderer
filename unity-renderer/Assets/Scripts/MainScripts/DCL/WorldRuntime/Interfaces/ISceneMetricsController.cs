@@ -28,5 +28,10 @@ namespace DCL
         public float sceneHeight;
 
         public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
+
+        public override string ToString()
+        {
+            return $"Textures: {textures} - Triangles: {triangles} - Materials: {materials} - Meshes: {meshes} - Bodies: {bodies} - Entities: {entities} - Scene Height: {sceneHeight}";
+        }
     }
 }

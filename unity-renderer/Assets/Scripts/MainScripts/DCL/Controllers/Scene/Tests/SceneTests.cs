@@ -105,12 +105,12 @@ namespace Tests
                 radiusBottom = 0
             });
 
+
             var planeShape = TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, DCL.Models.CLASS_ID.PLANE_SHAPE, new PlaneShape.Model()
             {
                 height = 1.5f,
                 width = 1
             });
-
 
             var shapeEntity = TestHelpers.CreateSceneEntity(scene);
             TestHelpers.SetEntityTransform(scene, shapeEntity, Vector3.one, Quaternion.identity, Vector3.one);
@@ -122,8 +122,13 @@ namespace Tests
                 segmentsHeight = 1.5f
             }));
 
+
             TestHelpers.DetachSharedComponent(scene, shapeEntity.entityId, coneShape.id);
             TestHelpers.SharedComponentAttach(planeShape, shapeEntity);
+
+            yield return new WaitForAllMessagesProcessed();
+            yield return null;
+            Debug.Log(scene.metricsController.GetModel());
 
             var lanternEntity = TestHelpers.CreateSceneEntity(scene);
             var lanternShape = TestHelpers.AttachGLTFShape(lanternEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
@@ -131,26 +136,33 @@ namespace Tests
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             });
             yield return TestHelpers.WaitForGLTFLoad(lanternEntity);
+            Debug.Log(scene.metricsController.GetModel());
 
-            var cesiumManEntity = TestHelpers.CreateSceneEntity(scene);
-            var cesiumManShape = TestHelpers.AttachGLTFShape(cesiumManEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
+            var shapeEntity2 = TestHelpers.CreateSceneEntity(scene);
+            var shape = TestHelpers.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
             });
-            yield return TestHelpers.WaitForGLTFLoad(cesiumManEntity);
+            yield return TestHelpers.WaitForGLTFLoad(shapeEntity2);
+            Debug.Log(scene.metricsController.GetModel());
 
             TestHelpers.RemoveSceneEntity(scene, lanternEntity);
             yield return null;
+            Debug.Log(scene.metricsController.GetModel());
 
-            TestHelpers.DetachSharedComponent(scene, cesiumManEntity.entityId, cesiumManShape.id);
-            cesiumManShape = TestHelpers.AttachGLTFShape(cesiumManEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
+            TestHelpers.DetachSharedComponent(scene, shapeEntity2.entityId, shape.id);
+            shape = TestHelpers.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             });
-            yield return TestHelpers.WaitForGLTFLoad(cesiumManEntity);
+            yield return TestHelpers.WaitForGLTFLoad(shapeEntity2);
+            Debug.Log(scene.metricsController.GetModel());
 
             TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
             TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(8, 1, 8));
+
+            yield return new WaitForAllMessagesProcessed();
+            Debug.Log(scene.metricsController.GetModel());
 
             AssertMetricsModel(scene,
                 triangles: 1126,
@@ -162,7 +174,7 @@ namespace Tests
 
             TestHelpers.RemoveSceneEntity(scene, "1");
             TestHelpers.RemoveSceneEntity(scene, "2");
-            TestHelpers.RemoveSceneEntity(scene, cesiumManEntity);
+            TestHelpers.RemoveSceneEntity(scene, shapeEntity2);
 
             yield return null;
 
@@ -246,8 +258,8 @@ namespace Tests
 
             //Not really elegant, but does the trick
             var jsonScenes = JsonConvert
-                             .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalParcelsJson)
-                             .Select(x => JsonUtility.ToJson(x));
+                .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalParcelsJson)
+                .Select(x => JsonUtility.ToJson(x));
 
             Assert.AreEqual(Environment.i.world.state.loadedScenes.Count, 1);
 
