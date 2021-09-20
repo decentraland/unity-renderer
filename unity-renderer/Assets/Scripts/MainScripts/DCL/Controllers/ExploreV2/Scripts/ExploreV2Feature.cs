@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class ExploreV2Feature : PluginFeature
 {
-    public IExploreV2MenuComponentView view;
-
     public event Action OnOpen;
     public event Action OnClose;
+
+    internal IExploreV2MenuComponentView view;
 
     public override void Initialize()
     {
@@ -23,7 +23,10 @@ public class ExploreV2Feature : PluginFeature
         base.Dispose();
 
         if (view != null && view.go != null)
+        {
+            view.OnCloseButtonPressed -= View_OnCloseButtonPressed;
             GameObject.Destroy(view.go);
+        }
     }
 
     public void SetVisibility(bool visible)
