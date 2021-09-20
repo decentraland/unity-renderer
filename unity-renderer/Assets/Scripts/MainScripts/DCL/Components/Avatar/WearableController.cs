@@ -29,10 +29,7 @@ public class WearableController
     protected SkinnedMeshRenderer[] assetRenderers;
     Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
 
-    public IReadOnlyList<SkinnedMeshRenderer> GetRenderers()
-    {
-        return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers);
-    }
+    public IReadOnlyList<SkinnedMeshRenderer> GetRenderers() { return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers); }
 
     public WearableController(WearableItem wearableItem) { this.wearable = wearableItem; }
 
@@ -64,7 +61,7 @@ public class WearableController
 
         loader.settings.forceNewInstance = false;
         loader.settings.initialLocalPosition = Vector3.up * 0.75f;
-        loader.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_EVERYTHING;
+        loader.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
         loader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
         loader.settings.parent = parent;
         loader.settings.layer = parent.gameObject.layer;
@@ -153,14 +150,9 @@ public class WearableController
         }
     }
 
-    protected virtual void PrepareWearable(GameObject assetContainer)
-    {
-    }
+    protected virtual void PrepareWearable(GameObject assetContainer) { }
 
-    public virtual void UpdateVisibility(HashSet<string> hiddenList)
-    {
-        SetAssetRenderersEnabled(!hiddenList.Contains(wearable.data.category));
-    }
+    public virtual void UpdateVisibility(HashSet<string> hiddenList) { SetAssetRenderersEnabled(!hiddenList.Contains(wearable.data.category)); }
 
     public bool IsLoadedForBodyShape(string bodyShapeId)
     {
@@ -169,7 +161,6 @@ public class WearableController
 
         return wearable.data.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
     }
-
 
     private void StoreOriginalMaterials()
     {
