@@ -1,9 +1,8 @@
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
-using UnityEngine;
 
-public class ExploreV2FeatureTests : MonoBehaviour
+public class ExploreV2FeatureTests
 {
     private ExploreV2Feature exploreV2Feature;
     private IExploreV2MenuComponentView exploreV2MenuView;
