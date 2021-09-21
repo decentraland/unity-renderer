@@ -140,7 +140,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
 
         UnityEngine.Assertions.Assert.AreEqual(1, PersistentAssetCache.ImageCacheByUri.Count);
         scene.RemoveEntity(entity.entityId);
-        PoolManager.i.Cleanup();
+        PoolManager.i.Dispose();
 
         yield return null;
 

@@ -106,7 +106,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.RemoveSceneEntity(scene, entity2.entityId);
             TestHelpers.RemoveSceneEntity(scene, entity3.entityId);
 
-            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+            Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
 
             Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check should be zero!");
         }
@@ -133,7 +133,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.RemoveSceneEntity(scene, entity2.entityId);
             TestHelpers.RemoveSceneEntity(scene, entity3.entityId);
 
-            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+            Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
 
             Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check should be zero!");
         }

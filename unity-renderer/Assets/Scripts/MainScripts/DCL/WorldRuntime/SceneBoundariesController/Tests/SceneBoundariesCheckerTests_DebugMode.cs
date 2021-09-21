@@ -54,7 +54,7 @@ namespace SceneBoundariesCheckerTests
 
             TestHelpers.RemoveSceneEntity(scene, entity.entityId);
 
-            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+            Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
 
             yield return null;
 

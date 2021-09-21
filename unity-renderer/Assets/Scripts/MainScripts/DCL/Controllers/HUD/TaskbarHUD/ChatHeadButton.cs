@@ -26,26 +26,19 @@ public class ChatHeadButton : TaskbarButton, IPointerEnterHandler, IPointerExitH
         else
             label.text = profile.userName;
 
-        if (profile.faceSnapshot != null)
-            portrait.texture = profile.faceSnapshot;
-        else
-            profile.OnFaceSnapshotReadyEvent += Profile_OnFaceSnapshotReadyEvent;
-
+        profile.snapshotObserver.AddListener(Profile_OnFaceSnapshotReadyEvent);
         SetOnlineStatus(false);
     }
 
     private void Profile_OnFaceSnapshotReadyEvent(Texture2D portraitTexture)
     {
-        profile.OnFaceSnapshotReadyEvent -= Profile_OnFaceSnapshotReadyEvent;
-
-        if (portraitTexture != null && this.portrait.texture != portraitTexture)
-            this.portrait.texture = portraitTexture;
+        this.portrait.texture = portraitTexture;
     }
 
     private void OnDestroy()
     {
         if (profile != null)
-            profile.OnFaceSnapshotReadyEvent -= Profile_OnFaceSnapshotReadyEvent;
+            profile.snapshotObserver.RemoveListener(Profile_OnFaceSnapshotReadyEvent);
     }
 
     public void OnPointerEnter(PointerEventData eventData) { labelContainer.Show(); }

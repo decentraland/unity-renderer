@@ -6,7 +6,6 @@ public class MinimapHUDController : IHUD
     private static bool VERBOSE = false;
 
     public MinimapHUDView view;
-
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
 
@@ -108,6 +107,8 @@ public class MinimapHUDController : IHUD
     {
         view.usersAroundListHudButton.gameObject.SetActive(true);
         controller.SetButtonView(view.usersAroundListHudButton);
+        controller.ToggleUsersCount(false);
+        KernelConfig.i.EnsureConfigInitialized().Then(kc => controller.ToggleUsersCount(kc.features.enablePeopleCounter));
     }
 
     private void OnOnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)

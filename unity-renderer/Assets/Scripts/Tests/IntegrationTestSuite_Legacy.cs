@@ -106,7 +106,7 @@ public class IntegrationTestSuite_Legacy
     protected virtual IEnumerator TearDown()
     {
         yield return null;
-        
+
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
@@ -121,7 +121,7 @@ public class IntegrationTestSuite_Legacy
 
         Environment.Dispose();
 
-        yield return TearDown_Memory();
+        TearDown_Memory();
 
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();
@@ -136,15 +136,12 @@ public class IntegrationTestSuite_Legacy
         AssetPromiseKeeper_AB.i?.Cleanup();
     }
 
-    protected IEnumerator TearDown_Memory()
+    protected void TearDown_Memory()
     {
         TearDown_PromiseKeepers();
 
-        if (Environment.i.platform.memoryManager != null)
-            yield return Environment.i.platform.memoryManager.CleanupPoolsIfNeeded(true);
-
         if (PoolManager.i != null)
-            PoolManager.i.Cleanup();
+            PoolManager.i.Dispose();
 
         Caching.ClearCache();
         Resources.UnloadUnusedAssets();
@@ -255,13 +252,7 @@ public class IntegrationTestSuite_Legacy
         }
     }
 
-    protected IEnumerator WaitForUICanvasUpdate() { yield break; }
-
-    public static T Reflection_GetStaticField<T>(System.Type baseType, string fieldName) { return (T) baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null); }
-
     public static T Reflection_GetField<T>(object instance, string fieldName) { return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance); }
-
-    public static void Reflection_SetField<T>(object instance, string fieldName, T newValue) { instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue); }
 
     protected GameObject CreateTestGameObject(string name) { return CreateTestGameObject(name, Vector3.zero); }
 

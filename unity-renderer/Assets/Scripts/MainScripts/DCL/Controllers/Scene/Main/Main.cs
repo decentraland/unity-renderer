@@ -22,7 +22,7 @@ namespace DCL
 
         private PluginSystem pluginSystem;
 
-        void Awake()
+        protected virtual void Awake()
         {
             if (i != null)
             {
@@ -40,6 +40,7 @@ namespace DCL
             }
 
             pluginSystem = new PluginSystem();
+            pluginSystem.Start();
 
 #if UNITY_WEBGL && !UNITY_EDITOR 
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -65,6 +66,9 @@ namespace DCL
             // to prevent race conditions like "SceneController is not an object",
             // aka sending events before unity is ready
             DCL.Interface.WebInterface.SendSystemInfoReport();
+            
+            // We trigger the Decentraland logic once everything is initialized.
+            DCL.Interface.WebInterface.StartDecentraland();
         }
 
         protected virtual void SetupEnvironment()
@@ -87,7 +91,6 @@ namespace DCL
         private void Start()
         {
             Environment.i.world.sceneController.Start();
-            pluginSystem?.Start();
         }
 
         private void Update()
@@ -104,7 +107,7 @@ namespace DCL
             pluginSystem.LateUpdate();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();

@@ -40,7 +40,7 @@ public class AvatarMeshCombinerHelperShould
         keeper.Forget(promise);
         webRequestController.Dispose();
         Object.Destroy(materialAsset);
-        PoolManager.i.Cleanup();
+        PoolManager.i.Dispose();
         yield break;
     }
 

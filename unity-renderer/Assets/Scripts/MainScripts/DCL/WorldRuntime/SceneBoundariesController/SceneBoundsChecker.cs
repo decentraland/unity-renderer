@@ -145,10 +145,7 @@ namespace DCL.Controllers
             if (!enabled)
                 return;
 
-            if (IsHighPrioEntity(entity))
-                highPrioEntitiesToCheck.Add(entity);
-            else
-                entitiesToCheck.Add(entity);
+            AddEntityBasedOnPriority(entity);
 
             persistentEntities.Add(entity);
         }
@@ -285,10 +282,7 @@ namespace DCL.Controllers
 
         protected void OnAddEntity(IDCLEntity entity)
         {
-            if (IsHighPrioEntity(entity))
-                highPrioEntitiesToCheck.Add(entity);
-            else
-                entitiesToCheck.Add(entity);
+            AddEntityBasedOnPriority(entity);
         }
 
         protected void OnRemoveEntity(IDCLEntity entity)
@@ -299,8 +293,19 @@ namespace DCL.Controllers
             feedbackStyle.ApplyFeedback(entity.meshesInfo, true);
         }
 
+        protected void AddEntityBasedOnPriority(IDCLEntity entity)
+        {
+            if (IsHighPrioEntity(entity) && !highPrioEntitiesToCheck.Contains(entity)) 
+                highPrioEntitiesToCheck.Add(entity);
+            else if(!entitiesToCheck.Contains(entity))
+                entitiesToCheck.Add(entity);
+        }
+
         protected bool IsHighPrioEntity(IDCLEntity entity)
         {
+            if (entity.gameObject == null)
+                return false;
+            
             Vector3 scale = entity.gameObject.transform.lossyScale;
             Vector3 position = entity.gameObject.transform.localPosition;
             return scale.x > TRIGGER_HIGHPRIO_VALUE || scale.y > TRIGGER_HIGHPRIO_VALUE || scale.z > TRIGGER_HIGHPRIO_VALUE || position.x > TRIGGER_HIGHPRIO_VALUE || position.y > TRIGGER_HIGHPRIO_VALUE || position.z > TRIGGER_HIGHPRIO_VALUE;

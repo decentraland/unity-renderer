@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace DCL.Components.Video.Plugin
 {
-    public static class WebGLPlugin
+    public static class WebGLVideoPlugin
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]

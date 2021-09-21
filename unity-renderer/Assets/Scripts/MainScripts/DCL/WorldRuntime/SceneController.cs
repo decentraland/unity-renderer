@@ -30,9 +30,6 @@ namespace DCL
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
-            // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
-            WebInterface.StartDecentraland();
-
             if (deferredMessagesDecoding) // We should be able to delete this code
                 deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecoding()); //
 

@@ -27,7 +27,7 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
         ownProfileModel = new UserProfileModel();
         ownProfileModel.userId = "my-user-id";
         ownProfileModel.name = "NO_USER";
-        ownProfile.UpdateData(ownProfileModel, false);
+        ownProfile.UpdateData(ownProfileModel);
 
         testProfileModel = new UserProfileModel();
         testProfileModel.userId = "my-user-id-2";
