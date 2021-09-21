@@ -288,7 +288,7 @@ namespace Tests
         }
         
         [UnityTest]
-        public IEnumerator OnPointerHoverFeedbackIsNotBlockedByFullyAplhaUIContainer()
+        public IEnumerator OnPointerHoverFeedbackIsNotBlockedByFullyAlphaUIContainer()
         {
             IDCLEntity entity;
             BoxShape shape;
