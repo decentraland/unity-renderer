@@ -97,6 +97,42 @@ public class ExploreV2MenuComponentViewTests
     }
 
     [Test]
+    public void SetRealmInfoCorrectly()
+    {
+        // Arrange
+        RealmViewerComponentModel testModel = new RealmViewerComponentModel
+        {
+            realmName = "Test Realm Name",
+            numberOfUsers = 50000
+        };
+
+        // Act
+        exploreV2MenuComponent.SetRealmInfo(testModel);
+
+        // Assert
+        Assert.AreEqual(testModel, exploreV2MenuComponent.model.realmInfo, "The realm info model does not match after configuring the button.");
+    }
+
+    [Test]
+    public void SetProfileInfoCorrectly()
+    {
+        // Arrange
+        ProfileCardComponentModel testModel = new ProfileCardComponentModel
+        {
+            profilePicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
+            profileName = "Test Name",
+            profileAddress = "Test Address",
+            onClickEvent = new Button.ButtonClickedEvent()
+        };
+
+        // Act
+        exploreV2MenuComponent.SetProfileInfo(testModel);
+
+        // Assert
+        Assert.AreEqual(testModel, exploreV2MenuComponent.model.profileInfo, "The profile info model does not match after configuring the button.");
+    }
+
+    [Test]
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]

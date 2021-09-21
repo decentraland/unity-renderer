@@ -109,9 +109,25 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
-    public void SetRealmInfo(RealmViewerComponentModel realmInfo) { realmViewer.Configure(realmInfo); }
+    public void SetRealmInfo(RealmViewerComponentModel realmInfo)
+    {
+        model.realmInfo = realmInfo;
 
-    public void SetProfileInfo(ProfileCardComponentModel profileInfo) { profileCard.Configure(profileInfo); }
+        if (realmViewer == null)
+            return;
+
+        realmViewer.Configure(realmInfo);
+    }
+
+    public void SetProfileInfo(ProfileCardComponentModel profileInfo)
+    {
+        model.profileInfo = profileInfo;
+
+        if (profileCard == null)
+            return;
+
+        profileCard.Configure(profileInfo);
+    }
 
     internal void CreateSectionSelectorMappings()
     {
