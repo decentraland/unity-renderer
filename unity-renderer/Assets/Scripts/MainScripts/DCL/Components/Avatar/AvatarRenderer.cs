@@ -139,13 +139,13 @@ namespace DCL
             if (userProfile != null)
             {
                 bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
-                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.sharedMesh, lodRenderer.sharedMaterial);
+                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.sharedMesh);
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
             }
             else
             {
-                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
+                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.sharedMesh);
             }
         }
 
@@ -614,7 +614,7 @@ namespace DCL
 
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
 
-        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
+        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.sharedMaterial, newColor); }
 
         public void SetAvatarFade(float avatarFade)
         {
@@ -631,9 +631,9 @@ namespace DCL
         public void SetImpostorFade(float impostorFade)
         {
             //TODO implement dither in Unlit shader
-            Color current = lodRenderer.material.GetColor(BASE_COLOR_PROPERTY);
+            Color current = lodRenderer.sharedMaterial.GetColor(BASE_COLOR_PROPERTY);
             current.a = impostorFade;
-            lodRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
+            lodRenderer.sharedMaterial.SetColor(BASE_COLOR_PROPERTY, current);
 
             OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
