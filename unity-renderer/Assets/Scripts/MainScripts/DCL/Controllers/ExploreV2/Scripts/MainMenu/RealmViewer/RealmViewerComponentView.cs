@@ -29,7 +29,7 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
     [SerializeField] private TMP_Text numberOfusers;
 
     [Header("Configuration")]
-    [SerializeField] protected RealmViewerComponentModel model;
+    [SerializeField] internal RealmViewerComponentModel model;
 
     public override void Initialize()
     {

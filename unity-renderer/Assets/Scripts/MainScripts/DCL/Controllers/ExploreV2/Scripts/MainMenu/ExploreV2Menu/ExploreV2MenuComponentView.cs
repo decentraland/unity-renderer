@@ -46,22 +46,22 @@ public interface IExploreV2MenuComponentView
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
     [Header("Top Menu")]
-    [SerializeField] private SectionSelectorComponentView sectionSelector;
-    [SerializeField] private ProfileCardComponentView profileCard;
-    [SerializeField] private RealmViewerComponentView realmViewer;
-    [SerializeField] private ButtonComponentView closeMenuButton;
+    [SerializeField] internal SectionSelectorComponentView sectionSelector;
+    [SerializeField] internal ProfileCardComponentView profileCard;
+    [SerializeField] internal RealmViewerComponentView realmViewer;
+    [SerializeField] internal ButtonComponentView closeMenuButton;
 
     [Header("Sections")]
-    [SerializeField] private ExploreSectionComponentView exploreSection;
-    [SerializeField] private QuestSectionComponentView questSection;
-    [SerializeField] private BackpackSectionComponentView backpackSection;
-    [SerializeField] private MapSectionComponentView mapSection;
-    [SerializeField] private BuilderSectionComponentView builderSection;
-    [SerializeField] private MarketSectionComponentView marketSection;
-    [SerializeField] private SettingsSectionComponentView settingsSection;
+    [SerializeField] internal ExploreSectionComponentView exploreSection;
+    [SerializeField] internal QuestSectionComponentView questSection;
+    [SerializeField] internal BackpackSectionComponentView backpackSection;
+    [SerializeField] internal MapSectionComponentView mapSection;
+    [SerializeField] internal BuilderSectionComponentView builderSection;
+    [SerializeField] internal MarketSectionComponentView marketSection;
+    [SerializeField] internal SettingsSectionComponentView settingsSection;
 
     [Header("Configuration")]
-    [SerializeField] protected ExploreV2MenuComponentModel model;
+    [SerializeField] internal ExploreV2MenuComponentModel model;
 
     public bool isActive => gameObject.activeSelf;
 
