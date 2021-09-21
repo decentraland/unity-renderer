@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Main controller for the feature "Explore V2".
+/// </summary>
 public class ExploreV2Feature : PluginFeature
 {
     public event Action OnOpen;
