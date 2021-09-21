@@ -32,6 +32,8 @@ namespace AssetPromiseKeeper_GLTF_Tests
             keeper.Keep(prom);
             keeper.Keep(prom2);
             keeper.Keep(prom3);
+            
+            var asset = prom.asset;
 
             keeper.Forget(prom);
 
@@ -40,8 +42,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Object.Destroy(parent);
 
             yield return prom;
-
-            var asset = prom.asset;
             
             yield return prom2;
             yield return prom3;

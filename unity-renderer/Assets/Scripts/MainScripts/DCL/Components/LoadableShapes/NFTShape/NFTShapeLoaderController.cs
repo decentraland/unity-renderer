@@ -208,6 +208,7 @@ public class NFTShapeLoaderController : MonoBehaviour
             yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl, (promise) =>
             {
                 foundDCLImage = true;
+                assetPromise?.Forget();
                 this.assetPromise = promise;
                 FetchNFTInfoSuccess(promise.asset, nftInfo, true);
             });
@@ -220,6 +221,7 @@ public class NFTShapeLoaderController : MonoBehaviour
                 (promise) =>
                 {
                     foundDCLImage = true;
+                    assetPromise?.Forget();
                     this.assetPromise = promise;
                     FetchNFTInfoSuccess(promise.asset, nftInfo, false);
                 }, () => isError = true);

@@ -11,9 +11,9 @@ using WaitUntil = UnityEngine.WaitUntil;
 
 public class WearablesVisualTests : VisualTestsBase
 {
-    private AvatarMeshCombinerHelper combiner = new AvatarMeshCombinerHelper();
     private BaseDictionary<string, WearableItem> catalog;
     private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
+    private readonly HashSet<AvatarMeshCombinerHelper> toCleanUpCombiners = new HashSet<AvatarMeshCombinerHelper>();
     private Material avatarMaterial;
     private Color skinColor;
     private Color hairColor;
@@ -44,7 +44,7 @@ public class WearablesVisualTests : VisualTestsBase
         const string EMISSIVE_WEARABLE_ID = "urn:decentraland:ethereum:collections-v1:dc_niftyblocksmith:blocksmith_feet";
 
         //Act
-        yield return LoadWearable(EMISSIVE_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, 1, 8));
+        yield return LoadWearable(EMISSIVE_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(EMISSIVE_WEARABLE_ID, new Vector3(8, 1, 8)));
 
         //Assert
         yield return VisualTestHelpers.TakeSnapshot();
@@ -64,7 +64,7 @@ public class WearablesVisualTests : VisualTestsBase
         const string ALPHA_BLEND_WEARABLE_ID = "urn:decentraland:ethereum:collections-v1:community_contest:cw_raver_eyewear";
 
         //Act
-        yield return LoadWearable(ALPHA_BLEND_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.65f, 8.5f));
+        yield return LoadWearable(ALPHA_BLEND_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(ALPHA_BLEND_WEARABLE_ID, new Vector3(8, -0.65f, 8.5f)));
 
         //Assert
         yield return VisualTestHelpers.TakeSnapshot();
@@ -84,7 +84,7 @@ public class WearablesVisualTests : VisualTestsBase
         const string ALPHA_TEST_WEARABLE_ID = "urn:decentraland:ethereum:collections-v1:tech_tribal_marc0matic:techtribal_beast_mask";
 
         //Act
-        yield return LoadWearable(ALPHA_TEST_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.75f, 8));
+        yield return LoadWearable(ALPHA_TEST_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(ALPHA_TEST_WEARABLE_ID, new Vector3(8, -0.75f, 8)));
 
         //Assert
         yield return VisualTestHelpers.TakeSnapshot();
@@ -92,10 +92,7 @@ public class WearablesVisualTests : VisualTestsBase
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator AlphaBlendWearableWithTransparentBaseColor_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearableWithTransparentBaseColor());
-    }
+    public IEnumerator AlphaBlendWearableWithTransparentBaseColor_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearableWithTransparentBaseColor()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
@@ -109,7 +106,7 @@ public class WearablesVisualTests : VisualTestsBase
         VisualTestController.i.camera.fieldOfView = 30;
 
         //Act
-        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.75f, 8));
+        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(WEARABLE_ID, new Vector3(8, -0.75f, 8)));
 
         //Assert
         yield return VisualTestHelpers.TakeSnapshot();
@@ -117,10 +114,7 @@ public class WearablesVisualTests : VisualTestsBase
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator EmissiveWearableWithNoEmissionMap_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearableWithNoEmissionMap());
-    }
+    public IEnumerator EmissiveWearableWithNoEmissionMap_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearableWithNoEmissionMap()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
@@ -132,14 +126,41 @@ public class WearablesVisualTests : VisualTestsBase
         const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0";
 
         //Act
-        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, new Vector3(8, -0.75f, 8));
+        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(WEARABLE_ID, new Vector3(8, -0.75f, 8)));
 
         //Assert
         yield return VisualTestHelpers.TakeSnapshot();
     }
 
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
+    public IEnumerator SkinAndHairMaterialsAreNotReplacedIncorrectly_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(SkinAndHairMaterialsAreNotReplacedIncorrectly()); }
 
-    private IEnumerator LoadWearable(string wearableId, string bodyShapeId, Vector3 wearablePosition)
+    [UnityTest, VisualTest]
+    [Category("Visual Tests")]
+    public IEnumerator SkinAndHairMaterialsAreNotReplacedIncorrectly()
+    {
+        //Arrange
+        yield return InitVisualTestsScene("WearableVisualTests_SkinAndHairMaterialsAreNotReplacedIncorrectly");
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(8f, 1.8f, 9.3f), new Vector3(8, 1.75f, 8));
+        const string JACKET_ID = "urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_jacket";
+        const string HAT_ID = "urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_hat";
+        GameObject holderHat = CreateTestGameObject(HAT_ID, new Vector3(8, -0.75f, 8));
+        GameObject holderJacket = CreateTestGameObject(JACKET_ID, new Vector3(8, -0.75f, 8));
+
+        //Act
+        yield return LoadWearable(JACKET_ID, WearableLiterals.BodyShapes.MALE, holderJacket, null);
+        yield return LoadWearable(HAT_ID, WearableLiterals.BodyShapes.MALE, holderHat, null);
+
+        Assert.IsFalse(holderHat.GetComponentsInChildren<SkinnedMeshRenderer>().Any(renderer => renderer.materials.Any(material => material.name.ToLower().Contains("skin"))));
+        Assert.IsFalse(holderJacket.GetComponentsInChildren<SkinnedMeshRenderer>().Any(renderer => renderer.materials.Any(material => material.name.ToLower().Contains("hair"))));
+
+        //Assert
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+    private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject holder) => LoadWearable(wearableId, bodyShapeId, holder, CreateCombiner());
+    private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject holder, AvatarMeshCombinerHelper combiner)
     {
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
@@ -150,8 +171,7 @@ public class WearablesVisualTests : VisualTestsBase
         bool succeeded = false;
         bool failed = false;
 
-        GameObject testGameObject = CreateTestGameObject(wearable.id, Vector3.up * -0.75f);
-        wearable.Load(bodyShapeId, testGameObject.transform, x => succeeded = true, x => failed = true);
+        wearable.Load(bodyShapeId, holder.transform, x => succeeded = true, x => failed = true);
 
         yield return new WaitUntil(() => succeeded || failed);
 
@@ -160,18 +180,33 @@ public class WearablesVisualTests : VisualTestsBase
         wearable.SetAssetRenderersEnabled(true);
         wearable.SetupHairAndSkinColors(skinColor, hairColor);
 
-        var rends = wearable.GetRenderers();
-        combiner.Combine(rends[0], rends.ToArray(), avatarMaterial);
+        if (combiner != null)
+        {
+            Vector3 cachedPos = holder.transform.position;
+            //We need to reset the holder position for the mesh combiner
+            holder.transform.position = Vector3.up * -0.75f;
+            var rends = wearable.GetRenderers();
+            combiner.Combine(rends[0], rends.ToArray(), avatarMaterial);
 
-        combiner.container.transform.SetParent(rends[0].transform.parent);
-        combiner.container.transform.localPosition = rends[0].transform.localPosition;
+            combiner.container.transform.SetParent(rends[0].transform.parent);
+            combiner.container.transform.localPosition = rends[0].transform.localPosition;
+            holder.transform.position = cachedPos;
+        }
+    }
 
-        testGameObject.transform.position = wearablePosition;
+    private AvatarMeshCombinerHelper CreateCombiner()
+    {
+        AvatarMeshCombinerHelper combiner = new AvatarMeshCombinerHelper();
+        toCleanUpCombiners.Add(combiner);
+        return combiner;
     }
 
     protected override IEnumerator TearDown()
     {
-        combiner.Dispose();
+        foreach (AvatarMeshCombinerHelper combiner in toCleanUpCombiners)
+        {
+            combiner.Dispose();
+        }
 
         foreach (WearableController wearable in toCleanUp)
         {
