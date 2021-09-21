@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -74,7 +74,7 @@ public class ProfileCardComponentViewTests
     }
 
     [Test]
-    public void SetProfilePictureFromSpriteCorrectly()
+    public void SetProfilePictureCorrectly()
     {
         // Arrange
         Sprite testPicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
@@ -85,21 +85,6 @@ public class ProfileCardComponentViewTests
         // Assert
         Assert.AreEqual(testPicture, profileCardComponent.model.profilePicture, "The profile picture does not match in the model.");
         Assert.AreEqual(testPicture, profileCardComponent.profileImage.image.sprite, "The profile image does not match.");
-    }
-
-    [Test]
-    public void SetProfilePictureFromTextureCorrectly()
-    {
-        // Arrange
-        Texture2D testPictureTexture = new Texture2D(10, 10);
-        Sprite testPictureSprite = Sprite.Create(testPictureTexture, new Rect(0, 0, testPictureTexture.width, testPictureTexture.height), new Vector2(0.5f, 0.5f));
-
-        // Act
-        profileCardComponent.SetProfilePicture(testPictureTexture);
-
-        // Assert
-        Assert.AreEqual(testPictureSprite.texture, profileCardComponent.model.profilePicture.texture, "The profile picture does not match in the model.");
-        Assert.AreEqual(testPictureSprite.texture, profileCardComponent.profileImage.image.sprite.texture, "The profile image does not match.");
     }
 
     [Test]

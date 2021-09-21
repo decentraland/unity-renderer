@@ -208,8 +208,6 @@ public class ProfileHUDController : IHUD
     /// </summary>
     public void HideProfileMenu() { view?.HideMenu(); }
 
-    public void ToggleMenu() { view?.ToggleMenu(); }
-
     private void UpdateProfileName(string newName)
     {
         if (view.inputName.wasCanceled)
