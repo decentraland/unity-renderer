@@ -381,6 +381,15 @@ namespace DCL
                 }
             }
 
+            if ( eyesController == null && !unusedCategories.Contains(Categories.EYES))
+                unusedCategories.Add(Categories.EYES);
+
+            if ( mouthController == null && !unusedCategories.Contains(Categories.MOUTH))
+                unusedCategories.Add(Categories.MOUTH);
+
+            if ( eyebrowsController == null && !unusedCategories.Contains(Categories.EYEBROWS))
+                unusedCategories.Add(Categories.EYEBROWS);
+
             foreach (var category in unusedCategories)
             {
                 switch (category)
@@ -600,7 +609,7 @@ namespace DCL
 
             mainMeshRenderer.enabled = newVisibility;
         }
-        
+
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
 
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
