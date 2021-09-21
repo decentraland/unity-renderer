@@ -17,12 +17,13 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     AudioEvent throwMoney;
     AudioEvent blowKiss;
 
-    AvatarParticleSystemsHandler particleSystemsHandler;
     AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
 
     Animation anim;
 
     float lastEventTime;
+
+    StickersController stickersController;
 
     public void Init(AudioContainer audioContainer)
     {
@@ -38,32 +39,32 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         throwMoney = audioContainer.GetEvent("ExpressionThrowMoney");
         blowKiss = audioContainer.GetEvent("ExpressionBlowKiss");
 
-        particleSystemsHandler = FindObjectOfType<AvatarParticleSystemsHandler>();
         bodyPartReferenceHandler = GetComponent<AvatarBodyPartReferenceHandler>();
-
         anim = GetComponent<Animation>();
+        stickersController = GetComponentInParent<StickersController>();
     }
 
-    public void AnimEvent_FootstepLight() { TryPlayingEvent(footstepLight); }
+    public void AnimEvent_FootstepLight() { PlayAudioEvent(footstepLight); }
 
-    public void AnimEvent_FootstepSlide() { TryPlayingEvent(footstepSlide); }
+    public void AnimEvent_FootstepSlide() { PlayAudioEvent(footstepSlide); }
 
-    public void AnimEvent_FootstepWalkLeft() { TryPlayingEvent(footstepWalk); }
+    public void AnimEvent_FootstepWalkLeft() { PlayAudioEvent(footstepWalk); }
 
-    public void AnimEvent_FootstepWalkRight() { TryPlayingEvent(footstepWalk); }
+    public void AnimEvent_FootstepWalkRight() { PlayAudioEvent(footstepWalk); }
 
     public void AnimEvent_FootstepRunLeft()
     {
-        TryPlayingEvent(footstepRun);
-        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footL.position, Vector3.up, 3);
+        PlayAudioEvent(footstepRun);
+        PlaySticker("footstep", bodyPartReferenceHandler.footL.position, Vector3.up);
     }
 
-    public void AnimEvent_FootstepRunRight() {
-        TryPlayingEvent(footstepRun);
-        particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, Vector3.up, 3);
+    public void AnimEvent_FootstepRunRight()
+    {
+        PlayAudioEvent(footstepRun);
+        PlaySticker("footstep", bodyPartReferenceHandler.footR.position, Vector3.up);
     }
 
-    public void AnimEvent_ClothesRustleShort() { TryPlayingEvent(clothesRustleShort); }
+    public void AnimEvent_ClothesRustleShort() { PlayAudioEvent(clothesRustleShort); }
 
     public void AnimEvent_Clap()
     {
@@ -73,8 +74,8 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_CLAP))
             return;
 
-        TryPlayingEvent(clap);
-        particleSystemsHandler.EmitClapParticles(bodyPartReferenceHandler.handR.position, Vector3.up, 1);
+        PlayAudioEvent(clap);
+        PlaySticker("clap", bodyPartReferenceHandler.handR.position, Vector3.up);
         UpdateEventTime();
     }
 
@@ -86,8 +87,8 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_MONEY))
             return;
 
-        TryPlayingEvent(throwMoney);
-        particleSystemsHandler.EmitMoneyParticles(bodyPartReferenceHandler.handL.position, bodyPartReferenceHandler.handL.rotation.eulerAngles, 1);
+        PlayAudioEvent(throwMoney);
+        PlaySticker("money", bodyPartReferenceHandler.handL.position, bodyPartReferenceHandler.handL.rotation.eulerAngles);
         UpdateEventTime();
     }
 
@@ -99,7 +100,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_KISS))
             return;
 
-        TryPlayingEvent(blowKiss);
+        PlayAudioEvent(blowKiss);
         StartCoroutine(EmitHeartParticle());
         UpdateEventTime();
     }
@@ -107,11 +108,10 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     IEnumerator EmitHeartParticle()
     {
         yield return new WaitForSeconds(0.8f);
-
-        particleSystemsHandler.EmitHeartParticles(bodyPartReferenceHandler.handR.position, transform.rotation.eulerAngles, 1);
+        PlaySticker("heart", bodyPartReferenceHandler.handR.position, transform.rotation.eulerAngles);
     }
 
-    void TryPlayingEvent(AudioEvent audioEvent)
+    void PlayAudioEvent(AudioEvent audioEvent)
     {
         if (audioEvent != null)
             audioEvent.Play(true);
@@ -142,5 +142,17 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     bool LastEventWasTooRecent()
     {
         return lastEventTime + MIN_EVENT_WAIT_TIME >= Time.realtimeSinceStartup;
+    }
+
+    /// <summary>
+    /// Plays a sticker.
+    /// </summary>
+    /// <param name="id">ID string of sticker</param>
+    /// <param name="position">Position in world space</param>
+    /// <param name="rotation">Euler angles</param>
+    void PlaySticker(string id, Vector3 position, Vector3 direction)
+    {
+        if (stickersController != null)
+            stickersController.PlayEmote(id, position, direction, false);
     }
 }

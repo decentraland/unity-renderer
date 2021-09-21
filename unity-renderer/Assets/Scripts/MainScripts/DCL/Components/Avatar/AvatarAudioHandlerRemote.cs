@@ -25,7 +25,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
 
     private Camera mainCamera;
     private AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
-    private AvatarParticleSystemsHandler particleSystemsHandler;
+    private StickersController stickersController;
 
     private void Start()
     {
@@ -48,8 +48,6 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
 
         globalRendererIsReady = CommonScriptableObjects.rendererState.Get();
         CommonScriptableObjects.rendererState.OnChange += OnGlobalRendererStateChange;
-
-        particleSystemsHandler = FindObjectOfType<AvatarParticleSystemsHandler>();
     }
 
     void OnGlobalRendererStateChange(bool current, bool previous) { globalRendererIsReady = current; }
@@ -58,6 +56,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     {
         this.rendererContainer = rendererContainer;
         this.bodyPartReferenceHandler = bodyPartReferenceHandler;
+        stickersController = rendererContainer.GetComponentInParent<StickersController>();
     }
 
     private void Update()
@@ -71,8 +70,8 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
             if (footstepJump != null)
                 footstepJump.Play(true);
             if (bodyPartReferenceHandler != null) {
-                if (particleSystemsHandler != null)
-                    particleSystemsHandler.EmitFootstepParticles(bodyPartReferenceHandler.footR.position, Vector3.up, 5);
+                if (stickersController != null)
+                    stickersController.PlayEmote("footstepJump", bodyPartReferenceHandler.footR.position, Vector3.up, false);
             }
         }
 
@@ -81,8 +80,11 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
             if (footstepLand != null)
                 footstepLand.Play(true);
             if (bodyPartReferenceHandler != null) {
-                if (particleSystemsHandler != null)
-                    particleSystemsHandler.EmitFootstepParticles(Vector3.Lerp(bodyPartReferenceHandler.footL.position, bodyPartReferenceHandler.footR.position, 0.5f), Vector3.up, 10);
+                if (stickersController != null)
+                    stickersController.PlayEmote("footstepLand",
+                        Vector3.Lerp(bodyPartReferenceHandler.footL.position, bodyPartReferenceHandler.footR.position, 0.5f),
+                        Vector3.up,
+                        false);
             }
         }
 

@@ -7,7 +7,8 @@ public class AvatarBodyPartReferenceHandler : MonoBehaviour
     [HideInInspector]
     public Transform footL, footR, handL, handR;
 
-    private void Awake() {
+    private void Awake()
+    {
         // Find body parts
         Transform[] children = GetComponentsInChildren<Transform>();
         for (int i = 0; i < children.Length; i++) {
