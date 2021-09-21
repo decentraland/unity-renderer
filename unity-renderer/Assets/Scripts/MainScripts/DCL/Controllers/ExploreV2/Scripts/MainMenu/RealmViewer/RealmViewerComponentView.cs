@@ -25,8 +25,8 @@ public interface IRealmViewerComponentView
 public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView
 {
     [Header("Prefab References")]
-    [SerializeField] private TMP_Text realm;
-    [SerializeField] private TMP_Text numberOfusers;
+    [SerializeField] internal TMP_Text realm;
+    [SerializeField] internal TMP_Text numberOfusers;
 
     [Header("Configuration")]
     [SerializeField] internal RealmViewerComponentModel model;
