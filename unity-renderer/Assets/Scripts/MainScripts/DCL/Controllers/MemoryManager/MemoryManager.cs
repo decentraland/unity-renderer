@@ -10,39 +10,33 @@ namespace DCL
         private const uint MAX_USED_MEMORY = 1300 * 1024 * 1024;
         private const float TIME_FOR_NEW_MEMORY_CHECK = 1.0f;
 
-        private List<object> idsToCleanup = new List<object>();
-
         private Coroutine autoCleanupCoroutine;
 
-        private IParcelScenesCleaner parcelScenesCleaner;
+        private uint memoryThresholdForCleanup = 0;
+        private float cleanupInterval;
 
-        public void Initialize(IParcelScenesCleaner parcelScenesCleaner)
+        public event System.Action OnCriticalMemory;
+
+        public MemoryManager (uint memoryThresholdForCleanup, float cleanupInterval)
         {
-            this.parcelScenesCleaner = parcelScenesCleaner;
+            this.memoryThresholdForCleanup = this.memoryThresholdForCleanup;
+            this.cleanupInterval = this.cleanupInterval;
+            autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
+        }
+
+        public MemoryManager ()
+        {
+            this.memoryThresholdForCleanup = MAX_USED_MEMORY;
+            this.cleanupInterval = TIME_FOR_NEW_MEMORY_CHECK;
             autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
         }
 
         public void Dispose()
         {
-            CleanupPoolsIfNeeded(true, immediate: true);
-
             if (autoCleanupCoroutine != null)
                 CoroutineStarter.Stop(autoCleanupCoroutine);
 
             autoCleanupCoroutine = null;
-
-            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
-        }
-
-        public MemoryManager() { CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange; }
-
-        private void OnRendererStateChange(bool isEnable, bool prevState)
-        {
-            if (isEnable)
-            {
-                parcelScenesCleaner?.ForceCleanup();
-                Resources.UnloadUnusedAssets();
-            }
         }
 
         bool NeedsMemoryCleanup()
@@ -57,51 +51,33 @@ namespace DCL
             {
                 if (NeedsMemoryCleanup())
                 {
-                    yield return CleanupPoolsIfNeeded();
+                    OnCriticalMemory?.Invoke();
+                    yield return CleanPoolManager();
+                    Resources.UnloadUnusedAssets();
                 }
 
                 yield return new WaitForSecondsRealtime(TIME_FOR_NEW_MEMORY_CHECK);
             }
         }
 
-        private bool NeedsCleanup(Pool pool, bool forceCleanup = false)
+        public IEnumerator CleanPoolManager(bool forceCleanup = false, bool immediate = false)
         {
-            if (forceCleanup)
-                return true;
+            bool unusedOnly = true;
+            bool nonPersistentOnly = true;
 
-            if (pool.persistent)
-                return false;
-
-            return pool.usedObjectsCount == 0;
-        }
-
-        public IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false, bool immediate = false)
-        {
-            using (var iterator = PoolManager.i.pools.GetEnumerator())
+            if ( forceCleanup )
             {
-                idsToCleanup.Clear();
-
-                while (iterator.MoveNext())
-                {
-                    Pool pool = iterator.Current.Value;
-
-                    if (NeedsCleanup(pool, forceCleanup))
-                    {
-                        idsToCleanup.Add(pool.id);
-                    }
-                }
+                unusedOnly = false;
+                nonPersistentOnly = false;
             }
 
-            int count = idsToCleanup.Count;
-            if (count > 0)
+            if ( immediate )
             {
-                for (int i = 0; i < count; i++)
-                {
-                    PoolManager.i.RemovePool(idsToCleanup[i]);
-
-                    if (!immediate)
-                        yield return null;
-                }
+                PoolManager.i.Cleanup(unusedOnly, nonPersistentOnly);
+            }
+            else
+            {
+                yield return PoolManager.i.CleanupAsync(unusedOnly, nonPersistentOnly, false);
             }
         }
     }

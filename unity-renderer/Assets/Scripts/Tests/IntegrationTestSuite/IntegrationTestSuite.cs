@@ -31,7 +31,7 @@ namespace Tests
         protected virtual IEnumerator TearDown()
         {
             Environment.Dispose();
-            PoolManager.i?.Cleanup();
+            PoolManager.i?.Dispose();
             yield break;
         }
     }

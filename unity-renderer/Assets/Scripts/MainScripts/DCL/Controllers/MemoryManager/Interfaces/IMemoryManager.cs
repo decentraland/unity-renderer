@@ -5,7 +5,6 @@ namespace DCL
 {
     public interface IMemoryManager : IDisposable
     {
-        void Initialize(IParcelScenesCleaner parcelScenesCleaner);
-        IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false, bool immediate = false);
+        public event System.Action OnCriticalMemory;
     }
 }
