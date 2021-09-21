@@ -6,23 +6,23 @@ public interface IExploreSectionComponentView
     /// Fill the model and updates the explore section with this data.
     /// </summary>
     /// <param name="model">Data to configure the explore section.</param>
-    void Configure(ExploreSectionMenuComponentModel model);
+    void Configure(ExploreSectionComponentModel model);
 }
 
 public class ExploreSectionComponentView : BaseComponentView, IExploreSectionComponentView
 {
     [Header("Top Menu")]
-    [SerializeField] private SectionSelectorComponentView subSectionSelector;
+    [SerializeField] internal SectionSelectorComponentView subSectionSelector;
 
     [Header("Sections")]
-    [SerializeField] private HighlightsSubSectionComponentView highlightsSubSection;
-    [SerializeField] private PlacesSubSectionComponentView placesSubSection;
-    [SerializeField] private FavoritesSubSectionComponentView favoritesSubSection;
-    [SerializeField] private MyPlacesSubSectionComponentView myPlacesSubSection;
-    [SerializeField] private EventsSubSectionComponentView eventsSubSection;
+    [SerializeField] internal HighlightsSubSectionComponentView highlightsSubSection;
+    [SerializeField] internal PlacesSubSectionComponentView placesSubSection;
+    [SerializeField] internal FavoritesSubSectionComponentView favoritesSubSection;
+    [SerializeField] internal MyPlacesSubSectionComponentView myPlacesSubSection;
+    [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
 
     [Header("Configuration")]
-    [SerializeField] protected ExploreSectionMenuComponentModel model;
+    [SerializeField] internal ExploreSectionComponentModel model;
 
     public override void Initialize()
     {
@@ -35,17 +35,13 @@ public class ExploreSectionComponentView : BaseComponentView, IExploreSectionCom
             subSectionSelector.OnInitialized += CreateSubSectionSelectorMappings;
     }
 
-    public void Configure(ExploreSectionMenuComponentModel model)
+    public void Configure(ExploreSectionComponentModel model)
     {
         this.model = model;
         RefreshControl();
     }
 
-    public override void RefreshControl()
-    {
-        if (model == null)
-            return;
-    }
+    public override void RefreshControl() { }
 
     public override void Dispose()
     {
