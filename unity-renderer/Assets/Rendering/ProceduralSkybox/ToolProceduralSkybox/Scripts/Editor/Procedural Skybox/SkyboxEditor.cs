@@ -49,7 +49,11 @@ namespace DCL.Skybox
         {
             if (Application.isPlaying)
             {
-                isPaused = SkyboxController.i.IsPaused();
+                if (SkyboxController.i != null)
+                {
+                    isPaused = SkyboxController.i.IsPaused();
+                }
+
             }
             EnsureDependencies();
         }
@@ -383,7 +387,10 @@ namespace DCL.Skybox
             isPaused = false;
             if (Application.isPlaying)
             {
-                SkyboxController.i.ResumeTime(true, timeOfTheDay);
+                if (SkyboxController.i != null)
+                {
+                    SkyboxController.i.ResumeTime(true, timeOfTheDay);
+                }
             }
         }
 
@@ -392,7 +399,10 @@ namespace DCL.Skybox
             isPaused = true;
             if (Application.isPlaying)
             {
-                SkyboxController.i.PauseTime();
+                if (SkyboxController.i != null)
+                {
+                    SkyboxController.i.PauseTime();
+                }
             }
         }
 
