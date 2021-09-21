@@ -172,7 +172,7 @@ namespace DCL.Skybox
                 selectedConfiguration.textureLayers.Add(new TextureLayer("Tex Layer " + (selectedConfiguration.textureLayers.Count + 1)));
             }
 
-            GUILayout.Space(120);
+            GUILayout.Space(300);
             EditorGUILayout.EndScrollView();
             GUILayout.EndArea();
             if (GUI.changed)
@@ -586,7 +586,7 @@ namespace DCL.Skybox
 
             //EditorGUILayout.Separator();
             // Normal Intensity
-            layer.speed = EditorGUILayout.FloatField("Normal Intensity", layer.normalIntensity, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            layer.normalIntensity = EditorGUILayout.FloatField("Normal Intensity", layer.normalIntensity, GUILayout.Width(200), GUILayout.ExpandWidth(false));
 
             EditorGUILayout.Separator();
 
@@ -659,7 +659,7 @@ namespace DCL.Skybox
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField("Color", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            EditorGUILayout.GradientField(new GUIContent(""), layer.color, true, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            layer.color = EditorGUILayout.GradientField(new GUIContent(""), layer.color, true, GUILayout.Width(200), GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
         }
 
