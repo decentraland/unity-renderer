@@ -7,6 +7,9 @@ using DCL.Helpers;
 using DCL.Helpers.NFT;
 using DCL.Interface;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using NSubstitute;
 
 internal interface INFTPromptHUDView : IDisposable
 {
@@ -89,6 +92,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     string marketUrl = null;
 
     private bool isDestroyed = false;
+    internal IWrappedTextureHelper wrappedTextureHelper;
 
     private void Awake()
     {
@@ -277,18 +281,20 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
         bool imageFound = false;
 
-        yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl,
+        yield return wrappedTextureHelper.Fetch(nftInfo.previewImageUrl,
             promise =>
             {
+                imagePromise?.Forget();
                 imagePromise = promise;
                 imageFound = true;
             });
 
         if (!imageFound)
         {
-            yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
+            yield return wrappedTextureHelper.Fetch(nftInfo.originalImageUrl,
                 promise =>
                 {
+                    imagePromise?.Forget();
                     imagePromise = promise;
                     imageFound = true;
                 });

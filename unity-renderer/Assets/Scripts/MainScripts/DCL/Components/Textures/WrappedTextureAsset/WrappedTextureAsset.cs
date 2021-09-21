@@ -5,9 +5,16 @@ using UnityEngine.Networking;
 
 namespace DCL
 {
-    public static class WrappedTextureUtils
+    public interface IWrappedTextureHelper
     {
-        public static IEnumerator GetHeader(string url, string headerField, Action<string> OnSuccess, Action<string> OnFail)
+        IEnumerator GetHeader(string url, string headerField, Action<string> OnSuccess, Action<string> OnFail);
+        IEnumerator Fetch(string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action OnFail = null);
+        IEnumerator Fetch(string contentType, string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action OnFail = null);
+    }
+
+    public class WrappedTextureUtils : IWrappedTextureHelper
+    {
+        public IEnumerator GetHeader(string url, string headerField, Action<string> OnSuccess, Action<string> OnFail)
         {
             using (var headReq = UnityWebRequest.Head(url))
             {
@@ -24,14 +31,14 @@ namespace DCL
             }
         }
 
-        public static IEnumerator Fetch(string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action OnFail = null)
+        public IEnumerator Fetch(string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action OnFail = null)
         {
             string contentType = null;
             yield return GetHeader(url, "Content-Type", type => contentType = type, null);
             yield return Fetch(contentType, url, OnSuccess, OnFail);
         }
 
-        public static IEnumerator Fetch(string contentType, string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action OnFail = null)
+        public IEnumerator Fetch(string contentType, string url, Action<IPromiseLike_TextureAsset> OnSuccess, Action OnFail = null)
         {
             if (contentType == "image/gif")
             {

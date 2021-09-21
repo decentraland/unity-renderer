@@ -5,6 +5,8 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using UnityEngine;
 
+public class NFTShapeLoaderControllerShould { }
+
 public class NFTInfoFectcherShould
 {
     private NFTInfoFetcher fetcher;
