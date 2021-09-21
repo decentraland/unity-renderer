@@ -54,7 +54,7 @@ namespace DCL.Components
         where ReferencesContainerType : UIReferencesContainer
         where ModelType : UIShape.Model
     {
-        public const float RAYCAST_ALPHA_THRESHOLD = 0.02f;
+        public const float RAYCAST_ALPHA_THRESHOLD = 0.01f;
         
         public UIShape() { }
 
