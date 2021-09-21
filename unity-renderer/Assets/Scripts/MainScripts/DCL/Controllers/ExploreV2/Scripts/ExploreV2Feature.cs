@@ -9,6 +9,8 @@ public class ExploreV2Feature : PluginFeature
     public event Action OnOpen;
     public event Action OnClose;
 
+    internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
+
     internal IExploreV2MenuComponentView view;
 
     public override void Initialize()
@@ -18,16 +20,24 @@ public class ExploreV2Feature : PluginFeature
         view = CreateView();
         SetVisibility(false);
 
-        view.OnCloseButtonPressed += View_OnCloseButtonPressed;
+        if (string.IsNullOrEmpty(ownUserProfile.userId))
+            ownUserProfile.OnUpdate += OnProfileUpdated;
+        else
+            OnProfileUpdated(ownUserProfile);
+
+        view.OnCloseButtonPressed += OnCloseButtonPressed;
     }
 
     public override void Dispose()
     {
         base.Dispose();
 
-        if (view != null && view.go != null)
+        if (view == null)
+            return;
+
+        if (view.go != null)
         {
-            view.OnCloseButtonPressed -= View_OnCloseButtonPressed;
+            view.OnCloseButtonPressed -= OnCloseButtonPressed;
             GameObject.Destroy(view.go);
         }
     }
@@ -45,7 +55,22 @@ public class ExploreV2Feature : PluginFeature
         view.SetActive(visible);
     }
 
-    internal void View_OnCloseButtonPressed() { OnClose?.Invoke(); }
+    internal void OnProfileUpdated(UserProfile profile)
+    {
+        view.currentProfileCard.SetProfileName(profile.userName);
+        view.currentProfileCard.SetProfileAddress(profile.ethAddress);
+        view.currentProfileCard.SetLoadingIndicatorVisible(true);
+        profile.snapshotObserver.AddListener(SetProfileImage);
+    }
+
+    internal void SetProfileImage(Texture2D texture)
+    {
+        ownUserProfile.snapshotObserver.RemoveListener(SetProfileImage);
+        view.currentProfileCard.SetLoadingIndicatorVisible(false);
+        view.currentProfileCard.SetProfilePicture(texture);
+    }
+
+    internal void OnCloseButtonPressed() { OnClose?.Invoke(); }
 
     internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }

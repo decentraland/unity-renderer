@@ -1,6 +1,7 @@
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using UnityEngine;
 
 public class ExploreV2FeatureTests
 {
@@ -40,6 +41,35 @@ public class ExploreV2FeatureTests
     }
 
     [Test]
+    public void OnProfileUpdatedCorrectly()
+    {
+        // Arrange
+        UserProfile testUserProfile = new UserProfile();
+
+        // Act
+        exploreV2Feature.OnProfileUpdated(testUserProfile);
+
+        //Assert
+        exploreV2MenuView.currentProfileCard.Received().SetProfileName(testUserProfile.userName);
+        exploreV2MenuView.currentProfileCard.Received().SetProfileAddress(testUserProfile.ethAddress);
+        exploreV2MenuView.currentProfileCard.Received().SetLoadingIndicatorVisible(true);
+    }
+
+    [Test]
+    public void SetProfileImageCorrectly()
+    {
+        // Arrange
+        Texture2D testTexture = new Texture2D(10, 10);
+
+        // Act
+        exploreV2Feature.SetProfileImage(testTexture);
+
+        //Assert
+        exploreV2MenuView.currentProfileCard.Received().SetLoadingIndicatorVisible(false);
+        exploreV2MenuView.currentProfileCard.Received().SetProfilePicture(testTexture);
+    }
+
+    [Test]
     public void ClickOnCloseButtonCorrectly()
     {
         // Arrange
@@ -47,7 +77,7 @@ public class ExploreV2FeatureTests
         exploreV2Feature.OnClose += () => clicked = true;
 
         // Act
-        exploreV2Feature.View_OnCloseButtonPressed();
+        exploreV2Feature.OnCloseButtonPressed();
 
         // Assert
         Assert.IsTrue(clicked);

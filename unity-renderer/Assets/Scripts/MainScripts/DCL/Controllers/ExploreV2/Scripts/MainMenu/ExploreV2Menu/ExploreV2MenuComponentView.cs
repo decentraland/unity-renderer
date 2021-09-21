@@ -14,6 +14,11 @@ public interface IExploreV2MenuComponentView
     GameObject go { get; }
 
     /// <summary>
+    /// Profile card component.
+    /// </summary>
+    IProfileCardComponentView currentProfileCard { get; }
+
+    /// <summary>
     /// Returns true if the game object is activated.
     /// </summary>
     bool isActive { get; }
@@ -66,6 +71,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public bool isActive => gameObject.activeSelf;
 
     public GameObject go => this != null ? gameObject : null;
+    public IProfileCardComponentView currentProfileCard => profileCard;
 
     public event Action OnCloseButtonPressed;
 
