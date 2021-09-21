@@ -18,8 +18,14 @@ public interface IProfileCardComponentView
     /// <summary>
     /// Set the profile picture.
     /// </summary>
-    /// <param name="newPicture">Profile picture.</param>
+    /// <param name="newPicture">Profile picture (sprite).</param>
     void SetProfilePicture(Sprite newPicture);
+
+    /// <summary>
+    /// Set the profile picture.
+    /// </summary>
+    /// <param name="newPicture">Profile picture (texture).</param>
+    void SetProfilePicture(Texture2D newPicture);
 
     /// <summary>
     /// Set the profile name.
