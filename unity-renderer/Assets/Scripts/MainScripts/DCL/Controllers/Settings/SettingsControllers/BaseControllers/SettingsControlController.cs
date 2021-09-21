@@ -59,7 +59,7 @@ namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
 
         private void OnAudioSettingsChanged(AudioSettings newAudioSettings) { currentAudioSettings = newAudioSettings; }
 
-        private void OnResetSettingsControl()
+        protected virtual void OnResetSettingsControl()
         {
             currentGeneralSettings = Settings.i.generalSettings.Data;
             currentQualitySetting = Settings.i.qualitySettings.Data;
