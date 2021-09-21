@@ -18,10 +18,14 @@ public class SkyboxController : PluginFeature
     private Material selectedMat;
     private bool overrideDefaultSkybox;
     private string overrideSkyboxID;
+    private bool isPaused;
 
     public override void Initialize()
     {
         base.Initialize();
+
+        i = this;
+
         SelectSkyboxConfiguration();
 
         // Enable/Disable or Create new Directional Light Object
@@ -68,11 +72,10 @@ public class SkyboxController : PluginFeature
         RenderSettings.skybox = selectedMat;
     }
 
-
     // Update is called once per frame
     public override void Update()
     {
-        if (configuration == null)
+        if (configuration == null || isPaused)
         {
             return;
         }
@@ -93,6 +96,19 @@ public class SkyboxController : PluginFeature
         base.Dispose();
         DCL.DataStore.i.isProceduralSkyboxInUse.Set(false);
     }
+
+    public void PauseTime() { isPaused = true; }
+
+    public void ResumeTime(bool overrideTime = false, float newTime = 0)
+    {
+        isPaused = false;
+        if (overrideTime)
+        {
+            timeOfTheDay = newTime;
+        }
+    }
+
+    public bool IsPaused() { return isPaused; }
 
     private float GetNormalizedDayTime()
     {

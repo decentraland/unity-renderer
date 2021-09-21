@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-
 namespace DCL.Skybox
 {
     public class SkyboxEditorWindow : EditorWindow
@@ -16,7 +15,8 @@ namespace DCL.Skybox
         private int newConfigIndex;
         private SkyboxConfiguration selectedConfiguration;
 
-        public float testTime;
+        public bool isPaused;
+        public float timeOfTheDay;
         private Material selectedMat;
         private Vector2 panelScrollPos;
         private Light directionalLight;
@@ -27,28 +27,12 @@ namespace DCL.Skybox
         private bool showAmbienLayer;
         private bool showFogLayer;
         private bool showDLLayer;
-        private bool showTextureLayer;
 
+        public static SkyboxEditorWindow instance { get { return GetWindow<SkyboxEditorWindow>(); } }
 
-        public static SkyboxEditorWindow instance
-        {
-            get
-            {
-                return GetWindow<SkyboxEditorWindow>();
-            }
-        }
+        private void OnEnable() { EnsureDependencies(); }
 
-        private void OnEnable()
-        {
-            EnsureDependencies();
-        }
-
-
-
-        void OnFocus()
-        {
-            OnEnable();
-        }
+        void OnFocus() { OnEnable(); }
 
         [MenuItem("Window/Skybox Editor")]
         static void Init()
@@ -58,7 +42,16 @@ namespace DCL.Skybox
             //SkyboxEditorWindow.selectedConfiguration = new SkyboxConfiguration();
             window.minSize = new Vector2(500, 500);
             window.Show();
-            window.EnsureDependencies();
+            window.InitializeWindow();
+        }
+
+        public void InitializeWindow()
+        {
+            if (Application.isPlaying)
+            {
+                isPaused = SkyboxController.i.IsPaused();
+            }
+            EnsureDependencies();
         }
 
         void OnGUI()
@@ -182,8 +175,24 @@ namespace DCL.Skybox
             {
                 ApplyOnMaterial();
             }
+        }
 
+        private void Update()
+        {
+            if (selectedConfiguration == null || isPaused)
+            {
+                return;
+            }
 
+            timeOfTheDay += Time.deltaTime;
+            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, 24);
+
+            ApplyOnMaterial();
+
+            if (timeOfTheDay >= 24)
+            {
+                timeOfTheDay = 0.01f;
+            }
         }
 
         private void EnsureDependencies()
@@ -217,7 +226,7 @@ namespace DCL.Skybox
 
             selectedMat = matLayer.material;
             selectedConfiguration.ResetMaterial(selectedMat, matLayer.maxLayer);
-
+            RenderSettings.skybox = selectedMat;
             //initialized = true;
         }
 
@@ -228,11 +237,6 @@ namespace DCL.Skybox
                 return;
             }
             InitializeMaterial();
-
-            if (RenderSettings.skybox != selectedMat)
-            {
-                RenderSettings.skybox = selectedMat;
-            }
         }
 
         SkyboxConfiguration AddNewConfiguration(string name)
@@ -302,7 +306,6 @@ namespace DCL.Skybox
             }
 
 
-
             GUILayout.EndHorizontal();
         }
 
@@ -336,6 +339,15 @@ namespace DCL.Skybox
             }
 
             InitializeMaterial();
+
+            //isPaused = true;
+
+            if (!Application.isPlaying)
+            {
+                isPaused = true;
+            }
+
+
         }
 
         private void RenderTimePanel()
@@ -344,12 +356,44 @@ namespace DCL.Skybox
             GUILayout.Label("Preview", EditorStyles.boldLabel);
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Time : " + testTime, EditorStyles.label);
-            testTime = EditorGUILayout.Slider(testTime, 0.01f, 24.00f, GUILayout.MinWidth(100), GUILayout.MaxWidth(300));
-            GUI.enabled = false;
-            EditorGUILayout.FloatField(GetNormalizedDayTime() * 100, GUILayout.MinWidth(100), GUILayout.MaxWidth(100));
-            GUI.enabled = true;
+            GUILayout.Label("Time : " + timeOfTheDay, EditorStyles.label, GUILayout.MinWidth(100));
+            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.MinWidth(100), GUILayout.MaxWidth(300));
+            EditorGUILayout.LabelField((GetNormalizedDayTime() * 100).ToString("f2"), GUILayout.MaxWidth(50));
+
+            if (isPaused)
+            {
+                if (GUILayout.Button("Play"))
+                {
+                    ResumeTime();
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Pause"))
+                {
+                    PauseTime();
+                }
+            }
+
             GUILayout.EndHorizontal();
+        }
+
+        void ResumeTime()
+        {
+            isPaused = false;
+            if (Application.isPlaying)
+            {
+                SkyboxController.i.ResumeTime(true, timeOfTheDay);
+            }
+        }
+
+        void PauseTime()
+        {
+            isPaused = true;
+            if (Application.isPlaying)
+            {
+                SkyboxController.i.PauseTime();
+            }
         }
 
         void RenderBackgroundColorLayer()
@@ -482,7 +526,6 @@ namespace DCL.Skybox
             }
 
 
-
         }
 
         void RenderTextureLayer(TextureLayer layer)
@@ -528,6 +571,10 @@ namespace DCL.Skybox
 
             EditorGUILayout.Separator();
 
+            // Render Distance
+
+
+            //EditorGUILayout.Separator();
             // Normal Intensity
             layer.speed = EditorGUILayout.FloatField("Normal Intensity", layer.normalIntensity, GUILayout.Width(200), GUILayout.ExpandWidth(false));
 
@@ -670,23 +717,20 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
         }
 
-        Vector4 QuaternionToVector4(Quaternion rot)
-        {
-            return new Vector4(rot.x, rot.y, rot.z, rot.w);
-        }
+        Vector4 QuaternionToVector4(Quaternion rot) { return new Vector4(rot.x, rot.y, rot.z, rot.w); }
 
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
 
-            selectedConfiguration.ApplyOnMaterial(selectedMat, testTime, GetNormalizedDayTime(), directionalLight);
+            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), directionalLight);
         }
 
         private float GetNormalizedDayTime()
         {
             float tTime = 0;
 
-            tTime = testTime / 24;
+            tTime = timeOfTheDay / 24;
 
             tTime = Mathf.Clamp(tTime, 0, 1);
 
