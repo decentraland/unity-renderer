@@ -1,5 +1,5 @@
 using System;
-using DCL.SettingsControls;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,7 +1,8 @@
 using DCL.Interface;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Base Resolution", fileName = "BaseResolutionControlController")]
     public class BaseResolutionControlController : SpinBoxSettingsControlController
@@ -10,17 +11,17 @@ namespace DCL.SettingsControls
 
         public override void UpdateSetting(object newValue)
         {
-            currentQualitySetting.baseResolution = (SettingsData.QualitySettings.BaseResolution)newValue;
+            currentQualitySetting.baseResolution = (QualitySettings.BaseResolution)newValue;
 
             switch (currentQualitySetting.baseResolution)
             {
-                case SettingsData.QualitySettings.BaseResolution.BaseRes_720:
+                case QualitySettings.BaseResolution.BaseRes_720:
                     WebInterface.SetBaseResolution(820);
                     break;
-                case SettingsData.QualitySettings.BaseResolution.BaseRes_1080:
+                case QualitySettings.BaseResolution.BaseRes_1080:
                     WebInterface.SetBaseResolution(1080);
                     break;
-                case SettingsData.QualitySettings.BaseResolution.BaseRes_Unlimited:
+                case QualitySettings.BaseResolution.BaseRes_Unlimited:
                     WebInterface.SetBaseResolution(9999);
                     break;
             }

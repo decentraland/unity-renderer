@@ -1,7 +1,7 @@
-using DCL.SettingsPanelHUD.Common;
 using DCL.SettingsPanelHUD.Sections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.SettingsCommon;
 
 namespace DCL.SettingsPanelHUD
 {
@@ -72,7 +72,15 @@ namespace DCL.SettingsPanelHUD
 
         private List<SettingsButtonEntry> menuButtons = new List<SettingsButtonEntry>();
 
-        public SettingsPanelHUDController() { view = SettingsPanelHUDView.Create(); }
+        public void Initialize()
+        {
+            view = CreateView();
+            view.Initialize(this, this);
+        }
+        protected virtual SettingsPanelHUDView CreateView()
+        {
+            return SettingsPanelHUDView.Create();
+        }
 
         public void Dispose()
         {
@@ -93,8 +101,6 @@ namespace DCL.SettingsPanelHUD
 
             view.SetVisibility(visible);
         }
-
-        public void Initialize() { view.Initialize(this, this); }
 
         public void AddSection(
             SettingsButtonEntry newMenuButton,

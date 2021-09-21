@@ -1,33 +1,33 @@
 using UnityEngine;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
 {
     /// <summary>
     /// This controller is in charge of manage all the logic related to a SETTING CONTROL.
     /// </summary>
     public class SettingsControlController : ScriptableObject
     {
-        protected SettingsData.GeneralSettings currentGeneralSettings;
-        protected SettingsData.QualitySettings currentQualitySetting;
-        protected SettingsData.AudioSettings currentAudioSettings;
+        protected GeneralSettings currentGeneralSettings;
+        protected QualitySettings currentQualitySetting;
+        protected AudioSettings currentAudioSettings;
 
         public virtual void Initialize()
         {
-            currentGeneralSettings = Settings.i.generalSettings;
-            currentQualitySetting = Settings.i.qualitySettings;
-            currentAudioSettings = Settings.i.audioSettings;
+            currentGeneralSettings = Settings.i.generalSettings.Data;
+            currentQualitySetting = Settings.i.qualitySettings.Data;
+            currentAudioSettings = Settings.i.audioSettings.Data;
 
-            Settings.i.OnGeneralSettingsChanged += OnGeneralSettingsChanged;
-            Settings.i.OnQualitySettingsChanged += OnQualitySettingsChanged;
-            Settings.i.OnAudioSettingsChanged += OnAudioSettingsChanged;
+            Settings.i.generalSettings.OnChanged += OnGeneralSettingsChanged;
+            Settings.i.qualitySettings.OnChanged += OnQualitySettingsChanged;
+            Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
             Settings.i.OnResetAllSettings += OnResetSettingsControl;
         }
 
         public virtual void OnDestroy()
         {
-            Settings.i.OnGeneralSettingsChanged -= OnGeneralSettingsChanged;
-            Settings.i.OnQualitySettingsChanged -= OnQualitySettingsChanged;
-            Settings.i.OnAudioSettingsChanged -= OnAudioSettingsChanged;
+            Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
+            Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;
+            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             Settings.i.OnResetAllSettings -= OnResetSettingsControl;
         }
 
@@ -48,22 +48,22 @@ namespace DCL.SettingsControls
         /// </summary>
         public virtual void ApplySettings()
         {
-            Settings.i.ApplyGeneralSettings(currentGeneralSettings);
-            Settings.i.ApplyQualitySettings(currentQualitySetting);
-            Settings.i.ApplyAudioSettings(currentAudioSettings);
+            Settings.i.generalSettings.Apply(currentGeneralSettings);
+            Settings.i.qualitySettings.Apply(currentQualitySetting);
+            Settings.i.audioSettings.Apply(currentAudioSettings);
         }
 
-        private void OnGeneralSettingsChanged(SettingsData.GeneralSettings newGeneralSettings) { currentGeneralSettings = newGeneralSettings; }
+        private void OnGeneralSettingsChanged(GeneralSettings newGeneralSettings) { currentGeneralSettings = newGeneralSettings; }
 
-        private void OnQualitySettingsChanged(SettingsData.QualitySettings newQualitySettings) { currentQualitySetting = newQualitySettings; }
+        private void OnQualitySettingsChanged(QualitySettings newQualitySettings) { currentQualitySetting = newQualitySettings; }
 
-        private void OnAudioSettingsChanged(SettingsData.AudioSettings newAudioSettings) { currentAudioSettings = newAudioSettings; }
+        private void OnAudioSettingsChanged(AudioSettings newAudioSettings) { currentAudioSettings = newAudioSettings; }
 
         private void OnResetSettingsControl()
         {
-            currentGeneralSettings = Settings.i.generalSettings;
-            currentQualitySetting = Settings.i.qualitySettings;
-            currentAudioSettings = Settings.i.audioSettings;
+            currentGeneralSettings = Settings.i.generalSettings.Data;
+            currentQualitySetting = Settings.i.qualitySettings.Data;
+            currentAudioSettings = Settings.i.audioSettings.Data;
         }
     }
 }

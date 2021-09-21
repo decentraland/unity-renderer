@@ -3,7 +3,7 @@ using DCL.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace DCL.SettingsController
+namespace DCL.SettingsCommon.SettingsControllers
 {
     /// <summary>
     /// This MonoBehaviour will only contain the external references needed for the quality settings.

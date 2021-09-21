@@ -1,10 +1,9 @@
-using Cinemachine;
-using DCL.SettingsCommon;
-using DCL.SettingsController;
-using DCL.SettingsControls;
-using NUnit.Framework;
 using System.Collections;
 using System.Reflection;
+using Cinemachine;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+using DCL.SettingsCommon.SettingsControllers.SpecificControllers;
+using NUnit.Framework;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -12,7 +11,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace DCL.SettingsCommon.SettingsControllers.Tests
 {
     public class SettingsControlsShould
     {
@@ -94,7 +93,7 @@ namespace Tests
             settingController.Initialize();
 
             // Act
-            int newValue = (int)DCL.SettingsData.GeneralSettings.VoiceChatAllow.FRIENDS_ONLY;
+            int newValue = (int)GeneralSettings.VoiceChatAllow.FRIENDS_ONLY;
             settingController.UpdateSetting(newValue);
 
             // Assert
@@ -126,7 +125,7 @@ namespace Tests
             settingController.Initialize();
 
             // Act
-            DCL.SettingsData.QualitySettings.BaseResolution newValue = DCL.SettingsData.QualitySettings.BaseResolution.BaseRes_1080;
+            QualitySettings.BaseResolution newValue = QualitySettings.BaseResolution.BaseRes_1080;
             settingController.UpdateSetting(newValue);
 
             // Assert
