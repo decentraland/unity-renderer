@@ -1,11 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using NSubstitute;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using UnityEngine;
-
-public class NFTShapeLoaderControllerShould { }
 
 public class NFTInfoFectcherShould
 {

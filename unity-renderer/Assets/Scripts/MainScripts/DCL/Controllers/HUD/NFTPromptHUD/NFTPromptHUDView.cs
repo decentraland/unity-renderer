@@ -7,9 +7,6 @@ using DCL.Helpers;
 using DCL.Helpers.NFT;
 using DCL.Interface;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using NSubstitute;
 
 internal interface INFTPromptHUDView : IDisposable
 {
@@ -96,6 +93,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     private void Awake()
     {
+        wrappedTextureHelper = new WrappedTextureUtils();
         name = "_NFTPromptHUD";
 
         buttonClose.onClick.AddListener(Hide);
