@@ -113,11 +113,11 @@ namespace DCL
             EnablePassport();
 
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            if(config.features.enableAvatarLODs)
-                                avatarRenderer.InitializeImpostor();
-                        });
+                .Then(config =>
+                {
+                    if (config.features.enableAvatarLODs)
+                        avatarRenderer.InitializeImpostor();
+                });
         }
 
         private void UpdatePlayerStatus(AvatarModel model)
@@ -135,6 +135,7 @@ namespace DCL
                 player = new Player();
                 isNew = true;
             }
+
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;

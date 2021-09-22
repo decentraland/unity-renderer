@@ -19,8 +19,10 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
-        public MeshRenderer lodRenderer;
-        public MeshFilter lodMeshFilter;
+        [SerializeField] private MeshRenderer lodRenderer;
+        [SerializeField] private MeshFilter lodMeshFilter;
+        private Material impostorMaterial;
+        private Mesh impostorMesh;
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
@@ -132,21 +134,31 @@ namespace DCL
 
         public void InitializeImpostor()
         {
+            impostorMesh = Instantiate(lodMeshFilter.sharedMesh);
+            impostorMaterial = new Material(lodRenderer.sharedMaterial);
+
             UserProfile userProfile = null;
+
             if (!string.IsNullOrEmpty(model?.id))
                 userProfile = UserProfileController.GetProfileByUserId(model.id);
 
             if (userProfile != null)
             {
                 bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.sharedMesh, lodRenderer.sharedMaterial);
-                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.sharedMesh);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, impostorMesh, impostorMaterial);
+                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMesh);
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
             }
             else
             {
-                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.sharedMesh);
+                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMesh);
             }
+        }
+
+        public void CleanImpostor()
+        {
+            Destroy(impostorMesh);
+            Destroy(impostorMaterial);
         }
 
         void StopLoadingCoroutines()
@@ -160,12 +172,14 @@ namespace DCL
         public void CleanupAvatar()
         {
             StopLoadingCoroutines();
+
             if (!isDestroyed)
             {
                 SetGOVisibility(true);
                 if (lodRenderer != null)
                     SetImpostorVisibility(false);
             }
+
 
             avatarMeshCombiner.Dispose();
             gpuSkinning = null;
@@ -196,6 +210,7 @@ namespace DCL
             OnSuccessEvent = null;
 
             CleanMergedAvatar();
+            CleanImpostor();
 
             if (bodySnapshotTexturePromise != null)
                 AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
@@ -614,7 +629,7 @@ namespace DCL
 
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
 
-        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.sharedMaterial, newColor); }
+        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(impostorMaterial, newColor); }
 
         public void SetAvatarFade(float avatarFade)
         {
@@ -631,9 +646,9 @@ namespace DCL
         public void SetImpostorFade(float impostorFade)
         {
             //TODO implement dither in Unlit shader
-            Color current = lodRenderer.sharedMaterial.GetColor(BASE_COLOR_PROPERTY);
+            Color current = impostorMaterial.GetColor(BASE_COLOR_PROPERTY);
             current.a = impostorFade;
-            lodRenderer.sharedMaterial.SetColor(BASE_COLOR_PROPERTY, current);
+            impostorMaterial.SetColor(BASE_COLOR_PROPERTY, current);
 
             OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
