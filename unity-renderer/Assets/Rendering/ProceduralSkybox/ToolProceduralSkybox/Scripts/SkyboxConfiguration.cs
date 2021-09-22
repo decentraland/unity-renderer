@@ -215,7 +215,7 @@ namespace DCL.Skybox
                 selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
                 selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
             }
-
+            selectedMat.SetFloat("_RenderDistance_" + layerNum, GetTansitionValue(layer.renderDistance, normalizedDayTime * 100, 3.4f));
 
             Vector2 currentOffset = GetTransitionValue(layer.position, normalizedDayTime * 100);
             Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, currentOffset.x, currentOffset.y);
@@ -302,6 +302,7 @@ namespace DCL.Skybox
         {
             for (int i = 0; i < layerNum; i++)
             {
+                selectedMat.SetFloat("_RenderDistance_" + i, 3.4f);
                 selectedMat.SetFloat("_isRadial_" + i, 0);
                 selectedMat.SetTexture("_tex_" + i, null);
                 selectedMat.SetTexture("_normals_" + i, null);
@@ -395,7 +396,7 @@ namespace DCL.Skybox
         public float timeSpan_End;
         public float fadingIn, fadingOut;
         public float tintercentage;
-
+        internal List<TransitioningFloat> renderDistance;
         internal LayerType layerType;
         public Texture2D texture;
         public Texture2D textureNormal;
@@ -411,6 +412,7 @@ namespace DCL.Skybox
             tiling = new Vector2(1, 1);
             nameInEditor = name;
             position = new List<TransitioningVector2>();
+            renderDistance = new List<TransitioningFloat>();
             color = new Gradient();
         }
     }
