@@ -58,8 +58,8 @@ namespace DCL
         public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
 
         private Coroutine loadCoroutine;
-        private List<string> wearablesInUse = new List<string>();
         private AssetPromise_Texture bodySnapshotTexturePromise;
+        private List<string> wearablesInUse = new List<string>();
         private bool isDestroyed = false;
 
         private void Awake()
@@ -99,8 +99,8 @@ namespace DCL
 
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+            
+            ResetImpostor();
 
             // TODO(Brian): Find a better approach than overloading callbacks like this. This code is not readable.
             void onSuccessWrapper()
@@ -135,10 +135,10 @@ namespace DCL
 
         public void InitializeImpostor()
         {
-            initializedImpostor = true;   
+            initializedImpostor = true;
             
             // The fetched snapshot can take its time so it's better to assign a generic impostor first.
-            AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
+            AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh, lodRenderer.material);
 
             UserProfile userProfile = null;
             if (!string.IsNullOrEmpty(model?.id))
@@ -148,7 +148,6 @@ namespace DCL
             {
                 bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
                 bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
-                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
             }
         }
@@ -202,8 +201,7 @@ namespace DCL
 
             CleanMergedAvatar();
 
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+            ResetImpostor();
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
@@ -698,7 +696,20 @@ namespace DCL
             return success;
         }
 
-        void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
+        private void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
+
+        private void ResetImpostor()
+        {
+            if (lodRenderer == null)
+                return;
+            
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+            
+            AvatarRendererHelpers.ResetImpostor(lodMeshFilter.mesh, lodRenderer.material);
+            
+            initializedImpostor = false;
+        }
 
         private void LateUpdate()
         {

@@ -158,7 +158,10 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
+        public void UpdateImpostorTint(float distanceToMainPlayer)
+        {
+            player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
+        }
 
         public void Dispose()
         {
