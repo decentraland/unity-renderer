@@ -312,15 +312,17 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   textureLayers:
   - nameInEditor: Stars
-    expandedInEditor: 1
+    expandedInEditor: 0
     timeSpan_start: 0
     timeSpan_End: 24
-    fadingIn: 1
+    fadingIn: 0
     fadingOut: 0
     tintercentage: 0
-    isRadial: 1
+    renderDistance: []
+    layerType: 2
     texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
     textureNormal: {fileID: 0}
+    cubemap: {fileID: 8900000, guid: 7529afcac85c84886af2e8998f5a86a8, type: 3}
     color:
       serializedVersion: 2
       key0: {r: 0.4716981, g: 0.3715735, b: 0.3715735, a: 1}
@@ -363,9 +365,13 @@ MonoBehaviour:
     fadingIn: 0
     fadingOut: 0
     tintercentage: 0
-    isRadial: 0
+    renderDistance:
+    - percentage: 19.583332
+      value: 2.5
+    layerType: 0
     texture: {fileID: 2800000, guid: 10f62b4152000cd40bfef3f3ac6dec74, type: 3}
     textureNormal: {fileID: 0}
+    cubemap: {fileID: 0}
     color:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 1, a: 1}
@@ -398,6 +404,6 @@ MonoBehaviour:
     tiling: {x: 0.05, y: 0.1}
     position:
     - percentage: 1
-      value: {x: 0.5, y: 0.1}
-    speed: 0
+      value: {x: 0, y: 0.1}
+    speed: 0.4
     normalIntensity: 0
