@@ -564,38 +564,56 @@ namespace DCL.Skybox
 
             EditorGUILayout.Separator();
 
-            layer.isRadial = EditorGUILayout.Toggle("Radial", layer.isRadial);
+            //layer.layerType = EditorGUILayout.Toggle("Radial", layer.layerType);
+            layer.layerType = (LayerType)EditorGUILayout.EnumPopup("Layer Type:", layer.layerType, GUILayout.Width(500));
 
-            // Texture
-            //EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Texture", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            layer.texture = (Texture2D)EditorGUILayout.ObjectField(layer.texture, typeof(Texture2D), false);
-            GUILayout.EndHorizontal();
+            if (layer.layerType == LayerType.Cubemap)
+            {
+                // Cubemap
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField("Cubemap", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                layer.cubemap = (Cubemap)EditorGUILayout.ObjectField(layer.cubemap, typeof(Cubemap), false);
+                GUILayout.EndHorizontal();
 
-            // Normal Texture
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Normal Map", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            layer.textureNormal = (Texture2D)EditorGUILayout.ObjectField(layer.textureNormal, typeof(Texture2D), false);
-            GUILayout.EndHorizontal();
+                EditorGUILayout.Separator();
+            }
+            else
+            {
+                // Texture
+                //EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField("Texture", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                layer.texture = (Texture2D)EditorGUILayout.ObjectField(layer.texture, typeof(Texture2D), false);
+                GUILayout.EndHorizontal();
+
+                EditorGUILayout.Separator();
+
+                // Normal Texture
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField("Normal Map", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                layer.textureNormal = (Texture2D)EditorGUILayout.ObjectField(layer.textureNormal, typeof(Texture2D), false);
+                GUILayout.EndHorizontal();
+
+                EditorGUILayout.Separator();
+
+                // Render Distance
+
+
+                //EditorGUILayout.Separator();
+                // Normal Intensity
+                layer.normalIntensity = EditorGUILayout.FloatField("Normal Intensity", layer.normalIntensity, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+
+                // Tiling
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField("Tiling", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                layer.tiling = EditorGUILayout.Vector2Field("", layer.tiling, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                GUILayout.EndHorizontal();
+                EditorGUILayout.Separator();
+            }
+
 
             EditorGUILayout.Separator();
 
-            // Render Distance
-
-
-            //EditorGUILayout.Separator();
-            // Normal Intensity
-            layer.normalIntensity = EditorGUILayout.FloatField("Normal Intensity", layer.normalIntensity, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-
-            EditorGUILayout.Separator();
-
-            // Tiling
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Tiling", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            layer.tiling = EditorGUILayout.Vector2Field("", layer.tiling, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            GUILayout.EndHorizontal();
-            EditorGUILayout.Separator();
 
             // Speed
             layer.speed = EditorGUILayout.FloatField("Speed", layer.speed, GUILayout.Width(200), GUILayout.ExpandWidth(false));

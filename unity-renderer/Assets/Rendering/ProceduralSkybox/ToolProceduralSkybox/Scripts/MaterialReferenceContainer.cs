@@ -1,55 +1,57 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SkyboxMaterialData", menuName = "ScriptableObjects/SkyboxMaterialData", order = 1)]
-public class MaterialReferenceContainer : ScriptableObject
+namespace DCL.Skybox
 {
-    [System.Serializable]
-    public class Mat_Layer
+    [CreateAssetMenu(fileName = "SkyboxMaterialData", menuName = "ScriptableObjects/SkyboxMaterialData", order = 1)]
+    public class MaterialReferenceContainer : ScriptableObject
     {
-        public int numberOfLayers;
-        public Material material;
-        public int maxLayer;
-    }
-
-    private static MaterialReferenceContainer instance;
-    public static MaterialReferenceContainer i => GetOrLoad(ref instance, "Skybox Materials/SkyboxMaterialData");
-
-    private static T GetOrLoad<T>(ref T variable, string path) where T : Object
-    {
-        if (variable == null)
+        [System.Serializable]
+        public class Mat_Layer
         {
-            variable = Resources.Load<T>(path);
+            public int numberOfLayers;
+            public Material material;
+            public int maxLayer;
         }
 
-        return variable;
-    }
+        private static MaterialReferenceContainer instance;
+        public static MaterialReferenceContainer i => GetOrLoad(ref instance, "Skybox Materials/SkyboxMaterialData");
 
-    public Mat_Layer[] materials;
-
-    public Material GetMaterialForLayers(int numOfLayer)
-    {
-        for (int i = 0; i < materials.Length; i++)
+        private static T GetOrLoad<T>(ref T variable, string path) where T : Object
         {
-            if (numOfLayer <= materials[i].numberOfLayers)
+            if (variable == null)
             {
-                return materials[i].material;
+                variable = Resources.Load<T>(path);
             }
-        }
-        return null;
-    }
 
-    public Mat_Layer GetMat_LayerForLayers(int numOfLayer)
-    {
-        for (int i = 0; i < materials.Length; i++)
-        {
-            if (numOfLayer <= materials[i].numberOfLayers)
-            {
-                return materials[i];
-            }
+            return variable;
         }
-        return null;
+
+        public Mat_Layer[] materials;
+
+        public Material GetMaterialForLayers(int numOfLayer)
+        {
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (numOfLayer <= materials[i].numberOfLayers)
+                {
+                    return materials[i].material;
+                }
+            }
+            return null;
+        }
+
+        public Mat_Layer GetMat_LayerForLayers(int numOfLayer)
+        {
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (numOfLayer <= materials[i].numberOfLayers)
+                {
+                    return materials[i];
+                }
+            }
+            return null;
+        }
     }
 }
