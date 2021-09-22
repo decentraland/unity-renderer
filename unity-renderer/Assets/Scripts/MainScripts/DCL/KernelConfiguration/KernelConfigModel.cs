@@ -11,7 +11,12 @@ public class KernelConfigModel
     public bool gifSupported = false;
     public string network = "mainnet";
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
-
+    public string kernelVersion = string.Empty;
+    public string rendererVersion = string.Empty;
+    public override bool Equals(object obj)
+    {
+        return obj is KernelConfigModel other && Equals(other);
+    }
     public bool Equals(KernelConfigModel other)
     {
         if (other == null)
@@ -25,12 +30,14 @@ public class KernelConfigModel
             if (!validWorldRanges[i].Equals(other.validWorldRanges[i]))
                 return false;
         }
-
-        return this.comms.Equals(other.comms) &&
-               this.profiles.Equals(other.profiles) &&
-               this.features.Equals(other.features) &&
-               this.gifSupported == other.gifSupported &&
-               this.network == other.network;
+        
+        return comms.Equals(other.comms) 
+               && profiles.Equals(other.profiles) 
+               && features.Equals(other.features) 
+               && gifSupported == other.gifSupported 
+               && network == other.network
+               && kernelVersion == other.kernelVersion
+               && rendererVersion == other.rendererVersion;
     }
 
     public KernelConfigModel Clone()
@@ -43,6 +50,8 @@ public class KernelConfigModel
         clone.gifSupported = gifSupported;
         clone.network = network;
         clone.validWorldRanges = new List<WorldRange>(validWorldRanges);
+        clone.kernelVersion = kernelVersion;
+        clone.rendererVersion = rendererVersion;
         return clone;
     }
 }

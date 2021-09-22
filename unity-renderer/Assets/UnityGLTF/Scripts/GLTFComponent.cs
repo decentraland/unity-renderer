@@ -359,13 +359,18 @@ namespace UnityGLTF
 
         public void CancelIfQueued()
         {
-            if (prioritizeDownload)
-                return;
-            
-            if (state == State.QUEUED || state == State.NONE)
+            if (IsInQueue())
             {
                 OnFail_Internal(null);
             }
+        }
+
+        public bool IsInQueue()
+        {
+            if (prioritizeDownload)
+                return false;
+            
+            return state == State.QUEUED || state == State.NONE;
         }
 
 #if UNITY_EDITOR

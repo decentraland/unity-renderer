@@ -8,9 +8,19 @@ namespace KernelConfigurationTypes
         public bool enableBuilderInWorld = false;
         public bool enableAvatarLODs = false;
         public bool enableTutorial = true;
+        public bool enablePeopleCounter = false;
 
-        public bool Equals(Features other) { return enableBuilderInWorld == other?.enableBuilderInWorld; }
-
+        public override bool Equals(object obj)
+        {
+            return obj is Features other && Equals(other);
+        }
+        protected bool Equals(Features other)
+        {
+            return enableBuilderInWorld == other.enableBuilderInWorld 
+                   && enableAvatarLODs == other.enableAvatarLODs 
+                   && enableTutorial == other.enableTutorial 
+                   && enablePeopleCounter == other.enablePeopleCounter;
+        }
         public Features Clone()
         {
             Features clone = (Features) this.MemberwiseClone();

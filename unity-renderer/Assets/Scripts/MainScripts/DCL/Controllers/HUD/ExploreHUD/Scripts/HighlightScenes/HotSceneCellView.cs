@@ -16,10 +16,12 @@ internal class HotSceneCellView : MonoBehaviour
 
     [Header("Animators")]
     [SerializeField] Animator viewAnimator;
+
     [SerializeField] ShowHideAnimator jumpInButtonAnimator;
 
     [Header("Crowd")]
     [SerializeField] GameObject crowdCountContainer;
+
     [SerializeField] TextMeshProUGUI crowdCount;
 
     [Header("Events")]
@@ -27,19 +29,23 @@ internal class HotSceneCellView : MonoBehaviour
 
     [Header("Friends")]
     [SerializeField] ExploreFriendsView friendsView;
+
     [SerializeField] GameObject friendsContainer;
 
     [Header("Scene")]
     [SerializeField] TextMeshProUGUI sceneName;
+
     [SerializeField] internal RawImageFillParent thumbnailImage;
     [SerializeField] UIHoverCallback sceneInfoButton;
 
     [Header("UI")]
     [SerializeField] UIHoverCallback jumpInHoverArea;
+
     [SerializeField] Button_OnPointerDown jumpIn;
     [SerializeField] Sprite errorThumbnail;
 
     public delegate void JumpInDelegate(Vector2Int coords, string serverName, string layerName);
+
     public static event JumpInDelegate OnJumpIn;
 
     public static event Action<HotSceneCellView> OnInfoButtonPointerDown;
@@ -96,8 +102,8 @@ internal class HotSceneCellView : MonoBehaviour
         mapInfoHandler = new MapInfoHandler();
 
         friendsHandler = new FriendsHandler(mapInfoHandler);
-        friendsHandler.onFriendAdded += OnFriendAdded;
-        friendsHandler.onFriendRemoved += OnFriendRemoved;
+        friendsHandler.OnFriendAddedEvent += OnFriendAdded;
+        friendsHandler.OnFriendRemovedEvent += OnFriendRemoved;
 
         thumbnailHandler = new ThumbnailHandler();
         animationHandler = new AnimationHandler(viewAnimator);
@@ -136,6 +142,7 @@ internal class HotSceneCellView : MonoBehaviour
                 {
                     nextMostPopulatedRealms = new Queue<HotScenesController.HotSceneInfo.Realm>(hotSceneInfo.realms.ToList().GetRange(i + 1, hotSceneInfo.realms.Length - i - 1));
                 }
+
                 break;
             }
         }
@@ -202,8 +209,8 @@ internal class HotSceneCellView : MonoBehaviour
         friendPool.Dispose();
         thumbnailHandler.Dispose();
 
-        friendsHandler.onFriendAdded -= OnFriendAdded;
-        friendsHandler.onFriendRemoved -= OnFriendRemoved;
+        friendsHandler.OnFriendAddedEvent -= OnFriendAdded;
+        friendsHandler.OnFriendRemovedEvent -= OnFriendRemoved;
 
         RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
         RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;

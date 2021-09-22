@@ -21,6 +21,8 @@ namespace DCL
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
+        private AvatarMeshCombiner.Output? lastOutput;
+
         public AvatarMeshCombinerHelper (GameObject container = null) { this.container = container; }
 
         /// <summary>
@@ -92,6 +94,7 @@ namespace DCL
                 renderer = container.AddComponent<SkinnedMeshRenderer>();
 
             UnloadAssets();
+            lastOutput = output;
 
             container.layer = bonesContainer.gameObject.layer;
             renderer.sharedMesh = output.mesh;
@@ -109,15 +112,15 @@ namespace DCL
 
         private void UnloadAssets()
         {
-            if (renderer == null)
+            if (!lastOutput.HasValue)
                 return;
 
-            if (renderer.sharedMesh != null)
-                Object.Destroy(renderer.sharedMesh);
+            if (lastOutput.Value.mesh != null)
+                Object.Destroy(lastOutput.Value.mesh);
 
-            if ( renderer.sharedMaterials != null)
+            if (lastOutput.Value.materials != null)
             {
-                foreach ( var material in renderer.sharedMaterials )
+                foreach ( var material in lastOutput.Value.materials )
                 {
                     Object.Destroy(material);
                 }

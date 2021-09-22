@@ -60,15 +60,9 @@ namespace DCL.Camera
             base.Init(camera);
         }
 
-        private void OnEnable()
-        {
-            CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera;
-        }
+        private void OnEnable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera; }
 
-        private void OnDisable()
-        {
-            CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera;
-        }
+        private void OnDisable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera; }
 
         void UpdateMovingPlatformCamera(bool isOnMovingPlatform, bool wasOnMovingPlatform)
         {
@@ -179,11 +173,13 @@ namespace DCL.Camera
                 var dirToLook = (cameraTarget - newPos);
                 eulerDir = Quaternion.LookRotation(dirToLook).eulerAngles;
             }
-
+            
             defaultVirtualCameraAsFreeLook.m_XAxis.Value = eulerDir.y;
-            defaultVirtualCameraAsFreeLook.m_YAxis.Value = eulerDir.x;
+            
+            //value range 0 to 1, being 0 the bottom orbit and 1 the top orbit
+            var yValue = Mathf.InverseLerp(-90, 90, eulerDir.x);
+            defaultVirtualCameraAsFreeLook.m_YAxis.Value = yValue;
         }
-
         public override void OnBlock(bool blocked)
         {
             base.OnBlock(blocked);

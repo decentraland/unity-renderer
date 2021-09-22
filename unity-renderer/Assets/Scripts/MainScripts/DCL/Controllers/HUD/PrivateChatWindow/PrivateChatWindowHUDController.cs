@@ -17,6 +17,8 @@ public class PrivateChatWindowHUDController : IHUD
     public string conversationUserId { get; private set; } = string.Empty;
     public string conversationUserName { get; private set; } = string.Empty;
 
+    private ILazyTextureObserver conversationSnapshot;
+
     public event System.Action OnPressBack;
 
     public void Initialize(IChatController chatController)
@@ -54,12 +56,16 @@ public class PrivateChatWindowHUDController : IHUD
 
         UserProfile newConversationUserProfile = UserProfileController.userProfilesCatalog.Get(newConversationUserId);
 
+        if ( conversationSnapshot != null )
+            conversationSnapshot.RemoveListener(view.ConfigureAvatarSnapshot);
+
         conversationUserId = newConversationUserId;
         conversationUserName = newConversationUserProfile.userName;
+        conversationSnapshot = newConversationUserProfile.snapshotObserver;
 
         view.ConfigureTitle(conversationUserName);
-        view.ConfigureProfilePicture(newConversationUserProfile.faceSnapshot);
         view.ConfigureUserId(newConversationUserProfile.userId);
+        conversationSnapshot.AddListener(view.ConfigureAvatarSnapshot);
 
         view.chatHudView.CleanAllEntries();
 
@@ -104,17 +110,21 @@ public class PrivateChatWindowHUDController : IHUD
             // The messages from 'conversationUserId' are marked as read once the private chat is opened
             MarkUserChatMessagesAsRead(conversationUserId);
             view.chatHudView.scrollRect.verticalNormalizedPosition = 0;
+            conversationSnapshot?.AddListener(view.ConfigureAvatarSnapshot);
 
             AudioScriptableObjects.dialogOpen.Play(true);
         }
         else
         {
+            conversationSnapshot?.RemoveListener(view.ConfigureAvatarSnapshot);
             AudioScriptableObjects.dialogClose.Play(true);
         }
     }
 
     public void Dispose()
     {
+        conversationSnapshot?.RemoveListener(view.ConfigureAvatarSnapshot);
+
         view.chatHudView.inputField.onSelect.RemoveListener(ChatHUDViewInputField_OnSelect);
 
         view.OnPressBack -= View_OnPressBack;
