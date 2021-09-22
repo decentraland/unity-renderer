@@ -131,7 +131,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         if (profileName == null)
             return;
 
-        profileName.text = newName;
+        profileName.text = !string.IsNullOrEmpty(newName) ? newName : string.Empty;
     }
 
     public void SetProfileAddress(string newAddress)
@@ -141,7 +141,10 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         if (profileAddress == null)
             return;
 
-        profileAddress.text = newAddress.Length >= 4 ?  $"#{newAddress.Substring(newAddress.Length - 4, 4)}" : $"#{newAddress}";
+        if (!string.IsNullOrEmpty(newAddress))
+            profileAddress.text = newAddress.Length >= 4 ? $"#{newAddress.Substring(newAddress.Length - 4, 4)}" : $"#{newAddress}";
+        else
+            profileAddress.text = string.Empty;
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible) { profileImage.SetLoadingIndicatorVisible(isVisible); }
