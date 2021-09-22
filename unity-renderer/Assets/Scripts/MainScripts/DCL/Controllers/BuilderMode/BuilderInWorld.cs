@@ -233,11 +233,6 @@ public class BuilderInWorld : PluginFeature
         if (biwAudioHandler.gameObject != null)
             UnityEngine.Object.Destroy(biwAudioHandler.gameObject);
 
-        foreach (var controller in controllers)
-        {
-            controller.Dispose();
-        }
-
         context.Dispose();
     }
 
