@@ -53,7 +53,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _cubemap_1:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 8900000, guid: c4fd96f2a68c87e408ce00bbeb917a02, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _cubemap_2:
@@ -145,7 +145,7 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f_1: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
     - _LAYERTYPE_0: 0
-    - _RenderDistance_0: 1.26
+    - _RenderDistance_0: 2.26
     - _RenderDistance_1: 0
     - _RenderDistance_2: 0
     - _dayTime: 0
@@ -159,7 +159,7 @@ Material:
     - _hasFade_0: 1
     - _hasFade_1: 0
     - _hasFade_2: 0
-    - _horizonHeight: 0.35
+    - _horizonHeight: 0.278
     - _horizonWidth: 0
     - _isRadial00: 0
     - _isRadial01: 1
@@ -167,8 +167,8 @@ Material:
     - _isRadialLayer00: 0
     - _isRadialLayer01: 0
     - _isRadialLayer02: 0
-    - _isRadial_0: 1
-    - _isRadial_1: 0
+    - _isRadial_0: 0
+    - _isRadial_1: 2
     - _isRadial_2: 1
     - _lightIntensity00: 0
     - _lightIntensity01: 0
@@ -213,7 +213,7 @@ Material:
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
     - _color_0: {r: 1, g: 1, b: 1, a: 1}
-    - _color_1: {r: 0.22346354, g: 0, b: 1, a: 0}
+    - _color_1: {r: 0.07694653, g: 0.07694653, b: 0.07694653, a: 0}
     - _color_2: {r: 1, g: 1, b: 1, a: 0}
     - _groundColor: {r: 0.094901726, g: 0.040195987, b: 0.26415092, a: 1}
     - _horizonColor: {r: 0.6623347, g: 0.21489628, b: 0.76801753, a: 1}
@@ -223,13 +223,13 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 2, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: -0.1}
     - _tilingAndOffset_2: {r: 4, g: 1.5, b: 0.17, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
     - _timeFrame_0: {r: 0, g: 24, b: 0, a: 0}
-    - _timeFrame_1: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_1: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
