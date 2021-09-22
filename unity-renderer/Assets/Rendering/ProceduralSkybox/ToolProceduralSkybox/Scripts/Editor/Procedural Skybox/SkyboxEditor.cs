@@ -596,13 +596,15 @@ namespace DCL.Skybox
 
                 EditorGUILayout.Separator();
 
-                // Render Distance
-
-
-                //EditorGUILayout.Separator();
                 // Normal Intensity
                 layer.normalIntensity = EditorGUILayout.FloatField("Normal Intensity", layer.normalIntensity, GUILayout.Width(200), GUILayout.ExpandWidth(false));
 
+                EditorGUILayout.Separator();
+
+                RenderTransitioningFloat(layer.renderDistance, "Render Distance", true, 0, 20);
+
+                EditorGUILayout.Separator();
+                EditorGUILayout.Separator();
                 // Tiling
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
                 EditorGUILayout.LabelField("Tiling", GUILayout.Width(100), GUILayout.ExpandWidth(false));
@@ -690,7 +692,7 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
         }
 
-        void RenderTransitioningFloat(List<TransitioningFloat> _list, string label)
+        void RenderTransitioningFloat(List<TransitioningFloat> _list, string label, bool slider = false, float min = 0, float max = 1)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(100), GUILayout.ExpandWidth(false));
@@ -712,10 +714,19 @@ namespace DCL.Skybox
             for (int i = 0; i < _list.Count; i++)
             {
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-
+                GUILayout.Space(10);
                 _list[i].percentage = EditorGUILayout.FloatField(_list[i].percentage, GUILayout.Width(50), GUILayout.ExpandWidth(false));
                 GUILayout.Space(10);
-                _list[i].value = EditorGUILayout.FloatField(_list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+
+                if (slider)
+                {
+                    _list[i].value = EditorGUILayout.Slider(_list[i].value, min, max, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                }
+                else
+                {
+                    _list[i].value = EditorGUILayout.FloatField(_list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                }
+
 
                 GUILayout.Space(20);
                 if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
