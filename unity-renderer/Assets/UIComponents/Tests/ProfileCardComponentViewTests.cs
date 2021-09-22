@@ -103,36 +103,43 @@ public class ProfileCardComponentViewTests
     }
 
     [Test]
-    public void SetProfileNameCorrectly()
+    [TestCase("TestName")]
+    [TestCase(null)]
+    public void SetProfileNameCorrectly(string name)
     {
-        // Arrange
-        string testName = "Test";
-
         // Act
-        profileCardComponent.SetProfileName(testName);
+        profileCardComponent.SetProfileName(name);
 
         // Assert
-        Assert.AreEqual(testName, profileCardComponent.model.profileName, "The profile name does not match in the model.");
-        Assert.AreEqual(testName, profileCardComponent.profileName.text, "The profile name text does not match.");
+        Assert.AreEqual(name, profileCardComponent.model.profileName, "The profile name does not match in the model.");
+        if (!string.IsNullOrEmpty(name))
+            Assert.AreEqual(name, profileCardComponent.profileName.text, "The profile name text does not match.");
+        else
+            Assert.AreEqual(string.Empty, profileCardComponent.profileName.text, "The profile name text does not match.");
     }
 
     [Test]
     [TestCase("1234567")]
     [TestCase("123")]
+    [TestCase(null)]
     public void SetProfileAddressCorrectly(string address)
     {
-        // Arrange
-        string testAddress = "Test";
-
         // Act
-        profileCardComponent.SetProfileAddress(testAddress);
+        profileCardComponent.SetProfileAddress(address);
 
         // Assert
-        Assert.AreEqual(testAddress, profileCardComponent.model.profileAddress, "The profile address does not match in the model.");
-        if (address.Length >= 4)
-            Assert.AreEqual($"#{testAddress.Substring(testAddress.Length - 4, 4)}", profileCardComponent.profileAddress.text, "The profile address text does not match.");
+        Assert.AreEqual(address, profileCardComponent.model.profileAddress, "The profile address does not match in the model.");
+        if (!string.IsNullOrEmpty(address))
+        {
+            if (address.Length >= 4)
+                Assert.AreEqual($"#{address.Substring(address.Length - 4, 4)}", profileCardComponent.profileAddress.text, "The profile address text does not match.");
+            else
+                Assert.AreEqual($"#{address}", profileCardComponent.profileAddress.text, "The profile address text does not match.");
+        }
         else
-            Assert.AreEqual($"#{testAddress}", profileCardComponent.profileAddress.text, "The profile address text does not match.");
+        {
+            Assert.AreEqual(string.Empty, profileCardComponent.profileAddress.text, "The profile address text does not match.");
+        }
     }
 
     [Test]
