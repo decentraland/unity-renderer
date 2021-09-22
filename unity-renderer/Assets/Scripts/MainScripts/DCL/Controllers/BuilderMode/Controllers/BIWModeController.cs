@@ -9,7 +9,6 @@ public interface IBIWModeController : IBIWController
 {
     event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
     event Action OnInputDone;
-    BIWGodMode godMode { get; set; }
     Vector3 GetCurrentEditionPosition();
     void CreatedEntity(BIWEntity entity);
 

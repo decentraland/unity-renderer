@@ -384,14 +384,17 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void StartExitModeScreenShot()
     {
         // Arrange
-        mainController.modeController.godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
-        mainController.saveController.numberOfSaves = 1;
+        BIWModeController modeController = (BIWModeController)mainController.modeController;
+        BIWSaveController saveController = (BIWSaveController)mainController.saveController;
+
+        modeController.godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
+        saveController.numberOfSaves = 1;
 
         // Act
         mainController.StartExitMode();
 
         // Assert
-        mainController.modeController.godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+        modeController.godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
 
     [Test]

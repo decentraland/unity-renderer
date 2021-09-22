@@ -9,7 +9,6 @@ public interface IBIWSaveController : IBIWController
     void SetSaveActivation(bool isActive, bool tryToSave = false);
     void TryToSave();
     void ForceSave();
-    int numberOfSaves { get; set; }
 }
 
 public class BIWSaveController : BIWController, IBIWSaveController
