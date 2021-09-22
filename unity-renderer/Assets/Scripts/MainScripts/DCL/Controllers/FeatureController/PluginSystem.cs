@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Tutorial;
+using DCL.Skybox;
 using UnityEngine;
 
 /// <summary>
