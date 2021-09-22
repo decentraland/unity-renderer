@@ -419,10 +419,10 @@ namespace DCL.Skybox
         {
             selectedConfiguration.horizonColor = EditorGUILayout.GradientField("Horizon Color", selectedConfiguration.horizonColor);
             EditorGUILayout.Separator();
-            RenderTransitioningFloat(selectedConfiguration.horizonHeight, "Horizon Height");
+            RenderTransitioningFloat(selectedConfiguration.horizonHeight, "Horizon Height", true, -1, 1);
 
             EditorGUILayout.Separator();
-            RenderTransitioningFloat(selectedConfiguration.horizonWidth, "Horizon Width");
+            RenderTransitioningFloat(selectedConfiguration.horizonWidth, "Horizon Width", true, -1, 1);
         }
 
         void RenderAmbientLayer()
@@ -558,7 +558,7 @@ namespace DCL.Skybox
             // Tint
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
-            layer.tintercentage = EditorGUILayout.FloatField("Tint", layer.tintercentage, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            layer.tintercentage = EditorGUILayout.Slider("Tint", layer.tintercentage, 0, 100, GUILayout.Width(500));
 
             GUILayout.EndHorizontal();
 
@@ -597,7 +597,7 @@ namespace DCL.Skybox
                 EditorGUILayout.Separator();
 
                 // Normal Intensity
-                layer.normalIntensity = EditorGUILayout.FloatField("Normal Intensity", layer.normalIntensity, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                layer.normalIntensity = EditorGUILayout.Slider("Normal Intensity", layer.normalIntensity, 0, 1, GUILayout.Width(500));
 
                 EditorGUILayout.Separator();
 
