@@ -396,8 +396,8 @@ namespace DCL.Skybox
         public float timeSpan_End;
         public float fadingIn, fadingOut;
         public float tintercentage;
-        internal List<TransitioningFloat> renderDistance;
-        internal LayerType layerType;
+        public List<TransitioningFloat> renderDistance;
+        public LayerType layerType;
         public Texture2D texture;
         public Texture2D textureNormal;
         public Cubemap cubemap;
@@ -417,7 +417,7 @@ namespace DCL.Skybox
         }
     }
 
-    internal enum LayerType
+    public enum LayerType
     {
         Planar = 0,
         Radial = 1,
