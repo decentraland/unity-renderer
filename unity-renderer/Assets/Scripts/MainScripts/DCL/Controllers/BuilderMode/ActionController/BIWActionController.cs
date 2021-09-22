@@ -8,7 +8,7 @@ using DCL.Controllers;
 using UnityEngine;
 using static BIWCompleteAction;
 
-public interface IBIWActionController
+public interface IBIWActionController : IBIWController
 {
     event System.Action OnRedo;
     event System.Action OnUndo;
@@ -18,6 +18,7 @@ public interface IBIWActionController
     void CreateActionEntityDeleted(List<BIWEntity> entityList);
     void CreateActionEntityDeleted(BIWEntity entity);
     void CreateActionEntityCreated(IDCLEntity entity);
+    void Clear();
 }
 
 public class BIWActionController : BIWController, IBIWActionController
@@ -35,9 +36,9 @@ public class BIWActionController : BIWController, IBIWActionController
     private int currentUndoStepIndex = 0;
     private int currentRedoStepIndex = 0;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
 
         entityHandler  = context.entityHandler;
         floorHandler = context.floorHandler;
@@ -59,7 +60,7 @@ public class BIWActionController : BIWController, IBIWActionController
         Clear();
     }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public override void EnterEditMode(IParcelScene scene)
     {
         base.EnterEditMode(scene);
         actionsMade.Clear();

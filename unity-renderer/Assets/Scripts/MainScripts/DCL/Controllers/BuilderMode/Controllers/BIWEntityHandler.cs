@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public interface IBIWEntityHandler
+public interface IBIWEntityHandler : IBIWController
 {
     event Action<BIWEntity> OnEntityDeselected;
     event Action OnEntitySelected;
@@ -92,9 +92,9 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private BIWEntity lastClickedEntity;
     private float lastTimeEntityClicked;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
         if (HUDController.i.builderInWorldMainHud != null)
         {
             hudController = HUDController.i.builderInWorldMainHud;
@@ -223,7 +223,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void SetMultiSelectionActive(bool isActive) { isMultiSelectionActive = isActive; }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public override void EnterEditMode(IParcelScene scene)
     {
         base.EnterEditMode(scene);
 
@@ -670,33 +670,31 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     BIWEntity SetupEntityToEdit(IDCLEntity entity, bool hasBeenCreated = false)
     {
-        if (!convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
+        string biwEntityId = GetConvertedUniqueKeyForEntity(entity);
+
+        if (convertedEntities.ContainsKey(biwEntityId))
+            return convertedEntities[biwEntityId];
+
+        BIWEntity entityToEdit = new BIWEntity();
+        entityToEdit.Initialize(entity, editMaterial);
+        convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
+        entity.OnRemoved += RemoveConvertedEntity;
+        entityToEdit.isNew = hasBeenCreated;
+
+        string entityName = entityToEdit.GetDescriptiveName();
+        var catalogItem = entityToEdit.GetCatalogItemAssociated();
+
+        if ((string.IsNullOrEmpty(entityName) || entityNameList.Contains(entityName)) && catalogItem != null)
         {
-            BIWEntity entityToEdit = new BIWEntity();
-            entityToEdit.Init(entity, editMaterial);
-            convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
-            entity.OnRemoved += RemoveConvertedEntity;
-            entityToEdit.isNew = hasBeenCreated;
-
-            string entityName = entityToEdit.GetDescriptiveName();
-            var catalogItem = entityToEdit.GetCatalogItemAssociated();
-
-            if ((string.IsNullOrEmpty(entityName) || entityNameList.Contains(entityName)) && catalogItem != null)
-            {
-                entityName = GetNewNameForEntity(catalogItem);
-                SetEntityName(entityToEdit, entityName);
-            }
-            else if (!string.IsNullOrEmpty(entityName) && !entityNameList.Contains(entityName))
-            {
-                entityNameList.Add(entityName);
-            }
-
-            return entityToEdit;
+            entityName = GetNewNameForEntity(catalogItem);
+            SetEntityName(entityToEdit, entityName);
         }
-        else
+        else if (!string.IsNullOrEmpty(entityName) && !entityNameList.Contains(entityName))
         {
-            return convertedEntities[GetConvertedUniqueKeyForEntity(entity)];
+            entityNameList.Add(entityName);
         }
+
+        return entityToEdit;
     }
 
     internal void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)

@@ -10,7 +10,7 @@ using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class BIWMainController : PluginFeature
+public class BuilderInWorld : PluginFeature
 {
     internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
     private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
@@ -20,22 +20,22 @@ public class BIWMainController : PluginFeature
     private InputController inputController;
     private GameObject[] groundVisualsGO;
 
-    internal BIWOutlinerController outlinerController;
-    internal BIWInputHandler inputHandler;
-    internal BIWPublishController publishController;
-    internal BIWCreatorController creatorController;
-    internal BIWModeController modeController;
-    internal BIWFloorHandler floorHandler;
-    internal BIWEntityHandler entityHandler;
-    internal BIWActionController actionController;
-    internal BIWSaveController saveController;
-    internal BIWInputWrapper inputWrapper;
-    internal BIWRaycastController raycastController;
-    internal BIWGizmosController gizmosController;
+    internal IBIWOutlinerController outlinerController => context.outlinerController;
+    internal IBIWInputHandler inputHandler => context.inputHandler;
+    internal IBIWPublishController publishController => context.publishController;
+    internal IBIWCreatorController creatorController => context.creatorController;
+    internal IBIWModeController modeController => context.modeController;
+    internal IBIWFloorHandler floorHandler => context.floorHandler;
+    internal IBIWEntityHandler entityHandler => context.entityHandler;
+    internal IBIWActionController actionController => context.actionController;
+    internal IBIWSaveController saveController => context.saveController;
+    internal IBIWInputWrapper inputWrapper => context.inputWrapper;
+    internal IBIWRaycastController raycastController => context.raycastController;
+    internal IBIWGizmosController gizmosController => context.gizmosController;
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
-    private BIWContext context;
+    internal BIWContext context;
 
     private readonly List<IBIWController> controllers = new List<IBIWController>();
 
@@ -74,6 +74,31 @@ public class BIWMainController : PluginFeature
     private bool alreadyAskedForLandPermissions = false;
     private Vector3 askPermissionLastPosition;
 
+    public BuilderInWorld()
+    {
+        context = new BIWContext();
+        context.Initialize(
+            new BIWOutlinerController(),
+            new BIWInputHandler(),
+            new BIWInputWrapper(),
+            new BIWPublishController(),
+            new BIWCreatorController(),
+            new BIWModeController(),
+            new BIWFloorHandler(),
+            new BIWEntityHandler(),
+            new BIWActionController(),
+            new BIWSaveController(),
+            new BIWRaycastController(),
+            new BIWGizmosController(),
+            InitialSceneReferences.i.data
+        );
+    }
+
+    public BuilderInWorld (BIWContext context)
+    {
+        this.context = context;
+    }
+
     public override void Initialize()
     {
         base.Initialize();
@@ -89,8 +114,7 @@ public class BIWMainController : PluginFeature
 
         BIWCatalogManager.Init();
 
-        CreateControllers();
-        InitReferences(InitialSceneReferences.i);
+        InitReferences(InitialSceneReferences.i.data);
 
         if (builderInWorldBridge != null)
         {
@@ -116,59 +140,26 @@ public class BIWMainController : PluginFeature
         editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
-        biwAudioHandler = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
-        biwAudioHandler.Init(context);
+        biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
+        biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    public void InitReferences(InitialSceneReferences initalReference)
+    public void InitReferences(InitialSceneReferences.Data sceneReferences)
     {
-
-        builderInWorldBridge = initalReference.builderInWorldBridge;
-        cursorGO = initalReference.cursorCanvas;
-        inputController = initalReference.inputController;
+        builderInWorldBridge = sceneReferences.builderInWorldBridge;
+        cursorGO = sceneReferences.cursorCanvas;
+        inputController = sceneReferences.inputController;
 
         List<GameObject> grounds = new List<GameObject>();
-        for (int i = 0; i < InitialSceneReferences.i.groundVisual.transform.transform.childCount; i++)
+
+        for (int i = 0; i < sceneReferences.groundVisual.transform.transform.childCount; i++)
         {
-            grounds.Add(InitialSceneReferences.i.groundVisual.transform.transform.GetChild(i).gameObject);
+            grounds.Add(sceneReferences.groundVisual.transform.transform.GetChild(i).gameObject);
         }
+
         groundVisualsGO = grounds.ToArray();
-
-        context = new BIWContext();
-        context.Init(
-            outlinerController,
-            inputHandler,
-            inputWrapper,
-            publishController,
-            creatorController,
-            modeController,
-            floorHandler,
-            entityHandler,
-            actionController,
-            saveController,
-            raycastController,
-            gizmosController,
-            InitialSceneReferences.i
-        );
-
         skyBoxMaterial = context.projectReferencesAsset.skyBoxMaterial;
-    }
-
-    private void CreateControllers()
-    {
-        outlinerController = new BIWOutlinerController();
-        inputHandler = new BIWInputHandler();
-        publishController = new BIWPublishController();
-        creatorController = new BIWCreatorController();
-        modeController = new BIWModeController();
-        floorHandler = new BIWFloorHandler();
-        entityHandler = new BIWEntityHandler();
-        actionController = new BIWActionController();
-        saveController = new BIWSaveController();
-        inputWrapper = new BIWInputWrapper();
-        raycastController = new BIWRaycastController();
-        gizmosController = new BIWGizmosController();
     }
 
     private void InitBuilderProjectPanel()
@@ -238,13 +229,9 @@ public class BIWMainController : PluginFeature
         editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
 
         biwAudioHandler.Dispose();
-        if (biwAudioHandler.gameObject != null)
-            GameObject.Destroy(biwAudioHandler.gameObject);
 
-        foreach (var controller in controllers)
-        {
-            controller.Dispose();
-        }
+        if (biwAudioHandler.gameObject != null)
+            UnityEngine.Object.Destroy(biwAudioHandler.gameObject);
 
         context.Dispose();
     }
@@ -382,7 +369,7 @@ public class BIWMainController : PluginFeature
 
     public void InitController(IBIWController controller)
     {
-        controller.Init(context);
+        controller.Initialize(context);
         controllers.Add(controller);
     }
 
@@ -393,14 +380,16 @@ public class BIWMainController : PluginFeature
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.Dispose();
 
-        if (Camera.main != null)
+        Camera camera = Camera.main;
+
+        if (camera != null)
         {
-            BIWOutline outliner = Camera.main.GetComponent<BIWOutline>();
-            GameObject.Destroy(outliner);
+            BIWOutline outliner = camera.GetComponent<BIWOutline>();
+            UnityEngine.Object.Destroy(outliner);
         }
 
-        floorHandler?.Clean();
-        creatorController?.Clean();
+        floorHandler?.CleanUp();
+        creatorController?.CleanUp();
     }
 
     public void ChangeEditModeStatusByShortcut(DCLAction_Trigger action)
@@ -439,6 +428,7 @@ public class BIWMainController : PluginFeature
             ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
             return;
         }
+
         if (IsParcelSceneDeployedFromSDK(sceneToEdit))
         {
             ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
@@ -640,6 +630,7 @@ public class BIWMainController : PluginFeature
         {
             groundVisual.SetActive(false);
         }
+
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
         BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
@@ -751,6 +742,7 @@ public class BIWMainController : PluginFeature
         {
             controller.EnterEditMode(sceneToEdit);
         }
+
         //Note: This audio should inside the controllers, it is here because it is still a monobehaviour
         biwAudioHandler.EnterEditMode(sceneToEdit);
     }
@@ -802,6 +794,7 @@ public class BIWMainController : PluginFeature
                 return sceneToEdit;
             }
         }
+
         return null;
     }
 
@@ -810,7 +803,7 @@ public class BIWMainController : PluginFeature
         if (activeFeature)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             TryStartEnterEditMode(targetScene);
         }
     }
@@ -840,22 +833,23 @@ public class BIWMainController : PluginFeature
             return;
 
         DeployedScenesFetcher.FetchLandsFromOwner(
-                                 Environment.i.platform.serviceProviders.catalyst,
-                                 Environment.i.platform.serviceProviders.theGraph,
-                                 userProfile.ethAddress,
-                                 KernelConfig.i.Get().network,
-                                 BIWSettings.CACHE_TIME_LAND,
-                                 BIWSettings.CACHE_TIME_SCENES)
-                             .Then(lands =>
-                             {
-                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                                 {
-                                     CheckSceneToEditByShorcut();
-                                 }
-                                 isWaitingForPermission = false;
-                                 alreadyAskedForLandPermissions = true;
-                             });
+                Environment.i.platform.serviceProviders.catalyst,
+                Environment.i.platform.serviceProviders.theGraph,
+                userProfile.ethAddress,
+                KernelConfig.i.Get().network,
+                BIWSettings.CACHE_TIME_LAND,
+                BIWSettings.CACHE_TIME_SCENES)
+            .Then(lands =>
+            {
+                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                {
+                    CheckSceneToEditByShorcut();
+                }
+
+                isWaitingForPermission = false;
+                alreadyAskedForLandPermissions = true;
+            });
     }
 
     private static void ShowGenericNotification(string message, NotificationFactory.Type type = NotificationFactory.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
