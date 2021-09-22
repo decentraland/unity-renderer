@@ -23,6 +23,7 @@ namespace DCL
         [SerializeField] private MeshFilter lodMeshFilter;
         private Material impostorMaterial;
         private Mesh impostorMesh;
+        private bool impostorInitialized = false;
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
@@ -134,6 +135,10 @@ namespace DCL
 
         public void InitializeImpostor()
         {
+            if (impostorInitialized)
+                return;
+
+            impostorInitialized = true;
             impostorMesh = Instantiate(lodMeshFilter.sharedMesh);
             impostorMaterial = new Material(lodRenderer.sharedMaterial);
 
@@ -157,6 +162,7 @@ namespace DCL
 
         public void CleanImpostor()
         {
+            impostorInitialized = false;
             Destroy(impostorMesh);
             Destroy(impostorMaterial);
         }
