@@ -7,10 +7,9 @@ using UnityEngine.UI;
 public interface IBuilderInWorldLoadingView
 {
     bool isActive { get; }
-
-    GameObject viewGO { get; }
+    GameObject gameObject { get; }
     void Show();
-    void Hide(bool forzeHidding = false, Action onHideAction = null);
+    void Hide(bool forceHide = false, Action onHideAction = null);
     void StartTipsCarousel();
     void StopTipsCarousel();
     void SetPercentage(float newValue);
@@ -23,6 +22,7 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
 
     [Header("Loading Tips Config")]
     [SerializeField] internal BuilderInWorldLoadingTip loadingTipPrefab;
+
     [SerializeField] internal RectTransform loadingTipsContainer;
     [SerializeField] internal ScrollRect loadingTipsScroll;
     [SerializeField] internal List<BuilderInWorldLoadingTipModel> loadingTips;
@@ -32,11 +32,10 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
 
     [Header("Other Config")]
     [SerializeField] internal float minVisibilityTime = 1.5f;
+
     [SerializeField] internal LoadingBar loadingBar;
 
     public bool isActive => gameObject.activeSelf;
-
-    public GameObject viewGO => gameObject;
 
     internal Coroutine tipsCoroutine;
     internal Coroutine hideCoroutine;
@@ -56,7 +55,7 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
 
     private void CreateLoadingTips()
     {
-        RectTransform tipsContainerRectTranform = loadingTipsContainer;
+        RectTransform tipsContainerRectTransform = loadingTipsContainer;
         float tipsContainerHorizontalOffset = 0;
 
         for (int i = 0; i < loadingTips.Count; i++)
@@ -70,7 +69,7 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
             }
         }
 
-        tipsContainerRectTranform.offsetMax = new Vector2(tipsContainerHorizontalOffset, tipsContainerRectTranform.offsetMax.y);
+        tipsContainerRectTransform.offsetMax = new Vector2(tipsContainerHorizontalOffset, tipsContainerRectTransform.offsetMax.y);
     }
 
     public void Show()
@@ -86,18 +85,21 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
         AudioScriptableObjects.builderEnter.Play();
     }
 
-    public void Hide(bool forzeHidding = false, Action onHideAction = null)
+    public void Hide(bool forceHide = false, Action onHideAction = null)
     {
         if (hideCoroutine != null)
             CoroutineStarter.Stop(hideCoroutine);
 
-        hideCoroutine = CoroutineStarter.Start(TryToHideCoroutine(forzeHidding, onHideAction));
+        hideCoroutine = CoroutineStarter.Start(TryToHideCoroutine(forceHide, onHideAction));
     }
 
     public void Dispose()
     {
+        StopTipsCarousel();
+
         if (hideCoroutine != null)
             CoroutineStarter.Stop(hideCoroutine);
+
         if (tipsCoroutine != null)
             CoroutineStarter.Stop(tipsCoroutine);
     }
@@ -116,20 +118,23 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
         CoroutineStarter.Stop(tipsCoroutine);
         tipsCoroutine = null;
 
-        ForzeToEndCurrentTipsAnimation();
+        ForceToEndCurrentTipsAnimation();
     }
 
-    internal IEnumerator TryToHideCoroutine(bool forzeHidding, Action onHideAction)
+    internal IEnumerator TryToHideCoroutine(bool forceHide, Action onHideAction)
     {
-        while (!forzeHidding && (Time.realtimeSinceStartup - showTime) < minVisibilityTime)
+        while (!forceHide && (Time.realtimeSinceStartup - showTime) < minVisibilityTime)
         {
             yield return null;
         }
 
         StopTipsCarousel();
+
         if (gameObject != null)
             gameObject.SetActive(false);
+
         onHideAction?.Invoke();
+
         AudioScriptableObjects.builderReady.Play();
     }
 
@@ -177,7 +182,7 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
         }
     }
 
-    internal void ForzeToEndCurrentTipsAnimation()
+    internal void ForceToEndCurrentTipsAnimation()
     {
         loadingTipsScroll.horizontalNormalizedPosition = currentFinalNormalizedPos;
         IncrementTipIndex();

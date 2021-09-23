@@ -5,7 +5,7 @@ using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public interface IBIWInputWrapper
+public interface IBIWInputWrapper : IBIWController
 {
     public void StopInput();
 
@@ -34,6 +34,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
     public static event OnMouseDragDelegateRaw OnMouseDragRaw;
 
     public delegate void OnMouseDragDelegate(int buttonId, Vector3 position, float axisX, float axisY);
+
     public delegate void OnMouseDragDelegateRaw(int buttonId, Vector3 position, float axisX, float axisY);
 
     internal float lastTimeMouseDown = 0;

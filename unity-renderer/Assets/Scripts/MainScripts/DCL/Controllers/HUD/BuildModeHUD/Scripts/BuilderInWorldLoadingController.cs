@@ -28,23 +28,25 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
     {
         initialLoadingView = view;
 
-        if (initialLoadingView.viewGO != null)
-            initialLoadingView.viewGO.SetActive(false);
+        if (initialLoadingView.gameObject != null)
+            initialLoadingView.gameObject.SetActive(false);
     }
 
     private IBuilderInWorldLoadingView CreateView()
     {
-        var view = GameObject.Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<IBuilderInWorldLoadingView>();
-        view.viewGO.name = "_BuildModeLoadingHUD";
+        var view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<IBuilderInWorldLoadingView>();
+        view.gameObject.name = "_BuildModeLoadingHUD";
 
         return view;
     }
 
     public void Dispose()
     {
-        initialLoadingView?.StopTipsCarousel();
-        initialLoadingView?.Dispose();
-        GameObject.Destroy(initialLoadingView?.viewGO);
+        if ( initialLoadingView == null )
+            return;
+
+        initialLoadingView.Dispose();
+        UnityEngine.Object.Destroy(initialLoadingView.gameObject);
     }
 
     public void Show() { initialLoadingView.Show(); }

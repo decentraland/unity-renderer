@@ -280,7 +280,7 @@ namespace Tests.BuildModeHUDControllers
             BIWEntity testEntity = new BIWEntity();
 
             var entity = TestHelpers.CreateSceneEntity(scene, "entityId");
-            testEntity.Init(entity, null);
+            testEntity.Initialize(entity, null);
 
             // Act
             entityInformationController.UpdateInfo(testEntity);
