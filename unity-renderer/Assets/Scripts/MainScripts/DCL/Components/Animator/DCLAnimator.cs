@@ -47,8 +47,8 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel model)
         {
-            entity.OnShapeUpdated -= OnComponentUpdated;
-            entity.OnShapeUpdated += OnComponentUpdated;
+            entity.OnShapeLoaded -= OnComponentUpdated;
+            entity.OnShapeLoaded += OnComponentUpdated;
 
             UpdateAnimationState();
 

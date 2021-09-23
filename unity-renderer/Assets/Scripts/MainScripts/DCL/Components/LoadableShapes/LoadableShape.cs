@@ -263,6 +263,7 @@ namespace DCL.Components
             ConfigureColliders(entity);
 
             RaiseOnShapeUpdated(entity);
+            RaiseOnShapeLoaded(entity);
 
             OnFinishCallbacks?.Invoke(this);
             OnFinishCallbacks = null;
@@ -298,6 +299,14 @@ namespace DCL.Components
                 return;
 
             entity.OnShapeUpdated?.Invoke(entity);
+        }
+
+        private void RaiseOnShapeLoaded(IDCLEntity entity)
+        {
+            if (!isLoaded)
+                return;
+
+            entity.OnShapeLoaded?.Invoke(entity);
         }
     }
 }
