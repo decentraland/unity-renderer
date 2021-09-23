@@ -20,12 +20,6 @@ namespace DCL
                 processor.Load(
                     frames =>
                     {
-                        for (int i = 0; i < frames.Length; i++)
-                        {
-                            GifFrameData frame = frames[i];
-                            frame.texture.Compress(false);
-                        }
-
                         asset.frames = frames;
                         OnSuccess?.Invoke();
                     }, OnFail));

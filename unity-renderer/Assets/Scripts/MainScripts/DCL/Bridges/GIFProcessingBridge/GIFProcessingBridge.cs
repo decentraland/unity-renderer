@@ -112,18 +112,24 @@ namespace DCL
             GifFrameData[] gifTextures = new GifFrameData[pointers.Length];
             for (int j = 0; j < pointers.Length; j++)
             {
-                Texture2D newTex = Texture2D.CreateExternalTexture(width, height, TextureFormat.ARGB32,
-                    false, false, (System.IntPtr)pointers[j]);
+                Texture2D newTex = Texture2D.CreateExternalTexture(width, height, TextureFormat.RGBA32,
+                    false, true, (System.IntPtr)pointers[j]);
 
-                if (newTex == null)
+                var newTex2 = TextureHelpers.Resize(newTex, newTex.width, newTex.height);
+                newTex2.Compress(false);
+                newTex2.Apply(true, true);
+
+                Destroy(newTex);
+
+                if (newTex2 == null)
                 {
                     Debug.Log("Couldn't create external texture!");
                     continue;
                 }
 
-                newTex.wrapMode = TextureWrapMode.Clamp;
+                newTex2.wrapMode = TextureWrapMode.Clamp;
 
-                gifTextures[j] = new GifFrameData() { texture = newTex, delay = frameDelays[j] / 1000 };
+                gifTextures[j] = new GifFrameData() { texture = newTex2, delay = frameDelays[j] / 1000 };
             }
 
             return gifTextures;
