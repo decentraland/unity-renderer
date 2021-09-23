@@ -59,23 +59,29 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
     public Button.ButtonClickedEvent onClick
     {
-        get { return button?.onClick; }
+        get
+        {
+            if (button == null)
+                return null;
+
+            return button.onClick;
+        }
         set
         {
-            model.onClickEvent = value;
-            button?.onClick.RemoveAllListeners();
-            button?.onClick.AddListener(() =>
+            model.onClick = value;
+
+            if (button != null)
             {
-                value?.Invoke();
-            });
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() =>
+                {
+                    value?.Invoke();
+                });
+            }
         }
     }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public void Configure(ProfileCardComponentModel model)
     {
@@ -91,7 +97,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         SetProfilePicture(model.profilePicture);
         SetProfileName(model.profileName);
         SetProfileAddress(model.profileAddress);
-        onClick = model.onClickEvent;
+        onClick = model.onClick;
     }
 
     public override void Dispose()

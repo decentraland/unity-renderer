@@ -25,11 +25,16 @@ public class BaseComponentViewTests
     [Test]
     public void InitializeComponentCorrectly()
     {
+        // Arrange
+        bool initializedEventInvoked = false;
+        baseComponent.OnFullyInitialized += () => initializedEventInvoked = true;
+
         // Act
         baseComponent.Initialize();
 
         // Assert
-        Assert.IsFalse(baseComponent.isInitialized, "The base component should not be initialized yet.");
+        Assert.IsTrue(baseComponent.isFullyInitialized, "The base component should be initialized.");
+        Assert.IsTrue(initializedEventInvoked, "The base component should have invoked the OnInitialized event.");
         Assert.IsNotNull(baseComponent.showHideAnimator, "The base component show/hide animator is null.");
     }
 

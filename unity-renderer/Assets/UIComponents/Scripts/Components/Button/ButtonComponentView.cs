@@ -40,23 +40,29 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public Button.ButtonClickedEvent onClick
     {
-        get { return button?.onClick; }
+        get
+        {
+            if (button == null)
+                return null;
+
+            return button.onClick;
+        }
         set
         {
-            model.onClickEvent = value;
-            button?.onClick.RemoveAllListeners();
-            button?.onClick.AddListener(() =>
+            model.onClick = value;
+
+            if (button != null)
             {
-                value.Invoke();
-            });
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() =>
+                {
+                    value?.Invoke();
+                });
+            }
         }
     }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public virtual void Configure(ButtonComponentModel model)
     {
@@ -71,7 +77,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         SetText(model.text);
         SetIcon(model.icon);
-        onClick = model.onClickEvent;
+        onClick = model.onClick;
     }
 
     public override void Dispose()

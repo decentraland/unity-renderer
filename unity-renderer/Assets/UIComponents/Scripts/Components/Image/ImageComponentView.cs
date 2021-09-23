@@ -18,7 +18,7 @@ public interface IImageComponentView
     /// <summary>
     /// Active or deactive the loading indicator.
     /// </summary>
-    /// <param name="isVisible">True for showing the loading indicator and hidding the image.</param>
+    /// <param name="isVisible">True for showing the loading indicator and hiding the image.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
@@ -31,11 +31,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
     [Header("Configuration")]
     [SerializeField] internal ImageComponentModel model;
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public void Configure(ImageComponentModel model)
     {
