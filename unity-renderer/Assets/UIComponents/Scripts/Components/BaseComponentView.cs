@@ -4,14 +4,14 @@ using UnityEngine;
 public interface IBaseComponentView
 {
     /// <summary>
-    /// It will be triggered after the UI component is initialized.
+    /// It will be triggered after the UI component is fully initialized (PostInitialization included).
     /// </summary>
-    event Action OnInitialized;
+    event Action OnFullyInitialized;
 
     /// <summary>
-    /// Returns true if the UI component is already initialized.
+    /// Returns true if the UI component is already fully initialized (PostInitialization included).
     /// </summary>
-    bool isInitialized { get; }
+    bool isFullyInitialized { get; }
 
     /// <summary>
     /// It is called just after the UI component has been initialized.
@@ -45,20 +45,20 @@ public interface IBaseComponentView
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
-    public event Action OnInitialized;
-    public bool isInitialized { get; private set; }
+    public event Action OnFullyInitialized;
+    public bool isFullyInitialized { get; private set; }
 
     internal ShowHideAnimator showHideAnimator;
 
     internal void Initialize()
     {
-        isInitialized = false;
+        isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
 
         PostInitialization();
 
-        isInitialized = true;
-        OnInitialized?.Invoke();
+        isFullyInitialized = true;
+        OnFullyInitialized?.Invoke();
     }
 
     public abstract void PostInitialization();
