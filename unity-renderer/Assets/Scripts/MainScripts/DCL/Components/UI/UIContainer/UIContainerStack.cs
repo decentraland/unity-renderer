@@ -50,6 +50,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
+            referencesContainer.image.raycastTarget = model.color.a >= RAYCAST_ALPHA_THRESHOLD;
 
             if (model.stackOrientation == StackOrientation.VERTICAL && !(layoutGroup is VerticalLayoutGroup))
             {

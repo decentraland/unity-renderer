@@ -22,6 +22,7 @@ public class BIWEntity
     public event Action<BIWEntity> OnErrorStatusChange;
 
     public bool isDeleted { get; private set; }
+
     public bool isLocked
     {
         get { return GetIsLockedValue(); }
@@ -64,8 +65,12 @@ public class BIWEntity
         set
         {
             isVisibleValue = value;
+
             if (rootEntity != null && rootEntity.gameObject != null)
-                rootEntity.gameObject?.SetActive(isVisibleValue);
+            {
+                rootEntity.gameObject.SetActive(isVisibleValue);
+            }
+
             OnStatusUpdate?.Invoke(this);
         }
     }
@@ -103,7 +108,7 @@ public class BIWEntity
 
     #endregion
 
-    public void Init(IDCLEntity entity, Material editMaterial)
+    public void Initialize(IDCLEntity entity, Material editMaterial)
     {
         rootEntity = entity;
         rootEntity.OnShapeUpdated += OnShapeUpdate;

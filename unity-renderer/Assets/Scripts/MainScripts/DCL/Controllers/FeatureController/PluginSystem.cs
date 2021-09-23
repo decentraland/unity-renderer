@@ -59,7 +59,7 @@ public class PluginSystem
 
     public void ApplyFeaturesConfig(KernelConfigModel config)
     {
-        HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
+        HandleFeature<BuilderInWorld>(config.features.enableBuilderInWorld);
         HandleFeature<TutorialController>(config.features.enableTutorial);
         HandleFeature<DebugPluginFeature>(true);
         HandleFeature<ExploreV2Feature>(config.features.enableExploreV2);
@@ -102,5 +102,4 @@ public class PluginSystem
             }
         }
     }
-
 }

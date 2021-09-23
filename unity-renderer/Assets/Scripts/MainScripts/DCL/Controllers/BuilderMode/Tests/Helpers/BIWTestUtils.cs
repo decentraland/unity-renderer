@@ -1,24 +1,20 @@
 using DCL.Helpers;
 using DCL.Helpers.NFT;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.UI;
 
-public static class BIWTestHelper
+public static class BIWTestUtils
 {
-    public static BIWContext CreateMockUpReferenceController()
+    public static BIWContext CreateMockedContext()
     {
         BIWContext context = new BIWContext();
-        context.Init(
+        context.Initialize(
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
             Substitute.For<IBIWInputWrapper>(),
@@ -31,11 +27,12 @@ public static class BIWTestHelper
             Substitute.For<IBIWSaveController>(),
             Substitute.For<IBIWRaycastController>(),
             Substitute.For<IBIWGizmosController>(),
-            new InitialSceneReferences()
+            new InitialSceneReferences.Data()
         );
         return context;
     }
-    public static BIWContext CreateReferencesControllerWithGenericMocks(params object[] mocks)
+
+    public static BIWContext CreateContextWithGenericMocks(params object[] mocks)
     {
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
         IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
@@ -49,9 +46,9 @@ public static class BIWTestHelper
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
-        InitialSceneReferences sceneReferences = new InitialSceneReferences();
+        InitialSceneReferences.Data sceneReferences = new InitialSceneReferences.Data();
 
-        foreach ( var mock in mocks)
+        foreach (var mock in mocks)
         {
             switch ( mock )
             {
@@ -91,14 +88,14 @@ public static class BIWTestHelper
                 case IBIWGizmosController gc:
                     gizmosController = gc;
                     break;
-                case InitialSceneReferences isr:
+                case InitialSceneReferences.Data isr:
                     sceneReferences = isr;
                     break;
             }
         }
 
         BIWContext context = new BIWContext();
-        context.Init(
+        context.Initialize(
             outliner,
             inputHandler,
             inputWrapper,
@@ -170,6 +167,7 @@ public static class BIWTestHelper
             CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
             return item;
         }
+
         return null;
     }
 

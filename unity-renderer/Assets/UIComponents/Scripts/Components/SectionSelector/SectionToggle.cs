@@ -43,7 +43,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             toggle?.onValueChanged.AddListener((isOn) =>
             {
                 if (isOn)
-                    value.Invoke(isOn);
+                    value?.Invoke(isOn);
             });
         }
     }
