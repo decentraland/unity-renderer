@@ -25,7 +25,7 @@ public class TaskbarHUDController : IHUD
     public FriendsHUDController friendsHud;
     public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
-    public ExploreV2MenuComponentController exploreV2Hud;
+    public IExploreV2MenuComponentController exploreV2Hud;
     public HelpAndSupportHUDController helpAndSupportHud;
 
     IMouseCatcher mouseCatcher;
@@ -417,23 +417,20 @@ public class TaskbarHUDController : IHUD
 
     private void ConfigureExploreV2Feature()
     {
-        var alreadyLoadedExploreV2Feature = DataStore.i.loadedPluginFeatures.Get().FirstOrDefault(x => x is ExploreV2Feature);
-        if (alreadyLoadedExploreV2Feature != null)
-            AddExploreV2Window(((ExploreV2Feature)alreadyLoadedExploreV2Feature).exploreV2MenuComponentController);
+        var alreadyLoadedExploreV2Controller = DataStore.i.exploreV2.controller.Get();
+        if (alreadyLoadedExploreV2Controller != null)
+            AddExploreV2Window(alreadyLoadedExploreV2Controller);
         else
-            DataStore.i.loadedPluginFeatures.OnAdded += OnNewPluginFeatureLoaded;
+            DataStore.i.exploreV2.controller.OnChange += OnExploreV2ControllerInitialized;
     }
 
-    private void OnNewPluginFeatureLoaded(PluginFeature newPluginFeature)
+    private void OnExploreV2ControllerInitialized(IExploreV2MenuComponentController current, IExploreV2MenuComponentController previous)
     {
-        if (newPluginFeature is ExploreV2Feature)
-        {
-            DataStore.i.loadedPluginFeatures.OnAdded -= OnNewPluginFeatureLoaded;
-            AddExploreV2Window(((ExploreV2Feature)newPluginFeature).exploreV2MenuComponentController);
-        }
+        DataStore.i.exploreV2.controller.OnChange -= OnExploreV2ControllerInitialized;
+        AddExploreV2Window(current);
     }
 
-    public void AddExploreV2Window(ExploreV2MenuComponentController controller)
+    public void AddExploreV2Window(IExploreV2MenuComponentController controller)
     {
         if (controller == null)
         {
@@ -536,7 +533,7 @@ public class TaskbarHUDController : IHUD
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
-        DataStore.i.loadedPluginFeatures.OnAdded -= OnNewPluginFeatureLoaded;
+        DataStore.i.exploreV2.controller.OnChange -= OnExploreV2ControllerInitialized;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }

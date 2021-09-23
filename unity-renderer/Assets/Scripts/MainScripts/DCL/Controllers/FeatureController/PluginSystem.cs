@@ -87,7 +87,6 @@ public class PluginSystem
         PluginFeature pluginFeature = new T();
         pluginFeature.Initialize();
         activeFeatures.Add(pluginFeature);
-        DataStore.i.loadedPluginFeatures.Add(pluginFeature);
     }
 
     private void RemoveFeature<T>() where T : PluginFeature
@@ -96,7 +95,6 @@ public class PluginSystem
         {
             if (activeFeatures[i].GetType() == typeof(T))
             {
-                DataStore.i.loadedPluginFeatures.Remove(activeFeatures[i]);
                 activeFeatures[i].Dispose();
                 activeFeatures.Remove(activeFeatures[i]);
             }

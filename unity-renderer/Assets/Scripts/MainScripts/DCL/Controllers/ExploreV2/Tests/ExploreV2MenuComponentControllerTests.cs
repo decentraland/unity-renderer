@@ -1,3 +1,4 @@
+using DCL;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -26,6 +27,7 @@ public class ExploreV2MenuComponentControllerTests
         // Assert
         Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
         exploreV2MenuView.Received().SetActive(false);
+        Assert.AreEqual(exploreV2MenuController, DataStore.i.exploreV2.controller.Get());
     }
 
     [Test]

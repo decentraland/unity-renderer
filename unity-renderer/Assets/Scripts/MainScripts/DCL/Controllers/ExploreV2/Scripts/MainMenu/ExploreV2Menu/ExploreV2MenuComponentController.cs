@@ -1,10 +1,11 @@
+using DCL;
 using System;
 using UnityEngine;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
 /// </summary>
-public class ExploreV2MenuComponentController : IHUD
+public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
     public event Action OnOpen;
     public event Action OnClose;
@@ -24,6 +25,8 @@ public class ExploreV2MenuComponentController : IHUD
             OnProfileUpdated(ownUserProfile);
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
+
+        DataStore.i.exploreV2.controller.Set(this);
     }
 
     public void Dispose()
