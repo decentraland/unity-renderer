@@ -19,8 +19,8 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
-        public MeshRenderer lodRenderer;
-        public MeshFilter lodMeshFilter;
+        public MeshRenderer impostorRenderer;
+        public MeshFilter impostorMeshFilter;
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
@@ -68,7 +68,7 @@ namespace DCL
             stickersController = GetComponent<StickersController>();
             avatarMeshCombiner = new AvatarMeshCombinerHelper();
 
-            if (lodRenderer != null)
+            if (impostorRenderer != null)
                 SetImpostorVisibility(false);
         }
 
@@ -138,7 +138,7 @@ namespace DCL
             initializedImpostor = true;
             
             // The fetched snapshot can take its time so it's better to assign a generic impostor first.
-            AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh, lodRenderer.material);
+            AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
 
             UserProfile userProfile = null;
             if (!string.IsNullOrEmpty(model?.id))
@@ -147,7 +147,7 @@ namespace DCL
             if (userProfile != null)
             {
                 bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, impostorMeshFilter.mesh, impostorRenderer.material);
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
             }
         }
@@ -166,7 +166,7 @@ namespace DCL
             if (!isDestroyed)
             {
                 SetGOVisibility(true);
-                if (lodRenderer != null)
+                if (impostorRenderer != null)
                     SetImpostorVisibility(false);
             }
 
@@ -619,12 +619,12 @@ namespace DCL
             if (impostorVisibility && !initializedImpostor)
                 InitializeImpostor();
             
-            lodRenderer.gameObject.SetActive(impostorVisibility);
+            impostorRenderer.gameObject.SetActive(impostorVisibility);
         }
 
-        public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
+        public void SetImpostorForward(Vector3 newForward) { impostorRenderer.transform.forward = newForward; }
 
-        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
+        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, newColor); }
         public void SetThrottling(int framesBetweenUpdates)
         {
             gpuSkinningFramesBetweenUpdates = framesBetweenUpdates;
@@ -646,9 +646,9 @@ namespace DCL
         public void SetImpostorFade(float impostorFade)
         {
             //TODO implement dither in Unlit shader
-            Color current = lodRenderer.material.GetColor(BASE_COLOR_PROPERTY);
+            Color current = impostorRenderer.material.GetColor(BASE_COLOR_PROPERTY);
             current.a = impostorFade;
-            lodRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
+            impostorRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
 
             OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
@@ -709,13 +709,13 @@ namespace DCL
 
         private void ResetImpostor()
         {
-            if (lodRenderer == null)
+            if (impostorRenderer == null)
                 return;
             
             if (bodySnapshotTexturePromise != null)
                 AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
             
-            AvatarRendererHelpers.ResetImpostor(lodMeshFilter.mesh, lodRenderer.material);
+            AvatarRendererHelpers.ResetImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
             
             initializedImpostor = false;
         }
