@@ -1,5 +1,8 @@
-﻿public class EventsSubSectionComponentView : BaseComponentView
+// TBD...
+
+public class EventsSubSectionComponentView : BaseComponentView
 {
-    // TBD...
+    public override void PostInitialization() { }
+
     public override void RefreshControl() { }
 }

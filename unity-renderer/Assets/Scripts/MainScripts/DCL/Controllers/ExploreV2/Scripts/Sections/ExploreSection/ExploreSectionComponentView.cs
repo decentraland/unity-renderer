@@ -24,15 +24,14 @@ public class ExploreSectionComponentView : BaseComponentView, IExploreSectionCom
     [Header("Configuration")]
     [SerializeField] internal ExploreSectionComponentModel model;
 
-    public override void Initialize()
+    public override void PostInitialization()
     {
-        base.Initialize();
         Configure(model);
 
-        if (subSectionSelector.isInitialized)
+        if (subSectionSelector.isFullyInitialized)
             CreateSubSectionSelectorMappings();
         else
-            subSectionSelector.OnInitialized += CreateSubSectionSelectorMappings;
+            subSectionSelector.OnFullyInitialized += CreateSubSectionSelectorMappings;
     }
 
     public void Configure(ExploreSectionComponentModel model)
@@ -45,7 +44,7 @@ public class ExploreSectionComponentView : BaseComponentView, IExploreSectionCom
 
     public override void Dispose()
     {
-        subSectionSelector.OnInitialized -= CreateSubSectionSelectorMappings;
+        subSectionSelector.OnFullyInitialized -= CreateSubSectionSelectorMappings;
         RemoveSectionSelectorMappings();
     }
 

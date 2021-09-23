@@ -27,7 +27,7 @@ public class ExploreV2MenuComponentViewTests
                 profilePicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
                 profileName = "Test Name",
                 profileAddress = "Test Address",
-                onClickEvent = new Button.ButtonClickedEvent()
+                onClick = new Button.ButtonClickedEvent()
             },
             realmInfo = new RealmViewerComponentModel
             {
@@ -57,7 +57,7 @@ public class ExploreV2MenuComponentViewTests
             profilePicture = testPicture,
             profileName = testProfileName,
             profileAddress = testAddress,
-            onClickEvent = testClickedEvent
+            onClick = testClickedEvent
         };
 
         string testRealmName = "Test Realm Name";
@@ -76,7 +76,7 @@ public class ExploreV2MenuComponentViewTests
         Assert.AreEqual(testPicture, exploreV2MenuComponent.model.profileInfo.profilePicture, "The profile picture does not match in the model.");
         Assert.AreEqual(testProfileName, exploreV2MenuComponent.model.profileInfo.profileName, "The profile name does not match in the model.");
         Assert.AreEqual(testAddress, exploreV2MenuComponent.model.profileInfo.profileAddress, "The profile address does not match in the model.");
-        Assert.AreEqual(testClickedEvent, exploreV2MenuComponent.model.profileInfo.onClickEvent, "The profile address does not match in the model.");
+        Assert.AreEqual(testClickedEvent, exploreV2MenuComponent.model.profileInfo.onClick, "The profile address does not match in the model.");
         Assert.AreEqual(testRealmName, exploreV2MenuComponent.model.realmInfo.realmName, "The realm name does not match in the model.");
         Assert.AreEqual(testNumberOfUsers, exploreV2MenuComponent.model.realmInfo.numberOfUsers, "The number of users does not match in the model.");
     }
@@ -122,7 +122,7 @@ public class ExploreV2MenuComponentViewTests
             profilePicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
             profileName = "Test Name",
             profileAddress = "Test Address",
-            onClickEvent = new Button.ButtonClickedEvent()
+            onClick = new Button.ButtonClickedEvent()
         };
 
         // Act

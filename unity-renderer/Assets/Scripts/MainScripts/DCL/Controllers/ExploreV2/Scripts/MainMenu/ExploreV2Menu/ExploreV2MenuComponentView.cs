@@ -75,20 +75,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public event Action OnCloseButtonPressed;
 
-    public override void Initialize()
+    public override void PostInitialization()
     {
-        base.Initialize();
         Configure(model);
 
-        if (sectionSelector.isInitialized)
+        if (sectionSelector.isFullyInitialized)
             CreateSectionSelectorMappings();
         else
-            sectionSelector.OnInitialized += CreateSectionSelectorMappings;
+            sectionSelector.OnFullyInitialized += CreateSectionSelectorMappings;
 
-        if (closeMenuButton.isInitialized)
+        if (closeMenuButton.isFullyInitialized)
             ConfigureCloseButton();
         else
-            closeMenuButton.OnInitialized += ConfigureCloseButton;
+            closeMenuButton.OnFullyInitialized += ConfigureCloseButton;
     }
 
     public void Configure(ExploreV2MenuComponentModel model)
@@ -108,7 +107,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public override void Dispose()
     {
-        sectionSelector.OnInitialized -= CreateSectionSelectorMappings;
+        sectionSelector.OnFullyInitialized -= CreateSectionSelectorMappings;
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
     }

@@ -1,5 +1,8 @@
-﻿public class PlacesSubSectionComponentView : BaseComponentView
+// TBD...
+
+public class PlacesSubSectionComponentView : BaseComponentView
 {
-    // TBD...
+    public override void PostInitialization() { }
+
     public override void RefreshControl() { }
 }

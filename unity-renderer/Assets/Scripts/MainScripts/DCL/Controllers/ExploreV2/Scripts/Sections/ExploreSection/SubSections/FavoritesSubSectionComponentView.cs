@@ -1,5 +1,8 @@
-﻿public class FavoritesSubSectionComponentView : BaseComponentView
+// TBD...
+
+public class FavoritesSubSectionComponentView : BaseComponentView
 {
-    // TBD...
+    public override void PostInitialization() { }
+
     public override void RefreshControl() { }
 }

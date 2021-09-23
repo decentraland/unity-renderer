@@ -1,5 +1,8 @@
+// TBD...
+
 public class SettingsSectionComponentView : BaseComponentView
 {
-    // TBD...
+    public override void PostInitialization() { }
+
     public override void RefreshControl() { }
 }

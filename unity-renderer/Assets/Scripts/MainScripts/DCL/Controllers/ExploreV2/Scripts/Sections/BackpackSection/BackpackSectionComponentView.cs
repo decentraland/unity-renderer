@@ -1,5 +1,8 @@
+// TBD...
+
 public class BackpackSectionComponentView : BaseComponentView
 {
-    // TBD...
+    public override void PostInitialization() { }
+
     public override void RefreshControl() { }
 }

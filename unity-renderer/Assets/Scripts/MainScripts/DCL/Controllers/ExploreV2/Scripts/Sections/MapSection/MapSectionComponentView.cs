@@ -1,5 +1,8 @@
+// TBD...
+
 public class MapSectionComponentView : BaseComponentView
 {
-    // TBD...
+    public override void PostInitialization() { }
+
     public override void RefreshControl() { }
 }
