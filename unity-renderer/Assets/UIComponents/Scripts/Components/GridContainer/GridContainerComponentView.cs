@@ -59,11 +59,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     private List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public void Configure(GridContainerComponentModel model)
     {

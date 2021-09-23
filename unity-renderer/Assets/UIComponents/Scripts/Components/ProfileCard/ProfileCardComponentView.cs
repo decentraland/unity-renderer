@@ -81,11 +81,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         }
     }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public void Configure(ProfileCardComponentModel model)
     {

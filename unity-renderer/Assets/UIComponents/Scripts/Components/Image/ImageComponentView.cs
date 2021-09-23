@@ -31,11 +31,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
     [Header("Configuration")]
     [SerializeField] internal ImageComponentModel model;
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public void Configure(ImageComponentModel model)
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 public interface IBaseComponentView
 {
     /// <summary>
-    /// It will be triggered after the UI component is initialized (it is called on the Start Unity event).
+    /// It will be triggered after the UI component is initialized.
     /// </summary>
     event Action OnInitialized;
 
@@ -14,9 +14,9 @@ public interface IBaseComponentView
     bool isInitialized { get; }
 
     /// <summary>
-    /// It is called when the UI component game object awakes.
+    /// It is called just after the UI component has been initialized.
     /// </summary>
-    void Initialize();
+    void PostInitialization();
 
     /// <summary>
     /// Shows the UI component.
@@ -36,7 +36,7 @@ public interface IBaseComponentView
     void RefreshControl();
 
     /// <summary>
-    /// It is called when the UI component game object is destroyed.
+    /// It is called when the UI component is destroyed.
     /// </summary>
     void Dispose();
 }
@@ -50,11 +50,18 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     internal ShowHideAnimator showHideAnimator;
 
-    public virtual void Initialize()
+    internal void Initialize()
     {
         isInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
+
+        PostInitialization();
+
+        isInitialized = true;
+        OnInitialized?.Invoke();
     }
+
+    public abstract void PostInitialization();
 
     public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
 
@@ -65,12 +72,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose() { }
 
     private void Awake() { Initialize(); }
-
-    private void Start()
-    {
-        isInitialized = true;
-        OnInitialized?.Invoke();
-    }
 
     private void OnDestroy() { Dispose(); }
 

@@ -62,11 +62,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
         }
     }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public virtual void Configure(ButtonComponentModel model)
     {

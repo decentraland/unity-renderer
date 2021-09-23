@@ -40,11 +40,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public void Configure(SectionSelectorComponentModel model)
     {
