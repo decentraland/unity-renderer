@@ -32,6 +32,7 @@ namespace DCL
         public readonly DataStore_Screen screen = new DataStore_Screen();
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
         public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
+        public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
 
         public class DataStore_BuilderInWorld
         {
@@ -113,7 +114,13 @@ namespace DCL
 
         public class DataStore_ExploreV2
         {
-            public readonly BaseVariable<IExploreV2MenuComponentController> controller = new BaseVariable<IExploreV2MenuComponentController>();
+            public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
+        }
+
+        public class DataStore_Taskbar
+        {
+            public readonly BaseVariable<bool> isExploreV2Enabled = new BaseVariable<bool>(false);
         }
     }
 }

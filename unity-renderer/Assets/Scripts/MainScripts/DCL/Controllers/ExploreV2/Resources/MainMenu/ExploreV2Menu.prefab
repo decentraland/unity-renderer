@@ -1625,7 +1625,7 @@ MonoBehaviour:
   profileCard: {fileID: 473306627002153747}
   realmViewer: {fileID: 5724359877345737668}
   closeMenuButton: {fileID: 1080349384249445918}
-  exploreSection: {fileID: 6521868703673930817}
+  placesAndEventsSection: {fileID: 6521868703673930817}
   questSection: {fileID: 7934178930056441387}
   backpackSection: {fileID: 1443121427877359202}
   mapSection: {fileID: 7171855799815233653}
@@ -1640,7 +1640,7 @@ MonoBehaviour:
       profilePicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
       profileName: Carrie
       profileAddress: 0x897234982345jkh5ku3hjhkd4f5
-      onClickEvent:
+      onClick:
         m_PersistentCalls:
           m_Calls: []
 --- !u!1 &4223377927872049633
@@ -3915,7 +3915,7 @@ PrefabInstance:
     - target: {fileID: 723462149448302663, guid: 17c845a92d1948c4783ccac4b36e7c7f,
         type: 3}
       propertyPath: m_fontSize
-      value: 15.65
+      value: 12.15
       objectReference: {fileID: 0}
     - target: {fileID: 1195385098958599846, guid: 17c845a92d1948c4783ccac4b36e7c7f,
         type: 3}
@@ -3925,7 +3925,7 @@ PrefabInstance:
     - target: {fileID: 1195385098958599846, guid: 17c845a92d1948c4783ccac4b36e7c7f,
         type: 3}
       propertyPath: m_fontSize
-      value: 15.5
+      value: 13.4
       objectReference: {fileID: 0}
     - target: {fileID: 3337524177640211239, guid: 17c845a92d1948c4783ccac4b36e7c7f,
         type: 3}
@@ -4401,7 +4401,7 @@ PrefabInstance:
     - target: {fileID: 1447187945983909996, guid: 80b06bccc3778f04a82e6190c76133a7,
         type: 3}
       propertyPath: m_Name
-      value: ExploreSection
+      value: PlacesAndEventsSection
       objectReference: {fileID: 0}
     - target: {fileID: 1447187945983909996, guid: 80b06bccc3778f04a82e6190c76133a7,
         type: 3}

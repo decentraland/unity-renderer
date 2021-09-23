@@ -236,11 +236,11 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnExploreV2ToggleOn()
     {
-        exploreV2Hud.SetVisibility(true);
+        DataStore.i.taskbar.isExploreV2Enabled.Set(true);
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
-    private void View_OnExploreV2ToggleOff() { exploreV2Hud.SetVisibility(false); }
+    private void View_OnExploreV2ToggleOff() { DataStore.i.taskbar.isExploreV2Enabled.Set(false); }
 
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
 
@@ -417,37 +417,34 @@ public class TaskbarHUDController : IHUD
 
     private void ConfigureExploreV2Feature()
     {
-        var alreadyLoadedExploreV2Controller = DataStore.i.exploreV2.controller.Get();
-        if (alreadyLoadedExploreV2Controller != null)
-            AddExploreV2Window(alreadyLoadedExploreV2Controller);
+        bool isExploreV2AlreadyInitialized = DataStore.i.exploreV2.isInitialized.Get();
+        if (isExploreV2AlreadyInitialized)
+            OnExploreV2ControllerInitialized(true, false);
         else
-            DataStore.i.exploreV2.controller.OnChange += OnExploreV2ControllerInitialized;
+            DataStore.i.exploreV2.isInitialized.OnChange += OnExploreV2ControllerInitialized;
     }
 
-    private void OnExploreV2ControllerInitialized(IExploreV2MenuComponentController current, IExploreV2MenuComponentController previous)
+    private void OnExploreV2ControllerInitialized(bool current, bool previous)
     {
-        DataStore.i.exploreV2.controller.OnChange -= OnExploreV2ControllerInitialized;
-        AddExploreV2Window(current);
-    }
-
-    public void AddExploreV2Window(IExploreV2MenuComponentController controller)
-    {
-        if (controller == null)
-        {
-            Debug.LogWarning("AddExploreV2Window >>> Explore V2 window doesn't exist yet!");
+        if (!current)
             return;
-        }
 
-        exploreV2Hud = controller;
+        DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
+        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
         view.OnAddExploreV2Window();
-        exploreV2Hud.OnOpen += () =>
+    }
+
+    private void OnExploreV2Open(bool current, bool previous)
+    {
+        if (current)
         {
             view.exploreV2Button.SetToggleState(true, false);
-        };
-        exploreV2Hud.OnClose += () =>
+            view.exploreV2Button.SetToggleState(false);
+        }
+        else
         {
             view.exploreV2Button.SetToggleState(false, false);
-        };
+        }
     }
 
     public void AddHelpAndSupportWindow(HelpAndSupportHUDController controller)
@@ -533,7 +530,8 @@ public class TaskbarHUDController : IHUD
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
-        DataStore.i.exploreV2.controller.OnChange -= OnExploreV2ControllerInitialized;
+        DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
+        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
