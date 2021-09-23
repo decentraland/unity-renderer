@@ -25,7 +25,7 @@ public class TaskbarHUDController : IHUD
     public FriendsHUDController friendsHud;
     public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
-    public ExploreV2Feature exploreV2Feature;
+    public IExploreV2MenuComponentController exploreV2Hud;
     public HelpAndSupportHUDController helpAndSupportHud;
 
     IMouseCatcher mouseCatcher;
@@ -236,11 +236,11 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnExploreV2ToggleOn()
     {
-        exploreV2Feature.SetVisibility(true);
+        exploreV2Hud.SetVisibility(true);
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
-    private void View_OnExploreV2ToggleOff() { exploreV2Feature.SetVisibility(false); }
+    private void View_OnExploreV2ToggleOff() { exploreV2Hud.SetVisibility(false); }
 
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
 
@@ -417,23 +417,20 @@ public class TaskbarHUDController : IHUD
 
     private void ConfigureExploreV2Feature()
     {
-        var alreadyLoadedExploreV2Feature = DataStore.i.loadedPluginFeatures.Get().FirstOrDefault(x => x is ExploreV2Feature);
-        if (alreadyLoadedExploreV2Feature != null)
-            AddExploreV2Window((ExploreV2Feature)alreadyLoadedExploreV2Feature);
+        var alreadyLoadedExploreV2Controller = DataStore.i.exploreV2.controller.Get();
+        if (alreadyLoadedExploreV2Controller != null)
+            AddExploreV2Window(alreadyLoadedExploreV2Controller);
         else
-            DataStore.i.loadedPluginFeatures.OnAdded += OnNewPluginFeatureLoaded;
+            DataStore.i.exploreV2.controller.OnChange += OnExploreV2ControllerInitialized;
     }
 
-    private void OnNewPluginFeatureLoaded(PluginFeature newPluginFeature)
+    private void OnExploreV2ControllerInitialized(IExploreV2MenuComponentController current, IExploreV2MenuComponentController previous)
     {
-        if (newPluginFeature is ExploreV2Feature)
-        {
-            DataStore.i.loadedPluginFeatures.OnAdded -= OnNewPluginFeatureLoaded;
-            AddExploreV2Window((ExploreV2Feature)newPluginFeature);
-        }
+        DataStore.i.exploreV2.controller.OnChange -= OnExploreV2ControllerInitialized;
+        AddExploreV2Window(current);
     }
 
-    public void AddExploreV2Window(ExploreV2Feature controller)
+    public void AddExploreV2Window(IExploreV2MenuComponentController controller)
     {
         if (controller == null)
         {
@@ -441,13 +438,13 @@ public class TaskbarHUDController : IHUD
             return;
         }
 
-        exploreV2Feature = controller;
+        exploreV2Hud = controller;
         view.OnAddExploreV2Window();
-        exploreV2Feature.OnOpen += () =>
+        exploreV2Hud.OnOpen += () =>
         {
             view.exploreV2Button.SetToggleState(true, false);
         };
-        exploreV2Feature.OnClose += () =>
+        exploreV2Hud.OnClose += () =>
         {
             view.exploreV2Button.SetToggleState(false, false);
         };
@@ -536,7 +533,7 @@ public class TaskbarHUDController : IHUD
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
-        DataStore.i.loadedPluginFeatures.OnAdded -= OnNewPluginFeatureLoaded;
+        DataStore.i.exploreV2.controller.OnChange -= OnExploreV2ControllerInitialized;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }

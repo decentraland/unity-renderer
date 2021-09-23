@@ -13,6 +13,7 @@ namespace DCL
         void SetImpostor();
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
+        void SetThrottling(int framesBetweenUpdates);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -103,6 +104,8 @@ namespace DCL
             StartTransition(0, 0);
         }
 
+        public void SetThrottling(int framesBetweenUpdates) { player?.renderer?.SetThrottling(framesBetweenUpdates); }
+
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
             CoroutineStarter.Stop(currentTransition);
@@ -155,7 +158,10 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
+        public void UpdateImpostorTint(float distanceToMainPlayer)
+        {
+            player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
+        }
 
         public void Dispose()
         {

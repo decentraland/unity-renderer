@@ -1,31 +1,33 @@
+using DCL;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
 
-public class ExploreV2FeatureTests
+public class ExploreV2MenuComponentControllerTests
 {
-    private ExploreV2Feature exploreV2Feature;
+    private ExploreV2MenuComponentController exploreV2MenuController;
     private IExploreV2MenuComponentView exploreV2MenuView;
 
     [SetUp]
     public void SetUp()
     {
         exploreV2MenuView = Substitute.For<IExploreV2MenuComponentView>();
-        exploreV2Feature = Substitute.ForPartsOf<ExploreV2Feature>();
-        exploreV2Feature.Configure().CreateView().Returns(info => exploreV2MenuView);
-        exploreV2Feature.Initialize();
+        exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>();
+        exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
+        exploreV2MenuController.Initialize();
     }
 
     [TearDown]
-    public void TearDown() { exploreV2Feature.Dispose(); }
+    public void TearDown() { exploreV2MenuController.Dispose(); }
 
     [Test]
     public void InitializeCorrectly()
     {
         // Assert
-        Assert.AreEqual(exploreV2MenuView, exploreV2Feature.view);
+        Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
         exploreV2MenuView.Received().SetActive(false);
+        Assert.AreEqual(exploreV2MenuController, DataStore.i.exploreV2.controller.Get());
     }
 
     [Test]
@@ -34,7 +36,7 @@ public class ExploreV2FeatureTests
     public void SetVisibilityCorrectly(bool isVisible)
     {
         // Act
-        exploreV2Feature.SetVisibility(isVisible);
+        exploreV2MenuController.SetVisibility(isVisible);
 
         //Assert
         exploreV2MenuView.Received().SetActive(isVisible);
@@ -47,7 +49,7 @@ public class ExploreV2FeatureTests
         UserProfile testUserProfile = new UserProfile();
 
         // Act
-        exploreV2Feature.OnProfileUpdated(testUserProfile);
+        exploreV2MenuController.OnProfileUpdated(testUserProfile);
 
         //Assert
         exploreV2MenuView.currentProfileCard.Received().SetProfileName(testUserProfile.userName);
@@ -62,7 +64,7 @@ public class ExploreV2FeatureTests
         Texture2D testTexture = new Texture2D(10, 10);
 
         // Act
-        exploreV2Feature.SetProfileImage(testTexture);
+        exploreV2MenuController.SetProfileImage(testTexture);
 
         //Assert
         exploreV2MenuView.currentProfileCard.Received().SetLoadingIndicatorVisible(false);
@@ -74,10 +76,10 @@ public class ExploreV2FeatureTests
     {
         // Arrange
         bool clicked = false;
-        exploreV2Feature.OnClose += () => clicked = true;
+        exploreV2MenuController.OnClose += () => clicked = true;
 
         // Act
-        exploreV2Feature.OnCloseButtonPressed();
+        exploreV2MenuController.OnCloseButtonPressed();
 
         // Assert
         Assert.IsTrue(clicked);
