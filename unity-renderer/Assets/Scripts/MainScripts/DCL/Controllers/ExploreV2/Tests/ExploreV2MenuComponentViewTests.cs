@@ -143,7 +143,7 @@ public class ExploreV2MenuComponentViewTests
     public void CreateSectionSelectorMappingsCorrectly(int sectionIndex)
     {
         // Arrange
-        exploreV2MenuComponent.exploreSection.gameObject.SetActive(false);
+        exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
         exploreV2MenuComponent.questSection.gameObject.SetActive(false);
         exploreV2MenuComponent.backpackSection.gameObject.SetActive(false);
         exploreV2MenuComponent.mapSection.gameObject.SetActive(false);
@@ -159,7 +159,7 @@ public class ExploreV2MenuComponentViewTests
         switch (sectionIndex)
         {
             case 0:
-                Assert.IsTrue(exploreV2MenuComponent.exploreSection.gameObject.activeSelf);
+                Assert.IsTrue(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf);
                 break;
             case 1:
                 Assert.IsTrue(exploreV2MenuComponent.questSection.gameObject.activeSelf);
@@ -194,7 +194,7 @@ public class ExploreV2MenuComponentViewTests
     {
         // Arrange
         exploreV2MenuComponent.CreateSectionSelectorMappings();
-        exploreV2MenuComponent.exploreSection.gameObject.SetActive(false);
+        exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
         exploreV2MenuComponent.questSection.gameObject.SetActive(false);
         exploreV2MenuComponent.backpackSection.gameObject.SetActive(false);
         exploreV2MenuComponent.mapSection.gameObject.SetActive(false);
@@ -210,7 +210,7 @@ public class ExploreV2MenuComponentViewTests
         switch (sectionIndex)
         {
             case 0:
-                Assert.IsFalse(exploreV2MenuComponent.exploreSection.gameObject.activeSelf);
+                Assert.IsFalse(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf);
                 break;
             case 1:
                 Assert.IsFalse(exploreV2MenuComponent.questSection.gameObject.activeSelf);
@@ -252,12 +252,12 @@ public class ExploreV2MenuComponentViewTests
     public void ShowDefaultSectionCorrectly()
     {
         // Arrange
-        exploreV2MenuComponent.exploreSection.gameObject.SetActive(false);
+        exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
 
         // Act
         exploreV2MenuComponent.ShowDefaultSection();
 
         // Assert
-        Assert.IsTrue(exploreV2MenuComponent.exploreSection.gameObject.activeSelf, "The explore section should be actived.");
+        Assert.IsTrue(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf, "The explore section should be actived.");
     }
 }

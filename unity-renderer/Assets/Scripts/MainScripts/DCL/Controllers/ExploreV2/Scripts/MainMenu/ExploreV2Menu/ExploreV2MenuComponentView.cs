@@ -57,7 +57,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal ButtonComponentView closeMenuButton;
 
     [Header("Sections")]
-    [SerializeField] internal ExploreSectionComponentView exploreSection;
+    [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
     [SerializeField] internal QuestSectionComponentView questSection;
     [SerializeField] internal BackpackSectionComponentView backpackSection;
     [SerializeField] internal MapSectionComponentView mapSection;
@@ -136,7 +136,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     internal void CreateSectionSelectorMappings()
     {
-        sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => exploreSection.gameObject.SetActive(isOn));
+        sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn));
         sectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => questSection.gameObject.SetActive(isOn));
         sectionSelector.GetSection(2)?.onSelect.AddListener((isOn) => backpackSection.gameObject.SetActive(isOn));
         sectionSelector.GetSection(3)?.onSelect.AddListener((isOn) => mapSection.gameObject.SetActive(isOn));
@@ -166,7 +166,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         });
     }
 
-    internal void ShowDefaultSection() { exploreSection.gameObject.SetActive(true); }
+    internal void ShowDefaultSection() { placesAndEventsSection.gameObject.SetActive(true); }
 
     internal static ExploreV2MenuComponentView Create()
     {
