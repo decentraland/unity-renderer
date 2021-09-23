@@ -53,7 +53,7 @@ MonoBehaviour:
     shadowResolution: 1024
     cameraDrawDistance: 250
     bloom: 1
-    fpsCap: 1
+    fpsCap: 0
     colorGrading: 1
     shadowDistance: 70
     enableDetailObjectCulling: 1
