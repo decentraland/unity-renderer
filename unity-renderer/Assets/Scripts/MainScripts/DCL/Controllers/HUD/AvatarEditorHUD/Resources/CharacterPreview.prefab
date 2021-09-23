@@ -344,6 +344,7 @@ MonoBehaviour:
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
   lodRenderer: {fileID: 0}
   lodMeshFilter: {fileID: 0}
+  enableImpostor: 0
   isLoading: 0
 --- !u!1 &8127486274469708600
 GameObject:

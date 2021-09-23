@@ -48,7 +48,7 @@ namespace DCL
             if (player?.renderer == null)
                 return;
             player.renderer.SetAvatarFade(avatarFade);
-            player.renderer.SetImpostorFade(impostorFade);
+            player.renderer.impostor.SetFade(impostorFade);
         }
 
         public void SetFullAvatar()
@@ -117,16 +117,16 @@ namespace DCL
             }
 
             player.renderer.SetAvatarFade(avatarFade);
-            player.renderer.SetImpostorFade(impostorFade);
+            player.renderer.impostor.SetFade(impostorFade);
             player.renderer.SetRendererEnabled(true);
-            player.renderer.SetImpostorVisibility(true);
+            player.renderer.impostor.SetVisibility(true);
 
             while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
             {
                 avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, (1f / transitionDuration) * Time.deltaTime);
                 impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, (1f / transitionDuration) * Time.deltaTime);
                 player.renderer.SetAvatarFade(avatarFade);
-                player.renderer.SetImpostorFade(impostorFade);
+                player.renderer.impostor.SetFade(impostorFade);
                 yield return null;
             }
 
@@ -136,7 +136,7 @@ namespace DCL
             bool avatarVisibility = !Mathf.Approximately(avatarFade, 0);
             player.renderer.SetRendererEnabled(avatarVisibility);
             bool impostorVisibility = !Mathf.Approximately(impostorFade, 0);
-            player.renderer.SetImpostorVisibility(impostorVisibility);
+            player.renderer.impostor.SetVisibility(impostorVisibility);
             currentTransition = null;
         }
 
@@ -155,7 +155,7 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
+        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.impostor.SetColorByDistance(distanceToMainPlayer); }
 
         public void Dispose()
         {

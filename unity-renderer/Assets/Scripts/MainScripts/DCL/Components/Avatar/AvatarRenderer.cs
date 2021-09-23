@@ -11,7 +11,6 @@ namespace DCL
 {
     public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
-        private static readonly int BASE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
         private const int MAX_RETRIES = 5;
 
         public Material defaultMaterial;
@@ -21,13 +20,12 @@ namespace DCL
 
         [SerializeField] private MeshRenderer lodRenderer;
         [SerializeField] private MeshFilter lodMeshFilter;
-        private Material impostorMaterial;
-        private Mesh impostorMesh;
-        private bool impostorInitialized = false;
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
         private SimpleGPUSkinning gpuSkinning = null;
+        public IAvatarImpostor impostor { get; private set; } = null;
+        public bool enableImpostor = true;
 
         private Renderer mainMeshRenderer
         {
@@ -41,7 +39,6 @@ namespace DCL
 
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
-        public event Action<float> OnImpostorAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
@@ -59,7 +56,6 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
-        private AssetPromise_Texture bodySnapshotTexturePromise;
         private bool isDestroyed = false;
 
         private void Awake()
@@ -68,8 +64,8 @@ namespace DCL
             stickersController = GetComponent<StickersController>();
             avatarMeshCombiner = new AvatarMeshCombinerHelper();
 
-            if (lodRenderer != null)
-                SetImpostorVisibility(false);
+            if ( enableImpostor )
+                impostor = new AvatarImpostor(lodRenderer, lodMeshFilter);
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -99,8 +95,6 @@ namespace DCL
 
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             // TODO(Brian): Find a better approach than overloading callbacks like this. This code is not readable.
             void onSuccessWrapper()
@@ -133,39 +127,6 @@ namespace DCL
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
         }
 
-        public void InitializeImpostor()
-        {
-            if (impostorInitialized)
-                return;
-
-            impostorInitialized = true;
-            impostorMesh = Instantiate(lodMeshFilter.sharedMesh);
-            impostorMaterial = new Material(lodRenderer.sharedMaterial);
-
-            UserProfile userProfile = null;
-
-            if (!string.IsNullOrEmpty(model?.id))
-                userProfile = UserProfileController.GetProfileByUserId(model.id);
-
-            if (userProfile != null)
-            {
-                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, impostorMesh, impostorMaterial);
-                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMesh);
-                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
-            }
-            else
-            {
-                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMesh);
-            }
-        }
-
-        public void CleanImpostor()
-        {
-            impostorInitialized = false;
-            Destroy(impostorMesh);
-            Destroy(impostorMaterial);
-        }
 
         void StopLoadingCoroutines()
         {
@@ -182,10 +143,12 @@ namespace DCL
             if (!isDestroyed)
             {
                 SetGOVisibility(true);
-                if (lodRenderer != null)
-                    SetImpostorVisibility(false);
+                impostor?.CleanUp();
             }
-
+            else
+            {
+                impostor?.Dispose();
+            }
 
             avatarMeshCombiner.Dispose();
             gpuSkinning = null;
@@ -216,10 +179,6 @@ namespace DCL
             OnSuccessEvent = null;
 
             CleanMergedAvatar();
-            CleanImpostor();
-
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
@@ -255,6 +214,9 @@ namespace DCL
             // TODO(Brian): This is an ugly hack, all the loading should be performed
             //              without being afraid of the gameObject active state.
             yield return new WaitUntil(() => gameObject.activeSelf);
+
+            if ( enableImpostor )
+                impostor.PopulateTexture(model?.id);
 
             bool loadSoftFailed = false;
 
@@ -631,11 +593,6 @@ namespace DCL
             mainMeshRenderer.enabled = newVisibility;
         }
 
-        public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
-
-        public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
-
-        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(impostorMaterial, newColor); }
 
         public void SetAvatarFade(float avatarFade)
         {
@@ -647,16 +604,6 @@ namespace DCL
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
-        }
-
-        public void SetImpostorFade(float impostorFade)
-        {
-            //TODO implement dither in Unlit shader
-            Color current = impostorMaterial.GetColor(BASE_COLOR_PROPERTY);
-            current.a = impostorFade;
-            impostorMaterial.SetColor(BASE_COLOR_PROPERTY, current);
-
-            OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
 
         private void HideAll()

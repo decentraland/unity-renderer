@@ -25,11 +25,11 @@ namespace DCL
         public AvatarsLODController()
         {
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            KernelConfig.i.OnChange += OnKernelConfigChanged;
-                            OnKernelConfigChanged(config, null);
-                        });
+                .Then(config =>
+                {
+                    KernelConfig.i.OnChange += OnKernelConfigChanged;
+                    OnKernelConfigChanged(config, null);
+                });
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
@@ -49,12 +49,14 @@ namespace DCL
             {
                 lodController.Dispose();
             }
+
             lodControllers.Clear();
 
             foreach (var keyValuePair in otherPlayers.Get())
             {
                 RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
             }
+
             otherPlayers.OnAdded += RegisterAvatar;
             otherPlayers.OnRemoved += UnregisterAvatar;
         }
@@ -103,7 +105,7 @@ namespace DCL
                 Vector3 lookAtDir = (cameraPosition - player.worldPosition).normalized;
 
                 lookAtDir.y = previousForward.y;
-                player.renderer.SetImpostorForward(lookAtDir);
+                player.renderer.impostor.SetForward(lookAtDir);
             }
         }
 

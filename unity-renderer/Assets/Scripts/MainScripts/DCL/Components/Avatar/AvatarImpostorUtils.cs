@@ -1,12 +1,10 @@
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
 {
-    public static class AvatarRendererHelpers
+    public static class AvatarImpostorUtils
     {
-        private static readonly int IMPOSTOR_TEXTURE_PROPERTY = Shader.PropertyToID("_BaseMap");
-        private static readonly int IMPOSTOR_TEXTURE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
-
         // Manually tweaked values
         public static readonly float IMPOSTOR_MOVEMENT_INTERPOLATION = 1.79f;
         private const float IMPOSTOR_TINT_MIN_DISTANCE = 30f;
@@ -20,7 +18,7 @@ namespace DCL
         private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
         private const int GENERIC_IMPOSTORS_ATLAS_ROWS = 2;
 
-        public static void RandomizeAndApplyGenericImpostor(Mesh impostorMesh)
+        public static void RandomizeAndApplyGenericImpostor(Mesh mesh)
         {
             Vector2 spriteSize = new Vector2(1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS, 1f / GENERIC_IMPOSTORS_ATLAS_ROWS);
             float randomUVXPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteSize.x;
@@ -31,7 +29,7 @@ namespace DCL
             uvs[1].Set(randomUVXPos + spriteSize.x, randomUVYPos);
             uvs[2].Set(randomUVXPos, randomUVYPos + spriteSize.y);
             uvs[3].Set(randomUVXPos + spriteSize.x, randomUVYPos + spriteSize.y);
-            impostorMesh.uv = uvs;
+            mesh.uv = uvs;
         }
 
         private static void ResetImpostorMeshUVs(Mesh impostorMesh)
@@ -44,14 +42,14 @@ namespace DCL
             impostorMesh.uv = uvs;
         }
 
-        public static void SetImpostorTexture(Texture2D impostorTexture, Mesh impostorMesh, Material impostorMaterial)
+        public static void SetImpostorTexture(Texture2D texture, Mesh mesh, Material material)
         {
-            if (impostorTexture == null)
+            if (texture == null)
                 return;
 
-            ResetImpostorMeshUVs(impostorMesh);
+            ResetImpostorMeshUVs(mesh);
 
-            impostorMaterial.SetTexture(IMPOSTOR_TEXTURE_PROPERTY, impostorTexture);
+            material.SetTexture(ShaderUtils.BaseMap, texture);
         }
 
         public static void SetImpostorTintColor(Material impostorMaterial, Color newColor)
@@ -59,7 +57,7 @@ namespace DCL
             if (impostorMaterial == null)
                 return;
 
-            impostorMaterial.SetColor(IMPOSTOR_TEXTURE_COLOR_PROPERTY, newColor);
+            impostorMaterial.SetColor(ShaderUtils.BaseColor, newColor);
         }
 
         public static Color CalculateImpostorTint(float distanceToMainPlayer)

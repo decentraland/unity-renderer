@@ -161,11 +161,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53a4f52c7cc5dc348ab140ed3238943a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightweightMat: {fileID: 2100000, guid: c27d60a72e5b77748bd23149c72355fe, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 77828a2ff3421ba42a6b4cc7e9a9061e, type: 2}
   eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
+  lodRenderer: {fileID: 0}
+  lodMeshFilter: {fileID: 0}
+  enableImpostor: 0
+  isLoading: 0
 --- !u!114 &2374946182991755626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,6 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f65711f48a721474693e887857e982a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraController: {fileID: 0}
   cameraPosition: {fileID: 0}
 --- !u!1 &6922703132412175462
 GameObject:

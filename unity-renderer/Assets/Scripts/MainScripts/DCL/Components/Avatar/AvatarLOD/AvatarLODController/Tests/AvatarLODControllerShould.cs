@@ -21,6 +21,7 @@ namespace Tests.AvatarLODController
         public void SetUp()
         {
             renderer = Substitute.For<IAvatarRenderer>();
+            renderer.impostor.Returns( (x) => Substitute.For<IAvatarImpostor>() );
             renderer.isReady.Returns(true);
             player = new Player { id = "player", renderer = renderer };
             controller = new DCL.AvatarLODController(player);
@@ -36,7 +37,7 @@ namespace Tests.AvatarLODController
             Assert.IsTrue(controller.SSAOEnabled);
             Assert.IsTrue(controller.facialFeaturesEnabled);
             player.renderer.Received().SetAvatarFade(1);
-            player.renderer.Received().SetImpostorFade(0);
+            player.renderer.impostor.Received().SetFade(0);
         }
 
         [Test]

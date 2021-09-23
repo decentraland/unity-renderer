@@ -37,7 +37,6 @@ namespace DCL
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-            avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
         }
 
         private void PlayerClicked()
@@ -54,7 +53,7 @@ namespace DCL
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
 
-            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
+            avatarRenderer.impostor.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -93,6 +92,9 @@ namespace DCL
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;
 
+            avatarRenderer.impostor.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
+            avatarRenderer.impostor.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+
             // To deal with the cases in which the entity transform was configured before the AvatarShape
             if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
             {
@@ -111,13 +113,6 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
-
-            KernelConfig.i.EnsureConfigInitialized()
-                .Then(config =>
-                {
-                    if (config.features.enableAvatarLODs)
-                        avatarRenderer.InitializeImpostor();
-                });
         }
 
         private void UpdatePlayerStatus(AvatarModel model)
@@ -191,7 +186,7 @@ namespace DCL
             player = null;
         }
 
-        void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
+        void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarImpostorUtils.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
 
         public override void Cleanup()
         {

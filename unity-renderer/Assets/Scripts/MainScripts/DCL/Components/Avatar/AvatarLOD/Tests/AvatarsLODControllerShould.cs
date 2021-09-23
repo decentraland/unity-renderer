@@ -12,6 +12,7 @@ namespace Tests.AvatarsLODController
     {
         private DCL.AvatarsLODController controller;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+
         [SetUp]
         public void SetUp() { controller = Substitute.ForPartsOf<DCL.AvatarsLODController>(); }
 
@@ -25,14 +26,14 @@ namespace Tests.AvatarsLODController
         [Test]
         public void BeInitializedProperly()
         {
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            controller.Initialize(new KernelConfigModel { features = new Features { enableAvatarLODs = true, enableTutorial = false } });
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(0, controller.lodControllers.Count);
         }
 
         [Test]
-        public void BeInitializedWithExistantPlayersProperly()
+        public void BeInitializedWithExistingPlayersProperly()
         {
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
@@ -76,12 +77,12 @@ namespace Tests.AvatarsLODController
         {
             IAvatarLODController lodController = null;
             controller.Configure()
-                      .CreateLodController(Arg.Any<Player>())
-                      .Returns(x =>
-                      {
-                          lodController = Substitute.For<IAvatarLODController>();
-                          return lodController;
-                      });
+                .CreateLodController(Arg.Any<Player>())
+                .Returns(x =>
+                {
+                    lodController = Substitute.For<IAvatarLODController>();
+                    return lodController;
+                });
             controller.enabled = true;
 
             controller.RegisterAvatar("player0", CreateMockPlayer("player0"));
@@ -158,7 +159,7 @@ namespace Tests.AvatarsLODController
             controller.enabled = true;
             controller.Update();
 
-            impostorPlayerRenderer.Received().SetImpostorForward((cameraPosition - impostorPlayer.worldPosition).normalized);
+            impostorPlayerRenderer.impostor.Received().SetForward((cameraPosition - impostorPlayer.worldPosition).normalized);
         }
 
         [Test]
@@ -187,7 +188,7 @@ namespace Tests.AvatarsLODController
 
             controller.UpdateAllLODs(1);
 
-            impostorPlayerRenderer.DidNotReceive().SetImpostorForward(new Vector3(0, 0, -1));
+            impostorPlayerRenderer.impostor.DidNotReceive().SetForward(new Vector3(0, 0, -1));
         }
 
         [Test]
@@ -383,8 +384,10 @@ namespace Tests.AvatarsLODController
         private Player CreateMockPlayer(string id, Vector3 worldPosition, out IAvatarRenderer renderer)
         {
             renderer = Substitute.For<IAvatarRenderer>();
+            renderer.impostor.Returns( (x) => Substitute.For<IAvatarImpostor>() );
             return new Player { name = id, id = id, renderer = renderer, worldPosition = worldPosition };
         }
+
         private IAvatarLODController CreateMockLODController(Player player)
         {
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
