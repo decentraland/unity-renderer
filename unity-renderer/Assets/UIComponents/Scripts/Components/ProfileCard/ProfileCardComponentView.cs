@@ -59,15 +59,25 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
     public Button.ButtonClickedEvent onClick
     {
-        get { return button?.onClick; }
+        get
+        {
+            if (button == null)
+                return null;
+
+            return button.onClick;
+        }
         set
         {
             model.onClickEvent = value;
-            button?.onClick.RemoveAllListeners();
-            button?.onClick.AddListener(() =>
+
+            if (button != null)
             {
-                value?.Invoke();
-            });
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() =>
+                {
+                    value?.Invoke();
+                });
+            }
         }
     }
 
