@@ -47,7 +47,7 @@ public class SectionSelectorComponentViewTests
         {
             icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             title = "Test4",
-            onSelectEvent = new Toggle.ToggleEvent()
+            onSelect = new Toggle.ToggleEvent()
         });
 
         // Act
@@ -142,7 +142,7 @@ public class SectionSelectorComponentViewTests
             {
                 icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
                 title = $"Test{i + 1}",
-                onSelectEvent = new Toggle.ToggleEvent()
+                onSelect = new Toggle.ToggleEvent()
             });
         }
 

@@ -14,5 +14,5 @@ public class SectionToggleModel
 {
     public Sprite icon;
     public string title;
-    public Toggle.ToggleEvent onSelectEvent;
+    public Toggle.ToggleEvent onSelect;
 }

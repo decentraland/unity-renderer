@@ -54,7 +54,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         {
             icon = sectionImage.sprite,
             title = sectionText.text,
-            onSelectEvent = onSelect
+            onSelect = onSelect
         };
     }
 
@@ -72,7 +72,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             sectionImage.sprite = model.icon;
         }
 
-        onSelect = model.onSelectEvent;
+        onSelect = model.onSelect;
     }
 
     public void SelectToggle()

@@ -68,7 +68,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         }
         set
         {
-            model.onClickEvent = value;
+            model.onClick = value;
 
             if (button != null)
             {
@@ -101,7 +101,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         SetProfilePicture(model.profilePicture);
         SetProfileName(model.profileName);
         SetProfileAddress(model.profileAddress);
-        onClick = model.onClickEvent;
+        onClick = model.onClick;
     }
 
     public override void Dispose()

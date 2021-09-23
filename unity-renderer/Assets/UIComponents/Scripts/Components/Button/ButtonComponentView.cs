@@ -49,7 +49,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
         }
         set
         {
-            model.onClickEvent = value;
+            model.onClick = value;
 
             if (button != null)
             {
@@ -81,7 +81,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         SetText(model.text);
         SetIcon(model.icon);
-        onClick = model.onClickEvent;
+        onClick = model.onClick;
     }
 
     public override void Dispose()
