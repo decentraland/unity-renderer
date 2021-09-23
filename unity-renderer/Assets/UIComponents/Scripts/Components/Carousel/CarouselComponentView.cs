@@ -117,9 +117,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     internal float currentFinalNormalizedPos;
     internal bool isInTransition = false;
 
-    public override void Initialize()
+    public override void PostInitialization()
     {
-        base.Initialize();
         Configure(model);
         ConfigureManualButtonsEvents();
         StartCarousel();
