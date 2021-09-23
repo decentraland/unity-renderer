@@ -42,7 +42,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Dispose()
     {
-        if ( initialLoadingView == null )
+        if ( initialLoadingView == null || initialLoadingView.gameObject == null )
             return;
 
         initialLoadingView.Dispose();
@@ -51,7 +51,12 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Show() { initialLoadingView.Show(); }
 
-    public void Hide(bool forzeHidding = false, Action onHideAction = null) { initialLoadingView.Hide(forzeHidding, onHideAction); }
+    public void Hide(bool forzeHidding = false, Action onHideAction = null)
+    {
+        if ( initialLoadingView.gameObject == null )
+            return;
+        initialLoadingView.Hide(forzeHidding, onHideAction);
+    }
 
     public void SetPercentage(float newValue) { initialLoadingView.SetPercentage(newValue); }
 }
