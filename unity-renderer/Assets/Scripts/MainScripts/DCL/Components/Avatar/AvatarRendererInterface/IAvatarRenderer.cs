@@ -24,5 +24,6 @@ namespace DCL
         void SetFacialFeaturesVisible(bool visible);
         void SetSSAOEnabled(bool enabled);
         void SetImpostorColor(Color newColor);
+        void SetThrottling(int framesBetweenUpdates);
     }
 }
