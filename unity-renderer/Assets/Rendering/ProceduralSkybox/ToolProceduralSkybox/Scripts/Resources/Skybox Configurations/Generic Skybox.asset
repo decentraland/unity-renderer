@@ -358,8 +358,8 @@ MonoBehaviour:
     normalIntensity: 0
   - nameInEditor: Clouds Day
     expandedInEditor: 0
-    timeSpan_start: 2
-    timeSpan_End: 13
+    timeSpan_start: 13
+    timeSpan_End: 24
     fadingIn: 2
     fadingOut: 0
     tintercentage: 0
@@ -451,7 +451,7 @@ MonoBehaviour:
     speed: 0.02
     normalIntensity: 0
   - nameInEditor: Clouds Plannar
-    expandedInEditor: 1
+    expandedInEditor: 0
     timeSpan_start: 0
     timeSpan_End: 24
     fadingIn: 0

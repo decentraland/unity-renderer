@@ -169,6 +169,9 @@ Material:
     - _isRadial_0: 1
     - _isRadial_1: 2
     - _isRadial_2: 2
+    - _layerType_0: 0
+    - _layerType_1: 0
+    - _layerType_2: 0
     - _lightIntensity00: 0
     - _lightIntensity01: 0
     - _lightIntensity02: 0
@@ -229,6 +232,6 @@ Material:
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
     - _timeFrame_0: {r: 12, g: 24, b: 0, a: 0}
-    - _timeFrame_1: {r: 2, g: 13, b: 0, a: 0}
+    - _timeFrame_1: {r: 13, g: 24, b: 0, a: 0}
     - _timeFrame_2: {r: 12, g: 22, b: 0, a: 0}
   m_BuildTextureStacks: []

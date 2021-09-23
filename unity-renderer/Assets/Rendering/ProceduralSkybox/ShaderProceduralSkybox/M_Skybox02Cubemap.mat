@@ -77,7 +77,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _normals_0:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: a217989cadb351846a6f03992af95a78, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _normals_1:
@@ -145,12 +145,12 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f_1: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
     - _LAYERTYPE_0: 0
-    - _RenderDistance_0: 2.26
+    - _RenderDistance_0: 0
     - _RenderDistance_1: 0
     - _RenderDistance_2: 0
-    - _dayTime: 0
+    - _dayTime: 1.87
     - _distance_0: 20
-    - _fadeTime_0: 0
+    - _fadeTime_0: 1
     - _fadeTime_1: 0
     - _fadeTime_2: 0
     - _hasFade00: 0
@@ -167,9 +167,12 @@ Material:
     - _isRadialLayer00: 0
     - _isRadialLayer01: 0
     - _isRadialLayer02: 0
-    - _isRadial_0: 0
+    - _isRadial_0: 1
     - _isRadial_1: 2
     - _isRadial_2: 1
+    - _layerType_0: 2
+    - _layerType_1: 0
+    - _layerType_2: 0
     - _lightIntensity00: 0
     - _lightIntensity01: 0
     - _lightIntensity02: 0
@@ -212,14 +215,14 @@ Material:
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
-    - _color_0: {r: 1, g: 1, b: 1, a: 1}
+    - _color_0: {r: 1, g: 0.9386792, b: 0.9386792, a: 1}
     - _color_1: {r: 0.07694653, g: 0.07694653, b: 0.07694653, a: 0}
     - _color_2: {r: 1, g: 1, b: 1, a: 0}
     - _groundColor: {r: 0.094901726, g: 0.040195987, b: 0.26415092, a: 1}
     - _horizonColor: {r: 0.6623347, g: 0.21489628, b: 0.76801753, a: 1}
-    - _lightDirection: {r: 44.098022, g: 96.20094, b: 153.87067, a: 0}
+    - _lightDirection: {r: 0.5, g: 0.5, b: 0.5, a: 0}
     - _lightTint: {r: 0.6622545, g: 0.6131314, b: 0.22200902, a: 1}
-    - _skyColor: {r: 0.10799927, g: 0.04313726, b: 0.47843137, a: 1}
+    - _skyColor: {r: 0.14793658, g: 0.09620862, b: 0.4339623, a: 1}
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
@@ -229,7 +232,7 @@ Material:
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
-    - _timeFrame_0: {r: 0, g: 24, b: 0, a: 0}
+    - _timeFrame_0: {r: 0, g: 5, b: 0, a: 0}
     - _timeFrame_1: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
