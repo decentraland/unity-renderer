@@ -139,6 +139,16 @@ namespace Tests.AvatarLODController
             Assert.Null(controller.currentTransition);
         }
 
+        [Test]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(6)]
+        public void SetAnimationThrottling(int framesBetweenUpdates)
+        {
+            controller.SetThrottling(framesBetweenUpdates);
+            renderer.Received().SetThrottling(framesBetweenUpdates);
+        }
+
         [UnityTest]
         public IEnumerator TransitionProperly()
         {

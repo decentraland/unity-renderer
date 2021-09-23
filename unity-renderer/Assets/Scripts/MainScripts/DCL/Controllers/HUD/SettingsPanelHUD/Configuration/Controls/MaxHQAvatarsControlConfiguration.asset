@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 060c1aa63ccfe124aa3cd640f9286a0b, type: 3}
-  m_Name: MaxNonLODAvatarsControlConfiguration
+  m_Name: MaxHQAvatarsControlConfiguration
   m_EditorClassIdentifier: 
   title: MAX HQ AVATARS
   controlPrefab: {fileID: 3572563192424337713, guid: 9c69fdd3db1d73140bfff48c5a2f72dd,
@@ -20,7 +20,7 @@ MonoBehaviour:
   flagsThatDeactivateMe:
   - {fileID: 11400000, guid: 5932aa2a572cf43a189edf2072b323d6, type: 2}
   isBeta: 0
-  sliderMinValue: 5
+  sliderMinValue: 25
   sliderMaxValue: 100
   storeValueAsNormalized: 0
   wholeNumbers: 1

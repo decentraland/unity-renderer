@@ -501,7 +501,7 @@ namespace DCL.Helpers
             key = tuple.Key;
             value = tuple.Value;
         }
-        
+
         /// <summary>
         /// Set a layer to the given transform and its child
         /// </summary>
@@ -520,17 +520,13 @@ namespace DCL.Helpers
         /// </summary>
         /// <param name="volume">Linear volume float</param>
         /// <returns>Exponential volume curve float</returns>
-        public static float ToVolumeCurve(float volume) {
-            return volume * (2f - volume);
-        }
+        public static float ToVolumeCurve(float volume) { return volume * (2f - volume); }
 
         /// <summary>
         /// Takes a linear volume value between 0 and 1, converts to exponential curve and maps to a value fitting for audio mixer group volume.
         /// </summary>
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>
-        public static float ToAudioMixerGroupVolume(float volume) {
-            return (ToVolumeCurve(volume) * 80f) - 80f;
-        }
+        public static float ToAudioMixerGroupVolume(float volume) { return (ToVolumeCurve(volume) * 80f) - 80f; }
     }
 }

@@ -28,6 +28,8 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
+        private void Awake() { model = new Model(); }
+        
         public override IEnumerator ApplyChanges(BaseModel baseModel) { return null; }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.GIZMOS; }
