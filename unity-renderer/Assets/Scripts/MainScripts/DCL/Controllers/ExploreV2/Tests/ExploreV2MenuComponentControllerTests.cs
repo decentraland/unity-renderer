@@ -27,7 +27,7 @@ public class ExploreV2MenuComponentControllerTests
         // Assert
         Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
         exploreV2MenuView.Received().SetActive(false);
-        Assert.AreEqual(exploreV2MenuController, DataStore.i.exploreV2.controller.Get());
+        Assert.IsTrue(DataStore.i.exploreV2.isInitialized.Get());
     }
 
     [Test]
@@ -74,14 +74,22 @@ public class ExploreV2MenuComponentControllerTests
     [Test]
     public void ClickOnCloseButtonCorrectly()
     {
-        // Arrange
-        bool clicked = false;
-        exploreV2MenuController.OnClose += () => clicked = true;
-
         // Act
         exploreV2MenuController.OnCloseButtonPressed();
 
         // Assert
-        Assert.IsTrue(clicked);
+        exploreV2MenuView.Received().SetActive(false);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ActivateFromTaskbarCorrectly(bool isActive)
+    {
+        // Act
+        exploreV2MenuController.OnActivateFromTaskbar(isActive, !isActive);
+
+        // Assert
+        exploreV2MenuView.Received().SetActive(isActive);
     }
 }

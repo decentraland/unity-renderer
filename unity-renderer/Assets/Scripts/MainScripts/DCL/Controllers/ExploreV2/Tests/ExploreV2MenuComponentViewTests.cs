@@ -237,7 +237,6 @@ public class ExploreV2MenuComponentViewTests
     public void ConfigureCloseButtonCorrectly()
     {
         // Arrange
-        exploreV2MenuComponent.SetActive(true);
         bool closeButtonClicked = false;
         exploreV2MenuComponent.OnCloseButtonPressed += () => closeButtonClicked = true;
 
@@ -246,7 +245,6 @@ public class ExploreV2MenuComponentViewTests
         exploreV2MenuComponent.closeMenuButton.onClick.Invoke();
 
         // Assert
-        Assert.IsFalse(exploreV2MenuComponent.gameObject.activeSelf, "The explore V2 menu should be deactivated.");
         Assert.IsTrue(closeButtonClicked, "The close button was not clicked.");
     }
 

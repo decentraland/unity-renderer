@@ -7,9 +7,6 @@ using UnityEngine;
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
-    public event Action OnOpen;
-    public event Action OnClose;
-
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
     internal IExploreV2MenuComponentView view;
@@ -25,8 +22,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             OnProfileUpdated(ownUserProfile);
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
-
-        DataStore.i.exploreV2.controller.Set(this);
+        DataStore.i.taskbar.isExploreV2Enabled.OnChange += OnActivateFromTaskbar;
+        DataStore.i.exploreV2.isInitialized.Set(true);
     }
 
     public void Dispose()
@@ -39,6 +36,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
             GameObject.Destroy(view.go);
         }
+
+        DataStore.i.taskbar.isExploreV2Enabled.OnChange -= OnActivateFromTaskbar;
     }
 
     public void SetVisibility(bool visible)
@@ -47,9 +46,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             return;
 
         if (visible && !view.isActive)
-            OnOpen?.Invoke();
+            DataStore.i.exploreV2.isOpen.Set(true);
         else if (!visible && view.isActive)
-            OnClose?.Invoke();
+            DataStore.i.exploreV2.isOpen.Set(false);
 
         view.SetActive(visible);
     }
@@ -69,7 +68,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentProfileCard.SetProfilePicture(texture);
     }
 
-    internal void OnCloseButtonPressed() { OnClose?.Invoke(); }
+    internal void OnCloseButtonPressed() { SetVisibility(false); }
+
+    internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current); }
 
     internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }

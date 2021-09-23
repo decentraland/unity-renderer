@@ -162,7 +162,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         closeMenuButton.onClick.AddListener(() =>
         {
-            SetActive(false);
             OnCloseButtonPressed?.Invoke();
         });
     }
