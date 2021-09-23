@@ -48,8 +48,6 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         }
     }
 
-    delegate void Logger(string str);
-
     public SectionToggleModel GetInfo()
     {
         return new SectionToggleModel
