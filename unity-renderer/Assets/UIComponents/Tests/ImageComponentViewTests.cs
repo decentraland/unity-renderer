@@ -4,15 +4,21 @@ using UnityEngine;
 public class ImageComponentViewTests
 {
     private ImageComponentView imageComponent;
+    private Texture2D testTexture;
 
     [SetUp]
-    public void SetUp() { imageComponent = BaseComponentView.Create<ImageComponentView>("Image"); }
+    public void SetUp()
+    {
+        imageComponent = BaseComponentView.Create<ImageComponentView>("Image");
+        testTexture = new Texture2D(20, 20);
+    }
 
     [TearDown]
     public void TearDown()
     {
         imageComponent.Dispose();
         GameObject.Destroy(imageComponent.gameObject);
+        GameObject.Destroy(testTexture);
     }
 
     [Test]
@@ -21,7 +27,7 @@ public class ImageComponentViewTests
         // Arrange
         ImageComponentModel testModel = new ImageComponentModel
         {
-            sprite = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero)
+            sprite = Sprite.Create(testTexture, new Rect(), Vector2.zero)
         };
 
         // Act
@@ -35,7 +41,7 @@ public class ImageComponentViewTests
     public void RefreshImageCorrectly()
     {
         // Arrange
-        Sprite testSprite = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
 
         imageComponent.model.sprite = testSprite;
 
@@ -50,7 +56,7 @@ public class ImageComponentViewTests
     public void SetImageCorrectly()
     {
         // Arrange
-        Sprite testSprite = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
 
         // Act
         imageComponent.SetImage(testSprite);

@@ -5,15 +5,21 @@ using UnityEngine.UI;
 public class ButtonComponentViewTests
 {
     private ButtonComponentView buttonComponent;
+    private Texture2D testTexture;
 
     [SetUp]
-    public void SetUp() { buttonComponent = CreateButtonComponent(); }
+    public void SetUp()
+    {
+        buttonComponent = CreateButtonComponent();
+        testTexture = new Texture2D(20, 20);
+    }
 
     [TearDown]
     public void TearDown()
     {
         buttonComponent.Dispose();
         GameObject.Destroy(buttonComponent.gameObject);
+        GameObject.Destroy(testTexture);
     }
 
     [Test]
@@ -36,9 +42,9 @@ public class ButtonComponentViewTests
         // Arrange
         ButtonComponentModel testModel = new ButtonComponentModel
         {
-            icon = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
+            icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             text = "Test",
-            onClickEvent = new Button.ButtonClickedEvent()
+            onClick = new Button.ButtonClickedEvent()
         };
 
         // Act
@@ -52,13 +58,13 @@ public class ButtonComponentViewTests
     public void RefreshButtonCorrectly()
     {
         // Arrange
-        Sprite testSprite = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
         string testText = "Test";
         Button.ButtonClickedEvent testClickedEvent = new Button.ButtonClickedEvent();
 
         buttonComponent.model.icon = testSprite;
         buttonComponent.model.text = testText;
-        buttonComponent.model.onClickEvent = testClickedEvent;
+        buttonComponent.model.onClick = testClickedEvent;
 
         // Act
         buttonComponent.RefreshControl();
@@ -66,7 +72,7 @@ public class ButtonComponentViewTests
         // Assert
         Assert.AreEqual(testSprite, buttonComponent.model.icon, "The icon does not match in the model.");
         Assert.AreEqual(testText, buttonComponent.model.text, "The text does not match in the model.");
-        Assert.AreEqual(testClickedEvent, buttonComponent.model.onClickEvent, "The onClick event does not match in the model.");
+        Assert.AreEqual(testClickedEvent, buttonComponent.model.onClick, "The onClick event does not match in the model.");
     }
 
     [Test]
@@ -89,7 +95,7 @@ public class ButtonComponentViewTests
     public void SetButtonIconCorrectly(bool isNullIcon)
     {
         // Arrange
-        Sprite testSprite = isNullIcon ? null : Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = isNullIcon ? null : Sprite.Create(testTexture, new Rect(), Vector2.zero);
 
         // Act
         buttonComponent.SetIcon(testSprite);

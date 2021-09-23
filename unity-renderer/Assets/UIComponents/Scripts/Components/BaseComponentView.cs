@@ -4,19 +4,19 @@ using UnityEngine;
 public interface IBaseComponentView
 {
     /// <summary>
-    /// It will be triggered after the UI component is initialized (it is called on the Start Unity event).
+    /// It will be triggered after the UI component is fully initialized (PostInitialization included).
     /// </summary>
-    event Action OnInitialized;
+    event Action OnFullyInitialized;
 
     /// <summary>
-    /// Returns true if the UI component is already initialized.
+    /// Returns true if the UI component is already fully initialized (PostInitialization included).
     /// </summary>
-    bool isInitialized { get; }
+    bool isFullyInitialized { get; }
 
     /// <summary>
-    /// It is called when the UI component game object awakes.
+    /// It is called just after the UI component has been initialized.
     /// </summary>
-    void Initialize();
+    void PostInitialization();
 
     /// <summary>
     /// Shows the UI component.
@@ -36,7 +36,7 @@ public interface IBaseComponentView
     void RefreshControl();
 
     /// <summary>
-    /// It is called when the UI component game object is destroyed.
+    /// It is called when the UI component is destroyed.
     /// </summary>
     void Dispose();
 }
@@ -45,16 +45,23 @@ public interface IBaseComponentView
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
-    public event Action OnInitialized;
-    public bool isInitialized { get; private set; }
+    public event Action OnFullyInitialized;
+    public bool isFullyInitialized { get; private set; }
 
     internal ShowHideAnimator showHideAnimator;
 
-    public virtual void Initialize()
+    internal void Initialize()
     {
-        isInitialized = false;
+        isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
+
+        PostInitialization();
+
+        isFullyInitialized = true;
+        OnFullyInitialized?.Invoke();
     }
+
+    public abstract void PostInitialization();
 
     public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
 
@@ -65,12 +72,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose() { }
 
     private void Awake() { Initialize(); }
-
-    private void Start()
-    {
-        isInitialized = true;
-        OnInitialized?.Invoke();
-    }
 
     private void OnDestroy() { Dispose(); }
 

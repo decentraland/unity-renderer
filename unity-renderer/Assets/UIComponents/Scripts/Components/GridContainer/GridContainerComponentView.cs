@@ -59,11 +59,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     private List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
 
-    public override void Initialize()
-    {
-        base.Initialize();
-        Configure(model);
-    }
+    public override void PostInitialization() { Configure(model); }
 
     public void Configure(GridContainerComponentModel model)
     {
@@ -150,7 +146,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         else
         {
             if (isActiveAndEnabled)
-                StartCoroutine(IntantiateItemOnEditor(newItem, name));
+                StartCoroutine(InstantiateItemOnEditor(newItem, name));
         }
     }
 
@@ -164,7 +160,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         instantiatedItems.Add(newGO);
     }
 
-    internal IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
+    internal IEnumerator InstantiateItemOnEditor(BaseComponentView newItem, string name)
     {
         yield return null;
         InstantiateItem(newItem, name);

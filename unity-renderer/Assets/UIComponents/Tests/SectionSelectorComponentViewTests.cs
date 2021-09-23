@@ -8,15 +8,21 @@ using UnityEngine.UI;
 public class SectionSelectorComponentViewTests
 {
     private SectionSelectorComponentView sectionSelectorComponent;
+    private Texture2D testTexture;
 
     [SetUp]
-    public void SetUp() { sectionSelectorComponent = BaseComponentView.Create<SectionSelectorComponentView>("SectionSelector"); }
+    public void SetUp()
+    {
+        sectionSelectorComponent = BaseComponentView.Create<SectionSelectorComponentView>("SectionSelector");
+        testTexture = new Texture2D(20, 20);
+    }
 
     [TearDown]
     public void TearDown()
     {
         sectionSelectorComponent.Dispose();
         GameObject.Destroy(sectionSelectorComponent.gameObject);
+        GameObject.Destroy(testTexture);
     }
 
     [Test]
@@ -39,9 +45,9 @@ public class SectionSelectorComponentViewTests
         sectionSelectorComponent.model = CreateTestModel(3);
         sectionSelectorComponent.model.sections.Add(new SectionToggleModel
         {
-            icon = Sprite.Create(new Texture2D(20, 20), new Rect(), Vector2.zero),
+            icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             title = "Test4",
-            onSelectEvent = new Toggle.ToggleEvent()
+            onSelect = new Toggle.ToggleEvent()
         });
 
         // Act
@@ -109,7 +115,7 @@ public class SectionSelectorComponentViewTests
         sectionSelectorComponent.SetSections(testSections);
 
         // Act
-        sectionSelectorComponent.RemoveAllIntantiatedSections();
+        sectionSelectorComponent.RemoveAllInstantiatedSections();
         yield return null;
 
         // Assert
@@ -134,9 +140,9 @@ public class SectionSelectorComponentViewTests
         {
             sections.Add(new SectionToggleModel
             {
-                icon = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
+                icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
                 title = $"Test{i + 1}",
-                onSelectEvent = new Toggle.ToggleEvent()
+                onSelect = new Toggle.ToggleEvent()
             });
         }
 
