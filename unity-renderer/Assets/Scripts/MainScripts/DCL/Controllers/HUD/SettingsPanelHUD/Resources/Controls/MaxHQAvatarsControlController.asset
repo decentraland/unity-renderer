@@ -10,5 +10,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb0cbce6311974e6995a0d4ac188ecd6, type: 3}
-  m_Name: MaxNonLODAvatarsControlController
+  m_Name: MaxHQAvatarsControlController
   m_EditorClassIdentifier: 

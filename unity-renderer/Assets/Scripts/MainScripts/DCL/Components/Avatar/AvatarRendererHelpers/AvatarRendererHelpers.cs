@@ -13,15 +13,18 @@ namespace DCL
         private const float IMPOSTOR_TINT_MAX_DISTANCE = 81.33f;
         private const float IMPOSTOR_TINT_NEAREST_BLACKNESS = 0f;
         private const float IMPOSTOR_TINT_FAREST_BLACKNESS = 0.74f;
-        private const float IMPOSTOR_ALPHA_NEAREST_VALUE = 1f;
-        private const float IMPOSTOR_ALPHA_FAREST_VALUE = 1f;
 
         // 2048x2048 atlas with 8 512x1024 snapshot-sprites
         private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
         private const int GENERIC_IMPOSTORS_ATLAS_ROWS = 2;
 
-        public static void RandomizeAndApplyGenericImpostor(Mesh impostorMesh)
+        private static Texture2D genericImpostorsTexture = Resources.Load<Texture2D>("Textures/avatar-impostors-atlas");
+        private static Texture2D transparentPixelTexture = Resources.Load<Texture2D>("Textures/transparent-pixel");
+
+        public static void RandomizeAndApplyGenericImpostor(Mesh impostorMesh, Material impostorMaterial)
         {
+            SetImpostorTexture(genericImpostorsTexture, impostorMesh, impostorMaterial);
+
             Vector2 spriteSize = new Vector2(1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS, 1f / GENERIC_IMPOSTORS_ATLAS_ROWS);
             float randomUVXPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteSize.x;
             float randomUVYPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_ROWS) * spriteSize.y;
@@ -46,7 +49,7 @@ namespace DCL
 
         public static void SetImpostorTexture(Texture2D impostorTexture, Mesh impostorMesh, Material impostorMaterial)
         {
-            if (impostorTexture == null)
+            if (TextureUtils.IsQuestionMarkPNG(impostorTexture))
                 return;
 
             ResetImpostorMeshUVs(impostorMesh);
@@ -54,11 +57,12 @@ namespace DCL
             impostorMaterial.SetTexture(IMPOSTOR_TEXTURE_PROPERTY, impostorTexture);
         }
 
+        /// <summary>
+        /// Sets impostor texture tint color ignoring the alpha channel
+        /// </summary>
         public static void SetImpostorTintColor(Material impostorMaterial, Color newColor)
         {
-            if (impostorMaterial == null)
-                return;
-
+            newColor.a = impostorMaterial.GetColor(IMPOSTOR_TEXTURE_COLOR_PROPERTY).a;
             impostorMaterial.SetColor(IMPOSTOR_TEXTURE_COLOR_PROPERTY, newColor);
         }
 
@@ -68,9 +72,10 @@ namespace DCL
             float tintStep = Mathf.InverseLerp(IMPOSTOR_TINT_MIN_DISTANCE, IMPOSTOR_TINT_MAX_DISTANCE, initialStep);
             float tintValue = Mathf.Lerp(IMPOSTOR_TINT_NEAREST_BLACKNESS, IMPOSTOR_TINT_FAREST_BLACKNESS, tintStep);
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
-            newColor.a = Mathf.Lerp(IMPOSTOR_ALPHA_NEAREST_VALUE, IMPOSTOR_ALPHA_FAREST_VALUE, tintStep);
 
             return newColor;
         }
+
+        public static void ResetImpostor(Mesh impostorMesh, Material impostorMaterial) { SetImpostorTexture(transparentPixelTexture, impostorMesh, impostorMaterial); }
     }
 }

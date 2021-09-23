@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
-using UnityEditor;
+using GPUSkinning;
 using UnityEngine;
 using static WearableLiterals;
 
@@ -19,12 +19,15 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
-        public MeshRenderer lodRenderer;
-        public MeshFilter lodMeshFilter;
+        public MeshRenderer impostorRenderer;
+        public MeshFilter impostorMeshFilter;
 
         private AvatarModel model;
         private AvatarMeshCombinerHelper avatarMeshCombiner;
         private SimpleGPUSkinning gpuSkinning = null;
+        private GPUSkinningThrottler gpuSkinningThrottler = null;
+        private int gpuSkinningFramesBetweenUpdates = 1;
+        private bool initializedImpostor = false;
 
         private Renderer mainMeshRenderer
         {
@@ -55,8 +58,8 @@ namespace DCL
         public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
 
         private Coroutine loadCoroutine;
-        private List<string> wearablesInUse = new List<string>();
         private AssetPromise_Texture bodySnapshotTexturePromise;
+        private List<string> wearablesInUse = new List<string>();
         private bool isDestroyed = false;
 
         private void Awake()
@@ -65,7 +68,7 @@ namespace DCL
             stickersController = GetComponent<StickersController>();
             avatarMeshCombiner = new AvatarMeshCombinerHelper();
 
-            if (lodRenderer != null)
+            if (impostorRenderer != null)
                 SetImpostorVisibility(false);
         }
 
@@ -96,8 +99,8 @@ namespace DCL
 
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+            
+            ResetImpostor();
 
             // TODO(Brian): Find a better approach than overloading callbacks like this. This code is not readable.
             void onSuccessWrapper()
@@ -132,6 +135,11 @@ namespace DCL
 
         public void InitializeImpostor()
         {
+            initializedImpostor = true;
+            
+            // The fetched snapshot can take its time so it's better to assign a generic impostor first.
+            AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
+
             UserProfile userProfile = null;
             if (!string.IsNullOrEmpty(model?.id))
                 userProfile = UserProfileController.GetProfileByUserId(model.id);
@@ -139,13 +147,8 @@ namespace DCL
             if (userProfile != null)
             {
                 bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
-                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, impostorMeshFilter.mesh, impostorRenderer.material);
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
-            }
-            else
-            {
-                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
             }
         }
 
@@ -163,11 +166,12 @@ namespace DCL
             if (!isDestroyed)
             {
                 SetGOVisibility(true);
-                if (lodRenderer != null)
+                if (impostorRenderer != null)
                     SetImpostorVisibility(false);
             }
 
             avatarMeshCombiner.Dispose();
+            gpuSkinningThrottler = null;
             gpuSkinning = null;
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
@@ -197,8 +201,7 @@ namespace DCL
 
             CleanMergedAvatar();
 
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+            ResetImpostor();
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
@@ -464,12 +467,13 @@ namespace DCL
 
             if (mergeSuccess)
             {
-                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
-
                 // Sample the animation manually and force an update in the GPUSkinning to avoid giant avatars
                 animator.SetIdleFrame();
                 animator.animation.Sample();
-                gpuSkinning.Update(true);
+                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
+
+                gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
+                gpuSkinningThrottler.SetThrottling(gpuSkinningFramesBetweenUpdates);
             }
             else
                 loadSoftFailed = true;
@@ -610,11 +614,22 @@ namespace DCL
             mainMeshRenderer.enabled = newVisibility;
         }
 
-        public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
+        public void SetImpostorVisibility(bool impostorVisibility)
+        {
+            if (impostorVisibility && !initializedImpostor)
+                InitializeImpostor();
+            
+            impostorRenderer.gameObject.SetActive(impostorVisibility);
+        }
 
-        public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
+        public void SetImpostorForward(Vector3 newForward) { impostorRenderer.transform.forward = newForward; }
 
-        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(lodRenderer.material, newColor); }
+        public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, newColor); }
+        public void SetThrottling(int framesBetweenUpdates)
+        {
+            gpuSkinningFramesBetweenUpdates = framesBetweenUpdates;
+            gpuSkinningThrottler?.SetThrottling(gpuSkinningFramesBetweenUpdates);
+        }
 
         public void SetAvatarFade(float avatarFade)
         {
@@ -631,9 +646,9 @@ namespace DCL
         public void SetImpostorFade(float impostorFade)
         {
             //TODO implement dither in Unlit shader
-            Color current = lodRenderer.material.GetColor(BASE_COLOR_PROPERTY);
+            Color current = impostorRenderer.material.GetColor(BASE_COLOR_PROPERTY);
             current.a = impostorFade;
-            lodRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
+            impostorRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
 
             OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
@@ -690,12 +705,25 @@ namespace DCL
             return success;
         }
 
-        void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
+        private void CleanMergedAvatar() { avatarMeshCombiner.Dispose(); }
+
+        private void ResetImpostor()
+        {
+            if (impostorRenderer == null)
+                return;
+            
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+            
+            AvatarRendererHelpers.ResetImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
+            
+            initializedImpostor = false;
+        }
 
         private void LateUpdate()
         {
             if (gpuSkinning != null && mainMeshRenderer.enabled)
-                gpuSkinning.Update();
+                gpuSkinningThrottler.TryUpdate();
         }
 
         protected virtual void OnDestroy()

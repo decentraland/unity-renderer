@@ -84,6 +84,9 @@ namespace DCL.SettingsData
         [Tooltip("SSAO quality level")]
         public SSAOQualityLevel ssaoQuality;
 
+        [Tooltip("Amount of HQ Avatars visible at any time")]
+        public int maxHQAvatars;
+
         public bool Equals(QualitySettings otherSetting)
         {
             // The precision is set to 1 because the wholeNumbers setting
@@ -117,6 +120,8 @@ namespace DCL.SettingsData
             if (!Utils.CompareFloats(detailObjectCullingLimit, otherSetting.detailObjectCullingLimit, comparePrecision))
                 return false;
             if (ssaoQuality != otherSetting.ssaoQuality)
+                return false;
+            if (maxHQAvatars != otherSetting.maxHQAvatars)
                 return false;
 
             return true;
