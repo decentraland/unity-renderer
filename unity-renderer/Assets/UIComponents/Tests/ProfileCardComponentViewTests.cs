@@ -5,15 +5,21 @@ using UnityEngine.UI;
 public class ProfileCardComponentViewTests
 {
     private ProfileCardComponentView profileCardComponent;
+    private Texture2D testTexture;
 
     [SetUp]
-    public void SetUp() { profileCardComponent = BaseComponentView.Create<ProfileCardComponentView>("ProfileCard"); }
+    public void SetUp()
+    {
+        profileCardComponent = BaseComponentView.Create<ProfileCardComponentView>("ProfileCard");
+        testTexture = new Texture2D(20, 20);
+    }
 
     [TearDown]
     public void TearDown()
     {
         profileCardComponent.Dispose();
         GameObject.Destroy(profileCardComponent.gameObject);
+        GameObject.Destroy(testTexture);
     }
 
     [Test]
@@ -36,7 +42,7 @@ public class ProfileCardComponentViewTests
         // Arrange
         ProfileCardComponentModel testModel = new ProfileCardComponentModel
         {
-            profilePicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
+            profilePicture = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             profileName = "Test name",
             profileAddress = "Test address",
             onClickEvent = new Button.ButtonClickedEvent()
@@ -53,7 +59,7 @@ public class ProfileCardComponentViewTests
     public void RefreshButtonCorrectly()
     {
         // Arrange
-        Sprite testPicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testPicture = Sprite.Create(testTexture, new Rect(), Vector2.zero);
         string testName = "Test name";
         string testAddress = "Test address";
         Button.ButtonClickedEvent testClickedEvent = new Button.ButtonClickedEvent();
@@ -77,7 +83,7 @@ public class ProfileCardComponentViewTests
     public void SetProfilePictureFromSpriteCorrectly()
     {
         // Arrange
-        Sprite testPicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testPicture = Sprite.Create(testTexture, new Rect(), Vector2.zero);
 
         // Act
         profileCardComponent.SetProfilePicture(testPicture);
@@ -91,11 +97,10 @@ public class ProfileCardComponentViewTests
     public void SetProfilePictureFromTextureCorrectly()
     {
         // Arrange
-        Texture2D testPictureTexture = new Texture2D(10, 10);
-        Sprite testPictureSprite = Sprite.Create(testPictureTexture, new Rect(0, 0, testPictureTexture.width, testPictureTexture.height), new Vector2(0.5f, 0.5f));
+        Sprite testPictureSprite = Sprite.Create(testTexture, new Rect(0, 0, testTexture.width, testTexture.height), new Vector2(0.5f, 0.5f));
 
         // Act
-        profileCardComponent.SetProfilePicture(testPictureTexture);
+        profileCardComponent.SetProfilePicture(testTexture);
 
         // Assert
         Assert.AreEqual(testPictureSprite.texture, profileCardComponent.model.profilePicture.texture, "The profile picture does not match in the model.");

@@ -1,18 +1,24 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 
 public class TagComponentViewTests
 {
     private TagComponentView tagComponent;
+    private Texture2D testTexture;
 
     [SetUp]
-    public void SetUp() { tagComponent = BaseComponentView.Create<TagComponentView>("Tag"); }
+    public void SetUp()
+    {
+        tagComponent = BaseComponentView.Create<TagComponentView>("Tag");
+        testTexture = new Texture2D(20, 20);
+    }
 
     [TearDown]
     public void TearDown()
     {
         tagComponent.Dispose();
         GameObject.Destroy(tagComponent.gameObject);
+        GameObject.Destroy(testTexture);
     }
 
     [Test]
@@ -21,7 +27,7 @@ public class TagComponentViewTests
         // Arrange
         TagComponentModel testModel = new TagComponentModel
         {
-            icon = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
+            icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             text = "Test"
         };
 
@@ -36,7 +42,7 @@ public class TagComponentViewTests
     public void RefreshTagCorrectly()
     {
         // Arrange
-        Sprite testSprite = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
         string testText = "Test";
 
         tagComponent.model.icon = testSprite;
@@ -70,7 +76,7 @@ public class TagComponentViewTests
     public void SetTagIconCorrectly(bool isNullIcon)
     {
         // Arrange
-        Sprite testSprite = isNullIcon ? null : Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = isNullIcon ? null : Sprite.Create(testTexture, new Rect(), Vector2.zero);
 
         // Act
         tagComponent.SetIcon(testSprite);

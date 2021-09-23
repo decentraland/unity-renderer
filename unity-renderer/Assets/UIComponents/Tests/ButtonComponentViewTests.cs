@@ -5,15 +5,21 @@ using UnityEngine.UI;
 public class ButtonComponentViewTests
 {
     private ButtonComponentView buttonComponent;
+    private Texture2D testTexture;
 
     [SetUp]
-    public void SetUp() { buttonComponent = CreateButtonComponent(); }
+    public void SetUp()
+    {
+        buttonComponent = CreateButtonComponent();
+        testTexture = new Texture2D(20, 20);
+    }
 
     [TearDown]
     public void TearDown()
     {
         buttonComponent.Dispose();
         GameObject.Destroy(buttonComponent.gameObject);
+        GameObject.Destroy(testTexture);
     }
 
     [Test]
@@ -36,7 +42,7 @@ public class ButtonComponentViewTests
         // Arrange
         ButtonComponentModel testModel = new ButtonComponentModel
         {
-            icon = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
+            icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             text = "Test",
             onClickEvent = new Button.ButtonClickedEvent()
         };
@@ -52,7 +58,7 @@ public class ButtonComponentViewTests
     public void RefreshButtonCorrectly()
     {
         // Arrange
-        Sprite testSprite = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
         string testText = "Test";
         Button.ButtonClickedEvent testClickedEvent = new Button.ButtonClickedEvent();
 
@@ -89,7 +95,7 @@ public class ButtonComponentViewTests
     public void SetButtonIconCorrectly(bool isNullIcon)
     {
         // Arrange
-        Sprite testSprite = isNullIcon ? null : Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
+        Sprite testSprite = isNullIcon ? null : Sprite.Create(testTexture, new Rect(), Vector2.zero);
 
         // Act
         buttonComponent.SetIcon(testSprite);
