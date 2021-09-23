@@ -109,7 +109,7 @@ public class SectionSelectorComponentViewTests
         sectionSelectorComponent.SetSections(testSections);
 
         // Act
-        sectionSelectorComponent.RemoveAllIntantiatedSections();
+        sectionSelectorComponent.RemoveAllInstantiatedSections();
         yield return null;
 
         // Assert

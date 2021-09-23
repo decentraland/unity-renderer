@@ -64,7 +64,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
     {
         model.sections = sections;
 
-        RemoveAllIntantiatedSections();
+        RemoveAllInstantiatedSections();
 
         for (int i = 0; i < sections.Count; i++)
         {
@@ -91,7 +91,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         else
         {
             if (isActiveAndEnabled)
-                StartCoroutine(IntantiateSectionToggleOnEditor(newSectionModel, name));
+                StartCoroutine(InstantiateSectionToggleOnEditor(newSectionModel, name));
         }
     }
 
@@ -107,17 +107,17 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         instantiatedSections.Add(newGO);
     }
 
-    internal IEnumerator IntantiateSectionToggleOnEditor(SectionToggleModel sectionModel, string name)
+    internal IEnumerator InstantiateSectionToggleOnEditor(SectionToggleModel sectionModel, string name)
     {
         yield return null;
         IntantiateSectionToggle(sectionModel, name);
     }
 
-    internal void RemoveAllIntantiatedSections()
+    internal void RemoveAllInstantiatedSections()
     {
         foreach (Transform child in transform)
         {
-            if (child.gameObject.GetInstanceID() == sectionToggleTemplate.gameObject.GetInstanceID())
+            if (child.gameObject == sectionToggleTemplate.gameObject)
                 continue;
 
             if (Application.isPlaying)
