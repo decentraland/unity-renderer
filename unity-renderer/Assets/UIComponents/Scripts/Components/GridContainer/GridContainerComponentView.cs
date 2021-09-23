@@ -150,7 +150,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         else
         {
             if (isActiveAndEnabled)
-                StartCoroutine(IntantiateItemOnEditor(newItem, name));
+                StartCoroutine(InstantiateItemOnEditor(newItem, name));
         }
     }
 
@@ -164,7 +164,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         instantiatedItems.Add(newGO);
     }
 
-    internal IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
+    internal IEnumerator InstantiateItemOnEditor(BaseComponentView newItem, string name)
     {
         yield return null;
         InstantiateItem(newItem, name);
