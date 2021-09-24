@@ -215,6 +215,10 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
 
             Update(bb.deltaTime);
         }
+        else
+        {
+            animation.Blend(bb.expressionTriggerId, 1, 0.1f);
+        }
     }
 
     public void SetExpressionValues(string expressionTriggerId, long expressionTriggerTimestamp)
