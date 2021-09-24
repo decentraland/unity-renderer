@@ -153,12 +153,12 @@ namespace DCL.Skybox
 
             if (directionalLightLayer.lightDirection.Count == 1)
             {
-                lightGO.transform.rotation = Vector4ToQuaternion(directionalLightLayer.lightDirection[0].value);
+                lightGO.transform.rotation = directionalLightLayer.lightDirection[0].value;
                 return;
             }
 
             float percentage = normalizedDayTime * 100;
-            TransitioningVector4 min = directionalLightLayer.lightDirection[0], max = directionalLightLayer.lightDirection[0];
+            TransitioningQuaternion min = directionalLightLayer.lightDirection[0], max = directionalLightLayer.lightDirection[0];
 
             // Apply Direction
             for (int i = 0; i < directionalLightLayer.lightDirection.Count; i++)
@@ -177,10 +177,7 @@ namespace DCL.Skybox
             }
 
             float t = Mathf.InverseLerp(min.percentage, max.percentage, percentage);
-            Quaternion lightDirection = Quaternion.Lerp(Vector4ToQuaternion(min.value), Vector4ToQuaternion(max.value), t);
-
-
-            lightGO.transform.rotation = lightDirection;
+            lightGO.transform.rotation = Quaternion.Lerp(min.value, max.value, t);
         }
 
         void ApplyTextureLayer(Material selectedMat, float normalizedDayTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
@@ -196,7 +193,7 @@ namespace DCL.Skybox
                 //    selectedMat.SetFloat("_isRadial_" + layerNum, 0);
                 //}
 
-                selectedMat.SetFloat("_isRadial_" + layerNum, (int)layer.layerType);
+                selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.layerType);
 
                 if (layer.layerType == LayerType.Cubemap)
                 {
@@ -371,18 +368,31 @@ namespace DCL.Skybox
     }
 
     [System.Serializable]
+    public class TransitioningQuaternion
+    {
+        public float percentage;
+        public Quaternion value;
+
+        public TransitioningQuaternion(float percentage, Quaternion value)
+        {
+            this.percentage = percentage;
+            this.value = value;
+        }
+    }
+
+    [System.Serializable]
     public class DirectionalLightAttributes
     {
         public Gradient lightColor;
         public List<TransitioningFloat> intensity;
-        public List<TransitioningVector4> lightDirection;
+        public List<TransitioningQuaternion> lightDirection;
         public Gradient tintColor;
 
         public DirectionalLightAttributes()
         {
             lightColor = new Gradient();
             intensity = new List<TransitioningFloat>();
-            lightDirection = new List<TransitioningVector4>();
+            lightDirection = new List<TransitioningQuaternion>();
             tintColor = new Gradient();
         }
     }
@@ -421,6 +431,6 @@ namespace DCL.Skybox
     {
         Planar = 0,
         Radial = 1,
-        Cubemap = 2
+        Cubemap = 3
     }
 }
