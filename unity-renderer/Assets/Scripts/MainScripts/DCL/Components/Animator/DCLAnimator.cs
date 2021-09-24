@@ -43,12 +43,12 @@ namespace DCL.Components
 
         private void Awake() { model = new Model(); }
 
-        private void OnDestroy() { entity.OnShapeUpdated -= OnComponentUpdated; }
+        private void OnDestroy() { entity.OnShapeLoaded -= OnEntityShapeLoaded; }
 
         public override IEnumerator ApplyChanges(BaseModel model)
         {
-            entity.OnShapeLoaded -= OnComponentUpdated;
-            entity.OnShapeLoaded += OnComponentUpdated;
+            entity.OnShapeLoaded -= OnEntityShapeLoaded;
+            entity.OnShapeLoaded += OnEntityShapeLoaded;
 
             UpdateAnimationState();
 
@@ -57,7 +57,7 @@ namespace DCL.Components
 
         new public Model GetModel() { return (Model) model; }
 
-        private void OnComponentUpdated(IDCLEntity e) { UpdateAnimationState(); }
+        private void OnEntityShapeLoaded(IDCLEntity e) { UpdateAnimationState(); }
 
         private void Initialize()
         {
