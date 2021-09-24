@@ -74,7 +74,9 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
 
     public void Show()
     {
-        gameObject.SetActive(true);
+        if (gameObject != null)
+            gameObject.SetActive(true);
+
         showTime = Time.realtimeSinceStartup;
 
         if (loadingTips.Count > 0)
