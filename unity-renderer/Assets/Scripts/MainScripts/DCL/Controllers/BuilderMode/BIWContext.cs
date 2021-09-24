@@ -23,14 +23,13 @@ public class BIWContext
     public IBIWPublishController publishController { get; private set; }
     public IBIWCreatorController creatorController { get; private set; }
     public IBIWModeController modeController { get; private set; }
-    public IBIWFloorHandler floorHandler { get; private set; }
+    public IBIWFloorHandler floorHandler { get; internal set; }
     public IBIWEntityHandler entityHandler { get; private set; }
     public IBIWActionController actionController { get; private set; }
     public IBIWSaveController saveController { get; private set; }
     public IBIWRaycastController raycastController { get; private set; }
     public IBIWGizmosController gizmosController { get; private set; }
     public InitialSceneReferences.Data sceneReferences { get; private set; }
-
 
     public void Initialize(IBIWOutlinerController outlinerController,
         IBIWInputHandler inputHandler,

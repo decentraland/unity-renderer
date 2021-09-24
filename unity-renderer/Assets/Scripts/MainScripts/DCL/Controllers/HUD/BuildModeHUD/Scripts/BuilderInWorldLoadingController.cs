@@ -24,7 +24,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Initialize(IBuilderInWorldLoadingView view) { AssignMainView(view); }
 
-    private void AssignMainView(IBuilderInWorldLoadingView view)
+    internal void AssignMainView(IBuilderInWorldLoadingView view)
     {
         initialLoadingView = view;
 
@@ -42,7 +42,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Dispose()
     {
-        if ( initialLoadingView == null )
+        if ( initialLoadingView == null || initialLoadingView.gameObject == null )
             return;
 
         initialLoadingView.Dispose();
