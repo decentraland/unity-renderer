@@ -310,7 +310,7 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   textureLayers:
   - nameInEditor: Stars
-    expandedInEditor: 0
+    expandedInEditor: 1
     timeSpan_start: 12
     timeSpan_End: 24
     fadingIn: 0.5
