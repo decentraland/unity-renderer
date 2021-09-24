@@ -156,7 +156,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         yield return new WaitForSeconds(MUSIC_DELAY_TIME_ON_START);
 
-        if (gameObject.activeInHierarchy)
+        if (gameObject != null && gameObject.activeInHierarchy)
             eventBuilderMusic.Play();
     }
 
@@ -205,10 +205,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private bool EntityHasBeenAddedSinceLastUpdate() { return (entityHandler.GetCurrentSceneEntityCount() > entityCount); }
 
-    private void OnDestroy()
-    {
-        Dispose();
-    }
+    private void OnDestroy() { Dispose(); }
 
     public void Dispose()
     {
