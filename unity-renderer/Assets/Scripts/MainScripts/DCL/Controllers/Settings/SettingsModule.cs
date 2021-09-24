@@ -7,12 +7,12 @@ namespace DCL.SettingsCommon
     public class SettingsModule<T> where T : struct
     {
         public event Action<T> OnChanged;
-        
+
         private readonly string playerPrefsKey;
         private readonly T defaultPreset;
 
-        public T Data => data;
-        private T data;
+        public T Data => dataValue;
+        private T dataValue;
 
         public SettingsModule(string playerPrefsKey, T defaultPreset)
         {
@@ -20,6 +20,7 @@ namespace DCL.SettingsCommon
             this.defaultPreset = defaultPreset;
             Preload();
         }
+        
         private void Preload()
         {
             bool isQualitySettingsSet = false;
@@ -27,7 +28,7 @@ namespace DCL.SettingsCommon
             {
                 try
                 {
-                    data = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
+                    dataValue = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
                     isQualitySettingsSet = true;
                 }
                 catch (Exception e)
@@ -38,27 +39,21 @@ namespace DCL.SettingsCommon
 
             if (!isQualitySettingsSet)
             {
-                data = defaultPreset;
+                dataValue = defaultPreset;
             }
         }
 
-        public void Reset()
-        {
-            Apply(defaultPreset);
-        }
+        public void Reset() { Apply(defaultPreset); }
 
         public void Apply(T newSettings)
         {
-            if (data.Equals(newSettings))
+            if (dataValue.Equals(newSettings))
                 return;
 
-            data = newSettings;
-            OnChanged?.Invoke(data);
+            dataValue = newSettings;
+            OnChanged?.Invoke(dataValue);
         }
 
-        public void Save()
-        {
-            PlayerPrefsUtils.SetString(playerPrefsKey, JsonUtility.ToJson(data));
-        }
+        public void Save() { PlayerPrefsUtils.SetString(playerPrefsKey, JsonUtility.ToJson(dataValue)); }
     }
 }
