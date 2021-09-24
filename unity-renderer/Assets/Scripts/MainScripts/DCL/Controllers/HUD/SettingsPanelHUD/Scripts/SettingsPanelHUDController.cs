@@ -145,13 +145,9 @@ namespace DCL.SettingsPanelHUD
         {
             foreach (var section in sections)
             {
-                if (section == sections[sectionIndex])
-                    continue;
-
-                section.SetActive(false);
+                bool active = section == sections[sectionIndex];
+                sections[sectionIndex].SetActive(active);
             }
-
-            sections[sectionIndex].SetActive(true);
         }
 
         public void MarkMenuButtonAsSelected(int buttonIndex)
