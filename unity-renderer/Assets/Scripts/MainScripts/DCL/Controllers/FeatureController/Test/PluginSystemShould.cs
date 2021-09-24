@@ -23,7 +23,6 @@ public class PluginSystemShould : IntegrationTestSuite
         PluginSystem pluginSystem = new PluginSystem();
         KernelConfigModel currentConfig = new KernelConfigModel();
         currentConfig.features.enableTutorial = false;
-        currentConfig.features.enableExploreV2 = false;
 
         //Act
         pluginSystem.ApplyFeaturesConfig(currentConfig);
@@ -39,10 +38,8 @@ public class PluginSystemShould : IntegrationTestSuite
         PluginSystem pluginSystem = new PluginSystem();
         KernelConfigModel currentConfig = new KernelConfigModel();
         currentConfig.features.enableTutorial = false;
-        currentConfig.features.enableExploreV2 = false;
         KernelConfigModel oldConfig = new KernelConfigModel();
         oldConfig.features.enableTutorial = false;
-        oldConfig.features.enableExploreV2 = false;
         pluginSystem.ApplyFeaturesConfig(oldConfig);
 
         //Act
