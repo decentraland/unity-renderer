@@ -94,10 +94,7 @@ public class BuilderInWorld : PluginFeature
         );
     }
 
-    public BuilderInWorld (BIWContext context)
-    {
-        this.context = context;
-    }
+    public BuilderInWorld (BIWContext context) { this.context = context; }
 
     public override void Initialize()
     {
@@ -228,10 +225,11 @@ public class BuilderInWorld : PluginFeature
         HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
         editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
 
-        biwAudioHandler.Dispose();
-
         if (biwAudioHandler.gameObject != null)
+        {
+            biwAudioHandler.Dispose();
             UnityEngine.Object.Destroy(biwAudioHandler.gameObject);
+        }
 
         context.Dispose();
     }
@@ -724,7 +722,8 @@ public class BuilderInWorld : PluginFeature
         isBuilderInWorldActivated = false;
         RenderSettings.skybox = previousSkyBoxMaterial;
 
-        biwAudioHandler.gameObject.SetActive(false);
+        if (biwAudioHandler.gameObject != null)
+            biwAudioHandler.gameObject.SetActive(false);
         DataStore.i.appMode.Set(AppMode.DEFAULT);
         DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
@@ -754,7 +753,8 @@ public class BuilderInWorld : PluginFeature
             controller.ExitEditMode();
         }
 
-        biwAudioHandler.ExitEditMode();
+        if (biwAudioHandler.gameObject != null)
+            biwAudioHandler.ExitEditMode();
     }
 
     public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
@@ -803,7 +803,7 @@ public class BuilderInWorld : PluginFeature
         if (activeFeature)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             TryStartEnterEditMode(targetScene);
         }
     }
@@ -833,23 +833,23 @@ public class BuilderInWorld : PluginFeature
             return;
 
         DeployedScenesFetcher.FetchLandsFromOwner(
-                Environment.i.platform.serviceProviders.catalyst,
-                Environment.i.platform.serviceProviders.theGraph,
-                userProfile.ethAddress,
-                KernelConfig.i.Get().network,
-                BIWSettings.CACHE_TIME_LAND,
-                BIWSettings.CACHE_TIME_SCENES)
-            .Then(lands =>
-            {
-                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                {
-                    CheckSceneToEditByShorcut();
-                }
+                                 Environment.i.platform.serviceProviders.catalyst,
+                                 Environment.i.platform.serviceProviders.theGraph,
+                                 userProfile.ethAddress,
+                                 KernelConfig.i.Get().network,
+                                 BIWSettings.CACHE_TIME_LAND,
+                                 BIWSettings.CACHE_TIME_SCENES)
+                             .Then(lands =>
+                             {
+                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                                 {
+                                     CheckSceneToEditByShorcut();
+                                 }
 
-                isWaitingForPermission = false;
-                alreadyAskedForLandPermissions = true;
-            });
+                                 isWaitingForPermission = false;
+                                 alreadyAskedForLandPermissions = true;
+                             });
     }
 
     private static void ShowGenericNotification(string message, NotificationFactory.Type type = NotificationFactory.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
