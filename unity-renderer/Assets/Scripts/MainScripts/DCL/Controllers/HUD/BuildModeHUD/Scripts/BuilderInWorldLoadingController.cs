@@ -24,7 +24,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Initialize(IBuilderInWorldLoadingView view) { AssignMainView(view); }
 
-    private void AssignMainView(IBuilderInWorldLoadingView view)
+    internal void AssignMainView(IBuilderInWorldLoadingView view)
     {
         initialLoadingView = view;
 
@@ -51,12 +51,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Show() { initialLoadingView.Show(); }
 
-    public void Hide(bool forzeHidding = false, Action onHideAction = null)
-    {
-        if ( initialLoadingView.gameObject == null )
-            return;
-        initialLoadingView.Hide(forzeHidding, onHideAction);
-    }
+    public void Hide(bool forzeHidding = false, Action onHideAction = null) { initialLoadingView.Hide(forzeHidding, onHideAction); }
 
     public void SetPercentage(float newValue) { initialLoadingView.SetPercentage(newValue); }
 }

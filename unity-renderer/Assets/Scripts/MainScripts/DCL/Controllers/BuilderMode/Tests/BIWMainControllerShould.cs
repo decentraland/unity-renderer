@@ -26,6 +26,10 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         mainController = new BuilderInWorld();
         BuilderInWorld.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize();
+        mainController.initialLoadingController.Dispose();
+        mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
+        mainController.initialLoadingController.Configure().isActive.Returns(true);
+
     }
 
     [Test]
@@ -403,7 +407,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         BIWCatalogManager.Init();
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
-
+        mainController.context.floorHandler = Substitute.For<IBIWFloorHandler>();
         mainController.sceneToEdit = scene;
         mainController.EnterBiwControllers();
 
@@ -411,7 +415,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         mainController.SetupNewScene();
 
         // Assert
-        Assert.Greater(mainController.floorHandler.floorPlaceHolderDict.Count, 0);
+        mainController.context.floorHandler.Received(1).CreateDefaultFloor();
     }
 
     [Test]
