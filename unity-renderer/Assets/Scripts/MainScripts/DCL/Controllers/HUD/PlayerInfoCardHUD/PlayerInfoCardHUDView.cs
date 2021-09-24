@@ -163,10 +163,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         }
     }
 
-    public void SetFaceSnapshot(Texture2D texture)
-    {
-        avatarPicture.texture = texture;
-    }
+    public void SetFaceSnapshot(Texture2D texture) { avatarPicture.texture = texture; }
 
     public void SetUserProfile(UserProfile userProfile)
     {
@@ -178,34 +175,33 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         ClearCollectibles();
 
         CatalogController.RequestOwnedWearables(userProfile.userId)
-            .Then((ownedWearables) =>
-            {
-                userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                loadedWearables.AddRange(ownedWearables.Select(x => x.id));
+                         .Then((ownedWearables) =>
+                         {
+                             userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             loadedWearables.AddRange(ownedWearables.Select(x => x.id));
 
-                var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
-                for (int index = 0; index < collectiblesIds.Length; index++)
-                {
-                    string collectibleId = collectiblesIds[index];
-                    CatalogController.wearableCatalog.TryGetValue(collectibleId, out WearableItem collectible);
-                    if (collectible == null)
-                        continue;
+                             var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
+                             for (int index = 0; index < collectiblesIds.Length; index++)
+                             {
+                                 string collectibleId = collectiblesIds[index];
+                                 CatalogController.wearableCatalog.TryGetValue(collectibleId, out WearableItem collectible);
+                                 if (collectible == null)
+                                     continue;
 
-                    var playerInfoCollectible =
-                        collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(collectible.rarity,
-                            wearablesContainer.transform);
-                    if (playerInfoCollectible == null)
-                        continue;
-                    playerInfoCollectibles.Add(playerInfoCollectible);
-                    playerInfoCollectible.Initialize(collectible);
-                }
+                                 var playerInfoCollectible =
+                                     collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(collectible.rarity,
+                                         wearablesContainer.transform);
+                                 if (playerInfoCollectible == null)
+                                     continue;
+                                 playerInfoCollectibles.Add(playerInfoCollectible);
+                                 playerInfoCollectible.Initialize(collectible);
+                             }
 
-                emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
-            })
-            .Catch((error) => Debug.Log(error));
+                             emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
+                         })
+                         .Catch((error) => Debug.Log(error));
 
         SetIsBlocked(IsBlocked(userProfile.userId));
-        UpdateFriendButton();
 
         // Remove old profile listener and set the new one
         if ( currentUserProfile != null )
@@ -214,6 +210,8 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         userProfile.snapshotObserver.AddListener(SetFaceSnapshot);
 
         currentUserProfile = userProfile;
+
+        UpdateFriendButton();
     }
 
     private void UpdateFriendButton()
