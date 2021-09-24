@@ -40,6 +40,10 @@ Material:
         m_Texture: {fileID: 8900000, guid: b5e77d527d64dd64f8dc715126915af7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SGHorizonLayer_9dcdf3fddc1845bc807a77201c0bdfe3_Texture2D21f342bcf59846d991d7446d9147e1b8_4239567488:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SampleCubemap_2dfc65137af0478d9f46ac612f60a309_Cube_1:
         m_Texture: {fileID: 8900000, guid: b5e77d527d64dd64f8dc715126915af7, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -58,6 +62,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _cubemap_2:
         m_Texture: {fileID: 8900000, guid: c4fd96f2a68c87e408ce00bbeb917a02, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _horizonMask_:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _normals:
@@ -159,7 +167,8 @@ Material:
     - _hasFade_0: 1
     - _hasFade_1: 0
     - _hasFade_2: 0
-    - _horizonHeight: 0.278
+    - _horizonHeight: -0
+    - _horizonMaskSize: 5
     - _horizonWidth: 0
     - _isRadial00: 0
     - _isRadial01: 1
@@ -185,6 +194,9 @@ Material:
     - _normalIntensity_0: 0
     - _normalIntensity_1: 0
     - _normalIntensity_2: 0
+    - _rotation_0: 0
+    - _rotation_1: 0
+    - _rotation_2: 0
     - _speed00: 0
     - _speed01: 0
     - _speed02: 0
@@ -220,13 +232,17 @@ Material:
     - _color_2: {r: 1, g: 1, b: 1, a: 0}
     - _groundColor: {r: 0.094901726, g: 0.040195987, b: 0.26415092, a: 1}
     - _horizonColor: {r: 0.6623347, g: 0.21489628, b: 0.76801753, a: 1}
+    - _horizonMaskOffset: {r: 0, g: 0, b: 0, a: 0}
     - _lightDirection: {r: 0.5, g: 0.5, b: 0.5, a: 0}
     - _lightTint: {r: 0.6622545, g: 0.6131314, b: 0.22200902, a: 1}
     - _skyColor: {r: 0.14793658, g: 0.09620862, b: 0.4339623, a: 1}
+    - _speed_0: {r: 0, g: 0, b: 0, a: 0}
+    - _speed_1: {r: 0, g: 0, b: 0, a: 0}
+    - _speed_2: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_0: {r: 2, g: 0, b: 0, a: 0}
     - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: -0.1}
     - _tilingAndOffset_2: {r: 4, g: 1.5, b: 0.17, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
