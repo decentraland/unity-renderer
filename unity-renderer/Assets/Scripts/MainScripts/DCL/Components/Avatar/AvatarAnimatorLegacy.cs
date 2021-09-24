@@ -217,7 +217,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
         }
         else
         {
-            animation.Blend(bb.expressionTriggerId, 1, 0.1f);
+            animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_TRANSITION_TIME / 2f);
         }
     }
 

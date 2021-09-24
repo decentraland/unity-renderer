@@ -2,6 +2,7 @@
 
 public class StickerAnimationListener : MonoBehaviour
 {
+    private const float WEIGHT_THRESHOLD = 0.5f;
     private StickersController stickersController;
 
     private void Awake() { stickersController = GetComponentInParent<StickersController>(); }
@@ -12,7 +13,7 @@ public class StickerAnimationListener : MonoBehaviour
         if (string.IsNullOrEmpty(animEvent.stringParameter))
             return;
 
-        if (animEvent.animationState.weight < 0.5f)
+        if (animEvent.animationState.weight < WEIGHT_THRESHOLD)
             return;
 
         stickersController?.PlayEmote(animEvent.stringParameter);
