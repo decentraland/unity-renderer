@@ -132,32 +132,26 @@ namespace DCL.SettingsPanelHUD
         {
             foreach (var section in sections)
             {
-                if (section == sectionToOpen)
-                    continue;
-
-                section.SetActive(false);
+                section.SetActive(section == sectionToOpen);
             }
-
-            sectionToOpen.SetActive(true);
         }
 
         public void OpenSection(int sectionIndex)
         {
-            foreach (var section in sections)
+            for (int i = 0; i < sections.Count; i++)
             {
-                bool active = section == sections[sectionIndex];
-                sections[sectionIndex].SetActive(active);
+                var section = sections[i];
+                section.SetActive(i == sectionIndex);
             }
         }
 
         public void MarkMenuButtonAsSelected(int buttonIndex)
         {
-            foreach (var button in menuButtons)
+            for (int i = 0; i < menuButtons.Count; i++)
             {
-                button.MarkAsSelected(false);
+                var button = menuButtons[i];
+                button.MarkAsSelected(i == buttonIndex);
             }
-
-            menuButtons[buttonIndex].MarkAsSelected(true);
         }
 
         public void SaveSettings() { Settings.i.SaveSettings(); }
