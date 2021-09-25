@@ -14,8 +14,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2027024121223139938, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2027024121223139938, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 35
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 2027024121223139938, guid: b53f82112c401e94eb453570ac440340,
         type: 3}

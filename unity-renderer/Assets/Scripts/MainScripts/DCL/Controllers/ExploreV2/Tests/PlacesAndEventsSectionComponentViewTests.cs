@@ -6,7 +6,7 @@ public class PlacesAndEventsSectionComponentViewTests
     private PlacesAndEventsSectionComponentView placesAndEventsSectionComponent;
 
     [SetUp]
-    public void SetUp() { placesAndEventsSectionComponent = BaseComponentView.Create<PlacesAndEventsSectionComponentView>("Sections/PlacesAndEvents/PlacesAndEventsSection"); }
+    public void SetUp() { placesAndEventsSectionComponent = BaseComponentView.Create<PlacesAndEventsSectionComponentView>("Sections/PlacesAndEventsSection/PlacesAndEventsSection"); }
 
     [TearDown]
     public void TearDown()
