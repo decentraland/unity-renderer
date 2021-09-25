@@ -11,17 +11,11 @@ public class PluginSystemShould : IntegrationTestSuite
     private GameObject main;
 
     [SetUp]
-    public void Setup()
-    {
-        main = new GameObject("Main");
-    }
+    public void Setup() { main = new GameObject("Main"); }
 
     [TearDown]
-    public void TearDown()
-    {
-        Object.DestroyImmediate(main);
-    }
-    
+    public void TearDown() { Object.DestroyImmediate(main); }
+
     [Test]
     public void TestFeatureControllerApplyConfig()
     {

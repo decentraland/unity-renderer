@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Tutorial;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// This class is used to handle a feature that needs the MonoBehaviour callbacks.
@@ -64,6 +62,7 @@ public class PluginSystem
         HandleFeature<BuilderInWorld>(config.features.enableBuilderInWorld);
         HandleFeature<TutorialController>(config.features.enableTutorial);
         HandleFeature<DebugPluginFeature>(true);
+        HandleFeature<ExploreV2Feature>(config.features.enableExploreV2);
         currentConfig = config;
     }
 
