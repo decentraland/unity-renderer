@@ -1,19 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &4282144267083536738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171146819627042931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 088742d917e2891499ac6de2a9078f98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  urlToGo: https://decentraland.org
---- !u!1001 &6601945259168165492
+--- !u!1001 &1174798656012556014
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -58,12 +45,12 @@ PrefabInstance:
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 140
+      value: 87
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 35
+      value: 46
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -103,12 +90,12 @@ PrefabInstance:
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -84
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -31
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -127,14 +114,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1442316120381234285, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
-      propertyPath: model.icon
-      value: 
-      objectReference: {fileID: 21300000, guid: 0ecdb22970854454890362ba85a9f59c,
-        type: 3}
-    - target: {fileID: 1442316120381234285, guid: fb037d81b9c10ad439a13e356a17bab6,
-        type: 3}
       propertyPath: model.text
-      value: LINK
+      value: INFO
+      objectReference: {fileID: 0}
+    - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -145,17 +131,22 @@ PrefabInstance:
     - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.9294118
       objectReference: {fileID: 0}
     - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.9215687
+      objectReference: {fileID: 0}
+    - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.92549026
       objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_text
-      value: LINK
+      value: INFO
       objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -185,28 +176,12 @@ PrefabInstance:
     - target: {fileID: 5466927874646222343, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Name
-      value: Button_Link
-      objectReference: {fileID: 0}
-    - target: {fileID: 7518669975530283665, guid: fb037d81b9c10ad439a13e356a17bab6,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 0ecdb22970854454890362ba85a9f59c,
-        type: 3}
-    - target: {fileID: 7518669975530283665, guid: fb037d81b9c10ad439a13e356a17bab6,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
+      value: Button_Info
       objectReference: {fileID: 0}
     - target: {fileID: 8616488889774720505, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 75
-      objectReference: {fileID: 0}
-    - target: {fileID: 8616488889774720505, guid: fb037d81b9c10ad439a13e356a17bab6,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -10
+      value: 87
       objectReference: {fileID: 0}
     - target: {fileID: 8616488889774720505, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -215,9 +190,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb037d81b9c10ad439a13e356a17bab6, type: 3}
---- !u!1 &1171146819627042931 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5466927874646222343, guid: fb037d81b9c10ad439a13e356a17bab6,
-    type: 3}
-  m_PrefabInstance: {fileID: 6601945259168165492}
-  m_PrefabAsset: {fileID: 0}
