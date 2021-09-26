@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using UnityEngine;
 
@@ -48,12 +49,17 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public event Action OnFullyInitialized;
     public bool isFullyInitialized { get; private set; }
 
+    [Header("Common Configuration")]
+    [SerializeField] internal bool refreshOnResolutionChanged = false;
+
     internal ShowHideAnimator showHideAnimator;
+    internal Resolution lastResolutionChecked;
 
     internal void Initialize()
     {
         isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
+        lastResolutionChecked = Screen.currentResolution;
 
         PostInitialization();
 
@@ -72,6 +78,19 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose() { }
 
     private void Awake() { Initialize(); }
+
+    private void Update()
+    {
+        if (!refreshOnResolutionChanged)
+            return;
+
+        if (Screen.currentResolution.width != lastResolutionChecked.width ||
+            Screen.currentResolution.height != lastResolutionChecked.height)
+        {
+            lastResolutionChecked = Screen.currentResolution;
+            RefreshControl();
+        }
+    }
 
     private void OnDestroy() { Dispose(); }
 
