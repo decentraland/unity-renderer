@@ -105,9 +105,9 @@ public class ButtonComponentViewTests
         Assert.AreEqual(testSprite, buttonComponent.icon.sprite, "The button icon does not match.");
 
         if (isNullIcon)
-            Assert.IsFalse(buttonComponent.icon.enabled);
+            Assert.IsFalse(buttonComponent.icon.gameObject.activeSelf);
         else
-            Assert.IsTrue(buttonComponent.icon.enabled);
+            Assert.IsTrue(buttonComponent.icon.gameObject.activeSelf);
     }
 
     protected virtual ButtonComponentView CreateButtonComponent() { return BaseComponentView.Create<ButtonComponentView>("Button_Common"); }

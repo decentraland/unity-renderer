@@ -105,7 +105,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
         if (icon == null)
             return;
 
-        icon.enabled = newIcon != null;
+        icon.gameObject.SetActive(newIcon != null);
         icon.sprite = newIcon;
     }
 }
