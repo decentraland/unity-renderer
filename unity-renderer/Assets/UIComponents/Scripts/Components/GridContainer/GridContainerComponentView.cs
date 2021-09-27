@@ -72,10 +72,10 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         if (model == null)
             return;
 
-        SetNumColumns(model.numColumns);
-        SetItemSize(model.itemSize);
-        SetSpaceBetweenItems(model.spaceBetweenItems);
         SetItems(model.items);
+        SetNumColumns(model.numColumns);
+        SetSpaceBetweenItems(model.spaceBetweenItems);
+        SetItemSize(model.itemSize);
     }
 
     public override void Dispose()
@@ -97,12 +97,22 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public void SetItemSize(Vector2 newItemSize)
     {
-        model.itemSize = newItemSize;
+        Vector2 newSizeToApply = newItemSize;
+        if (model.autoAdaptItemSizeToContainerWidth)
+        {
+            float width = ((RectTransform)transform).rect.width;
+            float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.numColumns / 2f));
+            newSizeToApply = new Vector2(
+                (width / model.numColumns) - extraSpaceToRemove,
+                (width / model.numColumns) - extraSpaceToRemove);
+        }
+
+        model.itemSize = newSizeToApply;
 
         if (gridLayoutGroup == null)
             return;
 
-        gridLayoutGroup.cellSize = newItemSize;
+        gridLayoutGroup.cellSize = newSizeToApply;
     }
 
     public void SetSpaceBetweenItems(Vector2 newSpace)

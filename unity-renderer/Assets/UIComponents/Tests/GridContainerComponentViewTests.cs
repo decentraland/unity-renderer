@@ -27,7 +27,8 @@ public class GridContainerComponentViewTests
             items = new List<BaseComponentView>(),
             itemSize = new Vector2Int(10, 10),
             numColumns = 3,
-            spaceBetweenItems = new Vector2Int(5, 5)
+            spaceBetweenItems = new Vector2Int(5, 5),
+            autoAdaptItemSizeToContainerWidth = false
         };
 
         // Act
@@ -46,11 +47,11 @@ public class GridContainerComponentViewTests
         int testNumColumns = 3;
         Vector2 testSpaceBetweenItems = new Vector2(5f, 5f);
 
-
         gridContainerComponent.model.items = testItems;
         gridContainerComponent.model.itemSize = testItemSize;
         gridContainerComponent.model.numColumns = testNumColumns;
         gridContainerComponent.model.spaceBetweenItems = testSpaceBetweenItems;
+        gridContainerComponent.model.autoAdaptItemSizeToContainerWidth = false;
 
         // Act
         gridContainerComponent.RefreshControl();
@@ -77,17 +78,30 @@ public class GridContainerComponentViewTests
     }
 
     [Test]
-    public void SetItemSizeCorrectly()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetItemSizeCorrectly(bool autoItemSize)
     {
         // Arrange
+        gridContainerComponent.model.autoAdaptItemSizeToContainerWidth = autoItemSize;
         Vector2 testItemSize = new Vector2(10f, 10f);
+        if (autoItemSize)
+            ((RectTransform)gridContainerComponent.transform).rect.Set(0, 0, 100, 100);
 
         // Act
         gridContainerComponent.SetItemSize(testItemSize);
 
         // Assert
-        Assert.AreEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
-        Assert.AreEqual(testItemSize, gridContainerComponent.gridLayoutGroup.cellSize, "The item size does not match.");
+        if (autoItemSize)
+        {
+            Assert.AreNotEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
+            Assert.AreNotEqual(testItemSize, gridContainerComponent.gridLayoutGroup.cellSize, "The item size does not match.");
+        }
+        else
+        {
+            Assert.AreEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
+            Assert.AreEqual(testItemSize, gridContainerComponent.gridLayoutGroup.cellSize, "The item size does not match.");
+        }
     }
 
     [Test]
