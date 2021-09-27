@@ -255,7 +255,7 @@ MonoBehaviour:
   m_enableKerning: 1
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
-  m_isRichText: 1
+  m_isRichText: 0
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1565,6 +1565,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3721388696150822269}
   - component: {fileID: 3509634873235505251}
+  - component: {fileID: 784513448954054668}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -1642,6 +1643,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!114 &784513448954054668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8152955852010045599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802ea225622c4628bce6092d7cfaa9ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggle: {fileID: 3509634873235505251}
+  target: {fileID: 2840193383000557092}
+  on: {r: 0.9960785, g: 0.18039216, b: 0.33333334, a: 1}
+  off: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &8619353364679120553
 GameObject:
   m_ObjectHideFlags: 0
