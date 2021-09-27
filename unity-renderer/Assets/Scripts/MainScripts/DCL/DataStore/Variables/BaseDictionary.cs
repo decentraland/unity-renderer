@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>
+public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>, IEnumerable<KeyValuePair<TKey, TValue>>
+
 {
     public event Action<IEnumerable<KeyValuePair<TKey, TValue>>> OnSet;
     public event Action<TKey, TValue> OnAdded;
@@ -13,6 +15,7 @@ public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>
     public TValue this[TKey key] { get => dictionary[key]; set => dictionary[key] = value; }
 
     public BaseDictionary() { }
+
     public BaseDictionary(IEnumerable<(TKey, TValue)> elements)
     {
         dictionary = new Dictionary<TKey, TValue>();
@@ -35,7 +38,18 @@ public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>
         {
             dictionary.Add(key, value);
         }
+
         OnSet?.Invoke(dictionary);
+    }
+
+    public void AddOrSet(TKey key, TValue value)
+    {
+        if ( !dictionary.ContainsKey(key))
+            dictionary.Add(key, value);
+        else
+            dictionary[key] = value;
+
+        OnAdded?.Invoke(key, value);
     }
 
     public void Add(TKey key, TValue value)
@@ -67,4 +81,14 @@ public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>
     public int Count() => dictionary.Count;
 
     public List<TValue> GetValues() => dictionary.Values.ToList();
+
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+    {
+        return dictionary.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return dictionary.GetEnumerator();
+    }
 }

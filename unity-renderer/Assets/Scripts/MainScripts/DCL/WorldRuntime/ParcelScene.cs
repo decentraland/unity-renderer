@@ -58,10 +58,10 @@ namespace DCL.Controllers
         private void OnDestroy()
         {
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-            metricsController.Dispose();
+            metricsController?.Dispose();
         }
 
-        void OnDisable() { metricsController.Disable(); }
+        void OnDisable() { metricsController?.Disable(); }
 
         private void Update()
         {
@@ -78,6 +78,8 @@ namespace DCL.Controllers
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
+            Assert.IsTrue( !string.IsNullOrEmpty(data.id), "Scene must have an ID!" );
+
             this.sceneData = data;
 
             contentProvider = new ContentProvider();
@@ -96,9 +98,6 @@ namespace DCL.Controllers
             {
                 gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
             }
-
-            if ( !DataStore.i.sceneRendering.sceneData.ContainsKey(data.id))
-                DataStore.i.sceneRendering.sceneData.Add(data.id, new DataStore.DataStore_Rendering.SceneData());
 
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
@@ -169,9 +168,6 @@ namespace DCL.Controllers
                     Destroy(this.gameObject);
                 }
             }
-
-            if ( DataStore.i.sceneRendering.sceneData.ContainsKey(sceneData.id))
-                DataStore.i.sceneRendering.sceneData.Remove(sceneData.id);
 
             isReleased = true;
         }

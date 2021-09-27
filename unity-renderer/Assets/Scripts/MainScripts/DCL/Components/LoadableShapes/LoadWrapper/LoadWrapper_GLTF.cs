@@ -10,8 +10,13 @@ namespace DCL.Components
     public class LoadWrapper_GLTF : LoadWrapper
     {
         static readonly bool VERBOSE = false;
+
         RendereableAssetLoadHelper loadHelper;
+
         public ContentProvider customContentProvider;
+
+        private Action<GameObject> successWrapperEvent;
+        private Action failWrapperEvent;
 
         /// <summary>
         /// Tracked meshes to persist in DataStore_SceneRendering
@@ -55,8 +60,11 @@ namespace DCL.Components
             this.entity.OnCleanupEvent -= OnEntityCleanup;
             this.entity.OnCleanupEvent += OnEntityCleanup;
 
-            loadHelper.OnSuccessEvent += (x) => OnSuccessWrapper(OnSuccess);
-            loadHelper.OnFailEvent += () => OnFailWrapper(OnFail);
+            successWrapperEvent = (x) => OnSuccessWrapper(OnSuccess);
+            failWrapperEvent = () => OnFailWrapper(OnFail);
+
+            loadHelper.OnSuccessEvent += successWrapperEvent;
+            loadHelper.OnFailEvent += failWrapperEvent;
             loadHelper.OnMeshAdded += OnMeshAdded;
             loadHelper.Load(targetUrl);
         }
@@ -74,6 +82,8 @@ namespace DCL.Components
         {
             alreadyLoaded = true;
             loadHelper.OnMeshAdded -= OnMeshAdded;
+            loadHelper.OnSuccessEvent -= successWrapperEvent;
+            loadHelper.OnFailEvent -= failWrapperEvent;
             this.entity.OnCleanupEvent -= OnEntityCleanup;
             OnFail?.Invoke(this);
         }
@@ -82,6 +92,8 @@ namespace DCL.Components
         {
             alreadyLoaded = true;
             loadHelper.OnMeshAdded -= OnMeshAdded;
+            loadHelper.OnSuccessEvent -= successWrapperEvent;
+            loadHelper.OnFailEvent -= failWrapperEvent;
             OnSuccess?.Invoke(this);
         }
 
@@ -98,6 +110,9 @@ namespace DCL.Components
             loadHelper.Unload();
             this.entity.OnCleanupEvent -= OnEntityCleanup;
             loadHelper.OnMeshAdded -= OnMeshAdded;
+            loadHelper.OnSuccessEvent -= successWrapperEvent;
+            loadHelper.OnFailEvent -= failWrapperEvent;
+            alreadyLoaded = false;
         }
 
         public override string ToString() { return $"LoadWrapper ... {loadHelper.ToString()}"; }

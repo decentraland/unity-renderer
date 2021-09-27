@@ -61,10 +61,10 @@ namespace DCL
                 string sceneId = scene.sceneData.id;
                 var sceneRenderingData = DataStore.i.sceneRendering.sceneData;
 
-                if ( sceneRenderingData.ContainsKey(sceneId) )
-                    return sceneRenderingData[sceneId].refCountedMeshes;
+                if ( !sceneRenderingData.ContainsKey(sceneId) )
+                    sceneRenderingData.Add(scene.sceneData.id, new DataStore.DataStore_Rendering.SceneData());
 
-                return null;
+                return sceneRenderingData[sceneId].refCountedMeshes;
             }
         }
 
@@ -72,6 +72,7 @@ namespace DCL
 
         public SceneMetricsController(IParcelScene sceneOwner)
         {
+            Assert.IsTrue( !string.IsNullOrEmpty(sceneOwner.sceneData.id), "Scene must have an ID!" );
             this.scene = sceneOwner;
 
             uniqueMeshesRefCount = new Dictionary<Mesh, int>();
@@ -109,8 +110,11 @@ namespace DCL
             if (scene == null)
                 return;
 
-            sceneMeshData.OnAdded -= OnWillAddMesh;
-            sceneMeshData.OnRemoved -= OnWillRemoveMesh;
+            if ( sceneMeshData != null )
+            {
+                sceneMeshData.OnAdded -= OnWillAddMesh;
+                sceneMeshData.OnRemoved -= OnWillRemoveMesh;
+            }
 
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;
@@ -272,10 +276,9 @@ namespace DCL
                 {
                     if ( !meshToTriangleCount.ContainsKey(sharedMesh) )
                     {
-                        Debug.LogError("This shouldnt happen!");
+                        Debug.LogError($"This shouldnt happen! ({sharedMesh.GetInstanceID()})");
                         continue;
                     }
-
 
                     triangleCount = meshToTriangleCount[sharedMesh];
                 }
@@ -426,23 +429,25 @@ namespace DCL
 
         public void OnWillAddMesh(Mesh mesh, int refCount)
         {
-            Assert.IsTrue(refCount == 0);
+            Assert.IsTrue(refCount == 1, "Ref count should always be 1 for new meshes!");
 
             if ( meshToTriangleCount.ContainsKey(mesh) )
                 meshToTriangleCount.Remove(mesh);
 
             int triangleCount = mesh.triangles.Length;
             meshToTriangleCount.Add(mesh, triangleCount);
+            Debug.Log($"Add meshToTriangle {mesh.GetInstanceID()}");
         }
 
         private void OnWillRemoveMesh(Mesh mesh, int refCount)
         {
-            Assert.IsTrue(refCount == 0);
+            Assert.IsTrue(refCount == 0, "Ref count should always be 0 for a mesh to be removed!");
 
             if ( !meshToTriangleCount.ContainsKey(mesh) )
                 return;
 
             meshToTriangleCount.Remove(mesh);
+            Debug.Log($"Remove meshToTriangle {mesh.GetInstanceID()}");
         }
 
 
