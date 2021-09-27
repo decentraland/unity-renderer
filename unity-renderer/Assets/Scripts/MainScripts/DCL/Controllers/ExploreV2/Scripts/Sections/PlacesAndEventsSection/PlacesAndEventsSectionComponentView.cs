@@ -1,15 +1,6 @@
 using UnityEngine;
 
-public interface IPlacesAndEventsSectionComponentView
-{
-    /// <summary>
-    /// Fill the model and updates the explore section with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the explore section.</param>
-    void Configure(PlacesAndEventsSectionComponentModel model);
-}
-
-public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
+public class PlacesAndEventsSectionComponentView : BaseComponentView
 {
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
@@ -21,23 +12,12 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     [SerializeField] internal MyPlacesSubSectionComponentView myPlacesSubSection;
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
 
-    [Header("Configuration")]
-    [SerializeField] internal PlacesAndEventsSectionComponentModel model;
-
     public override void PostInitialization()
     {
-        Configure(model);
-
         if (subSectionSelector.isFullyInitialized)
             CreateSubSectionSelectorMappings();
         else
             subSectionSelector.OnFullyInitialized += CreateSubSectionSelectorMappings;
-    }
-
-    public void Configure(PlacesAndEventsSectionComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
     }
 
     public override void RefreshControl() { }

@@ -16,20 +16,6 @@ public class PlacesAndEventsSectionComponentViewTests
     }
 
     [Test]
-    public void ConfigurePlacesAndEventsSectionCorrectly()
-    {
-        // Arrange
-        PlacesAndEventsSectionComponentModel testModel = new PlacesAndEventsSectionComponentModel
-            { };
-
-        // Act
-        placesAndEventsSectionComponent.Configure(testModel);
-
-        // Assert
-        Assert.AreEqual(testModel, placesAndEventsSectionComponent.model, "The model does not match after configuring the button.");
-    }
-
-    [Test]
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]
