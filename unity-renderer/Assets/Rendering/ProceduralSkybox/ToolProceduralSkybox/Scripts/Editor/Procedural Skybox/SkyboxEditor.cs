@@ -410,9 +410,9 @@ namespace DCL.Skybox
         {
 
             //GUILayout.Label("Background Layer", EditorStyles.boldLabel);
-            selectedConfiguration.skyColor = EditorGUILayout.GradientField(new GUIContent("Sky Color"), selectedConfiguration.skyColor);
-            selectedConfiguration.horizonColor = EditorGUILayout.GradientField("Horizon Color", selectedConfiguration.horizonColor);
-            selectedConfiguration.groundColor = EditorGUILayout.GradientField("Ground Color", selectedConfiguration.groundColor);
+            RenderColorGradientField(selectedConfiguration.skyColor, "Sky Color", 0, 24);
+            RenderColorGradientField(selectedConfiguration.horizonColor, "Horizon Color", 0, 24);
+            RenderColorGradientField(selectedConfiguration.groundColor, "Ground Color", 0, 24);
             RenderHorizonLayer();
         }
 
@@ -434,9 +434,12 @@ namespace DCL.Skybox
 
             if (selectedConfiguration.ambientTrilight)
             {
-                selectedConfiguration.ambientSkyColor = EditorGUILayout.GradientField("Ambient Sky Color", selectedConfiguration.ambientSkyColor);
-                selectedConfiguration.ambientEquatorColor = EditorGUILayout.GradientField("Ambient Equator Color", selectedConfiguration.ambientEquatorColor);
-                selectedConfiguration.ambientGroundColor = EditorGUILayout.GradientField("Ambient Ground Color", selectedConfiguration.ambientGroundColor);
+                RenderColorGradientField(selectedConfiguration.ambientSkyColor, "Ambient Sky Color", 0, 24, true);
+                RenderColorGradientField(selectedConfiguration.ambientEquatorColor, "Ambient Equator Color", 0, 24, true);
+                RenderColorGradientField(selectedConfiguration.ambientGroundColor, "Ambient Ground Color", 0, 24, true);
+                //selectedConfiguration.ambientSkyColor = EditorGUILayout.GradientField("Ambient Sky Color", selectedConfiguration.ambientSkyColor);
+                //selectedConfiguration.ambientEquatorColor = EditorGUILayout.GradientField("Ambient Equator Color", selectedConfiguration.ambientEquatorColor);
+                //selectedConfiguration.ambientGroundColor = EditorGUILayout.GradientField("Ambient Ground Color", selectedConfiguration.ambientGroundColor);
             }
 
         }
@@ -448,7 +451,8 @@ namespace DCL.Skybox
             selectedConfiguration.useFog = EditorGUILayout.Toggle("Use Fog", selectedConfiguration.useFog);
             if (selectedConfiguration.useFog)
             {
-                selectedConfiguration.fogColor = EditorGUILayout.GradientField("Fog Color", selectedConfiguration.fogColor);
+                RenderColorGradientField(selectedConfiguration.fogColor, "Fog Color", 0, 24);
+                //selectedConfiguration.fogColor = EditorGUILayout.GradientField("Fog Color", selectedConfiguration.fogColor);
                 selectedConfiguration.fogMode = (FogMode)EditorGUILayout.EnumPopup("Fog Mode", selectedConfiguration.fogMode);
 
                 switch (selectedConfiguration.fogMode)
@@ -475,8 +479,10 @@ namespace DCL.Skybox
             {
                 return;
             }
-            selectedConfiguration.directionalLightLayer.lightColor = EditorGUILayout.GradientField("Light Color", selectedConfiguration.directionalLightLayer.lightColor);
-            selectedConfiguration.directionalLightLayer.tintColor = EditorGUILayout.GradientField(new GUIContent("Tint Color"), selectedConfiguration.directionalLightLayer.tintColor, true);
+            RenderColorGradientField(selectedConfiguration.directionalLightLayer.lightColor, "Light Color", 0, 24);
+            RenderColorGradientField(selectedConfiguration.directionalLightLayer.tintColor, "Tint Color", 0, 24, true);
+            //selectedConfiguration.directionalLightLayer.lightColor = EditorGUILayout.GradientField("Light Color", selectedConfiguration.directionalLightLayer.lightColor);
+            //selectedConfiguration.directionalLightLayer.tintColor = EditorGUILayout.GradientField(new GUIContent("Tint Color"), selectedConfiguration.directionalLightLayer.tintColor, true);
             GUILayout.Space(10);
 
             // Light Intesity
@@ -680,10 +686,11 @@ namespace DCL.Skybox
 
             EditorGUILayout.Separator();
 
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Color", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            layer.color = EditorGUILayout.GradientField(new GUIContent(""), layer.color, true, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            GUILayout.EndHorizontal();
+            //GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            //EditorGUILayout.LabelField("Color", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            //layer.color = EditorGUILayout.GradientField(new GUIContent(""), layer.color, true, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            //GUILayout.EndHorizontal();
+            RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
         }
 
         void RenderHorizontalFloatField(ref float val, string label)
@@ -769,6 +776,25 @@ namespace DCL.Skybox
             }
 
             EditorGUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+        }
+
+        void RenderColorGradientField(Gradient color, string label = "color", float startTime = -1, float endTime = -1, bool hdr = false)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+
+            if (startTime != -1)
+            {
+                EditorGUILayout.LabelField(startTime.ToString(), GUILayout.Width(20), GUILayout.ExpandWidth(false));
+            }
+
+            color = EditorGUILayout.GradientField(new GUIContent(""), color, hdr, GUILayout.Width(250), GUILayout.ExpandWidth(false));
+
+            if (endTime != 1)
+            {
+                EditorGUILayout.LabelField(endTime.ToString(), GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            }
             GUILayout.EndHorizontal();
         }
 
