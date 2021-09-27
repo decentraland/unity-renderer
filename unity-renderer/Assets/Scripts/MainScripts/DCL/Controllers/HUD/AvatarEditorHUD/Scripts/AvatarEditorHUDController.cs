@@ -97,36 +97,36 @@ public class AvatarEditorHUDController : IHUD
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
         CatalogController.RequestOwnedWearables(userProfile.userId)
-            .Then((ownedWearables) =>
-            {
-                ownedWearablesAlreadyLoaded = true;
-                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                LoadUserProfile(userProfile, true);
-                view.ShowCollectiblesLoadingSpinner(false);
-            })
-            .Catch((error) =>
-            {
-                ownedWearablesRemainingRequests--;
-                if (ownedWearablesRemainingRequests > 0)
-                {
-                    Debug.LogWarning("Retrying owned wereables loading...");
-                    LoadOwnedWereables(userProfile);
-                }
-                else
-                {
-                    NotificationsController.i.ShowNotification(new Notification.Model
-                    {
-                        message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                        type = NotificationFactory.Type.GENERIC,
-                        timer = 10f,
-                        destroyOnFinish = true
-                    });
+                         .Then((ownedWearables) =>
+                         {
+                             ownedWearablesAlreadyLoaded = true;
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             LoadUserProfile(userProfile, true);
+                             view.ShowCollectiblesLoadingSpinner(false);
+                         })
+                         .Catch((error) =>
+                         {
+                             ownedWearablesRemainingRequests--;
+                             if (ownedWearablesRemainingRequests > 0)
+                             {
+                                 Debug.LogWarning("Retrying owned wereables loading...");
+                                 LoadOwnedWereables(userProfile);
+                             }
+                             else
+                             {
+                                 NotificationsController.i.ShowNotification(new Notification.Model
+                                 {
+                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                                     type = NotificationFactory.Type.GENERIC,
+                                     timer = 10f,
+                                     destroyOnFinish = true
+                                 });
 
-                    view.ShowCollectiblesLoadingSpinner(false);
-                    view.ShowCollectiblesLoadingRetry(true);
-                    Debug.LogError(error);
-                }
-            });
+                                 view.ShowCollectiblesLoadingSpinner(false);
+                                 view.ShowCollectiblesLoadingRetry(true);
+                                 Debug.LogError(error);
+                             }
+                         });
     }
 
     private void QueryNftCollections(string userId)
@@ -135,12 +135,12 @@ public class AvatarEditorHUDController : IHUD
             return;
 
         DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
-            .Then((nfts) => ownedNftCollectionsL1 = nfts)
-            .Catch((error) => Debug.LogError(error));
+           .Then((nfts) => ownedNftCollectionsL1 = nfts)
+           .Catch((error) => Debug.LogError(error));
 
         DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
-            .Then((nfts) => ownedNftCollectionsL2 = nfts)
-            .Catch((error) => Debug.LogError(error));
+           .Then((nfts) => ownedNftCollectionsL2 = nfts)
+           .Catch((error) => Debug.LogError(error));
     }
 
     public void RetryLoadOwnedWearables()
@@ -399,6 +399,11 @@ public class AvatarEditorHUDController : IHUD
             toReplace.ForEach(UnequipWearable);
             model.wearables.Add(wearable);
             view.EquipWearable(wearable);
+            string oldWearableId = "";
+            if (toReplace.FirstOrDefault() != null)
+                oldWearableId = toReplace.FirstOrDefault().id;
+
+            DCL.Interface.WebInterface.ReportWearableChanged(wearable.id, oldWearableId);
         }
     }
 

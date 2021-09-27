@@ -146,6 +146,13 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
+        public class WereableChangedPayload
+        {
+            public string oldWereableId;
+            public string newWereableId;
+        };
+
+        [System.Serializable]
         public class IdleStateChangedPayload
         {
             public bool isIdle;
@@ -676,6 +683,7 @@ namespace DCL.Interface
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
         private static CameraModePayload cameraModePayload = new CameraModePayload();
+        private static WereableChangedPayload wearableChangedPayload = new WereableChangedPayload();
         private static IdleStateChangedPayload idleStateChangedPayload = new IdleStateChangedPayload();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
         private static OnClickEvent onClickEvent = new OnClickEvent();
@@ -743,6 +751,13 @@ namespace DCL.Interface
         {
             cameraModePayload.cameraMode = cameraMode;
             SendAllScenesEvent("cameraModeChanged", cameraModePayload);
+        }
+
+        public static void ReportWearableChanged(string oldId, string newId)
+        {
+            wearableChangedPayload.oldWereableId = oldId;
+            wearableChangedPayload.newWereableId = newId;
+            SendAllScenesEvent("wearableChanged", wearableChangedPayload);
         }
 
         public static void ReportIdleStateChanged(bool isIdle)
@@ -1281,8 +1296,8 @@ namespace DCL.Interface
         public static void ReportVideoProgressEvent(
             string componentId,
             string sceneId,
-            string videoClipId, 
-            int videoStatus, 
+            string videoClipId,
+            int videoStatus,
             float currentOffset,
             float length)
         {
