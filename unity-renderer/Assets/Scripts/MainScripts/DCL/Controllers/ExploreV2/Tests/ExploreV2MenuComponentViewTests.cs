@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ExploreV2MenuComponentViewTests
 {
@@ -14,71 +13,6 @@ public class ExploreV2MenuComponentViewTests
     {
         exploreV2MenuComponent.Dispose();
         GameObject.Destroy(exploreV2MenuComponent.gameObject);
-    }
-
-    [Test]
-    public void ConfigureExploreV2MenuCorrectly()
-    {
-        // Arrange
-        ExploreV2MenuComponentModel testModel = new ExploreV2MenuComponentModel
-        {
-            profileInfo = new ProfileCardComponentModel
-            {
-                profilePicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
-                profileName = "Test Name",
-                profileAddress = "Test Address",
-                onClick = new Button.ButtonClickedEvent()
-            },
-            realmInfo = new RealmViewerComponentModel
-            {
-                realmName = "Test Realm Name",
-                numberOfUsers = 50000
-            }
-        };
-
-        // Act
-        exploreV2MenuComponent.Configure(testModel);
-
-        // Assert
-        Assert.AreEqual(testModel, exploreV2MenuComponent.model, "The model does not match after configuring the button.");
-    }
-
-    [Test]
-    public void RefreshExploreV2MenuCorrectly()
-    {
-        // Arrange
-        Sprite testPicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero);
-        string testProfileName = "Test Name";
-        string testAddress = "Test Address";
-        Button.ButtonClickedEvent testClickedEvent = new Button.ButtonClickedEvent();
-
-        exploreV2MenuComponent.model.profileInfo = new ProfileCardComponentModel
-        {
-            profilePicture = testPicture,
-            profileName = testProfileName,
-            profileAddress = testAddress,
-            onClick = testClickedEvent
-        };
-
-        string testRealmName = "Test Realm Name";
-        int testNumberOfUsers = 50000;
-
-        exploreV2MenuComponent.model.realmInfo = new RealmViewerComponentModel
-        {
-            realmName = testRealmName,
-            numberOfUsers = testNumberOfUsers
-        };
-
-        // Act
-        exploreV2MenuComponent.RefreshControl();
-
-        // Assert
-        Assert.AreEqual(testPicture, exploreV2MenuComponent.model.profileInfo.profilePicture, "The profile picture does not match in the model.");
-        Assert.AreEqual(testProfileName, exploreV2MenuComponent.model.profileInfo.profileName, "The profile name does not match in the model.");
-        Assert.AreEqual(testAddress, exploreV2MenuComponent.model.profileInfo.profileAddress, "The profile address does not match in the model.");
-        Assert.AreEqual(testClickedEvent, exploreV2MenuComponent.model.profileInfo.onClick, "The profile address does not match in the model.");
-        Assert.AreEqual(testRealmName, exploreV2MenuComponent.model.realmInfo.realmName, "The realm name does not match in the model.");
-        Assert.AreEqual(testNumberOfUsers, exploreV2MenuComponent.model.realmInfo.numberOfUsers, "The number of users does not match in the model.");
     }
 
     [Test]
@@ -97,42 +31,6 @@ public class ExploreV2MenuComponentViewTests
     }
 
     [Test]
-    public void SetRealmInfoCorrectly()
-    {
-        // Arrange
-        RealmViewerComponentModel testModel = new RealmViewerComponentModel
-        {
-            realmName = "Test Realm Name",
-            numberOfUsers = 50000
-        };
-
-        // Act
-        exploreV2MenuComponent.SetRealmInfo(testModel);
-
-        // Assert
-        Assert.AreEqual(testModel, exploreV2MenuComponent.model.realmInfo, "The realm info model does not match after configuring the button.");
-    }
-
-    [Test]
-    public void SetProfileInfoCorrectly()
-    {
-        // Arrange
-        ProfileCardComponentModel testModel = new ProfileCardComponentModel
-        {
-            profilePicture = Sprite.Create(new Texture2D(10, 10), new Rect(), Vector2.zero),
-            profileName = "Test Name",
-            profileAddress = "Test Address",
-            onClick = new Button.ButtonClickedEvent()
-        };
-
-        // Act
-        exploreV2MenuComponent.SetProfileInfo(testModel);
-
-        // Assert
-        Assert.AreEqual(testModel, exploreV2MenuComponent.model.profileInfo, "The profile info model does not match after configuring the button.");
-    }
-
-    [Test]
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]
@@ -143,6 +41,7 @@ public class ExploreV2MenuComponentViewTests
     public void CreateSectionSelectorMappingsCorrectly(int sectionIndex)
     {
         // Arrange
+        exploreV2MenuComponent.sectionSelector.RefreshControl();
         exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
         exploreV2MenuComponent.questSection.gameObject.SetActive(false);
         exploreV2MenuComponent.backpackSection.gameObject.SetActive(false);
@@ -193,6 +92,7 @@ public class ExploreV2MenuComponentViewTests
     public void RemoveSectionSelectorMappingsCorrectly(int sectionIndex)
     {
         // Arrange
+        exploreV2MenuComponent.sectionSelector.RefreshControl();
         exploreV2MenuComponent.CreateSectionSelectorMappings();
         exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
         exploreV2MenuComponent.questSection.gameObject.SetActive(false);

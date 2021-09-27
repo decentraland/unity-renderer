@@ -60,11 +60,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
         lastResolutionChecked = Screen.currentResolution;
-
-        PostInitialization();
-
-        isFullyInitialized = true;
-        OnFullyInitialized?.Invoke();
     }
 
     public abstract void PostInitialization();
@@ -78,6 +73,14 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void Dispose() { }
 
     private void Awake() { Initialize(); }
+
+    private void Start()
+    {
+        PostInitialization();
+
+        isFullyInitialized = true;
+        OnFullyInitialized?.Invoke();
+    }
 
     private void Update()
     {

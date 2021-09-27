@@ -38,6 +38,7 @@ public class PlacesAndEventsSectionComponentViewTests
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
+        placesAndEventsSectionComponent.subSectionSelector.RefreshControl();
         placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.favoritesSubSection.gameObject.SetActive(false);
@@ -78,6 +79,7 @@ public class PlacesAndEventsSectionComponentViewTests
     public void RemoveSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
+        placesAndEventsSectionComponent.subSectionSelector.RefreshControl();
         placesAndEventsSectionComponent.CreateSubSectionSelectorMappings();
         placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);

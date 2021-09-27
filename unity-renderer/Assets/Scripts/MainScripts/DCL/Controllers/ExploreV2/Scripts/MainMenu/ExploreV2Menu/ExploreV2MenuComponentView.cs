@@ -14,6 +14,11 @@ public interface IExploreV2MenuComponentView
     GameObject go { get; }
 
     /// <summary>
+    /// Real viewer component.
+    /// </summary>
+    IRealmViewerComponentView currentRealmViewer { get; }
+
+    /// <summary>
     /// Profile card component.
     /// </summary>
     IProfileCardComponentView currentProfileCard { get; }
@@ -24,28 +29,10 @@ public interface IExploreV2MenuComponentView
     bool isActive { get; }
 
     /// <summary>
-    /// Fill the model and updates the explore menu with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the explore menu.</param>
-    void Configure(ExploreV2MenuComponentModel model);
-
-    /// <summary>
     /// Activates/Deactivates the game object of the explore menu.
     /// </summary>
     /// <param name="isActive">True to activate it.</param>
     void SetActive(bool isActive);
-
-    /// <summary>
-    /// Set the realm info.
-    /// </summary>
-    /// <param name="realmInfo">RealmViewer model.</param>
-    void SetRealmInfo(RealmViewerComponentModel realmInfo);
-
-    /// <summary>
-    /// Set the profile info.
-    /// </summary>
-    /// <param name="profileInfo">ProfileCard model.</param>
-    void SetProfileInfo(ProfileCardComponentModel profileInfo);
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -65,20 +52,16 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal MarketSectionComponentView marketSection;
     [SerializeField] internal SettingsSectionComponentView settingsSection;
 
-    [Header("Configuration")]
-    [SerializeField] internal ExploreV2MenuComponentModel model;
-
     public bool isActive => gameObject.activeSelf;
 
     public GameObject go => this != null ? gameObject : null;
+    public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
 
     public event Action OnCloseButtonPressed;
 
     public override void PostInitialization()
     {
-        Configure(model);
-
         if (sectionSelector.isFullyInitialized)
             CreateSectionSelectorMappings();
         else
@@ -90,20 +73,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             closeMenuButton.OnFullyInitialized += ConfigureCloseButton;
     }
 
-    public void Configure(ExploreV2MenuComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
-
-    public override void RefreshControl()
-    {
-        if (model == null)
-            return;
-
-        SetRealmInfo(model.realmInfo);
-        SetProfileInfo(model.profileInfo);
-    }
+    public override void RefreshControl() { }
 
     public override void Dispose()
     {
@@ -113,26 +83,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
-
-    public void SetRealmInfo(RealmViewerComponentModel realmInfo)
-    {
-        model.realmInfo = realmInfo;
-
-        if (realmViewer == null)
-            return;
-
-        realmViewer.Configure(realmInfo);
-    }
-
-    public void SetProfileInfo(ProfileCardComponentModel profileInfo)
-    {
-        model.profileInfo = profileInfo;
-
-        if (profileCard == null)
-            return;
-
-        profileCard.Configure(profileInfo);
-    }
 
     internal void CreateSectionSelectorMappings()
     {
