@@ -148,8 +148,8 @@ namespace DCL.Interface
         [System.Serializable]
         public class WereableChangedPayload
         {
-            public string oldWereableId;
-            public string newWereableId;
+            public WearableItem unequipedWearable;
+            public WearableItem equipedWearable;
         };
 
         [System.Serializable]
@@ -753,10 +753,10 @@ namespace DCL.Interface
             SendAllScenesEvent("cameraModeChanged", cameraModePayload);
         }
 
-        public static void ReportWearableChanged(string oldId, string newId)
+        public static void ReportWearableChanged(WearableItem unequipedWearable, WearableItem equipedWearable)
         {
-            wearableChangedPayload.oldWereableId = oldId;
-            wearableChangedPayload.newWereableId = newId;
+            wearableChangedPayload.unequipedWearable = unequipedWearable;
+            wearableChangedPayload.equipedWearable = equipedWearable;
             SendAllScenesEvent("wearableChanged", wearableChangedPayload);
         }
 

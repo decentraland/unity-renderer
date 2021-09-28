@@ -276,6 +276,7 @@ public class AvatarEditorHUDController : IHUD
                 if (!categoriesThatMustHaveSelection.Contains(wearable.data.category))
                 {
                     UnequipWearable(wearable);
+                    DCL.Interface.WebInterface.ReportWearableChanged(wearable, null);
                 }
                 else
                 {
@@ -291,6 +292,8 @@ public class AvatarEditorHUDController : IHUD
                 }
 
                 EquipWearable(wearable);
+
+                DCL.Interface.WebInterface.ReportWearableChanged(sameCategoryEquipped, wearable);
             }
         }
 
@@ -399,11 +402,6 @@ public class AvatarEditorHUDController : IHUD
             toReplace.ForEach(UnequipWearable);
             model.wearables.Add(wearable);
             view.EquipWearable(wearable);
-            string oldWearableId = "";
-            if (toReplace.FirstOrDefault() != null)
-                oldWearableId = toReplace.FirstOrDefault().id;
-
-            DCL.Interface.WebInterface.ReportWearableChanged(wearable.id, oldWearableId);
         }
     }
 
