@@ -17,6 +17,8 @@ namespace DCL
         private GameObject sceneDebugPanel;
 
         [SerializeField] private InfoPanel infoPanel;
+        
+        [SerializeField] private GameObject previewSceneLimitsWarning;
 
         private void Awake() { infoPanel.SetVisible(false); }
 
@@ -44,6 +46,11 @@ namespace DCL
         public void HideInfoPanel()
         {
             infoPanel.SetVisible(false);
+        }
+
+        public void ShowPreviewSceneLimitsWarning(bool isEnable)
+        {
+            previewSceneLimitsWarning.SetActive(isEnable);
         }
     }
 }

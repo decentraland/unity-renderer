@@ -28,7 +28,11 @@ namespace DCL
             GameObject view = Object.Instantiate(UnityEngine.Resources.Load("DebugView")) as GameObject;
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
+
+            OnKernelConfigChanged(KernelConfig.i.Get(), null);
+            KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
+
         private void OnFPSPanelToggle(bool current, bool previous)
         {
             if (current == previous || debugView == null)
@@ -82,8 +86,12 @@ namespace DCL
 
         public void SetEngineDebugPanel()
         {
-            if (debugView != null)
-                debugView.SetEngineDebugPanel();
+            if (KernelConfig.i.Get().debugConfig.sceneDebugPanelEnabled)
+                return;
+            
+            var config = KernelConfig.i.Get().Clone();
+            config.debugConfig.sceneDebugPanelEnabled = true;
+            KernelConfig.i.Set(config);
         }
         
         public void HideInfoPanel()
@@ -132,10 +140,22 @@ namespace DCL
         {
             positionTracker.Dispose();
             isFPSPanelVisible.OnChange -= OnFPSPanelToggle;
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
 
             if (debugView != null)
                 Object.Destroy(debugView.gameObject);
         }
         
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        {
+            if (debugView == null)
+                return;
+            
+            if (current.debugConfig.sceneDebugPanelEnabled)
+            {
+                debugView.SetEngineDebugPanel();
+            }
+            debugView.ShowPreviewSceneLimitsWarning(!string.IsNullOrEmpty(current.debugConfig.sceneLimitsWarningSceneId));
+        }
     }
 }

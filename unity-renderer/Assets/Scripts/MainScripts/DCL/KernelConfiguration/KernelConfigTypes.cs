@@ -101,4 +101,25 @@ namespace KernelConfigurationTypes
                    y >= yMin && y <= yMax;
         }
     }
+
+    [Serializable]
+    public class Debugging
+    {
+        public bool sceneDebugPanelEnabled = false;
+        public string sceneDebugPanelTargetSceneId = null;
+        public string sceneLimitsWarningSceneId = null;
+        
+        public bool Equals(Debugging other)
+        {
+            return sceneDebugPanelEnabled == other?.sceneDebugPanelEnabled &&
+                   sceneDebugPanelTargetSceneId == other?.sceneDebugPanelTargetSceneId &&
+                   sceneLimitsWarningSceneId == other?.sceneLimitsWarningSceneId;
+        }
+
+        public Debugging Clone()
+        {
+            Debugging clone = (Debugging) this.MemberwiseClone();
+            return clone;
+        }
+    }
 }
