@@ -402,7 +402,8 @@ namespace DCL.ABConverter
 
             abConverterCoreController.InitializeDirectoryPaths(true);
 
-            int initialCollectionIndex = 1;
+            // By manipulating these variables we control which collections are converted to batch manually
+            int initialCollectionIndex = 0;
             int maxCollectionIndex = 50;
             DumpWearablesCollection(abConverterCoreController, initialCollectionIndex, maxCollectionIndex);
         }
