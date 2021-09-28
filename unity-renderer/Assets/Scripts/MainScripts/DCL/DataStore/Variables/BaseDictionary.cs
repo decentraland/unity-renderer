@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>, IEnumerable<KeyValuePair<TKey, TValue>>
-
 {
     public event Action<IEnumerable<KeyValuePair<TKey, TValue>>> OnSet;
     public event Action<TKey, TValue> OnAdded;

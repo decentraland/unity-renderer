@@ -13,9 +13,9 @@ namespace DCL
     public class AssetPromise_AB_GameObject : AssetPromise_WithUrl<Asset_AB_GameObject>
     {
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
-        public event System.Action<Mesh> OnWillUploadMeshToGPU;
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
+        public event Action<Mesh> OnMeshAdded;
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
@@ -169,14 +169,16 @@ namespace DCL
 
         private void UploadMeshesToGPU(List<Mesh> meshesList)
         {
-            foreach ( Mesh m in meshesList )
+            foreach ( Mesh mesh in meshesList )
             {
-                if ( !m.isReadable )
+                if ( !mesh.isReadable )
                     continue;
 
-                Physics.BakeMesh(m.GetInstanceID(), false);
-                OnWillUploadMeshToGPU?.Invoke(m);
-                m.UploadMeshData(true);
+                Physics.BakeMesh(mesh.GetInstanceID(), false);
+                asset.rendereable.triangleCount += mesh.triangles.Length;
+                OnMeshAdded?.Invoke(mesh);
+
+                mesh.UploadMeshData(true);
             }
         }
 

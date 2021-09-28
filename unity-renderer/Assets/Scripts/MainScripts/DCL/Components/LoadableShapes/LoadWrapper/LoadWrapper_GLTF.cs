@@ -15,7 +15,7 @@ namespace DCL.Components
 
         public ContentProvider customContentProvider;
 
-        private Action<GameObject> successWrapperEvent;
+        private Action<Rendereable> successWrapperEvent;
         private Action failWrapperEvent;
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace DCL.Components
                 return;
 
             trackedMeshes.Add(mesh);
-            DataStore.i.sceneRendering.AddMesh(entity, mesh);
+            DataStore.i.sceneWorldObjects.AddMesh(entity, mesh);
         }
 
         private void OnFailWrapper(Action<LoadWrapper> OnFail)
@@ -94,6 +94,8 @@ namespace DCL.Components
             loadHelper.OnMeshAdded -= OnMeshAdded;
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
+
+            DataStore.i.sceneWorldObjects.AddRendereable(entity, loadHelper.loadedAsset);
             OnSuccess?.Invoke(this);
         }
 
@@ -103,7 +105,12 @@ namespace DCL.Components
         {
             foreach ( var mesh in trackedMeshes )
             {
-                DataStore.i.sceneRendering.RemoveMesh(entity, mesh);
+                DataStore.i.sceneWorldObjects.RemoveMesh(entity, mesh);
+            }
+
+            if ( loadHelper.loadedAsset != null )
+            {
+                DataStore.i.sceneWorldObjects.RemoveRendereable(entity, loadHelper.loadedAsset);
             }
 
             trackedMeshes.Clear();

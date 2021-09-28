@@ -29,7 +29,7 @@ namespace DCL.Controllers
         public event System.Action<string, ISharedComponent> OnAddSharedComponent;
         public event System.Action<float> OnLoadingStateUpdated;
 
-        public ContentProvider contentProvider { get; protected set; }
+        public ContentProvider contentProvider { get; set; }
 
         public bool isTestScene { get; set; } = false;
         public bool isPersistent { get; set; } = false;

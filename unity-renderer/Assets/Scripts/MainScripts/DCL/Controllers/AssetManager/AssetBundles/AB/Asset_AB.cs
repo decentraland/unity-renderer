@@ -10,6 +10,29 @@ namespace DCL
 
         public Dictionary<string, List<Object>> assetsByExtension = new Dictionary<string, List<Object>>();
 
+        public Asset_AB()
+        {
+            assetsByExtension = new Dictionary<string, List<Object>>();
+        }
+
+        public override object Clone() => (Asset_AB) MemberwiseClone();
+
+        public void CancelShow()
+        {
+            Cleanup();
+        }
+
+        public override void Cleanup()
+        {
+            assetsByExtension = null;
+
+            if (ownerAssetBundle)
+            {
+                ownerAssetBundle.Unload(true);
+                ownerAssetBundle = null;
+            }
+        }
+
         public List<T> GetAssetsByExtensions<T>(params string[] extensions)
             where T : Object
         {
@@ -36,29 +59,6 @@ namespace DCL
             }
 
             return goList;
-        }
-
-        public Asset_AB()
-        {
-            assetsByExtension = new Dictionary<string, List<Object>>();
-        }
-
-        public override object Clone() => (Asset_AB) MemberwiseClone();
-
-        public void CancelShow()
-        {
-            Cleanup();
-        }
-
-        public override void Cleanup()
-        {
-            assetsByExtension = null;
-
-            if (ownerAssetBundle)
-            {
-                ownerAssetBundle.Unload(true);
-                ownerAssetBundle = null;
-            }
         }
     }
 }

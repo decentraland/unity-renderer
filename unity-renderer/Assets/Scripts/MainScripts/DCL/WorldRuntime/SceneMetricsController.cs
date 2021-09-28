@@ -10,9 +10,6 @@ namespace DCL
     [System.Serializable]
     public class SceneMetricsController : ISceneMetricsController
     {
-        private static bool VERBOSE = false;
-        public IParcelScene scene;
-
         public static class LimitsConfig
         {
             // number of entities
@@ -37,36 +34,27 @@ namespace DCL
             public int triangles = 0;
             public int textures = 0;
 
-            override public string ToString()
+            public override string ToString()
             {
-                return string.Format("materials: {0}, meshes: {1}, bodies: {2}, triangles: {3}, textures: {4}",
-                    materials.Count, meshes.Count, bodies, triangles, textures);
+                return $"materials: {materials.Count}, meshes: {meshes.Count}, bodies: {bodies}, triangles: {triangles}, textures: {textures}";
             }
         }
+
+        private static bool VERBOSE = false;
+        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
+
+        public IParcelScene scene;
+        SceneMetricsModel cachedModel = null;
 
         [SerializeField]
         protected SceneMetricsModel model;
 
         protected Dictionary<IDCLEntity, EntityMetrics> entitiesMetrics;
-        private Dictionary<Mesh, int> uniqueMeshesRefCount;
         private Dictionary<Material, int> uniqueMaterialsRefCount;
-        private Dictionary<Mesh, int> meshToTriangleCount;
+
+        private WorldSceneObjectsTrackingHelper sceneObjectsTrackingHelper;
 
         public bool isDirty { get; protected set; }
-
-        public BaseDictionary<Mesh, int> sceneMeshData
-        {
-            get
-            {
-                string sceneId = scene.sceneData.id;
-                var sceneRenderingData = DataStore.i.sceneRendering.sceneData;
-
-                if ( !sceneRenderingData.ContainsKey(sceneId) )
-                    sceneRenderingData.Add(scene.sceneData.id, new DataStore.DataStore_Rendering.SceneData());
-
-                return sceneRenderingData[sceneId].refCountedMeshes;
-            }
-        }
 
         public SceneMetricsModel GetModel() { return model.Clone(); }
 
@@ -75,19 +63,13 @@ namespace DCL
             Assert.IsTrue( !string.IsNullOrEmpty(sceneOwner.sceneData.id), "Scene must have an ID!" );
             this.scene = sceneOwner;
 
-            uniqueMeshesRefCount = new Dictionary<Mesh, int>();
             uniqueMaterialsRefCount = new Dictionary<Material, int>();
             entitiesMetrics = new Dictionary<IDCLEntity, EntityMetrics>();
-            meshToTriangleCount = new Dictionary<Mesh, int>();
             model = new SceneMetricsModel();
 
-            sceneMeshData.OnAdded += OnWillAddMesh;
-            sceneMeshData.OnRemoved += OnWillRemoveMesh;
+            sceneObjectsTrackingHelper = new WorldSceneObjectsTrackingHelper(DataStore.i, scene.sceneData.id);
 
-            if (VERBOSE)
-            {
-                Debug.Log("Start ScenePerformanceLimitsController...");
-            }
+            logger.Log("Start ScenePerformanceLimitsController...");
         }
 
         public void Enable()
@@ -95,10 +77,16 @@ namespace DCL
             if (scene == null)
                 return;
 
-            sceneMeshData.OnAdded -= OnWillAddMesh;
-            sceneMeshData.OnAdded += OnWillAddMesh;
-            sceneMeshData.OnRemoved -= OnWillRemoveMesh;
-            sceneMeshData.OnRemoved += OnWillRemoveMesh;
+            sceneObjectsTrackingHelper.OnWillAddRendereable -= OnWillAddRendereable;
+            sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
+            sceneObjectsTrackingHelper.OnWillAddMesh -= OnWillAddUniqueMesh;
+            sceneObjectsTrackingHelper.OnWillRemoveMesh -= OnWillRemoveUniqueMesh;
+
+            sceneObjectsTrackingHelper.OnWillAddRendereable += OnWillAddRendereable;
+            sceneObjectsTrackingHelper.OnWillRemoveRendereable += OnWillRemoveRendereable;
+            sceneObjectsTrackingHelper.OnWillAddMesh += OnWillAddUniqueMesh;
+            sceneObjectsTrackingHelper.OnWillRemoveMesh += OnWillRemoveUniqueMesh;
+
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;
             scene.OnEntityAdded += OnEntityAdded;
@@ -110,17 +98,14 @@ namespace DCL
             if (scene == null)
                 return;
 
-            if ( sceneMeshData != null )
-            {
-                sceneMeshData.OnAdded -= OnWillAddMesh;
-                sceneMeshData.OnRemoved -= OnWillRemoveMesh;
-            }
+            sceneObjectsTrackingHelper.OnWillAddRendereable -= OnWillAddRendereable;
+            sceneObjectsTrackingHelper.OnWillRemoveRendereable -= OnWillRemoveRendereable;
+            sceneObjectsTrackingHelper.OnWillAddMesh -= OnWillAddUniqueMesh;
+            sceneObjectsTrackingHelper.OnWillRemoveMesh -= OnWillRemoveUniqueMesh;
 
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;
         }
-
-        SceneMetricsModel cachedModel = null;
 
         public SceneMetricsModel GetLimits()
         {
@@ -222,11 +207,8 @@ namespace DCL
             EntityMetrics entityMetrics = entitiesMetrics[entity];
 
             RemoveEntitiesMaterial(entityMetrics);
-            RemoveEntityMeshes(entityMetrics);
 
             model.materials = uniqueMaterialsRefCount.Count;
-            model.meshes = uniqueMeshesRefCount.Count;
-            model.triangles -= entityMetrics.triangles;
             model.bodies -= entityMetrics.bodies;
 
             if (entitiesMetrics.ContainsKey(entity))
@@ -240,147 +222,48 @@ namespace DCL
         protected void AddMetrics(IDCLEntity entity)
         {
             if (entity.meshRootGameObject == null)
-            {
                 return;
-            }
 
             // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
-            if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
-            {
+            if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>())
                 return;
-            }
 
             EntityMetrics entityMetrics = new EntityMetrics();
-            int visualMeshRawTriangles = 0;
-
-            // If this proves to be too slow we can spread it with a Coroutine spooler.
-            MeshFilter[] meshFilters = entity.meshesInfo.meshFilters;
-
-            for (int i = 0; i < meshFilters.Length; i++)
-            {
-                MeshFilter mf = meshFilters[i];
-                Mesh sharedMesh = mf.sharedMesh;
-
-                if (mf == null || sharedMesh == null)
-                    continue;
-
-                // We have to use meshToTriangleCount because if meshes are uploaded to GPU at
-                // this stage, sharedMesh.triangles doesn't work.
-                int triangleCount = 0;
-
-                if ( sharedMesh.isReadable )
-                {
-                    triangleCount = sharedMesh.triangles.Length;
-                }
-                else
-                {
-                    if ( !meshToTriangleCount.ContainsKey(sharedMesh) )
-                    {
-                        Debug.LogError($"This shouldnt happen! ({sharedMesh.GetInstanceID()})");
-                        continue;
-                    }
-
-                    triangleCount = meshToTriangleCount[sharedMesh];
-                }
-
-
-                visualMeshRawTriangles += triangleCount;
-                AddMesh(entityMetrics, sharedMesh);
-
-                if (VERBOSE)
-                {
-                    Debug.Log("SceneMetrics: tris count " + triangleCount + " from mesh " + sharedMesh.name + " of entity " + entity.entityId);
-                    Debug.Log("SceneMetrics: mesh " + mf.sharedMesh.name + " of entity " + entity.entityId);
-                }
-            }
 
             CalculateMaterials(entity, entityMetrics);
 
-            // The array is a list of triangles that contains indices into the vertex array.
-            // The size of the triangle array must always be a multiple of 3.
-            // Vertices can be shared by simply indexing into the same vertex.
-            entityMetrics.triangles = visualMeshRawTriangles / 3;
+            // TODO(Brian): We should move bodies and materials to DataStore_WorldObjects later
             entityMetrics.bodies = entity.meshesInfo.meshFilters.Length;
 
             model.materials = uniqueMaterialsRefCount.Count;
-            model.meshes = uniqueMeshesRefCount.Count;
-            model.triangles += entityMetrics.triangles;
             model.bodies += entityMetrics.bodies;
 
             if (!entitiesMetrics.ContainsKey(entity))
-            {
                 entitiesMetrics.Add(entity, entityMetrics);
-            }
             else
-            {
                 entitiesMetrics[entity] = entityMetrics;
-            }
 
-            if (VERBOSE)
-            {
-                Debug.Log("SceneMetrics: entity " + entity.entityId + " metrics " + entityMetrics.ToString());
-            }
-
+            logger.Log("SceneMetrics: entity " + entity.entityId + " metrics " + entityMetrics.ToString());
             isDirty = true;
         }
 
         void CalculateMaterials(IDCLEntity entity, EntityMetrics entityMetrics)
         {
+            // TODO(Brian): Find a way to remove this dependency
             var originalMaterials = Environment.i.world.sceneBoundsChecker.GetOriginalMaterials(entity.meshesInfo);
+
             if (originalMaterials == null)
+            {
+                logger.Log($"SceneMetrics: material null of entity {entity.entityId} -- (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName})");
                 return;
+            }
 
             int originalMaterialsCount = originalMaterials.Count;
 
             for (int i = 0; i < originalMaterialsCount; i++)
             {
                 AddMaterial(entityMetrics, originalMaterials[i]);
-
-                if (VERBOSE)
-                    Debug.Log($"SceneMetrics: material (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName}) {originalMaterials[i].name} of entity {entity.entityId}");
-            }
-        }
-
-        void AddMesh(EntityMetrics entityMetrics, Mesh mesh)
-        {
-            if (!uniqueMeshesRefCount.ContainsKey(mesh))
-            {
-                uniqueMeshesRefCount.Add(mesh, 1);
-            }
-            else
-            {
-                uniqueMeshesRefCount[mesh] += 1;
-            }
-
-            if (!entityMetrics.meshes.ContainsKey(mesh))
-            {
-                entityMetrics.meshes.Add(mesh, 1);
-            }
-            else
-            {
-                entityMetrics.meshes[mesh] += 1;
-            }
-        }
-
-        void RemoveEntityMeshes(EntityMetrics entityMetrics)
-        {
-            var entityMeshes = entityMetrics.meshes;
-            using (var iterator = entityMeshes.GetEnumerator())
-            {
-                while (iterator.MoveNext())
-                {
-                    Mesh key = iterator.Current.Key;
-
-                    if (uniqueMeshesRefCount.ContainsKey(key))
-                    {
-                        uniqueMeshesRefCount[key] -= iterator.Current.Value;
-
-                        if (uniqueMeshesRefCount[key] <= 0)
-                        {
-                            uniqueMeshesRefCount.Remove(key);
-                        }
-                    }
-                }
+                logger.Log($"SceneMetrics: material {originalMaterials[i].name} of entity {entity.entityId} -- (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName})");
             }
         }
 
@@ -390,22 +273,14 @@ namespace DCL
                 return;
 
             if (!uniqueMaterialsRefCount.ContainsKey(material))
-            {
                 uniqueMaterialsRefCount.Add(material, 1);
-            }
             else
-            {
                 uniqueMaterialsRefCount[material] += 1;
-            }
 
             if (!entityMetrics.materials.ContainsKey(material))
-            {
                 entityMetrics.materials.Add(material, 1);
-            }
             else
-            {
                 entityMetrics.materials[material] += 1;
-            }
         }
 
         void RemoveEntitiesMaterial(EntityMetrics entityMetrics)
@@ -418,49 +293,44 @@ namespace DCL
                     if (uniqueMaterialsRefCount.ContainsKey(iterator.Current.Key))
                     {
                         uniqueMaterialsRefCount[iterator.Current.Key] -= iterator.Current.Value;
+
                         if (uniqueMaterialsRefCount[iterator.Current.Key] <= 0)
-                        {
                             uniqueMaterialsRefCount.Remove(iterator.Current.Key);
-                        }
                     }
                 }
             }
         }
 
-        public void OnWillAddMesh(Mesh mesh, int refCount)
+        public void OnWillAddRendereable(Rendereable rendereable)
         {
-            Assert.IsTrue(refCount == 1, "Ref count should always be 1 for new meshes!");
-
-            if ( meshToTriangleCount.ContainsKey(mesh) )
-                meshToTriangleCount.Remove(mesh);
-
-            int triangleCount = mesh.triangles.Length;
-            meshToTriangleCount.Add(mesh, triangleCount);
-            Debug.Log($"Add meshToTriangle {mesh.GetInstanceID()}");
+            int trianglesToAdd = rendereable.triangleCount / 3;
+            model.triangles += trianglesToAdd;
         }
 
-        private void OnWillRemoveMesh(Mesh mesh, int refCount)
+        private void OnWillRemoveRendereable(Rendereable rendereable)
         {
-            Assert.IsTrue(refCount == 0, "Ref count should always be 0 for a mesh to be removed!");
-
-            if ( !meshToTriangleCount.ContainsKey(mesh) )
-                return;
-
-            meshToTriangleCount.Remove(mesh);
-            Debug.Log($"Remove meshToTriangle {mesh.GetInstanceID()}");
+            int trianglesToRemove = rendereable.triangleCount / 3;
+            model.triangles -= trianglesToRemove;
         }
 
+        private void OnWillAddUniqueMesh(Mesh mesh, int refCount)
+        {
+            Assert.IsTrue(refCount == 1, "refCount should be one");
+            model.meshes++;
+        }
+
+        private void OnWillRemoveUniqueMesh(Mesh mesh, int refCount)
+        {
+            Assert.IsTrue(refCount == 0, "refCount should be zero");
+            model.meshes--;
+        }
 
         public void Dispose()
         {
             if (scene == null)
                 return;
 
-            if (sceneMeshData != null)
-            {
-                sceneMeshData.OnAdded -= OnWillAddMesh;
-                sceneMeshData.OnRemoved -= OnWillRemoveMesh;
-            }
+            sceneObjectsTrackingHelper.Dispose();
 
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;

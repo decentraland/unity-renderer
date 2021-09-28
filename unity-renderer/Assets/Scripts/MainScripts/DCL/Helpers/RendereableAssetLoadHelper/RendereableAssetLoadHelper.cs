@@ -1,3 +1,4 @@
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -21,7 +22,7 @@ namespace DCL.Components
 
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
 
-        public GameObject loadedAsset { get; protected set; }
+        public Rendereable loadedAsset { get; protected set; }
 
         public bool isFinished
         {
@@ -78,7 +79,7 @@ namespace DCL.Components
             this.bundlesContentUrl = bundlesContentUrl;
         }
 
-        public event System.Action<GameObject> OnSuccessEvent;
+        public event System.Action<Rendereable> OnSuccessEvent;
         public event System.Action OnFailEvent;
         public event System.Action<Mesh> OnMeshAdded;
 
@@ -112,7 +113,6 @@ namespace DCL.Components
         {
             if ( abPromise != null )
             {
-                abPromise.OnWillUploadMeshToGPU -= RaiseOnMeshAdded;
                 AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
             }
         }
@@ -121,12 +121,11 @@ namespace DCL.Components
         {
             if ( gltfPromise != null )
             {
-                gltfPromise.OnWillUploadMeshToGPU -= RaiseOnMeshAdded;
                 AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
             }
         }
 
-        void LoadAssetBundle(string targetUrl, System.Action<GameObject> OnSuccess, System.Action OnFail)
+        void LoadAssetBundle(string targetUrl, System.Action<Rendereable> OnSuccess, System.Action OnFail)
         {
             if (abPromise != null)
             {
@@ -150,11 +149,11 @@ namespace DCL.Components
             }
 
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
-            abPromise.OnWillUploadMeshToGPU += RaiseOnMeshAdded;
             abPromise.settings = this.settings;
 
-            abPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
+            abPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x.rendereable, OnSuccess);
             abPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
+            abPromise.OnMeshAdded += RaiseOnMeshAdded;
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
@@ -164,7 +163,7 @@ namespace DCL.Components
             OnMeshAdded?.Invoke(mesh);
         }
 
-        void LoadGltf(string targetUrl, System.Action<GameObject> OnSuccess, System.Action OnFail)
+        void LoadGltf(string targetUrl, System.Action<Rendereable> OnSuccess, System.Action OnFail)
         {
             if (gltfPromise != null)
             {
@@ -181,11 +180,11 @@ namespace DCL.Components
             }
 
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
-            gltfPromise.OnWillUploadMeshToGPU += RaiseOnMeshAdded;
             gltfPromise.settings = this.settings;
 
-            gltfPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
+            gltfPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x.rendereable, OnSuccess);
             gltfPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
+            gltfPromise.OnMeshAdded += RaiseOnMeshAdded;
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
@@ -201,7 +200,7 @@ namespace DCL.Components
             ClearEvents();
         }
 
-        private void OnSuccessWrapper(Asset_WithPoolableContainer loadedAsset, System.Action<GameObject> OnSuccess)
+        private void OnSuccessWrapper(Rendereable loadedAsset, System.Action<Rendereable> OnSuccess)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
@@ -214,8 +213,8 @@ namespace DCL.Components
                     Debug.Log($"AB Load(): target URL -> {abPromise.hash}. Success!");
             }
 
-            this.loadedAsset = loadedAsset.container;
-            OnSuccess?.Invoke(loadedAsset.container);
+            this.loadedAsset = loadedAsset;
+            OnSuccess?.Invoke(loadedAsset);
             ClearEvents();
         }
 

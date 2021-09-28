@@ -10,7 +10,7 @@ namespace DCL
     {
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         protected string assetDirectoryPath;
-        public event System.Action<Mesh> OnWillUploadMeshToGPU;
+        public event Action<Mesh> OnMeshAdded;
 
         protected ContentProvider provider = null;
         public string fileName { get; private set; }
@@ -93,6 +93,13 @@ namespace DCL
             asset.name = fileName;
         }
 
+        private void OnWillUploadMeshToGPU(Mesh mesh)
+        {
+            asset.meshes.Add(mesh);
+            asset.rendereable.triangleCount += mesh.triangles.Length;
+            OnMeshAdded?.Invoke(mesh);
+        }
+
         bool FileToHash(string fileName, out string hash)
         {
             return provider.TryGetContentHash(assetDirectoryPath + fileName, out hash);
@@ -100,6 +107,11 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
+            for (int i = 0; i < asset.meshes.Count; i++)
+            {
+                OnMeshAdded?.Invoke(asset.meshes[i]);
+            }
+
             //NOTE(Brian):  Show the asset using the simple gradient feedback.
             asset.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess);
         }

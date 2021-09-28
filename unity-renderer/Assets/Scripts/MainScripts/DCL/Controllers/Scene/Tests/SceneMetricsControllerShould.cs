@@ -3,6 +3,7 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
@@ -18,15 +19,99 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         (
             new SceneController(),
             new WorldState(),
-            new RuntimeComponentFactory()
+            new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory),
+            new SceneBoundsChecker() // Only used for GetOriginalMaterials(). We should remove this dependency on the future.
         );
+    }
+
+    protected override PlatformContext CreatePlatformContext()
+    {
+        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
+            WebRequestController.Create());
     }
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        scene = Environment.i.world.sceneController.CreateTestScene() as ParcelScene;
+
+        scene = (ParcelScene)Environment.i.world.sceneController.CreateTestScene();
+        scene.contentProvider = new ContentProvider_Dummy();
+        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+    }
+
+    [UnityTest]
+    public IEnumerator CountParametrizedShapes()
+    {
+        ConeShape coneShape = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(
+            scene,
+            DCL.Models.CLASS_ID.CONE_SHAPE,
+            new ConeShape.Model()
+            {
+                radiusTop = 1,
+                radiusBottom = 0
+            }
+        );
+
+        PlaneShape planeShape = TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(
+            scene,
+            DCL.Models.CLASS_ID.PLANE_SHAPE,
+            new PlaneShape.Model()
+            {
+                height = 1.5f,
+                width = 1
+            }
+        );
+
+        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+        TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+
+        IDCLEntity entity2 = TestHelpers.CreateSceneEntity(scene);
+        TestHelpers.SetEntityTransform(scene, entity2, Vector3.zero, Quaternion.identity, Vector3.one);
+
+        TestHelpers.SharedComponentAttach(coneShape, entity);
+        TestHelpers.SharedComponentAttach(planeShape, entity2);
+
+        yield return new WaitForAllMessagesProcessed();
+
+        AssertMetricsModel(scene,
+            triangles: 105,
+            materials: 1,
+            entities: 2,
+            meshes: 2,
+            bodies: 2,
+            textures: 0);
+
+        TestHelpers.RemoveSceneEntity(scene, entity);
+        TestHelpers.RemoveSceneEntity(scene, entity2);
+
+        yield return new WaitForAllMessagesProcessed();
+
+        AssertMetricsModel(scene,
+            triangles: 0,
+            materials: 0,
+            entities: 0,
+            meshes: 0,
+            bodies: 0,
+            textures: 0);
+    }
+
+    [UnityTest]
+    public IEnumerator CountGLTFShapes()
+    {
+        yield break;
+    }
+
+    [UnityTest]
+    public IEnumerator CountNFTShapes()
+    {
+        yield break;
+    }
+
+    [UnityTest]
+    public IEnumerator NotCountWhenEntityIsExcluded()
+    {
+        yield break;
     }
 
     [UnityTest]
@@ -83,14 +168,13 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         {
             src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
         });
+
         yield return TestHelpers.WaitForGLTFLoad(shapeEntity2);
-        Debug.Log(scene.metricsController.GetModel());
 
         TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
         TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(8, 1, 8));
 
         yield return new WaitForAllMessagesProcessed();
-        Debug.Log(scene.metricsController.GetModel());
 
         AssertMetricsModel(scene,
             triangles: 1126,
@@ -103,8 +187,6 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         TestHelpers.RemoveSceneEntity(scene, "1");
         TestHelpers.RemoveSceneEntity(scene, "2");
         TestHelpers.RemoveSceneEntity(scene, shapeEntity2);
-
-        yield return null;
 
         AssertMetricsModel(scene,
             triangles: 4,
