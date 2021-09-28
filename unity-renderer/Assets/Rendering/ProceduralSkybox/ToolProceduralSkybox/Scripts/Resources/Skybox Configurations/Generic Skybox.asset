@@ -270,15 +270,15 @@ MonoBehaviour:
       value: 1
     lightDirection:
     - percentage: 0
-      value: {x: 0.044703268, y: -0.6395718, z: 0.48422855, w: 0.5953757}
+      value: {x: -0.04470323, y: 0.6395718, z: -0.48422855, w: -0.5953757}
     - percentage: 35
-      value: {x: 0.23634431, y: -0.4613762, z: 0.6578698, w: 0.54633397}
+      value: {x: -0.23634444, y: 0.46137646, z: -0.65786976, w: -0.5463336}
     - percentage: 50
-      value: {x: 0.43316454, y: -0.15026699, z: 0.7885425, w: 0.4098646}
+      value: {x: 0.43316454, y: -0.150267, z: 0.78854257, w: 0.40986457}
     - percentage: 85
-      value: {x: 0.2363443, y: -0.4613762, z: 0.6578698, w: 0.546334}
+      value: {x: -0.23634419, y: 0.46137622, z: -0.6578698, w: -0.5463339}
     - percentage: 100
-      value: {x: 0.04470327, y: -0.6395718, z: 0.4842286, w: 0.5953757}
+      value: {x: -0.04470335, y: 0.6395718, z: -0.48422867, w: -0.59537566}
     tintColor:
       serializedVersion: 2
       key0: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
@@ -352,8 +352,8 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
     tiling: {x: 4, y: 2}
     position:
-    - percentage: 88.333336
-      value: {x: 0.1, y: 0.1}
+    - percentage: 50
+      value: {x: 5, y: 5}
     speed: 0.1
     normalIntensity: 0
   - nameInEditor: Clouds Day
