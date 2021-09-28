@@ -121,13 +121,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
     public void SetProfilePicture(Texture2D newPicture)
     {
         Sprite newPictureSprite = Sprite.Create(newPicture, new Rect(0, 0, newPicture.width, newPicture.height), new Vector2(0.5f, 0.5f));
-
-        model.profilePicture = newPictureSprite;
-
-        if (profileImage == null)
-            return;
-
-        profileImage.SetImage(newPictureSprite);
+        SetProfilePicture(newPictureSprite);
     }
 
     public void SetProfileName(string newName)
