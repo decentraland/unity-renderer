@@ -13,6 +13,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal IExploreV2MenuComponentView view;
 
+    internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
+
     public void Initialize()
     {
         view = CreateView();
@@ -27,7 +29,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         DataStore.i.taskbar.isExploreV2Enabled.OnChange += OnActivateFromTaskbar;
         DataStore.i.exploreV2.isInitialized.Set(true);
+
+        view.OnInitialized += CreateControllers;
     }
+
+    internal void CreateControllers() { placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection); }
 
     public void Dispose()
     {
@@ -37,10 +43,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (view != null && view.go != null)
         {
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
+            view.OnInitialized -= CreateControllers;
             GameObject.Destroy(view.go);
         }
 
         DataStore.i.taskbar.isExploreV2Enabled.OnChange -= OnActivateFromTaskbar;
+        placesAndEventsSectionController?.Dispose();
     }
 
     public void SetVisibility(bool visible)

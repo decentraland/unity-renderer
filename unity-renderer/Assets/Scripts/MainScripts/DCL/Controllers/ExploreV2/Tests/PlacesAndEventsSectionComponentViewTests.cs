@@ -6,14 +6,10 @@ public class PlacesAndEventsSectionComponentViewTests
     private PlacesAndEventsSectionComponentView placesAndEventsSectionComponent;
 
     [SetUp]
-    public void SetUp() { placesAndEventsSectionComponent = BaseComponentView.Create<PlacesAndEventsSectionComponentView>("Sections/PlacesAndEventsSection/PlacesAndEventsSection"); }
+    public void SetUp() { placesAndEventsSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesAndEventsSection")).GetComponent<PlacesAndEventsSectionComponentView>(); }
 
     [TearDown]
-    public void TearDown()
-    {
-        placesAndEventsSectionComponent.Dispose();
-        GameObject.Destroy(placesAndEventsSectionComponent.gameObject);
-    }
+    public void TearDown() { GameObject.Destroy(placesAndEventsSectionComponent.gameObject); }
 
     [Test]
     [TestCase(0)]

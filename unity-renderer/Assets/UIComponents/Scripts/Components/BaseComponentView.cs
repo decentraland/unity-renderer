@@ -1,5 +1,6 @@
 using DCL;
 using System;
+using System.Collections;
 using UnityEngine;
 
 public interface IBaseComponentView
@@ -49,12 +50,17 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public event Action OnFullyInitialized;
     public bool isFullyInitialized { get; private set; }
 
+    [Header("Common")]
+    [SerializeField] internal bool refreshOnScreenSizeChange = false;
+
     internal ShowHideAnimator showHideAnimator;
 
     internal void Initialize()
     {
         isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
+
+        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
     }
 
     public abstract void PostInitialization();
@@ -65,7 +71,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public abstract void RefreshControl();
 
-    public virtual void Dispose() { }
+    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
     private void Awake() { Initialize(); }
 
@@ -78,6 +84,20 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     }
 
     private void OnDestroy() { Dispose(); }
+
+    internal void OnScreenSizeChange(Vector2Int current, Vector2Int previous)
+    {
+        if (!refreshOnScreenSizeChange)
+            return;
+
+        StartCoroutine(RefreshControlAfterScreenSize());
+    }
+
+    internal IEnumerator RefreshControlAfterScreenSize()
+    {
+        yield return null;
+        RefreshControl();
+    }
 
     internal static T Create<T>(string resourceName) where T : BaseComponentView
     {

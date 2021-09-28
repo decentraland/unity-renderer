@@ -1,6 +1,14 @@
 using UnityEngine;
 
-public class PlacesAndEventsSectionComponentView : BaseComponentView
+public interface IPlacesAndEventsSectionComponentView
+{
+    /// <summary>
+    /// Events sub-section component.
+    /// </summary>
+    IEventsSubSectionComponentView currentEventsSubSectionComponentView { get; }
+}
+
+public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEventsSectionComponentView
 {
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
@@ -12,7 +20,9 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView
     [SerializeField] internal MyPlacesSubSectionComponentView myPlacesSubSection;
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
 
-    public override void PostInitialization()
+    public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
+
+    private void Start()
     {
         if (subSectionSelector.isFullyInitialized)
             CreateSubSectionSelectorMappings();
@@ -20,9 +30,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView
             subSectionSelector.OnFullyInitialized += CreateSubSectionSelectorMappings;
     }
 
-    public override void RefreshControl() { }
-
-    public override void Dispose()
+    private void OnDestroy()
     {
         subSectionSelector.OnFullyInitialized -= CreateSubSectionSelectorMappings;
         RemoveSectionSelectorMappings();

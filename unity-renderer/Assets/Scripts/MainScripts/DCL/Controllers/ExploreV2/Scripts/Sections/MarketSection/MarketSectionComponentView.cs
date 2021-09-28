@@ -1,8 +1,6 @@
-// TBD...
+using UnityEngine;
 
-public class MarketSectionComponentView : BaseComponentView
+public class MarketSectionComponentView : MonoBehaviour
 {
-    public override void PostInitialization() { }
-
-    public override void RefreshControl() { }
+    // TBD...
 }

@@ -6,14 +6,10 @@ public class ExploreV2MenuComponentViewTests
     private ExploreV2MenuComponentView exploreV2MenuComponent;
 
     [SetUp]
-    public void SetUp() { exploreV2MenuComponent = BaseComponentView.Create<ExploreV2MenuComponentView>("MainMenu/ExploreV2Menu"); }
+    public void SetUp() { exploreV2MenuComponent = Object.Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>(); }
 
     [TearDown]
-    public void TearDown()
-    {
-        exploreV2MenuComponent.Dispose();
-        GameObject.Destroy(exploreV2MenuComponent.gameObject);
-    }
+    public void TearDown() { GameObject.Destroy(exploreV2MenuComponent.gameObject); }
 
     [Test]
     [TestCase(true)]

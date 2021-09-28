@@ -4,6 +4,11 @@ using UnityEngine;
 public interface IExploreV2MenuComponentView
 {
     /// <summary>
+    /// It will be triggered when the view is fully initialized.
+    /// </summary>
+    event Action OnInitialized;
+
+    /// <summary>
     /// It will be triggered when the close button is clicked.
     /// </summary>
     event Action OnCloseButtonPressed;
@@ -24,6 +29,11 @@ public interface IExploreV2MenuComponentView
     IProfileCardComponentView currentProfileCard { get; }
 
     /// <summary>
+    /// Places and Events section component.
+    /// </summary>
+    IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection { get; }
+
+    /// <summary>
     /// Returns true if the game object is activated.
     /// </summary>
     bool isActive { get; }
@@ -35,7 +45,7 @@ public interface IExploreV2MenuComponentView
     void SetActive(bool isActive);
 }
 
-public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
+public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponentView
 {
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
@@ -52,15 +62,20 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal MarketSectionComponentView marketSection;
     [SerializeField] internal SettingsSectionComponentView settingsSection;
 
+    [Header("Modals")]
+    [SerializeField] internal EventCardComponentView eventCardModal;
+
     public bool isActive => gameObject.activeSelf;
 
     public GameObject go => this != null ? gameObject : null;
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
+    public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
 
+    public event Action OnInitialized;
     public event Action OnCloseButtonPressed;
 
-    public override void PostInitialization()
+    private void Start()
     {
         if (sectionSelector.isFullyInitialized)
             CreateSectionSelectorMappings();
@@ -71,11 +86,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             ConfigureCloseButton();
         else
             closeMenuButton.OnFullyInitialized += ConfigureCloseButton;
+
+        OnInitialized?.Invoke();
     }
 
-    public override void RefreshControl() { }
-
-    public override void Dispose()
+    private void OnDestroy()
     {
         sectionSelector.OnFullyInitialized -= CreateSectionSelectorMappings;
         RemoveSectionSelectorMappings();

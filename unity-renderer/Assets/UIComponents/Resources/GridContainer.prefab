@@ -132,6 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49a3b742109ef0499aa2a13d3e0bedf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 1
   gridLayoutGroup: {fileID: 7829080691771640198}
   model:
     numColumns: 3

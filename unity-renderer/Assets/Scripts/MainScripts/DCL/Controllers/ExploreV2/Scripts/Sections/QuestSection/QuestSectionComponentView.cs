@@ -1,8 +1,6 @@
-// TBD...
+using UnityEngine;
 
-public class QuestSectionComponentView : BaseComponentView
+public class QuestSectionComponentView : MonoBehaviour
 {
-    public override void PostInitialization() { }
-
-    public override void RefreshControl() { }
+    // TBD...
 }

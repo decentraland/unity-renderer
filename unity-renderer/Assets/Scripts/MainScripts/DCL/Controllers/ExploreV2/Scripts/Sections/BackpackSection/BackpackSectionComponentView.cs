@@ -1,8 +1,6 @@
-// TBD...
+using UnityEngine;
 
-public class BackpackSectionComponentView : BaseComponentView
+public class BackpackSectionComponentView : MonoBehaviour
 {
-    public override void PostInitialization() { }
-
-    public override void RefreshControl() { }
+    // TBD...
 }

@@ -1,8 +1,6 @@
-// TBD...
+using UnityEngine;
 
-public class SettingsSectionComponentView : BaseComponentView
+public class SettingsSectionComponentView : MonoBehaviour
 {
-    public override void PostInitialization() { }
-
-    public override void RefreshControl() { }
+    // TBD...
 }

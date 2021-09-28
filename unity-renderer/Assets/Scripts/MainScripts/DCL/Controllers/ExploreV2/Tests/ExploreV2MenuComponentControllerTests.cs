@@ -33,6 +33,19 @@ public class ExploreV2MenuComponentControllerTests
     }
 
     [Test]
+    public void CreateControllersCorrectly()
+    {
+        // Arrange
+        exploreV2MenuController.placesAndEventsSectionController = null;
+
+        // Act
+        exploreV2MenuController.CreateControllers();
+
+        // Assert
+        Assert.IsNotNull(exploreV2MenuController.placesAndEventsSectionController);
+    }
+
+    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void SetVisibilityCorrectly(bool isVisible)

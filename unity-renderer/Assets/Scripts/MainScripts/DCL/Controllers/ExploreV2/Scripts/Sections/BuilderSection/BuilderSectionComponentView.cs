@@ -1,8 +1,6 @@
-// TBD...
+using UnityEngine;
 
-public class BuilderSectionComponentView : BaseComponentView
+public class BuilderSectionComponentView : MonoBehaviour
 {
-    public override void PostInitialization() { }
-
-    public override void RefreshControl() { }
+    // TBD...
 }

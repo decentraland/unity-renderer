@@ -1,8 +1,6 @@
-// TBD...
+using UnityEngine;
 
-public class MapSectionComponentView : BaseComponentView
+public class MapSectionComponentView : MonoBehaviour
 {
-    public override void PostInitialization() { }
-
-    public override void RefreshControl() { }
+    // TBD...
 }

@@ -1,68 +1,49 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IEventsSubSectionComponentView
 {
-    /// <summary>
-    /// Fill the model and updates the Events sub-section with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the Events sub-section.</param>
-    void Configure(EventsSubSectionComponentModel model);
+    event Action OnFeatureEventsComponentReady;
+    event Action OnUpcomingEventsComponentReady;
 
-    /// <summary>
-    /// Set the featured events.
-    /// </summary>
-    /// <param name="featuredEventsInfo">Featured events model (carousel).</param>
-    void SetFeaturedEvents(CarouselComponentModel featuredEventsInfo);
-
-    /// <summary>
-    /// Set the upcoming events.
-    /// </summary>
-    /// <param name="upcomingEventsInfo">Upcoming events model (carousel).</param>
-    void SetUpcomingEvents(GridContainerComponentModel upcomingEventsInfo);
+    EventCardComponentView currentFeatureEventPrefab { get; }
+    EventCardComponentView currentEventPrefab { get; }
+    ICarouselComponentView currentFeaturedEvents { get; }
+    IGridContainerComponentView currentUpcomingEvents { get; }
 }
 
-public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
+public class EventsSubSectionComponentView : MonoBehaviour, IEventsSubSectionComponentView
 {
+    [Header("Assets References")]
+    [SerializeField] internal EventCardComponentView featureEventPrefab;
+    [SerializeField] internal EventCardComponentView eventPrefab;
+
+    [Header("Prefab References")]
     [SerializeField] internal CarouselComponentView featuredEvents;
     [SerializeField] internal GridContainerComponentView upcomingEvents;
 
-    [Header("Configuration")]
-    [SerializeField] internal EventsSubSectionComponentModel model;
+    public event Action OnFeatureEventsComponentReady;
+    public event Action OnUpcomingEventsComponentReady;
 
-    public override void PostInitialization() { Configure(model); }
+    public EventCardComponentView currentFeatureEventPrefab => featureEventPrefab;
+    public EventCardComponentView currentEventPrefab => eventPrefab;
+    public ICarouselComponentView currentFeaturedEvents => featuredEvents;
+    public IGridContainerComponentView currentUpcomingEvents => upcomingEvents;
 
-    public void Configure(EventsSubSectionComponentModel model)
+    private void Awake()
     {
-        this.model = model;
-        RefreshControl();
+        featuredEvents.OnFullyInitialized += OnFeatureEventsComponentInitialized;
+        upcomingEvents.OnFullyInitialized += UpcomingEvents_OnFullyInitialized;
     }
 
-    public override void RefreshControl()
+    private void OnDestroy()
     {
-        if (model == null)
-            return;
-
-        SetFeaturedEvents(model.featuredEvents);
-        SetUpcomingEvents(model.upcomingEvents);
+        featuredEvents.OnFullyInitialized -= OnFeatureEventsComponentInitialized;
+        upcomingEvents.OnFullyInitialized -= UpcomingEvents_OnFullyInitialized;
     }
 
-    public void SetFeaturedEvents(CarouselComponentModel featuredEventsInfo)
-    {
-        model.featuredEvents = featuredEventsInfo;
+    private void OnFeatureEventsComponentInitialized() { OnFeatureEventsComponentReady?.Invoke(); }
 
-        if (featuredEvents == null)
-            return;
-
-        featuredEvents.Configure(featuredEventsInfo);
-    }
-
-    public void SetUpcomingEvents(GridContainerComponentModel upcomingEventsInfo)
-    {
-        model.upcomingEvents = upcomingEventsInfo;
-
-        if (upcomingEvents == null)
-            return;
-
-        upcomingEvents.Configure(upcomingEventsInfo);
-    }
+    private void UpcomingEvents_OnFullyInitialized() { OnUpcomingEventsComponentReady?.Invoke(); }
 }

@@ -279,6 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4df6174eae7c4840b1729c3829bfa00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 1
   itemsContainer: {fileID: 9098407598896035524}
   horizontalLayout: {fileID: 2326470932528800288}
   itemsScroll: {fileID: 3238503515836443779}
