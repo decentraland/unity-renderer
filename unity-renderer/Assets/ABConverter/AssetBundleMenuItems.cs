@@ -92,10 +92,10 @@ namespace DCL
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump All Body-Wearables")]
-        public static void DumpAllBodiesWearables() { ABConverter.Client.DumpAllBodiesWearables(); }
+        public static void DumpAllBodiesWearables() { ABConverter.Client.DumpAllBodyshapeWearables(); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump All Non-Body-Wearables (Optimized)")]
-        public static void DumpAllNonBodiesWearables() { ABConverter.Client.DumpAllNonBodiesWearables(); }
+        public static void DumpAllNonBodiesWearables() { ABConverter.Client.DumpAllNonBodyshapeWearables(); }
 
         [MenuItem("Decentraland/Start Visual Tests")]
         public static void StartVisualTests() { EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets()); }

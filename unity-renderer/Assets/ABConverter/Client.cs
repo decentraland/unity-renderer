@@ -10,9 +10,6 @@ namespace DCL.ABConverter
 {
     public static class Client
     {
-        private const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections";
-        private const string WEARABLES_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections/wearables?";
-
         public class Settings
         {
             /// <summary>
@@ -67,6 +64,7 @@ namespace DCL.ABConverter
 
         private static Logger log = new Logger("ABConverter.Client");
         public static Environment env;
+        public static WearableCollectionsAPIData.Collection[] wearableCollections;
 
         public static Environment EnsureEnvironment()
         {
@@ -75,43 +73,31 @@ namespace DCL.ABConverter
 
             return env;
         }
-
-        public static string BuildAllWearableCollectionsURL(Func<string, bool> collectionFilter = null)
+        
+        public static WearableCollectionsAPIData.Collection[] EnsureWearableCollections()
         {
-            UnityWebRequest w = UnityWebRequest.Get(COLLECTIONS_FETCH_URL);
+            if (wearableCollections != null && wearableCollections.Length > 0)
+                return wearableCollections;
+
+            UnityWebRequest w = UnityWebRequest.Get(WearablesFetchingHelper.COLLECTIONS_FETCH_URL);
             w.SendWebRequest();
 
             while (!w.isDone) { }
 
             if (!w.WebRequestSucceded())
             {
-                Debug.LogError($"Request error! Wearable collections at '{COLLECTIONS_FETCH_URL}' couldn't be fetched! -- {w.error}");
+                log.Error($"Request error! Wearable collections at '{WearablesFetchingHelper.COLLECTIONS_FETCH_URL}' couldn't be fetched! -- {w.error}");
                 return null;
             }
 
             var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(w.downloadHandler.text);
 
-            string finalUrl = WEARABLES_FETCH_URL;
-            bool firstCollection = true;
+            return wearableCollections = collectionsApiData.collections;
+        }
 
-            for (int i = 0; i < collectionsApiData.collections.Length; i++)
-            {
-                string collectionId = collectionsApiData.collections[i].id;
-
-                if ( collectionFilter != null )
-                {
-                    if ( !collectionFilter.Invoke(collectionId) )
-                        continue;
-                }
-
-                if ( !firstCollection )
-                    finalUrl += "&";
-
-                finalUrl += "collectionId=" + collectionId;
-                firstCollection = false;
-            }
-
-            return finalUrl;
+        public static string BuildWearableCollectionFetchingURL(string targetCollectionId)
+        {
+            return WearablesFetchingHelper.WEARABLES_FETCH_URL + "collectionId=" + targetCollectionId;
         }
 
         /// <summary>
@@ -125,7 +111,7 @@ namespace DCL.ABConverter
             Application.SetStackTraceLogType(LogType.Error, StackTraceLogType.Full);
             Application.SetStackTraceLogType(LogType.Exception, StackTraceLogType.Full);
             Application.SetStackTraceLogType(LogType.Assert, StackTraceLogType.Full);
-
+            
             EnsureEnvironment();
             ExportSceneToAssetBundles(System.Environment.GetCommandLineArgs());
         }
@@ -369,11 +355,11 @@ namespace DCL.ABConverter
         /// <summary>
         /// Dump all bodyshape wearables normally, including their imported skeleton 
         /// </summary>
-        public static void DumpAllBodiesWearables(Func<string, bool> collectionFilter = null)
-        {
+        public static void DumpAllBodyshapeWearables()
+        {   
             EnsureEnvironment();
-
-            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL(collectionFilter))
+            
+            List<WearableItem> avatarItemList = GetWearableItems(BuildWearableCollectionFetchingURL(WearablesFetchingHelper.BASE_WEARABLES_COLLECTION_ID))
                 .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
                 .ToList();
 
@@ -388,21 +374,23 @@ namespace DCL.ABConverter
             DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnBodyWearableLoad);
         }
 
-
         /// <summary>
         /// Dump all non-bodyshape wearables, optimized to remove the skeleton for the wearables ABs since that is
-        /// only needed for the body shapes (and the WearablesController sets it up for non-bodyshapes in runtime) 
+        /// only needed for the body shapes (and the WearablesController sets it up for non-bodyshapes in runtime).
+        /// Each collection is dumped and converted sequentially as the amount of collections has grown more that we
+        /// can handle in 1 massive dump-conversion.
         /// </summary>
-        public static void DumpAllNonBodiesWearables(Func<string, bool> collectionFilter = null)
+        public static void DumpAllNonBodyshapeWearables(Func<string, bool> collectionFilter = null)
         {
             EnsureEnvironment();
+            
+            EnsureWearableCollections();
 
-            // For debugging purposes we can intercept this item list with LinQ for specific wearables
-            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL(collectionFilter))
-                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
-                .ToList();
-
-            Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
+            log.Info("Starting all non-bodyshape wearables dumping, total collections: " + wearableCollections.Length);
+            
+            float startTime = Time.realtimeSinceStartup;
+            int dumped = 0;
+            int startCollectionIndex = 1;
             var settings = new Settings();
             settings.skipAlreadyBuiltBundles = false;
             settings.deleteDownloadPathAfterFinished = false;
@@ -410,7 +398,34 @@ namespace DCL.ABConverter
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
 
             abConverterCoreController.InitializeDirectoryPaths(true);
-            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad);
+
+            int initialCollectionIndex = 0;
+            // int maxCollectionIndex = 100;
+            int maxCollectionIndex = 1; // TODO: Test "total time" logging
+            DumpWearablesCollection(abConverterCoreController, initialCollectionIndex, maxCollectionIndex);
+        }
+
+        private static void DumpWearablesCollection(ABConverter.Core abConverterCoreController, int currentCollectionIndex, int maxCollectionIndex)
+        {
+            if (currentCollectionIndex >= wearableCollections.Length)
+                return;
+         
+            log.Info($"Dumping wearables from collection {wearableCollections[currentCollectionIndex].id}");
+            
+            List<WearableItem> avatarItemList = GetWearableItems(BuildWearableCollectionFetchingURL(wearableCollections[currentCollectionIndex].id))
+                                                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
+                                                .ToList();
+            Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
+            
+            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad, (x) =>
+            {
+                currentCollectionIndex++;
+                
+                if (currentCollectionIndex > maxCollectionIndex)
+                    return;
+                
+                DumpWearablesCollection(abConverterCoreController, currentCollectionIndex, maxCollectionIndex);
+            });
         }
 
         /// <summary>
@@ -420,30 +435,28 @@ namespace DCL.ABConverter
         /// <param name="abConverterCoreController">an instance of the ABCore</param>
         /// <param name="items">an already-populated list of WearableItems</param>
         /// <param name="OnWearableLoad">an action to be bind to the OnWearableLoad event on each wearable</param>
-        private static void DumpWearableQueue(ABConverter.Core abConverterCoreController, Queue<WearableItem> items, System.Action<UnityGLTF.GLTFSceneImporter> OnWearableLoad)
+        private static void DumpWearableQueue(ABConverter.Core abConverterCoreController, Queue<WearableItem> items, System.Action<UnityGLTF.GLTFSceneImporter> OnWearableLoad, Action<Core.ErrorCodes> OnConversionFinish = null)
         {
             // We toggle the core's ABs generation off so that we execute that conversion here when there is no more items left.
             abConverterCoreController.generateAssetBundles = false;
 
             if (items.Count == 0)
             {
-                abConverterCoreController.ConvertDumpedAssets();
+                abConverterCoreController.ConvertDumpedAssets(OnConversionFinish);
 
                 return;
             }
 
-            Debug.Log("Building wearables... items left... " + items.Count);
-
             var pairs = ExtractMappingPairs(new List<WearableItem>() { items.Dequeue() });
-
+            
             UnityGLTF.GLTFImporter.OnGLTFWillLoad += OnWearableLoad;
-
+            
             abConverterCoreController.Convert(pairs.ToArray(),
                 (err) =>
                 {
                     UnityGLTF.GLTFImporter.OnGLTFWillLoad -= OnWearableLoad;
                     abConverterCoreController.CleanupWorkingFolders();
-                    DumpWearableQueue(abConverterCoreController, items, OnWearableLoad);
+                    DumpWearableQueue(abConverterCoreController, items, OnWearableLoad, OnConversionFinish);
                 });
         }
 
@@ -484,7 +497,7 @@ namespace DCL.ABConverter
 
             if (!w.WebRequestSucceded())
             {
-                Debug.LogError($"Request error! Wearable at '{url}' couldn't be fetched! -- {w.error}");
+                log.Error($"Request error! Wearable at '{url}' couldn't be fetched! -- {w.error}");
                 return null;
             }
 
@@ -495,7 +508,7 @@ namespace DCL.ABConverter
             // batches sequentially
             if (!string.IsNullOrEmpty(wearablesApiData.pagination.next))
             {
-                var nextPageResults = GetWearableItems(WEARABLES_FETCH_URL + wearablesApiData.pagination.next);
+                var nextPageResults = GetWearableItems(WearablesFetchingHelper.WEARABLES_FETCH_URL + wearablesApiData.pagination.next);
                 resultList.AddRange(nextPageResults);
             }
 

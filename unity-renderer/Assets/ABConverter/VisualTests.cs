@@ -13,8 +13,10 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
+        // TODO: Shouldn't we already add the '+ "ABConverter/"' here? we could remove 4 lines doing that.
         static readonly string baselinePath = AssetBundlesVisualTestHelpers.baselineImagesPath;
         static readonly string testImagesPath = AssetBundlesVisualTestHelpers.testImagesPath;
+        
         static string abPath = Application.dataPath + "/../AssetBundles/";
         static int skippedAssets = 0;
 
@@ -140,6 +142,7 @@ namespace DCL.ABConverter
                 go.SetActive(false);
             }
 
+            // Reset paths
             AssetBundlesVisualTestHelpers.baselineImagesPath = baselinePath;
             AssetBundlesVisualTestHelpers.testImagesPath = testImagesPath;
 
