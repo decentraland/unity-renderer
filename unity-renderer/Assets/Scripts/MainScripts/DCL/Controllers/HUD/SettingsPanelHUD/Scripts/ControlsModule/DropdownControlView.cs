@@ -42,8 +42,6 @@ namespace DCL.SettingsPanelHUD.Controls
                 return;
 
             dropdown.options = labels.Select(l => new TMP_Dropdown.OptionData(l)).ToList();
-            dropdown.template.ForceUpdateRectTransforms();
-            dropdown.template.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical,dropdown.template.rect.height + 5);
         }
 
         protected override void OnDestroy()
