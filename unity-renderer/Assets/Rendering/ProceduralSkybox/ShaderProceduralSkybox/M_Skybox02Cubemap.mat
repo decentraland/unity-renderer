@@ -153,7 +153,7 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f_1: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
     - _LAYERTYPE_0: 0
-    - _RenderDistance_0: 0
+    - _RenderDistance_0: 2
     - _RenderDistance_1: 0
     - _RenderDistance_2: 0
     - _dayTime: 1.87
@@ -233,6 +233,7 @@ Material:
     - _groundColor: {r: 0.094901726, g: 0.040195987, b: 0.26415092, a: 1}
     - _horizonColor: {r: 0.6623347, g: 0.21489628, b: 0.76801753, a: 1}
     - _horizonMaskOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
     - _lightDirection: {r: 0.5, g: 0.5, b: 0.5, a: 0}
     - _lightTint: {r: 0.6622545, g: 0.6131314, b: 0.22200902, a: 1}
     - _skyColor: {r: 0.14793658, g: 0.09620862, b: 0.4339623, a: 1}
@@ -242,8 +243,8 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 2, g: 0, b: 0, a: 0}
-    - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: -0.1}
+    - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: 0}
     - _tilingAndOffset_2: {r: 4, g: 1.5, b: 0.17, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
