@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DCL.Helpers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -380,17 +381,19 @@ namespace DCL.ABConverter
         /// Each collection is dumped and converted sequentially as the amount of collections has grown more that we
         /// can handle in 1 massive dump-conversion.
         /// </summary>
+        static double dumpStartTime;
         public static void DumpAllNonBodyshapeWearables(Func<string, bool> collectionFilter = null)
         {
+            // TODO: Re-implement collectionFilter usage
+            
+            dumpStartTime = EditorApplication.timeSinceStartup;
+            
             EnsureEnvironment();
             
             EnsureWearableCollections();
 
             log.Info("Starting all non-bodyshape wearables dumping, total collections: " + wearableCollections.Length);
             
-            float startTime = Time.realtimeSinceStartup;
-            int dumped = 0;
-            int startCollectionIndex = 1;
             var settings = new Settings();
             settings.skipAlreadyBuiltBundles = false;
             settings.deleteDownloadPathAfterFinished = false;
@@ -399,9 +402,8 @@ namespace DCL.ABConverter
 
             abConverterCoreController.InitializeDirectoryPaths(true);
 
-            int initialCollectionIndex = 0;
-            // int maxCollectionIndex = 100;
-            int maxCollectionIndex = 1; // TODO: Test "total time" logging
+            int initialCollectionIndex = 1;
+            int maxCollectionIndex = 50;
             DumpWearablesCollection(abConverterCoreController, initialCollectionIndex, maxCollectionIndex);
         }
 
@@ -420,9 +422,13 @@ namespace DCL.ABConverter
             DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad, (x) =>
             {
                 currentCollectionIndex++;
-                
-                if (currentCollectionIndex > maxCollectionIndex)
+
+                if (currentCollectionIndex > maxCollectionIndex || currentCollectionIndex >= wearableCollections.Length)
+                {
+                    double totalTime = EditorApplication.timeSinceStartup - dumpStartTime;
+                    log.Info($"Finished all non-bodyshape wearables dumping, total time: {totalTime} seconds");
                     return;
+                }
                 
                 DumpWearablesCollection(abConverterCoreController, currentCollectionIndex, maxCollectionIndex);
             });

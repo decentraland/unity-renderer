@@ -13,7 +13,6 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
-        // TODO: Shouldn't we already add the '+ "ABConverter/"' here? we could remove 4 lines doing that.
         static readonly string baselinePath = AssetBundlesVisualTestHelpers.baselineImagesPath;
         static readonly string testImagesPath = AssetBundlesVisualTestHelpers.testImagesPath;
         
@@ -50,6 +49,7 @@ namespace DCL.ABConverter
             var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
             yield return new WaitUntil(() => scene.isLoaded);
 
+            // Update visual tests path that will be used internally for the snapshots
             AssetBundlesVisualTestHelpers.baselineImagesPath += "ABConverter/";
             AssetBundlesVisualTestHelpers.testImagesPath += "ABConverter/";
             skippedAssets = 0;
@@ -142,7 +142,7 @@ namespace DCL.ABConverter
                 go.SetActive(false);
             }
 
-            // Reset paths
+            // Reset visual tests path
             AssetBundlesVisualTestHelpers.baselineImagesPath = baselinePath;
             AssetBundlesVisualTestHelpers.testImagesPath = testImagesPath;
 
