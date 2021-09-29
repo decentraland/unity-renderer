@@ -832,7 +832,7 @@ MonoBehaviour:
     eventDateText: JULY 5
     eventName: Event's name
     eventDescription: 
-    eventStartedIn: 1 hr ago
+    eventStartedIn: Tomorrow
     eventOrganizer: 
     eventPlace: 
     subscribedUsers: 153
@@ -911,7 +911,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1 hr ago
+  m_text: Tomorrow
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
@@ -938,11 +938,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 12.9
+  m_fontSizeBase: 12
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 15
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 10
   m_fontSizeMax: 16
   m_fontStyle: 0
   m_HorizontalAlignment: 1

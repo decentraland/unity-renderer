@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public interface IEventsSubSectionComponentController
 {
@@ -11,8 +12,15 @@ public interface IEventsSubSectionComponentController
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
     internal IEventsSubSectionComponentView view;
+    internal EventsSubSectionData mockedData;
 
-    public EventsSubSectionComponentController(IEventsSubSectionComponentView view) { this.view = view; }
+    public EventsSubSectionComponentController(IEventsSubSectionComponentView view)
+    {
+        mockedData = GameObject.Instantiate(Resources.Load<EventsSubSectionData>("MockedData/ExploreV2EventsSubSectionData"));
+
+        this.view = view;
+        this.view.OnReady += LoadEventsMockedData;
+    }
 
     public void SetFeatureEvents(List<EventCardComponentModel> events) { view.SetFeatureEvents(events); }
 
@@ -20,5 +28,13 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void SetGoingEvents(List<EventCardComponentModel> events) { view.SetGoingEvents(events); }
 
-    public void Dispose() { }
+    public void Dispose() { view.OnReady -= LoadEventsMockedData; }
+
+    // Temporal until connect with the events API
+    private void LoadEventsMockedData()
+    {
+        SetFeatureEvents(mockedData.featureEvents);
+        SetUpcomingEvents(mockedData.upcomingEvents);
+        SetGoingEvents(mockedData.goingEvents);
+    }
 }

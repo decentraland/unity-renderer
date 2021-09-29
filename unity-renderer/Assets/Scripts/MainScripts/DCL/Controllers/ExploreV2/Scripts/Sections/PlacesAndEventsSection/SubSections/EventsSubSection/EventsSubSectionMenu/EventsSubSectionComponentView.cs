@@ -25,7 +25,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public event Action OnReady;
 
-    public override void PostInitialization() { StartCoroutine(RefreshControlAfterAFrame()); }
+    public override void PostInitialization() { StartCoroutine(WaitForComponentsInitialization()); }
 
     public override void RefreshControl()
     {
@@ -34,9 +34,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         goingEvents.RefreshControl();
     }
 
-    private IEnumerator RefreshControlAfterAFrame()
+    public IEnumerator WaitForComponentsInitialization()
     {
+        yield return new WaitUntil(() => featuredEvents.isFullyInitialized && upcomingEvents.isFullyInitialized && goingEvents.isFullyInitialized);
         yield return null;
+
         RefreshControl();
         OnReady?.Invoke();
     }
