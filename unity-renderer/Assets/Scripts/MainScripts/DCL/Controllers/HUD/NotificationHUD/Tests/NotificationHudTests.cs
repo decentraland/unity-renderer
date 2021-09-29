@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using NotificationModel;
+using DCL.NotificationModel;
 
 namespace Tests
 {

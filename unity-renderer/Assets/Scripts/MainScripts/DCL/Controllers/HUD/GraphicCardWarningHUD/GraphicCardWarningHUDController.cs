@@ -49,14 +49,14 @@ public class GraphicCardWarningHUDController : IHUD
     {
         if (GraphicCardNotification.CanShowGraphicCardPopup() && IsIntegratedGraphicCard())
         {
-            NotificationsController.i.ShowNotification(new NotificationModel.Model
+            NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
             {
                 buttonMessage = "Dismiss",
                 destroyOnFinish = true,
                 groupID = "GraphicCard",
                 message = GRAPHIC_CARD_MESSAGE,
                 timer = 0,
-                type = NotificationModel.Type.GRAPHIC_CARD_WARNING
+                type = DCL.NotificationModel.Type.GRAPHIC_CARD_WARNING
             });
         }
     }
