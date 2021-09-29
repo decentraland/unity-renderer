@@ -11,11 +11,11 @@ public class FriendRequestsTabView : FriendsTabViewBase
     [SerializeField] internal Button addFriendButton;
 
     [Header("Notifications")] [SerializeField]
-    internal Notification requestSentNotification;
+    internal INotification requestSentNotification;
 
-    [SerializeField] internal Notification friendSearchFailedNotification;
-    [SerializeField] internal Notification acceptedFriendNotification;
-    [SerializeField] internal Notification alreadyFriendsNotification;
+    [SerializeField] internal INotification friendSearchFailedNotification;
+    [SerializeField] internal INotification acceptedFriendNotification;
+    [SerializeField] internal INotification alreadyFriendsNotification;
 
     public event System.Action<FriendRequestEntry> OnCancelConfirmation;
     public event System.Action<FriendRequestEntry> OnRejectConfirmation;

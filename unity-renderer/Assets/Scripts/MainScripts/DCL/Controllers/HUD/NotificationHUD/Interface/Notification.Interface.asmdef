@@ -1,0 +1,16 @@
+{
+    "name": "Notification.Interface",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e6f5b34eba99b4ed9836f899578ee258"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

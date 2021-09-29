@@ -1,4 +1,5 @@
 using UnityEngine;
+using NotificationModel;
 
 public class NotificationsController : MonoBehaviour
 {
@@ -26,11 +27,11 @@ public class NotificationsController : MonoBehaviour
         if (!allowNotifications)
             return;
 
-        Notification.Model model = JsonUtility.FromJson<Notification.Model>(notificationJson);
+        Model model = JsonUtility.FromJson<Model>(notificationJson);
         ShowNotification(model);
     }
 
-    public void ShowNotification(Notification.Model notification)
+    public void ShowNotification(Model notification)
     {
         if (!allowNotifications)
             return;
@@ -38,7 +39,7 @@ public class NotificationsController : MonoBehaviour
         controller?.ShowNotification(notification);
     }
 
-    public void ShowNotification(Notification notification)
+    public void ShowNotification(INotification notification)
     {
         if (!allowNotifications)
             return;
@@ -63,11 +64,11 @@ public class NotificationsController : MonoBehaviour
             notificationText += $" You are in {parcelName} {currentCoords.x}, {currentCoords.y}";
         }
 
-        Notification.Model model = new Notification.Model()
+        Model model = new Model()
         {
             message = notificationText,
             scene = "",
-            type = NotificationFactory.Type.GENERIC_WITHOUT_BUTTON,
+            type = Type.GENERIC_WITHOUT_BUTTON,
             timer = NOTIFICATION_DURATION
         };
 

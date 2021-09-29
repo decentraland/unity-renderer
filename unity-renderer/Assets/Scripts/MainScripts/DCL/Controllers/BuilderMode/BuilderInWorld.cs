@@ -407,7 +407,7 @@ public class BuilderInWorld : PluginFeature
         if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0 && !alreadyAskedForLandPermissions)
         {
             ActivateLandAccessBackgroundChecker();
-            ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, NotificationFactory.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
+            ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, NotificationModel.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
             isWaitingForPermission = true;
             askPermissionLastPosition = DCLCharacterController.i.characterPosition.unityPosition;
         }
@@ -852,9 +852,9 @@ public class BuilderInWorld : PluginFeature
                              });
     }
 
-    private static void ShowGenericNotification(string message, NotificationFactory.Type type = NotificationFactory.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
+    private static void ShowGenericNotification(string message, NotificationModel.Type type = NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
-        Notification.Model notificationModel = new Notification.Model();
+        NotificationModel.Model notificationModel = new NotificationModel.Model();
         notificationModel.message = message;
         notificationModel.type = type;
         notificationModel.timer = timer;
