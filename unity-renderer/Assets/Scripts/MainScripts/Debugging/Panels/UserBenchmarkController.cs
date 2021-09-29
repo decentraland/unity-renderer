@@ -169,7 +169,8 @@ namespace DCL
             
             if (!string.IsNullOrEmpty(debugSceneId))
             {
-                return worldState.loadedScenes[debugSceneId];
+                if (worldState.loadedScenes.TryGetValue(debugSceneId, out IParcelScene scene))
+                    return scene;
             }
             
             var currentPos = Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);

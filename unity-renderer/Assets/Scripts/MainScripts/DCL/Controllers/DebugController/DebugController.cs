@@ -1,6 +1,6 @@
 ﻿using System;
-using DCL.Bots;
 using System.Collections.Generic;
+using DCL.Bots;
 using DCL.Helpers;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -25,7 +25,7 @@ namespace DCL
             positionTracker = new CrashPayloadPositionTracker();
             isFPSPanelVisible = DataStore.i.debugConfig.isFPSPanelVisible;
             isFPSPanelVisible.OnChange += OnFPSPanelToggle;
-            GameObject view = Object.Instantiate(UnityEngine.Resources.Load("DebugView")) as GameObject;
+            GameObject view = Object.Instantiate(Resources.Load("DebugView")) as GameObject;
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
 
@@ -86,12 +86,13 @@ namespace DCL
 
         public void SetEngineDebugPanel()
         {
-            if (KernelConfig.i.Get().debugConfig.sceneDebugPanelEnabled)
+            var kernelConfig = KernelConfig.i.Get();
+            if (kernelConfig.debugConfig.sceneDebugPanelEnabled)
                 return;
             
-            var config = KernelConfig.i.Get().Clone();
-            config.debugConfig.sceneDebugPanelEnabled = true;
-            KernelConfig.i.Set(config);
+            var newConfig = kernelConfig.Clone();
+            newConfig.debugConfig.sceneDebugPanelEnabled = true;
+            KernelConfig.i.Set(newConfig);
         }
         
         public void HideInfoPanel()
@@ -104,7 +105,7 @@ namespace DCL
 
         public void InstantiateBotsAtWorldPos(string configJson)
         {
-            var config = new DCL.Bots.WorldPosInstantiationConfig();
+            var config = new WorldPosInstantiationConfig();
             JsonUtility.FromJsonOverwrite(configJson, config);
 
             CoroutineStarter.Start(botsController.InstantiateBotsAtWorldPos(config));
@@ -112,7 +113,7 @@ namespace DCL
 
         public void InstantiateBotsAtCoords(string configJson)
         {
-            var config = new DCL.Bots.CoordsInstantiationConfig();
+            var config = new CoordsInstantiationConfig();
             JsonUtility.FromJsonOverwrite(configJson, config);
 
             CoroutineStarter.Start(botsController.InstantiateBotsAtCoords(config));
@@ -120,7 +121,7 @@ namespace DCL
 
         public void StartBotsRandomizedMovement(string configJson)
         {
-            var config = new DCL.Bots.CoordsRandomMovementConfig();
+            var config = new CoordsRandomMovementConfig();
             JsonUtility.FromJsonOverwrite(configJson, config);
 
             botsController.StartRandomMovement(config);
@@ -153,8 +154,9 @@ namespace DCL
             
             if (current.debugConfig.sceneDebugPanelEnabled)
             {
-                debugView.SetEngineDebugPanel();
+                debugView.SetSceneDebugPanel();
             }
+            
             debugView.ShowPreviewSceneLimitsWarning(!string.IsNullOrEmpty(current.debugConfig.sceneLimitsWarningSceneId));
         }
     }
