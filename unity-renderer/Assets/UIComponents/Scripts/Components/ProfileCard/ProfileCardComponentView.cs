@@ -102,6 +102,8 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
     public override void Dispose()
     {
+        base.Dispose();
+
         if (button == null)
             return;
 

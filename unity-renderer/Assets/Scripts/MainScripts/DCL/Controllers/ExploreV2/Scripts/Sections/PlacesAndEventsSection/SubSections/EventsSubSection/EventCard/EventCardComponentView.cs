@@ -156,7 +156,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         }
         set
         {
-            model.onInfoClick = value;
+            model.onSubscribeClick = value;
 
             if (subscribeEventButton != null)
             {
@@ -180,7 +180,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         }
         set
         {
-            model.onInfoClick = value;
+            model.onUnsubscribeClick = value;
 
             if (unsubscribeEventButton != null)
             {
@@ -223,6 +223,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public override void Dispose()
     {
+        base.Dispose();
+
         if (infoButton != null)
             infoButton.onClick.RemoveAllListeners();
 

@@ -82,6 +82,8 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public override void Dispose()
     {
+        base.Dispose();
+
         if (button == null)
             return;
 

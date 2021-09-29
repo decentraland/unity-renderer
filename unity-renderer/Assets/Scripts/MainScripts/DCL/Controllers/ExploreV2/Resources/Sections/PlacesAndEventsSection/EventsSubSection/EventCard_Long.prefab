@@ -1121,6 +1121,7 @@ GameObject:
   - component: {fileID: 6082321114593150553}
   - component: {fileID: 3478297765545381476}
   - component: {fileID: 239144764471938776}
+  - component: {fileID: 53865806338488778}
   - component: {fileID: 7767464441775689202}
   - component: {fileID: 485718691211745490}
   - component: {fileID: 3860507124368258715}
@@ -1182,7 +1183,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6067442b4b5ee49e68ff2720d1aedddd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d254a3a3b9d5642e1ad6432c441d7f43, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1192,6 +1193,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &53865806338488778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4517512722868018251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!95 &7767464441775689202
 Animator:
   serializedVersion: 3
@@ -1277,6 +1291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc9031eccc4b6bf4bad1b55deb404612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 0
   eventImage: {fileID: 7636396302017607210}
   liveTag: {fileID: 4211452541982344853}
   eventDateText: {fileID: 42193676798517767}
@@ -1294,7 +1309,7 @@ MonoBehaviour:
   loadingSpinner: {fileID: 7508568797698277072}
   isEventCardModal: 0
   model:
-    eventPicture: {fileID: 21300000, guid: a75caa85e28974fc7b7a20b9942ca0fd, type: 3}
+    eventPicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -1593,6 +1608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 0
   button: {fileID: 5892958041971274506}
   text: {fileID: 72940063087533205}
   icon: {fileID: 4605749192480045426}
@@ -1907,14 +1923,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.69803923, g: 0.69803923, b: 0.69803923, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b63c85aaf7c44493a7613587a1a8a4f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2347,7 +2363,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b63c85aaf7c44493a7613587a1a8a4f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2524,6 +2540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2a654862e6084a4c942d930b273919e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 0
   icon: {fileID: 6611514470726376642}
   text: {fileID: 8868509258885943875}
   model:
@@ -2935,6 +2952,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 0
   button: {fileID: 474937080346991186}
   text: {fileID: 7090410479501203027}
   icon: {fileID: 1510919924968448551}
@@ -3304,13 +3322,13 @@ PrefabInstance:
         type: 3}
       propertyPath: model.sprite
       value: 
-      objectReference: {fileID: 21300000, guid: a75caa85e28974fc7b7a20b9942ca0fd,
+      objectReference: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24,
         type: 3}
     - target: {fileID: 5317768593788952491, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: a75caa85e28974fc7b7a20b9942ca0fd,
+      objectReference: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24,
         type: 3}
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}

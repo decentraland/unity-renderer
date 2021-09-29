@@ -53,6 +53,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 {
     [Header("Prefab References")]
     [SerializeField] internal GridLayoutGroup gridLayoutGroup;
+    [SerializeField] internal RectTransform externalScrollViewContainer;
 
     [Header("Configuration")]
     [SerializeField] internal GridContainerComponentModel model;
@@ -100,7 +101,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         Vector2 newSizeToApply = newItemSize;
         if (model.autoAdaptItemSizeToContainerWidth)
         {
-            float width = ((RectTransform)transform).rect.width;
+            float width = externalScrollViewContainer != null ? externalScrollViewContainer.rect.width : ((RectTransform)transform).rect.width;
             float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.numColumns / 2f));
             newSizeToApply = new Vector2(
                 (width / model.numColumns) - extraSpaceToRemove,
@@ -113,6 +114,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             return;
 
         gridLayoutGroup.cellSize = newSizeToApply;
+
+        ResizeGridContainer();
     }
 
     public void SetSpaceBetweenItems(Vector2 newSpace)
@@ -135,6 +138,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         {
             CreateItem(items[i], $"Item{i}");
         }
+
+        ResizeGridContainer();
     }
 
     public BaseComponentView GetItem(int index)
@@ -198,5 +203,20 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         yield return null;
         DestroyImmediate(go);
+    }
+
+    internal void ResizeGridContainer()
+    {
+        if (model.items.Count == 0)
+        {
+            ((RectTransform)transform).sizeDelta = Vector2.zero;
+            return;
+        }
+
+        int numRows = (int)Mathf.Ceil((float)model.items.Count / model.numColumns);
+
+        ((RectTransform)transform).sizeDelta = new Vector2(
+            model.autoAdaptItemSizeToContainerWidth ? ((RectTransform)transform).sizeDelta.x : (model.numColumns * model.itemSize.x) + (model.spaceBetweenItems.x * (model.numColumns - 1)),
+            (numRows * model.itemSize.y) + (model.spaceBetweenItems.y * (numRows - 1)));
     }
 }

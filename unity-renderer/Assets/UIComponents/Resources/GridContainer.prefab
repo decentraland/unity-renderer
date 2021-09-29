@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 500, y: 300}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3034685634738102410
 CanvasRenderer:
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 50, y: 50}
+  m_CellSize: {x: 200, y: 200}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 3
@@ -134,9 +134,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refreshOnScreenSizeChange: 1
   gridLayoutGroup: {fileID: 7829080691771640198}
+  externalScrollViewContainer: {fileID: 0}
   model:
     numColumns: 3
     autoAdaptItemSizeToContainerWidth: 0
-    itemSize: {x: 50, y: 50}
+    itemSize: {x: 200, y: 200}
     spaceBetweenItems: {x: 10, y: 10}
     items: []

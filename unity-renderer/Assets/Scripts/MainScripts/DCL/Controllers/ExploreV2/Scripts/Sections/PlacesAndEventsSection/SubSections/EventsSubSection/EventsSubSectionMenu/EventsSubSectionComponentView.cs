@@ -1,49 +1,75 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public interface IEventsSubSectionComponentView
 {
-    event Action OnFeatureEventsComponentReady;
-    event Action OnUpcomingEventsComponentReady;
+    event Action OnReady;
 
-    EventCardComponentView currentFeatureEventPrefab { get; }
-    EventCardComponentView currentEventPrefab { get; }
-    ICarouselComponentView currentFeaturedEvents { get; }
-    IGridContainerComponentView currentUpcomingEvents { get; }
+    void SetFeatureEvents(List<EventCardComponentModel> events);
+    void SetUpcomingEvents(List<EventCardComponentModel> events);
+    void SetGoingEvents(List<EventCardComponentModel> events);
 }
 
-public class EventsSubSectionComponentView : MonoBehaviour, IEventsSubSectionComponentView
+public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
 {
     [Header("Assets References")]
-    [SerializeField] internal EventCardComponentView featureEventPrefab;
-    [SerializeField] internal EventCardComponentView eventPrefab;
+    [SerializeField] internal EventCardComponentView eventCardLongPrefab;
+    [SerializeField] internal EventCardComponentView eventCardPrefab;
 
     [Header("Prefab References")]
     [SerializeField] internal CarouselComponentView featuredEvents;
     [SerializeField] internal GridContainerComponentView upcomingEvents;
+    [SerializeField] internal GridContainerComponentView goingEvents;
 
-    public event Action OnFeatureEventsComponentReady;
-    public event Action OnUpcomingEventsComponentReady;
+    public event Action OnReady;
 
-    public EventCardComponentView currentFeatureEventPrefab => featureEventPrefab;
-    public EventCardComponentView currentEventPrefab => eventPrefab;
-    public ICarouselComponentView currentFeaturedEvents => featuredEvents;
-    public IGridContainerComponentView currentUpcomingEvents => upcomingEvents;
+    public override void PostInitialization() { StartCoroutine(RefreshControlAfterAFrame()); }
 
-    private void Awake()
+    public override void RefreshControl()
     {
-        featuredEvents.OnFullyInitialized += OnFeatureEventsComponentInitialized;
-        upcomingEvents.OnFullyInitialized += UpcomingEvents_OnFullyInitialized;
+        featuredEvents.RefreshControl();
+        upcomingEvents.RefreshControl();
+        goingEvents.RefreshControl();
     }
 
-    private void OnDestroy()
+    private IEnumerator RefreshControlAfterAFrame()
     {
-        featuredEvents.OnFullyInitialized -= OnFeatureEventsComponentInitialized;
-        upcomingEvents.OnFullyInitialized -= UpcomingEvents_OnFullyInitialized;
+        yield return null;
+        RefreshControl();
+        OnReady?.Invoke();
     }
 
-    private void OnFeatureEventsComponentInitialized() { OnFeatureEventsComponentReady?.Invoke(); }
+    public void SetFeatureEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd = IntantiateEvents(events, eventCardLongPrefab);
+        featuredEvents.SetItems(eventComponentsToAdd);
+    }
 
-    private void UpcomingEvents_OnFullyInitialized() { OnUpcomingEventsComponentReady?.Invoke(); }
+    public void SetUpcomingEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd = IntantiateEvents(events, eventCardPrefab);
+        upcomingEvents.SetItems(eventComponentsToAdd);
+    }
+
+    public void SetGoingEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd = IntantiateEvents(events, eventCardPrefab);
+        goingEvents.SetItems(eventComponentsToAdd);
+    }
+
+    internal List<BaseComponentView> IntantiateEvents(List<EventCardComponentModel> events, EventCardComponentView prefabToUse)
+    {
+        List<BaseComponentView> instantiatedEvents = new List<BaseComponentView>();
+
+        foreach (EventCardComponentModel eventInfo in events)
+        {
+            EventCardComponentView eventGO = GameObject.Instantiate(prefabToUse);
+            eventGO.Configure(eventInfo);
+            instantiatedEvents.Add(eventGO);
+        }
+
+        return instantiatedEvents;
+    }
 }

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 public interface IEventsSubSectionComponentController
 {
+    void SetFeatureEvents(List<EventCardComponentModel> events);
+    void SetUpcomingEvents(List<EventCardComponentModel> events);
+    void SetGoingEvents(List<EventCardComponentModel> events);
     void Dispose();
 }
 
@@ -10,42 +12,13 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 {
     internal IEventsSubSectionComponentView view;
 
-    public EventsSubSectionComponentController(IEventsSubSectionComponentView view)
-    {
-        this.view = view;
+    public EventsSubSectionComponentController(IEventsSubSectionComponentView view) { this.view = view; }
 
-        this.view.OnFeatureEventsComponentReady += MockFeatureEvents;
-    }
+    public void SetFeatureEvents(List<EventCardComponentModel> events) { view.SetFeatureEvents(events); }
 
-    private void MockFeatureEvents()
-    {
-        //SetFeatureEvents(new List<EventCardComponentModel>
-        //{
-        //    new EventCardComponentModel
-        //    {
-        //        eventName = "SantiTest1"
-        //    },
-        //    new EventCardComponentModel
-        //    {
-        //        eventName = "SantiTest2"
-        //    }
-        //});
-    }
+    public void SetUpcomingEvents(List<EventCardComponentModel> events) { view.SetUpcomingEvents(events); }
 
-    public void SetFeatureEvents(List<EventCardComponentModel> events)
-    {
-        List<BaseComponentView> eventCardsToAdd = new List<BaseComponentView>();
+    public void SetGoingEvents(List<EventCardComponentModel> events) { view.SetGoingEvents(events); }
 
-        foreach (EventCardComponentModel eventInfo in events)
-        {
-            EventCardComponentView eventGO = GameObject.Instantiate(view.currentFeatureEventPrefab);
-            eventGO.name = eventInfo.eventName;
-            eventGO.Configure(eventInfo);
-            eventCardsToAdd.Add(eventGO);
-        }
-
-        view.currentFeaturedEvents.SetItems(eventCardsToAdd);
-    }
-
-    public void Dispose() { view.OnFeatureEventsComponentReady -= MockFeatureEvents; }
+    public void Dispose() { }
 }

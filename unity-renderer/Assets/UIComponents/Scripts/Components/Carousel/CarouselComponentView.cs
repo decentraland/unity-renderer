@@ -1,6 +1,7 @@
 using DCL;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -52,7 +53,8 @@ public interface ICarouselComponentView
     /// Set the items of the carousel.
     /// </summary>
     /// <param name="items">List of UI components.</param>
-    void SetItems(List<BaseComponentView> items);
+    /// <param name="instantiateNewCopyOfItems">Indicates if the items provided will be instantiated as a new copy or not.</param>
+    void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true);
 
     /// <summary>
     /// Get an item of the carousel.
@@ -190,7 +192,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
             nextButton.gameObject.SetActive(isActived);
     }
 
-    public void SetItems(List<BaseComponentView> items)
+    public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)
     {
         model.items = items;
 
@@ -198,7 +200,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
 
         for (int i = 0; i < items.Count; i++)
         {
-            CreateItem(items[i], $"Item{i}");
+            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems);
         }
     }
 
@@ -271,11 +273,11 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         }
     }
 
-    internal void CreateItem(BaseComponentView newItem, string name)
+    internal void CreateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
     {
         if (Application.isPlaying)
         {
-            InstantiateItem(newItem, name);
+            InstantiateItem(newItem, name, instantiateNewCopyOfItem);
         }
         else
         {
@@ -284,12 +286,24 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         }
     }
 
-    internal void InstantiateItem(BaseComponentView newItem, string name)
+    internal void InstantiateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
     {
         if (newItem == null)
             return;
 
-        BaseComponentView newGO = Instantiate(newItem, itemsContainer);
+        BaseComponentView newGO;
+        if (instantiateNewCopyOfItem)
+        {
+            newGO = Instantiate(newItem, itemsContainer);
+        }
+        else
+        {
+            newGO = newItem;
+            newGO.transform.SetParent(itemsContainer);
+            newGO.transform.localPosition = Vector3.zero;
+            newGO.transform.localScale = Vector3.one;
+        }
+
         newGO.name = name;
         ((RectTransform)newGO.transform).sizeDelta = new Vector2(viewport.rect.width, viewport.rect.height);
 
@@ -438,10 +452,10 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
 
         while (currentAnimationTime <= model.animationTransitionTime)
         {
-            itemsScroll.horizontalNormalizedPosition = Mathf.Lerp(
+            itemsScroll.horizontalNormalizedPosition = Mathf.Clamp01(Mathf.Lerp(
                 initialNormalizedPos,
                 currentFinalNormalizedPos,
-                model.animationCurve.Evaluate(currentAnimationTime / model.animationTransitionTime));
+                model.animationCurve.Evaluate(currentAnimationTime / model.animationTransitionTime)));
 
             currentAnimationTime += Time.deltaTime;
 
