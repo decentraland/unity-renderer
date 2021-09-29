@@ -498,54 +498,58 @@ namespace DCL.Skybox
             GUILayout.Space(10);
 
             // Light Direction
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            GUILayout.Label("Light Direction");
-            GUILayout.Space(10);
-            GUILayout.BeginVertical();
-            for (int i = 0; i < selectedConfiguration.directionalLightLayer.lightDirection.Count; i++)
-            {
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
-                {
-                    timeOfTheDay = selectedConfiguration.directionalLightLayer.lightDirection[i].percentage / 100 * 24;
-                }
-                GUILayout.Label("%", GUILayout.ExpandWidth(false));
-                selectedConfiguration.directionalLightLayer.lightDirection[i].percentage = EditorGUILayout.FloatField(selectedConfiguration.directionalLightLayer.lightDirection[i].percentage, GUILayout.ExpandWidth(false));
-                GUILayout.Space(10);
-                GUILayout.Label("Direction", GUILayout.ExpandWidth(false));
+            //GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            //GUILayout.Label("Light Direction");
+            //GUILayout.Space(10);
+            //GUILayout.BeginVertical();
+            //for (int i = 0; i < selectedConfiguration.directionalLightLayer.lightDirection.Count; i++)
+            //{
+            //    GUILayout.BeginHorizontal();
+            //    if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+            //    {
+            //        timeOfTheDay = GetDayTimeForLayerNormalizedTime(0, 24, selectedConfiguration.directionalLightLayer.lightDirection[i].percentage / 100);
+            //    }
 
-                // Convert Quaternion to Vector3
-                //Vector3 tRot = selectedConfiguration.directionalLightLayer.lightDirection[i].value.eulerAngles;
-                selectedConfiguration.directionalLightLayer.lightDirection[i].value = Quaternion.Euler(EditorGUILayout.Vector3Field("", selectedConfiguration.directionalLightLayer.lightDirection[i].value.eulerAngles, GUILayout.ExpandWidth(false)));
-                //selectedConfiguration.directionalLightLayer.lightDirection[i].value = Quaternion.Euler(tRot.x, tRot.y, tRot.z);
+            //    GUILayout.Label("%", GUILayout.ExpandWidth(false));
+            //    selectedConfiguration.directionalLightLayer.lightDirection[i].percentage = EditorGUILayout.FloatField(selectedConfiguration.directionalLightLayer.lightDirection[i].percentage, GUILayout.ExpandWidth(false));
+            //    GUILayout.Space(10);
+            //    GUILayout.Label("Direction", GUILayout.ExpandWidth(false));
+
+            //    // Convert Quaternion to Vector3
+            //    //Vector3 tRot = selectedConfiguration.directionalLightLayer.lightDirection[i].value.eulerAngles;
+            //    selectedConfiguration.directionalLightLayer.lightDirection[i].value = Quaternion.Euler(EditorGUILayout.Vector3Field("", selectedConfiguration.directionalLightLayer.lightDirection[i].value.eulerAngles, GUILayout.ExpandWidth(false)));
+            //    //selectedConfiguration.directionalLightLayer.lightDirection[i].value = Quaternion.Euler(tRot.x, tRot.y, tRot.z);
 
 
-                //selectedConfiguration.directionalLightLayer.lightDirection[i].value = Vector4ToQuaternion(EditorGUILayout.Vector4Field("", QuaternionToVector4(selectedConfiguration.directionalLightLayer.lightDirection[i].value), GUILayout.ExpandWidth(false)));
+            //    //selectedConfiguration.directionalLightLayer.lightDirection[i].value = Vector4ToQuaternion(EditorGUILayout.Vector4Field("", QuaternionToVector4(selectedConfiguration.directionalLightLayer.lightDirection[i].value), GUILayout.ExpandWidth(false)));
 
-                if (GUILayout.Button("Capture"))
-                {
-                    selectedConfiguration.directionalLightLayer.lightDirection[i].percentage = GetNormalizedDayTime() * 100;
-                    selectedConfiguration.directionalLightLayer.lightDirection[i].value = directionalLight.transform.rotation;
-                    break;
-                }
+            //    if (GUILayout.Button("Capture"))
+            //    {
+            //        selectedConfiguration.directionalLightLayer.lightDirection[i].percentage = GetNormalizedLayerCurrentTime(0, 24) * 100;
+            //        selectedConfiguration.directionalLightLayer.lightDirection[i].value = directionalLight.transform.rotation;
+            //        break;
+            //    }
 
-                if (GUILayout.Button("Remove"))
-                {
-                    selectedConfiguration.directionalLightLayer.lightDirection.RemoveAt(i);
-                    break;
-                }
-                GUILayout.EndHorizontal();
-            }
-            GUILayout.EndVertical();
-            GUILayout.EndHorizontal();
+            //    if (GUILayout.Button("Remove"))
+            //    {
+            //        selectedConfiguration.directionalLightLayer.lightDirection.RemoveAt(i);
+            //        break;
+            //    }
+            //    GUILayout.EndHorizontal();
+            //}
+            //GUILayout.EndVertical();
+            //GUILayout.EndHorizontal();
 
-            if (GUILayout.Button("+", GUILayout.MaxWidth(100)))
-            {
+            //if (GUILayout.Button("+", GUILayout.MaxWidth(100)))
+            //{
 
-                selectedConfiguration.directionalLightLayer.lightDirection.Add(new TransitioningQuaternion(GetNormalizedDayTime() * 100, directionalLight.transform.rotation));
-            }
+            //    selectedConfiguration.directionalLightLayer.lightDirection.Add(new TransitioningQuaternion(GetNormalizedLayerCurrentTime(0, 24) * 100, directionalLight.transform.rotation));
+            //}
 
+            RenderTransitioningQuaternionAsVector3(selectedConfiguration.directionalLightLayer.lightDirection, "Light Direction", "%", "Direction", GetDLDirection, 0, 24);
         }
+
+        private Quaternion GetDLDirection() { return directionalLight.transform.rotation; }
 
         void RenderTextureLayer(TextureLayer layer)
         {
@@ -610,7 +614,8 @@ namespace DCL.Skybox
 
                 EditorGUILayout.Separator();
 
-                RenderTransitioningFloat(layer.renderDistance, "Render Distance", "", "", true, 0, 20);
+                // Render Distance
+                RenderTransitioningFloat(layer.renderDistance, "Render Distance", "", "", true, 0, 20, layer.timeSpan_start, layer.timeSpan_End);
 
                 EditorGUILayout.Separator();
                 EditorGUILayout.Separator();
@@ -622,74 +627,19 @@ namespace DCL.Skybox
                 EditorGUILayout.Separator();
             }
 
-
             EditorGUILayout.Separator();
-
 
             // Speed
             layer.speed = EditorGUILayout.FloatField("Speed", layer.speed, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+
             EditorGUILayout.Separator();
 
             // Position
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Position", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            EditorGUILayout.BeginVertical();
-
-            if (layer.position.Count == 0)
-            {
-                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
-                {
-                    Vector2 tLastPos = Vector2.zero;
-                    if (layer.position.Count != 0)
-                    {
-                        tLastPos = layer.position[layer.position.Count - 1].value;
-                    }
-                    layer.position.Add(new TransitioningVector2(GetNormalizedDayTime() * 100, tLastPos));
-                }
-            }
-
-            for (int i = 0; i < layer.position.Count; i++)
-            {
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-
-                layer.position[i].percentage = EditorGUILayout.FloatField(layer.position[i].percentage, GUILayout.Width(50), GUILayout.ExpandWidth(false));
-                GUILayout.Space(10);
-                layer.position[i].value = EditorGUILayout.Vector2Field("", layer.position[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-
-                GUILayout.Space(20);
-                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
-                {
-                    layer.position.RemoveAt(i);
-                    //break;
-                }
-
-                if (i == (layer.position.Count - 1))
-                {
-                    GUILayout.Space(20);
-                    if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
-                    {
-                        Vector2 tLastPos = Vector2.zero;
-                        if (layer.position.Count != 0)
-                        {
-                            tLastPos = layer.position[layer.position.Count - 1].value;
-                        }
-                        layer.position.Add(new TransitioningVector2(GetNormalizedDayTime() * 100, tLastPos));
-                        //break;
-                    }
-                }
-
-                GUILayout.EndHorizontal();
-            }
-
-            EditorGUILayout.EndVertical();
-            GUILayout.EndHorizontal();
+            RenderTransitioningVector2(layer.position, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
 
             EditorGUILayout.Separator();
 
-            //GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            //EditorGUILayout.LabelField("Color", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            //layer.color = EditorGUILayout.GradientField(new GUIContent(""), layer.color, true, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            //GUILayout.EndHorizontal();
+            // Gradient
             RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
         }
 
@@ -702,7 +652,89 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
         }
 
-        void RenderTransitioningFloat(List<TransitioningFloat> _list, string label, string percentTxt, string valueText, bool slider = false, float min = 0, float max = 1)
+        void RenderTransitioningVector2(List<TransitioningVector2> _list, string label, string percentTxt, string valueText, float layerStartTime = 0, float layerEndTime = 24)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            EditorGUILayout.BeginVertical();
+
+            if (_list.Count == 0)
+            {
+                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                {
+                    Vector2 tLastPos = Vector2.zero;
+                    if (_list.Count != 0)
+                    {
+                        tLastPos = _list[_list.Count - 1].value;
+                    }
+                    _list.Add(new TransitioningVector2(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
+                }
+            }
+
+            for (int i = 0; i < _list.Count; i++)
+            {
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+
+                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+                {
+                    timeOfTheDay = GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, _list[i].percentage / 100);
+                }
+
+                // Percentage
+
+                GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
+
+                //GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+
+                GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                // Convert percentage into time
+                float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
+                //_list[i].percentage = EditorGUILayout.FloatField(_list[i].percentage, GUILayout.Width(50), GUILayout.ExpandWidth(false));
+                time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+                _list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
+
+                GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+
+                //GUILayout.EndHorizontal();
+
+
+                GUILayout.Space(10);
+
+                GUILayout.Label(valueText, GUILayout.ExpandWidth(false));
+
+                GUILayout.Space(10);
+                _list[i].value = EditorGUILayout.Vector2Field("", _list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+
+                GUILayout.Space(20);
+                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                {
+                    _list.RemoveAt(i);
+                    //break;
+                }
+
+                if (i == (_list.Count - 1))
+                {
+                    GUILayout.Space(20);
+                    if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                    {
+                        Vector2 tLastPos = Vector2.zero;
+                        if (_list.Count != 0)
+                        {
+                            tLastPos = _list[_list.Count - 1].value;
+                        }
+                        _list.Add(new TransitioningVector2(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
+                        //break;
+                    }
+                }
+
+                GUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+        }
+
+        void RenderTransitioningFloat(List<TransitioningFloat> _list, string label, string percentTxt, string valueText, bool slider = false, float min = 0, float max = 1, float layerStartTime = 0, float layerEndTime = 24)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(100), GUILayout.ExpandWidth(false));
@@ -719,7 +751,7 @@ namespace DCL.Skybox
                     {
                         tLast = _list[_list.Count - 1].value;
                     }
-                    _list.Add(new TransitioningFloat(GetNormalizedDayTime() * 100, tLast));
+                    _list.Add(new TransitioningFloat(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLast));
                 }
                 GUILayout.EndHorizontal();
             }
@@ -731,7 +763,7 @@ namespace DCL.Skybox
                 GUILayout.Space(10);
                 if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
                 {
-                    timeOfTheDay = _list[i].percentage / 100 * 24;
+                    timeOfTheDay = GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, _list[i].percentage / 100);
                 }
                 GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
                 //GUILayout.Space(10);
@@ -767,7 +799,7 @@ namespace DCL.Skybox
                         {
                             tLast = _list[_list.Count - 1].value;
                         }
-                        _list.Add(new TransitioningFloat(GetNormalizedDayTime() * 100, tLast));
+                        _list.Add(new TransitioningFloat(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLast));
                         //break;
                     }
                 }
@@ -786,16 +818,82 @@ namespace DCL.Skybox
 
             if (startTime != -1)
             {
-                EditorGUILayout.LabelField(startTime.ToString(), GUILayout.Width(20), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(startTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
             }
 
             color = EditorGUILayout.GradientField(new GUIContent(""), color, hdr, GUILayout.Width(250), GUILayout.ExpandWidth(false));
 
             if (endTime != 1)
             {
-                EditorGUILayout.LabelField(endTime.ToString(), GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(endTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
             }
             GUILayout.EndHorizontal();
+        }
+
+        void RenderTransitioningQuaternionAsVector3(List<TransitioningQuaternion> _list, string label, string percentTxt, string valueText, Func<Quaternion> GetCurrentRotation, float layerStartTime = 0, float layerEndTime = 24)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            GUILayout.Label(label, GUILayout.Width(100), GUILayout.ExpandWidth(false));
+
+            GUILayout.BeginVertical();
+            for (int i = 0; i < _list.Count; i++)
+            {
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+                {
+                    timeOfTheDay = GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, _list[i].percentage / 100);
+                }
+
+                GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
+
+                GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+
+                GUIStyle style = new GUIStyle();
+                style.alignment = TextAnchor.MiddleCenter;
+
+                GUILayout.BeginVertical(style, GUILayout.ExpandWidth(false), GUILayout.Width(150));
+                GUILayout.Label(_list[i].percentage.ToString("f2") + "%", GUILayout.ExpandWidth(false));
+                float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
+                time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+                _list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
+                GUILayout.EndVertical();
+
+                GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                //_list[i].percentage = EditorGUILayout.FloatField(_list[i].percentage, GUILayout.ExpandWidth(false));
+                GUILayout.Space(10);
+
+                GUILayout.Label(valueText, GUILayout.ExpandWidth(false));
+
+                // Convert Quaternion to Vector3
+                //Vector3 tRot = selectedConfiguration.directionalLightLayer.lightDirection[i].value.eulerAngles;
+                _list[i].value = Quaternion.Euler(EditorGUILayout.Vector3Field("", _list[i].value.eulerAngles, GUILayout.ExpandWidth(false)));
+                //selectedConfiguration.directionalLightLayer.lightDirection[i].value = Quaternion.Euler(tRot.x, tRot.y, tRot.z);
+
+
+                //selectedConfiguration.directionalLightLayer.lightDirection[i].value = Vector4ToQuaternion(EditorGUILayout.Vector4Field("", QuaternionToVector4(selectedConfiguration.directionalLightLayer.lightDirection[i].value), GUILayout.ExpandWidth(false)));
+
+                if (GUILayout.Button("Capture"))
+                {
+                    selectedConfiguration.directionalLightLayer.lightDirection[i].percentage = GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100;
+                    selectedConfiguration.directionalLightLayer.lightDirection[i].value = GetCurrentRotation();
+                    break;
+                }
+
+                if (GUILayout.Button("Remove"))
+                {
+                    _list.RemoveAt(i);
+                    break;
+                }
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+
+            if (GUILayout.Button("+", GUILayout.MaxWidth(100)))
+            {
+
+                _list.Add(new TransitioningQuaternion(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, GetCurrentRotation()));
+            }
         }
 
         Vector4 QuaternionToVector4(Quaternion rot) { return new Vector4(rot.x, rot.y, rot.z, rot.w); }
@@ -817,6 +915,10 @@ namespace DCL.Skybox
 
             return tTime;
         }
+
+        private float GetNormalizedLayerCurrentTime(float startTime, float endTime) { return Mathf.InverseLerp(startTime, endTime, timeOfTheDay); }
+
+        private float GetDayTimeForLayerNormalizedTime(float startTime, float endTime, float normalizeTime) { return Mathf.Lerp(startTime, endTime, normalizeTime); }
 
         private Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
     }
