@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class NotificationHUDController : IHUD
+public class NotificationHUDController : IHUD, INotificationHUDController
 {
     [System.Serializable]
     public class Model
@@ -72,4 +72,10 @@ public class NotificationHUDController : IHUD
     }
 
     public void SetVisibility(bool visible) { SetActive(visible); }
+
+    public void ShowWelcomeNotification()
+    {
+        var model = WelcomeNotification.Get();
+        ShowNotification(model);
+    }
 }
