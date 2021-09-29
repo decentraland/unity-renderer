@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using DCL.Models;
-using NSubstitute;
-using NSubstitute.Extensions;
 using UnityEngine;
 
 namespace DCL

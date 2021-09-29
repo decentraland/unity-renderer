@@ -1,7 +1,5 @@
 ﻿using System;
-using NSubstitute.Extensions;
 using UnityEngine;
-using UnityEngine.Windows.WebCam;
 
 namespace DCL
 {
