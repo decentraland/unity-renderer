@@ -7,14 +7,16 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace DCL.ABConverter
 {
     public static class VisualTests
     {
-        static readonly string baselinePath = AssetBundlesVisualTestHelpers.baselineImagesPath;
-        static readonly string testImagesPath = AssetBundlesVisualTestHelpers.testImagesPath;
+        static readonly string BASELINE_IMAGES_PATH = AssetBundlesVisualTestHelpers.baselineImagesPath;
+        static readonly string TEST_IMAGES_PATH = AssetBundlesVisualTestHelpers.testImagesPath;
+        static readonly string SCENE_NAME = "Assets/ABConverter/VisualTestScene.unity";
         
         static string abPath = Application.dataPath + "/../AssetBundles/";
         static int skippedAssets = 0;
@@ -46,7 +48,7 @@ namespace DCL.ABConverter
 
             Debug.Log("Visual Test Detection: Starting converted assets testing...");
 
-            var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
+            var scene = EditorSceneManager.OpenScene(SCENE_NAME, OpenSceneMode.Single);
             yield return new WaitUntil(() => scene.isLoaded);
 
             // Update visual tests path that will be used internally for the snapshots
@@ -143,8 +145,8 @@ namespace DCL.ABConverter
             }
 
             // Reset visual tests path
-            AssetBundlesVisualTestHelpers.baselineImagesPath = baselinePath;
-            AssetBundlesVisualTestHelpers.testImagesPath = testImagesPath;
+            AssetBundlesVisualTestHelpers.baselineImagesPath = BASELINE_IMAGES_PATH;
+            AssetBundlesVisualTestHelpers.testImagesPath = TEST_IMAGES_PATH;
 
             Debug.Log("Visual Test Detection: Finished converted assets testing...skipped assets: " + skippedAssets);
             OnFinish?.Invoke(skippedAssets);

@@ -399,9 +399,7 @@ namespace DCL.ABConverter
             settings.deleteDownloadPathAfterFinished = false;
             settings.clearDirectoriesOnStart = false;
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
-
-            abConverterCoreController.InitializeDirectoryPaths(true);
-
+            
             // By manipulating these variables we control which collections are converted to batch manually
             int initialCollectionIndex = 0;
             int maxCollectionIndex = 50;
@@ -412,6 +410,8 @@ namespace DCL.ABConverter
         {
             if (currentCollectionIndex >= wearableCollections.Length)
                 return;
+            
+            abConverterCoreController.InitializeDirectoryPaths(true);
          
             log.Info($"Dumping wearables from collection {wearableCollections[currentCollectionIndex].id}");
             
