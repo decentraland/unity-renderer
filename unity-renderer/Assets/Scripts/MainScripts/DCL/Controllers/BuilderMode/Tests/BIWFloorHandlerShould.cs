@@ -8,6 +8,7 @@ using DCL.Models;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityGLTF;
 
 public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
 {
@@ -23,15 +24,15 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwFloorHandler = new BIWFloorHandler();
         entityHandler = new BIWEntityHandler();
 
-        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        var referencesController = BIWTestUtils.CreateContextWithGenericMocks(
             entityHandler,
             biwFloorHandler,
             biwCreatorController
         );
 
-        biwCreatorController.Init(referencesController);
-        biwFloorHandler.Init(referencesController);
-        entityHandler.Init(referencesController);
+        biwCreatorController.Initialize(referencesController);
+        biwFloorHandler.Initialize(referencesController);
+        entityHandler.Initialize(referencesController);
 
         entityHandler.EnterEditMode(scene);
         biwFloorHandler.EnterEditMode(scene);
@@ -43,7 +44,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
         CatalogItem floorItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         biwCreatorController.EnterEditMode(scene);
@@ -83,7 +84,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
 
-        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
 
         CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
@@ -109,6 +110,8 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
+
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
         entityHandler.Dispose();

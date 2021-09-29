@@ -19,6 +19,7 @@ public class KernelConfigModel
     {
         return obj is KernelConfigModel other && Equals(other);
     }
+
     public bool Equals(KernelConfigModel other)
     {
         if (other == null)

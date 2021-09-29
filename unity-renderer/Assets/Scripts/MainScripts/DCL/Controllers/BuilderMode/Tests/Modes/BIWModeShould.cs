@@ -22,7 +22,7 @@ public class BIWModeShould
     {
         mode = new BIWMode();
         mockedGameObject = new GameObject("BIWModeGameObject");
-        context = BIWTestHelper.CreateMockUpReferenceController();
+        context = BIWTestUtils.CreateMockedContext();
         selectedEntities = new List<BIWEntity>();
         mode.Init(context);
         mode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);
@@ -68,7 +68,7 @@ public class BIWModeShould
         GameObject rootGameObject = new GameObject("Entity");
         rootEntity.Configure().gameObject.Returns(rootGameObject);
         selectedEntities.Add(entity);
-        entity.Init(rootEntity, null);
+        entity.Initialize(rootEntity, null);
 
         //Act
         mode.SelectedEntity(entity);

@@ -33,7 +33,7 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
         string entityId = "Test";
 
         BIWEntity newEntity = new BIWEntity();
-        newEntity.Init(TestHelpers.CreateSceneEntity(scene, entityId), null);
+        newEntity.Initialize(TestHelpers.CreateSceneEntity(scene, entityId), null);
         newEntity.rootEntity.gameObject.transform.position = Vector3.one * 444;
 
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -56,6 +56,7 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
     }
 
     private bool screenshotTaken = false;
+
     [UnityTest]
     public IEnumerator TakeScreenshot()
     {

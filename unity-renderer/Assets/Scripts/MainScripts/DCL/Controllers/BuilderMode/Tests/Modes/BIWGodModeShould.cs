@@ -33,18 +33,19 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         raycastController = new BIWRaycastController();
         gizmosController = new BIWGizmosController();
         selectedEntities = new List<BIWEntity>();
-        context = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             modeController,
             raycastController,
             gizmosController,
-            InitialSceneReferences.i
+            InitialSceneReferences.i.data
         );
 
         mockedGameObject = new GameObject("MockedGameObject");
         entityGameObject = new GameObject("EntityGameObject");
-        modeController.Init(context);
-        raycastController.Init(context);
-        gizmosController.Init(context);
+        modeController.Initialize(context);
+        raycastController.Initialize(context);
+        gizmosController.Initialize(context);
         modeController.EnterEditMode(scene);
         raycastController.EnterEditMode(scene);
         gizmosController.EnterEditMode(scene);
@@ -62,7 +63,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
         var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
-        entity.Init(rootEntity, null);
+        entity.Initialize(rootEntity, null);
         yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
@@ -92,7 +93,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         var entity = new BIWEntity();
-        entity.Init(Substitute.For<IDCLEntity>(), null);
+        entity.Initialize(Substitute.For<IDCLEntity>(), null);
 
         //Act
         godMode.SelectedEntity(entity);
@@ -123,7 +124,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var entity = new BIWEntity();
         var rootEntity = Substitute.For<IDCLEntity>();
         rootEntity.Configure().gameObject.Returns(mockedGameObject);
-        entity.Init(rootEntity, null);
+        entity.Initialize(rootEntity, null);
         entities.Add(entity);
         godMode.selectedEntities = entities;
 
@@ -143,7 +144,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var entity = new BIWEntity();
         var rootEntity = Substitute.For<IDCLEntity>();
         rootEntity.Configure().gameObject.Returns(mockedGameObject);
-        entity.Init(rootEntity, null);
+        entity.Initialize(rootEntity, null);
         entities.Add(entity);
         godMode.selectedEntities = entities;
         godMode.OnGizmosTransformStart(BIWSettings.TRANSLATE_GIZMO_NAME);
@@ -163,7 +164,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
         var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
-        entity.Init(rootEntity, null);
+        entity.Initialize(rootEntity, null);
         yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
@@ -205,7 +206,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
-        newEntity.Init(TestHelpers.CreateSceneEntity(scene), null);
+        newEntity.Initialize(TestHelpers.CreateSceneEntity(scene), null);
         raycastController.RayCastFloor(out Vector3 floorPosition);
 
         //Act
@@ -308,7 +309,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var biwEntity = new BIWEntity();
         var newEntity = Substitute.For<IDCLEntity>();
         newEntity.Configure().gameObject.Returns(entityGameObject);
-        biwEntity.Init(newEntity, null);
+        biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
 
         var newPosition = new Vector3(10, 10, 10);
@@ -328,7 +329,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var biwEntity = new BIWEntity();
         var newEntity = Substitute.For<IDCLEntity>();
         newEntity.Configure().gameObject.Returns(entityGameObject);
-        biwEntity.Init(newEntity, null);
+        biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
 
         var rotation = new Vector3(10, 10, 10);
@@ -348,7 +349,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var biwEntity = new BIWEntity();
         var newEntity = Substitute.For<IDCLEntity>();
         newEntity.Configure().gameObject.Returns(entityGameObject);
-        biwEntity.Init(newEntity, null);
+        biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
 
         var scale = new Vector3(10, 10, 10);
@@ -436,7 +437,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var biwEntity = new BIWEntity();
         var newEntity = Substitute.For<IDCLEntity>();
         newEntity.Configure().gameObject.Returns(entityGameObject);
-        biwEntity.Init(newEntity, null);
+        biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
         context.entityHandler.Configure().IsPointerInSelectedEntity().Returns(true);
 
@@ -455,7 +456,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var biwEntity = new BIWEntity();
         var newEntity = Substitute.For<IDCLEntity>();
         newEntity.Configure().gameObject.Returns(entityGameObject);
-        biwEntity.Init(newEntity, null);
+        biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
         godMode.StarDraggingSelectedEntities();
 
@@ -488,7 +489,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var biwEntity = new BIWEntity();
         var newEntity = Substitute.For<IDCLEntity>();
         newEntity.Configure().gameObject.Returns(entityGameObject);
-        biwEntity.Init(newEntity, null);
+        biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
         godMode.isPlacingNewObject = true;
 
@@ -545,7 +546,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var biwEntity = new BIWEntity();
         var newEntity = Substitute.For<IDCLEntity>();
         newEntity.Configure().gameObject.Returns(entityGameObject);
-        biwEntity.Init(newEntity, null);
+        biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
 
         //Act
@@ -598,14 +599,12 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnFinished();
-        raycastController.Dispose();
-        modeController.Dispose();
-        gizmosController.Dispose();
 
         context.Dispose();
 
-        GameObject.Destroy(mockedGameObject);
-        GameObject.Destroy(entityGameObject);
+        Object.Destroy(mockedGameObject);
+        Object.Destroy(entityGameObject);
+
         return base.TearDown();
     }
 }

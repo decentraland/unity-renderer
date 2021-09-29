@@ -23,16 +23,15 @@ public class BIWContext
     public IBIWPublishController publishController { get; private set; }
     public IBIWCreatorController creatorController { get; private set; }
     public IBIWModeController modeController { get; private set; }
-    public IBIWFloorHandler floorHandler { get; private set; }
+    public IBIWFloorHandler floorHandler { get; internal set; }
     public IBIWEntityHandler entityHandler { get; private set; }
     public IBIWActionController actionController { get; private set; }
     public IBIWSaveController saveController { get; private set; }
     public IBIWRaycastController raycastController { get; private set; }
     public IBIWGizmosController gizmosController { get; private set; }
-    public InitialSceneReferences sceneReferences { get; private set; }
+    public InitialSceneReferences.Data sceneReferences { get; private set; }
 
-
-    public void Init(IBIWOutlinerController outlinerController,
+    public void Initialize(IBIWOutlinerController outlinerController,
         IBIWInputHandler inputHandler,
         IBIWInputWrapper inputWrapper,
         IBIWPublishController publishController,
@@ -44,7 +43,7 @@ public class BIWContext
         IBIWSaveController saveController,
         IBIWRaycastController raycastController,
         IBIWGizmosController gizmosController,
-        InitialSceneReferences sceneReferences)
+        InitialSceneReferences.Data sceneReferences)
     {
         projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
         godModeDynamicVariablesAsset = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
@@ -68,10 +67,22 @@ public class BIWContext
 
     public void Dispose()
     {
+        outlinerController.Dispose();
+        inputHandler.Dispose();
+        inputWrapper.Dispose();
+        publishController.Dispose();
+        creatorController.Dispose();
+        modeController.Dispose();
+        floorHandler.Dispose();
+        entityHandler.Dispose();
+        actionController.Dispose();
+        saveController.Dispose();
+        raycastController.Dispose();
+        gizmosController.Dispose();
+
         projectReferencesAsset = null;
         godModeDynamicVariablesAsset = null;
         firstPersonDynamicVariablesAsset = null;
         inputsReferencesAsset = null;
     }
-
 }

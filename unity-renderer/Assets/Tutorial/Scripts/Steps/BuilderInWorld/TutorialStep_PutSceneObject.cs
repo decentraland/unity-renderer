@@ -1,6 +1,7 @@
 using DCL.Tutorial;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using DCL;
 using UnityEngine;
 
 [ExcludeFromCodeCoverage]

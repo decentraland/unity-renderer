@@ -25,7 +25,7 @@ public class BIWCatalogShould
     public void BuilderInWorldSearch()
     {
         string nameToFilter = "Sandy";
-        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
 
         CatalogItem catalogItemToFilter = null;
         foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
@@ -48,10 +48,10 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldQuickBar()
     {
-        BIWTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject();
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
-        CatalogItemAdapter adapter = BIWTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
+        CatalogItemAdapter adapter = BIWTestUtils.CreateCatalogItemAdapter(gameObjectToUse);
         adapter.SetContent(item);
 
         CatalogAssetGroupAdapter groupAdapter = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
@@ -84,7 +84,7 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldToggleFavorite()
     {
-        BIWTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject();
 
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
@@ -99,7 +99,7 @@ public class BIWCatalogShould
     [Test]
     public void CatalogItemsSceneObject()
     {
-        BIWTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject();
 
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);
@@ -109,7 +109,7 @@ public class BIWCatalogShould
     [Test]
     public void CatalogItemsNfts()
     {
-        BIWTestHelper.CreateNFT();
+        BIWTestUtils.CreateNFT();
 
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);

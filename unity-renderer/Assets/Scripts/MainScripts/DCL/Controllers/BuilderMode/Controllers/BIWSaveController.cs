@@ -1,8 +1,9 @@
+using System;
 using DCL;
 using DCL.Controllers;
 using UnityEngine;
 
-public interface IBIWSaveController
+public interface IBIWSaveController : IBIWController
 {
     int GetSaveTimes();
     void SetSaveActivation(bool isActive, bool tryToSave = false);
@@ -14,7 +15,7 @@ public class BIWSaveController : BIWController, IBIWSaveController
 {
     private const float MS_BETWEEN_SAVES = 5000f;
 
-    internal int numberOfSaves { get; set; } = 0;
+    public int numberOfSaves { get; set; } = 0;
 
     private BuilderInWorldBridge bridge;
 
@@ -22,9 +23,9 @@ public class BIWSaveController : BIWController, IBIWSaveController
     private bool canActivateSave = true;
     public int GetSaveTimes() { return numberOfSaves; }
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
 
         bridge = context.sceneReferences.builderInWorldBridge;
         if (bridge != null)
@@ -55,7 +56,7 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public void ResetNumberOfSaves() { numberOfSaves = 0; }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public override void EnterEditMode(IParcelScene scene)
     {
         base.EnterEditMode(scene);
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
@@ -71,6 +72,7 @@ public class BIWSaveController : BIWController, IBIWSaveController
             HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
             ResetNumberOfSaves();
         }
+
         base.ExitEditMode();
     }
 
