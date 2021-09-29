@@ -13,6 +13,7 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private Color textOff;
         [SerializeField] private Color bgOn;
         [SerializeField] private Color bgOff;
+        
         private void OnEnable()
         {
             toggle.onValueChanged.AddListener(OnValueChanged);
@@ -23,11 +24,11 @@ namespace DCL.SettingsPanelHUD.Controls
         {
             toggle.onValueChanged.RemoveListener(OnValueChanged);
         }
+        
         private void OnValueChanged(bool value)
         {
             targetText.color = value ? textOn : textOff;
             targetBackground.color = value ? bgOn : bgOff;
         }
-
     }
 }
