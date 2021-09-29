@@ -17,6 +17,7 @@ namespace DCL
 
         public readonly CrashPayloadPositionTracker positionTracker;
         private BaseVariable<bool> isFPSPanelVisible;
+        //private PreviewSceneLimitsWarning previewSceneLimitsWarning;
 
         public event Action OnDebugModeSet;
 
@@ -28,6 +29,7 @@ namespace DCL
             GameObject view = Object.Instantiate(Resources.Load("DebugView")) as GameObject;
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
+            //previewSceneLimitsWarning = new PreviewSceneLimitsWarning(Environment.i.world.state);
 
             OnKernelConfigChanged(KernelConfig.i.Get(), null);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
@@ -157,7 +159,7 @@ namespace DCL
                 debugView.SetSceneDebugPanel();
             }
             
-            debugView.ShowPreviewSceneLimitsWarning(!string.IsNullOrEmpty(current.debugConfig.sceneLimitsWarningSceneId));
+            //previewSceneLimitsWarning.SetActive(!string.IsNullOrEmpty(current.debugConfig.sceneLimitsWarningSceneId));
         }
     }
 }

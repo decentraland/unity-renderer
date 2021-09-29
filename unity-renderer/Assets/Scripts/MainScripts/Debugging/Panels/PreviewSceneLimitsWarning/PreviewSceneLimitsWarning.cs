@@ -1,26 +1,25 @@
 using System.Collections;
 using DCL.Controllers;
-using NotificationModel;
+using DCL.NotificationModel;
 using UnityEngine;
 
 namespace DCL
 {
-    public class PreviewSceneLimitsWarning : MonoBehaviour
+    public class PreviewSceneLimitsWarning
     {
         private const string NOTIFICATION_GROUP = "SceneLimitationReached";
         private const string NOTIFICATION_MESSAGE = "Scene limitations reached";
-        private const int NOTIFICATION_TYPE = 8;
-        private readonly string NOTIFICATION = $"{{\"type\":{NOTIFICATION_TYPE},\"message\":{NOTIFICATION_MESSAGE},\"groupID\":{NOTIFICATION_GROUP}}}";
 
         private string sceneId;
         private Coroutine updateRoutine;
         private IWorldState worldState;
+        private bool isActive = false;
 
-        private readonly Model limitReachedNotification = new Model()
+        private static readonly Model limitReachedNotification = new Model()
         {
             type = Type.WARNING,
-            groupID = "limitReachedNotification",
-            message = "Scene limitations reached"
+            groupID = NOTIFICATION_GROUP,
+            message = NOTIFICATION_MESSAGE
         };
 
         public PreviewSceneLimitsWarning(IWorldState worldState)
@@ -28,18 +27,21 @@ namespace DCL
             this.worldState = worldState;
         }
 
-        // private void OnEnable()
-        // {
-        //     sceneId = KernelConfig.i.Get().debugConfig.sceneLimitsWarningSceneId;
-        //     KernelConfig.i.OnChange += OnKernelConfigChanged;
-        //     updateRoutine = CoroutineStarter.Start(UpdateRoutine());
-        // }
-        //
-        // private void OnDisable()
-        // {
-        //     KernelConfig.i.OnChange -= OnKernelConfigChanged;
-        //     CoroutineStarter.Stop(updateRoutine);
-        // }
+        public void SetActive(bool active)
+        {
+            if (active && !isActive)
+            {
+                sceneId = KernelConfig.i.Get().debugConfig.sceneLimitsWarningSceneId;
+                KernelConfig.i.OnChange += OnKernelConfigChanged;
+                updateRoutine = CoroutineStarter.Start(UpdateRoutine());
+            }
+            if (!active && isActive)
+            {
+                KernelConfig.i.OnChange -= OnKernelConfigChanged;
+                CoroutineStarter.Stop(updateRoutine);
+            }
+            isActive = active;
+        }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
         {
@@ -67,7 +69,7 @@ namespace DCL
             }
         }
 
-        private bool IsLimitReached(SceneMetricsModel currentMetrics, SceneMetricsModel limit)
+        private static bool IsLimitReached(SceneMetricsModel currentMetrics, SceneMetricsModel limit)
         {
             return currentMetrics != null && limit != null
                                           && (currentMetrics.bodies > limit.bodies
