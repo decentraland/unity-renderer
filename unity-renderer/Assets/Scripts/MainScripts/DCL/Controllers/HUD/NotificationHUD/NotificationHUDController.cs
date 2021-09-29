@@ -5,7 +5,7 @@ public class NotificationHUDController : IHUD
     [System.Serializable]
     public class Model
     {
-        public List<Notification> notifications = new List<Notification>();
+        public List<INotification> notifications = new List<INotification>();
     }
 
     public NotificationHUDView view { get; private set; }
@@ -20,13 +20,13 @@ public class NotificationHUDController : IHUD
         view.OnNotificationDismissedEvent += OnNotificationDismissed;
     }
 
-    public void ShowNotification(Notification notification)
+    public void ShowNotification(INotification notification)
     {
         model.notifications.Add(notification);
         view.ShowNotification(notification, notification.model);
     }
 
-    public void ShowNotification(Notification.Model model)
+    public void ShowNotification(NotificationModel.Model model)
     {
         if (!string.IsNullOrEmpty(model.groupID))
         {
@@ -44,7 +44,7 @@ public class NotificationHUDController : IHUD
         if (this.model.notifications.Count > 0)
         {
             //NOTE(Brian): Copy list to avoid modify while iterating error
-            var notiList = new List<Notification>(this.model.notifications);
+            var notiList = new List<INotification>(this.model.notifications);
             int notiCount = notiList.Count;
 
             for (int i = 0; i < notiCount; i++)
@@ -57,7 +57,7 @@ public class NotificationHUDController : IHUD
         }
     }
 
-    private void OnNotificationDismissed(Notification notification) { model.notifications.Remove(notification); }
+    private void OnNotificationDismissed(INotification notification) { model.notifications.Remove(notification); }
 
     public void SetActive(bool active) { view.SetActive(active); }
 

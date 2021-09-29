@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using NotificationModel;
 
 namespace Tests
 {
@@ -45,9 +46,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator NotificationHud_ShowNotification()
         {
-            Notification.Model model = new Notification.Model()
+            Model model = new Model()
             {
-                type = NotificationFactory.Type.GENERIC,
+                type = Type.GENERIC,
                 message = "text",
                 timer = -1,
                 scene = ""
@@ -70,9 +71,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator NotificationHud_ShowSeveralNotifications()
         {
-            Notification.Model model = new Notification.Model()
+            Model model = new Model()
             {
-                type = NotificationFactory.Type.GENERIC,
+                type = Type.GENERIC,
                 message = "text",
                 timer = -1,
                 scene = ""
@@ -80,9 +81,9 @@ namespace Tests
 
             controller.ShowNotification(model);
 
-            Notification.Model model2 = new Notification.Model()
+            Model model2 = new Model()
             {
-                type = NotificationFactory.Type.SCRIPTING_ERROR,
+                type = Type.SCRIPTING_ERROR,
                 message = "text",
                 timer = -1,
                 scene = ""
@@ -99,9 +100,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator NotificationHud_ShowTimedNotification()
         {
-            Notification.Model model = new Notification.Model()
+            Model model = new Model()
             {
-                type = NotificationFactory.Type.GENERIC,
+                type = Type.GENERIC,
                 message = "text",
                 timer = 0.25f,
                 scene = ""

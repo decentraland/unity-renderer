@@ -1,33 +1,21 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using NotificationModel;
 
-public class Notification : MonoBehaviour
+public class Notification : MonoBehaviour, INotification
 {
-    public class Model
-    {
-        public NotificationFactory.Type type;
-        public string message;
-        public string buttonMessage;
-        public float timer;
-        public string scene;
-        public System.Action callback;
-        public string externalCallbackID;
-
-        public string groupID;
-        public bool destroyOnFinish = false;
-    }
-
     [SerializeField] internal TextMeshProUGUI messageLabel;
 
     [SerializeField] private Button actionButton;
 
     [SerializeField] private TextMeshProUGUI actionButtonLabel;
 
-    public Notification.Model model { get; private set; } = new Model();
+    public Model model { get; private set; } = new Model();
 
-    public event System.Action<Notification> OnNotificationDismissed;
+    public event Action<INotification> OnNotificationDismissed;
 
     Coroutine timerCoroutine;
 
@@ -60,7 +48,7 @@ public class Notification : MonoBehaviour
         StopTimer();
     }
 
-    public void Show(Notification.Model model)
+    public void Show(Model model)
     {
         gameObject.SetActive(true);
 

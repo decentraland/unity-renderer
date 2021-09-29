@@ -1,21 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Type = NotificationModel.Type;
 
 public class NotificationFactory : ScriptableObject
 {
-    public enum Type
-    {
-        GENERIC,
-        SCRIPTING_ERROR,
-        COMMS_ERROR,
-        AIRDROPPING,
-        GENERIC_WITHOUT_BUTTON,
-        CUSTOM,
-        UI_HIDDEN,
-        GRAPHIC_CARD_WARNING,
-        WARNING
-    }
-
     [System.Serializable]
     public class Item
     {
