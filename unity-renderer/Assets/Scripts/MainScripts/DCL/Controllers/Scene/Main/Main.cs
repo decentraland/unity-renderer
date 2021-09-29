@@ -39,10 +39,8 @@ namespace DCL
                 SetupEnvironment();
             }
 
-            pluginSystem = new PluginSystem();
-            pluginSystem.Start();
 
-#if UNITY_WEBGL && !UNITY_EDITOR 
+#if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;
 
@@ -66,7 +64,7 @@ namespace DCL
             // to prevent race conditions like "SceneController is not an object",
             // aka sending events before unity is ready
             DCL.Interface.WebInterface.SendSystemInfoReport();
-            
+
             // We trigger the Decentraland logic once everything is initialized.
             DCL.Interface.WebInterface.StartDecentraland();
         }
@@ -88,23 +86,20 @@ namespace DCL
 
         protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
 
-        private void Start()
-        {
-            Environment.i.world.sceneController.Start();
-        }
+        private void Start() { Environment.i.world.sceneController.Start(); }
 
         private void Update()
         {
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-            pluginSystem.Update();
+            pluginSystem?.Update();
         }
 
         private void LateUpdate()
         {
             Environment.i.world.sceneController.LateUpdate();
-            pluginSystem.LateUpdate();
+            pluginSystem?.LateUpdate();
         }
 
         protected virtual void OnDestroy()
@@ -115,6 +110,8 @@ namespace DCL
             kernelCommunication?.Dispose();
         }
 
-        private void OnGUI() { pluginSystem.OnGUI(); }
+        private void OnGUI() { pluginSystem?.OnGUI(); }
+
+        public void SetFeatureFlagConfiguration(string json) { pluginSystem = new PluginSystem(json); }
     }
 }

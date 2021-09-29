@@ -13,15 +13,17 @@ public class PluginSystem
 {
     private List<PluginFeature> activeFeatures = new List<PluginFeature>();
 
-    private KernelConfigModel currentConfig;
+    private FeatureFlagConfiguration currentConfig;
 
-    public KernelConfigModel GetCurrentConfig() { return currentConfig; }
+    public FeatureFlagConfiguration GetCurrentConfig() { return currentConfig; }
 
-    public void Start()
+    public PluginSystem(string featureConfigJson)
     {
-        KernelConfig.i.EnsureConfigInitialized().Then(ApplyFeaturesConfig);
-        KernelConfig.i.OnChange += OnKernelConfigChanged;
+        FeatureFlagConfiguration configuration = new FeatureFlagConfiguration(featureConfigJson);
+        ApplyFeaturesConfig(configuration);
     }
+
+    public PluginSystem(FeatureFlagConfiguration configuration) { ApplyFeaturesConfig(configuration); }
 
     public void OnGUI()
     {
@@ -55,14 +57,12 @@ public class PluginSystem
         }
     }
 
-    public void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { ApplyFeaturesConfig(current); }
-
-    public void ApplyFeaturesConfig(KernelConfigModel config)
+    public void ApplyFeaturesConfig(FeatureFlagConfiguration config)
     {
-        HandleFeature<BuilderInWorld>(config.features.enableBuilderInWorld);
-        HandleFeature<TutorialController>(config.features.enableTutorial);
+        HandleFeature<BuilderInWorld>(config.IsFeatureEnabled("builder_in_world"));
+        HandleFeature<TutorialController>(config.IsFeatureEnabled("tutorial"));
         HandleFeature<DebugPluginFeature>(true);
-        HandleFeature<ExploreV2Feature>(config.features.enableExploreV2);
+        HandleFeature<ExploreV2Feature>(config.IsFeatureEnabled("exploreV2"));
         currentConfig = config;
     }
 

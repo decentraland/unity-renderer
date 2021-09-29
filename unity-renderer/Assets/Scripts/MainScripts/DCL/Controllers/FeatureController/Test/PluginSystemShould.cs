@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using Tests;
 using UnityEngine;
 using Tests;
@@ -20,9 +21,8 @@ public class PluginSystemShould : IntegrationTestSuite
     public void TestFeatureControllerApplyConfig()
     {
         //Arrange
-        PluginSystem pluginSystem = new PluginSystem();
-        KernelConfigModel currentConfig = new KernelConfigModel();
-        currentConfig.features.enableTutorial = false;
+        FeatureFlagConfiguration currentConfig = TestHelpers.CreatetFeatureFlagConfiguration();
+        PluginSystem pluginSystem = new PluginSystem(currentConfig);
 
         //Act
         pluginSystem.ApplyFeaturesConfig(currentConfig);
@@ -35,17 +35,14 @@ public class PluginSystemShould : IntegrationTestSuite
     public void TestFeatureControllerConfigChange()
     {
         //Arrange
-        PluginSystem pluginSystem = new PluginSystem();
-        KernelConfigModel currentConfig = new KernelConfigModel();
-        currentConfig.features.enableTutorial = false;
-        KernelConfigModel oldConfig = new KernelConfigModel();
-        oldConfig.features.enableTutorial = false;
-        pluginSystem.ApplyFeaturesConfig(oldConfig);
+        FeatureFlagConfiguration oldConfig = TestHelpers.CreatetFeatureFlagConfiguration();
+        FeatureFlagConfiguration newConfig = TestHelpers.CreatetFeatureFlagConfiguration();
+        PluginSystem pluginSystem = new PluginSystem(oldConfig);
 
         //Act
-        pluginSystem.OnKernelConfigChanged(currentConfig, oldConfig);
+        pluginSystem.ApplyFeaturesConfig(newConfig);
 
         //Assert
-        Assert.AreSame(pluginSystem.GetCurrentConfig(), currentConfig);
+        Assert.AreSame(pluginSystem.GetCurrentConfig(), newConfig);
     }
 }
