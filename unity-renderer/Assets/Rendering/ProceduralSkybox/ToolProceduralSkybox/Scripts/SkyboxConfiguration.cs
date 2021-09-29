@@ -109,7 +109,7 @@ namespace DCL.Skybox
 
             for (int i = 0; i < textureLayers.Count; i++)
             {
-                ApplyTextureLayer(selectedMat, normalizedDayTime, i, textureLayers[i]);
+                ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, textureLayers[i]);
             }
         }
 
@@ -180,8 +180,16 @@ namespace DCL.Skybox
             lightGO.transform.rotation = Quaternion.Lerp(min.value, max.value, t);
         }
 
-        void ApplyTextureLayer(Material selectedMat, float normalizedDayTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
+        void ApplyTextureLayer(Material selectedMat, float dayTime, float normalizedDayTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
+            // Time not reached for current layer
+            if (dayTime < layer.timeSpan_start || dayTime > layer.timeSpan_End)
+            {
+                return;
+            }
+            float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, layer.timeSpan_End, dayTime);
+
+
             if (changeAlllValues)
             {
                 //if (layer.isRadial)
@@ -212,13 +220,13 @@ namespace DCL.Skybox
                 selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
                 selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
             }
-            selectedMat.SetFloat("_RenderDistance_" + layerNum, GetTansitionValue(layer.renderDistance, normalizedDayTime * 100, 3.4f));
+            selectedMat.SetFloat("_RenderDistance_" + layerNum, GetTansitionValue(layer.renderDistance, normalizedLayerTime * 100, 3.4f));
 
-            Vector2 currentOffset = GetTransitionValue(layer.position, normalizedDayTime * 100);
+            Vector2 currentOffset = GetTransitionValue(layer.position, normalizedLayerTime * 100);
             Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, currentOffset.x, currentOffset.y);
             selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
 
-            selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedDayTime));
+            selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
         }
 
         Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
@@ -431,6 +439,7 @@ namespace DCL.Skybox
     {
         Planar = 0,
         Radial = 1,
+        Satellite = 2,
         Cubemap = 3
     }
 }
