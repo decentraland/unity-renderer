@@ -1,5 +1,5 @@
 using System;
-using NotificationModel;
+using DCL.NotificationModel;
 
 public interface INotification
 {

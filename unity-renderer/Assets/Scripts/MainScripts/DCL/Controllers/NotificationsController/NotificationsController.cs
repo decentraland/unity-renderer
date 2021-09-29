@@ -1,5 +1,5 @@
 using UnityEngine;
-using NotificationModel;
+using DCL.NotificationModel;
 
 public class NotificationsController : MonoBehaviour
 {

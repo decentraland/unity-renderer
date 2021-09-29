@@ -1,6 +1,6 @@
 using System;
 
-namespace NotificationModel
+namespace DCL.NotificationModel
 {
     public enum Type
     {

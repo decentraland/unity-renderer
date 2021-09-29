@@ -26,7 +26,7 @@ public class NotificationHUDController : IHUD
         view.ShowNotification(notification, notification.model);
     }
 
-    public void ShowNotification(NotificationModel.Model model)
+    public void ShowNotification(DCL.NotificationModel.Model model)
     {
         if (!string.IsNullOrEmpty(model.groupID))
         {

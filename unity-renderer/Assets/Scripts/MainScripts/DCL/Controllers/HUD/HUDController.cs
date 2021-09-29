@@ -23,10 +23,10 @@ public class HUDController : IHUDController
 
     private InputAction_Trigger toggleUIVisibilityTrigger;
 
-    private readonly NotificationModel.Model hiddenUINotification = new NotificationModel.Model()
+    private readonly DCL.NotificationModel.Model hiddenUINotification = new DCL.NotificationModel.Model()
     {
         timer = 3,
-        type = NotificationModel.Type.UI_HIDDEN,
+        type = DCL.NotificationModel.Type.UI_HIDDEN,
         groupID = "UIHiddenNotification"
     };
 
