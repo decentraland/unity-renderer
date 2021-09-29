@@ -1,5 +1,6 @@
 using System.Collections;
 using DCL.Controllers;
+using NotificationModel;
 using UnityEngine;
 
 namespace DCL
@@ -15,9 +16,9 @@ namespace DCL
         private Coroutine updateRoutine;
         private IWorldState worldState;
 
-        private readonly Notification.Model limitReachedNotification = new Notification.Model()
+        private readonly Model limitReachedNotification = new Model()
         {
-            type = NotificationFactory.Type.WARNING,
+            type = Type.WARNING,
             groupID = "limitReachedNotification",
             message = "Scene limitations reached"
         };
@@ -25,23 +26,6 @@ namespace DCL
         public PreviewSceneLimitsWarning(IWorldState worldState)
         {
             this.worldState = worldState;
-        }
-
-        private void Awake()
-        {
-            Notification.Model ll = new Notification.Model()
-            {
-                type = NotificationFactory.Type.WARNING,
-                groupID = "limitReachedNotification",
-                message = "Scene limitations reached"
-            };
-
-            string value = JsonUtility.ToJson(ll);
-            Debug.Log(value);
-
-            string N = "{{\"type\":{0},\"message\":{1},\"groupID\":{2}}}";
-            var m = JsonUtility.FromJson<Notification.Model>(string.Format(N, NOTIFICATION_TYPE, NOTIFICATION_MESSAGE, NOTIFICATION_GROUP));
-            Debug.Log(m);
         }
 
         // private void OnEnable()
