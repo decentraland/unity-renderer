@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -14,18 +15,24 @@ namespace DCL
     /// </summary>
     public class Rendereable : ICloneable
     {
-        public int triangleCount = 0;
         public GameObject container;
+        public List<Mesh> meshes = new List<Mesh>();
+        public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
+        public List<Renderer> renderers = new List<Renderer>();
+        public int totalTriangleCount = 0;
 
         public bool Equals(Rendereable other)
         {
-            return triangleCount == other.triangleCount &&
-                   container == other.container;
+            return container == other.container;
         }
 
         public object Clone()
         {
-            return this.MemberwiseClone();
+            var result = (Rendereable)this.MemberwiseClone();
+            result.meshToTriangleCount = new Dictionary<Mesh, int>(meshToTriangleCount);
+            result.renderers = new List<Renderer>(renderers);
+            result.meshes = new List<Mesh>(meshes);
+            return result;
         }
     }
 }

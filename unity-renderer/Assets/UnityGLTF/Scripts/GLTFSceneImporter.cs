@@ -228,7 +228,8 @@ namespace UnityGLTF
         public GameObject lastLoadedScene { get { return _lastLoadedScene; } }
 
         public static System.Action<float> OnPerformanceFinish;
-        public event System.Action<Mesh> OnWillUploadMeshToGPU;
+        public event System.Action<Mesh> OnMeshCreated;
+        public event System.Action<Renderer> OnRendererCreated;
 
         /// <summary>
         /// Loads a glTF Scene into the LastLoadedScene field
@@ -1713,12 +1714,16 @@ namespace UnityGLTF
                         {
                             yield return SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh);
                         }
+
+                        OnRendererCreated?.Invoke(skinnedMeshRenderer);
                     }
                     else
                     {
                         meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
                         renderer = meshRenderer;
                         renderer.enabled = initialVisibility;
+
+                        OnRendererCreated?.Invoke(meshRenderer);
                     }
 
                     yield return ConstructPrimitiveMaterials(mesh, meshId, i);
@@ -2138,10 +2143,10 @@ namespace UnityGLTF
             }
 #endif
 
+            OnMeshCreated?.Invoke(mesh);
 
             if (forceGPUOnlyMesh)
             {
-                OnWillUploadMeshToGPU?.Invoke(mesh);
                 Physics.BakeMesh(mesh.GetInstanceID(), false);
                 mesh.UploadMeshData(true);
             }

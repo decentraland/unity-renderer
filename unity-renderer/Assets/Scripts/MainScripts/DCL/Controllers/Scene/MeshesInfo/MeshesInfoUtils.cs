@@ -42,6 +42,29 @@ namespace DCL.Models
             return renderer.bounds;
         }
 
+        public static int ComputeTotalTriangles(List<Renderer> renderers, Dictionary<Mesh, int> meshToTriangleCount)
+        {
+            int result = 0;
+
+            for ( int i = 0; i < renderers.Count; i++ )
+            {
+                var r = renderers[i];
+
+                if ( r is MeshRenderer meshRenderer )
+                {
+                    int triangles = meshToTriangleCount[ r.GetComponent<MeshFilter>().sharedMesh ];
+                    result += triangles;
+                }
+
+                if ( r is SkinnedMeshRenderer skinnedMeshRenderer )
+                {
+                    result += meshToTriangleCount[ skinnedMeshRenderer.sharedMesh ];
+                }
+            }
+
+            return result;
+        }
+
 
         public static List<Mesh> ExtractMeshes(GameObject gameObject)
         {
@@ -64,6 +87,9 @@ namespace DCL.Models
 
                 result.Add( meshFilter.mesh );
             }
+
+            // Ensure meshes are unique
+            result = result.Distinct().ToList();
 
             return result;
         }

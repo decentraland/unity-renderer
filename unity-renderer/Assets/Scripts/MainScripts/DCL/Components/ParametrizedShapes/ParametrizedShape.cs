@@ -223,10 +223,15 @@ namespace DCL.Components
         {
             string sceneId = entity.scene.sceneData.id;
 
+            int triangleCount = currentMesh.triangles.Length;
+
             var newRendereable = new Rendereable()
             {
+                renderers = new List<Renderer>(entity.meshesInfo.renderers),
                 container = entity.meshRootGameObject,
-                triangleCount = currentMesh.triangles.Length
+                totalTriangleCount = triangleCount,
+                meshes = new List<Mesh>() { currentMesh },
+                meshToTriangleCount = new Dictionary<Mesh, int>() { { currentMesh, triangleCount } }
             };
 
             if ( !attachedRendereables.ContainsKey(sceneId) )

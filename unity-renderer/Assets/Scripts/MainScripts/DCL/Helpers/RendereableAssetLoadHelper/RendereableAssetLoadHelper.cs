@@ -80,7 +80,6 @@ namespace DCL.Components
 
         public event System.Action<Rendereable> OnSuccessEvent;
         public event System.Action OnFailEvent;
-        public event System.Action<Mesh> OnMeshAdded;
 
         public void Load(string targetUrl)
         {
@@ -150,16 +149,23 @@ namespace DCL.Components
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
 
-            abPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x.rendereable, OnSuccess);
+            abPromise.OnSuccessEvent += (x) =>
+            {
+                var r = new Rendereable()
+                {
+                    container = x.container,
+                    totalTriangleCount = x.totalTriangleCount,
+                    meshes = x.meshes,
+                    renderers = x.renderers,
+                    meshToTriangleCount = x.meshToTriangleCount
+                };
+
+                OnSuccessWrapper(r, OnSuccess);
+            };
+
             abPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
-            abPromise.OnMeshAdded += RaiseOnMeshAdded;
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
-        }
-
-        private void RaiseOnMeshAdded(Mesh mesh)
-        {
-            OnMeshAdded?.Invoke(mesh);
         }
 
         void LoadGltf(string targetUrl, System.Action<Rendereable> OnSuccess, System.Action OnFail)
@@ -181,9 +187,20 @@ namespace DCL.Components
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
             gltfPromise.settings = this.settings;
 
-            gltfPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x.rendereable, OnSuccess);
+            gltfPromise.OnSuccessEvent += (x) =>
+            {
+                var r = new Rendereable()
+                {
+                    container = x.container,
+                    totalTriangleCount = x.totalTriangleCount,
+                    meshes = x.meshes,
+                    renderers = x.renderers,
+                    meshToTriangleCount = x.meshToTriangleCount
+                };
+
+                OnSuccessWrapper(r, OnSuccess);
+            };
             gltfPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
-            gltfPromise.OnMeshAdded += RaiseOnMeshAdded;
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }

@@ -99,7 +99,36 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator CountGLTFShapes()
     {
-        yield break;
+        IDCLEntity entity1 = TestHelpers.CreateSceneEntity(scene);
+        GLTFShape entity1shape = TestHelpers.AttachGLTFShape(entity1,
+            scene,
+            new Vector3(8, 1, 8),
+            new LoadableShape.Model()
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
+            });
+
+        yield return TestHelpers.WaitForGLTFLoad(entity1);
+
+        IDCLEntity entity2 = TestHelpers.CreateSceneEntity(scene);
+        GLTFShape entity2shape = TestHelpers.AttachGLTFShape(entity2,
+            scene,
+            new Vector3(8, 1, 8),
+            new LoadableShape.Model()
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
+            });
+
+        yield return TestHelpers.WaitForGLTFLoad(entity2);
+
+        yield return new WaitForAllMessagesProcessed();
+
+        Debug.Log(scene.metricsController.GetModel());
+
+        TestHelpers.RemoveSceneEntity(scene, entity1);
+        TestHelpers.RemoveSceneEntity(scene, entity2);
+        yield return new WaitForAllMessagesProcessed();
+        Debug.Log(scene.metricsController.GetModel());
     }
 
     [UnityTest]

@@ -5,7 +5,6 @@ using DCL.Helpers;
 using DCL.Configuration;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using DCL.Models;
 
 namespace DCL
@@ -15,7 +14,6 @@ namespace DCL
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
-        public event Action<Mesh> OnMeshAdded;
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
@@ -50,6 +48,7 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
+            asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
             asset.Show(OnSuccess);
         }
 
@@ -146,7 +145,9 @@ namespace DCL
 
                 List<Renderer> rendererList = assetBundleModelGO.GetComponentsInChildren<Renderer>(true).ToList();
 
+                asset.renderers.AddRange(rendererList);
                 UploadMeshesToGPU(MeshesInfoUtils.ExtractMeshes(assetBundleModelGO));
+                asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
                 yield return MaterialCachingHelper.Process(rendererList, enableRenderers: false, settings.cachingFlags);
@@ -175,9 +176,8 @@ namespace DCL
                     continue;
 
                 Physics.BakeMesh(mesh.GetInstanceID(), false);
-                asset.rendereable.triangleCount += mesh.triangles.Length;
-                OnMeshAdded?.Invoke(mesh);
-
+                asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
+                asset.meshes.Add(mesh);
                 mesh.UploadMeshData(true);
             }
         }

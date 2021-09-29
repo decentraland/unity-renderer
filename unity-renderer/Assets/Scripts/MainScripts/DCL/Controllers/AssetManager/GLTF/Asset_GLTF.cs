@@ -8,23 +8,21 @@ namespace DCL
 {
     public class Asset_GLTF : Asset_WithPoolableContainer
     {
-        public override GameObject container { get; set; }
         public string name;
         public bool visible = true;
-        public List<Mesh> meshes;
-        public Rendereable rendereable;
+
+        public override GameObject container { get; set; }
+
+        public List<Mesh> meshes = new List<Mesh>();
+        public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
+        public List<Renderer> renderers = new List<Renderer>();
+        public int totalTriangleCount = 0;
 
         Coroutine showCoroutine;
 
         public Asset_GLTF()
         {
-            container = new GameObject();
-            container.name = "Asset_GLTF Container";
-
-            rendereable = new Rendereable();
-            rendereable.container = container;
-            meshes = new List<Mesh>();
-
+            container = new GameObject("Asset_GLTF Container");
             visible = true;
         }
 
@@ -32,9 +30,7 @@ namespace DCL
         {
             Asset_GLTF result = this.MemberwiseClone() as Asset_GLTF;
             result.visible = true;
-            result.rendereable = (Rendereable)rendereable.Clone();
             result.meshes = new List<Mesh>(meshes);
-
             return result;
         }
 

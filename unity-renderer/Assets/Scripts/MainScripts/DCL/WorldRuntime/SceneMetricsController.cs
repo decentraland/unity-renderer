@@ -303,13 +303,13 @@ namespace DCL
 
         public void OnWillAddRendereable(Rendereable rendereable)
         {
-            int trianglesToAdd = rendereable.triangleCount / 3;
+            int trianglesToAdd = rendereable.totalTriangleCount / 3;
             model.triangles += trianglesToAdd;
         }
 
         private void OnWillRemoveRendereable(Rendereable rendereable)
         {
-            int trianglesToRemove = rendereable.triangleCount / 3;
+            int trianglesToRemove = rendereable.totalTriangleCount / 3;
             model.triangles -= trianglesToRemove;
         }
 

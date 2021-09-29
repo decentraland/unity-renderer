@@ -87,12 +87,24 @@ namespace DCL
         public static void AddRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
         {
             string sceneId = entity.scene.sceneData.id;
+
+            foreach (var mesh in rendereable.meshes)
+            {
+                self.AddMesh(entity, mesh);
+            }
+
             self.AddRendereable( sceneId, rendereable );
         }
 
         public static void RemoveRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
         {
             string sceneId = entity.scene.sceneData.id;
+
+            foreach (var mesh in rendereable.meshes)
+            {
+                self.RemoveMesh(entity, mesh);
+            }
+
             self.RemoveRendereable( sceneId, rendereable );
         }
 

@@ -18,11 +18,6 @@ namespace DCL.Components
         private Action<Rendereable> successWrapperEvent;
         private Action failWrapperEvent;
 
-        /// <summary>
-        /// Tracked meshes to persist in DataStore_SceneRendering
-        /// </summary>
-        public HashSet<Mesh> trackedMeshes = new HashSet<Mesh>();
-
         public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail)
         {
             if (loadHelper != null)
@@ -65,23 +60,12 @@ namespace DCL.Components
 
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;
-            loadHelper.OnMeshAdded += OnMeshAdded;
             loadHelper.Load(targetUrl);
-        }
-
-        private void OnMeshAdded(Mesh mesh)
-        {
-            if ( trackedMeshes.Contains(mesh) )
-                return;
-
-            trackedMeshes.Add(mesh);
-            DataStore.i.sceneWorldObjects.AddMesh(entity, mesh);
         }
 
         private void OnFailWrapper(Action<LoadWrapper> OnFail)
         {
             alreadyLoaded = true;
-            loadHelper.OnMeshAdded -= OnMeshAdded;
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
             this.entity.OnCleanupEvent -= OnEntityCleanup;
@@ -91,10 +75,8 @@ namespace DCL.Components
         private void OnSuccessWrapper(Action<LoadWrapper> OnSuccess)
         {
             alreadyLoaded = true;
-            loadHelper.OnMeshAdded -= OnMeshAdded;
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
-
             DataStore.i.sceneWorldObjects.AddRendereable(entity, loadHelper.loadedAsset);
             OnSuccess?.Invoke(this);
         }
@@ -103,20 +85,13 @@ namespace DCL.Components
 
         public override void Unload()
         {
-            foreach ( var mesh in trackedMeshes )
-            {
-                DataStore.i.sceneWorldObjects.RemoveMesh(entity, mesh);
-            }
-
             if ( loadHelper.loadedAsset != null )
             {
                 DataStore.i.sceneWorldObjects.RemoveRendereable(entity, loadHelper.loadedAsset);
             }
 
-            trackedMeshes.Clear();
             loadHelper.Unload();
             this.entity.OnCleanupEvent -= OnEntityCleanup;
-            loadHelper.OnMeshAdded -= OnMeshAdded;
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
             alreadyLoaded = false;
