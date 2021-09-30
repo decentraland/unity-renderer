@@ -12,7 +12,7 @@ namespace DCL.Components
     public abstract class ParametrizedShape<T> : BaseShape
         where T : BaseShape.Model, new()
     {
-        public Dictionary<string, Rendereable> attachedRendereables = new Dictionary<string, Rendereable>();
+        public Dictionary<IDCLEntity, Rendereable> attachedRendereables = new Dictionary<IDCLEntity, Rendereable>();
         bool visibilityDirty = false;
         bool collisionsDirty = false;
 
@@ -68,7 +68,9 @@ namespace DCL.Components
                 entity.meshesInfo.UpdateExistingMeshAtIndex(currentMesh, 0);
             }
 
-            AddOrUpdateRendereableToDataStore(entity);
+            // First we remove the old rendereable, then we compute and add the new one.
+            RemoveRendereableFromDataStore(entity);
+            AddRendereableToDataStore(entity);
         }
 
         void OnShapeAttached(IDCLEntity entity)
@@ -80,7 +82,7 @@ namespace DCL.Components
 
             if (currentMesh == null)
             {
-                currentMesh = GenerateGeometryAndUpdateDataStore();
+                currentMesh = GenerateGeometry();
             }
 
             MeshFilter meshFilter = entity.meshRootGameObject.AddComponent<MeshFilter>();
@@ -125,7 +127,7 @@ namespace DCL.Components
 
             if (attachedEntities.Count == 0)
             {
-                DestroyGeometryAndUpdateDataStore();
+                DestroyGeometry();
                 Utils.CleanMaterials(entity.meshRootGameObject.GetComponent<Renderer>());
                 currentMesh = null;
             }
@@ -154,8 +156,8 @@ namespace DCL.Components
             {
                 if (shouldGenerateMesh)
                 {
-                    DestroyGeometryAndUpdateDataStore();
-                    currentMesh = GenerateGeometryAndUpdateDataStore();
+                    DestroyGeometry();
+                    currentMesh = GenerateGeometry();
                 }
 
                 using (var iterator = attachedEntities.GetEnumerator())
@@ -195,34 +197,17 @@ namespace DCL.Components
 
         protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel) { return true; }
 
-        private void DestroyGeometryAndUpdateDataStore()
-        {
-            DataStore.i.sceneWorldObjects.RemoveMesh(scene.sceneData.id, currentMesh);
-            DestroyGeometry();
-        }
-
-        private Mesh GenerateGeometryAndUpdateDataStore()
-        {
-            Mesh mesh = GenerateGeometry();
-            DataStore.i.sceneWorldObjects.AddMesh(scene.sceneData.id, mesh);
-            return mesh;
-        }
-
         private void RemoveRendereableFromDataStore(IDCLEntity entity)
         {
-            string sceneId = entity.scene.sceneData.id;
-
-            if ( attachedRendereables.ContainsKey(sceneId) )
+            if ( attachedRendereables.ContainsKey(entity) )
             {
-                DataStore.i.sceneWorldObjects.RemoveRendereable(sceneId, attachedRendereables[sceneId]);
-                attachedRendereables.Remove(sceneId);
+                DataStore.i.sceneWorldObjects.RemoveRendereable(entity, attachedRendereables[entity]);
+                attachedRendereables.Remove(entity);
             }
         }
 
-        private void AddOrUpdateRendereableToDataStore(IDCLEntity entity)
+        private void AddRendereableToDataStore(IDCLEntity entity)
         {
-            string sceneId = entity.scene.sceneData.id;
-
             int triangleCount = currentMesh.triangles.Length;
 
             var newRendereable = new Rendereable()
@@ -234,18 +219,10 @@ namespace DCL.Components
                 meshToTriangleCount = new Dictionary<Mesh, int>() { { currentMesh, triangleCount } }
             };
 
-            if ( !attachedRendereables.ContainsKey(sceneId) )
+            if ( !attachedRendereables.ContainsKey(entity) )
             {
-                attachedRendereables.Add(sceneId, newRendereable);
-                DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
-            }
-            else if ( !newRendereable.Equals(attachedRendereables[sceneId]))
-            {
-                // NOTE(Brian): We remove and set the new one to trigger the change events
-                DataStore.i.sceneWorldObjects.RemoveRendereable(sceneId, attachedRendereables[sceneId]);
-                DataStore.i.sceneWorldObjects.AddRendereable(sceneId, newRendereable);
-                attachedRendereables.Remove(sceneId);
-                attachedRendereables.Add(sceneId, newRendereable);
+                attachedRendereables.Add(entity, newRendereable);
+                DataStore.i.sceneWorldObjects.AddRendereable(entity, newRendereable);
             }
         }
     }

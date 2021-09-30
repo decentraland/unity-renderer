@@ -50,7 +50,7 @@ namespace DCL.Models
             {
                 var r = renderers[i];
 
-                if ( r is MeshRenderer meshRenderer )
+                if ( r is MeshRenderer )
                 {
                     int triangles = meshToTriangleCount[ r.GetComponent<MeshFilter>().sharedMesh ];
                     result += triangles;
@@ -65,6 +65,18 @@ namespace DCL.Models
             return result;
         }
 
+        public static Dictionary<Mesh, int> ExtractMeshToTriangleMap(List<Mesh> meshes)
+        {
+            Dictionary<Mesh, int> result = new Dictionary<Mesh, int>();
+
+            for ( int i = 0; i < meshes.Count; i++ )
+            {
+                Mesh mesh = meshes[i];
+                result[mesh] = mesh.triangles.Length;
+            }
+
+            return result;
+        }
 
         public static List<Mesh> ExtractMeshes(GameObject gameObject)
         {

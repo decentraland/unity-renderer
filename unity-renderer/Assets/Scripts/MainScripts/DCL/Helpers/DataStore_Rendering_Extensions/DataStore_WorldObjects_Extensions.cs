@@ -9,20 +9,68 @@ namespace DCL
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
-        public static void AddMesh( this DataStore.DataStore_WorldObjects self, string sceneId, Mesh mesh )
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="entity"></param>
+        /// <param name="rendereable"></param>
+        public static void AddRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
         {
-            if ( mesh == null )
+            if ( entity == null )
             {
-                logger.Log( $"Trying to add null mesh! (id: {sceneId})");
+                logger.Log($"Null entity!");
                 return;
             }
 
-            if ( string.IsNullOrEmpty(sceneId))
+            if ( rendereable == null )
             {
-                logger.LogWarning($"AddMesh", $"invalid sceneId! (id: {sceneId})");
+                logger.Log( $"Trying to add null rendereable! (id: {entity.scene.sceneData.id})");
                 return;
             }
 
+            string sceneId = entity.scene.sceneData.id;
+
+            foreach (var mesh in rendereable.meshes)
+            {
+                self.AddMesh(entity, mesh);
+            }
+
+            self.AddRendereable( sceneId, rendereable );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="entity"></param>
+        /// <param name="rendereable"></param>
+        public static void RemoveRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
+        {
+            if ( entity == null )
+            {
+                logger.Log($"Null entity!");
+                return;
+            }
+
+            if ( rendereable == null )
+            {
+                logger.Log( $"Trying to remove null rendereable! (id: {entity.scene.sceneData.id})");
+                return;
+            }
+
+            string sceneId = entity.scene.sceneData.id;
+
+            foreach (var mesh in rendereable.meshes)
+            {
+                self.RemoveMesh(entity, mesh);
+            }
+
+            self.RemoveRendereable( sceneId, rendereable );
+        }
+
+        private static void AddMesh( this DataStore.DataStore_WorldObjects self, string sceneId, Mesh mesh )
+        {
             if (!self.sceneData.ContainsKey(sceneId))
                 self.sceneData.Add(sceneId, new DataStore.DataStore_WorldObjects.SceneData());
 
@@ -37,20 +85,8 @@ namespace DCL
             }
         }
 
-        public static void RemoveMesh( this DataStore.DataStore_WorldObjects self, string sceneId, Mesh mesh )
+        private static void RemoveMesh( this DataStore.DataStore_WorldObjects self, string sceneId, Mesh mesh )
         {
-            if ( mesh == null )
-            {
-                logger.Log( $"Trying to remove null mesh! (id: {sceneId})");
-                return;
-            }
-
-            if ( string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId) )
-            {
-                logger.LogWarning($"RemoveMesh", $"invalid sceneId! (id: {sceneId})");
-                return;
-            }
-
             BaseDictionary<Mesh, int> sceneMeshes = self.sceneData[sceneId].refCountedMeshes;
 
             if (!sceneMeshes.ContainsKey(mesh))
@@ -72,43 +108,51 @@ namespace DCL
                 self.sceneData.Remove(sceneId);
         }
 
-        public static void AddMesh( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
+        private static void AddMesh( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
         {
+            if (entity == null)
+            {
+                logger.LogWarning($"AddMesh", $"invalid entity!");
+                return;
+            }
+
             string sceneId = entity.scene.sceneData.id;
+
+            if (mesh == null)
+            {
+                logger.Log( $"Trying to add null mesh! (id: {sceneId})");
+                return;
+            }
+
             self.AddMesh( sceneId, mesh );
         }
 
-        public static void RemoveMesh( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
+        private static void RemoveMesh( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
         {
+            if (entity == null)
+            {
+                logger.LogWarning($"RemoveMesh", $"invalid entity!");
+                return;
+            }
+
             string sceneId = entity.scene.sceneData.id;
+
+            if ( mesh == null )
+            {
+                logger.Log( $"Trying to remove null mesh! (id: {sceneId})");
+                return;
+            }
+
+            if ( string.IsNullOrEmpty(sceneId) || !self.sceneData.ContainsKey(sceneId) )
+            {
+                logger.LogWarning($"RemoveMesh", $"invalid sceneId! (id: {sceneId})");
+                return;
+            }
+
             self.RemoveMesh( sceneId, mesh );
         }
 
-        public static void AddRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
-        {
-            string sceneId = entity.scene.sceneData.id;
-
-            foreach (var mesh in rendereable.meshes)
-            {
-                self.AddMesh(entity, mesh);
-            }
-
-            self.AddRendereable( sceneId, rendereable );
-        }
-
-        public static void RemoveRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
-        {
-            string sceneId = entity.scene.sceneData.id;
-
-            foreach (var mesh in rendereable.meshes)
-            {
-                self.RemoveMesh(entity, mesh);
-            }
-
-            self.RemoveRendereable( sceneId, rendereable );
-        }
-
-        public static void AddRendereable( this DataStore.DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
+        private static void AddRendereable( this DataStore.DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if ( rendereable == null )
             {
@@ -128,7 +172,7 @@ namespace DCL
                 sceneData.renderedObjects.Add(rendereable);
         }
 
-        public static void RemoveRendereable( this DataStore.DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
+        private static void RemoveRendereable( this DataStore.DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if ( rendereable == null )
             {
@@ -151,19 +195,9 @@ namespace DCL
                 self.sceneData.Remove(sceneId);
         }
 
-        public static bool IsEmpty( this DataStore.DataStore_WorldObjects.SceneData self)
+        private static bool IsEmpty( this DataStore.DataStore_WorldObjects.SceneData self)
         {
             return self.refCountedMeshes.Count() == 0 && self.renderedObjects.Count() == 0;
-        }
-
-        public static DataStore.DataStore_WorldObjects.SceneData GetSceneData(this DataStore.DataStore_WorldObjects self, string sceneId)
-        {
-            var sceneRenderingData = DataStore.i.sceneWorldObjects.sceneData;
-
-            if ( !sceneRenderingData.ContainsKey(sceneId) )
-                sceneRenderingData.Add(sceneId, new DataStore.DataStore_WorldObjects.SceneData());
-
-            return sceneRenderingData[sceneId];
         }
     }
 }

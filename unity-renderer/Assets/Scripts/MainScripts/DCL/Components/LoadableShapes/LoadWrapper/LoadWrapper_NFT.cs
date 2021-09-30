@@ -1,26 +1,31 @@
+using System.Linq;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
 {
     public class LoadWrapper_NFT : LoadWrapper
     {
-        [HideInInspector] public NFTShapeLoaderController loaderController;
+        public NFTShapeLoaderController loaderController;
 
         public bool withCollisions;
         public Color backgroundColor;
-        public BaseDisposable component;
 
-        string assetUrl;
+        private string assetUrl;
+        private Rendereable rendereable;
+
 
         public override void Unload()
         {
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
-            loaderController.OnLoadingAssetSuccess -= CallOnComponentUpdated;
+            loaderController.OnLoadingAssetSuccess -= OnLoadingAssetSuccess;
             Object.Destroy(loaderController);
 
             Utils.SafeDestroy(entity.meshRootGameObject);
             entity.meshesInfo.CleanReferences();
+
+            DataStore.i.sceneWorldObjects.RemoveRendereable(entity, rendereable);
         }
 
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)
@@ -40,7 +45,7 @@ namespace DCL.Components
             loaderController.collider.enabled = withCollisions;
             loaderController.backgroundColor = backgroundColor;
 
-            loaderController.OnLoadingAssetSuccess += CallOnComponentUpdated;
+            loaderController.OnLoadingAssetSuccess += OnLoadingAssetSuccess;
 
             assetUrl = src;
 
@@ -57,15 +62,22 @@ namespace DCL.Components
             OnSuccess?.Invoke(this);
         }
 
-        void CallOnComponentUpdated()
+        void OnLoadingAssetSuccess()
         {
             alreadyLoaded = true;
+
+            rendereable = Rendereable.CreateFromGameObject(entity.meshRootGameObject);
+            DataStore.i.sceneWorldObjects.AddRendereable(entity, rendereable);
 
             entity.OnShapeUpdated?.Invoke(entity);
             entity.OnShapeLoaded?.Invoke(entity);
         }
 
-        void LoadAsset() { loaderController?.LoadAsset(assetUrl, true); }
+        void LoadAsset()
+        {
+            if ( loaderController != null )
+                loaderController.LoadAsset(assetUrl, true);
+        }
 
         void OnRendererStateChanged(bool current, bool previous)
         {

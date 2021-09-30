@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL
@@ -33,6 +35,17 @@ namespace DCL
             result.renderers = new List<Renderer>(renderers);
             result.meshes = new List<Mesh>(meshes);
             return result;
+        }
+
+        public static Rendereable CreateFromGameObject(GameObject go)
+        {
+            Rendereable rendereable = new Rendereable();
+            rendereable.container = go;
+            rendereable.renderers = go.GetComponentsInChildren<Renderer>().ToList();
+            rendereable.meshes = MeshesInfoUtils.ExtractMeshes(go);
+            rendereable.meshToTriangleCount = MeshesInfoUtils.ExtractMeshToTriangleMap(rendereable.meshes);
+            rendereable.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(rendereable.renderers, rendereable.meshToTriangleCount);
+            return rendereable;
         }
     }
 }

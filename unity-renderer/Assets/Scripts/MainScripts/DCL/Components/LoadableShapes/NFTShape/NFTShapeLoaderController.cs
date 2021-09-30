@@ -94,6 +94,8 @@ public class NFTShapeLoaderController : MonoBehaviour
                     break;
             }
         }
+
+
         meshRenderer.materials = meshMaterials;
 
         // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
@@ -349,6 +351,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         {
             Object.Destroy(backgroundMaterial);
         }
+
         if (imageMaterial != null)
         {
             Object.Destroy(imageMaterial);
