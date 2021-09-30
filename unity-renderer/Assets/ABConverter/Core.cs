@@ -109,7 +109,7 @@ namespace DCL.ABConverter
 
             log.Info($"Conversion start... free space in disk: {PathUtils.GetFreeSpace()}");
 
-            InitializeDirectoryPaths(settings.clearDirectoriesOnStart);
+            InitializeDirectoryPaths(settings.clearDirectoriesOnStart, settings.clearDirectoriesOnStart);
             PopulateLowercaseMappings(rawContents);
 
             float timer = Time.realtimeSinceStartup;
@@ -802,12 +802,12 @@ namespace DCL.ABConverter
             ABConverter.Utils.MarkAssetForAssetBundleBuild(env.assetDatabase, mainShader, MAIN_SHADER_AB_NAME);
         }
 
-        internal virtual void InitializeDirectoryPaths(bool deleteIfExists)
+        internal virtual void InitializeDirectoryPaths(bool deleteDownloadDirIfExists, bool deleteABsDireIfExists)
         {
             log.Info("Initializing directory -- " + finalDownloadedPath);
-            env.directory.InitializeDirectory(finalDownloadedPath, deleteIfExists);
+            env.directory.InitializeDirectory(finalDownloadedPath, deleteDownloadDirIfExists);
             log.Info("Initializing directory -- " + settings.finalAssetBundlePath);
-            env.directory.InitializeDirectory(settings.finalAssetBundlePath, deleteIfExists);
+            env.directory.InitializeDirectory(settings.finalAssetBundlePath, deleteABsDireIfExists);
         }
 
         internal void CleanupWorkingFolders()

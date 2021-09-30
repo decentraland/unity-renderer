@@ -371,7 +371,7 @@ namespace DCL.ABConverter
             settings.clearDirectoriesOnStart = false;
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
 
-            abConverterCoreController.InitializeDirectoryPaths(true);
+            abConverterCoreController.InitializeDirectoryPaths(true, true);
             DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnBodyWearableLoad);
         }
 
@@ -402,36 +402,45 @@ namespace DCL.ABConverter
             
             // By manipulating these variables we control which collections are converted to batch manually
             int initialCollectionIndex = 0;
-            int maxCollectionIndex = 50;
-            DumpWearablesCollection(abConverterCoreController, initialCollectionIndex, maxCollectionIndex);
+            int lastCollectionIndex = 50;
+            DumpWearablesCollection(abConverterCoreController, initialCollectionIndex, lastCollectionIndex);
         }
 
-        private static void DumpWearablesCollection(ABConverter.Core abConverterCoreController, int currentCollectionIndex, int maxCollectionIndex)
+        private static void DumpWearablesCollection(ABConverter.Core abConverterCoreController, int currentCollectionIndex, int lastCollectionIndex)
         {
             if (currentCollectionIndex >= wearableCollections.Length)
                 return;
             
-            abConverterCoreController.InitializeDirectoryPaths(true);
+            abConverterCoreController.InitializeDirectoryPaths(true, false);
          
             log.Info($"Dumping wearables from collection {wearableCollections[currentCollectionIndex].id}");
             
             List<WearableItem> avatarItemList = GetWearableItems(BuildWearableCollectionFetchingURL(wearableCollections[currentCollectionIndex].id))
                                                 .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
+            
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
             
             DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad, (x) =>
             {
                 currentCollectionIndex++;
 
-                if (currentCollectionIndex > maxCollectionIndex || currentCollectionIndex >= wearableCollections.Length)
+                if (currentCollectionIndex > lastCollectionIndex || currentCollectionIndex >= wearableCollections.Length)
                 {
                     double totalTime = EditorApplication.timeSinceStartup - dumpStartTime;
-                    log.Info($"Finished all non-bodyshape wearables dumping, total time: {totalTime} seconds");
+                    
+                    TimeSpan t = TimeSpan.FromSeconds(totalTime);
+                    string formattedTotalTime = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
+                        t.Hours,
+                        t.Minutes,
+                        t.Seconds,
+                        t.Milliseconds);
+                    
+                    log.Info($"Finished all non-bodyshape wearables dumping, total time: {formattedTotalTime}");
                     return;
                 }
                 
-                DumpWearablesCollection(abConverterCoreController, currentCollectionIndex, maxCollectionIndex);
+                DumpWearablesCollection(abConverterCoreController, currentCollectionIndex, lastCollectionIndex);
             });
         }
 

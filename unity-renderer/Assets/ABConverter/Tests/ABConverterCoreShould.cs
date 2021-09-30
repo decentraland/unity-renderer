@@ -98,7 +98,7 @@ namespace DCL.ABConverter.Tests
             env = ABConverter.Environment.CreateWithDefaultImplementations();
             core = new ABConverter.Core(env, settings);
 
-            core.InitializeDirectoryPaths(false);
+            core.InitializeDirectoryPaths(false, false);
 
             Assert.IsFalse(string.IsNullOrEmpty(core.settings.finalAssetBundlePath));
             Assert.IsFalse(string.IsNullOrEmpty(core.finalDownloadedPath));
@@ -112,7 +112,7 @@ namespace DCL.ABConverter.Tests
             env.file.WriteAllText(file1, "test");
             env.file.WriteAllText(file2, "test");
 
-            core.InitializeDirectoryPaths(true);
+            core.InitializeDirectoryPaths(true, true);
 
             Assert.IsFalse(env.file.Exists(file1));
             Assert.IsFalse(env.file.Exists(file2));
