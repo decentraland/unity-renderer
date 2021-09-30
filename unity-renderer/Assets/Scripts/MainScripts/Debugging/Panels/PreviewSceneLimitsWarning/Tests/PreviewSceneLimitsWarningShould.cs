@@ -14,6 +14,7 @@ public class PreviewSceneLimitsWarningShould
     private SceneMetricsModel metrics = new SceneMetricsModel();
     private SceneMetricsModel limit = new SceneMetricsModel();
     private Dictionary<string, IParcelScene> scenes;
+    private readonly KernelConfigModel kernelConfigModel = new KernelConfigModel();
 
     [SetUp]
     public void SetUp()
@@ -31,13 +32,13 @@ public class PreviewSceneLimitsWarningShould
 
         scene.metricsController.Returns(sceneMetrics);
         worldState.loadedScenes.Returns(scenes);
+
+        kernelConfigModel.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;
     }
 
     [TearDown]
     public void TearDown()
     {
-        KernelConfig.i.ClearPromises();
-        KernelConfig.i.Set(new KernelConfigModel());
         previewSceneLimitsWarning.Dispose();
     }
 
@@ -47,11 +48,8 @@ public class PreviewSceneLimitsWarningShould
         limit.entities = 1;
         metrics.entities = 2;
 
-        var kernelConfig = KernelConfig.i.Get().Clone();
-        kernelConfig.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;
-        KernelConfig.i.Set(kernelConfig);
-
         previewSceneLimitsWarning.SetActive(true);
+        previewSceneLimitsWarning.OnKernelConfigChanged(kernelConfigModel, null);
         previewSceneLimitsWarning.HandleWarningNotification();
 
         Assert.IsTrue(previewSceneLimitsWarning.isShowingNotification);
@@ -63,11 +61,8 @@ public class PreviewSceneLimitsWarningShould
         limit.entities = 1;
         metrics.entities = 2;
 
-        var kernelConfig = KernelConfig.i.Get().Clone();
-        kernelConfig.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;
-        KernelConfig.i.Set(kernelConfig);
-
         previewSceneLimitsWarning.SetActive(true);
+        previewSceneLimitsWarning.OnKernelConfigChanged(kernelConfigModel, null);
         previewSceneLimitsWarning.HandleWarningNotification();
 
         Assert.IsTrue(previewSceneLimitsWarning.isShowingNotification);
@@ -84,11 +79,8 @@ public class PreviewSceneLimitsWarningShould
         limit.entities = 1;
         metrics.entities = 2;
 
-        var kernelConfig = KernelConfig.i.Get().Clone();
-        kernelConfig.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;
-        KernelConfig.i.Set(kernelConfig);
-
         previewSceneLimitsWarning.SetActive(true);
+        previewSceneLimitsWarning.OnKernelConfigChanged(kernelConfigModel, null);
         previewSceneLimitsWarning.HandleWarningNotification();
 
         Assert.IsTrue(previewSceneLimitsWarning.isShowingNotification);
@@ -104,16 +96,31 @@ public class PreviewSceneLimitsWarningShould
         limit.entities = 1;
         metrics.entities = 2;
 
-        var kernelConfig = KernelConfig.i.Get().Clone();
-        kernelConfig.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;
-        KernelConfig.i.Set(kernelConfig);
-
         previewSceneLimitsWarning.SetActive(true);
+        previewSceneLimitsWarning.OnKernelConfigChanged(kernelConfigModel, null);
         previewSceneLimitsWarning.HandleWarningNotification();
 
         Assert.IsTrue(previewSceneLimitsWarning.isShowingNotification);
 
         previewSceneLimitsWarning.Dispose();
+
+        Assert.IsFalse(previewSceneLimitsWarning.isShowingNotification);
+    }
+
+    [Test]
+    public void HideNotificationWhenDisabledByKernelConfig()
+    {
+        limit.entities = 1;
+        metrics.entities = 2;
+
+        previewSceneLimitsWarning.SetActive(true);
+        previewSceneLimitsWarning.OnKernelConfigChanged(kernelConfigModel, null);
+        previewSceneLimitsWarning.HandleWarningNotification();
+
+        Assert.IsTrue(previewSceneLimitsWarning.isShowingNotification);
+
+        kernelConfigModel.debugConfig.sceneLimitsWarningSceneId = null;
+        previewSceneLimitsWarning.OnKernelConfigChanged(kernelConfigModel, null);
 
         Assert.IsFalse(previewSceneLimitsWarning.isShowingNotification);
     }

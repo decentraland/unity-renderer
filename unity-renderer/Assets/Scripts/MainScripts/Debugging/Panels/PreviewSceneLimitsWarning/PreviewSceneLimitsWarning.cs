@@ -10,7 +10,7 @@ namespace DCL
     public class PreviewSceneLimitsWarning : IDisposable
     {
         private const string NOTIFICATION_GROUP = "SceneLimitationExceeded";
-        private const string NOTIFICATION_MESSAGE = "Scene's limits exceeded";
+        private const string NOTIFICATION_MESSAGE = "Scene's limits exceeded: {0}";
 
         internal const float CHECK_INTERVAL = 0.2f;
 
@@ -62,7 +62,7 @@ namespace DCL
             ShowNotification(false);
         }
 
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        internal void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
         {
             sceneId = current.debugConfig.sceneLimitsWarningSceneId;
             if (string.IsNullOrEmpty(sceneId))
@@ -95,7 +95,7 @@ namespace DCL
                 isLimitReached = IsLimitReached(currentMetrics, limit, ref warningMessage);
                 if (isLimitReached)
                 {
-                    limitReachedNotification.message = $"{NOTIFICATION_MESSAGE}: {warningMessage}";
+                    limitReachedNotification.message = string.Format(NOTIFICATION_MESSAGE, warningMessage);
                 }
             }
 
