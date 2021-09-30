@@ -36,6 +36,7 @@ namespace DCL
 
         public void Dispose()
         {
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
             StopChecking();
         }
 
@@ -49,6 +50,7 @@ namespace DCL
             }
             if (!active && isActive)
             {
+                KernelConfig.i.OnChange -= OnKernelConfigChanged;
                 StopChecking();
             }
             isActive = active;
@@ -56,7 +58,6 @@ namespace DCL
 
         private void StopChecking()
         {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
             CoroutineStarter.Stop(updateRoutine);
             ShowNotification(false);
         }
@@ -64,6 +65,10 @@ namespace DCL
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
         {
             sceneId = current.debugConfig.sceneLimitsWarningSceneId;
+            if (string.IsNullOrEmpty(sceneId))
+            {
+                StopChecking();
+            }
         }
 
         private IEnumerator UpdateRoutine()
@@ -77,6 +82,9 @@ namespace DCL
 
         internal void HandleWarningNotification()
         {
+            if (worldState == null)
+                return;
+
             bool isLimitReached = false;
 
             if (!string.IsNullOrEmpty(sceneId))
@@ -86,7 +94,12 @@ namespace DCL
                 SceneMetricsModel currentMetrics = metricsController?.GetModel();
                 SceneMetricsModel limit = metricsController?.GetLimits();
 
-                isLimitReached = IsLimitReached(currentMetrics, limit);
+                string warningMessage = null;
+                isLimitReached = IsLimitReached(currentMetrics, limit, ref warningMessage);
+                if (isLimitReached)
+                {
+                    limitReachedNotification.message = $"{NOTIFICATION_MESSAGE}: {warningMessage}";
+                }
             }
 
             if (isShowingNotification != isLimitReached)
@@ -95,16 +108,48 @@ namespace DCL
             }
         }
 
-        private static bool IsLimitReached(SceneMetricsModel currentMetrics, SceneMetricsModel limit)
+        private static bool IsLimitReached(SceneMetricsModel currentMetrics, SceneMetricsModel limit, ref string message)
         {
-            return currentMetrics != null && limit != null
-                                          && (currentMetrics.bodies > limit.bodies
-                                              || currentMetrics.entities > limit.entities
-                                              || currentMetrics.materials > limit.materials
-                                              || currentMetrics.meshes > limit.meshes
-                                              || currentMetrics.triangles > limit.triangles
-                                              || currentMetrics.sceneHeight > limit.sceneHeight
-                                          );
+            if (currentMetrics == null || limit == null)
+                return false;
+
+            if (currentMetrics.materials > limit.materials)
+            {
+                message = $"Materials ({currentMetrics.materials}/{limit.materials})";
+                return true;
+            }
+
+            if (currentMetrics.triangles > limit.triangles)
+            {
+                message = $"Triangles ({currentMetrics.triangles}/{limit.triangles})";
+                return true;
+            }
+
+            if (currentMetrics.meshes > limit.meshes)
+            {
+                message = $"Meshes ({currentMetrics.meshes}/{limit.meshes})";
+                return true;
+            }
+
+            if (currentMetrics.entities > limit.entities)
+            {
+                message = $"Entities ({currentMetrics.entities}/{limit.entities})";
+                return true;
+            }
+
+            if (currentMetrics.bodies > limit.bodies)
+            {
+                message = $"Bodies ({currentMetrics.bodies}/{limit.bodies})";
+                return true;
+            }
+
+            if (currentMetrics.sceneHeight > limit.sceneHeight)
+            {
+                message = $"Height ({currentMetrics.sceneHeight}/{limit.sceneHeight})";
+                return true;
+            }
+
+            return false;
         }
 
         private void ShowNotification(bool show)
