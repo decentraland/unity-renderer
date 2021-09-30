@@ -168,6 +168,7 @@ namespace DCL.Components
                         OnLoadFailed(null);
                         return;
                     }
+
                     model.src = sceneObject.model;
                 }
             }
@@ -262,10 +263,9 @@ namespace DCL.Components
             entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
 
             var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
+
             ConfigureVisibility(entity.meshRootGameObject, model.visible, loadWrapper.entity.meshesInfo.renderers);
-
             ConfigureColliders(entity);
-
             RaiseOnShapeUpdated(entity);
             RaiseOnShapeLoaded(entity);
 

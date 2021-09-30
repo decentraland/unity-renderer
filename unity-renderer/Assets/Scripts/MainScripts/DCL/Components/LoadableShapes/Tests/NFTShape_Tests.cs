@@ -8,12 +8,9 @@ using UnityEngine.TestTools;
 
 public class NFTShape_Tests : IntegrationTestSuite_Legacy
 {
-
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-
-
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -48,8 +45,6 @@ public class NFTShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator MissingValuesGetDefaultedOnUpdate()
     {
-
-
         var component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE);
         yield return component.routine;
 
@@ -63,8 +58,6 @@ public class NFTShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-
-
         string entityId = "entityId";
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];

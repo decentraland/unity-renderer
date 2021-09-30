@@ -239,6 +239,8 @@ public class NFTShapeLoaderController : MonoBehaviour
             yield break;
         }
 
+        // TODO(Brian): This code will be called but FetchNFTInfoSuccess call in the promise
+        //              above also triggers it, so the event is invoked twice!. Fix me!.
         FinishLoading(foundDCLImage);
     }
 

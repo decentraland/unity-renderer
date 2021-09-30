@@ -124,17 +124,67 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         yield return new WaitForAllMessagesProcessed();
 
         Debug.Log(scene.metricsController.GetModel());
+        AssertMetricsModel(scene,
+            triangles: 612,
+            materials: 1,
+            entities: 2,
+            meshes: 1,
+            bodies: 2,
+            textures: 0);
 
         TestHelpers.RemoveSceneEntity(scene, entity1);
         TestHelpers.RemoveSceneEntity(scene, entity2);
         yield return new WaitForAllMessagesProcessed();
-        Debug.Log(scene.metricsController.GetModel());
+
+        AssertMetricsModel(scene,
+            triangles: 0,
+            materials: 0,
+            entities: 0,
+            meshes: 0,
+            bodies: 0,
+            textures: 0);
     }
 
     [UnityTest]
     public IEnumerator CountNFTShapes()
     {
-        yield break;
+        var entity = TestHelpers.CreateSceneEntity(scene);
+
+        Assert.IsTrue(entity.meshRootGameObject == null, "entity mesh object should be null as the NFTShape hasn't been initialized yet");
+
+        var componentModel = new NFTShape.Model()
+        {
+            src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
+        };
+
+        CommonScriptableObjects.rendererState.Set(true);
+
+        NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
+        Debug.Log(scene.metricsController.GetModel());
+        TestHelpers.SharedComponentAttach(component, entity);
+
+        LoadWrapper_NFT wrapper = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
+        yield return new WaitUntil(() => wrapper.alreadyLoaded);
+
+        Debug.Log(scene.metricsController.GetModel());
+        AssertMetricsModel(scene,
+            triangles: 190,
+            materials: 6,
+            entities: 1,
+            meshes: 4,
+            bodies: 4,
+            textures: 0);
+
+        TestHelpers.RemoveSceneEntity(scene, entity);
+        yield return new WaitForAllMessagesProcessed();
+
+        AssertMetricsModel(scene,
+            triangles: 0,
+            materials: 0,
+            entities: 0,
+            meshes: 0,
+            bodies: 0,
+            textures: 0);
     }
 
     [UnityTest]

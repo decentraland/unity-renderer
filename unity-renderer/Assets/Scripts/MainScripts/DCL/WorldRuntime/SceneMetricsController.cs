@@ -305,12 +305,14 @@ namespace DCL
         {
             int trianglesToAdd = rendereable.totalTriangleCount / 3;
             model.triangles += trianglesToAdd;
+            logger.Log($"Adding tris... {trianglesToAdd} ... {rendereable.meshes[0].name}");
         }
 
         private void OnWillRemoveRendereable(Rendereable rendereable)
         {
             int trianglesToRemove = rendereable.totalTriangleCount / 3;
             model.triangles -= trianglesToRemove;
+            logger.Log($"Removing tris... {trianglesToRemove} ... {rendereable.meshes[0].name}");
         }
 
         private void OnWillAddUniqueMesh(Mesh mesh, int refCount)

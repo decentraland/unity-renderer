@@ -64,6 +64,9 @@ namespace DCL.Components
 
         void OnLoadingAssetSuccess()
         {
+            if (alreadyLoaded)
+                return;
+
             alreadyLoaded = true;
 
             rendereable = Rendereable.CreateFromGameObject(entity.meshRootGameObject);
