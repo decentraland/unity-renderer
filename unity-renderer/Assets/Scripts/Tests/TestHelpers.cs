@@ -57,12 +57,11 @@ namespace DCL.Helpers
             return pbTranf;
         }
 
-        public static FeatureFlagConfiguration CreatetFeatureFlagConfiguration()
+        public static FeatureFlag CreatetFeatureFlag()
         {
             FeatureFlag featureFlag = new FeatureFlag();
             featureFlag.flags.Add("Tutorial", false);
-            FeatureFlagConfiguration configuration = new FeatureFlagConfiguration(featureFlag);
-            return configuration;
+            return featureFlag;
         }
 
         public static PB_Transform GetPBTransformFromModelJson(string json)

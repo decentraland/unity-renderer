@@ -21,8 +21,8 @@ public class PluginSystemShould : IntegrationTestSuite
     public void TestFeatureControllerApplyConfig()
     {
         //Arrange
-        FeatureFlagConfiguration currentConfig = TestHelpers.CreatetFeatureFlagConfiguration();
-        PluginSystem pluginSystem = new PluginSystem(currentConfig);
+        FeatureFlag currentConfig = TestHelpers.CreatetFeatureFlag();
+        PluginSystem pluginSystem = new PluginSystem();
 
         //Act
         pluginSystem.ApplyFeaturesConfig(currentConfig);
@@ -35,9 +35,10 @@ public class PluginSystemShould : IntegrationTestSuite
     public void TestFeatureControllerConfigChange()
     {
         //Arrange
-        FeatureFlagConfiguration oldConfig = TestHelpers.CreatetFeatureFlagConfiguration();
-        FeatureFlagConfiguration newConfig = TestHelpers.CreatetFeatureFlagConfiguration();
-        PluginSystem pluginSystem = new PluginSystem(oldConfig);
+        FeatureFlag oldConfig = TestHelpers.CreatetFeatureFlag();
+        FeatureFlag newConfig = TestHelpers.CreatetFeatureFlag();
+        PluginSystem pluginSystem = new PluginSystem();
+        pluginSystem.ApplyFeaturesConfig(oldConfig);
 
         //Act
         pluginSystem.ApplyFeaturesConfig(newConfig);

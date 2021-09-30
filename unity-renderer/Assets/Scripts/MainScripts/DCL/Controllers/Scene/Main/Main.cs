@@ -39,6 +39,7 @@ namespace DCL
                 SetupEnvironment();
             }
 
+            pluginSystem = new PluginSystem();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -111,7 +112,5 @@ namespace DCL
         }
 
         private void OnGUI() { pluginSystem?.OnGUI(); }
-
-        public void SetFeatureFlagConfiguration(string json) { pluginSystem = new PluginSystem(json); }
     }
 }

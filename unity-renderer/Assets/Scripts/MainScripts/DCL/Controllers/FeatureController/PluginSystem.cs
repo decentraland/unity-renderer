@@ -11,19 +11,13 @@ using System.Collections.Generic;
 /// </summary>
 public class PluginSystem
 {
-    private List<PluginFeature> activeFeatures = new List<PluginFeature>();
+    private readonly List<PluginFeature> activeFeatures = new List<PluginFeature>();
 
-    private FeatureFlagConfiguration currentConfig;
+    private FeatureFlag currentConfig;
 
-    public FeatureFlagConfiguration GetCurrentConfig() { return currentConfig; }
+    public FeatureFlag GetCurrentConfig() { return currentConfig; }
 
-    public PluginSystem(string featureConfigJson)
-    {
-        FeatureFlagConfiguration configuration = new FeatureFlagConfiguration(featureConfigJson);
-        ApplyFeaturesConfig(configuration);
-    }
-
-    public PluginSystem(FeatureFlagConfiguration configuration) { ApplyFeaturesConfig(configuration); }
+    public PluginSystem() { DataStore.i.featureFlags.featureFlags.OnChange += ApplyFeaturesConfig; }
 
     public void OnGUI()
     {
@@ -51,18 +45,22 @@ public class PluginSystem
 
     public void OnDestroy()
     {
+        DataStore.i.featureFlags.featureFlags.OnChange -= ApplyFeaturesConfig;
+
         foreach (PluginFeature feature in activeFeatures)
         {
             feature.Dispose();
         }
     }
 
-    public void ApplyFeaturesConfig(FeatureFlagConfiguration config)
+    public void ApplyFeaturesConfig(FeatureFlag newConfig, FeatureFlag oldConfig) { ApplyFeaturesConfig(newConfig); }
+
+    public void ApplyFeaturesConfig(FeatureFlag config)
     {
         HandleFeature<BuilderInWorld>(config.IsFeatureEnabled("builder_in_world"));
         HandleFeature<TutorialController>(config.IsFeatureEnabled("tutorial"));
         HandleFeature<DebugPluginFeature>(true);
-        HandleFeature<ExploreV2Feature>(config.IsFeatureEnabled("exploreV2"));
+        HandleFeature<ExploreV2Feature>(config.IsFeatureEnabled("explorev2"));
         currentConfig = config;
     }
 
