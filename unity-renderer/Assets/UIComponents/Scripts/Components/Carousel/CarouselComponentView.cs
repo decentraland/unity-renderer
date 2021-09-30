@@ -119,6 +119,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     internal int currentItemIndex = 0;
     internal float currentFinalNormalizedPos;
     internal bool isInTransition = false;
+    internal bool destroyOnlyUnnecesaryItems = false;
 
     public override void PostInitialization()
     {
@@ -152,7 +153,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         base.Dispose();
 
         StopCarousel();
-        RemoveAllInstantiatedItems();
+        DestroyInstantiatedItems(true);
     }
 
     public void SetSpaceBetweenItems(float newSpace)
@@ -196,12 +197,15 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     {
         model.items = items;
 
-        RemoveAllInstantiatedItems();
+        DestroyInstantiatedItems(!destroyOnlyUnnecesaryItems);
 
         for (int i = 0; i < items.Count; i++)
         {
-            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems);
+            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems && !destroyOnlyUnnecesaryItems);
         }
+
+        if (!instantiateNewCopyOfItems)
+            destroyOnlyUnnecesaryItems = true;
     }
 
     public BaseComponentView GetItem(int index)
@@ -323,18 +327,31 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         InstantiateItem(newItem, name);
     }
 
-    internal void RemoveAllInstantiatedItems()
+    internal void DestroyInstantiatedItems(bool forzeToDestroyAll)
     {
-        foreach (Transform child in itemsContainer)
+        if (forzeToDestroyAll)
         {
-            if (Application.isPlaying)
+            foreach (Transform child in itemsContainer)
             {
-                Destroy(child.gameObject);
+                if (Application.isPlaying)
+                {
+                    Destroy(child.gameObject);
+                }
+                else
+                {
+                    if (isActiveAndEnabled)
+                        StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                }
             }
-            else
+        }
+        else
+        {
+            foreach (BaseComponentView child in instantiatedItems)
             {
-                if (isActiveAndEnabled)
-                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                if (!model.items.Contains(child))
+                {
+                    Destroy(child.gameObject);
+                }
             }
         }
 

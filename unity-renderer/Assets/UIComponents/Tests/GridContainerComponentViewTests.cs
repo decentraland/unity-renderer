@@ -187,7 +187,7 @@ public class GridContainerComponentViewTests
         gridContainerComponent.SetItems(testItems);
 
         // Act
-        gridContainerComponent.RemoveAllInstantiatedItems();
+        gridContainerComponent.DestroyInstantiatedItems(true);
         yield return null;
 
         // Assert

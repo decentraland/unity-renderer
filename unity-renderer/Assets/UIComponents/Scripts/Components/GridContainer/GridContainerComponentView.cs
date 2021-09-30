@@ -59,7 +59,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     [Header("Configuration")]
     [SerializeField] internal GridContainerComponentModel model;
 
-    private List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
+    internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
+    internal bool destroyOnlyUnnecesaryItems = false;
 
     public override void PostInitialization() { Configure(model); }
 
@@ -84,7 +85,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         base.Dispose();
 
-        RemoveAllInstantiatedItems();
+        DestroyInstantiatedItems(true);
     }
 
     public void SetNumColumns(int newNumColumns)
@@ -133,14 +134,17 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         model.items = items;
 
-        RemoveAllInstantiatedItems();
+        DestroyInstantiatedItems(!destroyOnlyUnnecesaryItems);
 
         for (int i = 0; i < items.Count; i++)
         {
-            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems);
+            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems && !destroyOnlyUnnecesaryItems);
         }
 
         ResizeGridContainer();
+
+        if (!instantiateNewCopyOfItems)
+            destroyOnlyUnnecesaryItems = true;
     }
 
     public BaseComponentView GetItem(int index)
@@ -194,18 +198,31 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         InstantiateItem(newItem, name);
     }
 
-    internal void RemoveAllInstantiatedItems()
+    internal void DestroyInstantiatedItems(bool forzeToDestroyAll)
     {
-        foreach (Transform child in transform)
+        if (forzeToDestroyAll)
         {
-            if (Application.isPlaying)
+            foreach (Transform child in transform)
             {
-                Destroy(child.gameObject);
+                if (Application.isPlaying)
+                {
+                    Destroy(child.gameObject);
+                }
+                else
+                {
+                    if (isActiveAndEnabled)
+                        StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                }
             }
-            else
+        }
+        else
+        {
+            foreach (BaseComponentView child in instantiatedItems)
             {
-                if (isActiveAndEnabled)
-                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                if (!model.items.Contains(child))
+                {
+                    Destroy(child.gameObject);
+                }
             }
         }
 
