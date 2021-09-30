@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7461880
+    totalSpriteSurfaceArea: 7481750
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -108,6 +108,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 42402c03014144e64b56b0f83f883e5e, type: 3}
   - {fileID: 21300000, guid: ad6eb51354c9f4bd4af55d70ae175139, type: 3}
   - {fileID: 21300000, guid: 540ccf231c7f68848b71c262e2a8c1f7, type: 3}
+  - {fileID: 21300000, guid: edb831335c79c4bc9977a312db827955, type: 3}
   - {fileID: 21300000, guid: bdbc7733c51e44718b2794d9b74dd50c, type: 3}
   - {fileID: 21300000, guid: 446caa43f3cad4f7d8abc800a474534b, type: 3}
   - {fileID: 21300000, guid: 94352b53817657c429ced2d35262394c, type: 3}
@@ -118,6 +119,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d254a3a3b9d5642e1ad6432c441d7f43, type: 3}
   - {fileID: 21300000, guid: f12b96a3537ed4d728c7870de5492db1, type: 3}
   - {fileID: 21300000, guid: f9ac9ba35ccb34e818a1cdcdd0af3643, type: 3}
+  - {fileID: 21300000, guid: 8b2eb5b3c1c0744819946a4f9fc05828, type: 3}
   - {fileID: 21300000, guid: 85b517b3cc5e34f0ba7f61e81232b591, type: 3}
   - {fileID: 21300000, guid: 73eb02c3697d74008aff9a4139d43c55, type: 3}
   - {fileID: 21300000, guid: cb768af398af844a585c615342f68492, type: 3}
@@ -264,6 +266,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 17bb56ac8d30b4a76bbd9b2e841ba75f, type: 3}
   - {fileID: 21300000, guid: 31a98abcdcc4e4022b74038cdc7154be, type: 3}
   - {fileID: 21300000, guid: ce0e66cca3918473693726f3bf7da082, type: 3}
+  - {fileID: 21300000, guid: a6f0d6dcdab344ad88af35e7ed9071b5, type: 3}
   - {fileID: 21300000, guid: 6d5f6edc2bfb441e1969ee1e10c3c572, type: 3}
   - {fileID: 21300000, guid: 2f88b1fc7390f42f881f72ccfcde00db, type: 3}
   - {fileID: 21300000, guid: 1867831d4dbb1354a9769cb39efca036, type: 3}
@@ -345,6 +348,7 @@ SpriteAtlas:
   - ContainerRectLeft20
   - ContainerRadius10@2x
   - ButtonFlatWhite
+  - ExitFullScreenIcon
   - RoundedLine
   - Pin
   - Frame24
@@ -355,6 +359,7 @@ SpriteAtlas:
   - ContainerRadius20
   - QuestDefaultThumbnail
   - ExploreIcon
+  - FullScreenIcon
   - PlayerIcon
   - ContainerPassport
   - ContainerShadowRadiusEight
@@ -474,7 +479,7 @@ SpriteAtlas:
   - EllipticalSwitchHanddle
   - RoundedContainer
   - ContainerTabsPassport
-  - SettingsStokeIcon
+  - SettingsStrokeIcon
   - AddFriendIcon
   - InteractiveIcon
   - Button8
@@ -499,8 +504,9 @@ SpriteAtlas:
   - InputRed
   - CrowdIcon
   - MagicButton
-  - HelpIconNew
+  - HelpIcon
   - VoiceChatPlayer
+  - HideNameIcon
   - ArrowGradient
   - ContainerOutline100
   - MicrophoneVoiceChat
@@ -527,7 +533,7 @@ SpriteAtlas:
   - DialogCornerLeft
   - LogOutIcon
   - RoundedContainer44
-  - ControlsIconNew
+  - ControlsIcon
   - WarningIcon
   - CameraIcon
   - InputNormal
