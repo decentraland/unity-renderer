@@ -7,13 +7,15 @@ namespace DCL
 {
     public class PreviewSceneLimitsWarning
     {
-        private const string NOTIFICATION_GROUP = "SceneLimitationReached";
-        private const string NOTIFICATION_MESSAGE = "Scene limitations reached";
+        private const string NOTIFICATION_GROUP = "SceneLimitationExceeded";
+        private const string NOTIFICATION_MESSAGE = "Scene's limits exceeded";
 
         private string sceneId;
         private Coroutine updateRoutine;
-        private IWorldState worldState;
         private bool isActive = false;
+        private bool isShowingNotification = false;
+
+        readonly internal IWorldState worldState;
 
         private static readonly Model limitReachedNotification = new Model()
         {
@@ -39,6 +41,7 @@ namespace DCL
             {
                 KernelConfig.i.OnChange -= OnKernelConfigChanged;
                 CoroutineStarter.Stop(updateRoutine);
+                ShowNotification(false);
             }
             isActive = active;
         }
@@ -64,7 +67,10 @@ namespace DCL
                     isLimitReached = IsLimitReached(currentMetrics, limit);
                 }
 
-                ShowNotification(isLimitReached);
+                if (isShowingNotification != isLimitReached)
+                {
+                    ShowNotification(isLimitReached);
+                }
                 yield return WaitForSecondsCache.Get(0.2f);
             }
         }
@@ -81,13 +87,21 @@ namespace DCL
                                           );
         }
 
-        private void ShowNotification(bool show)
+        internal virtual void ShowNotification(bool show)
         {
+            var notificationsController = NotificationsController.i;
+
+            if (notificationsController == null)
+                return;
+
+            isShowingNotification = show;
+
             if (show)
             {
-                NotificationsController.i.ShowNotification(limitReachedNotification);
+                notificationsController.ShowNotification(limitReachedNotification);
+                return;
             }
-            NotificationsController.i.DismissAllNotifications(limitReachedNotification.groupID);
+            notificationsController.DismissAllNotifications(limitReachedNotification.groupID);
         }
     }
 }
