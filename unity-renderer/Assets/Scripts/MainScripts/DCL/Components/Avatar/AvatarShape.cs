@@ -17,8 +17,8 @@ namespace DCL
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
 
-        [SerializeField]
-        internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        internal IPlayerName playerName;
 
         private StringVariable currentPlayerInfoCardId;
 
@@ -31,13 +31,18 @@ namespace DCL
 
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private BaseHashSet<string> visibleNames => DataStore.i.avatarsLOD.visibleNames;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+        }
+
+        private void Start()
+        {
+            playerName = GetComponentInChildren<IPlayerName>();
+            playerName?.Hide(true);
         }
 
         private void PlayerClicked()
@@ -92,6 +97,10 @@ namespace DCL
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;
+            onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
+            onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
+            onPointerDown.OnPointerExitReport -= PlayerPointerExit;
+            onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
             // To deal with the cases in which the entity transform was configured before the AvatarShape
             if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
@@ -115,10 +124,12 @@ namespace DCL
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
-                            if(config.features.enableAvatarLODs)
+                            if (config.features.enableAvatarLODs)
                                 avatarRenderer.InitializeImpostor();
                         });
         }
+        private void PlayerPointerExit() { playerName?.SetForceShow(false); }
+        private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
         private void UpdatePlayerStatus(AvatarModel model)
         {
@@ -140,9 +151,11 @@ namespace DCL
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
+            player.playerName = playerName;
+            player.playerName.SetName(player.name);
             if (isNew)
             {
-                visibleNames.Add(player.id);
+                player.playerName.Show();
                 otherPlayers.Add(player.id, player);
             }
         }
@@ -210,6 +223,8 @@ namespace DCL
             }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
+            onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
+            onPointerDown.OnPointerExitReport -= PlayerPointerExit;
 
             if (entity != null)
             {

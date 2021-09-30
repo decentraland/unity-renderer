@@ -1,9 +1,10 @@
 {
-    "name": "PlayerModels",
+    "name": "PlayerName",
     "rootNamespace": "",
     "references": [
-        "GUID:46cbc133d57a24117993396eb0fbbc5a",
-        "GUID:896ac1ef7dceedf49b9a9b0f3c8e798d"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:896ac1ef7dceedf49b9a9b0f3c8e798d",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
