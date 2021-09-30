@@ -55,15 +55,6 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
-    [SerializeField] internal QuestSectionComponentView questSection;
-    [SerializeField] internal BackpackSectionComponentView backpackSection;
-    [SerializeField] internal MapSectionComponentView mapSection;
-    [SerializeField] internal BuilderSectionComponentView builderSection;
-    [SerializeField] internal MarketSectionComponentView marketSection;
-    [SerializeField] internal SettingsSectionComponentView settingsSection;
-
-    [Header("Modals")]
-    [SerializeField] internal EventCardComponentView eventCardModal;
 
     public bool isActive => gameObject.activeSelf;
 
@@ -102,26 +93,11 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
     internal void CreateSectionSelectorMappings()
     {
         sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn));
-        sectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => questSection.gameObject.SetActive(isOn));
-        sectionSelector.GetSection(2)?.onSelect.AddListener((isOn) => backpackSection.gameObject.SetActive(isOn));
-        sectionSelector.GetSection(3)?.onSelect.AddListener((isOn) => mapSection.gameObject.SetActive(isOn));
-        sectionSelector.GetSection(4)?.onSelect.AddListener((isOn) => builderSection.gameObject.SetActive(isOn));
-        sectionSelector.GetSection(5)?.onSelect.AddListener((isOn) => marketSection.gameObject.SetActive(isOn));
-        sectionSelector.GetSection(6)?.onSelect.AddListener((isOn) => settingsSection.gameObject.SetActive(isOn));
 
         ShowDefaultSection();
     }
 
-    internal void RemoveSectionSelectorMappings()
-    {
-        sectionSelector.GetSection(0)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(1)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(2)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(3)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(4)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(5)?.onSelect.RemoveAllListeners();
-        sectionSelector.GetSection(6)?.onSelect.RemoveAllListeners();
-    }
+    internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.RemoveAllListeners(); }
 
     internal void ConfigureCloseButton()
     {

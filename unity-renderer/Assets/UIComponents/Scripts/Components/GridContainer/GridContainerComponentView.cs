@@ -33,7 +33,8 @@ public interface IGridContainerComponentView
     /// Set the items of the grid.
     /// </summary>
     /// <param name="items">List of UI components.</param>
-    void SetItems(List<BaseComponentView> items);
+    /// <param name="instantiateNewCopyOfItems">Indicates if the items provided will be instantiated as a new copy or not.</param>
+    void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true);
 
     /// <summary>
     /// Get an item of the grid.
@@ -128,7 +129,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         gridLayoutGroup.spacing = newSpace;
     }
 
-    public void SetItems(List<BaseComponentView> items)
+    public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)
     {
         model.items = items;
 
@@ -136,7 +137,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         for (int i = 0; i < items.Count; i++)
         {
-            CreateItem(items[i], $"Item{i}");
+            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems);
         }
 
         ResizeGridContainer();
@@ -152,11 +153,11 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public List<BaseComponentView> GetAllItems() { return instantiatedItems; }
 
-    internal void CreateItem(BaseComponentView newItem, string name)
+    internal void CreateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
     {
         if (Application.isPlaying)
         {
-            InstantiateItem(newItem, name);
+            InstantiateItem(newItem, name, instantiateNewCopyOfItem);
         }
         else
         {
@@ -165,12 +166,24 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         }
     }
 
-    internal void InstantiateItem(BaseComponentView newItem, string name)
+    internal void InstantiateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
     {
         if (newItem == null)
             return;
 
-        BaseComponentView newGO = Instantiate(newItem, transform);
+        BaseComponentView newGO;
+        if (instantiateNewCopyOfItem)
+        {
+            newGO = Instantiate(newItem, transform);
+        }
+        else
+        {
+            newGO = newItem;
+            newGO.transform.SetParent(transform);
+            newGO.transform.localPosition = Vector3.zero;
+            newGO.transform.localScale = Vector3.one;
+        }
+
         newGO.name = name;
         instantiatedItems.Add(newGO);
     }

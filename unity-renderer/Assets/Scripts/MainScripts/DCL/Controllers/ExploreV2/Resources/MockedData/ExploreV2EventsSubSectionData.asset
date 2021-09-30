@@ -73,6 +73,27 @@ MonoBehaviour:
     onUnsubscribeClick:
       m_PersistentCalls:
         m_Calls: []
+  trendingEvents:
+  - eventPicture: {fileID: 21300000, guid: 2f8b0284904be4060b916850abd6f9c8, type: 3}
+    isLive: 1
+    liveTagText: LIVE
+    eventDateText: 
+    eventName: Test trending event
+    eventDescription: This is the description of the test trending event...
+    eventStartedIn: 1 hr ago
+    eventOrganizer: 
+    eventPlace: 
+    subscribedUsers: 1248
+    isSubscribed: 0
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
   upcomingEvents:
   - eventPicture: {fileID: 21300000, guid: 7674b7af955f0481f97972d37c1897e5, type: 3}
     isLive: 1

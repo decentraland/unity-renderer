@@ -5,6 +5,7 @@ using UnityEngine;
 public class EventsSubSectionData : ScriptableObject
 {
     public List<EventCardComponentModel> featureEvents;
+    public List<EventCardComponentModel> trendingEvents;
     public List<EventCardComponentModel> upcomingEvents;
     public List<EventCardComponentModel> goingEvents;
 }

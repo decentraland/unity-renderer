@@ -185,11 +185,11 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     {
         model.showManualControls = isActived;
 
-        if (previousButton != null)
-            previousButton.gameObject.SetActive(isActived);
+        if (previousButton == null || nextButton == null)
+            return;
 
-        if (nextButton != null)
-            nextButton.gameObject.SetActive(isActived);
+        previousButton.gameObject.SetActive(isActived);
+        nextButton.gameObject.SetActive(isActived);
     }
 
     public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)

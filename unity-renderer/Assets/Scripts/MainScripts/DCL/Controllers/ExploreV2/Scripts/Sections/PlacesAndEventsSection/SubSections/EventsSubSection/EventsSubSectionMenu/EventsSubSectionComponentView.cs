@@ -8,6 +8,7 @@ public interface IEventsSubSectionComponentView
     event Action OnReady;
 
     void SetFeatureEvents(List<EventCardComponentModel> events);
+    void SetTrendingEvents(List<EventCardComponentModel> events);
     void SetUpcomingEvents(List<EventCardComponentModel> events);
     void SetGoingEvents(List<EventCardComponentModel> events);
 }
@@ -15,29 +16,42 @@ public interface IEventsSubSectionComponentView
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
 {
     [Header("Assets References")]
-    [SerializeField] internal EventCardComponentView eventCardLongPrefab;
     [SerializeField] internal EventCardComponentView eventCardPrefab;
+    [SerializeField] internal EventCardComponentView eventCardLongPrefab;
+    [SerializeField] internal EventCardComponentView eventCardModalPrefab;
 
     [Header("Prefab References")]
     [SerializeField] internal CarouselComponentView featuredEvents;
+    [SerializeField] internal GridContainerComponentView trendingEvents;
     [SerializeField] internal GridContainerComponentView upcomingEvents;
     [SerializeField] internal GridContainerComponentView goingEvents;
 
     public event Action OnReady;
 
-    public override void PostInitialization() { StartCoroutine(WaitForComponentsInitialization()); }
+    internal EventCardComponentView eventModal;
+
+    public override void PostInitialization()
+    {
+        StartCoroutine(WaitForComponentsInitialization());
+
+        eventModal = GameObject.Instantiate(eventCardModalPrefab);
+        eventModal.gameObject.SetActive(false);
+    }
 
     public override void RefreshControl()
     {
         featuredEvents.RefreshControl();
+        trendingEvents.RefreshControl();
         upcomingEvents.RefreshControl();
         goingEvents.RefreshControl();
     }
 
     public IEnumerator WaitForComponentsInitialization()
     {
-        yield return new WaitUntil(() => featuredEvents.isFullyInitialized && upcomingEvents.isFullyInitialized && goingEvents.isFullyInitialized);
-        yield return null;
+        yield return new WaitUntil(() => featuredEvents.isFullyInitialized &&
+                                         trendingEvents.isFullyInitialized &&
+                                         upcomingEvents.isFullyInitialized &&
+                                         goingEvents.isFullyInitialized);
 
         RefreshControl();
         OnReady?.Invoke();
@@ -46,19 +60,25 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void SetFeatureEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateEvents(events, eventCardLongPrefab);
-        featuredEvents.SetItems(eventComponentsToAdd);
+        featuredEvents.SetItems(eventComponentsToAdd, true);
+    }
+
+    public void SetTrendingEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd = IntantiateEvents(events, eventCardPrefab);
+        trendingEvents.SetItems(eventComponentsToAdd, true);
     }
 
     public void SetUpcomingEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateEvents(events, eventCardPrefab);
-        upcomingEvents.SetItems(eventComponentsToAdd);
+        upcomingEvents.SetItems(eventComponentsToAdd, true);
     }
 
     public void SetGoingEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateEvents(events, eventCardPrefab);
-        goingEvents.SetItems(eventComponentsToAdd);
+        goingEvents.SetItems(eventComponentsToAdd, true);
     }
 
     internal List<BaseComponentView> IntantiateEvents(List<EventCardComponentModel> events, EventCardComponentView prefabToUse)

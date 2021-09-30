@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public interface IEventsSubSectionComponentController
 {
+    event Action OnEventDetailOpen;
+    event Action<EventCardComponentModel> OnEventDetailLoaded;
+
     void SetFeatureEvents(List<EventCardComponentModel> events);
+    void SetTrendingEvents(List<EventCardComponentModel> events);
     void SetUpcomingEvents(List<EventCardComponentModel> events);
     void SetGoingEvents(List<EventCardComponentModel> events);
     void Dispose();
@@ -11,6 +16,9 @@ public interface IEventsSubSectionComponentController
 
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
+    public event Action OnEventDetailOpen;
+    public event Action<EventCardComponentModel> OnEventDetailLoaded;
+
     internal IEventsSubSectionComponentView view;
     internal EventsSubSectionData mockedData;
 
@@ -24,6 +32,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void SetFeatureEvents(List<EventCardComponentModel> events) { view.SetFeatureEvents(events); }
 
+    public void SetTrendingEvents(List<EventCardComponentModel> events) { view.SetTrendingEvents(events); }
+
     public void SetUpcomingEvents(List<EventCardComponentModel> events) { view.SetUpcomingEvents(events); }
 
     public void SetGoingEvents(List<EventCardComponentModel> events) { view.SetGoingEvents(events); }
@@ -34,6 +44,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void LoadEventsMockedData()
     {
         SetFeatureEvents(mockedData.featureEvents);
+        SetTrendingEvents(mockedData.trendingEvents);
         SetUpcomingEvents(mockedData.upcomingEvents);
         SetGoingEvents(mockedData.goingEvents);
     }

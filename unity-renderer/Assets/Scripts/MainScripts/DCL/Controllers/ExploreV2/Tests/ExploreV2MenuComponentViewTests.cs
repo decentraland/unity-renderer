@@ -39,12 +39,6 @@ public class ExploreV2MenuComponentViewTests
         // Arrange
         exploreV2MenuComponent.sectionSelector.RefreshControl();
         exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.questSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.backpackSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.mapSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.builderSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.marketSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.settingsSection.gameObject.SetActive(false);
 
         // Act
         exploreV2MenuComponent.CreateSectionSelectorMappings();
@@ -55,24 +49,6 @@ public class ExploreV2MenuComponentViewTests
         {
             case 0:
                 Assert.IsTrue(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf);
-                break;
-            case 1:
-                Assert.IsTrue(exploreV2MenuComponent.questSection.gameObject.activeSelf);
-                break;
-            case 2:
-                Assert.IsTrue(exploreV2MenuComponent.backpackSection.gameObject.activeSelf);
-                break;
-            case 3:
-                Assert.IsTrue(exploreV2MenuComponent.mapSection.gameObject.activeSelf);
-                break;
-            case 4:
-                Assert.IsTrue(exploreV2MenuComponent.builderSection.gameObject.activeSelf);
-                break;
-            case 5:
-                Assert.IsTrue(exploreV2MenuComponent.marketSection.gameObject.activeSelf);
-                break;
-            case 6:
-                Assert.IsTrue(exploreV2MenuComponent.settingsSection.gameObject.activeSelf);
                 break;
         }
     }
@@ -91,12 +67,6 @@ public class ExploreV2MenuComponentViewTests
         exploreV2MenuComponent.sectionSelector.RefreshControl();
         exploreV2MenuComponent.CreateSectionSelectorMappings();
         exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.questSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.backpackSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.mapSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.builderSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.marketSection.gameObject.SetActive(false);
-        exploreV2MenuComponent.settingsSection.gameObject.SetActive(false);
 
         // Act
         exploreV2MenuComponent.RemoveSectionSelectorMappings();
@@ -107,24 +77,6 @@ public class ExploreV2MenuComponentViewTests
         {
             case 0:
                 Assert.IsFalse(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf);
-                break;
-            case 1:
-                Assert.IsFalse(exploreV2MenuComponent.questSection.gameObject.activeSelf);
-                break;
-            case 2:
-                Assert.IsFalse(exploreV2MenuComponent.backpackSection.gameObject.activeSelf);
-                break;
-            case 3:
-                Assert.IsFalse(exploreV2MenuComponent.mapSection.gameObject.activeSelf);
-                break;
-            case 4:
-                Assert.IsFalse(exploreV2MenuComponent.builderSection.gameObject.activeSelf);
-                break;
-            case 5:
-                Assert.IsFalse(exploreV2MenuComponent.marketSection.gameObject.activeSelf);
-                break;
-            case 6:
-                Assert.IsFalse(exploreV2MenuComponent.settingsSection.gameObject.activeSelf);
                 break;
         }
     }
