@@ -142,6 +142,7 @@ namespace DCL
         public void Dispose()
         {
             positionTracker.Dispose();
+            previewSceneLimitsWarning.Dispose();
             isFPSPanelVisible.OnChange -= OnFPSPanelToggle;
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
 

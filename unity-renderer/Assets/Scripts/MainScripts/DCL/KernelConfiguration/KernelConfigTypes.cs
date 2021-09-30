@@ -105,8 +105,8 @@ namespace KernelConfigurationTypes
     public class Debugging
     {
         public bool sceneDebugPanelEnabled = false;
-        public string sceneDebugPanelTargetSceneId = null;
-        public string sceneLimitsWarningSceneId = null;
+        public string sceneDebugPanelTargetSceneId = string.Empty;
+        public string sceneLimitsWarningSceneId = string.Empty;
         
         public bool Equals(Debugging other)
         {

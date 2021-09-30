@@ -1,21 +1,26 @@
+using System;
 using System.Collections;
 using DCL.Controllers;
 using DCL.NotificationModel;
 using UnityEngine;
+using Type = DCL.NotificationModel.Type;
 
 namespace DCL
 {
-    public class PreviewSceneLimitsWarning
+    public class PreviewSceneLimitsWarning : IDisposable
     {
         private const string NOTIFICATION_GROUP = "SceneLimitationExceeded";
         private const string NOTIFICATION_MESSAGE = "Scene's limits exceeded";
 
+        internal const float CHECK_INTERVAL = 0.2f;
+
         private string sceneId;
         private Coroutine updateRoutine;
         private bool isActive = false;
-        private bool isShowingNotification = false;
 
-        readonly internal IWorldState worldState;
+        internal bool isShowingNotification = false;
+
+        private readonly IWorldState worldState;
 
         private static readonly Model limitReachedNotification = new Model()
         {
@@ -27,6 +32,13 @@ namespace DCL
         public PreviewSceneLimitsWarning(IWorldState worldState)
         {
             this.worldState = worldState;
+        }
+
+        public void Dispose()
+        {
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            CoroutineStarter.Stop(updateRoutine);
+            ShowNotification(false);
         }
 
         public void SetActive(bool active)
@@ -55,23 +67,28 @@ namespace DCL
         {
             while (true)
             {
-                bool isLimitReached = false;
+                HandleWarningNotification();
+                yield return WaitForSecondsCache.Get(CHECK_INTERVAL);
+            }
+        }
 
-                if (!string.IsNullOrEmpty(sceneId))
-                {
-                    worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene);
-                    ISceneMetricsController metricsController = scene?.metricsController;
-                    SceneMetricsModel currentMetrics = metricsController?.GetModel();
-                    SceneMetricsModel limit = metricsController?.GetLimits();
+        internal void HandleWarningNotification()
+        {
+            bool isLimitReached = false;
 
-                    isLimitReached = IsLimitReached(currentMetrics, limit);
-                }
+            if (!string.IsNullOrEmpty(sceneId))
+            {
+                worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene);
+                ISceneMetricsController metricsController = scene?.metricsController;
+                SceneMetricsModel currentMetrics = metricsController?.GetModel();
+                SceneMetricsModel limit = metricsController?.GetLimits();
 
-                if (isShowingNotification != isLimitReached)
-                {
-                    ShowNotification(isLimitReached);
-                }
-                yield return WaitForSecondsCache.Get(0.2f);
+                isLimitReached = IsLimitReached(currentMetrics, limit);
+            }
+
+            if (isShowingNotification != isLimitReached)
+            {
+                ShowNotification(isLimitReached);
             }
         }
 
@@ -87,14 +104,14 @@ namespace DCL
                                           );
         }
 
-        internal virtual void ShowNotification(bool show)
+        private void ShowNotification(bool show)
         {
+            isShowingNotification = show;
+
             var notificationsController = NotificationsController.i;
 
             if (notificationsController == null)
                 return;
-
-            isShowingNotification = show;
 
             if (show)
             {
