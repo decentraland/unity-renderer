@@ -171,7 +171,10 @@ public class NFTShapeLoaderController : MonoBehaviour
         nftInfoFetcher.FetchNFTImage(darURLRegistry, darURLAsset, NFTInfoFetched, NFTInfoFetchedFail);
     }
 
-    private void NFTInfoFetched(NFTInfo nftInfo) { fetchNftImageCoroutine = StartCoroutine(FetchNFTImageCoroutine(nftInfo)); }
+    private void NFTInfoFetched(NFTInfo nftInfo)
+    {
+        fetchNftImageCoroutine = StartCoroutine(FetchNFTImageCoroutine(nftInfo));
+    }
 
     private void NFTInfoFetchedFail()
     {
@@ -331,6 +334,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         if (fetchNftImageCoroutine != null)
             StopCoroutine(fetchNftImageCoroutine);
+
         if (assetPromise != null)
         {
             assetPromise.Forget();

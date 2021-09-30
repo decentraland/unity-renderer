@@ -15,11 +15,11 @@ namespace DCL.Components
         private string assetUrl;
         private Rendereable rendereable;
 
-
         public override void Unload()
         {
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             loaderController.OnLoadingAssetSuccess -= OnLoadingAssetSuccess;
+
             Object.Destroy(loaderController);
 
             Utils.SafeDestroy(entity.meshRootGameObject);

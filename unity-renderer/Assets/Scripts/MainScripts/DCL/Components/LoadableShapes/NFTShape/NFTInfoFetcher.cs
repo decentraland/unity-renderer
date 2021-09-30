@@ -23,6 +23,7 @@ public class NFTInfoFetcher : INFTInfoFetcher
     {
         if (fetchCoroutine != null)
             CoroutineStarter.Stop(fetchCoroutine);
+
         fetchCoroutine = null;
     }
 
