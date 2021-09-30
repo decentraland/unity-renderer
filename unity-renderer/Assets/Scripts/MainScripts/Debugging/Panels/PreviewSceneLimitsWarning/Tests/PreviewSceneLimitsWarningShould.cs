@@ -36,6 +36,7 @@ public class PreviewSceneLimitsWarningShould
     [TearDown]
     public void TearDown()
     {
+        KernelConfig.i.Set(new KernelConfigModel());
         KernelConfig.i.ClearPromises();
         previewSceneLimitsWarning.Dispose();
     }

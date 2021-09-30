@@ -82,9 +82,6 @@ namespace DCL
 
         internal void HandleWarningNotification()
         {
-            if (worldState == null)
-                return;
-
             bool isLimitReached = false;
 
             if (!string.IsNullOrEmpty(sceneId))
