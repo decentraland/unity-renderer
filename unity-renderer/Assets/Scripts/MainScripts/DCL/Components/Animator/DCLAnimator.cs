@@ -41,6 +41,8 @@ namespace DCL.Components
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
 
+        private bool hasBeenInitializated = false;
+
         private void Awake() { model = new Model(); }
 
         private void OnDestroy() { entity.OnShapeLoaded -= OnEntityShapeLoaded; }
@@ -50,7 +52,10 @@ namespace DCL.Components
             entity.OnShapeLoaded -= OnEntityShapeLoaded;
             entity.OnShapeLoaded += OnEntityShapeLoaded;
 
-            UpdateAnimationState();
+            //Note: If the entity is still loading the Shape, We wait until it is fully loaded to init it
+            //      If we don't wait, this can cause an issue with the asset bundles not loadings animations
+            if (hasBeenInitializated)
+                UpdateAnimationState();
 
             return null;
         }
@@ -89,6 +94,8 @@ namespace DCL.Components
                 unityState.blendMode = AnimationBlendMode.Blend;
                 layerIndex++;
             }
+
+            hasBeenInitializated = true;
         }
 
         void UpdateAnimationState()
