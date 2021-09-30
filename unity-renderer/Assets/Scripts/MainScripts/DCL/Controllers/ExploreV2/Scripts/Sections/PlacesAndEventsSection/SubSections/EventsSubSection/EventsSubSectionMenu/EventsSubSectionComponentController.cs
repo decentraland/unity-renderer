@@ -43,9 +43,36 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     // Temporal until connect with the events API
     private void LoadEventsMockedData()
     {
+        foreach (var eventCardModel in mockedData.featureEvents)
+        {
+            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
+            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
+            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+        }
         SetFeatureEvents(mockedData.featureEvents);
+
+        foreach (var eventCardModel in mockedData.trendingEvents)
+        {
+            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
+            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
+            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+        }
         SetTrendingEvents(mockedData.trendingEvents);
+
+        foreach (var eventCardModel in mockedData.upcomingEvents)
+        {
+            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
+            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
+            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+        }
         SetUpcomingEvents(mockedData.upcomingEvents);
+
+        foreach (var eventCardModel in mockedData.goingEvents)
+        {
+            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
+            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
+            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+        }
         SetGoingEvents(mockedData.goingEvents);
     }
 }

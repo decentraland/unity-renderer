@@ -135,13 +135,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             model.onInfoClick = value;
 
             if (infoButton != null)
-            {
-                infoButton.onClick.RemoveAllListeners();
-                infoButton.onClick.AddListener(() =>
-                {
-                    value?.Invoke();
-                });
-            }
+                infoButton.onClick = value;
         }
     }
 
@@ -159,13 +153,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             model.onSubscribeClick = value;
 
             if (subscribeEventButton != null)
-            {
-                subscribeEventButton.onClick.RemoveAllListeners();
-                subscribeEventButton.onClick.AddListener(() =>
-                {
-                    value?.Invoke();
-                });
-            }
+                subscribeEventButton.onClick = value;
         }
     }
 
@@ -183,13 +171,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             model.onUnsubscribeClick = value;
 
             if (unsubscribeEventButton != null)
-            {
-                unsubscribeEventButton.onClick.RemoveAllListeners();
-                unsubscribeEventButton.onClick.AddListener(() =>
-                {
-                    value?.Invoke();
-                });
-            }
+                unsubscribeEventButton.onClick = value;
         }
     }
 
