@@ -36,9 +36,7 @@ namespace DCL
 
         public void Dispose()
         {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
-            CoroutineStarter.Stop(updateRoutine);
-            ShowNotification(false);
+            StopChecking();
         }
 
         public void SetActive(bool active)
@@ -51,11 +49,16 @@ namespace DCL
             }
             if (!active && isActive)
             {
-                KernelConfig.i.OnChange -= OnKernelConfigChanged;
-                CoroutineStarter.Stop(updateRoutine);
-                ShowNotification(false);
+                StopChecking();
             }
             isActive = active;
+        }
+
+        private void StopChecking()
+        {
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            CoroutineStarter.Stop(updateRoutine);
+            ShowNotification(false);
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
