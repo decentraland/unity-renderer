@@ -3,12 +3,19 @@ using UnityEngine;
 
 public class FeatureFlagController : IFeatureFlagController
 {
-    private FeatureFlagBridge featureFlagBridgeComponent;
+    internal FeatureFlagBridge featureFlagBridgeComponent;
 
     public FeatureFlagController()
     {
         if (InitialSceneReferences.i.bridgeGameObject != null)
-            featureFlagBridgeComponent = InitialSceneReferences.i.bridgeGameObject.AddComponent<FeatureFlagBridge>();
+            AddBridgeComponent(InitialSceneReferences.i.bridgeGameObject );
+    }
+
+    public void AddBridgeComponent(GameObject gameObjectToAddBridge)
+    {
+        if (featureFlagBridgeComponent != null)
+            Dispose();
+        featureFlagBridgeComponent = gameObjectToAddBridge.AddComponent<FeatureFlagBridge>();
     }
 
     public void Dispose() { GameObject.Destroy(featureFlagBridgeComponent); }

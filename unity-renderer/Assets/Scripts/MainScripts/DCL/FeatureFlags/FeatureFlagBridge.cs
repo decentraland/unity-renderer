@@ -19,6 +19,11 @@ public class FeatureFlagBridge : MonoBehaviour
             Debug.LogError("FeatureFlag has been unable to parse the json! Error: " + e);
         }
 
+        SetFeatureFlagConfiguration(config);
+    }
+
+    public void SetFeatureFlagConfiguration(FeatureFlag config)
+    {
         if (config != null)
             DataStore.i.featureFlags.featureFlags.Set(config);
     }
