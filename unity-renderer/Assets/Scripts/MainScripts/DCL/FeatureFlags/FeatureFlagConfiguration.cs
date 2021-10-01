@@ -5,7 +5,11 @@ public class FeatureFlagController : IFeatureFlagController
 {
     private FeatureFlagBridge featureFlagBridgeComponent;
 
-    public FeatureFlagController() { featureFlagBridgeComponent = InitialSceneReferences.i.bridgeGameObject.AddComponent<FeatureFlagBridge>(); }
+    public FeatureFlagController()
+    {
+        if (InitialSceneReferences.i.bridgeGameObject != null)
+            featureFlagBridgeComponent = InitialSceneReferences.i.bridgeGameObject.AddComponent<FeatureFlagBridge>();
+    }
 
     public void Dispose() { GameObject.Destroy(featureFlagBridgeComponent); }
 }
