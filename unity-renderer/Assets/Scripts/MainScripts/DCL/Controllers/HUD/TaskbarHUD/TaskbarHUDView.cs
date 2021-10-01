@@ -27,6 +27,7 @@ public class TaskbarHUDView : MonoBehaviour
 
     [SerializeField] internal TaskbarButton settingsButton;
     [SerializeField] internal TaskbarButton exploreButton;
+    [SerializeField] internal TaskbarButton exploreV2Button;
     [SerializeField] internal TaskbarButton builderInWorldButton;
     [SerializeField] internal GameObject portableExperiencesDiv;
     [SerializeField] internal PortableExperienceTaskbarItem portableExperienceItem;
@@ -65,6 +66,8 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnBuilderInWorldToggleOff;
     public event System.Action OnExploreToggleOn;
     public event System.Action OnExploreToggleOff;
+    public event System.Action OnExploreV2ToggleOn;
+    public event System.Action OnExploreV2ToggleOff;
     public event System.Action OnMoreToggleOn;
     public event System.Action OnMoreToggleOff;
     public event System.Action<bool> OnQuestPanelToggled;
@@ -78,6 +81,7 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.Add(builderInWorldButton);
         taskbarButtonList.Add(settingsButton);
         taskbarButtonList.Add(exploreButton);
+        taskbarButtonList.Add(exploreV2Button);
         taskbarButtonList.Add(moreButton);
         taskbarButtonList.Add(questPanelButton);
 
@@ -111,6 +115,7 @@ public class TaskbarHUDView : MonoBehaviour
         builderInWorldButton.transform.parent.gameObject.SetActive(false);
         settingsButton.transform.parent.gameObject.SetActive(false);
         exploreButton.transform.parent.gameObject.SetActive(false);
+        exploreV2Button.transform.parent.gameObject.SetActive(false);
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
 
@@ -124,6 +129,7 @@ public class TaskbarHUDView : MonoBehaviour
         builderInWorldButton.Initialize();
         settingsButton.Initialize();
         exploreButton.Initialize();
+        exploreV2Button.Initialize();
         moreButton.Initialize();
         questPanelButton.Initialize();
 
@@ -144,6 +150,9 @@ public class TaskbarHUDView : MonoBehaviour
 
         exploreButton.OnToggleOn += OnWindowToggleOn;
         exploreButton.OnToggleOff += OnWindowToggleOff;
+
+        exploreV2Button.OnToggleOn += OnWindowToggleOn;
+        exploreV2Button.OnToggleOff += OnWindowToggleOff;
 
         moreButton.OnToggleOn += OnWindowToggleOn;
         moreButton.OnToggleOff += OnWindowToggleOff;
@@ -186,6 +195,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnBuilderInWorldToggleOff?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOff?.Invoke();
+        else if (obj == exploreV2Button)
+            OnExploreV2ToggleOff?.Invoke();
         else if (obj == moreButton)
             moreMenu.ShowMoreMenu(false);
         else if (obj == questPanelButton)
@@ -239,6 +250,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnBuilderInWorldToggleOn?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOn?.Invoke();
+        else if (obj == exploreV2Button)
+            OnExploreV2ToggleOn?.Invoke();
         else if (obj == moreButton)
             moreMenu.ShowMoreMenu(true);
         else if (obj == questPanelButton)
@@ -292,6 +305,12 @@ public class TaskbarHUDView : MonoBehaviour
     internal void OnAddExploreWindow()
     {
         exploreButton.transform.parent.gameObject.SetActive(true);
+        AdjustRightButtonsLayoutWidth();
+    }
+
+    internal void OnAddExploreV2Window()
+    {
+        exploreV2Button.transform.parent.gameObject.SetActive(true);
         AdjustRightButtonsLayoutWidth();
     }
 
@@ -353,6 +372,12 @@ public class TaskbarHUDView : MonoBehaviour
         {
             exploreButton.OnToggleOn -= OnWindowToggleOn;
             exploreButton.OnToggleOff -= OnWindowToggleOff;
+        }
+
+        if (exploreV2Button != null)
+        {
+            exploreV2Button.OnToggleOn -= OnWindowToggleOn;
+            exploreV2Button.OnToggleOff -= OnWindowToggleOff;
         }
 
         if (moreButton != null)
