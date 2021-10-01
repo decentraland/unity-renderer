@@ -30,6 +30,7 @@ namespace DCL
             }
 
             string sceneId = entity.scene.sceneData.id;
+            rendereable.ownerId = entity.entityId;
 
             foreach (var mesh in rendereable.meshes)
             {

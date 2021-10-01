@@ -77,6 +77,7 @@ namespace DCL.Components
             alreadyLoaded = true;
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
+
             DataStore.i.sceneWorldObjects.AddRendereable(entity, loadHelper.loadedAsset);
             OnSuccess?.Invoke(this);
         }

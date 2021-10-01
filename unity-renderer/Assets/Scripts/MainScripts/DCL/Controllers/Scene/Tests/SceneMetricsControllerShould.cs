@@ -124,7 +124,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
 
         yield return new WaitForAllMessagesProcessed();
 
-        Debug.Log(scene.metricsController.GetModel());
+        Debug.Log(scene.metricsCounter.GetModel());
         AssertMetricsModel(scene,
             triangles: 612,
             materials: 1,
@@ -161,13 +161,13 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         CommonScriptableObjects.rendererState.Set(true);
 
         NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
-        Debug.Log(scene.metricsController.GetModel());
+        Debug.Log(scene.metricsCounter.GetModel());
         TestHelpers.SharedComponentAttach(component, entity);
 
         LoadWrapper_NFT wrapper = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
         yield return new WaitUntil(() => wrapper.alreadyLoaded);
 
-        Debug.Log(scene.metricsController.GetModel());
+        Debug.Log(scene.metricsCounter.GetModel());
         AssertMetricsModel(scene,
             triangles: 190,
             materials: 6,
@@ -283,7 +283,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies,
         int textures)
     {
-        SceneMetricsModel inputModel = scene.metricsController.GetModel();
+        SceneMetricsModel inputModel = scene.metricsCounter.GetModel();
 
         Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: " + triangles);
         Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count");

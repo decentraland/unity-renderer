@@ -19,7 +19,7 @@ namespace DCL.Controllers
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
         public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
-        public ISceneMetricsController metricsController { get; set; }
+        public ISceneMetricsCounter metricsCounter { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
         public event System.Action<IComponent> OnComponentAdded;
@@ -58,10 +58,10 @@ namespace DCL.Controllers
         private void OnDestroy()
         {
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-            metricsController?.Dispose();
+            metricsCounter?.Dispose();
         }
 
-        void OnDisable() { metricsController?.Disable(); }
+        void OnDisable() { metricsCounter?.Disable(); }
 
         private void Update()
         {
@@ -99,8 +99,8 @@ namespace DCL.Controllers
                 gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
             }
 
-            metricsController = new SceneMetricsController(this);
-            metricsController.Enable();
+            metricsCounter = new SceneMetricsCounter(this);
+            metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
         }
@@ -189,7 +189,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsController.GetLimits().sceneHeight;
+            float heightLimit = metricsCounter.GetLimits().sceneHeight;
 
             if (height > heightLimit)
                 return false;
@@ -202,7 +202,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsController.GetLimits().sceneHeight;
+            float heightLimit = metricsCounter.GetLimits().sceneHeight;
             if (height > heightLimit)
                 return false;
 
@@ -681,7 +681,7 @@ namespace DCL.Controllers
         protected virtual void SendMetricsEvent()
         {
             if (Time.frameCount % 10 == 0)
-                metricsController.SendEvent();
+                metricsCounter.SendEvent();
         }
 
         public ISharedComponent GetSharedComponent(string componentId)

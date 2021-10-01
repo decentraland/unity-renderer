@@ -2,8 +2,9 @@
 
 namespace DCL
 {
-    public interface ISceneMetricsController : IDisposable
+    public interface ISceneMetricsCounter : IDisposable
     {
+        event System.Action<ISceneMetricsCounter> OnMetricsUpdated;
         SceneMetricsModel GetLimits();
         SceneMetricsModel GetModel();
 
@@ -14,6 +15,8 @@ namespace DCL
         void SendEvent();
 
         bool IsInsideTheLimits();
+        void RemoveExcludedEntity(string entityId);
+        void AddExcludedEntity(string entityId);
     }
 
     [System.Serializable]

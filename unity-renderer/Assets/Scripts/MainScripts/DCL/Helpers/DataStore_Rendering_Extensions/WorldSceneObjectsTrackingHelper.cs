@@ -24,8 +24,6 @@ namespace DCL
         public DataStore.DataStore_WorldObjects.SceneData sceneData { get; private set; }
         public event Action<Rendereable> OnWillAddRendereable;
         public event Action<Rendereable> OnWillRemoveRendereable;
-        public event Action<Mesh, int> OnWillAddMesh;
-        public event Action<Mesh, int> OnWillRemoveMesh;
 
         private string sceneId;
         private DataStore dataStore;
@@ -77,29 +75,13 @@ namespace DCL
                 // we have an early exit.
                 this.sceneData.renderedObjects.OnAdded -= OnRenderedObjectsAdded;
                 this.sceneData.renderedObjects.OnRemoved -= OnRenderedObjectsRemoved;
-                this.sceneData.refCountedMeshes.OnAdded -= OnRefCountedMeshesAdded;
-                this.sceneData.refCountedMeshes.OnRemoved -= OnRefCountedMeshesRemoved;
             }
 
             logger.Log($"Subscribing events for {sceneId}.");
             sceneData.renderedObjects.OnAdded += OnRenderedObjectsAdded;
             sceneData.renderedObjects.OnRemoved += OnRenderedObjectsRemoved;
-            sceneData.refCountedMeshes.OnAdded += OnRefCountedMeshesAdded;
-            sceneData.refCountedMeshes.OnRemoved += OnRefCountedMeshesRemoved;
 
             this.sceneData = sceneData;
-        }
-
-        private void OnRefCountedMeshesRemoved(Mesh mesh, int refCount)
-        {
-            logger.Log($"{sceneId}: Removing mesh reference ({mesh}, {refCount})");
-            OnWillRemoveMesh?.Invoke(mesh, refCount);
-        }
-
-        private void OnRefCountedMeshesAdded(Mesh mesh, int refCount)
-        {
-            logger.Log($"{sceneId}: Adding mesh reference ({mesh}, {refCount})");
-            OnWillAddMesh?.Invoke(mesh, refCount);
         }
 
         private void OnRenderedObjectsRemoved(Rendereable rendereable)
@@ -121,8 +103,6 @@ namespace DCL
 
             sceneData.renderedObjects.OnAdded -= OnRenderedObjectsAdded;
             sceneData.renderedObjects.OnRemoved -= OnRenderedObjectsRemoved;
-            sceneData.refCountedMeshes.OnAdded -= OnRefCountedMeshesAdded;
-            sceneData.refCountedMeshes.OnRemoved -= OnRefCountedMeshesRemoved;
 
             dataStore.sceneWorldObjects.sceneData.OnAdded -= OnSceneAdded;
             dataStore.sceneWorldObjects.sceneData.OnRemoved -= OnSceneRemoved;

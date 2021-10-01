@@ -17,6 +17,7 @@ namespace DCL
     /// </summary>
     public class Rendereable : ICloneable
     {
+        public string ownerId;
         public GameObject container;
         public List<Mesh> meshes = new List<Mesh>();
         public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
