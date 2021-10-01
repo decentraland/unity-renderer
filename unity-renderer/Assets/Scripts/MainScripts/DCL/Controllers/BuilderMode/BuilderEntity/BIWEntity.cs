@@ -647,12 +647,11 @@ public class BIWEntity
             t.ResetLocalTRS();
 
             var meshCollider = entityColliderChildren.AddComponent<MeshCollider>();
-            meshCollider.cookingOptions = MeshColliderCookingOptions.None;
 
-            if (meshInfo.renderers[i] is SkinnedMeshRenderer)
+            if (meshInfo.renderers[i] is SkinnedMeshRenderer skr)
             {
                 Mesh meshColliderForSkinnedMesh = new Mesh();
-                (meshInfo.renderers[i] as SkinnedMeshRenderer).BakeMesh(meshColliderForSkinnedMesh);
+                skr.BakeMesh(meshColliderForSkinnedMesh);
                 meshCollider.sharedMesh = meshColliderForSkinnedMesh;
                 t.localScale = new Vector3(1 / meshInfo.renderers[i].gameObject.transform.lossyScale.x, 1 / meshInfo.renderers[i].gameObject.transform.lossyScale.y, 1 / meshInfo.renderers[i].gameObject.transform.lossyScale.z);
             }
@@ -668,7 +667,6 @@ public class BIWEntity
             {
                 if (collidersGameObjectDictionary.ContainsKey(entity.scene.sceneData.id + entity.entityId))
                     collidersGameObjectDictionary.Remove(entity.scene.sceneData.id + entity.entityId);
-
 
                 collidersGameObjectDictionary.Add(entity.scene.sceneData.id + entity.entityId, colliderList);
 
