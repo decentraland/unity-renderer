@@ -357,22 +357,6 @@ namespace UnityGLTF
             prioritizeDownload = true;
         }
 
-        public void CancelIfQueued()
-        {
-            if (IsInQueue())
-            {
-                OnFail_Internal(null);
-            }
-        }
-
-        public bool IsInQueue()
-        {
-            if (prioritizeDownload)
-                return false;
-            
-            return state == State.QUEUED || state == State.NONE;
-        }
-
 #if UNITY_EDITOR
         // In production it will always be false
         private bool isQuitting = false;
@@ -408,11 +392,6 @@ namespace UnityGLTF
             }
 
             downloadQueueHandler.Dequeue(this);
-
-            if (loadingRoutine != null)
-            {
-                Debug.LogWarning($"ERROR: GLTF destroyed while loading -> {name}");
-            }
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {

@@ -6,22 +6,20 @@ using UnityGLTF;
 
 public class APK_GLTF_InteractiveTest : MonoBehaviour
 {
-    ContentProvider_Dummy provider;
     AssetPromiseKeeper_GLTF keeper;
-
+    private WebRequestController webRequestController;
     List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
 
     void Start()
     {
         GLTFSceneImporter.budgetPerFrameInMilliseconds = 4;
-
-        provider = new ContentProvider_Dummy();
+        webRequestController = WebRequestController.Create();
         keeper = new AssetPromiseKeeper_GLTF();
     }
 
     void Generate(string url)
     {
-        AssetPromise_GLTF promise = new AssetPromise_GLTF(provider, url);
+        AssetPromise_GLTF promise = new AssetPromise_GLTF(url, webRequestController);
 
         Vector3 pos = Vector3.zero;
         pos.x = Random.Range(-10, 10);
@@ -31,7 +29,9 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         keeper.Keep(promise);
         promiseList.Add(promise);
     }
+
     static int counter = 0;
+
     void Update()
     {
         if (Input.GetKeyUp(KeyCode.Z))
@@ -53,7 +53,6 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
                     Generate(url3);
                     break;
             }
-
         }
         else if (Input.GetKeyUp(KeyCode.X))
         {
@@ -62,8 +61,8 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
                 var promiseToRemove = promiseList[Random.Range(0, promiseList.Count)];
                 keeper.Forget(promiseToRemove);
                 promiseList.Remove(promiseToRemove);
+                PoolManager.i.Cleanup(true);
             }
         }
-
     }
 }
