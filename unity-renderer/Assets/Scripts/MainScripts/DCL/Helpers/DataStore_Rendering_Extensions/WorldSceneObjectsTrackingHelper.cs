@@ -18,6 +18,9 @@ namespace DCL
     /// </summary>
     public class WorldSceneObjectsTrackingHelper : IDisposable
     {
+        private static bool VERBOSE = false;
+        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
+
         public DataStore.DataStore_WorldObjects.SceneData sceneData { get; private set; }
         public event Action<Rendereable> OnWillAddRendereable;
         public event Action<Rendereable> OnWillRemoveRendereable;
@@ -29,11 +32,12 @@ namespace DCL
 
         public WorldSceneObjectsTrackingHelper (DataStore dataStore, string sceneId)
         {
+            logger.Log("A wild WorldSceneObjectsTrackingHelper appears!");
             this.dataStore = dataStore;
             this.sceneId = sceneId;
 
             if (dataStore.sceneWorldObjects.sceneData.ContainsKey(sceneId))
-                sceneData = dataStore.sceneWorldObjects.sceneData[sceneId];
+                SetSceneData(dataStore.sceneWorldObjects.sceneData[sceneId]);
 
             dataStore.sceneWorldObjects.sceneData.OnAdded += OnSceneAdded;
             dataStore.sceneWorldObjects.sceneData.OnRemoved += OnSceneRemoved;
@@ -45,6 +49,7 @@ namespace DCL
                 return;
 
             // Set dummy scene data so null reference exceptions are avoided.
+            logger.Log($"Scene {sceneId} was removed! Using dummy scene data.");
             SetSceneData( new DataStore.DataStore_WorldObjects.SceneData() );
         }
 
@@ -53,6 +58,7 @@ namespace DCL
             if ( sceneId != this.sceneId )
                 return;
 
+            logger.Log($"Scene {sceneId} was added!");
             SetSceneData( sceneData );
         }
 
@@ -75,6 +81,7 @@ namespace DCL
                 this.sceneData.refCountedMeshes.OnRemoved -= OnRefCountedMeshesRemoved;
             }
 
+            logger.Log($"Subscribing events for {sceneId}.");
             sceneData.renderedObjects.OnAdded += OnRenderedObjectsAdded;
             sceneData.renderedObjects.OnRemoved += OnRenderedObjectsRemoved;
             sceneData.refCountedMeshes.OnAdded += OnRefCountedMeshesAdded;
@@ -85,21 +92,25 @@ namespace DCL
 
         private void OnRefCountedMeshesRemoved(Mesh mesh, int refCount)
         {
+            logger.Log($"{sceneId}: Removing mesh reference ({mesh}, {refCount})");
             OnWillRemoveMesh?.Invoke(mesh, refCount);
         }
 
         private void OnRefCountedMeshesAdded(Mesh mesh, int refCount)
         {
+            logger.Log($"{sceneId}: Adding mesh reference ({mesh}, {refCount})");
             OnWillAddMesh?.Invoke(mesh, refCount);
         }
 
         private void OnRenderedObjectsRemoved(Rendereable rendereable)
         {
+            logger.Log($"Removing rendereable.");
             OnWillRemoveRendereable?.Invoke(rendereable);
         }
 
         private void OnRenderedObjectsAdded(Rendereable rendereable)
         {
+            logger.Log($"Adding rendereable.");
             OnWillAddRendereable?.Invoke(rendereable);
         }
 
@@ -115,6 +126,7 @@ namespace DCL
 
             dataStore.sceneWorldObjects.sceneData.OnAdded -= OnSceneAdded;
             dataStore.sceneWorldObjects.sceneData.OnRemoved -= OnSceneRemoved;
+            logger.Log($"Disposing.");
         }
     }
 }

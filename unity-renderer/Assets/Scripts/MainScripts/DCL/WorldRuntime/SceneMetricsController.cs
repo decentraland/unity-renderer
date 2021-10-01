@@ -334,6 +334,8 @@ namespace DCL
 
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;
+
+            logger.Log("Disposing...");
         }
     }
 }
