@@ -143,11 +143,13 @@ namespace DCL
 
                 if (uniqueMeshesRefCount.ContainsKey(mesh))
                 {
-                    model.meshes--;
                     uniqueMeshesRefCount[mesh]--;
 
                     if (uniqueMeshesRefCount[mesh] == 0)
+                    {
+                        model.meshes--;
                         uniqueMeshesRefCount.Remove(mesh);
+                    }
                 }
                 else
                 {
