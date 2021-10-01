@@ -1,12 +1,9 @@
-using System;
+using DCL;
 using System.Collections.Generic;
 using UnityEngine;
 
 public interface IEventsSubSectionComponentController
 {
-    event Action OnEventDetailOpen;
-    event Action<EventCardComponentModel> OnEventDetailLoaded;
-
     void SetFeatureEvents(List<EventCardComponentModel> events);
     void SetTrendingEvents(List<EventCardComponentModel> events);
     void SetUpcomingEvents(List<EventCardComponentModel> events);
@@ -16,18 +13,15 @@ public interface IEventsSubSectionComponentController
 
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
-    public event Action OnEventDetailOpen;
-    public event Action<EventCardComponentModel> OnEventDetailLoaded;
-
     internal IEventsSubSectionComponentView view;
     internal EventsSubSectionData mockedData;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view)
     {
-        mockedData = GameObject.Instantiate(Resources.Load<EventsSubSectionData>("MockedData/ExploreV2EventsSubSectionData"));
+        mockedData = GameObject.Instantiate(Resources.Load<EventsSubSectionData>("MockedData/ExploreV2EventsSubSectionMockedData"));
 
         this.view = view;
-        this.view.OnReady += LoadEventsMockedData;
+        this.view.OnReady += SetEventsMockedData;
     }
 
     public void SetFeatureEvents(List<EventCardComponentModel> events) { view.SetFeatureEvents(events); }
@@ -38,41 +32,42 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void SetGoingEvents(List<EventCardComponentModel> events) { view.SetGoingEvents(events); }
 
-    public void Dispose() { view.OnReady -= LoadEventsMockedData; }
+    public void Dispose() { view.OnReady -= SetEventsMockedData; }
 
     // Temporal until connect with the events API
-    private void LoadEventsMockedData()
+    private void SetEventsMockedData()
     {
         foreach (var eventCardModel in mockedData.featureEvents)
         {
-            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
-            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
-            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+            ConfigureEventCardButtons(eventCardModel);
         }
         SetFeatureEvents(mockedData.featureEvents);
 
         foreach (var eventCardModel in mockedData.trendingEvents)
         {
-            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
-            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
-            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+            ConfigureEventCardButtons(eventCardModel);
         }
         SetTrendingEvents(mockedData.trendingEvents);
 
         foreach (var eventCardModel in mockedData.upcomingEvents)
         {
-            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
-            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
-            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+            ConfigureEventCardButtons(eventCardModel);
         }
         SetUpcomingEvents(mockedData.upcomingEvents);
 
         foreach (var eventCardModel in mockedData.goingEvents)
         {
-            eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
-            eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("onSubscribeClick"));
-            eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("onUnsubscribeClick"));
+            ConfigureEventCardButtons(eventCardModel);
         }
         SetGoingEvents(mockedData.goingEvents);
+    }
+
+    // Temporal until connect with the events API
+    private void ConfigureEventCardButtons(EventCardComponentModel eventCardModel)
+    {
+        eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
+        eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("SUBSCRIBED!"));
+        eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("UNSUBSCRIBED!"));
+        eventCardModel.onJumpInClick.AddListener(() => DataStore.i.exploreV2.isOpen.Set(false));
     }
 }

@@ -107,7 +107,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.numColumns / 2f));
             newSizeToApply = new Vector2(
                 (width / model.numColumns) - extraSpaceToRemove,
-                (width / model.numColumns) - extraSpaceToRemove);
+                model.itemSize.y);
         }
 
         model.itemSize = newSizeToApply;

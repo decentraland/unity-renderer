@@ -16,7 +16,17 @@ public class EventCardComponentModel
     public string eventPlace;
     public int subscribedUsers;
     public bool isSubscribed;
+    public JumpInConfig jumpInConfiguration;
+    public Button.ButtonClickedEvent onJumpInClick;
     public Button.ButtonClickedEvent onInfoClick;
     public Button.ButtonClickedEvent onSubscribeClick;
     public Button.ButtonClickedEvent onUnsubscribeClick;
+}
+
+[Serializable]
+public class JumpInConfig
+{
+    public Vector2Int coords;
+    public string serverName;
+    public string layerName;
 }

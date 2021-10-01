@@ -1637,7 +1637,6 @@ MonoBehaviour:
   realmViewer: {fileID: 5724359877345737668}
   closeMenuButton: {fileID: 3975853955809606077}
   placesAndEventsSection: {fileID: 9218004316370049640}
-  eventCardModal: {fileID: 0}
 --- !u!1 &4223377927872049633
 GameObject:
   m_ObjectHideFlags: 0
@@ -2172,7 +2171,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 41, y: 0}
-  m_SizeDelta: {x: 200, y: 38}
+  m_SizeDelta: {x: 100, y: 38}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &4456640516536719289
 CanvasRenderer:
@@ -2202,7 +2201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Explore And Play
+  m_text: Explore
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c0f2e4affe3f2438d9042ca1db45764f, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 70f3d6b07a517476dbd2b89cf148f858, type: 2}
@@ -3314,7 +3313,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!114 &8293681955328573690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4152,12 +4151,12 @@ PrefabInstance:
     - target: {fileID: 7732408266846214892, guid: 8b84bfc4235d3d14b886dd08d4954f2d,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 50
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 7732408266846214892, guid: 8b84bfc4235d3d14b886dd08d4954f2d,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 50
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 7732408266846214892, guid: 8b84bfc4235d3d14b886dd08d4954f2d,
         type: 3}

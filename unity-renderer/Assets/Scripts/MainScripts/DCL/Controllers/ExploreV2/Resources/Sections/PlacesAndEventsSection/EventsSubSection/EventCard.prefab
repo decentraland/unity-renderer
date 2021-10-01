@@ -690,6 +690,7 @@ RectTransform:
   m_Children:
   - {fileID: 992765436605244564}
   - {fileID: 8561981978474783797}
+  - {fileID: 8340302353989308135}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -822,7 +823,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 9025576787768680609}
   subscribeEventButton: {fileID: 4515924208884649365}
   unsubscribeEventButton: {fileID: 7237540433397609953}
-  eventInfo: {fileID: 611945793179525290}
+  imageContainer: {fileID: 7868746511804096888}
+  eventInfoContainer: {fileID: 6076383061504269825}
   loadingSpinner: {fileID: 4892156300981809585}
   isEventCardModal: 0
   model:
@@ -837,6 +839,13 @@ MonoBehaviour:
     eventPlace: 
     subscribedUsers: 153
     isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 0, y: 0}
+      serverName: 
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
     onInfoClick:
       m_PersistentCalls:
         m_Calls: []
@@ -1010,7 +1019,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8216388292855290193}
-  - {fileID: 8340302353989308135}
   m_Father: {fileID: 8561981978474783797}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1984,7 +1992,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 5317293988822119759}
+    m_TransformParent: {fileID: 2760239434056358983}
     m_Modifications:
     - target: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}
@@ -1999,7 +2007,7 @@ PrefabInstance:
     - target: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}
@@ -2024,12 +2032,12 @@ PrefabInstance:
     - target: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1166888513132788191, guid: d565b61885fb1ef41b1582a285e748e9,
         type: 3}

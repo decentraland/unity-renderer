@@ -6,7 +6,6 @@ public interface IPlacesAndEventsSectionComponentController
 public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSectionComponentController
 {
     internal IPlacesAndEventsSectionComponentView view;
-
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
 
     public PlacesAndEventsSectionComponentController(IPlacesAndEventsSectionComponentView view)

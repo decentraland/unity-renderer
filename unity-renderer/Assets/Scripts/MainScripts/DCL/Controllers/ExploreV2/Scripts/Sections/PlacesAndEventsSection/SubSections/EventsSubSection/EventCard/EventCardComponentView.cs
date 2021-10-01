@@ -20,6 +20,11 @@ public interface IEventCardComponentView
     Button.ButtonClickedEvent onUnsubscribeClick { get; set; }
 
     /// <summary>
+    /// Event that will be triggered when the JumpIn button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onJumpInClick { get; set; }
+
+    /// <summary>
     /// Fill the model and updates the event card with this data.
     /// </summary>
     /// <param name="model">Data to configure the event card.</param>
@@ -96,6 +101,12 @@ public interface IEventCardComponentView
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
+
+    /// <summary>
+    /// Set the configuration of the JumpIn button.
+    /// </summary>
+    /// <param name="jumpInConfig">JumpIn configuration.</param>
+    void SetJumpInConfiguration(JumpInConfig jumpInConfig);
 }
 
 public class EventCardComponentView : BaseComponentView, IEventCardComponentView
@@ -114,7 +125,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
     [SerializeField] internal ButtonComponentView unsubscribeEventButton;
-    [SerializeField] internal GameObject eventInfo;
+    [SerializeField] internal GameObject imageContainer;
+    [SerializeField] internal GameObject eventInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
 
     [Header("Configuration")]
@@ -175,6 +187,24 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         }
     }
 
+    public Button.ButtonClickedEvent onJumpInClick
+    {
+        get
+        {
+            if (jumpinButton == null)
+                return null;
+
+            return jumpinButton.onClick;
+        }
+        set
+        {
+            model.onJumpInClick = value;
+
+            if (jumpinButton != null)
+                jumpinButton.onClick = value;
+        }
+    }
+
     public override void PostInitialization() { Configure(model); }
 
     public void Configure(EventCardComponentModel model)
@@ -198,9 +228,11 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventOrganizer(model.eventOrganizer);
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
+        SetJumpInConfiguration(model.jumpInConfiguration);
         onInfoClick = model.onInfoClick;
         onSubscribeClick = model.onSubscribeClick;
         onUnsubscribeClick = model.onUnsubscribeClick;
+        onJumpInClick = model.onJumpInClick;
     }
 
     public override void Dispose()
@@ -215,6 +247,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (unsubscribeEventButton != null)
             unsubscribeEventButton.onClick.RemoveAllListeners();
+
+        if (jumpinButton != null)
+            jumpinButton.onClick.RemoveAllListeners();
     }
 
     public void SetEventPicture(Sprite newPicture)
@@ -335,7 +370,15 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public void SetLoadingIndicatorVisible(bool isVisible)
     {
-        eventInfo.SetActive(!isVisible);
+        imageContainer.SetActive(!isVisible);
+        eventInfoContainer.SetActive(!isVisible);
         loadingSpinner.SetActive(isVisible);
+    }
+
+    public void SetJumpInConfiguration(JumpInConfig jumpInConfig)
+    {
+        jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
+        jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
+        jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
     }
 }

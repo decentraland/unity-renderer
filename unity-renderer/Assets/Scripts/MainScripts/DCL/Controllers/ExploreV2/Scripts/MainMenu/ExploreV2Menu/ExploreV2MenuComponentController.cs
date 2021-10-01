@@ -12,7 +12,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
     internal IExploreV2MenuComponentView view;
-
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
 
     public void Initialize()
