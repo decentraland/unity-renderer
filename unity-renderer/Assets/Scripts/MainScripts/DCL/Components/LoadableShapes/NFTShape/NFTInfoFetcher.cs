@@ -37,7 +37,7 @@ public class NFTInfoFetcher : INFTInfoFetcher
 
     private IEnumerator FetchNFTImageCoroutine(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail)
     {
-        yield return NFTHelper.FetchNFTInfo(address, id,
+        yield return NFTUtils.FetchNFTInfo(address, id,
             (info) =>
             {
                 OnSuccess?.Invoke(info);

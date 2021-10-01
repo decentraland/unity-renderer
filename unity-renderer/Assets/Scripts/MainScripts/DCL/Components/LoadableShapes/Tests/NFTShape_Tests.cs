@@ -3,11 +3,43 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
+using DCL.Controllers;
+using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class NFTShape_Tests : IntegrationTestSuite_Legacy
+public class NFTShape_Tests : IntegrationTestSuite
 {
+    private ParcelScene scene;
+
+    protected override WorldRuntimeContext CreateRuntimeContext()
+    {
+        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
+        (
+            new SceneController(),
+            new WorldState(),
+            new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory)
+        );
+    }
+
+    protected override PlatformContext CreatePlatformContext()
+    {
+        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
+            WebRequestController.Create());
+    }
+
+    [UnitySetUp]
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+
+        scene = (ParcelScene)DCL.Environment.i.world.sceneController.CreateTestScene();
+        scene.contentProvider = new ContentProvider_Dummy();
+        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+        CommonScriptableObjects.rendererState.Set(true);
+    }
+
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {

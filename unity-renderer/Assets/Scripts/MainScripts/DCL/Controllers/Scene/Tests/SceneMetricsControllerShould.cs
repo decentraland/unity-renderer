@@ -27,7 +27,8 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     protected override PlatformContext CreatePlatformContext()
     {
         return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
-            WebRequestController.Create());
+            WebRequestController.Create(),
+            new ServiceProviders());
     }
 
     [UnitySetUp]
