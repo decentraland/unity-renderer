@@ -12,7 +12,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     {
         this.view = view;
 
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(view.currentEventsSubSectionComponentView);
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(
+            view.currentEventsSubSectionComponentView,
+            new EventsAPIController());
     }
 
     public void Dispose() { eventsSubSectionComponentController.Dispose(); }

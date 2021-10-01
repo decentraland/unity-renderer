@@ -5,6 +5,7 @@ using UnityEngine.UI;
 [Serializable]
 public class EventCardComponentModel
 {
+    public string eventId;
     public Sprite eventPicture;
     public bool isLive;
     public string liveTagText;

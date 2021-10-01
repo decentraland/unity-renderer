@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public interface IEventsSubSectionComponentView
 {
     event Action OnReady;
 
-    void SetFeatureEvents(List<EventCardComponentModel> events);
+    void SetFeaturedEvents(List<EventCardComponentModel> events);
     void SetTrendingEvents(List<EventCardComponentModel> events);
     void SetUpcomingEvents(List<EventCardComponentModel> events);
     void SetGoingEvents(List<EventCardComponentModel> events);
@@ -25,8 +26,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [Header("Prefab References")]
     [SerializeField] internal CarouselComponentView featuredEvents;
     [SerializeField] internal GridContainerComponentView trendingEvents;
+    [SerializeField] internal TMP_Text trendingEventsNoDataText;
     [SerializeField] internal GridContainerComponentView upcomingEvents;
+    [SerializeField] internal TMP_Text upcomingEventsNoDataText;
     [SerializeField] internal GridContainerComponentView goingEvents;
+    [SerializeField] internal TMP_Text goingEventsNoDataText;
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
 
     public event Action OnReady;
@@ -70,28 +74,32 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         OnReady?.Invoke();
     }
 
-    public void SetFeatureEvents(List<EventCardComponentModel> events)
+    public void SetFeaturedEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEvents(events, eventCardLongPrefab);
         featuredEvents.SetItems(eventComponentsToAdd, false);
+        featuredEvents.gameObject.SetActive(events.Count != 0);
     }
 
     public void SetTrendingEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEvents(events, eventCardPrefab);
         trendingEvents.SetItems(eventComponentsToAdd, false);
+        trendingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
     public void SetUpcomingEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEvents(events, eventCardPrefab);
         upcomingEvents.SetItems(eventComponentsToAdd, false);
+        upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
     public void SetGoingEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEvents(events, eventCardPrefab);
         goingEvents.SetItems(eventComponentsToAdd, false);
+        goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
     public void ShowEventModal(EventCardComponentModel eventInfo)
