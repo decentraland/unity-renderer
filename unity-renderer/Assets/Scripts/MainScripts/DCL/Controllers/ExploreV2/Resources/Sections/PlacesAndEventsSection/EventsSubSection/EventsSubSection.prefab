@@ -1844,10 +1844,10 @@ RectTransform:
   m_Father: {fileID: 2666022041159230734}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -370}
-  m_SizeDelta: {x: 549.5, y: 370}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &6371556641963002157
 CanvasRenderer:
@@ -7586,7 +7586,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 8388510028514419583}
   subscribeEventButton: {fileID: 4020166336234437920}
   unsubscribeEventButton: {fileID: 1623778074220645676}
-  eventInfo: {fileID: 880132783505316825}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 2471962528072640567}
   isEventCardModal: 0
   model:
@@ -10704,10 +10705,10 @@ RectTransform:
   m_Father: {fileID: 771375392959150493}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -370}
-  m_SizeDelta: {x: 549.5, y: 370}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &6747349206560691825
 CanvasRenderer:
@@ -12683,9 +12684,9 @@ RectTransform:
   m_Father: {fileID: 2111437691023531127}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 549.5, y: -185}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1099, y: 370}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1729142747669090381
@@ -12838,7 +12839,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 5883008800082062270}
   subscribeEventButton: {fileID: 593999233782792089}
   unsubscribeEventButton: {fileID: 3741205645474492165}
-  eventInfo: {fileID: 2017760823707273582}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 5365870412527242231}
   isEventCardModal: 0
   model:
@@ -13038,7 +13040,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 2534887673563931209}
   subscribeEventButton: {fileID: 8417581749047496179}
   unsubscribeEventButton: {fileID: 8324975080759079409}
-  eventInfo: {fileID: 89893251993804812}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 8970239466608990250}
   isEventCardModal: 0
   model:
@@ -17767,10 +17770,10 @@ RectTransform:
   m_Father: {fileID: 481575576573207663}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -370}
-  m_SizeDelta: {x: 549.5, y: 370}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &8151237475412281710
 CanvasRenderer:
@@ -22604,9 +22607,9 @@ RectTransform:
   m_Father: {fileID: 2111437691023531127}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 2847.5, y: -185}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1099, y: 370}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6163567436430753182
@@ -22759,7 +22762,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 2038019078921374076}
   subscribeEventButton: {fileID: 6504483120893516788}
   unsubscribeEventButton: {fileID: 8793175273269259183}
-  eventInfo: {fileID: 398328479769850250}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 428258288143850354}
   isEventCardModal: 0
   model:
@@ -23304,9 +23308,9 @@ RectTransform:
   m_Father: {fileID: 2111437691023531127}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1698.5, y: -185}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1099, y: 370}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4103889338218106905
@@ -23459,7 +23463,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 6214308755472896599}
   subscribeEventButton: {fileID: 850243604585962583}
   unsubscribeEventButton: {fileID: 930083270048948472}
-  eventInfo: {fileID: 2139231739047758732}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 4986392700075235156}
   isEventCardModal: 0
   model:
@@ -26164,7 +26169,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 6001414174240866975}
   subscribeEventButton: {fileID: 3614220086601067359}
   unsubscribeEventButton: {fileID: 8273312500932952450}
-  eventInfo: {fileID: 7856464052814187895}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 955860277756658320}
   isEventCardModal: 0
   model:
@@ -27189,7 +27195,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 6394450095617677790}
   subscribeEventButton: {fileID: 3863385337154835787}
   unsubscribeEventButton: {fileID: 1000085881667175753}
-  eventInfo: {fileID: 4952551203567282610}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 2209026347701186708}
   isEventCardModal: 0
   model:
@@ -29718,7 +29725,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 1666283140226815536}
   subscribeEventButton: {fileID: 7184146847637090321}
   unsubscribeEventButton: {fileID: 85992492426036110}
-  eventInfo: {fileID: 3754258993755344734}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 6831099682797326289}
   isEventCardModal: 0
   model:
@@ -31556,7 +31564,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 70, y: 0}
+  m_AnchoredPosition: {x: 55, y: 0}
   m_SizeDelta: {x: 8, y: -50}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &8119416822930996029
@@ -31641,7 +31649,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3139007853373197222}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.26345983
+  m_Size: 0.2753751
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -31978,10 +31986,10 @@ RectTransform:
   m_Father: {fileID: 771375392959150493}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 549.5, y: -370}
-  m_SizeDelta: {x: 549.5, y: 370}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &5090171179942078552
 GameObject:
@@ -33975,10 +33983,10 @@ RectTransform:
   m_Father: {fileID: 481575576573207663}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 549.5, y: -370}
-  m_SizeDelta: {x: 549.5, y: 370}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &5406107978428353481
 GameObject:
@@ -35037,10 +35045,10 @@ RectTransform:
   m_Father: {fileID: 2666022041159230734}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 549.5, y: -370}
-  m_SizeDelta: {x: 549.5, y: 370}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &5696954808067173175
 GameObject:
@@ -40602,7 +40610,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 7194075102104527674}
   subscribeEventButton: {fileID: 8673253208728987037}
   unsubscribeEventButton: {fileID: 4532854407264933426}
-  eventInfo: {fileID: 5264654749240853512}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 3570886084298065043}
   isEventCardModal: 0
   model:
@@ -46910,7 +46919,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 7215948311200697767}
   subscribeEventButton: {fileID: 2690122800302264905}
   unsubscribeEventButton: {fileID: 3564081587334850428}
-  eventInfo: {fileID: 2725287456354801810}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 2992036930847207612}
   isEventCardModal: 0
   model:
@@ -50550,7 +50560,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 7339281041361289931}
   subscribeEventButton: {fileID: 9193780066489738358}
   unsubscribeEventButton: {fileID: 1083411046115906723}
-  eventInfo: {fileID: 1383175294871994874}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 3099158461188347397}
   isEventCardModal: 0
   model:
@@ -53093,7 +53104,8 @@ MonoBehaviour:
   jumpinButton: {fileID: 5589572648625639195}
   subscribeEventButton: {fileID: 6385784132249442670}
   unsubscribeEventButton: {fileID: 2072767316532917910}
-  eventInfo: {fileID: 5341659091101505473}
+  imageContainer: {fileID: 0}
+  eventInfoContainer: {fileID: 0}
   loadingSpinner: {fileID: 797687357941409795}
   isEventCardModal: 0
   model:
