@@ -96,6 +96,9 @@ namespace DCL
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump All Non-Body-Wearables (Optimized)")]
         public static void DumpAllNonBodiesWearables() { ABConverter.Client.DumpAllNonBodyshapeWearables(); }
+        
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Wearables Collection")]
+        public static void DumpSingleWearablesCollection() { ABConverter.Client.DumpSingleWearablesCollection("urn:decentraland:matic:collections-v2:0xe69e2d82343723a41efe661dd899cb98a9b57a29"); }
 
         [MenuItem("Decentraland/Start Visual Tests")]
         public static void StartVisualTests() { EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets()); }
