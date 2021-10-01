@@ -96,12 +96,12 @@ public class TaskbarMoreMenu : MonoBehaviour
         sortedButtonsAnimations.Add(helpAndSupportButton);
         sortedButtonsAnimations.Add(reportBugButton);
         sortedButtonsAnimations.Add(controlsButton);
+        sortedButtonsAnimations.Add(toggleAvatarNamesButton);
         sortedButtonsAnimations.Add(hideUIButton);
         sortedButtonsAnimations.Add(nightModeButton);
         sortedButtonsAnimations.Add(dayModeButton);
         sortedButtonsAnimations.Add(tutorialButton);
         sortedButtonsAnimations.Add(collapseBarButton);
-        sortedButtonsAnimations.Add(toggleAvatarNamesButton);
     }
 
     private void OnChangeProfile(RenderProfileWorld profile)
