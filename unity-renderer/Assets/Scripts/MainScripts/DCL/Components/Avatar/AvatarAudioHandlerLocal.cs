@@ -45,7 +45,7 @@ public class AvatarAudioHandlerLocal : MonoBehaviour
         if (footstepJump != null)
             footstepJump.Play(true);
         if (stickersController != null)
-            stickersController.PlayEmote("footstepJump", transform.position + jumpLandParticlesOffset, Vector3.up, false);
+            stickersController.PlaySticker("footstepJump", transform.position + jumpLandParticlesOffset, Vector3.up, false);
     }
 
     void OnLand()
@@ -53,7 +53,7 @@ public class AvatarAudioHandlerLocal : MonoBehaviour
         if (footstepLand != null)
             footstepLand.Play(true);
         if (stickersController != null)
-            stickersController.PlayEmote("footstepLand", transform.position + jumpLandParticlesOffset, Vector3.up, false);
+            stickersController.PlaySticker("footstepLand", transform.position + jumpLandParticlesOffset, Vector3.up, false);
     }
 
     // Faking footsteps when in first-person mode, since animations won't play

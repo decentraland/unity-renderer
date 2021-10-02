@@ -6,12 +6,12 @@ public class StickersController : MonoBehaviour
 
     private void Awake() { stickersFactory = Resources.Load<StickersFactory>("StickersFactory"); }
 
-    public void PlayEmote(string id)
+    public void PlaySticker(string id)
     {
-        PlayEmote(id, transform.position, Vector3.zero, true);
+        PlaySticker(id, transform.position, Vector3.zero, true);
     }
 
-    public void PlayEmote(string id, Vector3 position, Vector3 direction, bool followTransform)
+    public void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform)
     {
         if (stickersFactory == null || !stickersFactory.TryGet(id, out GameObject prefab))
             return;

@@ -153,6 +153,6 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     void PlaySticker(string id, Vector3 position, Vector3 direction)
     {
         if (stickersController != null)
-            stickersController.PlayEmote(id, position, direction, false);
+            stickersController.PlaySticker(id, position, direction, false);
     }
 }

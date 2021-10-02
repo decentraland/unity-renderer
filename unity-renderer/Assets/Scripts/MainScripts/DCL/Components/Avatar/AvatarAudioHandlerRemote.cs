@@ -71,7 +71,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
                 footstepJump.Play(true);
             if (bodyPartReferenceHandler != null) {
                 if (stickersController != null)
-                    stickersController.PlayEmote("footstepJump", bodyPartReferenceHandler.footR.position, Vector3.up, false);
+                    stickersController.PlaySticker("footstepJump", bodyPartReferenceHandler.footR.position, Vector3.up, false);
             }
         }
 
@@ -81,7 +81,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
                 footstepLand.Play(true);
             if (bodyPartReferenceHandler != null) {
                 if (stickersController != null)
-                    stickersController.PlayEmote("footstepLand",
+                    stickersController.PlaySticker("footstepLand",
                         Vector3.Lerp(bodyPartReferenceHandler.footL.position, bodyPartReferenceHandler.footR.position, 0.5f),
                         Vector3.up,
                         false);
