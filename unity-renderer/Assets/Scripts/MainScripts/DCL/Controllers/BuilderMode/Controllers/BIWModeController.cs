@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
-public interface IBIWModeController
+public interface IBIWModeController : IBIWController
 {
     event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
     event Action OnInputDone;
@@ -31,6 +31,8 @@ public interface IBIWModeController
     bool ShouldCancelUndoAction();
     void MouseClickDetected();
     void TakeSceneScreenshotForExit();
+    void ActivateCamera(ParcelScene sceneToEdit);
+    void OpenNewProjectDetails();
 }
 
 public class BIWModeController : BIWController, IBIWModeController
@@ -49,7 +51,7 @@ public class BIWModeController : BIWController, IBIWModeController
     private IBIWEntityHandler entityHandler;
 
     private BIWFirstPersonMode firstPersonMode;
-    internal BIWGodMode godMode;
+    public BIWGodMode godMode { get; set; }
 
     private InputAction_Trigger toggleSnapModeInputAction;
 
@@ -69,9 +71,9 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject snapGO;
     private GameObject freeMovementGO;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
 
         cursorGO = context.sceneReferences.cursorCanvas;
         cameraParentGO = context.sceneReferences.cameraParent;
@@ -201,7 +203,7 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode.LateUpdate();
     }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public override void EnterEditMode(IParcelScene scene)
     {
         base.EnterEditMode(scene);
         if (currentActiveMode == null)
@@ -277,6 +279,7 @@ public class BIWModeController : BIWController, IBIWModeController
         {
             SetBuildMode(EditModeState.GodMode);
         }
+
         InputDone();
     }
 

@@ -5,7 +5,7 @@ using DCL;
 using DCL.Camera;
 using UnityEngine;
 
-public interface IBIWGizmosController
+public interface IBIWGizmosController : IBIWController
 {
     delegate void GizmoTransformDelegate(string gizmoType);
 
@@ -51,9 +51,9 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private GameObject gizmosGO;
     private FreeCameraMovement freeCameraMovement;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
         gizmosGO = GameObject.Instantiate(context.projectReferencesAsset.gizmosPrefab, context.projectReferencesAsset.gizmosPrefab.transform.position, context.projectReferencesAsset.gizmosPrefab.transform.rotation);
         gizmos = gizmosGO.GetComponentsInChildren<IBIWGizmos>(true);
 
@@ -62,6 +62,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         raycastController.OnGizmosAxisPressed += OnGizmosAxisPressed;
         BIWInputWrapper.OnMouseUp += OnMouseUp;
         BIWInputWrapper.OnMouseDrag += OnMouseDrag;
+
         if (context.sceneReferences.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraMovement = (FreeCameraMovement)cameraState;
 
@@ -73,8 +74,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     public override void Dispose()
     {
         base.Dispose();
-        if (gizmosGO != null)
-            GameObject.Destroy(gizmosGO);
+        UnityEngine.Object.Destroy(gizmosGO);
         raycastController.OnGizmosAxisPressed -= OnGizmosAxisPressed;
         BIWInputWrapper.OnMouseUp -= OnMouseUp;
         BIWInputWrapper.OnMouseDrag -= OnMouseDrag;
@@ -227,6 +227,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         selectedEntitiesParent = selectionParent;
         GizmoStatusUpdate();
     }
+
     private void OnGizmosAxisPressed(BIWGizmosAxis pressedAxis) { OnBeginDrag(pressedAxis); }
 
     internal void OnMouseUp(int buttonId, Vector3 mousePosition)

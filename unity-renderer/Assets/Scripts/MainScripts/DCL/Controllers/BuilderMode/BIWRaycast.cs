@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Configuration;
 using UnityEngine;
 
-public interface IBIWRaycastController
+public interface IBIWRaycastController : IBIWController
 {
     event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
     bool RayCastFloor(out Vector3 position);
@@ -27,9 +28,9 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
     public LayerMask gizmoMask { get; private set; }
 
-    public override void Init(BIWContext context)
+    public override void Initialize(BIWContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
 
         entityHandler = context.entityHandler;
         modeController = context.modeController;
@@ -73,6 +74,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
                 return entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
             }
         }
+
         return null;
     }
 
@@ -87,6 +89,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
             position = hit.point;
             return true;
         }
+
         position = Vector3.zero;
         return false;
     }
@@ -100,6 +103,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
             hitInfo = hitComparer(hits);
             return true;
         }
+
         hitInfo = new RaycastHit();
         return false;
     }
@@ -163,7 +167,6 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
             BIWGizmosAxis gizmosAxis = hit.collider.gameObject.GetComponent<BIWGizmosAxis>();
             if (gizmosAxis != null)
                 OnGizmosAxisPressed?.Invoke(gizmosAxis);
-
         }
     }
 
@@ -184,5 +187,4 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
     private bool IsGizmoHit(RaycastHit hit) { return hit.collider.gameObject.GetComponent<BIWGizmosAxis>() != null; }
 
     #endregion
-
 }

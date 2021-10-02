@@ -5,8 +5,8 @@ using UnityEngine;
 
 public interface IBIWController
 {
-    void Init(BIWContext context);
-    void EnterEditMode(ParcelScene scene);
+    void Initialize(BIWContext context);
+    void EnterEditMode(IParcelScene scene);
     void ExitEditMode();
     void OnGUI();
 
@@ -22,11 +22,11 @@ public abstract class BIWController : IBIWController
 
     protected bool isEditModeActive = false;
 
-    public virtual void Init(BIWContext context) { isEditModeActive = false; }
+    public virtual void Initialize(BIWContext context) { isEditModeActive = false; }
 
-    public virtual void EnterEditMode(ParcelScene scene)
+    public virtual void EnterEditMode(IParcelScene scene)
     {
-        this.sceneToEdit = scene;
+        this.sceneToEdit = (ParcelScene)scene;
         isEditModeActive = true;
     }
 
@@ -40,11 +40,7 @@ public abstract class BIWController : IBIWController
 
     public virtual void LateUpdate() { }
 
-    public virtual void Update()
-    {
-        if (!isEditModeActive)
-            return;
-    }
+    public virtual void Update() { }
 
     public virtual void Dispose() { }
 }

@@ -31,6 +31,8 @@ namespace DCL
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
         public readonly DataStore_Screen screen = new DataStore_Screen();
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
+        public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
+        public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
 
         public class DataStore_BuilderInWorld
         {
@@ -108,6 +110,17 @@ namespace DCL
 
             public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
             public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
-        } 
+        }
+
+        public class DataStore_ExploreV2
+        {
+            public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
+        }
+
+        public class DataStore_Taskbar
+        {
+            public readonly BaseVariable<bool> isExploreV2Enabled = new BaseVariable<bool>(false);
+        }
     }
 }

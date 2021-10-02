@@ -26,7 +26,7 @@ namespace Tests.BuildModeHUDControllers
             dragAndDropSceneObjectController.Initialize(Substitute.For<ISceneCatalogController>(), view);
             catalogBridge = mockedGameObject.AddComponent<AssetCatalogBridge>();
 
-            item = BIWTestHelper.CreateTestCatalogLocalSingleObject();
+            item = BIWTestUtils.CreateTestCatalogLocalSingleObject();
             item.thumbnailURL = "";
         }
 
@@ -117,7 +117,7 @@ namespace Tests.BuildModeHUDControllers
 
         private CatalogItemAdapter CreateAdapter()
         {
-            var adapter = BIWTestHelper.CreateCatalogItemAdapter(mockedGameObject);
+            var adapter = BIWTestUtils.CreateCatalogItemAdapter(mockedGameObject);
             adapter.SetContent(item);
             return adapter;
         }

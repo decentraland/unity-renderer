@@ -29,6 +29,7 @@ MonoBehaviour:
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 85
     ssaoQuality: 1
+    maxHQAvatars: 25
   - displayName: Medium
     baseResolution: 1
     antiAliasing: 1
@@ -44,6 +45,7 @@ MonoBehaviour:
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
     ssaoQuality: 2
+    maxHQAvatars: 40
   - displayName: High
     baseResolution: 1
     antiAliasing: 1
@@ -53,12 +55,13 @@ MonoBehaviour:
     shadowResolution: 1024
     cameraDrawDistance: 250
     bloom: 1
-    fpsCap: 1
+    fpsCap: 0
     colorGrading: 1
     shadowDistance: 70
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
     ssaoQuality: 2
+    maxHQAvatars: 50
   - displayName: Ultra
     baseResolution: 2
     antiAliasing: 2
@@ -74,3 +77,4 @@ MonoBehaviour:
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 0
     ssaoQuality: 3
+    maxHQAvatars: 70
