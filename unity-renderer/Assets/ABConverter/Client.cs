@@ -102,7 +102,7 @@ namespace DCL.ABConverter
         }
 
         /// <summary>
-        /// Batch-mode entry point
+        /// Scenes conversion batch-mode entry point
         /// </summary>
         public static void ExportSceneToAssetBundles()
         {
@@ -118,7 +118,7 @@ namespace DCL.ABConverter
         }
 
         /// <summary>
-        /// Start the conversion process with the given commandLineArgs.
+        /// Start the scene conversion process with the given commandLineArgs.
         /// </summary>
         /// <param name="commandLineArgs">An array with the command line arguments.</param>
         /// <exception cref="ArgumentException">When an invalid argument is passed</exception>
@@ -185,6 +185,70 @@ namespace DCL.ABConverter
                 }
 
                 throw new ArgumentException("Invalid arguments! You must pass -parcelsXYWH or -sceneCid for dump to work!");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
+        
+        /// <summary>
+        /// Wearables collection conversion batch-mode entry point
+        /// </summary>
+        // TODO: Fix this CLI pipeline to finish converting the assets and return the correct exit code
+        /*public static void ExportWearablesCollectionToAssetBundles()
+        {
+            //NOTE(Brian): This should make the logs cleaner
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+            Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
+            Application.SetStackTraceLogType(LogType.Error, StackTraceLogType.Full);
+            Application.SetStackTraceLogType(LogType.Exception, StackTraceLogType.Full);
+            Application.SetStackTraceLogType(LogType.Assert, StackTraceLogType.Full);
+            
+            EnsureEnvironment();
+            ExportWearablesCollectionToAssetBundles(System.Environment.GetCommandLineArgs());
+        }*/
+        
+        /// <summary>
+        /// Start the wearables collection conversion process with the given commandLineArgs.
+        /// </summary>
+        /// <param name="commandLineArgs">An array with the command line arguments.</param>
+        /// <exception cref="ArgumentException">When an invalid argument is passed</exception>
+        public static void ExportWearablesCollectionToAssetBundles(string[] commandLineArgs)
+        {
+            Settings settings = new Settings();
+            try
+            {
+                if (Utils.ParseOption(commandLineArgs, Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
+                {
+                    settings.finalAssetBundlePath = outputPath[0] + "/";
+                }
+
+                if (Utils.ParseOption(commandLineArgs, Config.CLI_SET_CUSTOM_BASE_URL, 1, out string[] customBaseUrl))
+                    settings.baseUrl = customBaseUrl[0];
+
+                if (Utils.ParseOption(commandLineArgs, Config.CLI_VERBOSE, 0, out _))
+                    settings.verbose = true;
+
+                if (Utils.ParseOption(commandLineArgs, Config.CLI_ALWAYS_BUILD_SYNTAX, 0, out _))
+                    settings.skipAlreadyBuiltBundles = false;
+
+                if (Utils.ParseOption(commandLineArgs, Config.CLI_KEEP_BUNDLES_SYNTAX, 0, out _))
+                    settings.deleteDownloadPathAfterFinished = false;
+
+                if (Utils.ParseOption(commandLineArgs, Config.CLI_BUILD_WEARABLES_COLLECTION_SYNTAX, 1, out string[] collectionId))
+                {
+                    if (collectionId == null || string.IsNullOrEmpty(collectionId[0]))
+                    {
+                        throw new ArgumentException("Invalid wearablesCollectionUrnId argument! Please use -wearablesCollectionUrnId <id> to establish the desired collection id to process.");
+                    }
+
+                    DumpSingleWearablesCollection(collectionId[0], settings);
+
+                    return;
+                }
+
+                throw new ArgumentException("Invalid arguments! You must pass -wearablesCollectionUrnId for dump to work!");
             }
             catch (Exception e)
             {
@@ -375,18 +439,22 @@ namespace DCL.ABConverter
             DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnBodyWearableLoad);
         }
         
-        public static void DumpSingleWearablesCollection(string collectionId)
+        public static void DumpSingleWearablesCollection(string collectionId, Settings settings = null)
         {
             EnsureEnvironment();
             
             EnsureWearableCollections();
 
             log.Info("Starting wearables dumping for collection: " + collectionId.Length);
+
+            if (settings == null)
+            {
+                settings = new Settings();
+                settings.skipAlreadyBuiltBundles = false;
+                settings.deleteDownloadPathAfterFinished = false;
+                settings.clearDirectoriesOnStart = false;
+            }
             
-            var settings = new Settings();
-            settings.skipAlreadyBuiltBundles = false;
-            settings.deleteDownloadPathAfterFinished = false;
-            settings.clearDirectoriesOnStart = false;
             var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
             
             DumpWearablesCollection(abConverterCoreController, collectionId, (x) =>
@@ -401,12 +469,12 @@ namespace DCL.ABConverter
         /// Each collection is dumped and converted sequentially as the amount of collections has grown more that we
         /// can handle in 1 massive dump-conversion.
         /// </summary>
-        static double dumpStartTime;
+        static double wearablesCollectionDumpStartTime;
         public static void DumpAllNonBodyshapeWearables(Func<string, bool> collectionFilter = null)
         {
             // TODO: Re-implement collectionFilter usage
             
-            dumpStartTime = EditorApplication.timeSinceStartup;
+            wearablesCollectionDumpStartTime = EditorApplication.timeSinceStartup;
             
             EnsureEnvironment();
             
@@ -439,7 +507,7 @@ namespace DCL.ABConverter
 
                 if (currentCollectionIndex > lastCollectionIndex || currentCollectionIndex >= wearableCollections.Length)
                 {
-                    double totalTime = EditorApplication.timeSinceStartup - dumpStartTime;
+                    double totalTime = EditorApplication.timeSinceStartup - wearablesCollectionDumpStartTime;
                     
                     TimeSpan t = TimeSpan.FromSeconds(totalTime);
                     string formattedTotalTime = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
