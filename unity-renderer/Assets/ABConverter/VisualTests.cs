@@ -7,7 +7,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace DCL.ABConverter
