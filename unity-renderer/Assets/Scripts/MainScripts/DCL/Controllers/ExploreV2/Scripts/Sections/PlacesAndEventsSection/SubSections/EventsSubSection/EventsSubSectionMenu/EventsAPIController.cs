@@ -1,6 +1,5 @@
 using DCL;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,12 +7,15 @@ using UnityEngine.Networking;
 public interface IEventsAPIController
 {
     WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
+    UnityWebRequestAsyncOperation RegisterAttendEvent(string eventId, bool isRegistered, Action OnSuccess, Action<string> OnFail);
 }
 
 public class EventsAPIController : IEventsAPIController
 {
-    private const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
-    private const string URL_POST_MESSAGE = "https://events.decentraland.org/api/message";
+    internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
+    internal const string URL_POST_MESSAGE = "https://events.decentraland.org/api/message";
+
+    internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
     public WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
     {
@@ -30,37 +32,37 @@ public class EventsAPIController : IEventsAPIController
             });
     }
 
-    //void RegisterAttendEvent(string eventId, bool isRegistered)
-    //{
-    //    EventPostMessageModel data = new EventPostMessageModel
-    //    {
-    //        type = "attend",
-    //        timestamp = DateTime.Now.ToString(),
-    //        @event = eventId,
-    //        attend = isRegistered
-    //    };
+    public UnityWebRequestAsyncOperation RegisterAttendEvent(string eventId, bool isRegistered, Action OnSuccess, Action<string> OnFail)
+    {
+        AttendEventRequestModel data = new AttendEventRequestModel
+        {
+            address = ownUserProfile.userId,
+            message = new AttendEventMessageModel
+            {
+                type = "attend",
+                timestamp = DateTime.Now.ToLongDateString(),
+                @event = eventId,
+                attend = isRegistered
+            },
+            signature = ""
+        };
 
-    //    StartCoroutine(PostRequest(URL_POST_MESSAGE, JsonUtility.ToJson(data)));
-    //}
+        string json = JsonUtility.ToJson(data);
+        var postWebRequest = new UnityWebRequest(URL_POST_MESSAGE, "POST");
+        byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+        postWebRequest.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+        postWebRequest.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+        postWebRequest.SetRequestHeader("Content-Type", "application/json");
 
-    //IEnumerator PostRequest(string url, string json)
-    //{
-    //    var postWebRequest = new UnityWebRequest(url, "POST");
-    //    byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-    //    postWebRequest.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-    //    postWebRequest.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-    //    postWebRequest.SetRequestHeader("Content-Type", "application/json");
+        UnityWebRequestAsyncOperation asyncOp = postWebRequest.SendWebRequest();
+        asyncOp.completed += (asyncOp) =>
+        {
+            if (postWebRequest.result == UnityWebRequest.Result.Success)
+                OnSuccess?.Invoke();
+            else
+                OnFail?.Invoke(postWebRequest.downloadHandler.text);
+        };
 
-    //    // Send the request then wait here until it returns
-    //    yield return postWebRequest.SendWebRequest();
-
-    //    if (postWebRequest.result == UnityWebRequest.Result.ConnectionError)
-    //    {
-    //        Debug.Log("Error While Sending: " + postWebRequest.error);
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Received: " + postWebRequest.downloadHandler.text);
-    //    }
-    //}
+        return asyncOp;
+    }
 }

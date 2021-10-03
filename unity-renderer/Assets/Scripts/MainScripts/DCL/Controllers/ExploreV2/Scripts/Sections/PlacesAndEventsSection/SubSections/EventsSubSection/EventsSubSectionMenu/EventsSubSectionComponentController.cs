@@ -145,27 +145,30 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal EventCardComponentModel CreateEventCardModelFromAPIEvent(EventFromAPIModel eventFromAPI)
     {
-        EventCardComponentModel result = new EventCardComponentModel();
+        EventCardComponentModel eventCardModel = new EventCardComponentModel();
 
-        result.eventId = eventFromAPI.id;
-        result.eventPictureSprite = null;
-        result.eventPictureUri = eventFromAPI.image;
-        result.isLive = eventFromAPI.live;
-        result.liveTagText = "LIVE";
-        result.eventDateText = eventFromAPI.start_at;
-        result.eventName = eventFromAPI.name;
-        result.eventDescription = eventFromAPI.description;
-        result.eventStartedIn = eventFromAPI.start_at;
-        result.eventOrganizer = eventFromAPI.user_name;
-        result.eventPlace = eventFromAPI.scene_name;
-        result.subscribedUsers = eventFromAPI.total_attendees;
-        result.isSubscribed = false;
-        result.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
+        // Card data
+        eventCardModel.eventId = eventFromAPI.id;
+        eventCardModel.eventPictureSprite = null;
+        eventCardModel.eventPictureUri = eventFromAPI.image;
+        eventCardModel.isLive = eventFromAPI.live;
+        eventCardModel.liveTagText = "LIVE";
+        eventCardModel.eventDateText = eventFromAPI.start_at;
+        eventCardModel.eventName = eventFromAPI.name;
+        eventCardModel.eventDescription = eventFromAPI.description;
+        eventCardModel.eventStartedIn = eventFromAPI.start_at;
+        eventCardModel.eventOrganizer = eventFromAPI.user_name;
+        eventCardModel.eventPlace = eventFromAPI.scene_name;
+        eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
+        eventCardModel.isSubscribed = false;
+        eventCardModel.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
 
-        result.onInfoClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        result.onInfoClick.AddListener(() => view.ShowEventModal(result));
+        // Card events
+        ConfigureOnInfoActions(eventCardModel);
+        ConfigureOnSubscribeActions(eventCardModel);
+        ConfigureOnUnsubscribeActions(eventCardModel);
 
-        return result;
+        return eventCardModel;
     }
 
     internal JumpInConfig GetJumpInConfigFromAPIEvent(EventFromAPIModel eventFromAPI)
@@ -179,5 +182,49 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         result.layerName = realmFromAPI[1];
 
         return result;
+    }
+
+    internal void ConfigureOnInfoActions(EventCardComponentModel eventModel)
+    {
+        eventModel.onInfoClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+        eventModel.onInfoClick.AddListener(() => view.ShowEventModal(eventModel));
+    }
+
+    internal void ConfigureOnSubscribeActions(EventCardComponentModel eventModel)
+    {
+        eventModel.onSubscribeClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+        eventModel.onSubscribeClick.AddListener(() =>
+        {
+            eventsAPIApiController.RegisterAttendEvent(
+                eventModel.eventId,
+                true,
+                () =>
+                {
+                    Debug.Log("I WILL ATTEND!!");
+                },
+                (error) =>
+                {
+                    Debug.LogError($"Error posting 'attend' message to the API: {error}");
+                });
+        });
+    }
+
+    internal void ConfigureOnUnsubscribeActions(EventCardComponentModel eventModel)
+    {
+        eventModel.onUnsubscribeClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+        eventModel.onUnsubscribeClick.AddListener(() =>
+        {
+            eventsAPIApiController.RegisterAttendEvent(
+                eventModel.eventId,
+                false,
+                () =>
+                {
+                    Debug.Log("I WILL NOT ATTEND!!");
+                },
+                (error) =>
+                {
+                    Debug.LogError($"Error posting 'attend' message to the API: {error}");
+                });
+        });
     }
 }

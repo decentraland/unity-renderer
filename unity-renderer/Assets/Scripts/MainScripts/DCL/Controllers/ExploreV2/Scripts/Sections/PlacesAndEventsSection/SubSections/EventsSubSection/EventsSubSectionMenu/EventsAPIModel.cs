@@ -9,13 +9,6 @@ public class EventListFromAPIModel
 }
 
 [Serializable]
-public class EventDetailFromAPIModel
-{
-    public bool ok;
-    public EventFromAPIModel data;
-}
-
-[Serializable]
 public class EventFromAPIModel
 {
     public string id;
@@ -35,7 +28,15 @@ public class EventFromAPIModel
 }
 
 [Serializable]
-public class EventPostMessageModel
+public class AttendEventRequestModel
+{
+    public string address;
+    public AttendEventMessageModel message;
+    public string signature;
+}
+
+[Serializable]
+public class AttendEventMessageModel
 {
     public string type = "attend";
     public string timestamp;
