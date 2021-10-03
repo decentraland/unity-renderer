@@ -77,7 +77,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ParseEventFromAPI(receivedEvent);
+            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             featuredEvents.Add(eventCardModel);
         }
 
@@ -93,7 +93,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.trending).ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ParseEventFromAPI(receivedEvent);
+            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             trendingEvents.Add(eventCardModel);
         }
 
@@ -109,7 +109,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(3).ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = ParseEventFromAPI(receivedEvent);
+            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             upcomingEvents.Add(eventCardModel);
         }
 
@@ -129,7 +129,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         OnEventsFromAPIUpdated -= UpdateEvents;
     }
 
-    internal EventCardComponentModel ParseEventFromAPI(EventFromAPIModel eventFromAPI)
+    internal EventCardComponentModel CreateEventCardModelFromAPIEvent(EventFromAPIModel eventFromAPI)
     {
         EventCardComponentModel result = new EventCardComponentModel();
 
@@ -146,50 +146,24 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         result.eventPlace = eventFromAPI.scene_name;
         result.subscribedUsers = eventFromAPI.total_attendees;
         result.isSubscribed = false;
-        result.jumpInConfiguration = new JumpInConfig
-        {
-            coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]),
-            serverName = string.IsNullOrEmpty(eventFromAPI.realm) ? "" : eventFromAPI.realm.Split('-')[0],
-            layerName = ""
-        };
+        result.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
+
+        result.onInfoClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+        result.onInfoClick.AddListener(() => view.ShowEventModal(result));
 
         return result;
     }
 
-    //// Temporal until connect with the events API
-    //private void SetEventsMockedData()
-    //{
-    //    foreach (var eventCardModel in mockedData.featureEvents)
-    //    {
-    //        ConfigureEventCardButtons(eventCardModel);
-    //    }
-    //    SetFeatureEvents(mockedData.featureEvents);
+    internal JumpInConfig GetJumpInConfigFromAPIEvent(EventFromAPIModel eventFromAPI)
+    {
+        JumpInConfig result = new JumpInConfig();
 
-    //    foreach (var eventCardModel in mockedData.trendingEvents)
-    //    {
-    //        ConfigureEventCardButtons(eventCardModel);
-    //    }
-    //    SetTrendingEvents(mockedData.trendingEvents);
+        result.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
 
-    //    foreach (var eventCardModel in mockedData.upcomingEvents)
-    //    {
-    //        ConfigureEventCardButtons(eventCardModel);
-    //    }
-    //    SetUpcomingEvents(mockedData.upcomingEvents);
+        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new string[] { "", "" } : eventFromAPI.realm.Split('-');
+        result.serverName = realmFromAPI[0];
+        result.layerName = realmFromAPI[1];
 
-    //    foreach (var eventCardModel in mockedData.goingEvents)
-    //    {
-    //        ConfigureEventCardButtons(eventCardModel);
-    //    }
-    //    SetGoingEvents(mockedData.goingEvents);
-    //}
-
-    //// Temporal until connect with the events API
-    //private void ConfigureEventCardButtons(EventCardComponentModel eventCardModel)
-    //{
-    //    eventCardModel.onInfoClick.AddListener(() => view.ShowEventModal(eventCardModel));
-    //    eventCardModel.onSubscribeClick.AddListener(() => Debug.Log("SUBSCRIBED!"));
-    //    eventCardModel.onUnsubscribeClick.AddListener(() => Debug.Log("UNSUBSCRIBED!"));
-    //    eventCardModel.onJumpInClick.AddListener(() => DataStore.i.exploreV2.isOpen.Set(false));
-    //}
+        return result;
+    }
 }
