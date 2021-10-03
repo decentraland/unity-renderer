@@ -33,3 +33,12 @@ public class EventFromAPIModel
     public bool highlighted;
     public bool trending;
 }
+
+[Serializable]
+public class EventPostMessageModel
+{
+    public string type = "attend";
+    public string timestamp;
+    public string @event;
+    public bool attend;
+}
