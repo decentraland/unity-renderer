@@ -1,7 +1,5 @@
-using DCL;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -479,6 +477,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
             yield return null;
         }
 
+        itemsScroll.horizontalNormalizedPosition = currentFinalNormalizedPos;
         isInTransition = false;
     }
 }

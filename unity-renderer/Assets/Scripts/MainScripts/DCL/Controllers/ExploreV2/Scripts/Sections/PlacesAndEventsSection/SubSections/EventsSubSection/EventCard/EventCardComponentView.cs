@@ -31,16 +31,22 @@ public interface IEventCardComponentView
     void Configure(EventCardComponentModel model);
 
     /// <summary>
-    /// Set the event picture.
+    /// Set the event picture directly from a sprite.
     /// </summary>
-    /// <param name="newPicture">Event picture (sprite).</param>
-    void SetEventPicture(Sprite newPicture);
+    /// <param name="sprite">Event picture (sprite).</param>
+    void SetEventPicture(Sprite sprite);
 
     /// <summary>
-    /// Set the event picture.
+    /// Set the event picture from a 2D texture.
     /// </summary>
-    /// <param name="newPicture">Event picture (texture).</param>
-    void SetEventPicture(Texture2D newPicture);
+    /// <param name="texture">Event picture (url).</param>
+    void SetEventPicture(Texture2D texture);
+
+    /// <summary>
+    /// Set the event picture from an uri.
+    /// </summary>
+    /// <param name="uri"></param>
+    void SetEventPicture(string uri);
 
     /// <summary>
     /// Set the event card as live mode.
@@ -205,7 +211,13 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         }
     }
 
-    public override void PostInitialization() { Configure(model); }
+    public override void PostInitialization()
+    {
+        if (eventImage != null)
+            eventImage.OnLoaded += OnEventImageLoaded;
+
+        Configure(model);
+    }
 
     public void Configure(EventCardComponentModel model)
     {
@@ -218,7 +230,15 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (model == null)
             return;
 
-        SetEventPicture(model.eventPicture);
+        if (model.eventPictureSprite != null)
+            SetEventPicture(model.eventPictureSprite);
+        else if (model.eventPictureTexture != null)
+            SetEventPicture(model.eventPictureTexture);
+        else if (!string.IsNullOrEmpty(model.eventPictureUri))
+            SetEventPicture(model.eventPictureUri);
+        else
+            SetEventPicture(sprite: null);
+
         SetEventAsLive(model.isLive);
         SetLiveTagText(model.liveTagText);
         SetEventDate(model.eventDateText);
@@ -239,6 +259,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     {
         base.Dispose();
 
+        if (eventImage != null)
+            eventImage.OnLoaded -= OnEventImageLoaded;
+
         if (infoButton != null)
             infoButton.onClick.RemoveAllListeners();
 
@@ -252,20 +275,40 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             jumpinButton.onClick.RemoveAllListeners();
     }
 
-    public void SetEventPicture(Sprite newPicture)
+    public void SetEventPicture(Sprite sprite)
     {
-        model.eventPicture = newPicture;
+        model.eventPictureSprite = sprite;
 
         if (eventImage == null)
             return;
 
-        eventImage.SetImage(newPicture);
+        eventImage.SetImage(sprite);
     }
 
-    public void SetEventPicture(Texture2D newPicture)
+    public void SetEventPicture(Texture2D texture)
     {
-        Sprite newPictureSprite = Sprite.Create(newPicture, new Rect(0, 0, newPicture.width, newPicture.height), new Vector2(0.5f, 0.5f));
-        SetEventPicture(newPictureSprite);
+        model.eventPictureTexture = texture;
+
+        if (!Application.isPlaying)
+            return;
+
+        if (eventImage == null)
+            return;
+
+        eventImage.SetImage(texture);
+    }
+
+    public void SetEventPicture(string uri)
+    {
+        model.eventPictureUri = uri;
+
+        if (!Application.isPlaying)
+            return;
+
+        if (eventImage == null)
+            return;
+
+        eventImage.SetImage(uri);
     }
 
     public void SetEventAsLive(bool isLive)
@@ -381,4 +424,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
         jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
     }
+
+    private void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
 }

@@ -134,7 +134,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         EventCardComponentModel result = new EventCardComponentModel();
 
         result.eventId = eventFromAPI.id;
-        result.eventPicture = null;
+        result.eventPictureSprite = null;
+        result.eventPictureUri = eventFromAPI.image;
         result.isLive = eventFromAPI.live;
         result.liveTagText = "LIVE";
         result.eventDateText = eventFromAPI.start_at;

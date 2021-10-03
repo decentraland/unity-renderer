@@ -90,15 +90,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         view.currentProfileCard.SetProfileName(profile.userName);
         view.currentProfileCard.SetProfileAddress(profile.ethAddress);
-        view.currentProfileCard.SetLoadingIndicatorVisible(true);
-        profile.snapshotObserver.AddListener(SetProfileImage);
-    }
-
-    internal void SetProfileImage(Texture2D texture)
-    {
-        ownUserProfile.snapshotObserver.RemoveListener(SetProfileImage);
-        view.currentProfileCard.SetLoadingIndicatorVisible(false);
-        view.currentProfileCard.SetProfilePicture(texture);
+        view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
     }
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }

@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public class EventCardComponentModel
 {
     public string eventId;
-    public Sprite eventPicture;
+    public Sprite eventPictureSprite;
+    public Texture2D eventPictureTexture;
+    public string eventPictureUri;
     public bool isLive;
     public string liveTagText;
     public string eventDateText;

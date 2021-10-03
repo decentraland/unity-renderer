@@ -829,7 +829,10 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+      type: 3}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -1625,6 +1628,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1323953455831319416, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: coords.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1323953455831319416, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: coords.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1323953455831319416, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: layerName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1323953455831319416, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: serverName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2027024121223139938, guid: b53f82112c401e94eb453570ac440340,
         type: 3}

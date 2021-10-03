@@ -544,12 +544,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c47209a872c4314a8b0d6143186444b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 0
   button: {fileID: 7528735507517742048}
   profileImage: {fileID: 2421935006137242597}
   profileName: {fileID: 1195385098958599846}
   profileAddress: {fileID: 723462149448302663}
   model:
-    profilePicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    profilePictureSprite: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24,
+      type: 3}
+    profilePictureTexture: {fileID: 0}
+    profilePictureUri: 
     profileName: Name
     profileAddress: 0x8947234hj32g42j3h4g234g423b47f
     onClick:
