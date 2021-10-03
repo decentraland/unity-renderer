@@ -29,7 +29,7 @@ public class EventFromAPIModel
     public string realm;
     public int total_attendees;
     public bool live;
-    public string user;
+    public string user_name;
     public bool highlighted;
     public bool trending;
 }

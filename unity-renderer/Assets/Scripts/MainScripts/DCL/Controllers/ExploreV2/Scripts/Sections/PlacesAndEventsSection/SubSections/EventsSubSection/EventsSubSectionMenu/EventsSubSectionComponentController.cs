@@ -9,22 +9,28 @@ public interface IEventsSubSectionComponentController
     void LoadFeaturedEvents();
     void LoadTrendingEvents();
     void LoadUpcomingEvents();
+    void ShowMoreUpcomingEvents();
     void LoadGoingEvents();
     void Dispose();
 }
 
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
+    internal event Action OnEventsFromAPIUpdated;
+
+    internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 6;
+    internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 3;
+
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
-
-    internal event Action OnEventsFromAPIUpdated;
+    internal int currentUpcomingEventsShowed = INITIAL_NUMBER_OF_UPCOMING_EVENTS;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
+        this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
 
         eventsAPIApiController = eventsAPI;
         OnEventsFromAPIUpdated += UpdateEvents;
@@ -106,7 +112,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetUpcomingEvents(new List<EventCardComponentModel>());
 
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(3).ToList();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(currentUpcomingEventsShowed).ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
@@ -115,6 +121,13 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.SetUpcomingEventsAsLoading(false);
         view.SetUpcomingEvents(upcomingEvents);
+        view.SetShowMoreUpcomingEventsButtonActive(eventsFromAPI.Count > currentUpcomingEventsShowed);
+    }
+
+    public void ShowMoreUpcomingEvents()
+    {
+        currentUpcomingEventsShowed += SHOW_MORE_UPCOMING_EVENTS_INCREMENT;
+        LoadUpcomingEvents();
     }
 
     public void LoadGoingEvents()
@@ -126,6 +139,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void Dispose()
     {
         view.OnReady -= FirstLoading;
+        view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
         OnEventsFromAPIUpdated -= UpdateEvents;
     }
 
@@ -142,7 +156,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         result.eventName = eventFromAPI.name;
         result.eventDescription = eventFromAPI.description;
         result.eventStartedIn = eventFromAPI.start_at;
-        result.eventOrganizer = eventFromAPI.user;
+        result.eventOrganizer = eventFromAPI.user_name;
         result.eventPlace = eventFromAPI.scene_name;
         result.subscribedUsers = eventFromAPI.total_attendees;
         result.isSubscribed = false;

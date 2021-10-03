@@ -1202,6 +1202,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 4551767142048380211}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &239293488150361354
 GameObject:
   m_ObjectHideFlags: 0
@@ -4996,6 +4998,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 5533777021586533934}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &750838623412988570
 GameObject:
   m_ObjectHideFlags: 0
@@ -7592,7 +7596,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -10904,6 +10910,7 @@ MonoBehaviour:
   goingEvents: {fileID: 7104486456595568036}
   goingEventsLoading: {fileID: 8085057042995407143}
   goingEventsNoDataText: {fileID: 5839115136195910684}
+  showMoreUpcomingEventsButtonContainer: {fileID: 353585801300439280}
   showMoreUpcomingEventsButton: {fileID: 3950810441254292811}
 --- !u!1 &2009600051047960195
 GameObject:
@@ -11437,6 +11444,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 5857139154619633903}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &2104525133231786768
 GameObject:
   m_ObjectHideFlags: 0
@@ -12683,6 +12692,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 476720778075261660}
   model:
     sprite: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &2290041127584771200
 GameObject:
   m_ObjectHideFlags: 0
@@ -13168,7 +13179,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -13370,7 +13383,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -17167,6 +17182,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 9202357667721633543}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &2992036930847207612
 GameObject:
   m_ObjectHideFlags: 0
@@ -17624,6 +17641,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 5479254893696499404}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &3099158461188347397
 GameObject:
   m_ObjectHideFlags: 0
@@ -19457,6 +19476,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 781910967104264373}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &3220647319975541616
 GameObject:
   m_ObjectHideFlags: 0
@@ -20391,6 +20412,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 4058558580197944950}
   model:
     sprite: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &3438532603825704262
 GameObject:
   m_ObjectHideFlags: 0
@@ -22786,6 +22809,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 672790241561552978}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &3749980538372474117
 GameObject:
   m_ObjectHideFlags: 0
@@ -23273,7 +23298,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -23975,7 +24002,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -26682,7 +26711,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -26853,6 +26884,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 1292435381707071676}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &4221791815883027527
 GameObject:
   m_ObjectHideFlags: 0
@@ -27709,7 +27742,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -29462,6 +29497,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 3957761769070672476}
   model:
     sprite: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &4582559777645327430
 GameObject:
   m_ObjectHideFlags: 0
@@ -30240,7 +30277,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -41133,7 +41172,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -47488,7 +47529,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -49520,6 +49563,8 @@ MonoBehaviour:
   loadingIndicator: {fileID: 7654543272092679510}
   model:
     sprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    texture: {fileID: 0}
+    uri: 
 --- !u!1 &8400126463752891407
 GameObject:
   m_ObjectHideFlags: 0
@@ -51175,7 +51220,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
@@ -53720,7 +53767,9 @@ MonoBehaviour:
   isEventCardModal: 0
   model:
     eventId: 
-    eventPicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
+    eventPictureSprite: {fileID: 0}
+    eventPictureTexture: {fileID: 0}
+    eventPictureUri: 
     isLive: 1
     liveTagText: LIVE
     eventDateText: JULY 5
