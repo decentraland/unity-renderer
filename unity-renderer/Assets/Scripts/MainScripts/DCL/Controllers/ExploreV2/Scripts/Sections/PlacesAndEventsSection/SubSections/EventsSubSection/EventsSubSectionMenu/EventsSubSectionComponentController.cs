@@ -158,7 +158,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventCardModel.eventDescription = eventFromAPI.description;
         eventCardModel.eventStartedIn = eventFromAPI.start_at;
         eventCardModel.eventOrganizer = eventFromAPI.user_name;
-        eventCardModel.eventPlace = eventFromAPI.scene_name;
+        eventCardModel.eventPlace = string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name;
         eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
         eventCardModel.isSubscribed = false;
         eventCardModel.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
