@@ -30,4 +30,6 @@ public class EventFromAPIModel
     public int total_attendees;
     public bool live;
     public string user;
+    public bool highlighted;
+    public bool trending;
 }

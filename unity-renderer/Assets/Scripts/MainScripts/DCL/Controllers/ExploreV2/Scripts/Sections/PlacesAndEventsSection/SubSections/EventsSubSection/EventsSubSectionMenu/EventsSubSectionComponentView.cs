@@ -9,11 +9,15 @@ public interface IEventsSubSectionComponentView
     event Action OnReady;
 
     void SetFeaturedEvents(List<EventCardComponentModel> events);
+    void SetFeaturedEventsAsLoading(bool isVisible);
     void SetTrendingEvents(List<EventCardComponentModel> events);
+    void SetTrendingEventsAsLoading(bool isVisible);
     void SetUpcomingEvents(List<EventCardComponentModel> events);
-    void SetGoingEvents(List<EventCardComponentModel> events);
-    void ShowEventModal(EventCardComponentModel eventInfo);
+    void SetUpcomingEventsAsLoading(bool isVisible);
     void ShowMoreUpcomingEvents();
+    void SetGoingEvents(List<EventCardComponentModel> events);
+    void SetGoingEventsAsLoading(bool isVisible);
+    void ShowEventModal(EventCardComponentModel eventInfo);
 }
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
@@ -25,11 +29,15 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     [Header("Prefab References")]
     [SerializeField] internal CarouselComponentView featuredEvents;
+    [SerializeField] internal GameObject featuredEventsLoading;
     [SerializeField] internal GridContainerComponentView trendingEvents;
+    [SerializeField] internal GameObject trendingEventsLoading;
     [SerializeField] internal TMP_Text trendingEventsNoDataText;
     [SerializeField] internal GridContainerComponentView upcomingEvents;
+    [SerializeField] internal GameObject upcomingEventsLoading;
     [SerializeField] internal TMP_Text upcomingEventsNoDataText;
     [SerializeField] internal GridContainerComponentView goingEvents;
+    [SerializeField] internal GameObject goingEventsLoading;
     [SerializeField] internal TMP_Text goingEventsNoDataText;
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
 
@@ -78,7 +86,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEvents(events, eventCardLongPrefab);
         featuredEvents.SetItems(eventComponentsToAdd, false);
-        featuredEvents.gameObject.SetActive(events.Count != 0);
+    }
+    public void SetFeaturedEventsAsLoading(bool isVisible)
+    {
+        featuredEvents.gameObject.SetActive(!isVisible);
+        featuredEventsLoading.SetActive(isVisible);
     }
 
     public void SetTrendingEvents(List<EventCardComponentModel> events)
@@ -88,6 +100,13 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
+    public void SetTrendingEventsAsLoading(bool isVisible)
+    {
+        trendingEvents.gameObject.SetActive(!isVisible);
+        trendingEventsLoading.SetActive(isVisible);
+        trendingEventsNoDataText.gameObject.SetActive(false);
+    }
+
     public void SetUpcomingEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEvents(events, eventCardPrefab);
@@ -95,11 +114,25 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
+    public void SetUpcomingEventsAsLoading(bool isVisible)
+    {
+        upcomingEvents.gameObject.SetActive(!isVisible);
+        upcomingEventsLoading.SetActive(isVisible);
+        upcomingEventsNoDataText.gameObject.SetActive(false);
+    }
+
     public void SetGoingEvents(List<EventCardComponentModel> events)
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEvents(events, eventCardPrefab);
         goingEvents.SetItems(eventComponentsToAdd, false);
-        goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
+        goingEventsNoDataText.gameObject.SetActive(goingEvents.gameObject.activeInHierarchy && events.Count == 0);
+    }
+
+    public void SetGoingEventsAsLoading(bool isVisible)
+    {
+        goingEvents.gameObject.SetActive(!isVisible);
+        goingEventsLoading.SetActive(isVisible);
+        goingEventsNoDataText.gameObject.SetActive(false);
     }
 
     public void ShowEventModal(EventCardComponentModel eventInfo)

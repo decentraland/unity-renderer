@@ -5,19 +5,19 @@ using UnityEngine;
 
 public interface IEventsAPIController
 {
-    WebRequestAsyncOperation GetUpcomingEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
+    WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
     WebRequestAsyncOperation GetEventById(string id, Action<EventFromAPIModel> OnSuccess, Action<string> OnFail);
 }
 
 public class EventsAPIController : IEventsAPIController
 {
-    private const string URL_GET_UPCOMING_EVENTS = "https://events.decentraland.org/api/events?limit=3";
+    private const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
     private const string URL_GET_EVENT_BY_ID = "https://events.decentraland.org/api/events/{0}";
 
-    public WebRequestAsyncOperation GetUpcomingEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
+    public WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
     {
         return DCL.Environment.i.platform.webRequest.Get(
-            URL_GET_UPCOMING_EVENTS,
+            URL_GET_ALL_EVENTS,
             OnSuccess: (webRequestResult) =>
             {
                 EventListFromAPIModel upcomingEventsResult = JsonUtility.FromJson<EventListFromAPIModel>(webRequestResult.downloadHandler.text);
