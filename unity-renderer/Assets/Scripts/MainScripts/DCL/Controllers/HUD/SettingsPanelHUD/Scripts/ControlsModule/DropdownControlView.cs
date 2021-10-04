@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using TMPro;
@@ -41,7 +42,13 @@ namespace DCL.SettingsPanelHUD.Controls
             if (labels.Length == 0)
                 return;
 
-            dropdown.options = labels.Select(l => new TMP_Dropdown.OptionData(l)).ToList();
+            dropdown.ClearOptions();
+            List<TMP_Dropdown.OptionData> dropdownOptions = labels.Select(l => new TMP_Dropdown.OptionData(l)).ToList();
+            foreach (TMP_Dropdown.OptionData data in dropdownOptions)
+            {
+                dropdown.options.Add(data);
+            }
+            dropdown.RefreshShownValue();
         }
 
         protected override void OnDestroy()
