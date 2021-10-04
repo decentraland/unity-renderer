@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 public interface IEventsSubSectionComponentController
 {
-    void RequestAllEventsFromAPI();
+    void LoadAllEvents();
     void LoadFeaturedEvents();
     void LoadTrendingEvents();
     void LoadUpcomingEvents();
@@ -26,6 +27,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal IEventsAPIController eventsAPIApiController;
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
     internal int currentUpcomingEventsShowed = INITIAL_NUMBER_OF_UPCOMING_EVENTS;
+    internal bool reloadEvents = false;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI)
     {
@@ -39,6 +41,26 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void FirstLoading()
     {
+        reloadEvents = true;
+        LoadAllEvents();
+
+        view.OnEventsSubSectionEnable += LoadAllEvents;
+        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
+    }
+
+    private void OnExploreV2Open(bool current, bool previous)
+    {
+        if (current)
+            return;
+
+        reloadEvents = true;
+    }
+
+    public void LoadAllEvents()
+    {
+        if (!reloadEvents)
+            return;
+
         view.SetFeaturedEvents(new List<EventCardComponentModel>());
         view.SetFeaturedEventsAsLoading(true);
 
@@ -52,9 +74,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetGoingEventsAsLoading(true);
 
         RequestAllEventsFromAPI();
+
+        reloadEvents = false;
     }
 
-    public void RequestAllEventsFromAPI()
+    internal void RequestAllEventsFromAPI()
     {
         eventsAPIApiController.GetAllEvents(
             (eventList) =>
@@ -141,7 +165,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         view.OnReady -= FirstLoading;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
+        view.OnEventsSubSectionEnable -= LoadAllEvents;
         OnEventsFromAPIUpdated -= UpdateEvents;
+        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
     internal EventCardComponentModel CreateEventCardModelFromAPIEvent(EventFromAPIModel eventFromAPI)

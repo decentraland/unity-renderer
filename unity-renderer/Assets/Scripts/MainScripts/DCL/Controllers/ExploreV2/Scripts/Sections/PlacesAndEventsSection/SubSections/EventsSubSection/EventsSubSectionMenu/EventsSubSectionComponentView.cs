@@ -8,6 +8,7 @@ public interface IEventsSubSectionComponentView
 {
     event Action OnReady;
     event Action OnShowMoreUpcomingEventsClicked;
+    event Action OnEventsSubSectionEnable;
 
     void SetFeaturedEvents(List<EventCardComponentModel> events);
     void SetFeaturedEventsAsLoading(bool isVisible);
@@ -45,8 +46,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public event Action OnReady;
     public event Action OnShowMoreUpcomingEventsClicked;
+    public event Action OnEventsSubSectionEnable;
 
     internal EventCardComponentView eventModal;
+
+    private void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
 
     public override void PostInitialization()
     {
