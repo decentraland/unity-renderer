@@ -10,7 +10,8 @@ namespace DCL.Components
         {
             ASSET_BUNDLE_WITH_GLTF_FALLBACK,
             ASSET_BUNDLE_ONLY,
-            GLTF_ONLY
+            GLTF_ONLY,
+            DEFAULT
         }
 
         public static bool VERBOSE = false;
@@ -82,22 +83,25 @@ namespace DCL.Components
         public event Action<GameObject> OnSuccessEvent;
         public event Action OnFailEvent;
 
-        public void Load(string targetUrl)
+        public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
         {
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
 #endif
-            switch (loadingType)
+            
+            LoadingType finalLoadingType = forcedLoadingType != LoadingType.DEFAULT ? forcedLoadingType : loadingType;
+            switch (finalLoadingType)
             {
-                case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, () => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
-                    break;
                 case LoadingType.ASSET_BUNDLE_ONLY:
                     LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent);
                     break;
                 case LoadingType.GLTF_ONLY:
                     LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
+                    break;
+                case LoadingType.DEFAULT:
+                case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, () => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
                     break;
             }
         }

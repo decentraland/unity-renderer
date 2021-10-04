@@ -25,6 +25,7 @@ public class WearableController
 
     public bool boneRetargetingDirty = false;
     internal string lastMainFileLoaded = null;
+    internal bool wearableAssetBundlesEnabled = true;
 
     protected SkinnedMeshRenderer[] assetRenderers;
     Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
@@ -38,6 +39,13 @@ public class WearableController
         wearable = original.wearable;
         loader = original.loader;
         assetRenderers = original.assetRenderers;
+        
+        // TODO: Change this when the Feature Flags refactor is merged
+        KernelConfig.i.EnsureConfigInitialized()
+                    .Then(config =>
+                    {
+                        wearableAssetBundlesEnabled = config.features.enableWearableAssetBundles;
+                    });
     }
 
     public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
@@ -99,7 +107,8 @@ public class WearableController
         loader.OnFailEvent += OnFailEventWrapper;
 
         lastMainFileLoaded = representation.mainFile;
-        loader.Load(representation.mainFile);
+
+        loader.Load(representation.mainFile, wearableAssetBundlesEnabled ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY );
     }
 
     public void SetupHairAndSkinColors(Color skinColor, Color hairColor)
