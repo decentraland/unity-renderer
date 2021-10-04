@@ -106,71 +106,11 @@ namespace DCL.Skybox
 
             GUILayout.Space(32);
 
-            // Texture Layers
-            for (int i = 0; i < selectedConfiguration.textureLayers.Count; i++)
-            {
-                // Name and buttons
-                EditorGUILayout.BeginHorizontal();
-                selectedConfiguration.textureLayers[i].expandedInEditor = EditorGUILayout.Foldout(selectedConfiguration.textureLayers[i].expandedInEditor, "", true);
-                selectedConfiguration.textureLayers[i].nameInEditor = EditorGUILayout.TextField(selectedConfiguration.textureLayers[i].nameInEditor);
+            // Render Slots
+            //RenderSlots();
 
-                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
-                {
-                    selectedConfiguration.textureLayers.RemoveAt(i);
-                    break;
-                }
-
-                if (i == 0)
-                {
-                    GUI.enabled = false;
-                }
-
-                if (GUILayout.Button("Move up", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
-                {
-                    TextureLayer temp = selectedConfiguration.textureLayers[i - 1];
-                    selectedConfiguration.textureLayers[i - 1] = selectedConfiguration.textureLayers[i];
-                    selectedConfiguration.textureLayers[i] = temp;
-                    break;
-                }
-
-                GUI.enabled = true;
-
-                if (i == selectedConfiguration.textureLayers.Count - 1)
-                {
-                    GUI.enabled = false;
-                }
-
-                if (GUILayout.Button("Move down", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
-                {
-                    TextureLayer temp = selectedConfiguration.textureLayers[i + 1];
-                    selectedConfiguration.textureLayers[i + 1] = selectedConfiguration.textureLayers[i];
-                    selectedConfiguration.textureLayers[i] = temp;
-                    break;
-                }
-
-                EditorGUILayout.EndHorizontal();
-
-                GUI.enabled = true;
-
-                if (selectedConfiguration.textureLayers[i].expandedInEditor)
-                {
-                    EditorGUILayout.Separator();
-                    RenderTextureLayer(selectedConfiguration.textureLayers[i]);
-                }
-
-
-                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
-                GUILayout.Space(32);
-            }
-
-            GUI.enabled = true;
-
-            //EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            if (GUILayout.Button("+", GUILayout.MaxWidth(100)))
-            {
-                selectedConfiguration.textureLayers.Add(new TextureLayer("Tex Layer " + (selectedConfiguration.textureLayers.Count + 1)));
-            }
+            // Render Texture Layers
+            RenderTextureLayers();
 
             GUILayout.Space(300);
             EditorGUILayout.EndScrollView();
@@ -418,12 +358,26 @@ namespace DCL.Skybox
 
         void RenderHorizonLayer()
         {
-
             EditorGUILayout.Separator();
             RenderTransitioningFloat(selectedConfiguration.horizonHeight, "Horizon Height", "%", "value", true, -1, 1);
 
             EditorGUILayout.Separator();
             RenderTransitioningFloat(selectedConfiguration.horizonWidth, "Horizon Width", "%", "value", true, -1, 1);
+
+            EditorGUILayout.Separator();
+            // Horizon Mask
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Texture", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            selectedConfiguration.horizonMask = (Texture2D)EditorGUILayout.ObjectField(selectedConfiguration.horizonMask, typeof(Texture2D), false);
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+
+            // Horizon mask values
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Horizon Mask Values", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            selectedConfiguration.horizonMaskValues = EditorGUILayout.Vector3Field("", selectedConfiguration.horizonMaskValues, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
         }
 
         void RenderAmbientLayer()
@@ -551,6 +505,87 @@ namespace DCL.Skybox
 
         private Quaternion GetDLDirection() { return directionalLight.transform.rotation; }
 
+        //private void RenderSlots()
+        //{
+        //    for (int i = 0; i < selectedConfiguration.slots.Count; i++)
+        //    {
+
+        //    }
+        //}
+
+        //private void RenderSlot(SkyboxSlots slot)
+        //{
+
+        //}
+
+        void RenderTextureLayers()
+        {
+            for (int i = 0; i < selectedConfiguration.textureLayers.Count; i++)
+            {
+                // Name and buttons
+                EditorGUILayout.BeginHorizontal();
+                selectedConfiguration.textureLayers[i].expandedInEditor = EditorGUILayout.Foldout(selectedConfiguration.textureLayers[i].expandedInEditor, "", true);
+                selectedConfiguration.textureLayers[i].nameInEditor = EditorGUILayout.TextField(selectedConfiguration.textureLayers[i].nameInEditor);
+
+                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                {
+                    selectedConfiguration.textureLayers.RemoveAt(i);
+                    break;
+                }
+
+                if (i == 0)
+                {
+                    GUI.enabled = false;
+                }
+
+                if (GUILayout.Button("Move up", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                {
+                    TextureLayer temp = selectedConfiguration.textureLayers[i - 1];
+                    selectedConfiguration.textureLayers[i - 1] = selectedConfiguration.textureLayers[i];
+                    selectedConfiguration.textureLayers[i] = temp;
+                    break;
+                }
+
+                GUI.enabled = true;
+
+                if (i == selectedConfiguration.textureLayers.Count - 1)
+                {
+                    GUI.enabled = false;
+                }
+
+                if (GUILayout.Button("Move down", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                {
+                    TextureLayer temp = selectedConfiguration.textureLayers[i + 1];
+                    selectedConfiguration.textureLayers[i + 1] = selectedConfiguration.textureLayers[i];
+                    selectedConfiguration.textureLayers[i] = temp;
+                    break;
+                }
+
+                EditorGUILayout.EndHorizontal();
+
+                GUI.enabled = true;
+
+                if (selectedConfiguration.textureLayers[i].expandedInEditor)
+                {
+                    EditorGUILayout.Separator();
+                    RenderTextureLayer(selectedConfiguration.textureLayers[i]);
+                }
+
+
+                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+                GUILayout.Space(32);
+            }
+
+            GUI.enabled = true;
+
+            //EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            if (GUILayout.Button("+", GUILayout.MaxWidth(100)))
+            {
+                selectedConfiguration.textureLayers.Add(new TextureLayer("Tex Layer " + (selectedConfiguration.textureLayers.Count + 1)));
+            }
+        }
+
         void RenderTextureLayer(TextureLayer layer)
         {
 
@@ -582,73 +617,229 @@ namespace DCL.Skybox
 
             if (layer.layerType == LayerType.Cubemap)
             {
-                // Cubemap
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                EditorGUILayout.LabelField("Cubemap", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-                layer.cubemap = (Cubemap)EditorGUILayout.ObjectField(layer.cubemap, typeof(Cubemap), false);
-                GUILayout.EndHorizontal();
+                RenderCubemapLayer(layer);
 
-                EditorGUILayout.Separator();
+            }
+            else if (layer.layerType == LayerType.Planar)
+            {
+                RenderPlanarLayer(layer);
+
+            }
+            else if (layer.layerType == LayerType.Radial)
+            {
+                RenderPlanarLayer(layer, true);
             }
             else
             {
-                // Texture
-                //EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                EditorGUILayout.LabelField("Texture", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-                layer.texture = (Texture2D)EditorGUILayout.ObjectField(layer.texture, typeof(Texture2D), false);
-                GUILayout.EndHorizontal();
-
-                EditorGUILayout.Separator();
-
-                // Normal Texture
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                EditorGUILayout.LabelField("Normal Map", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-                layer.textureNormal = (Texture2D)EditorGUILayout.ObjectField(layer.textureNormal, typeof(Texture2D), false);
-                GUILayout.EndHorizontal();
-
-                EditorGUILayout.Separator();
-
-                // Normal Intensity
-                layer.normalIntensity = EditorGUILayout.Slider("Normal Intensity", layer.normalIntensity, 0, 1, GUILayout.Width(500));
-
-                EditorGUILayout.Separator();
-
-                // Render Distance
-                RenderTransitioningFloat(layer.renderDistance, "Render Distance", "", "", true, 0, 20, layer.timeSpan_start, layer.timeSpan_End);
-
-                EditorGUILayout.Separator();
-                EditorGUILayout.Separator();
-                // Tiling
-                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                EditorGUILayout.LabelField("Tiling", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-                layer.tiling = EditorGUILayout.Vector2Field("", layer.tiling, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-                GUILayout.EndHorizontal();
-                EditorGUILayout.Separator();
+                RenderSatelliteLayer(layer);
             }
+        }
 
-            EditorGUILayout.Separator();
-
-            // Speed
-            layer.speed = EditorGUILayout.FloatField("Speed", layer.speed, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-
-            EditorGUILayout.Separator();
-
-            // Position
-            RenderTransitioningVector2(layer.position, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+        void RenderCubemapLayer(TextureLayer layer)
+        {
+            // Cubemap
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Cubemap", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.cubemap = (Cubemap)EditorGUILayout.ObjectField(layer.cubemap, typeof(Cubemap), false);
+            GUILayout.EndHorizontal();
 
             EditorGUILayout.Separator();
 
             // Gradient
             RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
+
+            EditorGUILayout.Separator();
+
+            RenderTransitioningVector3(layer.cubemapRotations, "Rotation", "%", "Rot:", layer.timeSpan_start, layer.timeSpan_End);
+
+            EditorGUILayout.Separator();
+
+            // Speed
+            layer.speed = EditorGUILayout.FloatField("Speed", layer.speed, GUILayout.Width(200), GUILayout.ExpandWidth(false));
         }
 
-        void RenderHorizontalFloatField(ref float val, string label)
+        void RenderPlanarLayer(TextureLayer layer, bool isRadial = false)
+        {
+            // Render Distance
+            if (!isRadial)
+            {
+                RenderTransitioningFloat(layer.renderDistance, "Render Distance", "", "", true, 0, 20, layer.timeSpan_start, layer.timeSpan_End);
+            }
+
+            EditorGUILayout.Separator();
+
+            // Texture
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Texture", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.texture = (Texture2D)EditorGUILayout.ObjectField(layer.texture, typeof(Texture2D), false);
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+
+            // Normal Texture
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Normal Map", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.textureNormal = (Texture2D)EditorGUILayout.ObjectField(layer.textureNormal, typeof(Texture2D), false);
+            GUILayout.EndHorizontal();
+
+            // Normal Intensity
+            layer.normalIntensity = EditorGUILayout.Slider("Normal Intensity", layer.normalIntensity, 0, 1, GUILayout.Width(500));
+
+            EditorGUILayout.Separator();
+
+            // Gradient
+            RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
+
+            EditorGUILayout.Separator();
+
+            // Tiling
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Tiling", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.tiling = EditorGUILayout.Vector2Field("", layer.tiling, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+
+            // Offset
+            RenderTransitioningVector2(layer.offset, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+
+            EditorGUILayout.Separator();
+
+            // Speed
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Speed", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.speed_Vec2 = EditorGUILayout.Vector2Field("", layer.speed_Vec2, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+
+            // Rotation
+            RenderTransitioningFloat(layer.rotation_float, "Rotation", "", "", true, 0, 360, layer.timeSpan_start, layer.timeSpan_End);
+            EditorGUILayout.Separator();
+        }
+
+        void RenderSatelliteLayer(TextureLayer layer)
+        {
+
+            // Texture
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Texture", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.texture = (Texture2D)EditorGUILayout.ObjectField(layer.texture, typeof(Texture2D), false);
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+
+            // Normal Texture
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Normal Map", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.textureNormal = (Texture2D)EditorGUILayout.ObjectField(layer.textureNormal, typeof(Texture2D), false);
+            GUILayout.EndHorizontal();
+
+            // Normal Intensity
+            layer.normalIntensity = EditorGUILayout.Slider("Normal Intensity", layer.normalIntensity, 0, 1, GUILayout.Width(500));
+
+            EditorGUILayout.Separator();
+
+            // Gradient
+            RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
+
+            EditorGUILayout.Separator();
+
+            // Size
+            RenderTransitioningVector2(layer.satelliteWidthHeight, "Width & Height", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+
+            EditorGUILayout.Separator();
+
+            // Offset
+            RenderTransitioningVector2(layer.offset, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+
+            EditorGUILayout.Separator();
+
+            // Speed
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Speed", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            layer.speed_Vec2 = EditorGUILayout.Vector2Field("", layer.speed_Vec2, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+
+            EditorGUILayout.Separator();
+
+            // Rotation
+            RenderTransitioningFloat(layer.rotation_float, "Rotation", "", "", true, 0, 360, layer.timeSpan_start, layer.timeSpan_End);
+        }
+
+        void RenderTransitioningVector3(List<TransitioningVector3> _list, string label, string percentTxt, string valueText, float layerStartTime = 0, float layerEndTime = 24)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            val = EditorGUILayout.FloatField(val, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            //EditorGUILayout.FloatField("Out", layer.fadingOut, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            EditorGUILayout.BeginVertical();
+
+            if (_list.Count == 0)
+            {
+                if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                {
+                    Vector3 tLastPos = Vector3.zero;
+                    if (_list.Count != 0)
+                    {
+                        tLastPos = _list[_list.Count - 1].value;
+                    }
+                    _list.Add(new TransitioningVector3(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
+                }
+            }
+
+            for (int i = 0; i < _list.Count; i++)
+            {
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+
+                if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
+                {
+                    timeOfTheDay = GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, _list[i].percentage / 100);
+                }
+
+                // Percentage
+
+                GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
+
+                GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                // Convert percentage into time
+                float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
+
+                time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+                _list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
+
+                GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+
+                GUILayout.Space(10);
+
+                GUILayout.Label(valueText, GUILayout.ExpandWidth(false));
+
+                GUILayout.Space(10);
+                _list[i].value = EditorGUILayout.Vector3Field("", _list[i].value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+
+                GUILayout.Space(20);
+                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                {
+                    _list.RemoveAt(i);
+                    //break;
+                }
+
+                if (i == (_list.Count - 1))
+                {
+                    GUILayout.Space(20);
+                    if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
+                    {
+                        Vector3 tLastPos = Vector3.zero;
+                        if (_list.Count != 0)
+                        {
+                            tLastPos = _list[_list.Count - 1].value;
+                        }
+                        _list.Add(new TransitioningVector3(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
+                        //break;
+                    }
+                }
+
+                GUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndVertical();
             GUILayout.EndHorizontal();
         }
 
@@ -743,7 +934,6 @@ namespace DCL.Skybox
             if (_list.Count == 0)
             {
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                GUILayout.Space(10);
                 if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.ExpandWidth(false)))
                 {
                     float tLast = 0;
