@@ -21,7 +21,6 @@ public class EventCardComponentModel
     public int subscribedUsers;
     public bool isSubscribed;
     public JumpInConfig jumpInConfiguration;
-    public Button.ButtonClickedEvent onJumpInClick;
     public Button.ButtonClickedEvent onInfoClick;
     public Button.ButtonClickedEvent onSubscribeClick;
     public Button.ButtonClickedEvent onUnsubscribeClick;
