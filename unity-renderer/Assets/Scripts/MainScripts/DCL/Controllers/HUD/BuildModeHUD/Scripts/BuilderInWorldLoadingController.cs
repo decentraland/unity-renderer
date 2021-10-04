@@ -24,27 +24,29 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Initialize(IBuilderInWorldLoadingView view) { AssignMainView(view); }
 
-    private void AssignMainView(IBuilderInWorldLoadingView view)
+    internal void AssignMainView(IBuilderInWorldLoadingView view)
     {
         initialLoadingView = view;
 
-        if (initialLoadingView.viewGO != null)
-            initialLoadingView.viewGO.SetActive(false);
+        if (initialLoadingView.gameObject != null)
+            initialLoadingView.gameObject.SetActive(false);
     }
 
     private IBuilderInWorldLoadingView CreateView()
     {
-        var view = GameObject.Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<IBuilderInWorldLoadingView>();
-        view.viewGO.name = "_BuildModeLoadingHUD";
+        var view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<IBuilderInWorldLoadingView>();
+        view.gameObject.name = "_BuildModeLoadingHUD";
 
         return view;
     }
 
     public void Dispose()
     {
-        initialLoadingView?.StopTipsCarousel();
-        initialLoadingView?.Dispose();
-        GameObject.Destroy(initialLoadingView?.viewGO);
+        if ( initialLoadingView == null || initialLoadingView.gameObject == null )
+            return;
+
+        initialLoadingView.Dispose();
+        UnityEngine.Object.Destroy(initialLoadingView.gameObject);
     }
 
     public void Show() { initialLoadingView.Show(); }

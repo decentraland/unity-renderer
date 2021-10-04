@@ -114,10 +114,10 @@ public class AvatarEditorHUDController : IHUD
                 }
                 else
                 {
-                    NotificationsController.i.ShowNotification(new Notification.Model
+                    NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
                     {
                         message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                        type = NotificationFactory.Type.GENERIC,
+                        type = DCL.NotificationModel.Type.GENERIC,
                         timer = 10f,
                         destroyOnFinish = true
                     });

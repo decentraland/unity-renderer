@@ -1,4 +1,4 @@
-using DCL.SettingsControls;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 using UnityEngine.UI;
 

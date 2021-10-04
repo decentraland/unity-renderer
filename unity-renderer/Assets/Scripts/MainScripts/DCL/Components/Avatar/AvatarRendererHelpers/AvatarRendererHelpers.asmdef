@@ -1,0 +1,16 @@
+{
+    "name": "AvatarRendererHelpers",
+    "rootNamespace": "",
+    "references": [
+        "GUID:38a8ee8544aa3d247917a7a4d70fdd8b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class BuilderInWorldAudioHandler : MonoBehaviour
@@ -47,22 +48,21 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private int entityCount;
     bool playPlacementSoundOnDeselect;
     private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
-    private Coroutine fadeInCoroutine, fadeOutCoroutine;
+
+    private Coroutine fadeInCoroutine;
+    private Coroutine fadeOutCoroutine;
+    private Coroutine startBuilderMusicCoroutine;
 
     private void Start() { playPlacementSoundOnDeselect = false; }
 
-    public void Init(BIWContext context)
+    public void Initialize(BIWContext context)
     {
         creatorController = context.creatorController;
-
         entityHandler = context.entityHandler;
-
         modeController = context.modeController;
 
         AddListeners();
     }
-
-    private void OnDestroy() { RemoveListeners(); }
 
     private void AddListeners()
     {
@@ -70,6 +70,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         entityHandler.OnDeleteSelectedEntities += OnAssetDelete;
         modeController.OnChangedEditModeState += OnChangedEditModeState;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += OnEntityBoundsCheckerStatusChanged;
+
         if (DCL.Tutorial.TutorialController.i != null)
         {
             DCL.Tutorial.TutorialController.i.OnTutorialEnabled += OnTutorialEnabled;
@@ -80,36 +81,12 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         entityHandler.OnEntitySelected += OnAssetSelect;
     }
 
-    private void RemoveListeners()
-    {
-        creatorController.OnCatalogItemPlaced -= OnAssetSpawn;
-        entityHandler.OnDeleteSelectedEntities -= OnAssetDelete;
-        modeController.OnChangedEditModeState -= OnChangedEditModeState;
-        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
-
-        if (DCL.Tutorial.TutorialController.i != null)
-        {
-            DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
-            DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
-        }
-
-        entityHandler.OnEntityDeselected -= OnAssetDeselect;
-        entityHandler.OnEntitySelected -= OnAssetSelect;
-    }
-
-    public void Dispose()
-    {
-        if (fadeInCoroutine != null)
-            CoroutineStarter.Stop(fadeInCoroutine);
-
-        if (fadeOutCoroutine != null)
-            CoroutineStarter.Stop(fadeOutCoroutine);
-    }
-
     public void EnterEditMode(ParcelScene scene)
     {
         UpdateEntityCount();
+
         CoroutineStarter.Start(StartBuilderMusic());
+
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
 
@@ -179,7 +156,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         yield return new WaitForSeconds(MUSIC_DELAY_TIME_ON_START);
 
-        if (gameObject.activeInHierarchy)
+        if (gameObject != null && gameObject.activeInHierarchy)
             eventBuilderMusic.Play();
     }
 
@@ -227,4 +204,41 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private void UpdateEntityCount() { entityCount = entityHandler.GetCurrentSceneEntityCount(); }
 
     private bool EntityHasBeenAddedSinceLastUpdate() { return (entityHandler.GetCurrentSceneEntityCount() > entityCount); }
+
+    private void OnDestroy() { Dispose(); }
+
+    public void Dispose()
+    {
+        if (startBuilderMusicCoroutine != null)
+            CoroutineStarter.Stop(startBuilderMusicCoroutine);
+
+        if (fadeInCoroutine != null)
+            CoroutineStarter.Stop(fadeInCoroutine);
+
+        if (fadeOutCoroutine != null)
+            CoroutineStarter.Stop(fadeOutCoroutine);
+
+        startBuilderMusicCoroutine = null;
+        fadeInCoroutine = null;
+        fadeOutCoroutine = null;
+
+        RemoveListeners();
+    }
+
+    private void RemoveListeners()
+    {
+        creatorController.OnCatalogItemPlaced -= OnAssetSpawn;
+        entityHandler.OnDeleteSelectedEntities -= OnAssetDelete;
+        modeController.OnChangedEditModeState -= OnChangedEditModeState;
+        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
+
+        if (DCL.Tutorial.TutorialController.i != null)
+        {
+            DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
+            DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
+        }
+
+        entityHandler.OnEntityDeselected -= OnAssetDeselect;
+        entityHandler.OnEntitySelected -= OnAssetSelect;
+    }
 }

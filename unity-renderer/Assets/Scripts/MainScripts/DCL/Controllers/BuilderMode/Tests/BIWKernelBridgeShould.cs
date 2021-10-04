@@ -20,7 +20,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
-        entityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
+        entityHandler.Initialize(BIWTestUtils.CreateMockedContext());
         entityHandler.EnterEditMode(scene);
 
         dummyGameObject = new GameObject();
@@ -117,7 +117,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestSmartItemComponentKernelUpdate()
     {
         //Arrange
-        BIWEntity entity =  BIWTestHelper.CreateSmartItemEntity(entityHandler, scene, null);
+        BIWEntity entity =  BIWTestUtils.CreateSmartItemEntity(entityHandler, scene, null);
 
         //Act
         biwBridge.UpdateSmartItemComponent(entity, scene);

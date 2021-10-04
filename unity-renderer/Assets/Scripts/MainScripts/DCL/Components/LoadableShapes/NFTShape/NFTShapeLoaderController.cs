@@ -56,7 +56,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     private string darURLProtocol;
     private string darURLRegistry;
     private string darURLAsset;
-    private IPromiseLike_TextureAsset assetPromise = null;
+    internal IPromiseLike_TextureAsset assetPromise = null;
 
     public Material frameMaterial { private set; get; } = null;
     public Material imageMaterial { private set; get; } = null;
@@ -71,6 +71,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     bool isDestroyed = false;
 
     private Coroutine fetchNftImageCoroutine;
+    internal IWrappedTextureHelper wrappedTextureHelper;
 
     void Awake()
     {
@@ -100,6 +101,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         InitializePerlinNoise();
         nftInfoFetcher = new NFTInfoFetcher();
+        wrappedTextureHelper = new WrappedTextureUtils();
     }
 
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
@@ -195,7 +197,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         FinishLoading(true);
     }
 
-    IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
+    internal IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
     {
         bool isError = false;
 
@@ -205,7 +207,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         bool foundDCLImage = false;
         if (!string.IsNullOrEmpty(nftInfo.previewImageUrl))
         {
-            yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl, (promise) =>
+            yield return wrappedTextureHelper.Fetch(nftInfo.previewImageUrl, (promise) =>
             {
                 foundDCLImage = true;
                 assetPromise?.Forget();
@@ -217,7 +219,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         //We fall back to the nft original image which can have a really big size
         if (!foundDCLImage && !string.IsNullOrEmpty(nftInfo.originalImageUrl))
         {
-            yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
+            yield return wrappedTextureHelper.Fetch(nftInfo.originalImageUrl,
                 (promise) =>
                 {
                     foundDCLImage = true;

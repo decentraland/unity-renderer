@@ -1,7 +1,7 @@
-using DCL.Interface;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Allow Voice Chat", fileName = "AllowVoiceChatControlController")]
     public class AllowVoiceChatControlController : SpinBoxSettingsControlController
@@ -11,7 +11,7 @@ namespace DCL.SettingsControls
         public override void UpdateSetting(object newValue)
         {
             int newIntValue = (int)newValue;
-            currentGeneralSettings.voiceChatAllow = (SettingsData.GeneralSettings.VoiceChatAllow)newIntValue;
+            currentGeneralSettings.voiceChatAllow = (GeneralSettings.VoiceChatAllow)newIntValue;
             Settings.i.ApplyVoiceChatSettings();
         }
     }

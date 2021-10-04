@@ -53,7 +53,7 @@ namespace Tests.BuildModeHUDControllers
             //Arrange
             mockedGameObject = new GameObject();
             AssetCatalogBridge.i = mockedGameObject.AddComponent<AssetCatalogBridge>();
-            BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+            BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
             var catalogItemPack = BIWCatalogManager.GetCatalogItemPackList()[0];
 
             //Act

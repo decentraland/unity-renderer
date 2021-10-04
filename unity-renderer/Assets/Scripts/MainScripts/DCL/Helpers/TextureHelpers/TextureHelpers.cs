@@ -54,7 +54,7 @@ public static class TextureHelpers
     public static Texture2D CopyTexture(Texture2D sourceTexture)
     {
         Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
-        Graphics.CopyTexture(sourceTexture, texture);
+        Graphics.CopyTexture(sourceTexture, texture); // TODO: does this work in WebGL?
         return texture;
     }
 }

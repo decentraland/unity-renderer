@@ -1,10 +1,10 @@
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
-
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/FPS Limit", fileName = "FPSLimitControlController")]
     public class FPSLimitControlController : ToggleSettingsControlController
