@@ -2323,7 +2323,7 @@
     "m_Group": {
         "m_Id": "f04d7cb3fa554c0d8c2ca086ef4e4193"
     },
-    "m_Name": "SG_RadialSkyUV",
+    "m_Name": "SG_SkyUVRadial",
     "m_DrawState": {
         "m_Expanded": true,
         "m_Position": {

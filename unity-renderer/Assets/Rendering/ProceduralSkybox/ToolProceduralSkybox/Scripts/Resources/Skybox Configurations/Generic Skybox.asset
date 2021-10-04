@@ -112,6 +112,8 @@ MonoBehaviour:
   horizonHeight:
   - percentage: 0
     value: 0
+  horizonMask: {fileID: 0}
+  horizonMaskValues: {x: 0, y: 0, z: 0}
   ambientTrilight: 0
   ambientSkyColor:
     serializedVersion: 2
@@ -351,13 +353,15 @@ MonoBehaviour:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     tiling: {x: 4, y: 2}
-    position:
-    - percentage: 50
-      value: {x: 5, y: 5}
+    offset: []
+    satelliteWidthHeight: []
+    rotation_float: []
+    cubemapRotations: []
+    speed_Vec2: {x: 0, y: 0}
     speed: 0.1
     normalIntensity: 0
   - nameInEditor: Clouds Day
-    expandedInEditor: 0
+    expandedInEditor: 1
     timeSpan_start: 13
     timeSpan_End: 24
     fadingIn: 2
@@ -398,13 +402,15 @@ MonoBehaviour:
       m_NumColorKeys: 4
       m_NumAlphaKeys: 2
     tiling: {x: 1, y: 1}
-    position:
-    - percentage: 6.25
-      value: {x: -0.5, y: 0.1}
+    offset: []
+    satelliteWidthHeight: []
+    rotation_float: []
+    cubemapRotations: []
+    speed_Vec2: {x: 0, y: 0}
     speed: 0.02
     normalIntensity: 0
   - nameInEditor: Clouds Night
-    expandedInEditor: 0
+    expandedInEditor: 1
     timeSpan_start: 12
     timeSpan_End: 22
     fadingIn: 2
@@ -445,9 +451,11 @@ MonoBehaviour:
       m_NumColorKeys: 3
       m_NumAlphaKeys: 2
     tiling: {x: 0.1, y: 0.1}
-    position:
-    - percentage: 0
-      value: {x: -0.5, y: 0.1}
+    offset: []
+    satelliteWidthHeight: []
+    rotation_float: []
+    cubemapRotations: []
+    speed_Vec2: {x: 0, y: 0}
     speed: 0.02
     normalIntensity: 0
   - nameInEditor: Clouds Plannar
@@ -494,8 +502,10 @@ MonoBehaviour:
       m_NumColorKeys: 5
       m_NumAlphaKeys: 2
     tiling: {x: 0.5, y: 0.5}
-    position:
-    - percentage: 0
-      value: {x: -0.2, y: 0.1}
+    offset: []
+    satelliteWidthHeight: []
+    rotation_float: []
+    cubemapRotations: []
+    speed_Vec2: {x: 0, y: 0}
     speed: 0.1
     normalIntensity: 0
