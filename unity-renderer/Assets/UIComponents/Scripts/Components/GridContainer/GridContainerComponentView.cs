@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public interface IGridContainerComponentView
 {
@@ -12,10 +13,16 @@ public interface IGridContainerComponentView
     void Configure(GridContainerComponentModel model);
 
     /// <summary>
-    /// Set the number of columns of the grid.
+    /// Set the type of constraint of the grid.
     /// </summary>
-    /// <param name="newNumColumns">Number of columns.</param>
-    void SetNumColumns(int newNumColumns);
+    /// <param name="newConstraint">Type of constraint.</param>
+    void SetConstraint(Constraint newConstraint);
+
+    /// <summary>
+    /// Set the number of columns/rows of the grid depending on the type of constraint set.
+    /// </summary>
+    /// <param name="newConstraintCount">Number of columns or rows.</param>
+    void SetConstraintCount(int newConstraintCount);
 
     /// <summary>
     /// Set the size of each child item.
@@ -75,8 +82,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         if (model == null)
             return;
 
+        SetConstraint(model.constraint);
         SetItems(model.items);
-        SetNumColumns(model.numColumns);
+        SetConstraintCount(model.constranitCount);
         SetSpaceBetweenItems(model.spaceBetweenItems);
         SetItemSize(model.itemSize);
     }
@@ -88,26 +96,47 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         DestroyInstantiatedItems(true);
     }
 
-    public void SetNumColumns(int newNumColumns)
+    public void SetConstraint(Constraint newConstraint)
     {
-        model.numColumns = newNumColumns;
+        model.constraint = newConstraint;
 
         if (gridLayoutGroup == null)
             return;
 
-        gridLayoutGroup.constraintCount = newNumColumns;
+        gridLayoutGroup.constraint = newConstraint;
+    }
+
+    public void SetConstraintCount(int newConstraintCount)
+    {
+        model.constranitCount = newConstraintCount;
+
+        if (gridLayoutGroup == null)
+            return;
+
+        gridLayoutGroup.constraintCount = newConstraintCount;
     }
 
     public void SetItemSize(Vector2 newItemSize)
     {
         Vector2 newSizeToApply = newItemSize;
-        if (model.autoAdaptItemSizeToContainerWidth)
+        if (model.adaptItemSizeToGridSize)
         {
-            float width = externalScrollViewContainer != null ? externalScrollViewContainer.rect.width : ((RectTransform)transform).rect.width;
-            float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.numColumns / 2f));
-            newSizeToApply = new Vector2(
-                (width / model.numColumns) - extraSpaceToRemove,
-                model.itemSize.y);
+            if (model.constraint == Constraint.FixedColumnCount)
+            {
+                float width = externalScrollViewContainer != null ? externalScrollViewContainer.rect.width : ((RectTransform)transform).rect.width;
+                float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.constranitCount / 2f));
+                newSizeToApply = new Vector2(
+                    (width / model.constranitCount) - extraSpaceToRemove,
+                    model.itemSize.y);
+            }
+            else if (model.constraint == Constraint.FixedRowCount)
+            {
+                float height = ((RectTransform)transform).rect.height;
+                float extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
+                newSizeToApply = new Vector2(
+                    model.itemSize.x,
+                    (height / model.constranitCount) - extraSpaceToRemove);
+            }
         }
 
         model.itemSize = newSizeToApply;
@@ -243,10 +272,19 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             return;
         }
 
-        int numRows = (int)Mathf.Ceil((float)model.items.Count / model.numColumns);
-
-        ((RectTransform)transform).sizeDelta = new Vector2(
-            model.autoAdaptItemSizeToContainerWidth ? ((RectTransform)transform).sizeDelta.x : (model.numColumns * model.itemSize.x) + (model.spaceBetweenItems.x * (model.numColumns - 1)),
-            (numRows * model.itemSize.y) + (model.spaceBetweenItems.y * (numRows - 1)));
+        if (model.constraint == Constraint.FixedColumnCount)
+        {
+            int numRows = (int)Mathf.Ceil((float)model.items.Count / model.constranitCount);
+            ((RectTransform)transform).sizeDelta = new Vector2(
+                model.adaptItemSizeToGridSize ? ((RectTransform)transform).sizeDelta.x : (model.constranitCount * model.itemSize.x) + (model.spaceBetweenItems.x * (model.constranitCount - 1)),
+                (numRows * model.itemSize.y) + (model.spaceBetweenItems.y * (numRows - 1)));
+        }
+        else if (model.constraint == Constraint.FixedRowCount)
+        {
+            int numCols = (int)Mathf.Ceil((float)model.items.Count / model.constranitCount);
+            ((RectTransform)transform).sizeDelta = new Vector2(
+                (numCols * model.itemSize.x) + (model.spaceBetweenItems.x * (numCols - 1)),
+                model.adaptItemSizeToGridSize ? ((RectTransform)transform).sizeDelta.y : (model.constranitCount * model.itemSize.y) + (model.spaceBetweenItems.y * (model.constranitCount - 1)));
+        }
     }
 }
