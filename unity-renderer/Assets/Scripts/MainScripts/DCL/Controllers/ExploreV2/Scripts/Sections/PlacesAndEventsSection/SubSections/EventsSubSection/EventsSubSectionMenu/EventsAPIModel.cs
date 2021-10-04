@@ -15,7 +15,7 @@ public class EventFromAPIModel
     public string name;
     public string image;
     public string description;
-    public string start_at;
+    public string next_start_at;
     public string finish_at;
     public string scene_name;
     public int[] coordinates;

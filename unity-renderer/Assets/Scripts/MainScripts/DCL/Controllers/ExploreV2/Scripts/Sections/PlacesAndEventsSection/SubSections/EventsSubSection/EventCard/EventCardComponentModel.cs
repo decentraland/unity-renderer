@@ -15,6 +15,7 @@ public class EventCardComponentModel
     public string eventName;
     public string eventDescription;
     public string eventStartedIn;
+    public string eventStartsInFromTo;
     public string eventOrganizer;
     public string eventPlace;
     public int subscribedUsers;

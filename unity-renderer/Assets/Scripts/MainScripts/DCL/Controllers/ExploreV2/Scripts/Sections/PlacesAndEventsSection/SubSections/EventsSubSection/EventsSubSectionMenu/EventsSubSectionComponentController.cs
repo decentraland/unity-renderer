@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 
@@ -149,16 +150,16 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         // Card data
         eventCardModel.eventId = eventFromAPI.id;
-        eventCardModel.eventPictureSprite = null;
         eventCardModel.eventPictureUri = eventFromAPI.image;
         eventCardModel.isLive = eventFromAPI.live;
         eventCardModel.liveTagText = "LIVE";
-        eventCardModel.eventDateText = eventFromAPI.start_at;
+        eventCardModel.eventDateText = FormatEventDate(eventFromAPI);
         eventCardModel.eventName = eventFromAPI.name;
         eventCardModel.eventDescription = eventFromAPI.description;
-        eventCardModel.eventStartedIn = eventFromAPI.start_at;
-        eventCardModel.eventOrganizer = eventFromAPI.user_name;
-        eventCardModel.eventPlace = string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name;
+        eventCardModel.eventStartedIn = FormatEventStartDate(eventFromAPI);
+        eventCardModel.eventStartsInFromTo = FormatEventStartDateFromTo(eventFromAPI);
+        eventCardModel.eventOrganizer = FormatEventOrganized(eventFromAPI);
+        eventCardModel.eventPlace = FormatEventPlace(eventFromAPI);
         eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
         eventCardModel.isSubscribed = false;
         eventCardModel.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
@@ -170,6 +171,55 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         return eventCardModel;
     }
+
+    internal string FormatEventDate(EventFromAPIModel eventFromAPI)
+    {
+        DateTime eventDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
+        return eventDateTime.ToString("MMMM d", new CultureInfo("en-US"));
+    }
+
+    internal string FormatEventStartDate(EventFromAPIModel eventFromAPI)
+    {
+        DateTime eventDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
+        string formattedDate;
+        if (eventFromAPI.live)
+        {
+            int daysAgo = (int)Math.Ceiling((DateTime.Now - eventDateTime).TotalDays);
+            int hoursAgo = (int)Math.Ceiling((DateTime.Now - eventDateTime).TotalHours);
+
+            if (daysAgo > 0)
+                formattedDate = $"{daysAgo} days ago";
+            else
+                formattedDate = $"{hoursAgo} hr ago";
+        }
+        else
+        {
+            int daysToStart = (int)Math.Ceiling((eventDateTime - DateTime.Now).TotalDays);
+            int hoursToStart = (int)Math.Ceiling((eventDateTime - DateTime.Now).TotalHours);
+
+            if (daysToStart > 0)
+                formattedDate = $"in {daysToStart} days";
+            else
+                formattedDate = $"in {hoursToStart} hours";
+        }
+
+        return formattedDate;
+    }
+
+    internal string FormatEventStartDateFromTo(EventFromAPIModel eventFromAPI)
+    {
+        CultureInfo cultureInfo = new CultureInfo("en-US");
+        DateTime eventStartDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
+        DateTime eventEndDateTime = Convert.ToDateTime(eventFromAPI.finish_at).ToUniversalTime();
+        string formattedDate = $"From {eventStartDateTime.ToString("dddd", cultureInfo)}, {eventStartDateTime.Day} {eventStartDateTime.ToString("MMM", cultureInfo)}" +
+                               $" to {eventEndDateTime.ToString("dddd", cultureInfo)}, {eventEndDateTime.Day} {eventEndDateTime.ToString("MMM", cultureInfo)} UTC";
+
+        return formattedDate;
+    }
+
+    internal string FormatEventOrganized(EventFromAPIModel eventFromAPI) { return $"Public, Organized by {eventFromAPI.user_name}"; }
+
+    internal string FormatEventPlace(EventFromAPIModel eventFromAPI) { return string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name; }
 
     internal JumpInConfig GetJumpInConfigFromAPIEvent(EventFromAPIModel eventFromAPI)
     {
