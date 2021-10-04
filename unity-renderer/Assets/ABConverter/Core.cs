@@ -50,7 +50,7 @@ namespace DCL.ABConverter
         public Dictionary<string, string> hashLowercaseToHashProper = new Dictionary<string, string>();
         internal bool generateAssetBundles = true;
 
-        public Client.Settings settings;
+        public ClientSettings settings;
 
         private float startTime;
         private int totalAssets;
@@ -60,11 +60,11 @@ namespace DCL.ABConverter
         private static Logger log = new Logger("ABConverter.Core");
         private string logBuffer;
 
-        public Core(Environment env, Client.Settings settings = null)
+        public Core(Environment env, ClientSettings settings = null)
         {
             this.env = env;
 
-            this.settings = settings?.Clone() ?? new Client.Settings();
+            this.settings = settings?.Clone() ?? new ClientSettings();
 
             finalDownloadedPath = PathUtils.FixDirectorySeparator(Config.DOWNLOADED_PATH_ROOT + Config.DASH);
             finalDownloadedAssetDbPath = PathUtils.FixDirectorySeparator(Config.ASSET_BUNDLES_PATH_ROOT + Config.DASH);

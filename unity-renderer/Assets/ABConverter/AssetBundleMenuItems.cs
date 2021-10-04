@@ -1,22 +1,11 @@
-using System;
-using DCL.Helpers;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using DCL.ABConverter;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
-using System.IO;
-using System.Linq;
-using UnityGLTF;
 using static DCL.ContentServerUtils;
 using Utils = DCL.Helpers.Utils;
-
-namespace DCL.ABConverter
-{
-}
 
 namespace DCL
 {
@@ -82,7 +71,7 @@ namespace DCL
 
             string customBaseUrl = "file://" + emptyScenesResourcesPath;
 
-            var settings = new ABConverter.Client.Settings(ApiTLD.NONE);
+            var settings = new ABConverter.ClientSettings(ApiTLD.NONE);
             settings.skipAlreadyBuiltBundles = true;
             settings.deleteDownloadPathAfterFinished = false;
             settings.baseUrl = customBaseUrl + "/contents/";
@@ -92,40 +81,40 @@ namespace DCL
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump All Body-Wearables")]
-        public static void DumpAllBodiesWearables() { ABConverter.Client.DumpAllBodyshapeWearables(); }
+        public static void DumpAllBodiesWearables() { ABConverter.WearablesCollectionClient.DumpAllBodyshapeWearables(); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump All Non-Body-Wearables (Optimized)")]
-        public static void DumpAllNonBodiesWearables() { ABConverter.Client.DumpAllNonBodyshapeWearables(); }
+        public static void DumpAllNonBodiesWearables() { ABConverter.WearablesCollectionClient.DumpAllNonBodyshapeWearables(); }
         
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Wearables Collection")]
-        public static void DumpSingleWearablesCollection() { ABConverter.Client.DumpSingleWearablesCollection("urn:decentraland:ethereum:collections-v1:atari_launch"); }
+        public static void DumpSingleWearablesCollection() { ABConverter.WearablesCollectionClient.DumpSingleWearablesCollection("urn:decentraland:ethereum:collections-v1:atari_launch"); }
 
         [MenuItem("Decentraland/Start Visual Tests")]
         public static void StartVisualTests() { EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets()); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
-        public static void DumpArea() { ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
+        public static void DumpArea() { ABConverter.SceneClient.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump scene QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM")]
-        public static void DumpSceneId() { ABConverter.Client.DumpScene("QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM"); }
+        public static void DumpSceneId() { ABConverter.SceneClient.DumpScene("QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM"); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
         public static void DumpSingleAsset()
         {
             // TODO: Make an editor window to setup these values from editor (for other dump-modes as well)
-            ABConverter.Client.DumpAsset("QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC",
+            ABConverter.SceneClient.DumpAsset("QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC",
                 "models/FloorBaseGrass_01/FloorBaseGrass_01.glb",
                 "QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM");
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -6,30")]
-        public static void DumpOrg() { ABConverter.Client.DumpArea(new Vector2Int(-6, 30), new Vector2Int(15, 15)); }
+        public static void DumpOrg() { ABConverter.SceneClient.DumpArea(new Vector2Int(-6, 30), new Vector2Int(15, 15)); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org 0,0")]
         public static void DumpCenterPlaza()
         {
             var zoneArray = Utils.GetCenteredZoneArray(new Vector2Int(0, 0), new Vector2Int(1, 1));
-            ABConverter.Client.DumpArea(zoneArray);
+            ABConverter.SceneClient.DumpArea(zoneArray);
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Only Build Bundles")]

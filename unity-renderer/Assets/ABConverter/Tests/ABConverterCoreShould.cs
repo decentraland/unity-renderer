@@ -49,7 +49,7 @@ namespace DCL.ABConverter.Tests
         {
             ResetCacheAndWorkingFolders();
 
-            var settings = new ABConverter.Client.Settings(ContentServerUtils.ApiTLD.ZONE);
+            var settings = new ABConverter.ClientSettings(ContentServerUtils.ApiTLD.ZONE);
             settings.deleteDownloadPathAfterFinished = false;
 
             env = ABConverter.Environment.CreateWithMockImplementations();
@@ -92,7 +92,7 @@ namespace DCL.ABConverter.Tests
         [Test]
         public void InitializeDirectoryPathsCorrectly()
         {
-            var settings = new ABConverter.Client.Settings(ContentServerUtils.ApiTLD.ZONE);
+            var settings = new ABConverter.ClientSettings(ContentServerUtils.ApiTLD.ZONE);
             settings.deleteDownloadPathAfterFinished = false;
 
             env = ABConverter.Environment.CreateWithDefaultImplementations();
