@@ -196,7 +196,7 @@ namespace DCL.ABConverter
         /// Wearables collection conversion batch-mode entry point
         /// </summary>
         // TODO: Fix this CLI pipeline to finish converting the assets and return the correct exit code
-        /*public static void ExportWearablesCollectionToAssetBundles()
+        public static void ExportWearablesCollectionToAssetBundles()
         {
             //NOTE(Brian): This should make the logs cleaner
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
@@ -207,7 +207,7 @@ namespace DCL.ABConverter
             
             EnsureEnvironment();
             ExportWearablesCollectionToAssetBundles(System.Environment.GetCommandLineArgs());
-        }*/
+        }
         
         /// <summary>
         /// Start the wearables collection conversion process with the given commandLineArgs.
