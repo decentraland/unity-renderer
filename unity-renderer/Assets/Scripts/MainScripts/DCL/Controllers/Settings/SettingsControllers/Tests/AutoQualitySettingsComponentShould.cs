@@ -1,15 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using DCL;
 using DCL.FPSDisplay;
-using DCL.SettingsData;
-using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
-using QualitySettings = DCL.SettingsData.QualitySettings;
 
-namespace Tests
+namespace DCL.SettingsCommon.SettingsControllers.Tests
 {
     public class AutoQualitySettingsComponentShould : IntegrationTestSuite_Legacy
     {
@@ -22,10 +17,10 @@ namespace Tests
             Settings.i.autoqualitySettings = ScriptableObject.CreateInstance<QualitySettingsData>();
             component.qualitySettings.Set(new []
             {
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
             });
         }
 
@@ -66,15 +61,15 @@ namespace Tests
             qualities = ScriptableObject.CreateInstance<QualitySettingsData>();
             qualities.Set(new []
             {
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
             });
             controller = new AutoQualityCappedFPSController(30, 0, qualities);
         }
@@ -150,15 +145,15 @@ namespace Tests
             qualities = ScriptableObject.CreateInstance<QualitySettingsData>();
             qualities.Set(new []
             {
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
-                Settings.i.qualitySettings,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
+                Settings.i.qualitySettings.Data,
             });
             controller = new AutoQualityUncappedFPSController(0, qualities);
         }

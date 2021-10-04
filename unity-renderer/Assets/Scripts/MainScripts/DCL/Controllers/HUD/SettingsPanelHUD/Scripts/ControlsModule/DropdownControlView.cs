@@ -1,5 +1,5 @@
 using System.Linq;
-using DCL.SettingsControls;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using TMPro;
 using UnityEngine;
 

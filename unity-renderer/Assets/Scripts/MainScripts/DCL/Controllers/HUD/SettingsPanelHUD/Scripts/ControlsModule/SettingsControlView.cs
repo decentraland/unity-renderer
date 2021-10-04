@@ -1,9 +1,11 @@
-using DCL.SettingsControls;
 using DCL.SettingsPanelHUD.Common;
 using System.Collections.Generic;
+using DCL.SettingsCommon;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using QualitySettings = DCL.SettingsCommon.QualitySettings;
 
 namespace DCL.SettingsPanelHUD.Controls
 {
@@ -75,8 +77,8 @@ namespace DCL.SettingsPanelHUD.Controls
 
             RefreshControl();
 
-            Settings.i.OnGeneralSettingsChanged += OnGeneralSettingsChanged;
-            Settings.i.OnQualitySettingsChanged += OnQualitySettingsChanged;
+            Settings.i.generalSettings.OnChanged += OnGeneralSettingsChanged;
+            Settings.i.qualitySettings.OnChanged += OnQualitySettingsChanged;
             Settings.i.OnResetAllSettings += OnResetSettingsControl;
         }
 
@@ -95,8 +97,8 @@ namespace DCL.SettingsPanelHUD.Controls
                 }
             }
 
-            Settings.i.OnGeneralSettingsChanged -= OnGeneralSettingsChanged;
-            Settings.i.OnQualitySettingsChanged -= OnQualitySettingsChanged;
+            Settings.i.generalSettings.OnChanged -= OnGeneralSettingsChanged;
+            Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;
             Settings.i.OnResetAllSettings -= OnResetSettingsControl;
         }
 
@@ -152,9 +154,9 @@ namespace DCL.SettingsPanelHUD.Controls
                 SetControlActive(!current);
         }
 
-        private void OnGeneralSettingsChanged(SettingsData.GeneralSettings obj) { RefreshControl(); }
+        private void OnGeneralSettingsChanged(GeneralSettings obj) { RefreshControl(); }
 
-        private void OnQualitySettingsChanged(SettingsData.QualitySettings obj) { RefreshControl(); }
+        private void OnQualitySettingsChanged(QualitySettings obj) { RefreshControl(); }
 
         private void OnResetSettingsControl() { RefreshControl(); }
 

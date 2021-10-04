@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Reflection;
-using DCL.SettingsData;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using QualitySettings = DCL.SettingsData.QualitySettings;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/SSAO Controller", fileName = "SSAOControlController")]
     public class SSAOControlController : SpinBoxSettingsControlController
