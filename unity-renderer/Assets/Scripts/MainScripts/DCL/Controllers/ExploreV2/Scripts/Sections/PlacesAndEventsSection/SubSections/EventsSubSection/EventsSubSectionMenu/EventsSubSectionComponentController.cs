@@ -83,16 +83,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (!reloadEvents)
             return;
 
-        view.SetFeaturedEvents(new List<EventCardComponentModel>());
         view.SetFeaturedEventsAsLoading(true);
-
-        view.SetTrendingEvents(new List<EventCardComponentModel>());
         view.SetTrendingEventsAsLoading(true);
-
-        view.SetUpcomingEvents(new List<EventCardComponentModel>());
         view.SetUpcomingEventsAsLoading(true);
-
-        view.SetGoingEvents(new List<EventCardComponentModel>());
         view.SetGoingEventsAsLoading(true);
 
         RequestAllEventsFromAPI();

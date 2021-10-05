@@ -143,10 +143,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
                                          goingEvents.isFullyInitialized &&
                                          showMoreUpcomingEventsButton.isFullyInitialized);
 
-        RefreshControl();
-
+        showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
         showMoreUpcomingEventsButton.onClick.AddListener(() => OnShowMoreUpcomingEventsClicked?.Invoke());
-
         OnReady?.Invoke();
     }
 

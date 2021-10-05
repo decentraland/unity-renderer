@@ -86,7 +86,6 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         SetItems(model.items);
         SetConstraintCount(model.constranitCount);
         SetSpaceBetweenItems(model.spaceBetweenItems);
-        SetItemSize(model.itemSize);
     }
 
     public override void Dispose()
@@ -174,6 +173,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         if (!instantiateNewCopyOfItems)
             destroyOnlyUnnecesaryItems = true;
+
+        SetItemSize(model.itemSize);
     }
 
     public BaseComponentView GetItem(int index)
