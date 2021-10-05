@@ -128,7 +128,7 @@ namespace UnityGLTF
             public long StartPosition;
         }
 
-        static protected float _timeAtLastYield = 0f;
+        private static float _timeAtLastYield = 0f;
         protected AsyncCoroutineHelper _asyncCoroutineHelper;
 
         public bool addImagesToPersistentCaching = true;
@@ -408,7 +408,8 @@ namespace UnityGLTF
             {
                 MaterialCache = _assetCache.MaterialCache,
                 TextureCache = _assetCache.TextureCache,
-                MeshCache = _assetCache.MeshCache
+                MeshCache = _assetCache.MeshCache,
+                animationCache = _assetCache.AnimationCache
             };
         }
 
@@ -1250,7 +1251,7 @@ namespace UnityGLTF
             return valueDelta / timeDelta;
         }
 
-        protected AnimationClip ConstructClip(Transform root, GameObject[] nodes, int animationId, out GLTFAnimation animation, out AnimationCacheData animationCache)
+        protected AnimationClip ConstructClip(int animationId, out GLTFAnimation animation, out AnimationCacheData animationCache)
         {
             animation = _gltfRoot.Animations[animationId];
 
@@ -1334,7 +1335,7 @@ namespace UnityGLTF
 
                     yield return LoadAnimationBufferData(_gltfRoot.Animations[i], i);
 
-                    AnimationClip clip = ConstructClip(CreatedObject.transform, _assetCache.NodeCache, i, out gltfAnimation, out animationCache);
+                    AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
                     ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
 

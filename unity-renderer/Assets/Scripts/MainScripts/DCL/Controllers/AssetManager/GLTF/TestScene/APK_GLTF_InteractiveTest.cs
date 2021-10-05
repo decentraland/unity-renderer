@@ -30,29 +30,28 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         promiseList.Add(promise);
     }
 
-    static int counter = 0;
+    private int counter = 0;
+
+    // private string[] urls = new string[]
+    // {
+    //     "/GLB/TrunkSeparatedTextures/Trunk.glb",
+    //     "/GLB/Lantern/Lantern.glb",
+    //     "/GLB/DamagedHelmet/DamagedHelmet.glb"
+    // };
+
+    private string[] urls = new string[]
+    {
+        "/GLB/Trevor/Trevor.glb"
+    };
 
     void Update()
     {
         if (Input.GetKeyUp(KeyCode.Z))
         {
             counter++;
-            counter %= 3;
-            switch (counter)
-            {
-                case 0:
-                    string url = TestAssetsUtils.GetPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb";
-                    Generate(url);
-                    break;
-                case 1:
-                    string url2 = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-                    Generate(url2);
-                    break;
-                case 2:
-                    string url3 = TestAssetsUtils.GetPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb";
-                    Generate(url3);
-                    break;
-            }
+            counter %= urls.Length;
+            string finalUrl = TestAssetsUtils.GetPath() + urls[counter];
+            Generate(finalUrl);
         }
         else if (Input.GetKeyUp(KeyCode.X))
         {

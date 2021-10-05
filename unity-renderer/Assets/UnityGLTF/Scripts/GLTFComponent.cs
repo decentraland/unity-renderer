@@ -335,7 +335,10 @@ namespace UnityGLTF
                     CoroutineStarter.Stop(loadingRoutine);
                     loadingRoutine = null;
 
-                    OnFinishedLoadingAsset?.Invoke();
+                    if ( state == State.COMPLETED )
+                        OnFinishedLoadingAsset?.Invoke();
+                    else
+                        OnFailedLoadingAsset?.Invoke();
 
                     Destroy(loadingPlaceholder);
                     Destroy(this);
