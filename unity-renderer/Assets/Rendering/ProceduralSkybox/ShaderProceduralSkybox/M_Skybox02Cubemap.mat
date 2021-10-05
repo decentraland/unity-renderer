@@ -84,6 +84,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: b4c1ce2301a727543a5f460e3d33bd06, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SGLayerParticles_dd5b28be870b49f7a3ce77237030c9e6_Texture2Dd05dc483de224ec6b7ecdc5ece61c1f6_1944866908:
+        m_Texture: {fileID: 2800000, guid: b4c1ce2301a727543a5f460e3d33bd06, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SGSky03BasicLayer_0a6af1f64c704b309e104cb326459edb_Texture2DArray9bf205da79ed4da58279b27bd5e005ef_3592061530:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -102,6 +106,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SampleCubemap_888acc28c8924c3fa001ce730f9082f3_Cube_1:
         m_Texture: {fileID: 8900000, guid: b5e77d527d64dd64f8dc715126915af7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2DArray_1ac35b549ee94944bb9b772d9b996144_TextureArray_1:
+        m_Texture: {fileID: 18700000, guid: c6f0a96ba04876443afa637a0dd24eec, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_005359c0f5664165abd6c25f127c916f_Texture_1:
@@ -201,11 +209,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_0:
-        m_Texture: {fileID: 2800000, guid: 10f62b4152000cd40bfef3f3ac6dec74, type: 3}
+        m_Texture: {fileID: 2800000, guid: b4c1ce2301a727543a5f460e3d33bd06, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
-        m_Texture: {fileID: 2800000, guid: 10f62b4152000cd40bfef3f3ac6dec74, type: 3}
+        m_Texture: {fileID: 2800000, guid: b4c1ce2301a727543a5f460e3d33bd06, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_2:
@@ -271,7 +279,7 @@ Material:
     - _isRadial_0: 1
     - _isRadial_1: 2
     - _isRadial_2: 1
-    - _layerType_0: 0
+    - _layerType_0: 3
     - _layerType_1: 0
     - _layerType_2: 0
     - _lightIntensity00: 0
@@ -323,7 +331,11 @@ Material:
     - _color_1: {r: 1, g: 0, b: 0, a: 0}
     - _color_2: {r: 1, g: 1, b: 1, a: 0}
     - _distortIntAndSize_0: {r: 0, g: 10, b: 0, a: 0}
-    - _distortSpeedAndSharp_0: {r: 0.1, g: 0.1, b: 0, a: 1}
+    - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
+    - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
+    - _distortSpeedAndSharp_0: {r: 0.1, g: 0, b: 0, a: 1}
+    - _distortSpeedAndSharp_1: {r: 0, g: 0, b: 0, a: 0}
+    - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _groundColor: {r: 0.094901726, g: 0.040195987, b: 0.26415092, a: 1}
     - _horizonColor: {r: 0.6623347, g: 0.21489628, b: 0.76801753, a: 1}
     - _horizonMaskOffset: {r: 0, g: 0, b: 0, a: 0}
@@ -340,7 +352,7 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_0: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: 0}
     - _tilingAndOffset_2: {r: 4, g: 1.5, b: 0.17, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
