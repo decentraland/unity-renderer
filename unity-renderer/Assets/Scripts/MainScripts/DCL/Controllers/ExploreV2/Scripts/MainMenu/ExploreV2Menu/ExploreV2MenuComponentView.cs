@@ -14,11 +14,6 @@ public interface IExploreV2MenuComponentView
     event Action OnCloseButtonPressed;
 
     /// <summary>
-    /// Game object of the explore menu.
-    /// </summary>
-    GameObject go { get; }
-
-    /// <summary>
     /// Real viewer component.
     /// </summary>
     IRealmViewerComponentView currentRealmViewer { get; }
@@ -43,6 +38,11 @@ public interface IExploreV2MenuComponentView
     /// </summary>
     /// <param name="isActive">True to activate it.</param>
     void SetActive(bool isActive);
+
+    /// <summary>
+    /// Dispose the view.
+    /// </summary>
+    void Dispose();
 }
 
 public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponentView
@@ -116,4 +116,6 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
         return exploreV2View;
     }
+
+    public void Dispose() { Destroy(gameObject); }
 }
