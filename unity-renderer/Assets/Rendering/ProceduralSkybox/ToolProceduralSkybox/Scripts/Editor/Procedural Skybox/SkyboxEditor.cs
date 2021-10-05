@@ -76,7 +76,9 @@ namespace DCL.Skybox
             showBackgroundLayer = EditorGUILayout.Foldout(showBackgroundLayer, "BG Layer", true);
             if (showBackgroundLayer)
             {
+                EditorGUI.indentLevel++;
                 RenderBackgroundColorLayer();
+                EditorGUI.indentLevel--;
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -84,7 +86,9 @@ namespace DCL.Skybox
             showAmbienLayer = EditorGUILayout.Foldout(showAmbienLayer, "Ambient Layer", true);
             if (showAmbienLayer)
             {
+                EditorGUI.indentLevel++;
                 RenderAmbientLayer();
+                EditorGUI.indentLevel--;
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -92,7 +96,9 @@ namespace DCL.Skybox
             showFogLayer = EditorGUILayout.Foldout(showFogLayer, "Fog Layer", true);
             if (showFogLayer)
             {
+                EditorGUI.indentLevel++;
                 RenderFogLayer();
+                EditorGUI.indentLevel--;
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -100,7 +106,9 @@ namespace DCL.Skybox
             showDLLayer = EditorGUILayout.Foldout(showDLLayer, "Directional Light Layer", true);
             if (showDLLayer)
             {
+                EditorGUI.indentLevel++;
                 RenderDirectionalLightLayer();
+                EditorGUI.indentLevel--;
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -435,8 +443,7 @@ namespace DCL.Skybox
             }
             RenderColorGradientField(selectedConfiguration.directionalLightLayer.lightColor, "Light Color", 0, 24);
             RenderColorGradientField(selectedConfiguration.directionalLightLayer.tintColor, "Tint Color", 0, 24, true);
-            //selectedConfiguration.directionalLightLayer.lightColor = EditorGUILayout.GradientField("Light Color", selectedConfiguration.directionalLightLayer.lightColor);
-            //selectedConfiguration.directionalLightLayer.tintColor = EditorGUILayout.GradientField(new GUIContent("Tint Color"), selectedConfiguration.directionalLightLayer.tintColor, true);
+
             GUILayout.Space(10);
 
             // Light Intesity
@@ -582,11 +589,14 @@ namespace DCL.Skybox
                 if (slot.layers[i].expandedInEditor)
                 {
                     EditorGUILayout.Separator();
+                    EditorGUI.indentLevel++;
                     RenderTextureLayer(slot.layers[i]);
+
+                    EditorGUI.indentLevel--;
                 }
 
-
                 EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
 
                 GUILayout.Space(32);
             }
@@ -664,6 +674,7 @@ namespace DCL.Skybox
 
             EditorGUILayout.Separator();
 
+            // Rotation
             RenderTransitioningVector3(layer.cubemapRotations, "Rotation", "%", "Rot:", layer.timeSpan_start, layer.timeSpan_End);
 
             EditorGUILayout.Separator();
@@ -817,14 +828,15 @@ namespace DCL.Skybox
 
                 GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
 
-                GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
-                // Convert percentage into time
-                float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
+                RenderPercentagePart(layerStartTime, layerEndTime, ref _list[i].percentage);
+                //GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                //// Convert percentage into time
+                //float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
 
-                time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-                _list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
+                //time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+                //_list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
 
-                GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                //GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
 
                 GUILayout.Space(10);
 
@@ -894,21 +906,23 @@ namespace DCL.Skybox
 
                 GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
 
+                RenderPercentagePart(layerStartTime, layerEndTime, ref _list[i].percentage);
+
                 //GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
 
-                GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
-                // Convert percentage into time
-                float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
-                //_list[i].percentage = EditorGUILayout.FloatField(_list[i].percentage, GUILayout.Width(50), GUILayout.ExpandWidth(false));
-                time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-                _list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
+                //GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                //// Convert percentage into time
+                //float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
+                ////_list[i].percentage = EditorGUILayout.FloatField(_list[i].percentage, GUILayout.Width(50), GUILayout.ExpandWidth(false));
+                //time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+                //_list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
 
-                GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                //GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
 
-                //GUILayout.EndHorizontal();
+                ////GUILayout.EndHorizontal();
 
 
-                GUILayout.Space(10);
+                //GUILayout.Space(10);
 
                 GUILayout.Label(valueText, GUILayout.ExpandWidth(false));
 
@@ -975,9 +989,10 @@ namespace DCL.Skybox
                     timeOfTheDay = GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, _list[i].percentage / 100);
                 }
                 GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
+
+                RenderPercentagePart(layerStartTime, layerEndTime, ref _list[i].percentage);
+                //_list[i].percentage = EditorGUILayout.FloatField("", _list[i].percentage, GUILayout.Width(50), GUILayout.ExpandWidth(false));
                 //GUILayout.Space(10);
-                _list[i].percentage = EditorGUILayout.FloatField("", _list[i].percentage, GUILayout.Width(50), GUILayout.ExpandWidth(false));
-                GUILayout.Space(10);
 
                 GUILayout.Label(valueText, GUILayout.ExpandWidth(false));
                 //GUILayout.Space(10);
@@ -1027,14 +1042,14 @@ namespace DCL.Skybox
 
             if (startTime != -1)
             {
-                EditorGUILayout.LabelField(startTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(startTime + "Hr", GUILayout.Width(45), GUILayout.ExpandWidth(false));
             }
 
             color = EditorGUILayout.GradientField(new GUIContent(""), color, hdr, GUILayout.Width(250), GUILayout.ExpandWidth(false));
 
             if (endTime != 1)
             {
-                EditorGUILayout.LabelField(endTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(endTime + "Hr", GUILayout.Width(45), GUILayout.ExpandWidth(false));
             }
             GUILayout.EndHorizontal();
         }
@@ -1055,19 +1070,8 @@ namespace DCL.Skybox
 
                 GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
 
-                GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+                RenderPercentagePart(layerStartTime, layerEndTime, ref _list[i].percentage);
 
-                GUIStyle style = new GUIStyle();
-                style.alignment = TextAnchor.MiddleCenter;
-
-                GUILayout.BeginVertical(style, GUILayout.ExpandWidth(false), GUILayout.Width(150));
-                GUILayout.Label(_list[i].percentage.ToString("f2") + "%", GUILayout.ExpandWidth(false));
-                float time = Mathf.Lerp(layerStartTime, layerEndTime, _list[i].percentage / 100);
-                time = EditorGUILayout.Slider(time, layerStartTime, layerEndTime, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-                _list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
-                GUILayout.EndVertical();
-
-                GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
                 //_list[i].percentage = EditorGUILayout.FloatField(_list[i].percentage, GUILayout.ExpandWidth(false));
                 GUILayout.Space(10);
 
@@ -1103,6 +1107,23 @@ namespace DCL.Skybox
 
                 _list.Add(new TransitioningQuaternion(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, GetCurrentRotation()));
             }
+        }
+
+        void RenderPercentagePart(float layerStartTime, float layerEndTime, ref float percentage)
+        {
+            GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
+
+            GUIStyle style = new GUIStyle();
+            style.alignment = TextAnchor.MiddleCenter;
+
+            GUILayout.BeginVertical(style, GUILayout.ExpandWidth(false), GUILayout.Width(150));
+            float time = Mathf.Lerp(layerStartTime, layerEndTime, percentage / 100);
+            GUILayout.Label(time.ToString("f2") + " Hr", GUILayout.ExpandWidth(false));
+            percentage = EditorGUILayout.Slider(percentage, 0, 100, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            //_list[i].percentage = Mathf.InverseLerp(layerStartTime, layerEndTime, time) * 100;
+            GUILayout.EndVertical();
+
+            GUILayout.Label(layerEndTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
         }
 
         Vector4 QuaternionToVector4(Quaternion rot) { return new Vector4(rot.x, rot.y, rot.z, rot.w); }
