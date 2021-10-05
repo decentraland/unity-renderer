@@ -18,7 +18,7 @@ public class FeatureFlagShould
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void IsFeatureEnable(bool isEnabled)
+    public void AddFeaturesCorrectly(bool isEnabled)
     {
         //Arrange
         FeatureFlag featureFlag = new FeatureFlag();
@@ -31,7 +31,7 @@ public class FeatureFlagShould
     }
 
     [Test]
-    public void FeatureFlagControllerAddBridgeCorrectly()
+    public void AddBridgeWhenInitialized()
     {
         //Arrange
         FeatureFlagController controller = new FeatureFlagController();
@@ -47,7 +47,7 @@ public class FeatureFlagShould
     }
 
     [Test]
-    public void FeatureFlagControllerDisposeCorrectly()
+    public void BeDisposedCorrectly()
     {
         //Arrange
         FeatureFlagController controller = new FeatureFlagController();
@@ -60,23 +60,23 @@ public class FeatureFlagShould
     }
 
     [Test]
-    public void FeatureFlagApplyCorrectly()
+    public void ApplyFeatureFlagWhenBridgeReceivesUpdateMessage()
     {
         //Arrange
         GameObject newGameObject = new GameObject("Test");
         FeatureFlagBridge bridge = newGameObject.AddComponent<FeatureFlagBridge>();
-        FeatureFlag confifg = TestHelpers.CreatetFeatureFlag();
-        DataStore.i.featureFlags.featureFlags.OnChange += FeatureFlagConfigReceived;
+        FeatureFlag config = TestHelpers.CreateFeatureFlag();
+        DataStore.i.featureFlags.flags.OnChange += FlagConfigReceived;
         featureFlagReceived = false;
 
         //Act
-        bridge.SetFeatureFlagConfiguration(confifg);
+        bridge.SetFeatureFlagConfiguration(config);
 
         //Assert
         Assert.IsTrue(featureFlagReceived);
     }
 
     private bool featureFlagReceived = false;
-    private void FeatureFlagConfigReceived(FeatureFlag newConfig, FeatureFlag oldConfig) { featureFlagReceived = true; }
+    private void FlagConfigReceived(FeatureFlag newConfig, FeatureFlag oldConfig) { featureFlagReceived = true; }
 
 }

@@ -57,10 +57,17 @@ namespace DCL.Helpers
             return pbTranf;
         }
 
-        public static FeatureFlag CreatetFeatureFlag()
+        public static FeatureFlag CreateFeatureFlag(List<string> enabledFlags = null)
         {
             FeatureFlag featureFlag = new FeatureFlag();
-            featureFlag.flags.Add("Tutorial", false);
+            if (enabledFlags == null)
+                return featureFlag;
+
+            foreach (var flag in enabledFlags)
+            {
+                featureFlag.flags.Add(flag, true);
+            }
+
             return featureFlag;
         }
 
