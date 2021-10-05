@@ -154,6 +154,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEventCards(events, eventCardLongPrefab);
         featuredEvents.SetItems(eventComponentsToAdd, false);
+        featuredEvents.gameObject.SetActive(events.Count > 0);
     }
     public void SetFeaturedEventsAsLoading(bool isVisible)
     {
