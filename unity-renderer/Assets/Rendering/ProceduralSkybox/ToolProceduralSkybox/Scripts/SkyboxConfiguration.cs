@@ -18,7 +18,7 @@ namespace DCL.Skybox
         // Horizon Layer
         public List<TransitioningFloat> horizonWidth = new List<TransitioningFloat>();
         public List<TransitioningFloat> horizonHeight = new List<TransitioningFloat>();
-        public Texture horizonMask;
+        public Texture2D horizonMask;
         public Vector3 horizonMaskValues = new Vector3(0, 0, 0);
 
         // Ambient Color
