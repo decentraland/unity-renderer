@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultPresetIndex: 1
   settings:
-  - displayName: Basic
+  - displayName: Low
     baseResolution: 0
     antiAliasing: 1
     renderScale: 0.7
@@ -33,10 +33,10 @@ MonoBehaviour:
   - displayName: Medium
     baseResolution: 1
     antiAliasing: 1
-    renderScale: 0.8
+    renderScale: 1
     shadows: 1
     softShadows: 1
-    shadowResolution: 512
+    shadowResolution: 1024
     cameraDrawDistance: 150
     bloom: 1
     fpsCap: 1
@@ -48,11 +48,11 @@ MonoBehaviour:
     maxHQAvatars: 40
   - displayName: High
     baseResolution: 1
-    antiAliasing: 1
+    antiAliasing: 4
     renderScale: 1
     shadows: 1
     softShadows: 1
-    shadowResolution: 1024
+    shadowResolution: 2048
     cameraDrawDistance: 250
     bloom: 1
     fpsCap: 0
@@ -61,10 +61,10 @@ MonoBehaviour:
     enableDetailObjectCulling: 1
     detailObjectCullingLimit: 50
     ssaoQuality: 2
-    maxHQAvatars: 50
+    maxHQAvatars: 60
   - displayName: Ultra
     baseResolution: 2
-    antiAliasing: 2
+    antiAliasing: 8
     renderScale: 1
     shadows: 1
     softShadows: 1
@@ -74,7 +74,7 @@ MonoBehaviour:
     fpsCap: 0
     colorGrading: 1
     shadowDistance: 100
-    enableDetailObjectCulling: 1
+    enableDetailObjectCulling: 0
     detailObjectCullingLimit: 0
     ssaoQuality: 3
-    maxHQAvatars: 70
+    maxHQAvatars: 100
