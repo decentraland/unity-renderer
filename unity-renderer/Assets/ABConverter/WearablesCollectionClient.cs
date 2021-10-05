@@ -165,10 +165,8 @@ namespace DCL.ABConverter
         /// Each collection is dumped and converted sequentially as the amount of collections has grown more that we
         /// can handle in 1 massive dump-conversion.
         /// </summary>
-        public static void DumpAllNonBodyshapeWearables(Func<string, bool> collectionFilter = null)
+        public static void DumpAllNonBodyshapeWearables()
         {
-            // TODO: Re-implement collectionFilter usage
-            
             wearablesCollectionDumpStartTime = EditorApplication.timeSinceStartup;
             
             EnsureEnvironment();
