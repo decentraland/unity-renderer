@@ -1,14 +1,14 @@
 using DCL;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEventsSubSectionComponentController
+public interface IEventsSubSectionComponentController : IDisposable
 {
     void SetFeatureEvents(List<EventCardComponentModel> events);
     void SetTrendingEvents(List<EventCardComponentModel> events);
     void SetUpcomingEvents(List<EventCardComponentModel> events);
     void SetGoingEvents(List<EventCardComponentModel> events);
-    void Dispose();
 }
 
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController

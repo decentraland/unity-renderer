@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public interface IBaseComponentView
+public interface IBaseComponentView : IDisposable
 {
     /// <summary>
     /// It will be triggered after the UI component is fully initialized (PostInitialization included).
@@ -36,11 +36,6 @@ public interface IBaseComponentView
     /// Updates the UI component with the current model.
     /// </summary>
     void RefreshControl();
-
-    /// <summary>
-    /// It is called when the UI component is destroyed.
-    /// </summary>
-    void Dispose();
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]

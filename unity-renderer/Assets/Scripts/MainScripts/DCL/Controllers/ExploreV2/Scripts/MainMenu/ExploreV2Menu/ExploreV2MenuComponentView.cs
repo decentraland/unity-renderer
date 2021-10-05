@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public interface IExploreV2MenuComponentView
+public interface IExploreV2MenuComponentView : IDisposable
 {
     /// <summary>
     /// It will be triggered when the view is fully initialized.
@@ -38,11 +38,6 @@ public interface IExploreV2MenuComponentView
     /// </summary>
     /// <param name="isActive">True to activate it.</param>
     void SetActive(bool isActive);
-
-    /// <summary>
-    /// Dispose the view.
-    /// </summary>
-    void Dispose();
 }
 
 public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponentView

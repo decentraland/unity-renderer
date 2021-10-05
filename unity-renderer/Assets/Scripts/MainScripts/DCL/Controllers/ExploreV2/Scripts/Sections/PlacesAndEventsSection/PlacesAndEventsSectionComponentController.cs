@@ -1,7 +1,6 @@
-public interface IPlacesAndEventsSectionComponentController
-{
-    void Dispose();
-}
+using System;
+
+public interface IPlacesAndEventsSectionComponentController : IDisposable { }
 
 public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSectionComponentController
 {
