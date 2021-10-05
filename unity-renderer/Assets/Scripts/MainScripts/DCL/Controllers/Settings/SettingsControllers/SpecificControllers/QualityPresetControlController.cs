@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Quality Preset", fileName = "QualityPresetControlController")]
     public class QualityPresetControlController : SpinBoxSettingsControlController
@@ -19,14 +20,14 @@ namespace DCL.SettingsControls
 
         public override void UpdateSetting(object newValue)
         {
-            SettingsData.QualitySettings preset = Settings.i.qualitySettingsPresets[(int)newValue];
+            QualitySettings preset = Settings.i.qualitySettingsPresets[(int)newValue];
             currentQualitySetting = preset;
         }
 
         private void SetupQualityPresetLabels()
         {
             List<string> presetNames = new List<string>();
-            SettingsData.QualitySettings preset;
+            QualitySettings preset;
             for (int i = 0; i < Settings.i.qualitySettingsPresets.Length; i++)
             {
                 preset = Settings.i.qualitySettingsPresets[i];
@@ -38,7 +39,7 @@ namespace DCL.SettingsControls
 
         private int GetCurrentStoredValue()
         {
-            SettingsData.QualitySettings preset;
+            QualitySettings preset;
             for (int i = 0; i < Settings.i.qualitySettingsPresets.Length; i++)
             {
                 preset = Settings.i.qualitySettingsPresets[i];

@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using DCL.Interface;
 using System;
+using DCL.SettingsCommon;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -135,7 +136,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         if (HUDAudioHandler.i != null)
         {
             // Check whether or not this message is new, and chat sounds are enabled in settings
-            if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp && DCL.Settings.i.currentAudioSettings.chatSFXEnabled)
+            if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp && Settings.i.audioSettings.Data.chatSFXEnabled)
             {
                 switch (chatEntryModel.messageType)
                 {
