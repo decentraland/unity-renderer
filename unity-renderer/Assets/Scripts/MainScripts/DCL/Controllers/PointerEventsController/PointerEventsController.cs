@@ -38,9 +38,15 @@ namespace DCL
 
         public void Initialize()
         {
-            InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
-            InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
-            InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
+            for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
+            {
+                var buttonId = (WebInterface.ACTION_BUTTON)i;
+                
+                if (buttonId == WebInterface.ACTION_BUTTON.ANY) 
+                    continue;
+                
+                InputController_Legacy.i.AddListener(buttonId, OnButtonEvent);
+            }
 
             hoverController = InteractionHoverCanvasController.i;
 
@@ -215,9 +221,15 @@ namespace DCL
 
         public void Cleanup()
         {
-            InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
-            InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
-            InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
+            for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
+            {
+                var buttonId = (WebInterface.ACTION_BUTTON)i;
+                
+                if (buttonId == WebInterface.ACTION_BUTTON.ANY) 
+                    continue;
+                
+                InputController_Legacy.i.RemoveListener(buttonId, OnButtonEvent);
+            }
 
             lastHoveredObject = null;
             newHoveredGO = null;

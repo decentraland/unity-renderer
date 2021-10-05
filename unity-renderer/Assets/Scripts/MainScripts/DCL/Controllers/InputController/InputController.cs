@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DCL.Configuration;
 
 /// <summary>
 /// Mapping for Trigger actions
@@ -364,10 +365,10 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Hold.Sprint:
-                    InputProcessor.FromKey(action, KeyCode.LeftShift, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromKey(action,InputSettings.WalkButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Hold.Jump:
-                    InputProcessor.FromKey(action, KeyCode.Space, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Hold.FreeCameraMode:
                     //Disable until the fine-tuning is ready

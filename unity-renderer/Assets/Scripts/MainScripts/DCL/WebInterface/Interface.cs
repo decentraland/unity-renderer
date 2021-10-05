@@ -133,7 +133,17 @@ namespace DCL.Interface
             POINTER,
             PRIMARY,
             SECONDARY,
-            ANY
+            ANY,
+            FORWARD,
+            BACKWARD,
+            RIGHT,
+            LEFT,
+            JUMP,
+            WALK,
+            ACTION_1,
+            ACTION_2,
+            ACTION_3,
+            ACTION_4
         }
 
         [System.Serializable]
