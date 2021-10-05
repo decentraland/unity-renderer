@@ -5,6 +5,11 @@ using UnityEngine.UI;
 public interface IEventCardComponentView
 {
     /// <summary>
+    /// Event that will be triggered when the jumpIn button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onJumpInClick { get; set; }
+
+    /// <summary>
     /// Event that will be triggered when the info button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onInfoClick { get; set; }
@@ -145,6 +150,24 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal bool isEventCardModal = false;
     [SerializeField] internal EventCardComponentModel model;
 
+    public Button.ButtonClickedEvent onJumpInClick
+    {
+        get
+        {
+            if (jumpinButton == null)
+                return null;
+
+            return jumpinButton.onClick;
+        }
+        set
+        {
+            model.onJumpInClick = value;
+
+            if (jumpinButton != null)
+                jumpinButton.onClick = value;
+        }
+    }
+
     public Button.ButtonClickedEvent onInfoClick
     {
         get
@@ -238,6 +261,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
         SetJumpInConfiguration(model.jumpInConfiguration);
+        onJumpInClick = model.onJumpInClick;
         onInfoClick = model.onInfoClick;
         onSubscribeClick = model.onSubscribeClick;
         onUnsubscribeClick = model.onUnsubscribeClick;

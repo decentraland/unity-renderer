@@ -8,6 +8,11 @@ using UnityEngine;
 public interface IEventsSubSectionComponentController : IDisposable
 {
     /// <summary>
+    /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
+    /// </summary>
+    event Action OnCloseExploreV2;
+
+    /// <summary>
     /// Request all events from the API.
     /// </summary>
     void RequestAllEvents();
@@ -40,6 +45,7 @@ public interface IEventsSubSectionComponentController : IDisposable
 
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
+    public event Action OnCloseExploreV2;
     internal event Action OnEventsFromAPIUpdated;
 
     internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 6;
@@ -206,6 +212,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventCardModel.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
 
         // Card events
+        ConfigureOnJumpInActions(eventCardModel);
         ConfigureOnInfoActions(eventCardModel);
         ConfigureOnSubscribeActions(eventCardModel);
         ConfigureOnUnsubscribeActions(eventCardModel);
@@ -275,6 +282,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         return result;
     }
 
+    internal void ConfigureOnJumpInActions(EventCardComponentModel eventModel)
+    {
+        eventModel.onJumpInClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+        eventModel.onJumpInClick.AddListener(RequestExploreV2Closing);
+    }
+
     internal void ConfigureOnInfoActions(EventCardComponentModel eventModel)
     {
         eventModel.onInfoClick = new UnityEngine.UI.Button.ButtonClickedEvent();
@@ -317,5 +330,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                     Debug.LogError($"Error posting 'attend' message to the API: {error}");
                 });
         });
+    }
+
+    internal void RequestExploreV2Closing()
+    {
+        view.HideEventModal();
+        OnCloseExploreV2?.Invoke();
     }
 }

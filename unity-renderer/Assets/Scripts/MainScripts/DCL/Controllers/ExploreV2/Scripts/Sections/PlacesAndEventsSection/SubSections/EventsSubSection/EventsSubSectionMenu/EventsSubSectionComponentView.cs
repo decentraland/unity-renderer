@@ -80,6 +80,11 @@ public interface IEventsSubSectionComponentView
     /// </summary>
     /// <param name="eventInfo">Event (model) to be loaded in the card.</param>
     void ShowEventModal(EventCardComponentModel eventInfo);
+
+    /// <summary>
+    /// Hides the Event Card modal.
+    /// </summary>
+    void HideEventModal();
 }
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
@@ -207,6 +212,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         eventModal.gameObject.SetActive(true);
         eventModal.Configure(eventInfo);
     }
+
+    public void HideEventModal() { eventModal.gameObject.SetActive(false); }
 
     public void SetShowMoreUpcomingEventsButtonActive(bool isActive) { showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive); }
 

@@ -1,8 +1,7 @@
 using DCL;
 using System.Collections.Generic;
-using UnityEngine;
-using Variables.RealmsInfo;
 using System.Linq;
+using Variables.RealmsInfo;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
@@ -32,7 +31,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.OnInitialized += CreateControllers;
     }
 
-    internal void CreateControllers() { placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection); }
+    internal void CreateControllers()
+    {
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection);
+        placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
+    }
 
     public void Dispose()
     {
@@ -47,7 +50,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
 
         DataStore.i.taskbar.isExploreV2Enabled.OnChange -= OnActivateFromTaskbar;
-        placesAndEventsSectionController?.Dispose();
+
+        if (placesAndEventsSectionController != null)
+        {
+            placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
+            placesAndEventsSectionController.Dispose();
+        }
     }
 
     public void SetVisibility(bool visible)
