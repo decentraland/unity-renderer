@@ -43,11 +43,17 @@ namespace DCL.Components
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
 
-        private bool hasBeenInitializated = false;
-
         private void Awake() { model = new Model(); }
 
-        private void OnDestroy() { entity.OnShapeLoaded -= OnEntityShapeLoaded; }
+        private void OnDestroy()
+        {
+            entity.OnShapeLoaded -= OnEntityShapeLoaded;
+
+            var animationShape = entity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+
+            if (animationShape != null)
+                animationShape.OnLoaded -= OnShapeLoaded;
+        }
 
         public override IEnumerator ApplyChanges(BaseModel model)
         {
@@ -75,9 +81,9 @@ namespace DCL.Components
             return animationShape.isLoaded;
         }
 
-        private void OnEntityShapeLoaded(IDCLEntity e)
+        private void OnEntityShapeLoaded(IDCLEntity shapeEntity)
         {
-            var animationShape = e.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+            var animationShape = shapeEntity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
 
             if (animationShape == null)
                 return;
@@ -139,8 +145,6 @@ namespace DCL.Components
                 unityState.blendMode = AnimationBlendMode.Blend;
                 layerIndex++;
             }
-
-            hasBeenInitializated = true;
         }
 
         void UpdateAnimationState()

@@ -311,7 +311,6 @@ namespace DCL.Components
                 return;
 
             entity.OnShapeLoaded?.Invoke(entity);
-
         }
     }
 }
