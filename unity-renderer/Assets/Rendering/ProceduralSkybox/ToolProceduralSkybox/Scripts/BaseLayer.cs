@@ -7,6 +7,7 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
+        public bool disabled;
         public string nameInEditor;
         public bool expandedInEditor;
         public float timeSpan_start;
@@ -37,6 +38,7 @@ namespace DCL.Skybox
 
         public TextureLayer(string name = "noname")
         {
+            disabled = false;
             tiling = new Vector2(1, 1);
             speed_Vec2 = new Vector2(0, 0);
             nameInEditor = name;
@@ -44,6 +46,7 @@ namespace DCL.Skybox
             renderDistance = new List<TransitioningFloat>();
             rotation_float = new List<TransitioningFloat>();
             satelliteWidthHeight = new List<TransitioningVector2>();
+            cubemapRotations = new List<TransitioningVector3>();
             color = new Gradient();
         }
     }
