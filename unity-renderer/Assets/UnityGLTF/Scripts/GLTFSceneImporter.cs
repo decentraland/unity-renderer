@@ -271,10 +271,7 @@ namespace UnityGLTF
                 }
 
                 if (_assetCache == null)
-                {
                     _assetCache = new AssetCache(_gltfRoot);
-                }
-
 
                 if (PROFILING_ENABLED)
                 {
@@ -343,7 +340,6 @@ namespace UnityGLTF
                             Object.DestroyImmediate(skeleton);
                     }
                 }
-
             }
             finally
             {
@@ -632,12 +628,14 @@ namespace UnityGLTF
                 throw new GLTFLoadException("No default scene in gltf file.");
             }
 
+            CreatedObject = new GameObject(string.IsNullOrEmpty(scene.Name) ? ("GLTFScene") : scene.Name);
+
+            InitializeGltfTopLevelObject();
+
             yield return ConstructScene(scene, showSceneObj);
 
             if (SceneParent != null)
-            {
                 CreatedObject.transform.SetParent(SceneParent, false);
-            }
 
             _lastLoadedScene = CreatedObject;
         }
@@ -1000,7 +998,7 @@ namespace UnityGLTF
                 string relativePath = RelativePathFrom(node.transform, root);
 
                 NumericArray input = samplerCache.Input.AccessorContent,
-                             output = samplerCache.Output.AccessorContent;
+                    output = samplerCache.Output.AccessorContent;
 
                 string[] propertyNames;
                 Vector3 coordinateSpaceConversionScale = new Vector3(-1, 1, 1);
@@ -1287,15 +1285,11 @@ namespace UnityGLTF
 
         protected virtual IEnumerator ConstructScene(GLTFScene scene, bool showSceneObj)
         {
-            var sceneObj = new GameObject(string.IsNullOrEmpty(scene.Name) ? ("GLTFScene") : scene.Name);
-
-            CreatedObject = sceneObj;
-
-            sceneObj.SetActive(showSceneObj);
-            sceneObj.transform.SetParent(SceneParent, false);
-            sceneObj.transform.localPosition = Vector3.zero;
-            sceneObj.transform.localRotation = Quaternion.identity;
-            sceneObj.transform.localScale = Vector3.one;
+            CreatedObject.SetActive(showSceneObj);
+            CreatedObject.transform.SetParent(SceneParent, false);
+            CreatedObject.transform.localPosition = Vector3.zero;
+            CreatedObject.transform.localRotation = Quaternion.identity;
+            CreatedObject.transform.localScale = Vector3.one;
 
             Transform[] nodeTransforms = new Transform[scene.Nodes.Count];
 
@@ -1303,7 +1297,7 @@ namespace UnityGLTF
             {
                 NodeId node = scene.Nodes[i];
 
-                yield return _LoadNode(node.Id, sceneObj.transform);
+                yield return _LoadNode(node.Id, CreatedObject.transform);
 
                 GameObject nodeObj = _assetCache.NodeCache[node.Id];
                 nodeTransforms[i] = nodeObj.transform;
@@ -1329,7 +1323,7 @@ namespace UnityGLTF
             {
                 // create the AnimationClip that will contain animation data
                 // NOTE (Pravs): Khronos GLTFLoader sets the animationComponent as 'enabled = false' but we don't do that so that we can find the component when needed.
-                Animation animation = sceneObj.AddComponent<Animation>();
+                Animation animation = CreatedObject.AddComponent<Animation>();
                 animation.playAutomatically = true;
                 animation.cullingType = AnimationCullingType.AlwaysAnimate;
 
@@ -1340,9 +1334,9 @@ namespace UnityGLTF
 
                     yield return LoadAnimationBufferData(_gltfRoot.Animations[i], i);
 
-                    AnimationClip clip = ConstructClip(sceneObj.transform, _assetCache.NodeCache, i, out gltfAnimation, out animationCache);
+                    AnimationClip clip = ConstructClip(CreatedObject.transform, _assetCache.NodeCache, i, out gltfAnimation, out animationCache);
 
-                    ProcessCurves(sceneObj.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
+                    ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
 
                     clip.wrapMode = WrapMode.Loop;
 
@@ -1354,8 +1348,6 @@ namespace UnityGLTF
                     }
                 }
             }
-
-            InitializeGltfTopLevelObject();
         }
 
         IEnumerator LoadAnimationBufferData(GLTFAnimation animation, int animationId)
@@ -1807,7 +1799,6 @@ namespace UnityGLTF
 
                 unityMeshData = ConvertAccessorsToUnityTypes(meshConstructionData);
 
-                //yield return null;
                 yield return ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData);
             }
         }
@@ -2058,6 +2049,8 @@ namespace UnityGLTF
 #endif
             };
 
+            _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
+
             mesh.vertices = unityMeshData.Vertices;
             if (ShouldYieldOnTimeout())
             {
@@ -2142,8 +2135,6 @@ namespace UnityGLTF
             {
                 mesh.UploadMeshData(true);
             }
-
-            _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
         }
 
         static Material cachedSpecGlossMat;
@@ -2210,7 +2201,6 @@ namespace UnityGLTF
                     TextureId textureId = pbr.BaseColorTexture.Index;
                     yield return ConstructTexture(textureId.Value, textureId.Id, false, false);
                     mrMapper.BaseColorTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
-                    _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
 
                     mrMapper.BaseColorTexCoord = pbr.BaseColorTexture.TexCoord;
                     ExtTextureTransformExtension ext = GetTextureTransform(pbr.BaseColorTexture);
@@ -2229,7 +2219,6 @@ namespace UnityGLTF
                     TextureId textureId = pbr.MetallicRoughnessTexture.Index;
                     yield return ConstructTexture(textureId.Value, textureId.Id);
                     mrMapper.MetallicRoughnessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
-                    _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
                     mrMapper.MetallicRoughnessTexCoord = pbr.MetallicRoughnessTexture.TexCoord;
                     mrMapper.RoughnessFactor = 0;
                 }
@@ -2251,7 +2240,6 @@ namespace UnityGLTF
                     TextureId textureId = specGloss.DiffuseTexture.Index;
                     yield return ConstructTexture(textureId.Value, textureId.Id);
                     sgMapper.DiffuseTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
-                    _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
                     sgMapper.DiffuseTexCoord = specGloss.DiffuseTexture.TexCoord;
                     ExtTextureTransformExtension ext = GetTextureTransform(specGloss.DiffuseTexture);
                     if (ext != null)
@@ -2270,7 +2258,6 @@ namespace UnityGLTF
                     TextureId textureId = specGloss.SpecularGlossinessTexture.Index;
                     yield return ConstructTexture(textureId.Value, textureId.Id);
                     sgMapper.SpecularGlossinessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
-                    _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
                 }
             }
 
@@ -2279,7 +2266,6 @@ namespace UnityGLTF
                 TextureId textureId = def.NormalTexture.Index;
                 yield return ConstructTexture(textureId.Value, textureId.Id);
                 mapper.NormalTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
-                _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
                 mapper.NormalTexCoord = def.NormalTexture.TexCoord;
                 mapper.NormalTexScale = def.NormalTexture.Scale;
             }
@@ -2290,7 +2276,6 @@ namespace UnityGLTF
                 TextureId textureId = def.OcclusionTexture.Index;
                 yield return ConstructTexture(textureId.Value, textureId.Id);
                 mapper.OcclusionTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
-                _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
             }
 
             if (def.EmissiveTexture != null)
@@ -2298,7 +2283,6 @@ namespace UnityGLTF
                 TextureId textureId = def.EmissiveTexture.Index;
                 yield return ConstructTexture(textureId.Value, textureId.Id, false, false);
                 mapper.EmissiveTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
-                _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
                 mapper.EmissiveTexCoord = def.EmissiveTexture.TexCoord;
             }
 
@@ -2327,23 +2311,9 @@ namespace UnityGLTF
                     {
                         case MATERIAL:
                             materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, material[i]);
-                            //
-                            // if (!usedMaterials.Contains(material[i]))
-                            // {
-                            //     materialWrapper.CachedMaterial.IncreaseRefCount();
-                            //     usedMaterials.Add(material[i]);
-                            // }
-                            //
                             break;
                         case MATERIAL_WITH_VERTEX_COLORS:
                             materialWrapper.CachedMaterialWithVertexColor = new RefCountedMaterialData(materialCRC, material[i]);
-                            //
-                            // if (!usedMaterials.Contains(material[i]))
-                            // {
-                            //     materialWrapper.CachedMaterialWithVertexColor.IncreaseRefCount();
-                            //     usedMaterials.Add(material[i]);
-                            // }
-                            //
                             break;
                     }
 
@@ -2359,7 +2329,7 @@ namespace UnityGLTF
                 }
                 else if (material[i] != PersistentAssetCache.MaterialCacheByCRC[materialCRC].material)
                 {
-                    Material.Destroy(material[i]);
+                    Object.Destroy(material[i]);
                 }
 
                 switch (i)
@@ -2466,6 +2436,8 @@ namespace UnityGLTF
             if (PersistentAssetCache.HasImage(imageId))
             {
                 source = PersistentAssetCache.GetImage(imageId);
+                source.IncreaseRefCount();
+
                 _assetCache.ImageCache[sourceId] = source.Texture;
 
                 if (_assetCache.ImageCache[sourceId] == null)
@@ -2492,6 +2464,8 @@ namespace UnityGLTF
                 {
                     source = new RefCountedTextureData(imageId, _assetCache.ImageCache[sourceId]);
                 }
+
+                source.IncreaseRefCount();
             }
 
             var desiredFilterMode = FilterMode.Bilinear;
@@ -2542,6 +2516,8 @@ namespace UnityGLTF
             {
                 if (source.Texture.isReadable)
                 {
+                    source.DecreaseRefCount();
+
                     var unityTexture = Object.Instantiate(source.Texture);
                     unityTexture.filterMode = desiredFilterMode;
                     unityTexture.wrapMode = desiredWrapMode;
@@ -2550,7 +2526,9 @@ namespace UnityGLTF
                     // NOTE(Brian): This breaks importing in edit mode, so only enable it for runtime.
                     unityTexture.Apply(false, true);
 #endif
-                    _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(imageId, unityTexture);
+                    var newSource = new RefCountedTextureData(imageId, unityTexture);
+                    _assetCache.TextureCache[textureIndex].CachedTexture = newSource;
+                    newSource.IncreaseRefCount();
                 }
                 else
                 {
@@ -2647,6 +2625,7 @@ namespace UnityGLTF
             {
                 return _loader.assetIdConverter(uri, out hash);
             }
+
             hash = uri;
             return false;
         }
