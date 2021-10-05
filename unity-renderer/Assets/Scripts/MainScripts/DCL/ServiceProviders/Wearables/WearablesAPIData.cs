@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class WearablesAPIData
@@ -93,6 +94,13 @@ public class WearablesAPIData
                 List<WearableItem.MappingPair> contentMappingPairs = new List<WearableItem.MappingPair>();
                 foreach (var content in wearableDataRepresentation.contents)
                 {
+                    if (string.IsNullOrEmpty(content.url))
+                    {
+                        Debug.Log($"WearablesAPIData - Couldn't get hash from mappings for asset '{content.key}', it's content.url is null!");
+                        
+                        continue;
+                    }
+                    
                     contentMappingPairs.Add(new WearableItem.MappingPair()
                     {
                         key = content.key,
