@@ -7,13 +7,35 @@ using UnityEngine;
 
 public interface IEventsSubSectionComponentController : IDisposable
 {
-    void LoadAllEvents();
+    /// <summary>
+    /// Request all events from the API.
+    /// </summary>
+    void RequestAllEvents();
+
+    /// <summary>
+    /// Load the featured events with the last requested ones.
+    /// </summary>
     void LoadFeaturedEvents();
+
+    /// <summary>
+    /// Load the trending events with the last requested ones.
+    /// </summary>
     void LoadTrendingEvents();
+
+    /// <summary>
+    /// Load the upcoming events with the last requested ones.
+    /// </summary>
     void LoadUpcomingEvents();
+
+    /// <summary>
+    /// Increment the number of upcoming events loaded.
+    /// </summary>
     void ShowMoreUpcomingEvents();
+
+    /// <summary>
+    /// Load the going events with the last requested ones.
+    /// </summary>
     void LoadGoingEvents();
-    void Dispose();
 }
 
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
@@ -21,7 +43,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal event Action OnEventsFromAPIUpdated;
 
     internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 6;
-    internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 3;
+    internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 6;
 
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
@@ -36,15 +58,15 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
 
         eventsAPIApiController = eventsAPI;
-        OnEventsFromAPIUpdated += UpdateEvents;
+        OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
     }
 
     internal void FirstLoading()
     {
         reloadEvents = true;
-        LoadAllEvents();
+        RequestAllEvents();
 
-        view.OnEventsSubSectionEnable += LoadAllEvents;
+        view.OnEventsSubSectionEnable += RequestAllEvents;
         DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
@@ -56,7 +78,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         reloadEvents = true;
     }
 
-    public void LoadAllEvents()
+    public void RequestAllEvents()
     {
         if (!reloadEvents)
             return;
@@ -92,7 +114,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             });
     }
 
-    internal void UpdateEvents()
+    internal void OnRequestedEventsUpdated()
     {
         LoadFeaturedEvents();
         LoadTrendingEvents();
@@ -165,8 +187,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         view.OnReady -= FirstLoading;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
-        view.OnEventsSubSectionEnable -= LoadAllEvents;
-        OnEventsFromAPIUpdated -= UpdateEvents;
+        view.OnEventsSubSectionEnable -= RequestAllEvents;
+        OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 

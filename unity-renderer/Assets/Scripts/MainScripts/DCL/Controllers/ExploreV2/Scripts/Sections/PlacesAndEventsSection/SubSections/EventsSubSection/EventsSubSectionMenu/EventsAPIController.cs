@@ -6,7 +6,22 @@ using UnityEngine.Networking;
 
 public interface IEventsAPIController
 {
+    /// <summary>
+    /// Request all events from the server.
+    /// </summary>
+    /// <param name="OnSuccess">It will be triggered if the operation finishes successfully.</param>
+    /// <param name="OnFail">It will be triggered if the operation fails.</param>
+    /// <returns></returns>
     WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
+
+    /// <summary>
+    /// Register/Unregister your user in a specific event.
+    /// </summary>
+    /// <param name="eventId">Event Id.</param>
+    /// <param name="isRegistered">True for registering.</param>
+    /// <param name="OnSuccess">It will be triggered if the operation finishes successfully.</param>
+    /// <param name="OnFail">It will be triggered if the operation fails.</param>
+    /// <returns></returns>
     UnityWebRequestAsyncOperation RegisterAttendEvent(string eventId, bool isRegistered, Action OnSuccess, Action<string> OnFail);
 }
 

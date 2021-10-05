@@ -6,19 +6,79 @@ using UnityEngine;
 
 public interface IEventsSubSectionComponentView
 {
+    /// <summary>
+    /// It will be triggered when all the UI components have been fully initialized.
+    /// </summary>
     event Action OnReady;
+
+    /// <summary>
+    /// It will be triggered when the "Show More" button is clicked.
+    /// </summary>
     event Action OnShowMoreUpcomingEventsClicked;
+
+    /// <summary>
+    /// It will be triggered each time the view is enabled.
+    /// </summary>
     event Action OnEventsSubSectionEnable;
 
+    /// <summary>
+    /// Set the featured events component with a list of events.
+    /// </summary>
+    /// <param name="events">List of events (model) to be loaded.</param>
     void SetFeaturedEvents(List<EventCardComponentModel> events);
+
+    /// <summary>
+    /// Set the featured events component in loading mode.
+    /// </summary>
+    /// <param name="isVisible">True for activating the loading mode.</param>
     void SetFeaturedEventsAsLoading(bool isVisible);
+
+    /// <summary>
+    /// Set the trending events component with a list of events.
+    /// </summary>
+    /// <param name="events">List of events (model) to be loaded.</param>
     void SetTrendingEvents(List<EventCardComponentModel> events);
+
+    /// <summary>
+    /// Set the trending events component in loading mode.
+    /// </summary>
+    /// <param name="isVisible">True for activating the loading mode.</param>
     void SetTrendingEventsAsLoading(bool isVisible);
+
+    /// <summary>
+    /// Set the upcoming events component with a list of events.
+    /// </summary>
+    /// <param name="events">List of events (model) to be loaded.</param>
     void SetUpcomingEvents(List<EventCardComponentModel> events);
+
+    /// <summary>
+    /// Set the upcoming events component in loading mode.
+    /// </summary>
+    /// <param name="isVisible">True for activating the loading mode.</param>
     void SetUpcomingEventsAsLoading(bool isVisible);
+
+    /// <summary>
+    /// Activates/Deactivates the "Show More" button.
+    /// </summary>
+    /// <param name="isActive">True for activating it.</param>
     void SetShowMoreUpcomingEventsButtonActive(bool isActive);
+
+    /// <summary>
+    /// Set the going events component with a list of events.
+    /// </summary>
+    /// <param name="events">List of events (model) to be loaded.</param>
     void SetGoingEvents(List<EventCardComponentModel> events);
+
+    /// <summary>
+    /// Set the going events component in loading mode.
+    /// </summary>
+    /// <param name="isVisible">True for activating the loading mode.</param>
     void SetGoingEventsAsLoading(bool isVisible);
+
+    /// <summary>
+    /// Shows the Event Card modal with the provided information.
+    /// </summary>
+    /// <param name="eventInfo">Event (model) to be loaded in the card.</param>
     void ShowEventModal(EventCardComponentModel eventInfo);
 }
 
