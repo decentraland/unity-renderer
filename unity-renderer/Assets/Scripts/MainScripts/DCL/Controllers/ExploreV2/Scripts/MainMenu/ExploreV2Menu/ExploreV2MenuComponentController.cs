@@ -39,11 +39,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
 
-        if (view != null && view.go != null)
+        if (view != null)
         {
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
             view.OnInitialized -= CreateControllers;
-            GameObject.Destroy(view.go);
+            view.Dispose();
         }
 
         DataStore.i.taskbar.isExploreV2Enabled.OnChange -= OnActivateFromTaskbar;

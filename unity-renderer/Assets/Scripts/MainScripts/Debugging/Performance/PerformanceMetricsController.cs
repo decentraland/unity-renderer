@@ -1,5 +1,6 @@
 using DCL.Interface;
 using DCL.FPSDisplay;
+using DCL.SettingsCommon;
 using UnityEngine;
 
 namespace DCL
@@ -39,6 +40,6 @@ namespace DCL
             }
         }
 
-        private void Report(string encodedSamples) { WebInterface.SendPerformanceReport(encodedSamples, Settings.i.currentQualitySettings.fpsCap, tracker.CurrentHiccupCount(), tracker.GetHiccupSum(), tracker.GetTotalSeconds()); }
+        private void Report(string encodedSamples) { WebInterface.SendPerformanceReport(encodedSamples, Settings.i.qualitySettings.Data.fpsCap, tracker.CurrentHiccupCount(), tracker.GetHiccupSum(), tracker.GetTotalSeconds()); }
     }
 }

@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using UnityEngine;
 
-public interface IEventsSubSectionComponentController
+public interface IEventsSubSectionComponentController : IDisposable
 {
     void LoadAllEvents();
     void LoadFeaturedEvents();

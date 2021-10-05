@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public interface IExploreV2MenuComponentView
+public interface IExploreV2MenuComponentView : IDisposable
 {
     /// <summary>
     /// It will be triggered when the view is fully initialized.
@@ -12,11 +12,6 @@ public interface IExploreV2MenuComponentView
     /// It will be triggered when the close button is clicked.
     /// </summary>
     event Action OnCloseButtonPressed;
-
-    /// <summary>
-    /// Game object of the explore menu.
-    /// </summary>
-    GameObject go { get; }
 
     /// <summary>
     /// Real viewer component.
@@ -116,4 +111,6 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
         return exploreV2View;
     }
+
+    public void Dispose() { Destroy(gameObject); }
 }
