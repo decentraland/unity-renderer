@@ -283,8 +283,8 @@ public class TaskbarHUDView : MonoBehaviour
             if (btn != obj)
             {
                 // We let the use of the chat and friends windows while we are using the explore at the same time
-                if ((btn == exploreButton && (obj == chatButton || obj == friendsButton || obj is ChatHeadButton)) ||
-                    ((btn == chatButton || btn == friendsButton || btn is ChatHeadButton) && obj == exploreButton))
+                if (((btn == exploreButton || btn == exploreV2Button) && (obj == chatButton || obj == friendsButton || obj is ChatHeadButton)) ||
+                    ((btn == chatButton || btn == friendsButton || btn is ChatHeadButton) && (obj == exploreButton || obj == exploreV2Button)))
                     continue;
 
                 btn.SetToggleState(false, useCallback: true);
