@@ -11,7 +11,6 @@ namespace UnityGLTF
         private const float EMISSIVE_HDR_INTENSITY = 5f;
 
         protected Material _material;
-        private Shader _shader;
         private AlphaMode _alphaMode = AlphaMode.OPAQUE;
         private double _alphaCutoff = 0.5;
 
@@ -63,13 +62,8 @@ namespace UnityGLTF
 
             s.maximumLOD = MaxLOD;
 
-            this._shader = s;
-        }
-
-        public void ConstructMaterial()
-        {
             if ( _material == null )
-                _material = new Material(_shader);
+                _material = new Material(s);
         }
 
         protected StandardMap(Material mat, int MaxLOD = 1000)

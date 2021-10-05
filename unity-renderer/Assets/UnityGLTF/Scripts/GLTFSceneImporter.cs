@@ -2131,9 +2131,6 @@ namespace UnityGLTF
             }
         }
 
-        // static Material cachedSpecGlossMat;
-        // static Material cachedMetalRoughMat;
-
         protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex)
         {
             IUniformMap mapper;
@@ -2157,14 +2154,13 @@ namespace UnityGLTF
                     mapper = new MetalRoughMap(CustomShaderName, maximumLod);
             }
 
-            mapper.ConstructMaterial();
             mapper.Material.name = def.Name;
 
             MaterialCacheData materialWrapper = new MaterialCacheData();
-
-            string materialCRC = mapper.Material.ComputeCRC().ToString();
+            materialWrapper.GLTFMaterial = def;
 
             // Add the material before-hand so it gets freed if the importing is cancelled.
+            string materialCRC = mapper.Material.ComputeCRC().ToString();
             materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
             materialWrapper.CachedMaterial.IncreaseRefCount();
 
@@ -2277,6 +2273,13 @@ namespace UnityGLTF
 
             mapper.EmissiveFactor = def.EmissiveFactor;
 
+            if ( !addMaterialsToPersistentCaching )
+            {
+                materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
+                materialWrapper.CachedMaterial.IncreaseRefCount();
+                yield break;
+            }
+
             materialCRC = mapper.Material.ComputeCRC().ToString();
 
             if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(materialCRC))
@@ -2291,8 +2294,6 @@ namespace UnityGLTF
                 materialWrapper.CachedMaterial = PersistentAssetCache.MaterialCacheByCRC[materialCRC];
                 materialWrapper.CachedMaterial.IncreaseRefCount();
             }
-
-            materialWrapper.GLTFMaterial = def;
         }
 
         protected virtual int GetTextureSourceId(GLTFTexture texture) { return texture.Source.Id; }
