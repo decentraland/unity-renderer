@@ -2273,14 +2273,14 @@ namespace UnityGLTF
 
             mapper.EmissiveFactor = def.EmissiveFactor;
 
+            materialCRC = mapper.Material.ComputeCRC().ToString();
+
             if ( !addMaterialsToPersistentCaching )
             {
                 materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
                 materialWrapper.CachedMaterial.IncreaseRefCount();
                 yield break;
             }
-
-            materialCRC = mapper.Material.ComputeCRC().ToString();
 
             if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(materialCRC))
             {

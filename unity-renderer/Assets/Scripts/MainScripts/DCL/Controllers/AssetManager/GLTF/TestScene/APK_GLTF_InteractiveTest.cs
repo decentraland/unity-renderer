@@ -10,6 +10,16 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
     private WebRequestController webRequestController;
     List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
 
+    private int counter = 0;
+
+    private string[] urls = new string[]
+    {
+        "/GLB/TrunkSeparatedTextures/Trunk.glb",
+        "/GLB/Lantern/Lantern.glb",
+        "/GLB/DamagedHelmet/DamagedHelmet.glb",
+        "/GLB/Trevor/Trevor.glb"
+    };
+
     void Start()
     {
         GLTFSceneImporter.budgetPerFrameInMilliseconds = 4;
@@ -29,20 +39,6 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         keeper.Keep(promise);
         promiseList.Add(promise);
     }
-
-    private int counter = 0;
-
-    // private string[] urls = new string[]
-    // {
-    //     "/GLB/TrunkSeparatedTextures/Trunk.glb",
-    //     "/GLB/Lantern/Lantern.glb",
-    //     "/GLB/DamagedHelmet/DamagedHelmet.glb"
-    // };
-
-    private string[] urls = new string[]
-    {
-        "/GLB/Trevor/Trevor.glb"
-    };
 
     void Update()
     {
