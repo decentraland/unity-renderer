@@ -39,13 +39,10 @@ namespace DCL.Skybox
         public bool useDirectionalLight = true;
         public DirectionalLightAttributes directionalLightLayer = new DirectionalLightAttributes();
 
-        //// Slots
-        //public List<SkyboxSlots> slots = new List<SkyboxSlots>();
+        // Slots
+        public List<SkyboxSlots> slots = new List<SkyboxSlots>();
 
-        //public void AddSlots()
-        //{
-        //    slots.Add(new SkyboxSlots());
-        //}
+        public void AddSlots() { slots.Add(new SkyboxSlots()); }
 
         // Texture Layer Properties
         public List<TextureLayer> textureLayers = new List<TextureLayer>();
@@ -119,11 +116,37 @@ namespace DCL.Skybox
                 directionalLightGO.gameObject.SetActive(false);
             }
 
-            for (int i = 0; i < textureLayers.Count; i++)
+            ApplyAllSlots(selectedMat, dayTime, normalizedDayTime);
+
+            //for (int i = 0; i < textureLayers.Count; i++)
+            //{
+            //    ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, textureLayers[i]);
+            //}
+        }
+
+        void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime)
+        {
+            for (int i = 0; i < slots.Count; i++)
             {
-                ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, textureLayers[i]);
+                if (slots[i].disabled)
+                {
+                    ResetSlot(selectedMat, i);
+                    continue;
+                }
+
+                TextureLayer layer = slots[i].GetActiveLayer(dayTime);
+
+                if (layer == null || layer.disabled)
+                {
+                    ResetSlot(selectedMat, i);
+                    continue;
+                }
+
+                ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, layer);
             }
         }
+
+        #region Directional Light
 
         void ApplyDLIntensity(float normalizedDayTime, Light lightGO)
         {
@@ -192,6 +215,10 @@ namespace DCL.Skybox
             lightGO.transform.rotation = Quaternion.Lerp(min.value, max.value, t);
         }
 
+        #endregion
+
+        #region Apply texture layers
+
         void ApplyTextureLayer(Material selectedMat, float dayTime, float normalizedDayTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
             // Time not reached for current layer
@@ -242,7 +269,7 @@ namespace DCL.Skybox
             selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(currentRotation.x, currentRotation.y, currentRotation.z, 0));
 
             // Set speed float to vector2
-            selectedMat.SetVector("_speed_" + layerNum, new Vector2(layer.speed, 0));
+            //selectedMat.SetVector("_speed_" + layerNum, new Vector2(layer.speed, 0));
         }
 
         void ApplyPlanarTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
@@ -266,7 +293,11 @@ namespace DCL.Skybox
             // Set speed float to vector2
             //selectedMat.SetVector("_speed_" + layerNum, layer.speed_Vec2);
             // speed and Rotation
-            float rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+            float rot = 0;
+            if (layer.layerType == LayerType.Planar)
+            {
+                rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+            }
 
             selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vec2.x, layer.speed_Vec2.y, rot));
 
@@ -312,7 +343,9 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
         }
 
-        Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
+        #endregion
+
+        #region Transition Values Utility Methods
 
         float GetTransitionValue(List<TransitioningFloat> _list, float percentage, float defaultVal = 0)
         {
@@ -425,63 +458,34 @@ namespace DCL.Skybox
             return offset;
         }
 
-        public void ResetMaterial(Material selectedMat, int layerNum)
+        #endregion
+
+        public void ResetMaterial(Material selectedMat, int slotCount)
         {
-            for (int i = 0; i < layerNum; i++)
+            for (int i = 0; i < slotCount; i++)
             {
-                selectedMat.SetFloat("_RenderDistance_" + i, 3.4f);
-                selectedMat.SetFloat("_isRadial_" + i, 0);
-                selectedMat.SetTexture("_tex_" + i, null);
-                selectedMat.SetTexture("_normals_" + i, null);
-                selectedMat.SetTexture("_cubemap_" + i, null);
-                selectedMat.SetFloat("_normalIntensity_" + i, 0);
-                selectedMat.SetFloat("_speed_" + i, 0);
-                selectedMat.SetVector("_timeFrame_" + i, new Vector4(0, 0));
-                selectedMat.SetFloat("_fadeTime_" + i, 0);
-                selectedMat.SetFloat("_lightIntensity_" + i, 0);
-                selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(1, 1, 0, 0));
-                selectedMat.SetColor("_color_" + i, new Color(1, 1, 1, 0));
+                ResetSlot(selectedMat, i);
             }
         }
+
+        public void ResetSlot(Material selectedMat, int slotCount)
+        {
+            selectedMat.SetFloat("_RenderDistance_" + slotCount, 3.4f);
+            selectedMat.SetFloat("_layerType_" + slotCount, 0);
+            selectedMat.SetTexture("_tex_" + slotCount, null);
+            selectedMat.SetTexture("_cubemap_" + slotCount, null);
+            selectedMat.SetTexture("_normals_" + slotCount, null);
+            selectedMat.SetColor("_color_" + slotCount, new Color(1, 1, 1, 0));
+            selectedMat.SetVector("_tilingAndOffset_" + slotCount, new Vector4(1, 1, 0, 0));
+            selectedMat.SetVector("_speedAndRotation_" + slotCount, new Vector4(0, 0, 0));
+            selectedMat.SetVector("_timeFrame_" + slotCount, new Vector4(0, 0));
+            selectedMat.SetFloat("_fadeTime_" + slotCount, 0);
+            selectedMat.SetFloat("_normalIntensity_" + slotCount, 0);
+            selectedMat.SetFloat("_lightIntensity_" + slotCount, 0);
+            selectedMat.SetVector("_distortIntAndSize_" + slotCount, new Vector2(0, 0));
+            selectedMat.SetVector("_distortSpeedAndSharp_" + slotCount, new Vector4(0, 0, 0, 0));
+        }
+
+        Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
     }
-
-    //[System.Serializable]
-    //public class TextureLayer
-    //{
-    //    public string nameInEditor;
-    //    public bool expandedInEditor;
-    //    public float timeSpan_start;
-    //    public float timeSpan_End;
-    //    public float fadingIn, fadingOut;
-    //    public float tintercentage;
-    //    public List<TransitioningFloat> renderDistance;
-    //    public LayerType layerType;
-    //    public Texture2D texture;
-    //    public Texture2D textureNormal;
-    //    public Cubemap cubemap;
-    //    public Gradient color;
-    //    public Vector2 tiling;
-
-    //    public List<TransitioningVector2> position;                     // Offset
-
-    //    // Rotations
-    //    public List<TransitioningFloat> rotation_float;
-    //    public List<TransitioningVector3> cubemapRotations;
-
-    //    public Vector2 speed_Vec2;
-    //    public float speed;
-    //    public float normalIntensity;
-
-    //    public TextureLayer(string name = "noname")
-    //    {
-    //        tiling = new Vector2(1, 1);
-    //        speed_Vec2 = new Vector2(0, 0);
-    //        nameInEditor = name;
-    //        position = new List<TransitioningVector2>();
-    //        renderDistance = new List<TransitioningFloat>();
-    //        rotation_float = new List<TransitioningFloat>();
-    //        color = new Gradient();
-    //    }
-    //}
-
 }
