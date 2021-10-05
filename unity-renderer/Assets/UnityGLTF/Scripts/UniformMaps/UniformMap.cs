@@ -27,6 +27,7 @@ namespace UnityGLTF
 
         Material GetMaterialCopy();
 
+        void ConstructMaterial();
     }
 
     interface IMetalRoughUniformMap : IUniformMap

@@ -1751,19 +1751,12 @@ namespace UnityGLTF
             MaterialCacheData materialCacheData =
                 materialIndex >= 0 ? _assetCache.MaterialCache[materialIndex] : _defaultLoadedMaterial;
 
-            bool useVertexColors = primitive.Attributes.ContainsKey(SemanticProperties.COLOR_0);
-
-            Material material = materialCacheData.GetContents(useVertexColors, false);
+            Material material = materialCacheData.GetContents();
 
             bool alreadyUsedMaterial = usedMaterials.Contains(material);
 
             if (!alreadyUsedMaterial)
             {
-                if (useVertexColors)
-                    materialCacheData.CachedMaterialWithVertexColor.IncreaseRefCount();
-                else
-                    materialCacheData.CachedMaterial.IncreaseRefCount();
-
                 usedMaterials.Add(material);
             }
 
@@ -2137,60 +2130,56 @@ namespace UnityGLTF
             }
         }
 
-        static Material cachedSpecGlossMat;
-        static Material cachedMetalRoughMat;
+        // static Material cachedSpecGlossMat;
+        // static Material cachedMetalRoughMat;
 
         protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex)
         {
             IUniformMap mapper;
             const string specGlossExtName = KHR_materials_pbrSpecularGlossinessExtensionFactory.EXTENSION_NAME;
-            if (_gltfRoot.ExtensionsUsed != null && _gltfRoot.ExtensionsUsed.Contains(specGlossExtName)
-                                                 && def.Extensions != null && def.Extensions.ContainsKey(specGlossExtName))
+
+            if (_gltfRoot.ExtensionsUsed != null
+                && _gltfRoot.ExtensionsUsed.Contains(specGlossExtName)
+                && def.Extensions != null
+                && def.Extensions.ContainsKey(specGlossExtName))
             {
-                if (!string.IsNullOrEmpty(CustomShaderName))
-                {
-                    mapper = new SpecGlossMap(CustomShaderName, maximumLod);
-                }
+                if (string.IsNullOrEmpty(CustomShaderName))
+                    mapper = new SpecGlossMap(maximumLod);
                 else
-                {
-                    if (cachedSpecGlossMat != null)
-                    {
-                        mapper = new SpecGlossMap(new Material(cachedSpecGlossMat), maximumLod);
-                    }
-                    else
-                    {
-                        mapper = new SpecGlossMap(maximumLod);
-                        cachedSpecGlossMat = mapper.GetMaterialCopy();
-                    }
-                }
+                    mapper = new SpecGlossMap(CustomShaderName, maximumLod);
             }
             else
             {
-                if (!string.IsNullOrEmpty(CustomShaderName))
-                {
-                    mapper = new MetalRoughMap(CustomShaderName, maximumLod);
-                }
+                if (string.IsNullOrEmpty(CustomShaderName))
+                    mapper = new MetalRoughMap(maximumLod);
                 else
-                {
-                    if (cachedMetalRoughMat != null)
-                    {
-                        mapper = new MetalRoughMap(new Material(cachedMetalRoughMat), maximumLod);
-                    }
-                    else
-                    {
-                        mapper = new MetalRoughMap(maximumLod);
-                        cachedMetalRoughMat = mapper.GetMaterialCopy();
-                    }
-                }
+                    mapper = new MetalRoughMap(CustomShaderName, maximumLod);
             }
 
-
+            mapper.ConstructMaterial();
             mapper.Material.name = def.Name;
+
+            MaterialCacheData materialWrapper = new MaterialCacheData();
+
+            string materialCRC = mapper.Material.ComputeCRC().ToString();
+
+            // Add the material before-hand so it gets freed if the importing is cancelled.
+            materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
+            materialWrapper.CachedMaterial.IncreaseRefCount();
+
+            if (materialIndex >= 0)
+            {
+                _assetCache.MaterialCache[materialIndex] = materialWrapper;
+            }
+            else
+            {
+                _defaultLoadedMaterial = materialWrapper;
+            }
+
             mapper.AlphaMode = def.AlphaMode;
             mapper.DoubleSided = def.DoubleSided;
 
-            var mrMapper = mapper as IMetalRoughUniformMap;
-            if (def.PbrMetallicRoughness != null && mrMapper != null)
+            if (def.PbrMetallicRoughness != null && mapper is IMetalRoughUniformMap mrMapper)
             {
                 var pbr = def.PbrMetallicRoughness;
 
@@ -2228,8 +2217,7 @@ namespace UnityGLTF
                 }
             }
 
-            var sgMapper = mapper as ISpecGlossUniformMap;
-            if (sgMapper != null)
+            if (mapper is ISpecGlossUniformMap sgMapper)
             {
                 var specGloss = def.Extensions[specGlossExtName] as KHR_materials_pbrSpecularGlossinessExtension;
 
@@ -2288,71 +2276,22 @@ namespace UnityGLTF
 
             mapper.EmissiveFactor = def.EmissiveFactor;
 
-            IUniformMap vertColorMapper = mapper.Clone();
-            vertColorMapper.VertexColorsEnabled = true;
+            materialCRC = mapper.Material.ComputeCRC().ToString();
 
-            Material[] material = new Material[2];
-
-            const int MATERIAL = 0;
-            const int MATERIAL_WITH_VERTEX_COLORS = 1;
-
-            material[MATERIAL] = mapper.Material;
-            material[MATERIAL_WITH_VERTEX_COLORS] = vertColorMapper.Material;
-
-            MaterialCacheData materialWrapper = new MaterialCacheData();
-
-            for (int i = 0; i < 2; i++)
+            if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(materialCRC))
             {
-                string materialCRC = material[i].ComputeCRC().ToString();
-
-                if (!addMaterialsToPersistentCaching)
-                {
-                    switch (i)
-                    {
-                        case MATERIAL:
-                            materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, material[i]);
-                            break;
-                        case MATERIAL_WITH_VERTEX_COLORS:
-                            materialWrapper.CachedMaterialWithVertexColor = new RefCountedMaterialData(materialCRC, material[i]);
-                            break;
-                    }
-
-                    continue;
-                }
-
-                //TODO(Brian): Remove old material here if the material won't be used.
-                //             (We can use Resources.UnloadUnusedAssets too, but I hate to rely on this)
-                if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(materialCRC))
-                {
-                    RefCountedMaterialData newRefCountedMaterial = new RefCountedMaterialData(materialCRC, material[i]);
-                    PersistentAssetCache.MaterialCacheByCRC.Add(materialCRC, newRefCountedMaterial);
-                }
-                else if (material[i] != PersistentAssetCache.MaterialCacheByCRC[materialCRC].material)
-                {
-                    Object.Destroy(material[i]);
-                }
-
-                switch (i)
-                {
-                    case MATERIAL:
-                        materialWrapper.CachedMaterial = PersistentAssetCache.MaterialCacheByCRC[materialCRC];
-                        break;
-                    case MATERIAL_WITH_VERTEX_COLORS:
-                        materialWrapper.CachedMaterialWithVertexColor = PersistentAssetCache.MaterialCacheByCRC[materialCRC];
-                        break;
-                }
-            }
-
-            materialWrapper.GLTFMaterial = def;
-
-            if (materialIndex >= 0)
-            {
-                _assetCache.MaterialCache[materialIndex] = materialWrapper;
+                materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
+                materialWrapper.CachedMaterial.IncreaseRefCount();
+                PersistentAssetCache.MaterialCacheByCRC.Add(materialCRC, materialWrapper.CachedMaterial);
             }
             else
             {
-                _defaultLoadedMaterial = materialWrapper;
+                Object.Destroy( mapper.Material );
+                materialWrapper.CachedMaterial = PersistentAssetCache.MaterialCacheByCRC[materialCRC];
+                materialWrapper.CachedMaterial.IncreaseRefCount();
             }
+
+            materialWrapper.GLTFMaterial = def;
         }
 
         protected virtual int GetTextureSourceId(GLTFTexture texture) { return texture.Source.Id; }

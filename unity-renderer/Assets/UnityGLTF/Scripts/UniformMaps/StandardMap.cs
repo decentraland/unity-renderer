@@ -11,6 +11,7 @@ namespace UnityGLTF
         private const float EMISSIVE_HDR_INTENSITY = 5f;
 
         protected Material _material;
+        private Shader _shader;
         private AlphaMode _alphaMode = AlphaMode.OPAQUE;
         private double _alphaCutoff = 0.5;
 
@@ -54,14 +55,21 @@ namespace UnityGLTF
 
         protected StandardMap(string shaderName, int MaxLOD = 1000)
         {
-            var s = Shader.Find(shaderName);
+            Shader s = Shader.Find(shaderName);
             if (s == null)
             {
                 throw new ShaderNotFoundException(shaderName + " not found. Did you forget to add it to the build?");
             }
 
             s.maximumLOD = MaxLOD;
-            _material = new Material(s);
+
+            this._shader = s;
+        }
+
+        public void ConstructMaterial()
+        {
+            if ( _material == null )
+                _material = new Material(_shader);
         }
 
         protected StandardMap(Material mat, int MaxLOD = 1000)
