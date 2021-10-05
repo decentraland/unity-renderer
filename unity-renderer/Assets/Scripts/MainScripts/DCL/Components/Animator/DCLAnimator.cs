@@ -38,6 +38,8 @@ namespace DCL.Components
         [System.NonSerialized]
         public Animation animComponent = null;
 
+        private string lastLoadedModelSrc;
+
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
 
@@ -54,7 +56,8 @@ namespace DCL.Components
 
             //Note: If the entity is still loading the Shape, We wait until it is fully loaded to init it
             //      If we don't wait, this can cause an issue with the asset bundles not loadings animations
-            if (hasBeenInitializated)
+
+            if (IsEntityShapeLoaded())
                 UpdateAnimationState();
 
             return null;
@@ -62,7 +65,49 @@ namespace DCL.Components
 
         new public Model GetModel() { return (Model) model; }
 
-        private void OnEntityShapeLoaded(IDCLEntity e) { UpdateAnimationState(); }
+        private bool IsEntityShapeLoaded()
+        {
+            var animationShape = entity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+
+            if (animationShape == null)
+                return false;
+
+            return animationShape.isLoaded;
+        }
+
+        private void OnEntityShapeLoaded(IDCLEntity e)
+        {
+            var animationShape = e.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+
+            if (animationShape == null)
+                return;
+
+            var shapeModel = animationShape.GetModel() as LoadableShape.Model;
+
+            if (shapeModel == null)
+                return;
+
+            if ( shapeModel.src == lastLoadedModelSrc )
+                return;
+
+            lastLoadedModelSrc = shapeModel.src;
+
+            if ( animationShape.isLoaded )
+            {
+                UpdateAnimationState();
+            }
+            else
+            {
+                animationShape.OnLoaded -= OnShapeLoaded;
+                animationShape.OnLoaded += OnShapeLoaded;
+            }
+        }
+
+        private void OnShapeLoaded(LoadableShape shape)
+        {
+            shape.OnLoaded -= OnShapeLoaded;
+            UpdateAnimationState();
+        }
 
         private void Initialize()
         {
