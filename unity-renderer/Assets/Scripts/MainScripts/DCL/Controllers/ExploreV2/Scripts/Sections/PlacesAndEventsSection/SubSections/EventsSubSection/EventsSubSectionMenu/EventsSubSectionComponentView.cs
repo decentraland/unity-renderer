@@ -194,7 +194,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEventCards(events, eventCardPrefab);
         goingEvents.SetItems(eventComponentsToAdd, false);
-        goingEventsNoDataText.gameObject.SetActive(goingEvents.gameObject.activeInHierarchy && events.Count == 0);
+        goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
     public void SetGoingEventsAsLoading(bool isVisible)
