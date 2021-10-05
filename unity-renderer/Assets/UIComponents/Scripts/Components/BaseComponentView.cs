@@ -1,7 +1,9 @@
+using DCL;
 using System;
+using System.Collections;
 using UnityEngine;
 
-public interface IBaseComponentView
+public interface IBaseComponentView : IDisposable
 {
     /// <summary>
     /// It will be triggered after the UI component is fully initialized (PostInitialization included).
@@ -34,11 +36,6 @@ public interface IBaseComponentView
     /// Updates the UI component with the current model.
     /// </summary>
     void RefreshControl();
-
-    /// <summary>
-    /// It is called when the UI component is destroyed.
-    /// </summary>
-    void Dispose();
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]
@@ -48,6 +45,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public event Action OnFullyInitialized;
     public bool isFullyInitialized { get; private set; }
 
+    [Header("Common")]
+    [SerializeField] internal bool refreshOnScreenSizeChange = false;
+
     internal ShowHideAnimator showHideAnimator;
 
     internal void Initialize()
@@ -55,10 +55,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
 
-        PostInitialization();
-
-        isFullyInitialized = true;
-        OnFullyInitialized?.Invoke();
+        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
     }
 
     public abstract void PostInitialization();
@@ -69,11 +66,33 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public abstract void RefreshControl();
 
-    public virtual void Dispose() { }
+    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
     private void Awake() { Initialize(); }
 
+    private void Start()
+    {
+        PostInitialization();
+
+        isFullyInitialized = true;
+        OnFullyInitialized?.Invoke();
+    }
+
     private void OnDestroy() { Dispose(); }
+
+    internal void OnScreenSizeChange(Vector2Int current, Vector2Int previous)
+    {
+        if (!refreshOnScreenSizeChange)
+            return;
+
+        StartCoroutine(RefreshControlAfterScreenSize());
+    }
+
+    internal IEnumerator RefreshControlAfterScreenSize()
+    {
+        yield return null;
+        RefreshControl();
+    }
 
     internal static T Create<T>(string resourceName) where T : BaseComponentView
     {

@@ -82,6 +82,8 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public override void Dispose()
     {
+        base.Dispose();
+
         if (button == null)
             return;
 
@@ -105,7 +107,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
         if (icon == null)
             return;
 
-        icon.enabled = newIcon != null;
+        icon.gameObject.SetActive(newIcon != null);
         icon.sprite = newIcon;
     }
 }

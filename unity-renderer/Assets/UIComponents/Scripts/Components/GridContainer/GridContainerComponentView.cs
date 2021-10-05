@@ -33,7 +33,8 @@ public interface IGridContainerComponentView
     /// Set the items of the grid.
     /// </summary>
     /// <param name="items">List of UI components.</param>
-    void SetItems(List<BaseComponentView> items);
+    /// <param name="instantiateNewCopyOfItems">Indicates if the items provided will be instantiated as a new copy or not.</param>
+    void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true);
 
     /// <summary>
     /// Get an item of the grid.
@@ -53,11 +54,13 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 {
     [Header("Prefab References")]
     [SerializeField] internal GridLayoutGroup gridLayoutGroup;
+    [SerializeField] internal RectTransform externalScrollViewContainer;
 
     [Header("Configuration")]
     [SerializeField] internal GridContainerComponentModel model;
 
-    private List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
+    internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
+    internal bool destroyOnlyUnnecesaryItems = false;
 
     public override void PostInitialization() { Configure(model); }
 
@@ -72,17 +75,17 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         if (model == null)
             return;
 
-        SetNumColumns(model.numColumns);
-        SetItemSize(model.itemSize);
-        SetSpaceBetweenItems(model.spaceBetweenItems);
         SetItems(model.items);
+        SetNumColumns(model.numColumns);
+        SetSpaceBetweenItems(model.spaceBetweenItems);
+        SetItemSize(model.itemSize);
     }
 
     public override void Dispose()
     {
         base.Dispose();
 
-        RemoveAllInstantiatedItems();
+        DestroyInstantiatedItems(true);
     }
 
     public void SetNumColumns(int newNumColumns)
@@ -97,12 +100,24 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public void SetItemSize(Vector2 newItemSize)
     {
-        model.itemSize = newItemSize;
+        Vector2 newSizeToApply = newItemSize;
+        if (model.autoAdaptItemSizeToContainerWidth)
+        {
+            float width = externalScrollViewContainer != null ? externalScrollViewContainer.rect.width : ((RectTransform)transform).rect.width;
+            float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.numColumns / 2f));
+            newSizeToApply = new Vector2(
+                (width / model.numColumns) - extraSpaceToRemove,
+                model.itemSize.y);
+        }
+
+        model.itemSize = newSizeToApply;
 
         if (gridLayoutGroup == null)
             return;
 
-        gridLayoutGroup.cellSize = newItemSize;
+        gridLayoutGroup.cellSize = newSizeToApply;
+
+        ResizeGridContainer();
     }
 
     public void SetSpaceBetweenItems(Vector2 newSpace)
@@ -115,16 +130,21 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         gridLayoutGroup.spacing = newSpace;
     }
 
-    public void SetItems(List<BaseComponentView> items)
+    public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)
     {
         model.items = items;
 
-        RemoveAllInstantiatedItems();
+        DestroyInstantiatedItems(!destroyOnlyUnnecesaryItems);
 
         for (int i = 0; i < items.Count; i++)
         {
-            CreateItem(items[i], $"Item{i}");
+            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems && !destroyOnlyUnnecesaryItems);
         }
+
+        ResizeGridContainer();
+
+        if (!instantiateNewCopyOfItems)
+            destroyOnlyUnnecesaryItems = true;
     }
 
     public BaseComponentView GetItem(int index)
@@ -137,11 +157,11 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public List<BaseComponentView> GetAllItems() { return instantiatedItems; }
 
-    internal void CreateItem(BaseComponentView newItem, string name)
+    internal void CreateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
     {
         if (Application.isPlaying)
         {
-            InstantiateItem(newItem, name);
+            InstantiateItem(newItem, name, instantiateNewCopyOfItem);
         }
         else
         {
@@ -150,12 +170,24 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         }
     }
 
-    internal void InstantiateItem(BaseComponentView newItem, string name)
+    internal void InstantiateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
     {
         if (newItem == null)
             return;
 
-        BaseComponentView newGO = Instantiate(newItem, transform);
+        BaseComponentView newGO;
+        if (instantiateNewCopyOfItem)
+        {
+            newGO = Instantiate(newItem, transform);
+        }
+        else
+        {
+            newGO = newItem;
+            newGO.transform.SetParent(transform);
+            newGO.transform.localPosition = Vector3.zero;
+            newGO.transform.localScale = Vector3.one;
+        }
+
         newGO.name = name;
         instantiatedItems.Add(newGO);
     }
@@ -166,18 +198,31 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         InstantiateItem(newItem, name);
     }
 
-    internal void RemoveAllInstantiatedItems()
+    internal void DestroyInstantiatedItems(bool forzeToDestroyAll)
     {
-        foreach (Transform child in transform)
+        if (forzeToDestroyAll)
         {
-            if (Application.isPlaying)
+            foreach (Transform child in transform)
             {
-                Destroy(child.gameObject);
+                if (Application.isPlaying)
+                {
+                    Destroy(child.gameObject);
+                }
+                else
+                {
+                    if (isActiveAndEnabled)
+                        StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                }
             }
-            else
+        }
+        else
+        {
+            foreach (BaseComponentView child in instantiatedItems)
             {
-                if (isActiveAndEnabled)
-                    StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
+                if (!model.items.Contains(child))
+                {
+                    Destroy(child.gameObject);
+                }
             }
         }
 
@@ -188,5 +233,20 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         yield return null;
         DestroyImmediate(go);
+    }
+
+    internal void ResizeGridContainer()
+    {
+        if (model.items.Count == 0)
+        {
+            ((RectTransform)transform).sizeDelta = Vector2.zero;
+            return;
+        }
+
+        int numRows = (int)Mathf.Ceil((float)model.items.Count / model.numColumns);
+
+        ((RectTransform)transform).sizeDelta = new Vector2(
+            model.autoAdaptItemSizeToContainerWidth ? ((RectTransform)transform).sizeDelta.x : (model.numColumns * model.itemSize.x) + (model.spaceBetweenItems.x * (model.numColumns - 1)),
+            (numRows * model.itemSize.y) + (model.spaceBetweenItems.y * (numRows - 1)));
     }
 }
