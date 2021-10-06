@@ -18,9 +18,6 @@ namespace DCL
 
         object id = null;
 
-        private Action OnSuccess;
-        private Action OnFail;
-
         public AssetPromise_GLTF(string url)
             : this(new ContentProvider_Dummy(), url, null, Environment.i.platform.webRequest)
         {
@@ -86,11 +83,8 @@ namespace DCL
             gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
                 false, tmpSettings, FileToHash);
 
-            this.OnSuccess = OnSuccess;
-            this.OnFail = OnFail;
-
-            gltfComponent.OnSuccess += this.OnSuccess;
-            gltfComponent.OnFail += this.OnFail;
+            gltfComponent.OnSuccess += OnSuccess;
+            gltfComponent.OnFail += OnFail;
 
             asset.name = fileName;
         }
