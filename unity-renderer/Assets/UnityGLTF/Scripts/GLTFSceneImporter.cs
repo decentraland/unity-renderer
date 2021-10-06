@@ -43,6 +43,14 @@ namespace UnityGLTF
         public BoneWeight[] BoneWeights;
     }
 
+    public struct TextureCreationSettings
+    {
+        public FilterMode filterMode;
+        public TextureWrapMode wrapMode;
+        public bool generateMipmaps;
+        public bool uploadToGpu;
+    }
+
     /// <summary>
     /// Converts gltf animation data to unity
     /// </summary>
@@ -489,7 +497,6 @@ namespace UnityGLTF
         {
             int sourceId = GetTextureSourceId(texture);
             GLTFImage image = _gltfRoot.Images[sourceId];
-            string imageId = GenerateImageId(image.Uri, sourceId);
 
             if (image.Uri != null && this.addImagesToPersistentCaching)
             {
@@ -498,6 +505,9 @@ namespace UnityGLTF
                     yield return new WaitForSeconds(0.1f);
                 }
             }
+
+            TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture);
+            string imageId = GenerateImageId(image.Uri, sourceId, settings);
 
             if ((image.Uri == null || !PersistentAssetCache.HasImage(imageId)) && _assetCache.ImageStreamCache[sourceId] == null)
             {
@@ -520,10 +530,7 @@ namespace UnityGLTF
                 }
             }
 
-            _assetCache.TextureCache[textureIndex] = new TextureCacheData
-            {
-                TextureDefinition = texture
-            };
+            _assetCache.TextureCache[textureIndex] = new TextureCacheData();
         }
 
         protected IEnumerator WaitUntilEnum(WaitUntil waitUntil) { yield return waitUntil; }
@@ -680,72 +687,74 @@ namespace UnityGLTF
             }
         }
 
-        protected IEnumerator ConstructImage(GLTFImage image, int imageCacheIndex, bool markGpuOnly = false, bool linear = true)
+        protected IEnumerator ConstructImage(TextureCreationSettings settings, GLTFImage image, int imageCacheIndex) //, bool markGpuOnly = false, bool linear = true)
         {
-            if (_assetCache.ImageCache[imageCacheIndex] == null)
+            if (_assetCache.ImageCache[imageCacheIndex] != null)
+                yield break;
+
+            if (image.Uri == null)
             {
-                Stream stream = null;
-                if (image.Uri == null)
+                //NOTE(Zak): This fixes current issues of concurrent texture loading,
+                //           but it's possible that it would happen again in the future.
+                //           If that happens, we'll have implement some locking behavior for concurrent
+                //           import calls.
+
+                //NOTE(Brian): We can't yield between the stream creation and the stream.Read because
+                //             another coroutine can modify the stream Position in the next frame.
+                var bufferView = image.BufferView.Value;
+                var data = new byte[bufferView.ByteLength];
+
+                BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
+                bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
+                bufferContents.Stream.Read(data, 0, data.Length);
+
+                if (ShouldYieldOnTimeout())
                 {
-                    //NOTE(Zak): This fixes current issues of concurrent texture loading,
-                    //           but it's possible that it would happen again in the future.
-                    //           If that happens, we'll have implement some locking behavior for concurrent
-                    //           import calls.
+                    yield return YieldOnTimeout();
+                }
 
-                    //NOTE(Brian): We can't yield between the stream creation and the stream.Read because
-                    //             another coroutine can modify the stream Position in the next frame.
-                    var bufferView = image.BufferView.Value;
-                    var data = new byte[bufferView.ByteLength];
+                yield return ConstructUnityTexture(settings, data, imageCacheIndex);
+            }
+            else
+            {
+                string uri = image.Uri;
+                URIHelper.TryParseBase64(uri, out byte[] bufferData);
+                Stream stream = null;
 
-                    BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
-                    bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
-                    bufferContents.Stream.Read(data, 0, data.Length);
-
-                    if (ShouldYieldOnTimeout())
-                    {
-                        yield return YieldOnTimeout();
-                    }
-
-                    yield return ConstructUnityTexture(data, markGpuOnly, linear, imageCacheIndex);
+                if (bufferData != null)
+                {
+                    stream = new MemoryStream(bufferData, 0, bufferData.Length, false, true);
                 }
                 else
                 {
-                    string uri = image.Uri;
-
-                    URIHelper.TryParseBase64(uri, out byte[] bufferData);
-
-                    if (bufferData != null)
-                    {
-                        stream = new MemoryStream(bufferData, 0, bufferData.Length, false, true);
-                    }
-                    else
-                    {
-                        stream = _assetCache.ImageStreamCache[imageCacheIndex];
-                    }
-
-                    if (ShouldYieldOnTimeout())
-                    {
-                        yield return YieldOnTimeout();
-                    }
-
-                    yield return ConstructUnityTexture(stream, markGpuOnly, linear, image, imageCacheIndex);
+                    stream = _assetCache.ImageStreamCache[imageCacheIndex];
                 }
+
+                if (ShouldYieldOnTimeout())
+                {
+                    yield return YieldOnTimeout();
+                }
+
+                yield return ConstructUnityTexture(settings, stream, imageCacheIndex);
             }
         }
 
-        protected virtual IEnumerator ConstructUnityTexture(byte[] buffer, bool markGpuOnly, bool linear, int imageCacheIndex)
+        protected virtual IEnumerator ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
         {
-            Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, true, linear);
+            Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps);
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
-            texture.LoadImage(buffer, markGpuOnly);
+            texture.LoadImage(buffer, false);
             texture = CheckAndReduceTextureSize(texture);
+            _assetCache.ImageCache[imageCacheIndex] = texture;
 
 #if !UNITY_EDITOR
             //NOTE(Brian): This breaks importing in editor mode
             texture.Compress(false);
 #endif
-            _assetCache.ImageCache[imageCacheIndex] = texture;
+            texture.wrapMode = settings.wrapMode;
+            texture.filterMode = settings.filterMode;
+            texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
 
             if (ShouldYieldOnTimeout())
             {
@@ -753,7 +762,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual IEnumerator ConstructUnityTexture(Stream stream, bool markGpuOnly, bool linear, GLTFImage image, int imageCacheIndex)
+        protected virtual IEnumerator ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
         {
             if (stream == null)
                 yield break;
@@ -762,7 +771,7 @@ namespace UnityGLTF
             {
                 using (MemoryStream memoryStream = stream as MemoryStream)
                 {
-                    yield return ConstructUnityTexture(memoryStream.ToArray(), false, linear, imageCacheIndex);
+                    yield return ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
 
@@ -771,7 +780,7 @@ namespace UnityGLTF
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     fileStream.CopyTo(memoryStream);
-                    yield return ConstructUnityTexture(memoryStream.ToArray(), false, linear, imageCacheIndex);
+                    yield return ConstructUnityTexture(settings, memoryStream.ToArray(), imageCacheIndex);
                 }
             }
         }
@@ -779,32 +788,30 @@ namespace UnityGLTF
         // Note that if the texture is reduced in size, the source one is destroyed
         protected Texture2D CheckAndReduceTextureSize(Texture2D source)
         {
-            if (source.width > maxTextureSize || source.height > maxTextureSize)
+            if (source.width <= maxTextureSize && source.height <= maxTextureSize)
+                return source;
+
+            float factor = 1.0f;
+            int width = source.width;
+            int height = source.height;
+
+            if (width >= height)
             {
-                float factor = 1.0f;
-                int width = source.width;
-                int height = source.height;
-
-                if (width >= height)
-                {
-                    factor = (float)maxTextureSize / width;
-                }
-                else
-                {
-                    factor = (float)maxTextureSize / height;
-                }
-
-                Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor));
-
-                if (Application.isPlaying)
-                    Texture2D.Destroy(source);
-                else
-                    Texture2D.DestroyImmediate(source);
-
-                return dstTex;
+                factor = (float)maxTextureSize / width;
+            }
+            else
+            {
+                factor = (float)maxTextureSize / height;
             }
 
-            return source;
+            Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor));
+
+            if (Application.isPlaying)
+                Object.Destroy(source);
+            else
+                Object.DestroyImmediate(source);
+
+            return dstTex;
         }
 
         protected virtual IEnumerator ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex)
@@ -2185,7 +2192,7 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     TextureId textureId = pbr.BaseColorTexture.Index;
-                    yield return ConstructTexture(textureId.Value, textureId.Id, false, false);
+                    yield return ConstructTexture(textureId.Value, textureId.Id);
                     mrMapper.BaseColorTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
 
                     mrMapper.BaseColorTexCoord = pbr.BaseColorTexture.TexCoord;
@@ -2266,7 +2273,7 @@ namespace UnityGLTF
             if (def.EmissiveTexture != null)
             {
                 TextureId textureId = def.EmissiveTexture.Index;
-                yield return ConstructTexture(textureId.Value, textureId.Id, false, false);
+                yield return ConstructTexture(textureId.Value, textureId.Id);
                 mapper.EmissiveTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 mapper.EmissiveTexCoord = def.EmissiveTexture.TexCoord;
             }
@@ -2298,118 +2305,10 @@ namespace UnityGLTF
 
         protected virtual int GetTextureSourceId(GLTFTexture texture) { return texture.Source.Id; }
 
-        /// <summary>
-        /// Creates a texture from a glTF texture
-        /// </summary>
-        /// <param name="texture">The texture to load</param>
-        /// <returns>The loaded unity texture</returns>
-        public virtual IEnumerator LoadTextureAsync(GLTFTexture texture, int textureIndex, bool markGpuOnly = true)
+        TextureCreationSettings GetTextureCreationSettingsForTexture(GLTFTexture texture)
         {
-            try
-            {
-                lock (this)
-                {
-                    if (_isRunning)
-                    {
-                        throw new GLTFLoadException("Cannot CreateTexture while GLTFSceneImporter is already running");
-                    }
-
-                    _isRunning = true;
-                }
-
-                if (_gltfRoot == null)
-                {
-                    yield return LoadJsonStream(_gltfFileName);
-                    yield return LoadJson();
-                }
-
-                if (_assetCache == null)
-                {
-                    _assetCache = new AssetCache(_gltfRoot);
-                }
-
-                _timeAtLastYield = Time.realtimeSinceStartup;
-                yield return ConstructImageBuffer(texture, textureIndex);
-                yield return ConstructTexture(texture, textureIndex, markGpuOnly);
-            }
-            finally
-            {
-                lock (this)
-                {
-                    _isRunning = false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets texture that has been loaded from CreateTexture
-        /// </summary>
-        /// <param name="textureIndex">The texture to get</param>
-        /// <returns>Created texture</returns>
-        public virtual Texture GetTexture(int textureIndex)
-        {
-            if (_assetCache == null)
-            {
-                throw new GLTFLoadException("Asset cache needs initialized before calling GetTexture");
-            }
-
-            if (_assetCache.TextureCache[textureIndex] == null)
-            {
-                return null;
-            }
-
-            return _assetCache.TextureCache[textureIndex].CachedTexture.Texture;
-        }
-
-        protected virtual IEnumerator ConstructTexture(GLTFTexture texture, int textureIndex,
-            bool markGpuOnly = false, bool isLinear = true)
-        {
-            yield return new WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
-
-            if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
-                yield break;
-
-            int sourceId = GetTextureSourceId(texture);
-            GLTFImage image = _gltfRoot.Images[sourceId];
-            string imageId = GenerateImageId(image.Uri, sourceId);
-            RefCountedTextureData source = null;
-
-            if (PersistentAssetCache.HasImage(imageId))
-            {
-                source = PersistentAssetCache.GetImage(imageId);
-                source.IncreaseRefCount();
-
-                _assetCache.ImageCache[sourceId] = source.Texture;
-
-                if (_assetCache.ImageCache[sourceId] == null)
-                {
-                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {sourceId} / {image.Uri} / {id}, applying invalid-tex texture...");
-                    _assetCache.ImageCache[sourceId] = Texture2D.redTexture;
-                }
-            }
-            else
-            {
-                yield return ConstructImage(image, sourceId, markGpuOnly, isLinear);
-
-                if (_assetCache.ImageCache[sourceId] == null)
-                {
-                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {sourceId} / {image.Uri} / {id}, applying invalid-tex texture...");
-                    _assetCache.ImageCache[sourceId] = Texture2D.redTexture;
-                }
-
-                if (addImagesToPersistentCaching)
-                {
-                    source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId]);
-                }
-                else
-                {
-                    source = new RefCountedTextureData(imageId, _assetCache.ImageCache[sourceId]);
-                }
-
-                source.IncreaseRefCount();
-            }
-
-            var desiredFilterMode = FilterMode.Bilinear;
+            TextureCreationSettings settings = new TextureCreationSettings();
+            var desiredFilterMode = FilterMode.Trilinear;
             var desiredWrapMode = TextureWrapMode.Repeat;
 
             if (texture.Sampler != null)
@@ -2444,39 +2343,63 @@ namespace UnityGLTF
                 }
             }
 
-            if (markGpuOnly || (source.Texture.filterMode == desiredFilterMode && source.Texture.wrapMode == desiredWrapMode))
-            {
-                _assetCache.TextureCache[textureIndex].CachedTexture = source;
+            settings.filterMode = desiredFilterMode;
+            settings.wrapMode = desiredWrapMode;
+            settings.uploadToGpu = true;
+            settings.generateMipmaps = true;
+            return settings;
+        }
 
-                if (markGpuOnly)
+        protected virtual IEnumerator ConstructTexture(GLTFTexture texture, int textureIndex)
+        {
+            yield return new WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
+
+            if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
+                yield break;
+
+            TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture);
+
+            int sourceId = GetTextureSourceId(texture);
+            GLTFImage image = _gltfRoot.Images[sourceId];
+            string imageId = GenerateImageId(image.Uri, sourceId, settings);
+            RefCountedTextureData source = null;
+
+            if (PersistentAssetCache.HasImage(imageId))
+            {
+                source = PersistentAssetCache.GetImage(imageId);
+                source.IncreaseRefCount();
+
+                _assetCache.ImageCache[sourceId] = source.Texture;
+
+                if (_assetCache.ImageCache[sourceId] == null)
                 {
-                    Debug.LogWarning("Ignoring sampler");
+                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {sourceId} / {image.Uri} / {id}, applying invalid-tex texture...");
+                    _assetCache.ImageCache[sourceId] = Texture2D.redTexture;
                 }
             }
             else
             {
-                if (source.Texture.isReadable)
+                yield return ConstructImage(settings, image, sourceId);
+
+                if (_assetCache.ImageCache[sourceId] == null)
                 {
-                    source.DecreaseRefCount();
+                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {sourceId} / {image.Uri} / {id}, applying invalid-tex texture...");
+                    _assetCache.ImageCache[sourceId] = Texture2D.redTexture;
+                }
 
-                    var unityTexture = Object.Instantiate(source.Texture);
-                    unityTexture.filterMode = desiredFilterMode;
-                    unityTexture.wrapMode = desiredWrapMode;
-
-#if !UNITY_EDITOR
-                    // NOTE(Brian): This breaks importing in edit mode, so only enable it for runtime.
-                    unityTexture.Apply(false, true);
-#endif
-                    var newSource = new RefCountedTextureData(imageId, unityTexture);
-                    _assetCache.TextureCache[textureIndex].CachedTexture = newSource;
-                    newSource.IncreaseRefCount();
+                if (addImagesToPersistentCaching)
+                {
+                    source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId]);
                 }
                 else
                 {
-                    Debug.LogWarning("Skipping instantiation of non-readable texture: " + image.Uri);
-                    _assetCache.TextureCache[textureIndex].CachedTexture = source;
+                    source = new RefCountedTextureData(imageId, _assetCache.ImageCache[sourceId]);
                 }
+
+                source.IncreaseRefCount();
             }
+
+            _assetCache.TextureCache[textureIndex].CachedTexture = source;
         }
 
         protected virtual void ConstructImageFromGLB(GLTFImage image, int imageCacheIndex)
@@ -2545,11 +2468,17 @@ namespace UnityGLTF
 
         public static Vector2 GLTFOffsetToUnitySpace(Vector2 offset, float textureYScale) { return new Vector2(offset.x, 1 - textureYScale - offset.y); }
 
-        private string GenerateImageId(string uri, int sourceId)
+        string TextureSettingsToId(TextureCreationSettings textureSettings)
+        {
+            // We don't care about anything else.
+            return "W" + textureSettings.wrapMode;
+        }
+
+        private string GenerateImageId(string uri, int sourceId, TextureCreationSettings textureSettings)
         {
             if (string.IsNullOrEmpty(uri))
             {
-                return PersistentAssetCache.GetCacheId($"embedded{sourceId}", id);
+                return PersistentAssetCache.GetCacheId($"embedded{sourceId}{TextureSettingsToId(textureSettings)}", id);
             }
 
             if (GetAssetContentHash(uri, out string imageHash))
