@@ -11,8 +11,8 @@ namespace DCL.Helpers
     {
         // TODO: dinamically use ICatalyst.contentUrl, content server is not a const
         public const string WEARABLES_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections/wearables?";
-        private const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections";
-        private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
+        public const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections"; // TODO: Change this URL to the new one when it's fixed: 'https://nft-api.decentraland.org/v1/contracts?category=wearable&first=1000' and change fetching logic to allow pagination
+        public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
 
         private static Collection[] collections;
 
