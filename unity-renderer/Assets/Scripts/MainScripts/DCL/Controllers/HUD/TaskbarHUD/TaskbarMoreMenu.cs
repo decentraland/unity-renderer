@@ -8,6 +8,9 @@ using UnityEngine.Networking;
 
 public class TaskbarMoreMenu : MonoBehaviour
 {
+    private const string HIDE_NAMES = "Hide Names";
+    private const string SHOW_NAMES = "Show Names";
+
     [Header("Menu Animation")]
     [SerializeField] internal ShowHideAnimator moreMenuAnimator;
     [SerializeField] internal float timeBetweenAnimations = 0.01f;
@@ -86,9 +89,9 @@ public class TaskbarMoreMenu : MonoBehaviour
     private void OnAvatarNamesVisibleChanged(bool current, bool previous)
     {
         if (current)
-            toggleAvatarNamesButton.buttonText.SetText("Hide Names");
+            toggleAvatarNamesButton.buttonText.SetText(HIDE_NAMES);
         else
-            toggleAvatarNamesButton.buttonText.SetText("Show Names");
+            toggleAvatarNamesButton.buttonText.SetText(SHOW_NAMES);
     }
 
     protected void SortButtonsAnimations()
