@@ -1,0 +1,342 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a35bef1d8520554fb275fe910e858bd, type: 3}
+  m_Name: ExploreV2EventsSubSectionMockedData
+  m_EditorClassIdentifier: 
+  featureEvents:
+  - eventPicture: {fileID: 21300000, guid: dcdf9cf86d2644e82b7712af42584c7c, type: 3}
+    isLive: 1
+    liveTagText: LIVE
+    eventDateText: JULY 1
+    eventName: Test event 1
+    eventDescription: This is the description of the test event 1...
+    eventStartedIn: 1 hr ago
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 583
+    isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 100, y: 100}
+      serverName: 
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: JULY 4
+    eventName: Test event 2
+    eventDescription: This is the description of the test event 2...
+    eventStartedIn: Tomorrow
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: 
+    subscribedUsers: 0
+    isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 50, y: 100}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: a75caa85e28974fc7b7a20b9942ca0fd, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: NOVEMBER 23
+    eventName: Test event 3
+    eventDescription: This is the description of the test event 3...
+    eventStartedIn: 18 days
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 0
+    isSubscribed: 1
+    jumpInConfiguration:
+      coords: {x: 0, y: 0}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  trendingEvents:
+  - eventPicture: {fileID: 21300000, guid: 2f8b0284904be4060b916850abd6f9c8, type: 3}
+    isLive: 1
+    liveTagText: LIVE
+    eventDateText: JULY 1
+    eventName: Test trending event 1
+    eventDescription: This is the description of the test trending event 1...
+    eventStartedIn: 1 hr ago
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 1248
+    isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 35, y: 20}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: dfb614ec29ae64410a9cb17a66431d03, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: JULY 1
+    eventName: Test trending event 2
+    eventDescription: This is the description of the test trending event 2...
+    eventStartedIn: 1 hr ago
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 1248
+    isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 35, y: 40}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  upcomingEvents:
+  - eventPicture: {fileID: 21300000, guid: 7674b7af955f0481f97972d37c1897e5, type: 3}
+    isLive: 1
+    liveTagText: LIVE
+    eventDateText: JULY 1
+    eventName: Test event 4
+    eventDescription: This is the description of the test event 4...
+    eventStartedIn: 1 hr ago
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 52
+    isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 15, y: 69}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: 9cd4312f23f74b04e9ca0aac7a34d46c, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: AUGUST 13
+    eventName: Test event 5
+    eventDescription: This is the description of the test event 5...
+    eventStartedIn: 5 days
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 0
+    isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 10, y: 90}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: 9932402d6a77c484999857fc085618a0, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: OCTOBER 23
+    eventName: Test event 6
+    eventDescription: This is the description of the test event 6...
+    eventStartedIn: 26 days
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 0
+    isSubscribed: 1
+    jumpInConfiguration:
+      coords: {x: 63, y: 25}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: 2bc3c488c1fe144209a0cc2e304c7c5a, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: OCTOBER 25
+    eventName: Test event 7
+    eventDescription: This is the description of the test event 7...
+    eventStartedIn: 30 days
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 0
+    isSubscribed: 1
+    jumpInConfiguration:
+      coords: {x: 142, y: 25}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: 601ec298f7379d44eb260d13b369a796, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: OCTOBER 29
+    eventName: Test event 8
+    eventDescription: This is the description of the test event 8...
+    eventStartedIn: 26 days
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 0
+    isSubscribed: 1
+    jumpInConfiguration:
+      coords: {x: 63, y: 25}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - eventPicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: OCTOBER 30
+    eventName: Test event 9
+    eventDescription: This is the description of the test event 9...
+    eventStartedIn: 26 days
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 0
+    isSubscribed: 0
+    jumpInConfiguration:
+      coords: {x: 63, y: 25}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+  goingEvents:
+  - eventPicture: {fileID: 21300000, guid: c1e81be26094f46b4b00b853ca617eca, type: 3}
+    isLive: 0
+    liveTagText: LIVE
+    eventDateText: DECEMBER 4
+    eventName: Test event 10
+    eventDescription: This is the description of the test event 10...
+    eventStartedIn: 2 months
+    eventOrganizer: Public, Organized by Sam
+    eventPlace: Signum ARK Gallery
+    subscribedUsers: 0
+    isSubscribed: 1
+    jumpInConfiguration:
+      coords: {x: 58, y: 77}
+      serverName: loki
+      layerName: 
+    onJumpInClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onInfoClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onSubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []
+    onUnsubscribeClick:
+      m_PersistentCalls:
+        m_Calls: []

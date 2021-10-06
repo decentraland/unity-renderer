@@ -6,42 +6,19 @@ public class PlacesAndEventsSectionComponentViewTests
     private PlacesAndEventsSectionComponentView placesAndEventsSectionComponent;
 
     [SetUp]
-    public void SetUp() { placesAndEventsSectionComponent = BaseComponentView.Create<PlacesAndEventsSectionComponentView>("Sections/PlacesAndEvents/PlacesAndEventsSection"); }
+    public void SetUp() { placesAndEventsSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesAndEventsSection")).GetComponent<PlacesAndEventsSectionComponentView>(); }
 
     [TearDown]
-    public void TearDown()
-    {
-        placesAndEventsSectionComponent.Dispose();
-        GameObject.Destroy(placesAndEventsSectionComponent.gameObject);
-    }
-
-    [Test]
-    public void ConfigurePlacesAndEventsSectionCorrectly()
-    {
-        // Arrange
-        PlacesAndEventsSectionComponentModel testModel = new PlacesAndEventsSectionComponentModel
-            { };
-
-        // Act
-        placesAndEventsSectionComponent.Configure(testModel);
-
-        // Assert
-        Assert.AreEqual(testModel, placesAndEventsSectionComponent.model, "The model does not match after configuring the button.");
-    }
+    public void TearDown() { GameObject.Destroy(placesAndEventsSectionComponent.gameObject); }
 
     [Test]
     [TestCase(0)]
     [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
-        placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
+        placesAndEventsSectionComponent.subSectionSelector.RefreshControl();
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
-        placesAndEventsSectionComponent.favoritesSubSection.gameObject.SetActive(false);
-        placesAndEventsSectionComponent.myPlacesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
 
         // Act
@@ -52,18 +29,9 @@ public class PlacesAndEventsSectionComponentViewTests
         switch (subSectionIndex)
         {
             case 0:
-                Assert.IsTrue(placesAndEventsSectionComponent.highlightsSubSection.gameObject.activeSelf);
-                break;
-            case 1:
                 Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf);
                 break;
-            case 2:
-                Assert.IsTrue(placesAndEventsSectionComponent.favoritesSubSection.gameObject.activeSelf);
-                break;
-            case 3:
-                Assert.IsTrue(placesAndEventsSectionComponent.myPlacesSubSection.gameObject.activeSelf);
-                break;
-            case 4:
+            case 1:
                 Assert.IsTrue(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
                 break;
         }
@@ -72,17 +40,12 @@ public class PlacesAndEventsSectionComponentViewTests
     [Test]
     [TestCase(0)]
     [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
     public void RemoveSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
+        placesAndEventsSectionComponent.subSectionSelector.RefreshControl();
         placesAndEventsSectionComponent.CreateSubSectionSelectorMappings();
-        placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
-        placesAndEventsSectionComponent.favoritesSubSection.gameObject.SetActive(false);
-        placesAndEventsSectionComponent.myPlacesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
 
         // Act
@@ -93,18 +56,9 @@ public class PlacesAndEventsSectionComponentViewTests
         switch (subSectionIndex)
         {
             case 0:
-                Assert.IsFalse(placesAndEventsSectionComponent.highlightsSubSection.gameObject.activeSelf);
-                break;
-            case 1:
                 Assert.IsFalse(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf);
                 break;
-            case 2:
-                Assert.IsFalse(placesAndEventsSectionComponent.favoritesSubSection.gameObject.activeSelf);
-                break;
-            case 3:
-                Assert.IsFalse(placesAndEventsSectionComponent.myPlacesSubSection.gameObject.activeSelf);
-                break;
-            case 4:
+            case 1:
                 Assert.IsFalse(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
                 break;
         }
@@ -114,12 +68,12 @@ public class PlacesAndEventsSectionComponentViewTests
     public void ShowDefaultSubSectionCorrectly()
     {
         // Arrange
-        placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
+        placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
 
         // Act
         placesAndEventsSectionComponent.ShowDefaultSubSection();
 
         // Assert
-        Assert.IsTrue(placesAndEventsSectionComponent.highlightsSubSection.gameObject.activeSelf, "The highlights sub-section should be actived.");
+        Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf, "The places sub-section should be actived.");
     }
 }

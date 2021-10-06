@@ -13,8 +13,10 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
-        static readonly string baselinePath = AssetBundlesVisualTestHelpers.baselineImagesPath;
-        static readonly string testImagesPath = AssetBundlesVisualTestHelpers.testImagesPath;
+        static readonly string BASELINE_IMAGES_PATH = AssetBundlesVisualTestHelpers.baselineImagesPath;
+        static readonly string TEST_IMAGES_PATH = AssetBundlesVisualTestHelpers.testImagesPath;
+        static readonly string SCENE_NAME = "Assets/ABConverter/VisualTestScene.unity";
+        
         static string abPath = Application.dataPath + "/../AssetBundles/";
         static int skippedAssets = 0;
 
@@ -45,9 +47,10 @@ namespace DCL.ABConverter
 
             Debug.Log("Visual Test Detection: Starting converted assets testing...");
 
-            var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
+            var scene = EditorSceneManager.OpenScene(SCENE_NAME, OpenSceneMode.Single);
             yield return new WaitUntil(() => scene.isLoaded);
 
+            // Update visual tests path that will be used internally for the snapshots
             AssetBundlesVisualTestHelpers.baselineImagesPath += "ABConverter/";
             AssetBundlesVisualTestHelpers.testImagesPath += "ABConverter/";
             skippedAssets = 0;
@@ -140,8 +143,9 @@ namespace DCL.ABConverter
                 go.SetActive(false);
             }
 
-            AssetBundlesVisualTestHelpers.baselineImagesPath = baselinePath;
-            AssetBundlesVisualTestHelpers.testImagesPath = testImagesPath;
+            // Reset visual tests path
+            AssetBundlesVisualTestHelpers.baselineImagesPath = BASELINE_IMAGES_PATH;
+            AssetBundlesVisualTestHelpers.testImagesPath = TEST_IMAGES_PATH;
 
             Debug.Log("Visual Test Detection: Finished converted assets testing...skipped assets: " + skippedAssets);
             OnFinish?.Invoke(skippedAssets);

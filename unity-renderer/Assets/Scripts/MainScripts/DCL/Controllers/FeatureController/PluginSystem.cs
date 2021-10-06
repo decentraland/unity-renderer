@@ -11,17 +11,13 @@ using System.Collections.Generic;
 /// </summary>
 public class PluginSystem
 {
-    private List<PluginFeature> activeFeatures = new List<PluginFeature>();
+    private readonly List<PluginFeature> activeFeatures = new List<PluginFeature>();
 
-    private KernelConfigModel currentConfig;
+    private FeatureFlag currentConfig;
 
-    public KernelConfigModel GetCurrentConfig() { return currentConfig; }
+    public FeatureFlag GetCurrentConfig() { return currentConfig; }
 
-    public void Start()
-    {
-        KernelConfig.i.EnsureConfigInitialized().Then(ApplyFeaturesConfig);
-        KernelConfig.i.OnChange += OnKernelConfigChanged;
-    }
+    public PluginSystem() { DataStore.i.featureFlags.flags.OnChange += ApplyConfig; }
 
     public void OnGUI()
     {
@@ -49,21 +45,23 @@ public class PluginSystem
 
     public void OnDestroy()
     {
+        DataStore.i.featureFlags.flags.OnChange -= ApplyConfig;
+
         foreach (PluginFeature feature in activeFeatures)
         {
             feature.Dispose();
         }
     }
 
-    public void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { ApplyFeaturesConfig(current); }
+    public void ApplyConfig(FeatureFlag newConfig, FeatureFlag oldConfig) { ApplyFeaturesConfig(newConfig); }
 
-    public void ApplyFeaturesConfig(KernelConfigModel config)
+    public void ApplyFeaturesConfig(FeatureFlag featureFlag)
     {
-        HandleFeature<BuilderInWorld>(config.features.enableBuilderInWorld);
-        HandleFeature<TutorialController>(config.features.enableTutorial);
+        HandleFeature<BuilderInWorld>(featureFlag.IsFeatureEnabled("builder_in_world"));
+        HandleFeature<TutorialController>(featureFlag.IsFeatureEnabled("tutorial"));
         HandleFeature<DebugPluginFeature>(true);
-        HandleFeature<ExploreV2Feature>(config.features.enableExploreV2);
-        currentConfig = config;
+        HandleFeature<ExploreV2Feature>(featureFlag.IsFeatureEnabled("explorev2"));
+        currentConfig = featureFlag;
     }
 
     private void HandleFeature<T>(bool isActive) where T : PluginFeature, new ()

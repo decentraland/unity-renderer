@@ -15,16 +15,15 @@ namespace UnityGLTF.Cache
 
         public override string ToString()
         {
-            return "ref counted material. name = " + material.name + " ... crc = " + crc;
+            return $"ref counted material. name = {material.name} ... crc = {crc}";
         }
 
         protected override void OnDestroyCachedData()
         {
-            Debug.Log($"On Destroy -- {ToString()}");
             if (!string.IsNullOrEmpty(crc) && PersistentAssetCache.MaterialCacheByCRC.ContainsKey(crc))
                 PersistentAssetCache.MaterialCacheByCRC.Remove(crc);
 
-            UnityEngine.Object.Destroy(material);
+            Object.Destroy(material);
         }
     }
 }

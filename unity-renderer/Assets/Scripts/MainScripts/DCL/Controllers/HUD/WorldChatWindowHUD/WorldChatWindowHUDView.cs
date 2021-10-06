@@ -77,7 +77,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         if (!string.IsNullOrEmpty(controller.lastPrivateMessageReceivedSender) && text == "/r ")
         {
             chatHudView.inputField.text = $"/w {controller.lastPrivateMessageReceivedSender} ";
-            chatHudView.inputField.caretPosition = chatHudView.inputField.text.Length;
+            chatHudView.inputField.MoveTextEnd(false);
         }
     }
 
