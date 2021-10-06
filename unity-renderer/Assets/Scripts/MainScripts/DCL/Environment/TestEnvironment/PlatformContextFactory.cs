@@ -92,7 +92,7 @@ namespace DCL.Tests
                 serviceProviders: serviceProviders ?? GetServiceProvidersMock(),
                 idleChecker: idleChecker ?? Substitute.For<IIdleChecker>(),
                 avatarsLODController: avatarsLODController ?? Substitute.For<IAvatarsLODController>(),
-                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>() );,
+                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>() );
         }
 
         private static IWebRequestController GetWebRequestControllerMock()
