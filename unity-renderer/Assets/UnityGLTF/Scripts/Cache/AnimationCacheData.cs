@@ -1,5 +1,6 @@
 ﻿using GLTF;
 using GLTF.Schema;
+using UnityEngine;
 
 namespace UnityGLTF.Cache
 {
@@ -12,12 +13,17 @@ namespace UnityGLTF.Cache
 
     public class AnimationCacheData
     {
-        public UnityEngine.AnimationClip LoadedAnimationClip { get; set; }
+        public AnimationClip LoadedAnimationClip { get; set; }
         public AnimationSamplerCacheData[] Samplers { get; set; }
 
         public AnimationCacheData(int samplerCount)
         {
             Samplers = new AnimationSamplerCacheData[samplerCount];
+        }
+
+        public void Unload()
+        {
+            Object.Destroy(LoadedAnimationClip);
         }
     }
 }

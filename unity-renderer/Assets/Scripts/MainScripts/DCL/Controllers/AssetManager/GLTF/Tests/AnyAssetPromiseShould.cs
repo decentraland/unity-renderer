@@ -189,40 +189,5 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             keeper.Cleanup();
         }
-
-        [UnityTest]
-        public IEnumerator WaitForGltfToBeLoadedBeforeDestroyingIt()
-        {
-            var parentGO = new GameObject("GLTFParent");
-            var keeper = new AssetPromiseKeeper_GLTF();
-
-            string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
-            bool finishedLoading = false;
-            bool failed = false;
-
-            AssetPromise_GLTF promise = new AssetPromise_GLTF(scene.contentProvider, url);
-            promise.settings.parent = parentGO.transform;
-            keeper.Keep(promise);
-
-            GLTFComponent gltfComponent = promise.asset.container.GetComponentInChildren<GLTFComponent>();
-            gltfComponent.OnSuccess += () => finishedLoading = true;
-            gltfComponent.OnFail += () => failed = true;
-            GameObject gltfContainer = promise.asset.container;
-
-            Assert.IsNotNull(gltfComponent);
-            Assert.AreEqual(parentGO.transform, gltfContainer.transform.parent);
-
-            keeper.Forget(promise);
-            Assert.IsNotNull(gltfComponent);
-            Assert.AreNotEqual(parentGO.transform, gltfContainer.transform.parent);
-
-            yield return promise;
-
-            yield return new WaitUntil(() => finishedLoading || failed);
-            Assert.IsTrue(finishedLoading);
-
-            Object.DestroyImmediate(parentGO);
-            keeper.Cleanup();
-        }
     }
 }
