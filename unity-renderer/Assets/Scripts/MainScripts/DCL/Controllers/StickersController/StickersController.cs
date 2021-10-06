@@ -20,7 +20,8 @@ public class StickersController : MonoBehaviour
         emoteGameObject.transform.position += position;
         emoteGameObject.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
 
-        if (followTransform) {
+        if (followTransform)
+        {
             FollowObject emoteFollow = emoteGameObject.AddComponent<FollowObject>();
             emoteFollow.target = transform;
             emoteFollow.offset = prefab.transform.position;

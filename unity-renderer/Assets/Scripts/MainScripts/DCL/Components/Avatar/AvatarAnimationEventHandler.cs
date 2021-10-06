@@ -127,10 +127,14 @@ public class AvatarAnimationEventHandler : MonoBehaviour
 
     bool AnimationWeightIsOverThreshold(float threshold, string animationName)
     {
-        if (anim != null) {
-            if (anim.isPlaying) {
-                foreach (AnimationState state in anim) {
-                    if (state.name == animationName) {
+        if (anim != null)
+        {
+            if (anim.isPlaying)
+            {
+                foreach (AnimationState state in anim)
+                {
+                    if (state.name == animationName)
+                    {
                         if (state.weight > threshold)
                             return true;
                         break;
