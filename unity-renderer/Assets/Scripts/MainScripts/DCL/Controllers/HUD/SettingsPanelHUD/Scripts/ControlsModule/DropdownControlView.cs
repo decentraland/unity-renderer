@@ -30,11 +30,7 @@ namespace DCL.SettingsPanelHUD.Controls
         }
         private void SetOption(string option)
         {
-            var index = dropdown.options.FindIndex(o => o.text == option);
-            if (index >= 0)
-            {
-                dropdown.value = index;
-            }
+            dropdown.captionText.text = option;
         }
         private void SetLabels(string[] labels)
         {
