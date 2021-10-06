@@ -43,11 +43,6 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         footstepLand.source.volume = footstepLand.source.volume * 0.5f;
         clothesRustleShort.source.volume = clothesRustleShort.source.volume * 0.5f;
 
-        // Get references to body parts
-        Transform[] children = GetComponentsInChildren<Transform>();
-        footL = AvatarBodyPartReferenceUtility.GetLeftToe(children);
-        footR = AvatarBodyPartReferenceUtility.GetRightToe(children);
-
         if (avatarAnimatorLegacy != null)
         {
             blackBoard = avatarAnimatorLegacy.blackboard;
@@ -63,6 +58,11 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     {
         this.rendererContainer = rendererContainer;
         stickersController = rendererContainer.GetComponentInParent<StickersController>();
+
+        // Get references to body parts
+        Transform[] children = rendererContainer.GetComponentsInChildren<Transform>();
+        footL = AvatarBodyPartReferenceUtility.GetLeftToe(children);
+        footR = AvatarBodyPartReferenceUtility.GetRightToe(children);
     }
 
     private void Update()
@@ -75,7 +75,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         {
             if (footstepJump != null)
                 footstepJump.Play(true);
-            if (stickersController != null)
+            if (stickersController != null && footR != null)
                 stickersController.PlaySticker("footstepJump", footR.position, Vector3.up, false);
         }
 
@@ -84,7 +84,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         {
             if (footstepLand != null)
                 footstepLand.Play(true);
-            if (stickersController != null)
+            if (stickersController != null && footL != null && footR != null)
                     stickersController.PlaySticker("footstepLand",
                         Vector3.Lerp(footL.position, footR.position, 0.5f),
                         Vector3.up,
