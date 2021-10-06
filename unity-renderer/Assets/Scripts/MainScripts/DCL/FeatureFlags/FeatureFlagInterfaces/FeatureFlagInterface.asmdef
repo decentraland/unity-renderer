@@ -1,10 +1,7 @@
 {
-    "name": "KernelConfigurationBridge",
+    "name": "FeatureFlagInterface",
     "rootNamespace": "",
-    "references": [
-        "GUID:c44f6fd10d3d94432a107d581e0096b5",
-        "GUID:3e062a4ccaf3f77919ca87fd7ad3743f"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

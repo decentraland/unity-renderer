@@ -15,7 +15,8 @@ namespace DCL
                 webRequest: WebRequestController.Create(),
                 serviceProviders: new ServiceProviders(),
                 idleChecker: new IdleChecker(),
-                avatarsLODController: new AvatarsLODController());
+                avatarsLODController: new AvatarsLODController(),
+                featureFlagController: new FeatureFlagController());
         }
     }
 }
