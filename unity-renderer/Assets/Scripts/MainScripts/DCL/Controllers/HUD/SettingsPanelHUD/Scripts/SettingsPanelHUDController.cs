@@ -154,7 +154,7 @@ namespace DCL.SettingsPanelHUD
             }
         }
 
-        public void SaveSettings() { Settings.i.SaveSettings(); }
+        public virtual void SaveSettings() { Settings.i.SaveSettings(); }
 
         public void ResetAllSettings() { Settings.i.ResetAllSettings(); }
     }
