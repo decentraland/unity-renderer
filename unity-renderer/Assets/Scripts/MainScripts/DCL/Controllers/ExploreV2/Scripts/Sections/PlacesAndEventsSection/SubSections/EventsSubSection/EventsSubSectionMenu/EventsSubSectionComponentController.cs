@@ -314,7 +314,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                 true,
                 () =>
                 {
-                    Debug.Log("I WILL ATTEND!!");
+                    // Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
                 },
                 (error) =>
                 {
@@ -333,7 +333,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                 false,
                 () =>
                 {
-                    Debug.Log("I WILL NOT ATTEND!!");
+                    // Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
                 },
                 (error) =>
                 {
