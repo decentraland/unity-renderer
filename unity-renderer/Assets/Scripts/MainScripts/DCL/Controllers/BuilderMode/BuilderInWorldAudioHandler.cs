@@ -85,7 +85,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         UpdateEntityCount();
 
-        CoroutineStarter.Start(StartBuilderMusic());
+        startBuilderMusicCoroutine = StartCoroutine(StartBuilderMusic());
 
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
@@ -96,7 +96,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     public void ExitEditMode()
     {
         eventBuilderExit.Play();
-        fadeOutCoroutine = CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
+        fadeOutCoroutine =  StartCoroutine(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
 
@@ -143,13 +143,13 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private void OnTutorialEnabled()
     {
         if (gameObject.activeInHierarchy)
-            fadeOutCoroutine = CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
+            fadeOutCoroutine =  StartCoroutine(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
     }
 
     private void OnTutorialDisabled()
     {
         if (gameObject.activeInHierarchy)
-            CoroutineStarter.Start(StartBuilderMusic());
+            startBuilderMusicCoroutine = StartCoroutine(StartBuilderMusic());
     }
 
     private IEnumerator StartBuilderMusic()
@@ -210,13 +210,13 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     public void Dispose()
     {
         if (startBuilderMusicCoroutine != null)
-            CoroutineStarter.Stop(startBuilderMusicCoroutine);
+            StopCoroutine(startBuilderMusicCoroutine);
 
         if (fadeInCoroutine != null)
-            CoroutineStarter.Stop(fadeInCoroutine);
+            StopCoroutine(fadeInCoroutine);
 
         if (fadeOutCoroutine != null)
-            CoroutineStarter.Stop(fadeOutCoroutine);
+            StopCoroutine(fadeOutCoroutine);
 
         startBuilderMusicCoroutine = null;
         fadeInCoroutine = null;
