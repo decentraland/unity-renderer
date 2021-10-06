@@ -1395,3 +1395,43 @@ MonoBehaviour:
     description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
       by Maricela.
     issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: cascoCruzado.glb
+        contents:
+        - key: cascoCruzado.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: cascoCruzado.glb
+        contents:
+        - key: cascoCruzado.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      category: helmet
+      tags:
+      - WonderZone
+      - exclusive
+      - decentraland
+      - mana
+      - helmet
+      - steampunk
+      - licensed
+      - exclusive
+      replaces: []
+      hides: []
+    id: cascoCruzado
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Crussader Helmet
+    thumbnail: https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC
+    rarity: legendary
+    description: 
+    issuedId: 0

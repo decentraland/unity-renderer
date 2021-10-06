@@ -52,6 +52,26 @@ public class WearablesVisualTests : VisualTestsBase
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
+    public IEnumerator CascoCruzado_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(CascoCruzado()); }
+
+    [UnityTest, VisualTest]
+    [Category("Visual Tests")]
+    public IEnumerator CascoCruzado()
+    {
+        //Arrange
+        yield return InitVisualTestsScene("WearableVisualTests_CascoCruzado");
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
+        const string WEARABLE_ID = "cascoCruzado";
+
+        //Act
+        yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(WEARABLE_ID, new Vector3(8, -0.625f, 8)));
+
+        //Assert
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
     public IEnumerator AlphaBlendWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearable()); }
 
     [UnityTest, VisualTest]

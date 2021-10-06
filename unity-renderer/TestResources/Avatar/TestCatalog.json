@@ -2213,5 +2213,74 @@
 	   ],
 	   "createdAt":1617888361627,
 	   "updatedAt":1617888361627
+	},
+{
+	   "id":"cascoCruzado",
+	   "description":"",
+	   "image":"https://peer.decentraland.org/content/contents/QmUFjtn8VySQjVgRiY6BnMxntZkwAwjJJzXrvxkw9nG5nD",
+	   "thumbnail":"https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC",
+	   "collectionAddress":"",
+	   "rarity":"legendary",
+	   "data":{
+		  "replaces":[],
+		  "hides":[],
+		  "tags":[
+			 "WonderZone",
+			 "exclusive",
+			 "decentraland",
+			 "mana",
+			 "helmet",
+			 "steampunk",
+			 "licensed",
+			 "exclusive"
+		  ],
+		  "category":"helmet",
+		  "representations":[
+			 {
+				"bodyShapes":[
+				   "urn:decentraland:off-chain:base-avatars:BaseMale"
+				],
+				"mainFile":"cascoCruzado.glb",
+				"overrideReplaces":[
+				   
+				],
+				"overrideHides":[
+				   
+				],
+				"contents":[
+				   {
+					  "key":"cascoCruzado.glb",
+					  "url":"https://peer.decentraland.org/content/contents/QmUzcUuFiguf2Pvz5k3Dyde6M13PPSaXyLnMgRGH6amFWA"
+				   }
+				]
+			 },
+			 {
+				"bodyShapes":[
+				   "urn:decentraland:off-chain:base-avatars:BaseFemale"
+				],
+				"mainFile":"cascoCruzado.glb",
+				"overrideReplaces":[
+				   
+				],
+				"overrideHides":[
+				   
+				],
+				"contents":[
+				   {
+					  "key":"cascoCruzado.glb",
+					  "url":"https://peer.decentraland.org/content/contents/QmQ5ixCz6mM75UwdddZqWCQ11mZZz4vnKzmMx3ujRseoUm"
+				   }
+				]
+			 }
+		  ]
+	   },
+	   "i18n":[
+		  {
+			 "code":"en",
+			 "text":"Crussader Helmet"
+		  }
+	   ],
+	   "createdAt":1617888361627,
+	   "updatedAt":1617888361627
 	}
 ]
