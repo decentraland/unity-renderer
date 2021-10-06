@@ -178,8 +178,18 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void LoadGoingEvents()
     {
-        view.SetGoingEventsAsLoading(false);
         view.SetGoingEvents(new List<EventCardComponentModel>());
+
+        List<EventCardComponentModel> goingEvents = new List<EventCardComponentModel>();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
+        {
+            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
+            goingEvents.Add(eventCardModel);
+        }
+
+        view.SetGoingEventsAsLoading(false);
+        view.SetGoingEvents(goingEvents);
     }
 
     public void Dispose()

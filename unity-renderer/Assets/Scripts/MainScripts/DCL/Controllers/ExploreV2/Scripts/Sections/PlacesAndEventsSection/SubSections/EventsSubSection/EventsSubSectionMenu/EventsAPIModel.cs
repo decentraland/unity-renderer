@@ -25,6 +25,7 @@ public class EventFromAPIModel
     public string user_name;
     public bool highlighted;
     public bool trending;
+    public bool attending;
 }
 
 [Serializable]
