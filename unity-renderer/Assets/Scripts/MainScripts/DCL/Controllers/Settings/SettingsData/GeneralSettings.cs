@@ -14,6 +14,7 @@ namespace DCL.SettingsCommon
         public float scenesLoadRadius;
         public float avatarsLODDistance;
         public float maxNonLODAvatars;
+        public float namesOpacity;
 
         public bool Equals(GeneralSettings settings)
         {
@@ -23,7 +24,8 @@ namespace DCL.SettingsCommon
                    && maxNonLODAvatars == settings.maxNonLODAvatars
                    && voiceChatVolume == settings.voiceChatVolume
                    && voiceChatAllow == settings.voiceChatAllow
-                   && autoqualityOn == settings.autoqualityOn;
+                   && autoqualityOn == settings.autoqualityOn
+                   && namesOpacity == settings.namesOpacity;
         }
     }
 }
