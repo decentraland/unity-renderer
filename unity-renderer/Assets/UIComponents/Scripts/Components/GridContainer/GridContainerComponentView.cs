@@ -61,7 +61,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 {
     [Header("Prefab References")]
     [SerializeField] internal GridLayoutGroup gridLayoutGroup;
-    [SerializeField] internal RectTransform externalScrollViewContainer;
+    [SerializeField] internal RectTransform externalParentToAdaptSize;
 
     [Header("Configuration")]
     [SerializeField] internal GridContainerComponentModel model;
@@ -86,6 +86,14 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         SetItems(model.items);
         SetConstraintCount(model.constranitCount);
         SetSpaceBetweenItems(model.spaceBetweenItems);
+    }
+
+    public override void PostScreenSizeChanged()
+    {
+        base.PostScreenSizeChanged();
+
+        ResizeGridContainer();
+        SetItemSize(model.itemSize);
     }
 
     public override void Dispose()
@@ -122,8 +130,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         {
             if (model.constraint == Constraint.FixedColumnCount)
             {
-                float width = externalScrollViewContainer != null ? externalScrollViewContainer.rect.width : ((RectTransform)transform).rect.width;
-                float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.constranitCount / 2f));
+                float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+                float extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
                 newSizeToApply = new Vector2(
                     (width / model.constranitCount) - extraSpaceToRemove,
                     model.itemSize.y);
