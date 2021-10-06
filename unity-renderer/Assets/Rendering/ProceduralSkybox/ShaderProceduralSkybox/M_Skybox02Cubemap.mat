@@ -80,6 +80,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SGLayerParticles_1c423f4cd0624eca9ef3b77eef2eb8d3_Texture2Dfc450b2db7f54977a54b88410e0e641d_756302754:
+        m_Texture: {fileID: 2800000, guid: 42cc058140f798e46bde1006aab6fa8b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SGLayerParticles_8b3586e5d4ec4c8db70e21f5a74ae526_Texture2Dd05dc483de224ec6b7ecdc5ece61c1f6_1944866908:
         m_Texture: {fileID: 2800000, guid: b4c1ce2301a727543a5f460e3d33bd06, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -168,6 +172,14 @@ Material:
         m_Texture: {fileID: 8900000, guid: c4fd96f2a68c87e408ce00bbeb917a02, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _cubemap_3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _cubemap_4:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _horizonMask_:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -200,6 +212,14 @@ Material:
         m_Texture: {fileID: 2800000, guid: a217989cadb351846a6f03992af95a78, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _normals_3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _normals_4:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _tex00:
         m_Texture: {fileID: 2800000, guid: 43c4709ef7cd84e4dabe0746e0b0ffa7, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -222,6 +242,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _tex_2:
         m_Texture: {fileID: 2800000, guid: 56bdf1986cd0fa442a2c818656434b46, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex_3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex_4:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -260,11 +288,15 @@ Material:
     - _RenderDistance_0: 2
     - _RenderDistance_1: 0
     - _RenderDistance_2: 0
+    - _RenderDistance_3: 0
+    - _RenderDistance_4: 0
     - _dayTime: 1.87
     - _distance_0: 20
     - _fadeTime_0: 0
     - _fadeTime_1: 0
     - _fadeTime_2: 0
+    - _fadeTime_3: 0
+    - _fadeTime_4: 0
     - _hasFade00: 0
     - _hasFade01: 1
     - _hasFade02: 0
@@ -286,18 +318,24 @@ Material:
     - _layerType_0: 1
     - _layerType_1: 0
     - _layerType_2: 0
+    - _layerType_3: 0
+    - _layerType_4: 0
     - _lightIntensity00: 0
     - _lightIntensity01: 0
     - _lightIntensity02: 0
     - _lightIntensity_0: 0
     - _lightIntensity_1: 0
     - _lightIntensity_2: 0
+    - _lightIntensity_3: 0
+    - _lightIntensity_4: 0
     - _normalIntensity00: 0.45
     - _normalIntensity01: 0.357
     - _normalIntensity02: 0
     - _normalIntensity_0: 0.124
     - _normalIntensity_1: 0
     - _normalIntensity_2: 0
+    - _normalIntensity_3: 0
+    - _normalIntensity_4: 0
     - _rotation_0: 0
     - _rotation_1: 0
     - _rotation_2: 0
@@ -331,15 +369,21 @@ Material:
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
-    - _color_0: {r: 7.4642644, g: 0, b: 0, a: 1}
+    - _color_0: {r: 0, g: 2.6315408, b: 7.4642644, a: 1}
     - _color_1: {r: 0, g: 0.017053338, b: 0.7490196, a: 1}
     - _color_2: {r: 1, g: 1, b: 1, a: 0}
+    - _color_3: {r: 0, g: 0, b: 0, a: 0}
+    - _color_4: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_0: {r: 0, g: 10, b: 0, a: 0}
     - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
+    - _distortIntAndSize_3: {r: 0, g: 0, b: 0, a: 0}
+    - _distortIntAndSize_4: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_0: {r: 0.1, g: 0, b: 0, a: 1}
     - _distortSpeedAndSharp_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
+    - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
+    - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
     - _groundColor: {r: 0.094901726, g: 0.040195987, b: 0.26415092, a: 1}
     - _horizonColor: {r: 0.6623347, g: 0.21489628, b: 0.76801753, a: 1}
     - _horizonMaskOffset: {r: 0, g: 0, b: 0, a: 0}
@@ -350,19 +394,25 @@ Material:
     - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: 0, b: 0, a: 0}
+    - _speedAndRotation_3: {r: 0, g: 0, b: 0, a: 0}
+    - _speedAndRotation_4: {r: 0, g: 0, b: 0, a: 0}
     - _speed_0: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _speed_1: {r: 0, g: 0, b: 0, a: 0}
     - _speed_2: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 2, g: 2, b: 0, a: 0}
+    - _tilingAndOffset_0: {r: 4, g: 2, b: 0, a: 0}
     - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: 0}
     - _tilingAndOffset_2: {r: 4, g: 1.5, b: 0.17, a: 0}
+    - _tilingAndOffset_3: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_4: {r: 1, g: 1, b: 0, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
     - _timeFrame_0: {r: 0, g: 5, b: 0, a: 0}
     - _timeFrame_1: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_3: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_4: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
