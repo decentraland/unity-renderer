@@ -181,7 +181,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetGoingEvents(new List<EventCardComponentModel>());
 
         List<EventCardComponentModel> goingEvents = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.attending).ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
