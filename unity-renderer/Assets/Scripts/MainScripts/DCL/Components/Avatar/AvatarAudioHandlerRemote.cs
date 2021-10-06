@@ -24,8 +24,10 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     bool globalRendererIsReady;
 
     private Camera mainCamera;
-    private AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
     private StickersController stickersController;
+
+    Transform footL;
+    Transform footR;
 
     private void Start()
     {
@@ -41,6 +43,11 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         footstepLand.source.volume = footstepLand.source.volume * 0.5f;
         clothesRustleShort.source.volume = clothesRustleShort.source.volume * 0.5f;
 
+        // Get references to body parts
+        Transform[] children = GetComponentsInChildren<Transform>();
+        footL = AvatarBodyPartReferenceUtility.GetLeftToe(children);
+        footR = AvatarBodyPartReferenceUtility.GetRightToe(children);
+
         if (avatarAnimatorLegacy != null)
         {
             blackBoard = avatarAnimatorLegacy.blackboard;
@@ -52,10 +59,9 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
 
     void OnGlobalRendererStateChange(bool current, bool previous) { globalRendererIsReady = current; }
 
-    public void Init(GameObject rendererContainer, AvatarBodyPartReferenceHandler bodyPartReferenceHandler)
+    public void Init(GameObject rendererContainer)
     {
         this.rendererContainer = rendererContainer;
-        this.bodyPartReferenceHandler = bodyPartReferenceHandler;
         stickersController = rendererContainer.GetComponentInParent<StickersController>();
     }
 
@@ -69,23 +75,20 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         {
             if (footstepJump != null)
                 footstepJump.Play(true);
-            if (bodyPartReferenceHandler != null) {
-                if (stickersController != null)
-                    stickersController.PlaySticker("footstepJump", bodyPartReferenceHandler.footR.position, Vector3.up, false);
-            }
+            if (stickersController != null)
+                stickersController.PlaySticker("footstepJump", footR.position, Vector3.up, false);
         }
 
         // Landed
-        if (blackBoard.isGrounded && !isGroundedPrevious) {
+        if (blackBoard.isGrounded && !isGroundedPrevious)
+        {
             if (footstepLand != null)
                 footstepLand.Play(true);
-            if (bodyPartReferenceHandler != null) {
-                if (stickersController != null)
+            if (stickersController != null)
                     stickersController.PlaySticker("footstepLand",
-                        Vector3.Lerp(bodyPartReferenceHandler.footL.position, bodyPartReferenceHandler.footR.position, 0.5f),
+                        Vector3.Lerp(footL.position, footR.position, 0.5f),
                         Vector3.up,
                         false);
-            }
         }
 
         // Simulate footsteps when avatar is not visible

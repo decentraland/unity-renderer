@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Helpers;
+using DCL;
 
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
@@ -17,13 +17,16 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     AudioEvent throwMoney;
     AudioEvent blowKiss;
 
-    AvatarBodyPartReferenceHandler bodyPartReferenceHandler;
-
     Animation anim;
 
     float lastEventTime;
 
     StickersController stickersController;
+
+    Transform footL;
+    Transform footR;
+    Transform handL;
+    Transform handR;
 
     public void Init(AudioContainer audioContainer)
     {
@@ -39,9 +42,14 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         throwMoney = audioContainer.GetEvent("ExpressionThrowMoney");
         blowKiss = audioContainer.GetEvent("ExpressionBlowKiss");
 
-        bodyPartReferenceHandler = GetComponent<AvatarBodyPartReferenceHandler>();
         anim = GetComponent<Animation>();
         stickersController = GetComponentInParent<StickersController>();
+
+        Transform[] children = GetComponentsInChildren<Transform>();
+        footL = AvatarBodyPartReferenceUtility.GetLeftToe(children);
+        footR = AvatarBodyPartReferenceUtility.GetRightToe(children);
+        handL = AvatarBodyPartReferenceUtility.GetLeftHand(children);
+        handR = AvatarBodyPartReferenceUtility.GetRightHand(children);
     }
 
     public void AnimEvent_FootstepLight() { PlayAudioEvent(footstepLight); }
@@ -55,13 +63,13 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     public void AnimEvent_FootstepRunLeft()
     {
         PlayAudioEvent(footstepRun);
-        PlaySticker("footstep", bodyPartReferenceHandler.footL.position, Vector3.up);
+        PlaySticker("footstep", footL.position, Vector3.up);
     }
 
     public void AnimEvent_FootstepRunRight()
     {
         PlayAudioEvent(footstepRun);
-        PlaySticker("footstep", bodyPartReferenceHandler.footR.position, Vector3.up);
+        PlaySticker("footstep", footR.position, Vector3.up);
     }
 
     public void AnimEvent_ClothesRustleShort() { PlayAudioEvent(clothesRustleShort); }
@@ -75,7 +83,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(clap);
-        PlaySticker("clap", bodyPartReferenceHandler.handR.position, Vector3.up);
+        PlaySticker("clap", handR.position, Vector3.up);
         UpdateEventTime();
     }
 
@@ -88,7 +96,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(throwMoney);
-        PlaySticker("money", bodyPartReferenceHandler.handL.position, bodyPartReferenceHandler.handL.rotation.eulerAngles);
+        PlaySticker("money", handL.position, handL.rotation.eulerAngles);
         UpdateEventTime();
     }
 
@@ -108,7 +116,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     IEnumerator EmitHeartParticle()
     {
         yield return new WaitForSeconds(0.8f);
-        PlaySticker("heart", bodyPartReferenceHandler.handR.position, transform.rotation.eulerAngles);
+        PlaySticker("heart", handR.position, transform.rotation.eulerAngles);
     }
 
     void PlayAudioEvent(AudioEvent audioEvent)

@@ -217,9 +217,6 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     private void InitializeAvatarAudioAndParticleHandlers(GameObject container, Animation createdAnimation)
     {
-        //NOTE(Mordi): Adds handler for determining where the different body parts are, for particle effects to spawn at the right place
-        AvatarBodyPartReferenceHandler bodyPartReferenceHandler = createdAnimation.gameObject.AddComponent<AvatarBodyPartReferenceHandler>();
-
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
         AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = container.transform.parent.parent.GetComponentInChildren<AudioContainer>();
@@ -231,7 +228,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
             AvatarAudioHandlerRemote audioHandlerRemote = audioContainer.GetComponent<AvatarAudioHandlerRemote>();
             if (audioHandlerRemote != null)
             {
-                audioHandlerRemote.Init(createdAnimation.gameObject, bodyPartReferenceHandler);
+                audioHandlerRemote.Init(createdAnimation.gameObject);
             }
         }
 
