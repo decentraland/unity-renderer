@@ -1,11 +1,10 @@
-using DCL.SettingsCommon;
-using DCL.SettingsController;
 using System.Reflection;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Shadow", fileName = "ShadowControlController")]
     public class ShadowControlController : ToggleSettingsControlController

@@ -6,6 +6,7 @@ using UnityEngine;
 using DCL.Components.Video.Plugin;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.SettingsCommon;
 
 namespace DCL.Components
 {
@@ -100,7 +101,7 @@ namespace DCL.Components
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
                 scene.OnEntityRemoved += OnEntityRemoved;
-                Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
+                Settings.i.generalSettings.OnChanged += OnSettingsChanged;
 
                 OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
             }
@@ -286,8 +287,8 @@ namespace DCL.Components
             {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
-                float sceneSFXSetting = Settings.i.currentAudioSettings.sceneSFXVolume;
-                float masterSetting = Settings.i.currentAudioSettings.masterVolume;
+                float sceneSFXSetting = Settings.i.audioSettings.Data.sceneSFXVolume;
+                float masterSetting = Settings.i.audioSettings.Data.masterVolume;
                 targetVolume *= Utils.ToVolumeCurve(virtualMixerVolume * sceneSFXSetting * masterSetting);
             }
 
@@ -388,12 +389,12 @@ namespace DCL.Components
 
         void OnEntityRemoved(IDCLEntity entity) { isPlayStateDirty = true; }
 
-        void OnSettingsChanged(SettingsData.GeneralSettings settings) { UpdateVolume(); }
+        void OnSettingsChanged(GeneralSettings settings) { UpdateVolume(); }
 
         public override void Dispose()
         {
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
+            Settings.i.generalSettings.OnChanged -= OnSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
             if (scene != null)

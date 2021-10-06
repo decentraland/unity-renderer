@@ -1,9 +1,9 @@
-using System;
 using DCL.Rendering;
-using DCL.SettingsController;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
+using Environment = DCL.Environment;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Detail Object Culling Size", fileName = "DetailObjectCullingSizeControlController")]
     public class DetailObjectCullingSizeControlController : SliderSettingsControlController

@@ -2,7 +2,9 @@ using DCL;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
+using Variables.RealmsInfo;
 
 public class ExploreV2MenuComponentControllerTests
 {
@@ -31,6 +33,19 @@ public class ExploreV2MenuComponentControllerTests
     }
 
     [Test]
+    public void CreateControllersCorrectly()
+    {
+        // Arrange
+        exploreV2MenuController.placesAndEventsSectionController = null;
+
+        // Act
+        exploreV2MenuController.CreateControllers();
+
+        // Assert
+        Assert.IsNotNull(exploreV2MenuController.placesAndEventsSectionController);
+    }
+
+    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void SetVisibilityCorrectly(bool isVisible)
@@ -43,13 +58,43 @@ public class ExploreV2MenuComponentControllerTests
     }
 
     [Test]
-    public void OnProfileUpdatedCorrectly()
+    public void UpdateRealmInfoCorrectly()
+    {
+        // Arrange
+        string testRealmName = "TestName";
+        string testRealmLayer = "TestLayer";
+        DataStore.i.playerRealm.Set(new CurrentRealmModel
+        {
+            serverName = testRealmName,
+            layer = testRealmLayer
+        });
+
+        List<RealmModel> testRealmList = new List<RealmModel>();
+        int testUsersCount = 100;
+        testRealmList.Add(new RealmModel
+        {
+            serverName = testRealmName,
+            layer = testRealmLayer,
+            usersCount = testUsersCount
+        });
+        DataStore.i.realmsInfo.Set(testRealmList.ToArray());
+
+        // Act
+        exploreV2MenuController.UpdateRealmInfo(DataStore.i.playerRealm.Get(), null);
+
+        //Assert
+        exploreV2MenuView.currentRealmViewer.Received().SetRealm($"{testRealmName}-{testRealmLayer}");
+        exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(testUsersCount);
+    }
+
+    [Test]
+    public void UpdateProfileInfoCorrectly()
     {
         // Arrange
         UserProfile testUserProfile = new UserProfile();
 
         // Act
-        exploreV2MenuController.OnProfileUpdated(testUserProfile);
+        exploreV2MenuController.UpdateProfileInfo(testUserProfile);
 
         //Assert
         exploreV2MenuView.currentProfileCard.Received().SetProfileName(testUserProfile.userName);

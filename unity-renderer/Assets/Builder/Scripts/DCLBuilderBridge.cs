@@ -1,4 +1,3 @@
-using System;
 using Builder.Gizmos;
 using DCL;
 using DCL.Components;
@@ -10,10 +9,12 @@ using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Camera;
+using DCL.SettingsCommon;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
+using QualitySettings = DCL.SettingsCommon.QualitySettings;
 
 namespace Builder
 {
@@ -670,9 +671,9 @@ namespace Builder
 
         private void SetupQualitySettings()
         {
-            DCL.SettingsData.QualitySettings settings = new DCL.SettingsData.QualitySettings()
+            QualitySettings settings = new QualitySettings
             {
-                baseResolution = DCL.SettingsData.QualitySettings.BaseResolution.BaseRes_1080,
+                baseResolution = QualitySettings.BaseResolution.BaseRes_1080,
                 antiAliasing = UnityEngine.Rendering.Universal.MsaaQuality._2x,
                 renderScale = 1,
                 shadows = true,
@@ -682,7 +683,7 @@ namespace Builder
                 bloom = true,
                 colorGrading = true
             };
-            Settings.i.ApplyQualitySettings(settings);
+            Settings.i.qualitySettings.Apply(settings);
         }
     }
 }

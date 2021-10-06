@@ -1,8 +1,7 @@
-using System;
-using DCL.SettingsController;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Draw Distance", fileName = "DrawDistanceControlController")]
     public class DrawDistanceControlController : SliderSettingsControlController

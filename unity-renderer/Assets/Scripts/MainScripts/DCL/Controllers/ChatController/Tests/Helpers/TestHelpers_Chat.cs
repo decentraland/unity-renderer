@@ -48,6 +48,6 @@ public static class TestHelpers_Chat
     public static void FakePrivateChatMessageFrom(IChatController controller, string senderUserId, string message)
     {
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
-        FakePrivateChatMessage(controller, senderUserId, ownProfile.userId, message);
+        FakePrivateChatMessage(controller, senderUserId, ownProfile.userId ?? string.Empty, message);
     }
 }

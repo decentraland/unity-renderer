@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2026062374757361563}
   - component: {fileID: 3034685634738102410}
   - component: {fileID: 7829080691771640198}
-  - component: {fileID: 1954667348703456396}
   - component: {fileID: 6453322237000976408}
   - component: {fileID: 4158216989085160810}
   - component: {fileID: 4065694885507964064}
@@ -67,27 +66,13 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 1
+  m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 150, y: 100}
+  m_CellSize: {x: 200, y: 200}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 3
---- !u!114 &1954667348703456396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8413359027062790288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 1
-  m_VerticalFit: 1
 --- !u!95 &6453322237000976408
 Animator:
   serializedVersion: 3
@@ -147,9 +132,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49a3b742109ef0499aa2a13d3e0bedf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 1
   gridLayoutGroup: {fileID: 7829080691771640198}
+  externalScrollViewContainer: {fileID: 0}
   model:
     numColumns: 3
-    itemSize: {x: 150, y: 100}
+    autoAdaptItemSizeToContainerWidth: 0
+    itemSize: {x: 200, y: 200}
     spaceBetweenItems: {x: 10, y: 10}
     items: []
