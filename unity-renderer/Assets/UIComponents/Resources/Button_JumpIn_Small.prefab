@@ -90,7 +90,7 @@ PrefabInstance:
     - target: {fileID: 3429754838372700524, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_ChildAlignment
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3429754838372700524, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
@@ -105,7 +105,7 @@ PrefabInstance:
     - target: {fileID: 3429754838372700524, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_Padding.m_Bottom
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5736161931655279129, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
@@ -170,7 +170,7 @@ PrefabInstance:
     - target: {fileID: 6583379474799589209, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6583379474799589209, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
@@ -235,7 +235,7 @@ PrefabInstance:
     - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_text
-      value: 12,45
+      value: -12,-45
       objectReference: {fileID: 0}
     - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
         type: 3}

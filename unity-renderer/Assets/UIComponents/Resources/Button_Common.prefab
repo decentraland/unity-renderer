@@ -26,7 +26,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 295322807238159221}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -35,8 +35,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 113.1855, y: -23}
-  m_SizeDelta: {x: 23.629011, y: 46}
+  m_AnchoredPosition: {x: 110.31158, y: -21.5}
+  m_SizeDelta: {x: 19.376846, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1886200544444164757
 CanvasRenderer:
@@ -89,8 +89,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 15
-  m_MinHeight: 15
+  m_MinWidth: 5
+  m_MinHeight: 5
   m_PreferredWidth: 20
   m_PreferredHeight: 20
   m_FlexibleWidth: -1
@@ -246,7 +246,6 @@ GameObject:
   - component: {fileID: 8412491424384214035}
   - component: {fileID: 7263379833390393243}
   - component: {fileID: 8360437818873036568}
-  - component: {fileID: 1069926105808548299}
   - component: {fileID: 7887689455078732951}
   - component: {fileID: 1442316120381234285}
   m_Layer: 5
@@ -419,12 +418,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 15
-    m_Right: 15
-    m_Top: 0
-    m_Bottom: 3
+    m_Left: 20
+    m_Right: 20
+    m_Top: 5
+    m_Bottom: 8
   m_ChildAlignment: 4
-  m_Spacing: 10
+  m_Spacing: 5
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
@@ -432,26 +431,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &1069926105808548299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5466927874646222343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: 140
-  m_PreferredHeight: 46
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
 --- !u!114 &7887689455078732951
 MonoBehaviour:
   m_ObjectHideFlags: 0
