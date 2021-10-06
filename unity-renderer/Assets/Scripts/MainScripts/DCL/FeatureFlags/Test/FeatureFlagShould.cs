@@ -67,7 +67,9 @@ public class FeatureFlagShould
         FeatureFlagBridge bridge = newGameObject.AddComponent<FeatureFlagBridge>();
         FeatureFlag config = TestHelpers.CreateFeatureFlag();
         DataStore.i.featureFlags.flags.OnChange += FlagConfigReceived;
-        featureFlagReceived = false;
+        var featureFlagReceived = false;
+
+        void FlagConfigReceived(FeatureFlag newConfig, FeatureFlag oldConfig) => featureFlagReceived = true;
 
         //Act
         bridge.SetFeatureFlagConfiguration(config);
@@ -75,8 +77,5 @@ public class FeatureFlagShould
         //Assert
         Assert.IsTrue(featureFlagReceived);
     }
-
-    private bool featureFlagReceived = false;
-    private void FlagConfigReceived(FeatureFlag newConfig, FeatureFlag oldConfig) { featureFlagReceived = true; }
 
 }
