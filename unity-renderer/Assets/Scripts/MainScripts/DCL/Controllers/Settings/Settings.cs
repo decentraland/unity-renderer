@@ -80,7 +80,7 @@ namespace DCL.SettingsCommon
                 voiceChatVolume = 1,
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
                 autoqualityOn = false,
-                namesOpacity = 1
+                namesOpacity = 1f
             };
         }
 
