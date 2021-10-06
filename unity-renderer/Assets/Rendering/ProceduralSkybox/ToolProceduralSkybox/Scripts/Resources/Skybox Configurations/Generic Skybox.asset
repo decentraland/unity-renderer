@@ -310,8 +310,78 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 5
       m_NumAlphaKeys: 2
+  slots:
+  - disabled: 0
+    slotName: 
+    expandedInEditor: 1
+    startTime: 0
+    endTime: 0
+    layers:
+    - disabled: 0
+      nameInEditor: Tex Layer 1
+      expandedInEditor: 0
+      timeSpan_start: 0
+      timeSpan_End: 0
+      fadingIn: 0
+      fadingOut: 0
+      tintercentage: 0
+      renderDistance: []
+      layerType: 0
+      texture: {fileID: 0}
+      textureNormal: {fileID: 0}
+      cubemap: {fileID: 0}
+      color:
+        serializedVersion: 2
+        key0: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 1, g: 1, b: 1, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 0
+        ctime1: 65535
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      tiling: {x: 1, y: 1}
+      offset: []
+      satelliteWidthHeight: []
+      rotation_float: []
+      cubemapRotations: []
+      speed_Vec2: {x: 0, y: 0}
+      speed: 0
+      normalIntensity: 0
+  - disabled: 0
+    slotName: 
+    expandedInEditor: 0
+    startTime: 0
+    endTime: 0
+    layers: []
+  - disabled: 0
+    slotName: 
+    expandedInEditor: 0
+    startTime: 0
+    endTime: 0
+    layers: []
   textureLayers:
-  - nameInEditor: Stars
+  - disabled: 0
+    nameInEditor: Stars
     expandedInEditor: 1
     timeSpan_start: 12
     timeSpan_End: 24
@@ -360,7 +430,8 @@ MonoBehaviour:
     speed_Vec2: {x: 0, y: 0}
     speed: 0.1
     normalIntensity: 0
-  - nameInEditor: Clouds Day
+  - disabled: 0
+    nameInEditor: Clouds Day
     expandedInEditor: 1
     timeSpan_start: 13
     timeSpan_End: 24
@@ -409,7 +480,8 @@ MonoBehaviour:
     speed_Vec2: {x: 0, y: 0}
     speed: 0.02
     normalIntensity: 0
-  - nameInEditor: Clouds Night
+  - disabled: 0
+    nameInEditor: Clouds Night
     expandedInEditor: 1
     timeSpan_start: 12
     timeSpan_End: 22
@@ -458,7 +530,8 @@ MonoBehaviour:
     speed_Vec2: {x: 0, y: 0}
     speed: 0.02
     normalIntensity: 0
-  - nameInEditor: Clouds Plannar
+  - disabled: 0
+    nameInEditor: Clouds Plannar
     expandedInEditor: 0
     timeSpan_start: 0
     timeSpan_End: 24
