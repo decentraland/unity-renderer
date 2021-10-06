@@ -85,7 +85,8 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         UpdateEntityCount();
 
-        startBuilderMusicCoroutine = StartCoroutine(StartBuilderMusic());
+        if (eventBuilderMusic.source.gameObject.activeSelf)
+            startBuilderMusicCoroutine = StartCoroutine(StartBuilderMusic());
 
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
@@ -96,7 +97,8 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     public void ExitEditMode()
     {
         eventBuilderExit.Play();
-        fadeOutCoroutine =  StartCoroutine(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
+        if (eventBuilderMusic.source.gameObject.activeSelf)
+            fadeOutCoroutine =  StartCoroutine(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
 
