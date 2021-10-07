@@ -6,10 +6,10 @@ using UnityEngine;
 public class BuilderInWorld : PluginFeature
 {
     private const string DEV_FLAG_NAME = "builder-dev";
-    internal readonly IBIWEditor editor;
-    internal readonly IBuilderProjectsPanelController panelController;
+    internal IBIWEditor editor;
+    internal IBuilderProjectsPanelController panelController;
 
-    internal readonly Context context;
+    internal Context context;
 
     public BuilderInWorld()
     {
