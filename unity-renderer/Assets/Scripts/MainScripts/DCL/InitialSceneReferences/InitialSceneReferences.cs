@@ -18,10 +18,9 @@ namespace DCL
             public PlayerAvatarController playerAvatarController;
             public CameraController cameraController;
             public UnityEngine.Camera mainCamera;
+            public GameObject bridgeGameObject;
 
-            public Data ()
-            {
-            }
+            public Data () { }
 
             public Data(InitialSceneReferences component)
             {
@@ -48,6 +47,7 @@ namespace DCL
         [SerializeField] private PlayerAvatarController playerAvatarControllerReference;
         [SerializeField] private CameraController cameraControllerReference;
         [SerializeField] private UnityEngine.Camera mainCameraReference;
+        [SerializeField] private GameObject bridgeGameObjectReference;
 
         public GameObject groundVisual => data.groundVisual;
         public GameObject cameraParent => data.cameraParent;
@@ -58,6 +58,7 @@ namespace DCL
         public PlayerAvatarController playerAvatarController => data.playerAvatarController;
         public CameraController cameraController => data.cameraController;
         public UnityEngine.Camera mainCamera { get { return mainCameraReference; } }
+        public GameObject bridgeGameObject { get { return bridgeGameObjectReference; } }
 
         public static InitialSceneReferences i { get; private set; }
 
