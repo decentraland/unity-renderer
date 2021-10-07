@@ -88,14 +88,14 @@ namespace UnityGLTF.Loader
 
             if (!asyncOp.isSucceded)
             {
-                Debug.Log($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
+                Debug.LogError($"{asyncOp.webRequest.error} - {finalUrl} - responseCode: {asyncOp.webRequest.responseCode}");
                 errorMessage = $"{asyncOp.webRequest.error} {asyncOp.webRequest.downloadHandler.text}";
                 error = true;
             }
 
             if (!error && asyncOp.webRequest.downloadedBytes > int.MaxValue)
             {
-                Debug.Log("Stream is too big for a byte array");
+                Debug.LogError("Stream is too big for a byte array");
                 errorMessage = "Stream is too big for a byte array";
                 error = true;
             }
