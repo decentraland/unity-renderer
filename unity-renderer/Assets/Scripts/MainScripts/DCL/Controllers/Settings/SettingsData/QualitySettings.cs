@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public class QualitySettings : ICloneable
+    public class QualitySettings : ICloneable, IEquatable<QualitySettings>
     {
         public enum BaseResolution
         {
@@ -69,8 +69,15 @@ namespace DCL.SettingsCommon
         [Tooltip("Amount of HQ Avatars visible at any time")]
         public int maxHQAvatars;
 
+        
+        public object Clone() { return MemberwiseClone(); }
         public bool Equals(QualitySettings otherSetting)
         {
+            if (ReferenceEquals(null, otherSetting))
+                return false;
+            if (ReferenceEquals(this, otherSetting))
+                return true;
+            
             // The precision is set to 1 because the wholeNumbers setting
             // in the slider can clamp the values, thus we can have a 0 > n > 1 precision error.
             const float comparePrecision = 1.0f;
@@ -107,7 +114,17 @@ namespace DCL.SettingsCommon
                 return false;
 
             return true;
+            
         }
-        public object Clone() { return MemberwiseClone(); }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
+            return Equals((QualitySettings) obj);
+        }
     }
 }

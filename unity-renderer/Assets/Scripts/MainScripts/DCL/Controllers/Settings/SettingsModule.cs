@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.SettingsCommon
 {
-    public class SettingsModule<T> where T : class, ICloneable
+    public class SettingsModule<T> where T : class, ICloneable, IEquatable<T>
     {
         public event Action<T> OnChanged;
 

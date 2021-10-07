@@ -3,7 +3,7 @@ using System;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public class GeneralSettings : ICloneable
+    public class GeneralSettings : ICloneable, IEquatable<GeneralSettings>
     {
         public enum VoiceChatAllow { ALL_USERS, VERIFIED_ONLY, FRIENDS_ONLY }
 
@@ -17,16 +17,24 @@ namespace DCL.SettingsCommon
         public float namesOpacity;
 
         public object Clone() { return (GeneralSettings)MemberwiseClone(); }
-        public bool Equals(GeneralSettings settings)
+
+        public bool Equals(GeneralSettings other)
         {
-            return mouseSensitivity == settings.mouseSensitivity
-                   && scenesLoadRadius == settings.scenesLoadRadius
-                   && avatarsLODDistance == settings.avatarsLODDistance
-                   && maxNonLODAvatars == settings.maxNonLODAvatars
-                   && voiceChatVolume == settings.voiceChatVolume
-                   && voiceChatAllow == settings.voiceChatAllow
-                   && autoqualityOn == settings.autoqualityOn
-                   && namesOpacity == settings.namesOpacity;
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return mouseSensitivity.Equals(other.mouseSensitivity) && voiceChatVolume.Equals(other.voiceChatVolume) && voiceChatAllow == other.voiceChatAllow && autoqualityOn == other.autoqualityOn && scenesLoadRadius.Equals(other.scenesLoadRadius) && avatarsLODDistance.Equals(other.avatarsLODDistance) && maxNonLODAvatars.Equals(other.maxNonLODAvatars) && namesOpacity.Equals(other.namesOpacity);
+        }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
+            return Equals((GeneralSettings) obj);
         }
     }
 }

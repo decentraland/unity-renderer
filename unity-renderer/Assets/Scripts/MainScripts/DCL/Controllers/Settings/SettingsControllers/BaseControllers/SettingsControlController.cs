@@ -13,9 +13,9 @@ namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
 
         public virtual void Initialize()
         {
-            currentGeneralSettings = Settings.i.generalSettings.Data;
-            currentQualitySetting = Settings.i.qualitySettings.Data;
-            currentAudioSettings = Settings.i.audioSettings.Data;
+            currentGeneralSettings = Settings.i.generalSettings.Data.Clone() as GeneralSettings;
+            currentQualitySetting = Settings.i.qualitySettings.Data.Clone() as QualitySettings;
+            currentAudioSettings = Settings.i.audioSettings.Data.Clone() as AudioSettings;
 
             Settings.i.generalSettings.OnChanged += OnGeneralSettingsChanged;
             Settings.i.qualitySettings.OnChanged += OnQualitySettingsChanged;
@@ -53,17 +53,17 @@ namespace DCL.SettingsCommon.SettingsControllers.BaseControllers
             Settings.i.audioSettings.Apply(currentAudioSettings);
         }
 
-        private void OnGeneralSettingsChanged(GeneralSettings newGeneralSettings) { currentGeneralSettings = newGeneralSettings; }
+        private void OnGeneralSettingsChanged(GeneralSettings newGeneralSettings) { currentGeneralSettings = (GeneralSettings)newGeneralSettings.Clone(); }
 
-        private void OnQualitySettingsChanged(QualitySettings newQualitySettings) { currentQualitySetting = newQualitySettings; }
+        private void OnQualitySettingsChanged(QualitySettings newQualitySettings) { currentQualitySetting = (QualitySettings)newQualitySettings.Clone(); }
 
-        private void OnAudioSettingsChanged(AudioSettings newAudioSettings) { currentAudioSettings = newAudioSettings; }
+        private void OnAudioSettingsChanged(AudioSettings newAudioSettings) { currentAudioSettings = (AudioSettings)newAudioSettings.Clone(); }
 
         protected virtual void OnResetSettingsControl()
         {
-            currentGeneralSettings = Settings.i.generalSettings.Data;
-            currentQualitySetting = Settings.i.qualitySettings.Data;
-            currentAudioSettings = Settings.i.audioSettings.Data;
+            currentGeneralSettings = Settings.i.generalSettings.Data.Clone() as GeneralSettings;
+            currentQualitySetting = Settings.i.qualitySettings.Data.Clone() as QualitySettings;
+            currentAudioSettings = Settings.i.audioSettings.Data.Clone() as AudioSettings;
         }
     }
 }
