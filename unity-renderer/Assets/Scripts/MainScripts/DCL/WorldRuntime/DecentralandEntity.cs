@@ -28,6 +28,7 @@ namespace DCL.Models
         public Renderer[] renderers => meshesInfo.renderers;
 
         public System.Action<IDCLEntity> OnShapeUpdated { get; set; }
+        public System.Action<IDCLEntity> OnShapeLoaded { get; set; }
         public System.Action<object> OnNameChange { get; set; }
         public System.Action<object> OnTransformChange { get; set; }
         public System.Action<IDCLEntity> OnRemoved { get; set; }

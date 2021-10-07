@@ -62,6 +62,7 @@ namespace DCL.Components
             alreadyLoaded = true;
 
             entity.OnShapeUpdated?.Invoke(entity);
+            entity.OnShapeLoaded?.Invoke(entity);
         }
 
         void LoadAsset() { loaderController?.LoadAsset(assetUrl, true); }
