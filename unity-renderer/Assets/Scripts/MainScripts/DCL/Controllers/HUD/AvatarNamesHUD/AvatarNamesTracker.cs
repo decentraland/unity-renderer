@@ -51,7 +51,8 @@ namespace AvatarNamesHUD
             if ( name != null )
                 name.gameObject.SetActive(visibility);
 
-            voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
+            if (voiceChatCanvasGroup != null)
+                voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
         }
 
         public void SetPlayer(Player newPlayer)
@@ -76,7 +77,7 @@ namespace AvatarNamesHUD
             Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(player.worldPosition + OFFSET);
             float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
             float startingFade = lodDistance * 0.75f;
-            float alpha = Mathf.Lerp(1, 0, (screenPoint.z - startingFade) / (lodDistance - startingFade)); //Lerp just at the last quarter of distance
+            float alpha = DataStore.i.HUDs.avatarNamesOpacity.Get() * Mathf.Lerp(1, 0, (screenPoint.z - startingFade) / (lodDistance - startingFade)); //Lerp just at the last quarter of distance
 
             if (screenPoint.z > 0)
             {

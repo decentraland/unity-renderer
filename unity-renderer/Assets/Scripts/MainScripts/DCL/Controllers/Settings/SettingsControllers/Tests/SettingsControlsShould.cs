@@ -41,6 +41,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            Settings.i.LoadDefaultSettings();
+
             ScriptableObject.Destroy(settingController);
 
             yield return EditorSceneManager.UnloadSceneAsync(TEST_SCENE_NAME);
@@ -363,7 +365,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeAvatarSFXVolumeCorrectly() {
+        public void ChangeAvatarSFXVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<AvatarSFXVolumeControlController>();
             settingController.Initialize();
@@ -377,7 +380,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeChatSFXToggleCorrectly() {
+        public void ChangeChatSFXToggleCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<ChatSFXToggleControlController>();
             settingController.Initialize();
@@ -391,7 +395,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeMasterVolumeCorrectly() {
+        public void ChangeMasterVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<MasterVolumeControlController>();
             settingController.Initialize();
@@ -405,7 +410,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeMusicVolumeCorrectly() {
+        public void ChangeMusicVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<MusicVolumeControlController>();
             settingController.Initialize();
@@ -419,7 +425,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeSceneSFXVolumeCorrectly() {
+        public void ChangeSceneSFXVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<SceneSFXVolumeControlController>();
             settingController.Initialize();
@@ -433,7 +440,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeUISFXVolumeCorrectly() {
+        public void ChangeUISFXVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<UISFXVolumeControlController>();
             settingController.Initialize();

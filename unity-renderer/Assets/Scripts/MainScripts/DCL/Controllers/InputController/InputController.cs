@@ -24,6 +24,7 @@ public enum DCLAction_Trigger
     ToggleVoiceChatRecording = 127,
     ToggleAvatarEditorHud = 128,
     ToggleQuestsPanelHud = 129,
+    ToggleAvatarNamesHud = 130,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -346,6 +347,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleQuestsPanelHud:
                     InputProcessor.FromKey(action, KeyCode.J, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleAvatarNamesHud:
+                    InputProcessor.FromKey(action, KeyCode.N, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
