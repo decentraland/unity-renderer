@@ -3,6 +3,11 @@ using UnityEngine;
 public interface IPlacesAndEventsSectionComponentView
 {
     /// <summary>
+    /// Places sub-section component.
+    /// </summary>
+    IPlacesSubSectionComponentView currentPlacesSubSectionComponentView { get; }
+
+    /// <summary>
     /// Events sub-section component.
     /// </summary>
     IEventsSubSectionComponentView currentEventsSubSectionComponentView { get; }
@@ -18,6 +23,7 @@ public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEven
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
 
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
+    public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
 
     private void Start()
     {
