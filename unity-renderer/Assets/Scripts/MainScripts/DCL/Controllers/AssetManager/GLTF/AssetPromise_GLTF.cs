@@ -87,13 +87,10 @@ namespace DCL
             gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
                 false, tmpSettings, FileToHash);
 
-            gltfComponent.OnSuccess += OnSuccess;
-            gltfComponent.OnFail += OnFail;
-            
             gltfComponent.sceneImporter.OnMeshCreated += MeshCreated;
             gltfComponent.sceneImporter.OnRendererCreated += RendererCreated;
 
-            this.OnSuccess = () =>
+            gltfComponent.OnSuccess += () =>
             {
                 if ( asset != null )
                 {
@@ -102,7 +99,8 @@ namespace DCL
 
                 OnSuccess.Invoke();
             };
-            this.OnFail = OnFail;
+
+            gltfComponent.OnFail += OnFail;
 
             asset.name = fileName;
         }
