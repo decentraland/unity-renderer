@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
 
-public class BIWSceneBoundarieShould : IntegrationTestSuite
+public class BIWSceneBoundariesShould : IntegrationTestSuite
 {
     protected override PlatformContext CreatePlatformContext()
     {
@@ -22,9 +22,9 @@ public class BIWSceneBoundarieShould : IntegrationTestSuite
             textureWebRequest: new WebRequestTexture(),
             null);
 
-        var context = DCL.Tests.PlatformContextFactory.CreateWithCustomMocks
+        var context = DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
         (
-            webRequestController: webRequestController
+            webRequestController
         );
 
         return context;

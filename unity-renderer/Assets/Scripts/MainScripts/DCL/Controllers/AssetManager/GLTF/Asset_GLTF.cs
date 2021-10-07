@@ -1,5 +1,6 @@
 using DCL.Configuration;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityGLTF;
 
@@ -7,16 +8,21 @@ namespace DCL
 {
     public class Asset_GLTF : Asset_WithPoolableContainer
     {
-        public override GameObject container { get; set; }
         public string name;
         public bool visible = true;
+
+        public override GameObject container { get; set; }
+
+        public List<Mesh> meshes = new List<Mesh>();
+        public Dictionary<Mesh, int> meshToTriangleCount = new Dictionary<Mesh, int>();
+        public List<Renderer> renderers = new List<Renderer>();
+        public int totalTriangleCount = 0;
 
         Coroutine showCoroutine;
 
         public Asset_GLTF()
         {
-            container = new GameObject();
-            container.name = "Asset_GLTF Container";
+            container = new GameObject("Asset_GLTF Container");
             visible = true;
         }
 
@@ -24,6 +30,7 @@ namespace DCL
         {
             Asset_GLTF result = this.MemberwiseClone() as Asset_GLTF;
             result.visible = true;
+            result.meshes = new List<Mesh>(meshes);
             return result;
         }
 
@@ -36,6 +43,7 @@ namespace DCL
                 container.transform.parent = null;
                 container.transform.position = EnvironmentSettings.MORDOR;
             }
+
             visible = false;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using DCL;
+using NSubstitute.ClearExtensions;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -32,6 +33,7 @@ namespace Tests
         {
             Environment.Dispose();
             PoolManager.i?.Dispose();
+            DataStore.Clear();
             yield break;
         }
     }

@@ -20,7 +20,7 @@ namespace DCL
         void Initialize(
             IWebRequest genericWebRequest,
             IWebRequestAssetBundle assetBundleWebRequest,
-            IWebRequest textureWebRequest,
+            IWebRequestTexture textureWebRequest,
             IWebRequestAudio audioWebRequest);
 
         /// <summary>
@@ -95,7 +95,8 @@ namespace DCL
             Action<UnityWebRequest> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true);
+            bool disposeOnCompleted = true,
+            bool isReadable = true);
 
         /// <summary>
         /// Download an audio clip from a url.

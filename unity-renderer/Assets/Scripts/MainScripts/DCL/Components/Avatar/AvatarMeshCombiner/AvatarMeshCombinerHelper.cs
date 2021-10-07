@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GPUSkinning;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
@@ -20,6 +21,9 @@ namespace DCL
 
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
+
+        public bool prepareMeshForGpuSkinning = false;
+        public bool uploadMeshToGpu = true;
 
         private AvatarMeshCombiner.Output? lastOutput;
 
@@ -105,6 +109,12 @@ namespace DCL
             renderer.updateWhenOffscreen = false;
             renderer.skinnedMotionVectors = false;
             renderer.enabled = true;
+
+            if (prepareMeshForGpuSkinning)
+                GPUSkinningUtils.EncodeBindPosesIntoMesh(renderer);
+
+            if (uploadMeshToGpu)
+                output.mesh.UploadMeshData(true);
 
             logger.Log("AvatarMeshCombiner", "Finish combining avatar. Click here to focus on GameObject.", container);
             return true;

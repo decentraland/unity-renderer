@@ -22,7 +22,6 @@ namespace DCL.Models
             set
             {
                 meshRootGameObjectValue = value;
-
                 UpdateRenderersCollection();
             }
         }

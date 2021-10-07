@@ -1,6 +1,9 @@
 using System;
+using System.Linq;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityGLTF;
 
 namespace DCL
@@ -78,15 +81,52 @@ namespace DCL
                 initialVisibility = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE,
                 shaderOverride = settings.shaderOverride,
                 addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
+                forceGPUOnlyMesh = settings.forceGPUOnlyMesh
             };
 
             gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
                 false, tmpSettings, FileToHash);
 
-            gltfComponent.OnSuccess += OnSuccess;
+            gltfComponent.sceneImporter.OnMeshCreated += MeshCreated;
+            gltfComponent.sceneImporter.OnRendererCreated += RendererCreated;
+
+            gltfComponent.OnSuccess += () =>
+            {
+                if ( asset != null )
+                {
+                    asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
+                }
+
+                OnSuccess.Invoke();
+            };
+
             gltfComponent.OnFail += OnFail;
 
             asset.name = fileName;
+        }
+
+
+        private void RendererCreated(Renderer r)
+        {
+            Assert.IsTrue(r != null, "Renderer is null?");
+
+            // TODO(Brian): SilentForget nulls this. Remove this line after fixing the GLTF cancellation. 
+            if ( asset == null )
+                return;
+
+            asset.renderers.Add(r);
+        }
+
+        private void MeshCreated(Mesh mesh)
+        {
+            Assert.IsTrue(mesh != null, "Mesh is null?");
+
+            // TODO(Brian): SilentForget nulls this. Remove this line after fixing the GLTF cancellation. 
+            if ( asset == null )
+                return;
+
+            asset.meshes.Add(mesh);
+            asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
         }
 
         bool FileToHash(string fileName, out string hash)
@@ -96,6 +136,7 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
+            asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
             //NOTE(Brian):  Show the asset using the simple gradient feedback.
             asset.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess);
         }

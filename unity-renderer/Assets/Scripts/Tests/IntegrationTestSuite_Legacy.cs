@@ -120,6 +120,7 @@ public class IntegrationTestSuite_Legacy
         }
 
         Environment.Dispose();
+        DataStore.Clear();
 
         TearDown_Memory();
 

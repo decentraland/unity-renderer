@@ -43,6 +43,7 @@ namespace DCL.Controllers
 
         public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo) { return feedbackStyle.GetOriginalMaterials(meshesInfo); }
 
+
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         IEnumerator CheckEntities()
         {
@@ -54,21 +55,15 @@ namespace DCL.Controllers
                     //TODO(Brian): Remove later when we implement a centralized way of handling time budgets
                     var messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
 
-                    if (messagingManager == null)
-                    {
-                        Debug.LogWarning("MessagingControllersManager is null! This shouldn't happen!");
-                        continue;
-                    }
-
                     void processEntitiesList(HashSet<IDCLEntity> entities)
                     {
-                        if (messagingManager.timeBudgetCounter <= 0f)
+                        if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
                             return;
 
                         using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
                         while (iterator.MoveNext())
                         {
-                            if (messagingManager.timeBudgetCounter <= 0f)
+                            if (messagingManager != null && messagingManager.timeBudgetCounter <= 0f)
                                 break;
 
                             float startTime = Time.realtimeSinceStartup;
@@ -77,7 +72,9 @@ namespace DCL.Controllers
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
-                            messagingManager.timeBudgetCounter -= (finishTime - startTime);
+
+                            if ( messagingManager != null )
+                                messagingManager.timeBudgetCounter -= (finishTime - startTime);
                         }
                     }
 
@@ -96,6 +93,7 @@ namespace DCL.Controllers
                             }
                         }
                     }
+
                     checkedEntities.Clear();
 
                     lastCheckTime = Time.realtimeSinceStartup;
@@ -295,9 +293,9 @@ namespace DCL.Controllers
 
         protected void AddEntityBasedOnPriority(IDCLEntity entity)
         {
-            if (IsHighPrioEntity(entity) && !highPrioEntitiesToCheck.Contains(entity)) 
+            if (IsHighPrioEntity(entity) && !highPrioEntitiesToCheck.Contains(entity))
                 highPrioEntitiesToCheck.Add(entity);
-            else if(!entitiesToCheck.Contains(entity))
+            else if (!entitiesToCheck.Contains(entity))
                 entitiesToCheck.Add(entity);
         }
 
@@ -305,7 +303,7 @@ namespace DCL.Controllers
         {
             if (entity.gameObject == null)
                 return false;
-            
+
             Vector3 scale = entity.gameObject.transform.lossyScale;
             Vector3 position = entity.gameObject.transform.localPosition;
             return scale.x > TRIGGER_HIGHPRIO_VALUE || scale.y > TRIGGER_HIGHPRIO_VALUE || scale.z > TRIGGER_HIGHPRIO_VALUE || position.x > TRIGGER_HIGHPRIO_VALUE || position.y > TRIGGER_HIGHPRIO_VALUE || position.z > TRIGGER_HIGHPRIO_VALUE;

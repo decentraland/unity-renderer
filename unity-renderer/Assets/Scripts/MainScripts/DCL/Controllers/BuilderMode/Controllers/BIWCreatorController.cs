@@ -115,8 +115,8 @@ namespace DCL
             if (HUDController.i.builderInWorldMainHud == null)
                 return false;
 
-            SceneMetricsModel limits = sceneToEdit.metricsController.GetLimits();
-            SceneMetricsModel usage = sceneToEdit.metricsController.GetModel();
+            SceneMetricsModel limits = sceneToEdit.metricsCounter.GetLimits();
+            SceneMetricsModel usage = sceneToEdit.metricsCounter.GetModel();
 
             if (limits.bodies < usage.bodies + sceneObject.metrics.bodies)
             {
