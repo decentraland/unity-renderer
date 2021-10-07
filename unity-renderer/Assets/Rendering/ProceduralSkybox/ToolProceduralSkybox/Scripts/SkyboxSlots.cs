@@ -7,19 +7,40 @@ namespace DCL.Skybox
     [System.Serializable]
     public class SkyboxSlots
     {
-        public bool disabled = false;
+        public bool enabled = true;
+        public int slotID = -1;
         public string slotName;
         public bool expandedInEditor;
         public float startTime = 0;
         public float endTime = 24;
         public List<TextureLayer> layers = new List<TextureLayer>();
 
-        public SkyboxSlots(float startTime = 0, float endTime = 24)
+        public SkyboxSlots(int slotID, float startTime = 0, float endTime = 24)
         {
-            disabled = false;
+            this.slotID = slotID;
+            enabled = true;
             this.startTime = startTime;
             this.endTime = endTime;
             layers = new List<TextureLayer>();
+        }
+
+        public void UpdateSlotsID(int slotID) { this.slotID = slotID; }
+
+        public void AddNewLayer(TextureLayer layer, bool addInFront = false)
+        {
+            if (layer == null)
+            {
+                return;
+            }
+
+            if (addInFront)
+            {
+                this.layers.Insert(0, layer);
+            }
+            else
+            {
+                this.layers.Add(layer);
+            }
         }
 
         public TextureLayer GetActiveLayer(float currentTime)
