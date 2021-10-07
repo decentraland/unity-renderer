@@ -4,11 +4,14 @@ using DCL.Interface;
 using System.Collections;
 using System;
 using DCL.Helpers;
+using UnityEngine.Events;
 using Environment = DCL.Environment;
 using WaitUntil = UnityEngine.WaitUntil;
 
 public class ProfileHUDController : IHUD
 {
+    private readonly IUserProfileGateway userProfileGateway;
+
     [Serializable]
     public struct Configuration
     {
@@ -35,8 +38,9 @@ public class ProfileHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
-    public ProfileHUDController()
+    public ProfileHUDController(IUserProfileGateway userProfileGateway)
     {
+        this.userProfileGateway = userProfileGateway;
         mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
 
 
@@ -58,6 +62,8 @@ public class ProfileHUDController : IHUD
         view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
         view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
         view.inputName.onSubmit.AddListener(UpdateProfileName);
+        view.inputDescription.onSubmit.AddListener(UpdateProfileDescription);
+        view.inputDescription.onDeselect.AddListener(HandleInputDescriptionDeselection);
         view.OnOpen += () =>
         {
             WebInterface.RequestOwnProfileUpdate();
@@ -136,6 +142,9 @@ public class ProfileHUDController : IHUD
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
+        
+        view.inputDescription.onSubmit.RemoveListener(UpdateProfileDescription);
+        view.inputDescription.onDeselect.RemoveListener(HandleInputDescriptionDeselection);
     }
 
     void OnProfileUpdated(UserProfile profile) { view?.SetProfile(profile); }
@@ -225,8 +234,31 @@ public class ProfileHUDController : IHUD
             view.ActivateProfileNameEditionMode(false);
         }
 
-        WebInterface.SendSaveUserUnverifiedName(newName);
+        userProfileGateway.SaveUnverifiedName(newName);
     }
 
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { view?.SetNameRegex(current.profiles.nameValidRegex); }
+
+    private void UpdateProfileDescription(string description)
+    {
+        if (view.inputDescription.wasCanceled
+            || !ownUserProfile.hasConnectedWeb3
+            || description.Length > view.inputDescription.characterLimit)
+        {
+            ResetViewingDescription();
+            return;
+        }
+
+        view.SetDescription(description);
+        view.ActivateDescriptionEditionMode(false);
+
+        userProfileGateway.SaveDescription(description);
+    }
+
+    private void ResetViewingDescription()
+    {
+        view.inputDescription.text = ownUserProfile.description;
+    }
+
+    private void HandleInputDescriptionDeselection(string description) => ResetViewingDescription();
 }

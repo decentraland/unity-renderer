@@ -1005,6 +1005,17 @@ namespace DCL.Interface
         {
             public string newUnverifiedName;
         }
+        
+        [System.Serializable]
+        public class SendSaveUserDescriptionPayload
+        {
+            public string description;
+
+            public SendSaveUserDescriptionPayload(string description)
+            {
+                this.description = description;
+            }
+        }
 
         [Serializable]
         public class SendVideoProgressEvent
@@ -1045,6 +1056,11 @@ namespace DCL.Interface
             };
 
             SendMessage("SaveUserUnverifiedName", payload);
+        }
+        
+        public static void SendSaveUserDescription(string about)
+        {
+            SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about));
         }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }

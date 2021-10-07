@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Environment = DCL.Environment;
 
 internal class ProfileHUDView : MonoBehaviour
 {
@@ -16,6 +17,9 @@ internal class ProfileHUDView : MonoBehaviour
 
     [SerializeField]
     internal ShowHideAnimator menuShowHideAnimator;
+
+    [SerializeField]
+    private RectTransform mainRootLayout;
 
     [SerializeField]
     internal GameObject loadingSpinner;
@@ -111,6 +115,19 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField]
     internal RectTransform backpackTooltipReference;
 
+    [Header("Description")]
+    [SerializeField]
+    internal TMP_InputField inputDescription;
+
+    [SerializeField]
+    internal TextMeshProUGUI textCharLimitDescription;
+
+    [SerializeField]
+    internal GameObject descriptionContainer;
+
+    [SerializeField]
+    private Image descriptionBackgroundImage;
+
     private InputAction_Trigger.Triggered closeActionDelegate;
 
     private Coroutine copyToastRoutine = null;
@@ -128,8 +145,15 @@ internal class ProfileHUDView : MonoBehaviour
         buttonCopyAddress.onClick.AddListener(CopyAddress);
         buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
-        inputName.onValueChanged.AddListener(UpdateCharLimit);
+        inputName.onValueChanged.AddListener(UpdateNameCharLimit);
         inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
+        inputDescription.onSelect.AddListener(x =>
+        {
+            ActivateDescriptionEditionMode(true);
+            UpdateDescriptionCharLimit(inputDescription.text);
+        });
+        inputDescription.onValueChanged.AddListener(UpdateDescriptionCharLimit);
+        inputDescription.onDeselect.AddListener(x => ActivateDescriptionEditionMode(false));
         copyToast.gameObject.SetActive(false);
     }
 
@@ -148,6 +172,9 @@ internal class ProfileHUDView : MonoBehaviour
         SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
         HandleProfileAddress(userProfile);
         HandleProfileSnapshot(userProfile);
+        SetDescription(userProfile.description);
+        SetDescriptionEnabled(userProfile.hasConnectedWeb3);
+        ForceLayoutToRefreshSize();
     }
 
     internal void ToggleMenu()
@@ -216,6 +243,11 @@ internal class ProfileHUDView : MonoBehaviour
         nonConnectedWalletSection.SetActive(!active);
     }
 
+    private void ForceLayoutToRefreshSize()
+    {
+        LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout);
+    }
+
     private void SetActiveUnverifiedNameGOs(bool active)
     {
         for (int i = 0; i < hideOnNameClaimed.Length; i++)
@@ -251,7 +283,7 @@ internal class ProfileHUDView : MonoBehaviour
             return;
         }
 
-        DCL.Environment.i.platform.clipboard.WriteText(profile.userId);
+        Environment.i.platform.clipboard.WriteText(profile.userId);
 
         copyTooltip.gameObject.SetActive(false);
         if (copyToastRoutine != null)
@@ -302,7 +334,7 @@ internal class ProfileHUDView : MonoBehaviour
         }
     }
 
-    private void UpdateCharLimit(string newValue) { textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}"; }
+    private void UpdateNameCharLimit(string newValue) { textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}"; }
 
     internal void SetProfileName(string newName) { textName.text = newName; }
 
@@ -314,5 +346,28 @@ internal class ProfileHUDView : MonoBehaviour
             return true;
 
         return nameRegex.IsMatch(name);
+    }
+
+    internal void ActivateDescriptionEditionMode(bool active)
+    {
+        textCharLimitDescription.gameObject.SetActive(active);
+        var targetColor = descriptionBackgroundImage.color;
+        targetColor.a = active ? 1f : 0f;
+        descriptionBackgroundImage.color = targetColor;
+    }
+    
+    internal void SetDescription(string description)
+    {
+        inputDescription.text = description;
+    }
+    
+    private void UpdateDescriptionCharLimit(string newValue)
+    {
+        textCharLimitDescription.text = $"{newValue.Length}/{inputDescription.characterLimit}";
+    }
+    
+    private void SetDescriptionEnabled(bool enabled)
+    {
+        descriptionContainer.SetActive(enabled);
     }
 }
