@@ -28,7 +28,7 @@ public class GridContainerComponentViewTests
             itemSize = new Vector2Int(10, 10),
             constranitCount = 3,
             spaceBetweenItems = new Vector2Int(5, 5),
-            adaptItemSizeToGridSize = false
+            adaptItemSizeToContainer = false
         };
 
         // Act
@@ -51,7 +51,7 @@ public class GridContainerComponentViewTests
         gridContainerComponent.model.itemSize = testItemSize;
         gridContainerComponent.model.constranitCount = testNumColumns;
         gridContainerComponent.model.spaceBetweenItems = testSpaceBetweenItems;
-        gridContainerComponent.model.adaptItemSizeToGridSize = false;
+        gridContainerComponent.model.adaptItemSizeToContainer = false;
 
         // Act
         gridContainerComponent.RefreshControl();
@@ -83,7 +83,7 @@ public class GridContainerComponentViewTests
     public void SetItemSizeCorrectly(bool autoItemSize)
     {
         // Arrange
-        gridContainerComponent.model.adaptItemSizeToGridSize = autoItemSize;
+        gridContainerComponent.model.adaptItemSizeToContainer = autoItemSize;
         gridContainerComponent.model.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
         Vector2 testItemSize = new Vector2(10f, 10f);
         if (autoItemSize)
