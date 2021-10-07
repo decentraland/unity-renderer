@@ -11,6 +11,8 @@ using Object = UnityEngine.Object;
 
 public class WearableController
 {
+    internal static bool useAssetBundles = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("wearable_asset_bundles");
+    
     private const string MATERIAL_FILTER_HAIR = "hair";
     private const string MATERIAL_FILTER_SKIN = "skin";
 
@@ -25,7 +27,6 @@ public class WearableController
 
     public bool boneRetargetingDirty = false;
     internal string lastMainFileLoaded = null;
-    internal bool wearableAssetBundlesEnabled = true;
 
     protected SkinnedMeshRenderer[] assetRenderers;
     Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
@@ -39,13 +40,6 @@ public class WearableController
         wearable = original.wearable;
         loader = original.loader;
         assetRenderers = original.assetRenderers;
-        
-        // TODO: Change this when the Feature Flags refactor is merged
-        KernelConfig.i.EnsureConfigInitialized()
-                    .Then(config =>
-                    {
-                        wearableAssetBundlesEnabled = config.features.enableWearableAssetBundles;
-                    });
     }
 
     public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
@@ -108,7 +102,7 @@ public class WearableController
 
         lastMainFileLoaded = representation.mainFile;
 
-        loader.Load(representation.mainFile, wearableAssetBundlesEnabled ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY );
+        loader.Load(representation.mainFile, useAssetBundles ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY );
     }
 
     public void SetupHairAndSkinColors(Color skinColor, Color hairColor)

@@ -19,7 +19,7 @@ namespace DCL.Components
         public static bool useCustomContentServerUrl = false;
         public static string customContentServerUrl;
 
-        public static LoadingType loadingType = LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK;
+        public static LoadingType defaultLoadingType = LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK;
 
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
 
@@ -90,7 +90,7 @@ namespace DCL.Components
             loadStartTime = Time.realtimeSinceStartup;
 #endif
             
-            LoadingType finalLoadingType = forcedLoadingType != LoadingType.DEFAULT ? forcedLoadingType : loadingType;
+            LoadingType finalLoadingType = forcedLoadingType == LoadingType.DEFAULT ? defaultLoadingType : forcedLoadingType;
             switch (finalLoadingType)
             {
                 case LoadingType.ASSET_BUNDLE_ONLY:

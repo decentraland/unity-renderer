@@ -7,7 +7,6 @@ namespace KernelConfigurationTypes
     {
         public bool enableBuilderInWorld = false;
         public bool enableAvatarLODs = false;
-        public bool enableWearableAssetBundles = false;
         public bool enableTutorial = true;
         public bool enablePeopleCounter = false;
         public bool enableExploreV2 = false;
@@ -17,7 +16,6 @@ namespace KernelConfigurationTypes
         {
             return enableBuilderInWorld == other.enableBuilderInWorld
                    && enableAvatarLODs == other.enableAvatarLODs
-                   && enableWearableAssetBundles == other.enableWearableAssetBundles
                    && enableTutorial == other.enableTutorial
                    && enablePeopleCounter == other.enablePeopleCounter
                    && enableExploreV2 == other.enableExploreV2;
