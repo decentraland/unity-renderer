@@ -21,5 +21,9 @@ public class FeatureFlagController : IFeatureFlagController
         featureFlagBridgeComponent = gameObjectToAddBridge.AddComponent<FeatureFlagBridge>();
     }
 
-    public void Dispose() { Object.Destroy(featureFlagBridgeComponent); }
+    public void Dispose()
+    {
+        Object.Destroy(featureFlagBridgeComponent);
+        featureFlagBridgeComponent = null;
+    }
 }
