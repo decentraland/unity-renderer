@@ -67,7 +67,9 @@ namespace DCL
             DisablePassport();
 
             var model = (AvatarModel) newModel;
-
+#if UNITY_EDITOR
+            gameObject.name = $"Avatar Shape {model.name}";
+#endif
             everythingIsLoaded = false;
 
             bool avatarDone = false;

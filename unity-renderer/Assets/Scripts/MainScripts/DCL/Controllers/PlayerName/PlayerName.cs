@@ -1,11 +1,13 @@
 using System;
-using System.Collections;
+using DCL;
 using TMPro;
 using UnityEngine;
 
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
 {
+    private const int DEFAULT_CANVAS_SORTING_ORDER = 0;
+    private static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
     private const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
     private const float TARGET_ALPHA_SHOW = 1;
     private const float TARGET_ALPHA_HIDE = 0;
@@ -15,6 +17,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private RectTransform background;
     [SerializeField] private Transform pivot;
+    [SerializeField] private Animator talkingAnimator;
 
     private float alpha;
     private float targetAlpha;
@@ -23,13 +26,14 @@ public class PlayerName : MonoBehaviour, IPlayerName
     private void Awake()
     {
         alpha = 1;
+        canvas.sortingOrder = DEFAULT_CANVAS_SORTING_ORDER;
         Show(true);
     }
 
     public void SetName(string name)
     {
         nameText.text = name;
-        background.sizeDelta = new Vector2(nameText.GetPreferredValues().x * 1.25f, 30);
+        background.sizeDelta = new Vector2(nameText.GetPreferredValues().x + 50, 30);
     }
 
     private void Update()
@@ -46,6 +50,8 @@ public class PlayerName : MonoBehaviour, IPlayerName
             return;
         }
         Vector3 cameraPosition = CommonScriptableObjects.cameraPosition.Get();
+        Vector3 cameraRight = CommonScriptableObjects.cameraRight.Get();
+        Quaternion cameraRotation = DataStore.i.camera.rotation.Get();
 
         /*
          * TODO: We could obtain distance to player from the AvatarLODController but that coupling it's overkill and ugly
@@ -55,8 +61,18 @@ public class PlayerName : MonoBehaviour, IPlayerName
         float resolvedAlpha = ResolveAlphaByDistance(alpha, distanceToPlayer, forceShow);
         UpdateVisuals(resolvedAlpha);
         ScalePivotByDistance(distanceToPlayer);
+        LookAtCamera(cameraRight, cameraRotation.eulerAngles);
+    }
 
-        transform.LookAt(cameraPosition);
+    private void LookAtCamera(Vector3 cameraRight, Vector3 cameraEulerAngles)
+    {
+        Transform cachedTransform = transform;
+        cachedTransform.right = -cameraRight; // This will set the Y rotation
+
+        // Now we use the negated X axis rotation to make the rotation steady in horizont
+        Vector3 finalEulerAngle = cachedTransform.localEulerAngles;
+        finalEulerAngle.x = -cameraEulerAngles.x;
+        cachedTransform.localEulerAngles = finalEulerAngle;
     }
 
     public void Show(bool instant = false)
@@ -78,25 +94,27 @@ public class PlayerName : MonoBehaviour, IPlayerName
     }
     public void SetForceShow(bool forceShow)
     {
-        canvas.sortingOrder = forceShow ? int.MaxValue : 0;
+        canvas.sortingOrder = forceShow ? int.MaxValue : DEFAULT_CANVAS_SORTING_ORDER;
         this.forceShow = forceShow;
         if (this.forceShow)
             gameObject.SetActive(true);
     }
+
+    public void SetIsTalking(bool talking) { talkingAnimator.SetBool(TALKING_ANIMATOR_BOOL, talking); }
 
     private static float ResolveAlphaByDistance(float alphaValue, float distanceToCamera, bool forceShow)
     {
         if (forceShow)
             return alphaValue;
 
-        const float MIN_VALUE = 5;
-        if (distanceToCamera < MIN_VALUE)
+        const float MIN_DISTANCE = 5;
+        if (distanceToCamera < MIN_DISTANCE)
             return alphaValue;
 
-        return alphaValue * Mathf.Lerp(1, 0, (distanceToCamera - MIN_VALUE) / (15 - MIN_VALUE));
+        return alphaValue * Mathf.Lerp(1, 0, (distanceToCamera - MIN_DISTANCE) / (DataStore.i.avatarsLOD.LODDistance.Get() - MIN_DISTANCE));
     }
 
     private void UpdateVisuals(float resolvedAlpha) { canvasGroup.alpha = resolvedAlpha; }
 
-    internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.1f * distanceToCamera; }
+    internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
 }

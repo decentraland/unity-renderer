@@ -34,6 +34,7 @@ namespace DCL
         public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
         public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
+        public readonly DataStore_Camera camera = new DataStore_Camera();
 
         public class DataStore_BuilderInWorld
         {
@@ -129,6 +130,11 @@ namespace DCL
         public class DataStore_FeatureFlag
         {
             public readonly BaseVariable<FeatureFlag> flags = new BaseVariable<FeatureFlag>();
+        }
+
+        public class DataStore_Camera
+        {
+            public readonly BaseVariable<Quaternion> rotation =  new BaseVariable<Quaternion>();
         }
     }
 }
