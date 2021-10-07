@@ -335,7 +335,10 @@ namespace UnityGLTF
                     CoroutineStarter.Stop(loadingRoutine);
                     loadingRoutine = null;
 
-                    OnFinishedLoadingAsset?.Invoke();
+                    if ( state == State.COMPLETED )
+                        OnFinishedLoadingAsset?.Invoke();
+                    else
+                        OnFailedLoadingAsset?.Invoke();
 
                     Destroy(loadingPlaceholder);
                     Destroy(this);
@@ -355,22 +358,6 @@ namespace UnityGLTF
         public void SetPrioritized()
         {
             prioritizeDownload = true;
-        }
-
-        public void CancelIfQueued()
-        {
-            if (IsInQueue())
-            {
-                OnFail_Internal(null);
-            }
-        }
-
-        public bool IsInQueue()
-        {
-            if (prioritizeDownload)
-                return false;
-            
-            return state == State.QUEUED || state == State.NONE;
         }
 
 #if UNITY_EDITOR
@@ -408,11 +395,6 @@ namespace UnityGLTF
             }
 
             downloadQueueHandler.Dequeue(this);
-
-            if (loadingRoutine != null)
-            {
-                Debug.LogWarning($"ERROR: GLTF destroyed while loading -> {name}");
-            }
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
