@@ -6,13 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
-using UnityGLTF.Cache;
-using Object = UnityEngine.Object;
 
 public class WearableController
 {
-    internal static bool useAssetBundles = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("wearable_asset_bundles");
-    
     private const string MATERIAL_FILTER_HAIR = "hair";
     private const string MATERIAL_FILTER_SKIN = "skin";
 
@@ -27,19 +23,26 @@ public class WearableController
 
     public bool boneRetargetingDirty = false;
     internal string lastMainFileLoaded = null;
+    internal bool useAssetBundles = true;
 
     protected SkinnedMeshRenderer[] assetRenderers;
     Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
 
     public IReadOnlyList<SkinnedMeshRenderer> GetRenderers() { return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers); }
 
-    public WearableController(WearableItem wearableItem) { this.wearable = wearableItem; }
+    public WearableController(WearableItem wearableItem, bool useAssetBundles = true)
+    {
+        this.wearable = wearableItem;
+        this.useAssetBundles = useAssetBundles;
+    }
 
-    protected WearableController(WearableController original)
+    protected WearableController(WearableController original, bool useAssetBundles = true)
     {
         wearable = original.wearable;
         loader = original.loader;
         assetRenderers = original.assetRenderers;
+        
+        this.useAssetBundles = useAssetBundles;
     }
 
     public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
