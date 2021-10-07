@@ -42,7 +42,7 @@ namespace DCL.Skybox
         // Slots
         public List<SkyboxSlots> slots = new List<SkyboxSlots>();
 
-        public void AddSlots() { slots.Add(new SkyboxSlots()); }
+        public void AddSlots(int slotID) { slots.Add(new SkyboxSlots(slotID)); }
 
         // Texture Layer Properties
         public List<TextureLayer> textureLayers = new List<TextureLayer>();
@@ -128,7 +128,7 @@ namespace DCL.Skybox
         {
             for (int i = 0; i < slots.Count; i++)
             {
-                if (slots[i].disabled)
+                if (!slots[i].enabled)
                 {
                     ResetSlot(selectedMat, i);
                     continue;
@@ -136,7 +136,7 @@ namespace DCL.Skybox
 
                 TextureLayer layer = slots[i].GetActiveLayer(dayTime);
 
-                if (layer == null || layer.disabled)
+                if (layer == null || !layer.enabled)
                 {
                     ResetSlot(selectedMat, i);
                     continue;
