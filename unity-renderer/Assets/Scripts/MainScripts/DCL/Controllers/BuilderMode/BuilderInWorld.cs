@@ -35,8 +35,6 @@ public class BuilderInWorld : PluginFeature
             new BIWRaycastController(),
             new BIWGizmosController(),
             InitialSceneReferences.i.data);
-
-        HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
     }
 
     public override void Initialize()
@@ -50,11 +48,24 @@ public class BuilderInWorld : PluginFeature
 
         panelController.Initialize();
         editor.Initialize(context);
+
+        if (HUDController.i.taskbarHud != null)
+            HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
+        else
+            HUDController.i.OnTaskbarCreation += TaskBarCreated;
+    }
+
+    private void TaskBarCreated()
+    {
+        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
+        HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
     }
 
     public override void Dispose()
     {
         base.Dispose();
+
+        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
         editor.Dispose();
         panelController.Dispose();

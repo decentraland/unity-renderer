@@ -42,7 +42,7 @@ public class HUDController : IHUDController
         UserContextMenu.OnOpenPrivateChatRequest += OpenPrivateChatWindow;
     }
 
-    public event Action OnBuilderProjectPanelCreation;
+    public event Action OnTaskbarCreation;
 
     public ProfileHUDController profileHud => GetHUDElement(HUDElementID.PROFILE_HUD) as ProfileHUDController;
 
@@ -277,6 +277,7 @@ public class HUDController : IHUDController
                         }
 
                         taskbarHud.AddSettingsWindow(settingsPanelHud);
+                        OnTaskbarCreation?.Invoke();
                     }
                 }
                 else

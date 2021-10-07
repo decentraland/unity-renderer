@@ -139,12 +139,6 @@ public class BuilderInWorldEditor : IBIWEditor
         skyBoxMaterial = context.projectReferencesAsset.skyBoxMaterial;
     }
 
-    private void InitBuilderProjectPanel()
-    {
-        if (context.panelHUD != null)
-            context.panelHUD.OnJumpInOrEdit += GetCatalog;
-    }
-
     private void InitHUD()
     {
         context.editorContext.editorHUD.Initialize();
@@ -194,7 +188,8 @@ public class BuilderInWorldEditor : IBIWEditor
 
         CleanItems();
 
-        HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
+        if (context.panelHUD != null)
+            context.panelHUD.OnJumpInOrEdit -= GetCatalog;
         editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
 
         if (biwAudioHandler.gameObject != null)
