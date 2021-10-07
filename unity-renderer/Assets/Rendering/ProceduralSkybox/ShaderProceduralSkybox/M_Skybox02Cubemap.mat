@@ -169,7 +169,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _cubemap_2:
-        m_Texture: {fileID: 8900000, guid: c4fd96f2a68c87e408ce00bbeb917a02, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _cubemap_3:
@@ -237,19 +237,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
-        m_Texture: {fileID: 2800000, guid: b4c1ce2301a727543a5f460e3d33bd06, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_2:
-        m_Texture: {fileID: 2800000, guid: 56bdf1986cd0fa442a2c818656434b46, type: 3}
+        m_Texture: {fileID: 2800000, guid: 10f62b4152000cd40bfef3f3ac6dec74, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_3:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 54745b55af2f79e4297e9183c10654c0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_4:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -285,12 +285,12 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f_1: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
     - _LAYERTYPE_0: 0
-    - _RenderDistance_0: 2
+    - _RenderDistance_0: 10.4
     - _RenderDistance_1: 0
-    - _RenderDistance_2: 0
+    - _RenderDistance_2: 3.8
     - _RenderDistance_3: 0
     - _RenderDistance_4: 0
-    - _dayTime: 1.87
+    - _dayTime: 0
     - _distance_0: 20
     - _fadeTime_0: 0
     - _fadeTime_1: 0
@@ -315,11 +315,11 @@ Material:
     - _isRadial_0: 1
     - _isRadial_1: 2
     - _isRadial_2: 1
-    - _layerType_0: 1
+    - _layerType_0: 2
     - _layerType_1: 0
     - _layerType_2: 0
-    - _layerType_3: 0
-    - _layerType_4: 0
+    - _layerType_3: 2
+    - _layerType_4: 1
     - _lightIntensity00: 0
     - _lightIntensity01: 0
     - _lightIntensity02: 0
@@ -333,7 +333,7 @@ Material:
     - _normalIntensity02: 0
     - _normalIntensity_0: 0.124
     - _normalIntensity_1: 0
-    - _normalIntensity_2: 0
+    - _normalIntensity_2: 0.368
     - _normalIntensity_3: 0
     - _normalIntensity_4: 0
     - _rotation_0: 0
@@ -345,6 +345,11 @@ Material:
     - _speed_0: 0
     - _speed_1: 0.1
     - _speed_2: 0.1
+    - _useParticles_0: 1
+    - _useParticles_1: 0
+    - _useParticles_2: 0
+    - _useParticles_3: 0
+    - _useParticles_4: 0
     m_Colors:
     - Color_08fa8ef5ff754ab98799912ae1cb4f77: {r: 0, g: 0.7104626, b: 1, a: 1}
     - Color_b7dc0641df8a45b2a7101d1ca3cf09af: {r: 0.3490566, g: 0.30015576, b: 0.18605375,
@@ -362,6 +367,7 @@ Material:
     - Vector2_04b482e5a8734e95a571186e141dc709: {r: 0, g: 10, b: 0, a: 0}
     - Vector2_1: {r: 13, g: 17, b: 0, a: 0}
     - Vector2_2: {r: 18, g: 24, b: 0, a: 0}
+    - Vector2_aed2130458274996924bfa70d3c08e65: {r: 0, g: 0, b: 0, a: 0}
     - Vector3_ec53950c399247c18be46638fd571874: {r: 0.5, g: 0.5, b: 0, a: 0}
     - Vector4_0cf559245b2d4be8a1deafca41d5f1d6: {r: 1, g: 1, b: 0, a: 0}
     - Vector4_1: {r: 0.1, g: 0.1, b: 0.5, a: 0}
@@ -370,10 +376,10 @@ Material:
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
     - _color_0: {r: 0, g: 2.6315408, b: 7.4642644, a: 1}
-    - _color_1: {r: 0, g: 0.017053338, b: 0.7490196, a: 1}
-    - _color_2: {r: 1, g: 1, b: 1, a: 0}
-    - _color_3: {r: 0, g: 0, b: 0, a: 0}
-    - _color_4: {r: 0, g: 0, b: 0, a: 0}
+    - _color_1: {r: 1, g: 1, b: 1, a: 0}
+    - _color_2: {r: 0.37638143, g: 0.31011927, b: 0.6509434, a: 0}
+    - _color_3: {r: 0, g: 6.4980197, b: 0.42937273, a: 0}
+    - _color_4: {r: 11.313707, g: 3.329958, b: 0, a: 0}
     - _distortIntAndSize_0: {r: 0, g: 10, b: 0, a: 0}
     - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
@@ -390,11 +396,21 @@ Material:
     - _horizonMaskValues: {r: 4, g: 0, b: 0, a: 0}
     - _lightDirection: {r: 1, g: 0.5, b: 0.27, a: 0}
     - _lightTint: {r: 0.6622545, g: 0.6131314, b: 0.22200902, a: 1}
+    - _particleSpeedAndFrequency_0: {r: 10, g: 1, b: 0, a: 0}
+    - _particleSpeedAndFrequency_1: {r: 0, g: 0, b: 0, a: 0}
+    - _particleSpeedAndFrequency_2: {r: 1, g: 5, b: 0, a: 0}
+    - _particleSpeedAndFrequency_3: {r: 0, g: 0, b: 0, a: 0}
+    - _particleSpeedAndFrequency_4: {r: 0, g: 0, b: 0, a: 0}
+    - _rowAndCollumns_0: {r: 2, g: 2, b: 0, a: 0}
+    - _rowAndCollumns_1: {r: 0, g: 0, b: 0, a: 0}
+    - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
+    - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
+    - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
     - _skyColor: {r: 0.1549928, g: 0.08410466, b: 0.509434, a: 1}
     - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
-    - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
-    - _speedAndRotation_2: {r: 0, g: 0, b: 0, a: 0}
-    - _speedAndRotation_3: {r: 0, g: 0, b: 0, a: 0}
+    - _speedAndRotation_1: {r: 0, g: 1, b: 0, a: 0}
+    - _speedAndRotation_2: {r: 0, g: -0.01, b: 0, a: 0}
+    - _speedAndRotation_3: {r: 0, g: 10, b: 0, a: 0}
     - _speedAndRotation_4: {r: 0, g: 0, b: 0, a: 0}
     - _speed_0: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _speed_1: {r: 0, g: 0, b: 0, a: 0}
@@ -402,17 +418,17 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 4, g: 2, b: 0, a: 0}
+    - _tilingAndOffset_0: {r: 2, g: 2, b: 0, a: 0}
     - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: 0}
-    - _tilingAndOffset_2: {r: 4, g: 1.5, b: 0.17, a: 0}
-    - _tilingAndOffset_3: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_4: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_2: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _tilingAndOffset_3: {r: 1, g: 1, b: 0, a: -27.21}
+    - _tilingAndOffset_4: {r: 0.5, g: 0.25, b: 0, a: 0}
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
-    - _timeFrame_0: {r: 0, g: 5, b: 0, a: 0}
+    - _timeFrame_0: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_1: {r: 0, g: 24, b: 0, a: 0}
-    - _timeFrame_2: {r: 0, g: 0, b: 0, a: 0}
-    - _timeFrame_3: {r: 0, g: 0, b: 0, a: 0}
-    - _timeFrame_4: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_2: {r: 0, g: 24, b: 0, a: 0}
+    - _timeFrame_3: {r: 0, g: 24, b: 0, a: 0}
+    - _timeFrame_4: {r: 0, g: 24, b: 0, a: 0}
   m_BuildTextureStacks: []
