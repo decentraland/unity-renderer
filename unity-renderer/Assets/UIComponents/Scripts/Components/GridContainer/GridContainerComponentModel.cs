@@ -8,8 +8,9 @@ public class GridContainerComponentModel
 {
     public Constraint constraint = Constraint.FixedColumnCount;
     public int constranitCount = 3;
-    public bool adaptItemSizeToGridSize = false;
+    public bool adaptItemSizeToContainer = false;
     public Vector2 itemSize;
     public Vector2 spaceBetweenItems;
+    public float minWidthForFlexibleItems;
     public List<BaseComponentView> items;
 }
