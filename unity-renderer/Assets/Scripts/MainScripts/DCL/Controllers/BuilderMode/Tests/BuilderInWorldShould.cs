@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -10,19 +11,18 @@ public class BuilderInWorldShould
     public void CreateContextCorrectly()
     {
         //Act
-        BuilderInWorld builderInWorld = new BuilderInWorld();
+        BuilderInWorld builderInWorld = new BuilderInWorld(BIWTestUtils.CreateMockedContext());
 
         //Assert
         Assert.IsNotNull(builderInWorld.context);
         Assert.IsNotNull(builderInWorld.context.editorContext);
-
     }
 
     [Test]
     public void InitializePartsCorrectly()
     {
         //Arrange
-        BuilderInWorld builderInWorld = new BuilderInWorld();
+        BuilderInWorld builderInWorld = new BuilderInWorld(BIWTestUtils.CreateMockedContext());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
         builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
 
@@ -37,7 +37,7 @@ public class BuilderInWorldShould
     public void DisposePartsCorrectly()
     {
         //Arrange
-        BuilderInWorld builderInWorld = new BuilderInWorld();
+        BuilderInWorld builderInWorld = new BuilderInWorld(BIWTestUtils.CreateMockedContext());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
         builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
 
@@ -52,7 +52,7 @@ public class BuilderInWorldShould
     public void CallUpdateCorrectly()
     {
         //Arrange
-        BuilderInWorld builderInWorld = new BuilderInWorld();
+        BuilderInWorld builderInWorld = new BuilderInWorld(BIWTestUtils.CreateMockedContext());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
         builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
 
@@ -67,7 +67,7 @@ public class BuilderInWorldShould
     public void CallLateUpdateCorrectly()
     {
         //Arrange
-        BuilderInWorld builderInWorld = new BuilderInWorld();
+        BuilderInWorld builderInWorld = new BuilderInWorld(BIWTestUtils.CreateMockedContext());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
         builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
 
@@ -82,7 +82,7 @@ public class BuilderInWorldShould
     public void CallOnGUICorrectly()
     {
         //Arrange
-        BuilderInWorld builderInWorld = new BuilderInWorld();
+        BuilderInWorld builderInWorld = new BuilderInWorld(BIWTestUtils.CreateMockedContext());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
         builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
 

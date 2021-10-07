@@ -388,6 +388,15 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void StartExitModeScreenShot()
     {
         // Arrange
+        mainController.Dispose();
+        mainController = new BuilderInWorldEditor();
+        BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
+        mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(new BIWModeController(),
+            new BIWSaveController(), InitialSceneReferences.i.data));
+        mainController.initialLoadingController.Dispose();
+        mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
+        mainController.initialLoadingController.Configure().isActive.Returns(true);
+
         BIWModeController modeController = (BIWModeController)mainController.modeController;
         BIWSaveController saveController = (BIWSaveController)mainController.saveController;
 
@@ -473,6 +482,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         DataStore.i.builderInWorld.catalogItemDict.Clear();
         AssetCatalogBridge.i.ClearCatalog();
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
+        mainController.context.Dispose();
         mainController.Dispose();
         BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = false;
         yield return base.TearDown();

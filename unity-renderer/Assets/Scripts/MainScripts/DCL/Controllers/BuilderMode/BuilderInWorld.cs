@@ -18,7 +18,6 @@ public class BuilderInWorld : PluginFeature
 
         panelController = new BuilderProjectsPanelController();
         editor = new BuilderInWorldEditor();
-
         context = new Context(editor,
             panelController,
             new BuilderEditorHUDController(),
@@ -37,6 +36,8 @@ public class BuilderInWorld : PluginFeature
             InitialSceneReferences.i.data);
     }
 
+    public BuilderInWorld(Context context) { this.context = context; }
+
     public override void Initialize()
     {
         base.Initialize();
@@ -48,6 +49,8 @@ public class BuilderInWorld : PluginFeature
 
         panelController.Initialize();
         editor.Initialize(context);
+        if (HUDController.i == null)
+            return;
 
         if (HUDController.i.taskbarHud != null)
             HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
@@ -65,7 +68,8 @@ public class BuilderInWorld : PluginFeature
     {
         base.Dispose();
 
-        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
+        if (HUDController.i != null)
+            HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
         editor.Dispose();
         panelController.Dispose();
