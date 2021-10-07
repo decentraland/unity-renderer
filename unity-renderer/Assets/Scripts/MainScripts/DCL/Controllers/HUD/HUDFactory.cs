@@ -84,7 +84,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new GraphicCardWarningHUDController();
                 break;
             case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                hudElement = new BuildModeHUDController();
+                hudElement = new BuilderEditorHUDController();
                 break;
             case HUDElementID.QUESTS_PANEL:
                 hudElement = new QuestsPanelHUDController();

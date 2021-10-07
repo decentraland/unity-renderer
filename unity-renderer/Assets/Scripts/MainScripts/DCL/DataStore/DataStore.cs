@@ -42,6 +42,7 @@ namespace DCL
             public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();
             public readonly BaseVariable<PublishSceneResultPayload> unpublishSceneResult = new BaseVariable<PublishSceneResultPayload>();
             public readonly BaseVariable<bool> showTaskBar = new BaseVariable<bool>();
+            public readonly BaseVariable<bool> isDevBuild = new BaseVariable<bool>();
             public readonly BaseVariable<LandWithAccess[]> landsWithAccess = new BaseVariable<LandWithAccess[]>();
         }
 

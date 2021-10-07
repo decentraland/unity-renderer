@@ -90,9 +90,6 @@ public class HUDController : IHUDController
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
 
     public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
-
-    public BuildModeHUDController builderInWorldMainHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_MAIN) as BuildModeHUDController;
-
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
@@ -329,10 +326,10 @@ public class HUDController : IHUDController
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 CreateHudElement(configuration, hudElementId);
                 break;
+            //Deprecated
             case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                CreateHudElement(configuration, hudElementId);
-                if (configuration.active)
-                    builderInWorldMainHud.Initialize();
+                //This HUD has been migrated to the Plugin system - BuilderInWorld
+                //The plugin has the responsibility to create and manage it
                 break;
             case HUDElementID.QUESTS_PANEL:
                 CreateHudElement(configuration, hudElementId);
@@ -355,14 +352,10 @@ public class HUDController : IHUDController
                     signupHUD.Initialize(avatarEditorHud);
                 }
                 break;
+            //Deprecated
             case HUDElementID.BUILDER_PROJECTS_PANEL:
-                CreateHudElement(configuration, hudElementId);
-                if (configuration.active)
-                {
-                    builderProjectsPanelController.Initialize();
-                    taskbarHud.SetBuilderInWorldStatus(true);
-                }
-                OnBuilderProjectPanelCreation?.Invoke();
+                //This HUD has been migrated to the Plugin system - BuilderInWorld
+                //The plugin has the responsibility to create and manage it
                 break;
             case HUDElementID.LOADING:
                 CreateHudElement(configuration, hudElementId);

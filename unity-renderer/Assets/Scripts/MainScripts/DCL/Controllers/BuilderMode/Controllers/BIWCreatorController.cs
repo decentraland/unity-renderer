@@ -44,30 +44,30 @@ namespace DCL
 
         private float lastAnalyticsSentTimestamp = 0;
 
-        public override void Initialize(BIWContext biwContext)
+        public override void Initialize(Context context)
         {
-            base.Initialize(biwContext);
+            base.Initialize(context);
 
-            modeController = biwContext.modeController;
-            floorHandler = biwContext.floorHandler;
-            entityHandler = biwContext.entityHandler;
-            loadingObjectPrefab = biwContext.projectReferencesAsset.loadingPrefab;
-            errorPrefab = biwContext.projectReferencesAsset.errorPrefab;
+            modeController = context.editorContext.modeController;
+            floorHandler = context.editorContext.floorHandler;
+            entityHandler = context.editorContext.entityHandler;
+            loadingObjectPrefab = context.projectReferencesAsset.loadingPrefab;
+            errorPrefab = context.projectReferencesAsset.errorPrefab;
 
-            if (HUDController.i.builderInWorldMainHud != null)
+            if ( context.editorContext.editorHUD != null)
             {
-                HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
-                HUDController.i.builderInWorldMainHud.OnCatalogItemDropped += OnCatalogItemDropped;
+                context.editorContext.editorHUD.OnCatalogItemSelected += OnCatalogItemSelected;
+                context.editorContext.editorHUD.OnCatalogItemDropped += OnCatalogItemDropped;
             }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            if (HUDController.i.builderInWorldMainHud != null)
+            if ( context.editorContext.editorHUD != null)
             {
-                HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
-                HUDController.i.builderInWorldMainHud.OnCatalogItemDropped -= OnCatalogItemDropped;
+                context.editorContext.editorHUD.OnCatalogItemSelected -= OnCatalogItemSelected;
+                context.editorContext.editorHUD.OnCatalogItemDropped -= OnCatalogItemDropped;
             }
 
             CleanUp();
@@ -112,7 +112,7 @@ namespace DCL
 
         private bool IsInsideTheLimits(CatalogItem sceneObject)
         {
-            if (HUDController.i.builderInWorldMainHud == null)
+            if ( context.editorContext.editorHUD == null)
                 return false;
 
             SceneMetricsModel limits = sceneToEdit.metricsController.GetLimits();
@@ -120,37 +120,37 @@ namespace DCL
 
             if (limits.bodies < usage.bodies + sceneObject.metrics.bodies)
             {
-                HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
+                context.editorContext.editorHUD.ShowSceneLimitsPassed();
                 return false;
             }
 
             if (limits.entities < usage.entities + sceneObject.metrics.entities)
             {
-                HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
+                context.editorContext.editorHUD.ShowSceneLimitsPassed();
                 return false;
             }
 
             if (limits.materials < usage.materials + sceneObject.metrics.materials)
             {
-                HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
+                context.editorContext.editorHUD.ShowSceneLimitsPassed();
                 return false;
             }
 
             if (limits.meshes < usage.meshes + sceneObject.metrics.meshes)
             {
-                HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
+                context.editorContext.editorHUD.ShowSceneLimitsPassed();
                 return false;
             }
 
             if (limits.textures < usage.textures + sceneObject.metrics.textures)
             {
-                HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
+                context.editorContext.editorHUD.ShowSceneLimitsPassed();
                 return false;
             }
 
             if (limits.triangles < usage.triangles + sceneObject.metrics.triangles)
             {
-                HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
+                context.editorContext.editorHUD.ShowSceneLimitsPassed();
                 return false;
             }
 
@@ -390,8 +390,8 @@ namespace DCL
             }
 
             string catalogSection = "";
-            if (HUDController.i.builderInWorldMainHud != null)
-                catalogSection =   HUDController.i.builderInWorldMainHud.GetCatalogSectionSelected().ToString();
+            if ( context.editorContext.editorHUD != null)
+                catalogSection =    context.editorContext.editorHUD.GetCatalogSectionSelected().ToString();
 
             itemsToSendAnalytics.Add(new KeyValuePair<CatalogItem, string>(catalogItem, catalogSection));
         }

@@ -13,7 +13,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 {
     private BIWPublishController biwPublishController;
     private BIWEntityHandler biwEntityHandler;
-    private BIWContext context;
+    private Context context;
 
     private const string entityId = "E1";
 

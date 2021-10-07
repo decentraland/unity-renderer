@@ -11,10 +11,12 @@ using UnityEngine.UI;
 
 public static class BIWTestUtils
 {
-    public static BIWContext CreateMockedContext()
+    public static Context CreateMockedContext()
     {
-        BIWContext context = new BIWContext();
-        context.Initialize(
+        Context context = new Context(
+            Substitute.For<IBIWEditor>(),
+            Substitute.For<IBuilderProjectsPanelController>(),
+            Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
             Substitute.For<IBIWInputWrapper>(),
@@ -32,8 +34,12 @@ public static class BIWTestUtils
         return context;
     }
 
-    public static BIWContext CreateContextWithGenericMocks(params object[] mocks)
+    public static Context CreateContextWithGenericMocks(params object[] mocks)
     {
+        IBIWEditor editor = Substitute.For<IBIWEditor>();
+        IBuilderProjectsPanelController panelHUD = Substitute.For<IBuilderProjectsPanelController>();
+        IBuilderEditorHUDController editorHUD = Substitute.For<IBuilderEditorHUDController>();
+
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
         IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
         IBIWInputWrapper inputWrapper = Substitute.For<IBIWInputWrapper>();
@@ -52,6 +58,15 @@ public static class BIWTestUtils
         {
             switch ( mock )
             {
+                case IBIWEditor e:
+                    editor = e;
+                    break;
+                case IBuilderProjectsPanelController ppc:
+                    panelHUD = ppc;
+                    break;
+                case IBuilderEditorHUDController ehc:
+                    editorHUD = ehc;
+                    break;
                 case IBIWOutlinerController oc:
                     outliner = oc;
                     break;
@@ -94,8 +109,9 @@ public static class BIWTestUtils
             }
         }
 
-        BIWContext context = new BIWContext();
-        context.Initialize(
+        Context context = new Context(editor,
+            panelHUD,
+            editorHUD,
             outliner,
             inputHandler,
             inputWrapper,

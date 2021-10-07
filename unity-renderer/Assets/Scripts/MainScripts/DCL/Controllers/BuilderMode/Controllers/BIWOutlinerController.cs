@@ -29,12 +29,12 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     private int outlinerOptimizationCounter = 0;
     private bool isOutlineCheckActive = true;
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
         cameraOutlinerMaterial = context.projectReferencesAsset.cameraOutlinerMaterial;
 
-        raycastController = context.raycastController;
+        raycastController = context.editorContext.raycastController;
     }
 
     public override void EnterEditMode(IParcelScene scene)

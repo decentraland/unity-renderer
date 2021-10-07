@@ -9,17 +9,25 @@ using Variables.RealmsInfo;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
-public class BuilderProjectsPanelController : IHUD
+public interface IBuilderProjectsPanelController
+{
+    void Initialize();
+    void Dispose();
+    event Action OnJumpInOrEdit;
+}
+
+public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelController
 {
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
+    private const string VIEW_PREFAB_PATH_DEV = "BuilderProjectsPanelDev";
 
     private const float CACHE_TIME_LAND = 5 * 60;
     private const float CACHE_TIME_SCENES = 1 * 60;
     private const float REFRESH_INTERVAL = 2 * 60;
 
-    internal readonly IBuilderProjectsPanelView view;
+    internal IBuilderProjectsPanelView view;
 
     private ISectionsController sectionsController;
     private IScenesViewController scenesViewController;
@@ -42,10 +50,15 @@ public class BuilderProjectsPanelController : IHUD
 
     public event Action OnJumpInOrEdit;
 
-    public BuilderProjectsPanelController() : this(
-        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH))) { }
+    public BuilderProjectsPanelController()
+    {
+        if (DataStore.i.builderInWorld.isDevBuild.Get())
+            SetView(Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH_DEV)));
+        else
+            SetView(Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH)));
+    }
 
-    internal BuilderProjectsPanelController(IBuilderProjectsPanelView view)
+    internal void SetView(IBuilderProjectsPanelView view)
     {
         this.view = view;
         view.OnClosePressed += OnClose;
@@ -150,6 +163,9 @@ public class BuilderProjectsPanelController : IHUD
 
     private void OnClose()
     {
+        if (!view.IsVisible())
+            return;
+
         SetVisibility(false);
 
         LandWithAccess[] lands = landsController.GetLands();
@@ -245,7 +261,8 @@ public class BuilderProjectsPanelController : IHUD
                               .Aggregate((i, j) => i.Concat(j))
                               .ToArray();
 
-            if (sendPlayerOpenPanelEvent)PanelOpenEvent(lands);
+            if (sendPlayerOpenPanelEvent)
+                PanelOpenEvent(lands);
             landsController.SetLands(lands);
             scenesViewController.SetScenes(scenes);
         }

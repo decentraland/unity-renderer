@@ -10,18 +10,21 @@ public class TutorialStep_Catalog : TutorialStep
     [SerializeField] AudioEvent audioEventSuccess;
     bool isCatalogOpen = false;
 
+    private Context context;
+    public void SetContext(Context context) { this.context = context; }
+
     public override void OnStepStart()
     {
         base.OnStepStart();
 
-        HUDController.i.builderInWorldMainHud.OnCatalogOpen += CatalogOpened;
+        context.editorContext.editorHUD.OnCatalogOpen += CatalogOpened;
     }
 
     public override void OnStepFinished()
     {
         base.OnStepFinished();
 
-        HUDController.i.builderInWorldMainHud.OnCatalogOpen -= CatalogOpened;
+        context.editorContext.editorHUD.OnCatalogOpen -= CatalogOpened;
     }
 
     void CatalogOpened()

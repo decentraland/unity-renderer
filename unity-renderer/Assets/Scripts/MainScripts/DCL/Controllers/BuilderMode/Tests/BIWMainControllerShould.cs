@@ -17,15 +17,15 @@ using Environment = DCL.Environment;
 
 public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 {
-    private BuilderInWorld mainController;
+    private BuilderInWorldEditor mainController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        mainController = new BuilderInWorld();
-        BuilderInWorld.BYPASS_LAND_OWNERSHIP_CHECK = true;
-        mainController.Initialize();
+        mainController = new BuilderInWorldEditor();
+        BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
+        mainController.Initialize(BIWTestUtils.CreateMockedContext());
         mainController.initialLoadingController.Dispose();
         mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
         mainController.initialLoadingController.Configure().isActive.Returns(true);
@@ -407,7 +407,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         BIWCatalogManager.Init();
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
-        mainController.context.floorHandler = Substitute.For<IBIWFloorHandler>();
+        mainController.context.editorContext.floorHandler = Substitute.For<IBIWFloorHandler>();
         mainController.sceneToEdit = scene;
         mainController.EnterBiwControllers();
 
@@ -415,7 +415,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         mainController.SetupNewScene();
 
         // Assert
-        mainController.context.floorHandler.Received(1).CreateDefaultFloor();
+        mainController.context.editorContext.floorHandler.Received(1).CreateDefaultFloor();
     }
 
     [Test]
@@ -474,7 +474,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         AssetCatalogBridge.i.ClearCatalog();
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController.Dispose();
-        BuilderInWorld.BYPASS_LAND_OWNERSHIP_CHECK = false;
+        BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = false;
         yield return base.TearDown();
     }
 }
