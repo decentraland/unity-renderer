@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
-public class BuilderInWorld : PluginFeature
+public class BuilderInWorldPlugin : PluginFeature
 {
     private const string DEV_FLAG_NAME = "builder-dev";
     internal IBIWEditor editor;
@@ -11,7 +11,7 @@ public class BuilderInWorld : PluginFeature
 
     internal Context context;
 
-    public BuilderInWorld()
+    public BuilderInWorldPlugin()
     {
         if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DEV_FLAG_NAME))
             DataStore.i.builderInWorld.isDevBuild.Set(true);
@@ -36,7 +36,7 @@ public class BuilderInWorld : PluginFeature
             InitialSceneReferences.i.data);
     }
 
-    public BuilderInWorld(Context context) { this.context = context; }
+    public BuilderInWorldPlugin(Context context) { this.context = context; }
 
     public override void Initialize()
     {
