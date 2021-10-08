@@ -2,6 +2,7 @@ using System;
 using DCL;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
@@ -15,7 +16,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     [SerializeField] private Canvas canvas;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private RectTransform background;
+    [SerializeField] private Image background;
     [SerializeField] private Transform pivot;
     [SerializeField] private Animator talkingAnimator;
 
@@ -25,21 +26,27 @@ public class PlayerName : MonoBehaviour, IPlayerName
     private float alpha;
     private float targetAlpha;
     private bool forceShow = false;
+    private Color backgroundOriginalColor;
 
     private void Awake()
     {
+        backgroundOriginalColor = background.color;
         alpha = 1;
         canvas.sortingOrder = DEFAULT_CANVAS_SORTING_ORDER;
         namesVisible.OnChange += OnNamesVisibleChanged;
+        namesOpacity.OnChange += OnNamesOpacityChanged;
         OnNamesVisibleChanged(namesVisible.Get(), true);
+        OnNamesOpacityChanged(namesOpacity.Get(), 1);
         Show(true);
     }
+    private void OnNamesOpacityChanged(float current, float previous) { background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, current); }
+
     private void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current; }
 
     public void SetName(string name)
     {
         nameText.text = name;
-        background.sizeDelta = new Vector2(nameText.GetPreferredValues().x + 50, 30);
+        background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + 50, 30);
     }
 
     private void Update()
@@ -64,8 +71,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
          * instead we should have a provider so all the subsystems can use it
          */
         float distanceToPlayer = Vector3.Distance(cameraPosition, gameObject.transform.position);
-        float resolvedAlpha = ResolveAlphaByDistance(alpha, distanceToPlayer, forceShow);
-        resolvedAlpha *= namesOpacity.Get();
+        float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToPlayer, forceShow);
         UpdateVisuals(resolvedAlpha);
         ScalePivotByDistance(distanceToPlayer);
         LookAtCamera(cameraRight, cameraRotation.eulerAngles);
@@ -102,12 +108,20 @@ public class PlayerName : MonoBehaviour, IPlayerName
     public void SetForceShow(bool forceShow)
     {
         canvas.sortingOrder = forceShow ? int.MaxValue : DEFAULT_CANVAS_SORTING_ORDER;
+        background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, forceShow ? 1 : namesOpacity.Get());
         this.forceShow = forceShow;
         if (this.forceShow)
             gameObject.SetActive(true);
     }
 
     public void SetIsTalking(bool talking) { talkingAnimator.SetBool(TALKING_ANIMATOR_BOOL, talking); }
+
+    public Rect ScreenSpaceRect(Camera mainCamera)
+    {
+        Vector3 origin = mainCamera.WorldToScreenPoint(background.transform.position);
+        Vector2 size = background.rectTransform.sizeDelta;
+        return new Rect(origin.x, Screen.height - origin.y, size.x, size.y);
+    }
 
     private static float ResolveAlphaByDistance(float alphaValue, float distanceToCamera, bool forceShow)
     {
@@ -125,5 +139,9 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
 
-    private void OnDestroy() { namesVisible.OnChange -= OnNamesVisibleChanged; }
+    private void OnDestroy()
+    {
+        namesVisible.OnChange -= OnNamesVisibleChanged;
+        namesOpacity.OnChange -= OnNamesOpacityChanged;
+    }
 }

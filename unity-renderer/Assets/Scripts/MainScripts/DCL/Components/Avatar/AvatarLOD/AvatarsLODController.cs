@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using DCL.Interface;
 
 namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
+        private const float NAMES_OVERLAPPING_TOLERANCE = 0.5f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
@@ -18,9 +18,11 @@ namespace DCL
         private Vector3 cameraPosition;
         private Vector3 cameraForward;
         private GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
+        private RectsOverlappingTracker rectsOverlappingTracker = new RectsOverlappingTracker(NAMES_OVERLAPPING_TOLERANCE);
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         internal bool enabled;
+        private UnityEngine.Camera mainCamera;
 
         public AvatarsLODController()
         {
@@ -110,12 +112,16 @@ namespace DCL
 
         internal void UpdateAllLODs(int maxAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
+            if (mainCamera == null)
+                mainCamera = UnityEngine.Camera.main;
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
             float lodDistance = LODDistance.Get();
             float simpleAvatarDistance = this.simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
+
+            rectsOverlappingTracker.Reset();
 
             (IAvatarLODController lodController, float distance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
@@ -136,7 +142,11 @@ namespace DCL
                     else
                         lodController.SetSimpleAvatar();
                     avatarsCount++;
-                    lodController.SetNameVisible(true);
+
+                    if (mainCamera == null)
+                        lodController.SetNameVisible(true);
+                    else
+                        lodController.SetNameVisible(rectsOverlappingTracker.RegisterRect(lodController.player.playerName.ScreenSpaceRect(mainCamera)));
                     continue;
                 }
 

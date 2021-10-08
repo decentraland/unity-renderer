@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public interface IPlayerName
 {
     void SetName(string name);
@@ -5,4 +7,5 @@ public interface IPlayerName
     void Hide(bool instant = false);
     void SetForceShow(bool forceShow);
     void SetIsTalking(bool talking);
+    Rect ScreenSpaceRect(Camera mainCamera);
 }

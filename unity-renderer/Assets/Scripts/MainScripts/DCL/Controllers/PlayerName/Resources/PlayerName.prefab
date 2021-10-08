@@ -300,7 +300,7 @@ MonoBehaviour:
   canvas: {fileID: 3804098088807173820}
   canvasGroup: {fileID: 1790873661326668397}
   nameText: {fileID: 6215207142198627590}
-  background: {fileID: 6225888458169134410}
+  background: {fileID: 8584510806292853918}
   pivot: {fileID: 2017979172353991747}
   talkingAnimator: {fileID: 4757240879941231793}
 --- !u!1 &4317848905128615993
@@ -450,7 +450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.49019608}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

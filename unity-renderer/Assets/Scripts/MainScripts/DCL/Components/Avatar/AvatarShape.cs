@@ -153,13 +153,14 @@ namespace DCL
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
-            player.playerName = playerName;
-            player.playerName.SetName(player.name);
             if (isNew)
             {
+                player.playerName = playerName;
+                player.playerName.SetName(player.name);
                 player.playerName.Show();
                 otherPlayers.Add(player.id, player);
             }
+            player.playerName.SetIsTalking(model.talking);
         }
 
         private void Update()
@@ -211,6 +212,7 @@ namespace DCL
         {
             base.Cleanup();
 
+            playerName?.Hide(true);
             if (player != null)
             {
                 otherPlayers.Remove(player.id);
