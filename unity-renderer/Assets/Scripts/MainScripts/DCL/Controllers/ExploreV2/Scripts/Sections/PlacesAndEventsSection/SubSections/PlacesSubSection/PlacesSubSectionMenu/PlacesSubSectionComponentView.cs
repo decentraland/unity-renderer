@@ -19,8 +19,8 @@ public interface IPlacesSubSectionComponentView
     /// <summary>
     /// Set the places component with a list of places.
     /// </summary>
-    /// <param name="events">List of places (model) to be loaded.</param>
-    void SetPlaces(List<PlaceCardComponentModel> events);
+    /// <param name="places">List of places (model) to be loaded.</param>
+    void SetPlaces(List<PlaceCardComponentModel> places);
 
     /// <summary>
     /// Set the places component in loading mode.
@@ -31,8 +31,8 @@ public interface IPlacesSubSectionComponentView
     /// <summary>
     /// Shows the Place Card modal with the provided information.
     /// </summary>
-    /// <param name="eventInfo">Place (model) to be loaded in the card.</param>
-    void ShowPlaceModal(PlaceCardComponentModel eventInfo);
+    /// <param name="placeInfo">Place (model) to be loaded in the card.</param>
+    void ShowPlaceModal(PlaceCardComponentModel placeInfo);
 
     /// <summary>
     /// Hides the Place Card modal.
@@ -75,11 +75,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         OnReady?.Invoke();
     }
 
-    public void SetPlaces(List<PlaceCardComponentModel> events)
+    public void SetPlaces(List<PlaceCardComponentModel> places)
     {
-        List<BaseComponentView> placeComponentsToAdd = IntantiateAndConfigureEventCards(events, placeCardPrefab);
-        places.SetItems(placeComponentsToAdd, false);
-        placesNoDataText.gameObject.SetActive(events.Count == 0);
+        List<BaseComponentView> placeComponentsToAdd = IntantiateAndConfigurePlaceCards(places, placeCardPrefab);
+        this.places.SetItems(placeComponentsToAdd, false);
+        placesNoDataText.gameObject.SetActive(places.Count == 0);
     }
 
     public void SetPlacesAsLoading(bool isVisible)
@@ -97,7 +97,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void HidePlaceModal() { placeModal.gameObject.SetActive(false); }
 
-    internal List<BaseComponentView> IntantiateAndConfigureEventCards(List<PlaceCardComponentModel> places, PlaceCardComponentView prefabToUse)
+    internal List<BaseComponentView> IntantiateAndConfigurePlaceCards(List<PlaceCardComponentModel> places, PlaceCardComponentView prefabToUse)
     {
         List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
 

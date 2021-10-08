@@ -72,11 +72,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
-    private void OnEnable()
-    {
-        // After an UI is enabled, we must wait for 2 frames to allow time for it to fully resize itself
-        StartCoroutine(RaisePostScreenSizeChangedAfterDelay(2));
-    }
+    private void OnEnable() { PostScreenSizeChanged(); }
 
     private void Awake() { Initialize(); }
 

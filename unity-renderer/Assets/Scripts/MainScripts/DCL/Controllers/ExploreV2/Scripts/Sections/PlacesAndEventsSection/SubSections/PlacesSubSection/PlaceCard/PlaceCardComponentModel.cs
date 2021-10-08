@@ -12,6 +12,7 @@ public class PlaceCardComponentModel
     public string placeDescription;
     public string placeAuthor;
     public int numberOfUsers;
+    public Vector2Int[] parcels;
     public Button.ButtonClickedEvent onJumpInClick;
     public Button.ButtonClickedEvent onInfoClick;
 }

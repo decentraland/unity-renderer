@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,6 +64,12 @@ public interface IPlaceCardComponentView
     void SetNumberOfUsers(int newNumberOfUsers);
 
     /// <summary>
+    /// Set the parcels contained in the place.
+    /// </summary>
+    /// <param name="parcels">List of parcels.</param>
+    void SetParcels(Vector2Int[] parcels);
+
+    /// <summary>
     /// Active or deactive the loading indicator.
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
@@ -71,6 +78,10 @@ public interface IPlaceCardComponentView
 
 public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 {
+    const int THMBL_MARKETPLACE_WIDTH = 196;
+    const int THMBL_MARKETPLACE_HEIGHT = 143;
+    const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
+
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView placeImage;
     [SerializeField] internal TMP_Text placeNameText;
@@ -142,6 +153,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (model == null)
             return;
 
+        SetParcels(model.parcels);
+
         if (model.placePictureSprite != null)
             SetPlacePicture(model.placePictureSprite);
         else if (model.placePictureTexture != null)
@@ -149,7 +162,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         else if (!string.IsNullOrEmpty(model.placePictureUri))
             SetPlacePicture(model.placePictureUri);
         else
-            SetPlacePicture(sprite: null);
+            OnPlaceImageLoaded(null);
 
         SetPlaceName(model.placeName);
         SetPlaceDescription(model.placeDescription);
@@ -249,6 +262,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         numberOfUsersText.text = newNumberOfUsers.ToString();
     }
 
+    public void SetParcels(Vector2Int[] parcels) { model.parcels = parcels; }
+
     public void SetLoadingIndicatorVisible(bool isVisible)
     {
         imageContainer.SetActive(!isVisible);
@@ -256,5 +271,11 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         loadingSpinner.SetActive(isVisible);
     }
 
-    private void OnPlaceImageLoaded(Sprite sprite) { SetPlacePicture(sprite); }
+    private void OnPlaceImageLoaded(Sprite sprite)
+    {
+        if (sprite != null)
+            SetPlacePicture(sprite);
+        else
+            SetPlacePicture(MapUtils.GetMarketPlaceThumbnailUrl(model.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR));
+    }
 }

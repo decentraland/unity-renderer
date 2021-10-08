@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
-using DCL;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -72,6 +70,7 @@ namespace DCL.Helpers
 
         private State state = State.NONE;
         private Action<Texture2D> OnLoaded;
+        private Action OnFail;
 
         private HashSet<Action<Texture2D>> subscriptions = new HashSet<Action<Texture2D>>();
 
@@ -95,6 +94,7 @@ namespace DCL.Helpers
             {
                 state = State.NONE;
                 uri = null;
+                OnFail?.Invoke();
             };
         }
 
@@ -106,6 +106,7 @@ namespace DCL.Helpers
             {
                 subscriptions.Add(listener);
                 this.OnLoaded += listener;
+                this.OnFail += () => listener.Invoke(null);
             }
 
             // First, check if we did set a texture directly and return it if so.

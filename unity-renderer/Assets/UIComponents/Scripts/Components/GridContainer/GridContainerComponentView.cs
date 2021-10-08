@@ -104,7 +104,6 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         base.PostScreenSizeChanged();
 
-        ResizeGridContainer();
         SetItemSize(model.itemSize);
     }
 
@@ -231,8 +230,6 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         {
             CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems && !destroyOnlyUnnecesaryItems);
         }
-
-        ResizeGridContainer();
 
         if (!instantiateNewCopyOfItems)
             destroyOnlyUnnecesaryItems = true;

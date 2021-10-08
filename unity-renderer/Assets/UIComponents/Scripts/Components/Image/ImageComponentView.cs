@@ -121,7 +121,11 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
         if (!Application.isPlaying)
             return;
 
-        imageObserver.RefreshWithUri(uri);
+        if (!string.IsNullOrEmpty(uri))
+            imageObserver.RefreshWithUri(uri);
+        else
+            OnImageObserverUpdated(null);
+
         SetLoadingIndicatorVisible(true);
     }
 
@@ -138,7 +142,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
         else
             DestroyImmediate(currentSprite);
 
-        currentSprite = Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+        currentSprite = texture != null ? Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
         SetImage(currentSprite);
         SetLoadingIndicatorVisible(false);
         OnLoaded?.Invoke(currentSprite);

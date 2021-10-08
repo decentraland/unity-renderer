@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Interface;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -118,6 +119,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         placeCardModel.placeDescription = FormatDescription(placeFromAPI);
         placeCardModel.placeAuthor = FormatAuthorName(placeFromAPI);
         placeCardModel.numberOfUsers = placeFromAPI.usersTotalCount;
+        placeCardModel.parcels = placeFromAPI.parcels;
 
         // Card events
         ConfigureOnJumpInActions(placeCardModel, placeFromAPI);
