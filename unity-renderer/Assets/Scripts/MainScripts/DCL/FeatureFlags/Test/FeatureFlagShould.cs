@@ -34,7 +34,8 @@ public class FeatureFlagShould
     public void AddBridgeWhenInitialized()
     {
         //Arrange
-        FeatureFlagController controller = new FeatureFlagController();
+        GameObject bridgeGameObject = new GameObject("Bridges");
+        FeatureFlagController controller = new FeatureFlagController(bridgeGameObject);
         GameObject newGameObject = new GameObject("Test");
 
         //Act
@@ -43,7 +44,8 @@ public class FeatureFlagShould
         //Assert
         Assert.IsNotNull(controller.featureFlagBridgeComponent);
         Assert.IsNotNull(newGameObject.GetComponent<FeatureFlagBridge>());
-        GameObject.Destroy(newGameObject);
+        Object.Destroy(newGameObject);
+        Object.Destroy(bridgeGameObject);
     }
 
     [Test]
@@ -77,5 +79,4 @@ public class FeatureFlagShould
         //Assert
         Assert.IsTrue(featureFlagReceived);
     }
-
 }

@@ -10,49 +10,13 @@ namespace GPUSkinning
         void Update();
     }
 
-    public class SimpleGPUSkinning : IGPUSkinning
+    public static class GPUSkinningUtils
     {
-        private static readonly int BONE_MATRICES = Shader.PropertyToID("_Matrices");
-        private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
-        private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
-
-        public Renderer renderer { get; }
-
-        private Transform[] bones;
-        private Matrix4x4[] boneMatrices;
-
-        public SimpleGPUSkinning (SkinnedMeshRenderer skr)
-        {
-            ConfigureBindPoses(skr);
-
-            boneMatrices = new Matrix4x4[skr.bones.Length];
-
-            GameObject go = skr.gameObject;
-
-            if (!go.TryGetComponent(out MeshFilter meshFilter))
-                meshFilter = go.AddComponent<MeshFilter>();
-
-            meshFilter.sharedMesh = skr.sharedMesh;
-
-            renderer = go.AddComponent<MeshRenderer>();
-            renderer.sharedMaterials = skr.sharedMaterials;
-            foreach (Material material in renderer.sharedMaterials)
-            {
-                material.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
-                material.EnableKeyword("_GPU_SKINNING");
-            }
-            bones = skr.bones;
-            meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
-            UpdateMatrices();
-
-            Object.Destroy(skr);
-        }
-
         /// <summary>
         /// This must be done once per SkinnedMeshRenderer before animating.
         /// </summary>
         /// <param name="skr"></param>
-        private void ConfigureBindPoses(SkinnedMeshRenderer skr)
+        public static void EncodeBindPosesIntoMesh(SkinnedMeshRenderer skr)
         {
             Mesh sharedMesh = skr.sharedMesh;
             int vertexCount = sharedMesh.vertexCount;
@@ -78,6 +42,47 @@ namespace GPUSkinning
             skr.sharedMesh.tangents = bone01data;
             skr.sharedMesh.SetUVs(1, bone23data);
         }
+    }
+
+    public class SimpleGPUSkinning : IGPUSkinning
+    {
+        private static readonly int BONE_MATRICES = Shader.PropertyToID("_Matrices");
+        private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
+        private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
+
+        public Renderer renderer { get; }
+
+        private Transform[] bones;
+        private Matrix4x4[] boneMatrices;
+
+        public SimpleGPUSkinning (SkinnedMeshRenderer skr, bool encodeBindPoses = true)
+        {
+            if ( encodeBindPoses )
+                GPUSkinningUtils.EncodeBindPosesIntoMesh(skr);
+
+            boneMatrices = new Matrix4x4[skr.bones.Length];
+
+            GameObject go = skr.gameObject;
+
+            if (!go.TryGetComponent(out MeshFilter meshFilter))
+                meshFilter = go.AddComponent<MeshFilter>();
+
+            meshFilter.sharedMesh = skr.sharedMesh;
+
+            renderer = go.AddComponent<MeshRenderer>();
+            renderer.sharedMaterials = skr.sharedMaterials;
+            foreach (Material material in renderer.sharedMaterials)
+            {
+                material.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
+                material.EnableKeyword("_GPU_SKINNING");
+            }
+
+            bones = skr.bones;
+            meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
+            UpdateMatrices();
+
+            Object.Destroy(skr);
+        }
 
         public void Update()
         {
@@ -95,6 +100,7 @@ namespace GPUSkinning
                 Transform bone = bones[i];
                 boneMatrices[i] = bone.localToWorldMatrix;
             }
+
             for (int index = 0; index < renderer.sharedMaterials.Length; index++)
             {
                 Material material = renderer.sharedMaterials[index];

@@ -19,8 +19,7 @@ namespace DCL.Controllers
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
         public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
-        public SceneController ownerController;
-        public ISceneMetricsController metricsController { get; set; }
+        public ISceneMetricsCounter metricsCounter { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
         public event System.Action<IComponent> OnComponentAdded;
@@ -30,7 +29,7 @@ namespace DCL.Controllers
         public event System.Action<string, ISharedComponent> OnAddSharedComponent;
         public event System.Action<float> OnLoadingStateUpdated;
 
-        public ContentProvider contentProvider { get; protected set; }
+        public ContentProvider contentProvider { get; set; }
 
         public bool isTestScene { get; set; } = false;
         public bool isPersistent { get; set; } = false;
@@ -53,20 +52,21 @@ namespace DCL.Controllers
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-
-            metricsController = new SceneMetricsController(this);
-            metricsController.Enable();
-
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
         }
 
-        private void OnDestroy() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
+        private void OnDestroy()
+        {
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
+            metricsCounter?.Dispose();
+        }
 
-        void OnDisable() { metricsController.Disable(); }
+        void OnDisable() { metricsCounter?.Disable(); }
 
         private void Update()
         {
-            if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY && CommonScriptableObjects.rendererState.Get())
+            if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY
+                && CommonScriptableObjects.rendererState.Get())
                 SendMetricsEvent();
         }
 
@@ -78,6 +78,8 @@ namespace DCL.Controllers
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
+            Assert.IsTrue( !string.IsNullOrEmpty(data.id), "Scene must have an ID!" );
+
             this.sceneData = data;
 
             contentProvider = new ContentProvider();
@@ -86,13 +88,19 @@ namespace DCL.Controllers
             contentProvider.BakeHashes();
 
             parcels.Clear();
+
             for (int i = 0; i < sceneData.parcels.Length; i++)
             {
                 parcels.Add(sceneData.parcels[i]);
             }
 
             if (DCLCharacterController.i != null)
+            {
                 gameObject.transform.position = PositionUtils.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
+            }
+
+            metricsCounter = new SceneMetricsCounter(this);
+            metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
         }
@@ -181,7 +189,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsController.GetLimits().sceneHeight;
+            float heightLimit = metricsCounter.GetLimits().sceneHeight;
 
             if (height > heightLimit)
                 return false;
@@ -194,7 +202,7 @@ namespace DCL.Controllers
             if (parcels.Count == 0)
                 return false;
 
-            float heightLimit = metricsController.GetLimits().sceneHeight;
+            float heightLimit = metricsCounter.GetLimits().sceneHeight;
             if (height > heightLimit)
                 return false;
 
@@ -673,7 +681,7 @@ namespace DCL.Controllers
         protected virtual void SendMetricsEvent()
         {
             if (Time.frameCount % 10 == 0)
-                metricsController.SendEvent();
+                metricsCounter.SendEvent();
         }
 
         public ISharedComponent GetSharedComponent(string componentId)

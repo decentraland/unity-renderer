@@ -73,7 +73,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     public void TestMetricsPublish()
     {
         //Act
-        for (int i = 0; i < scene.metricsController.GetLimits().entities + 1; i++)
+        for (int i = 0; i < scene.metricsCounter.GetLimits().entities + 1; i++)
         {
             TestHelpers.CreateSceneEntity(scene, entityId + i);
         }

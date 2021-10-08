@@ -151,10 +151,10 @@ namespace DCL
                     x => x.sceneData.parcels != null
                          && x.sceneData.parcels.Any(y => y == currentPos)) as ParcelScene;
 
-                if (activeScene != null && activeScene.metricsController != null)
+                if (activeScene != null && activeScene.metricsCounter != null)
                 {
-                    var metrics = activeScene.metricsController.GetModel();
-                    var limits = activeScene.metricsController.GetLimits();
+                    var metrics = activeScene.metricsCounter.GetModel();
+                    var limits = activeScene.metricsCounter.GetLimits();
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.CURRENT_SCENE, $"{activeScene.sceneData.id}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.POLYGONS_VS_LIMIT, $"{metrics.triangles} of {limits.triangles}");
                     statsPanel.SetCellText((int) Columns.VALUE, (int) Rows.TEXTURES_VS_LIMIT, $"{metrics.textures} of {limits.textures}");

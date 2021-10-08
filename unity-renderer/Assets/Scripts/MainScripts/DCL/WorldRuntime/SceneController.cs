@@ -44,6 +44,7 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
         }
+
         private void OnDebugModeSet(bool current, bool previous)
         {
             if (current == previous)
@@ -455,7 +456,6 @@ namespace DCL
 
             var go = new GameObject();
             var newScene = go.AddComponent<ParcelScene>();
-            newScene.ownerController = this;
             newScene.isTestScene = true;
             newScene.isPersistent = true;
             newScene.SetData(data);
@@ -622,7 +622,6 @@ namespace DCL
                     newScene.InitializeDebugPlane();
                 }
 
-                newScene.ownerController = this;
                 worldState.loadedScenes.Add(sceneToLoad.id, newScene);
                 worldState.scenesSortedByDistance.Add(newScene);
 
@@ -817,7 +816,6 @@ namespace DCL
             var newGameObject = new GameObject("Global Scene - " + newGlobalSceneId);
 
             var newScene = newGameObject.AddComponent<GlobalScene>();
-            newScene.ownerController = this;
             newScene.unloadWithDistance = false;
             newScene.isPersistent = true;
             newScene.sceneName = globalScene.name;

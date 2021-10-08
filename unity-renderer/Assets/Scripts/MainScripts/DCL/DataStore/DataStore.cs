@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -31,9 +31,21 @@ namespace DCL
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
         public readonly DataStore_Screen screen = new DataStore_Screen();
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
+        public readonly DataStore_WorldObjects sceneWorldObjects = new DataStore_WorldObjects();
         public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
         public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
+
+        public class DataStore_WorldObjects
+        {
+            public class SceneData
+            {
+                public readonly BaseDictionary<Mesh, int> refCountedMeshes = new BaseDictionary<Mesh, int>();
+                public readonly BaseHashSet<Rendereable> renderedObjects = new BaseHashSet<Rendereable>();
+            }
+
+            public readonly BaseDictionary<string, SceneData> sceneData = new BaseDictionary<string, SceneData>();
+        }
 
         public class DataStore_BuilderInWorld
         {
@@ -57,6 +69,8 @@ namespace DCL
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
             public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
             public class LoadingHUD

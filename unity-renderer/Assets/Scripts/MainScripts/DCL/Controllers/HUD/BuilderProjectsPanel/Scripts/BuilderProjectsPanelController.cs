@@ -146,7 +146,7 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
 
         if (isVisible)
         {
-            if (DataStore.i.builderInWorld.landsWithAccess != null)
+            if (DataStore.i.builderInWorld.landsWithAccess.Get() != null)
                 PanelOpenEvent(DataStore.i.builderInWorld.landsWithAccess.Get());
             else
                 sendPlayerOpenPanelEvent = true;
@@ -198,6 +198,7 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
             else
                 operatorLandsCount++;
         }
+
         return new Vector2Int(ownedLandsCount, operatorLandsCount);
     }
 
@@ -257,9 +258,9 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
         try
         {
             var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                              .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                              .Aggregate((i, j) => i.Concat(j))
-                              .ToArray();
+                .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                .Aggregate((i, j) => i.Concat(j))
+                .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);
@@ -289,6 +290,7 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
         {
             SetVisibility(false);
         }
+
         OnJumpInOrEdit?.Invoke();
     }
 

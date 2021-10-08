@@ -114,12 +114,13 @@ namespace UnityGLTF
         /// </summary>
         public bool initialVisibility { get; set; }
 
+
         private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
         private static float budgetPerFrameInMillisecondsValue = 2f;
 
         public static float budgetPerFrameInMilliseconds { get => renderingIsDisabled ? float.MaxValue : budgetPerFrameInMillisecondsValue; set => budgetPerFrameInMillisecondsValue = value; }
 
-        public bool KeepCPUCopyOfMesh = true;
+        public bool forceGPUOnlyMesh = true;
 
         private bool useMaterialTransitionValue = true;
 
@@ -227,6 +228,8 @@ namespace UnityGLTF
         public GameObject lastLoadedScene { get { return _lastLoadedScene; } }
 
         public static System.Action<float> OnPerformanceFinish;
+        public event System.Action<Mesh> OnMeshCreated;
+        public event System.Action<Renderer> OnRendererCreated;
 
         /// <summary>
         /// Loads a glTF Scene into the LastLoadedScene field
@@ -748,10 +751,12 @@ namespace UnityGLTF
             texture = CheckAndReduceTextureSize(texture);
             _assetCache.ImageCache[imageCacheIndex] = texture;
 
-#if !UNITY_EDITOR
-            //NOTE(Brian): This breaks importing in editor mode
-            texture.Compress(false);
-#endif
+            if ( Application.isPlaying )
+            {
+                //NOTE(Brian): This breaks importing in editor mode
+                texture.Compress(false);
+            }
+            
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
@@ -1709,12 +1714,16 @@ namespace UnityGLTF
                         {
                             yield return SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh);
                         }
+
+                        OnRendererCreated?.Invoke(skinnedMeshRenderer);
                     }
                     else
                     {
                         meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
                         renderer = meshRenderer;
                         renderer.enabled = initialVisibility;
+
+                        OnRendererCreated?.Invoke(meshRenderer);
                     }
 
                     yield return ConstructPrimitiveMaterials(mesh, meshId, i);
@@ -2122,18 +2131,23 @@ namespace UnityGLTF
                 yield return YieldOnTimeout();
             }
 
+            mesh.Optimize();
+
 // Disable it in runtime so this optimization only takes place in
 // asset bundle converter time.
 #if UNITY_EDITOR
-            mesh.Optimize();
 
             if (ShouldYieldOnTimeout())
             {
                 yield return YieldOnTimeout();
             }
 #endif
-            if (!KeepCPUCopyOfMesh)
+
+            OnMeshCreated?.Invoke(mesh);
+
+            if (forceGPUOnlyMesh)
             {
+                Physics.BakeMesh(mesh.GetInstanceID(), false);
                 mesh.UploadMeshData(true);
             }
         }

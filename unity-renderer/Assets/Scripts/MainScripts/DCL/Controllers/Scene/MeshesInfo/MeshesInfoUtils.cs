@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace DCL.Models
 {
@@ -38,6 +40,70 @@ namespace DCL.Models
                 return new Bounds( Vector3.one * POSITION_OVERFLOW_LIMIT, Vector3.one * 0.1f );
 
             return renderer.bounds;
+        }
+
+        public static int ComputeTotalTriangles(List<Renderer> renderers, Dictionary<Mesh, int> meshToTriangleCount)
+        {
+            int result = 0;
+
+            for ( int i = 0; i < renderers.Count; i++ )
+            {
+                var r = renderers[i];
+
+                if ( r is MeshRenderer )
+                {
+                    int triangles = meshToTriangleCount[ r.GetComponent<MeshFilter>().sharedMesh ];
+                    result += triangles;
+                }
+
+                if ( r is SkinnedMeshRenderer skinnedMeshRenderer )
+                {
+                    result += meshToTriangleCount[ skinnedMeshRenderer.sharedMesh ];
+                }
+            }
+
+            return result;
+        }
+
+        public static Dictionary<Mesh, int> ExtractMeshToTriangleMap(List<Mesh> meshes)
+        {
+            Dictionary<Mesh, int> result = new Dictionary<Mesh, int>();
+
+            for ( int i = 0; i < meshes.Count; i++ )
+            {
+                Mesh mesh = meshes[i];
+                result[mesh] = mesh.triangles.Length;
+            }
+
+            return result;
+        }
+
+        public static List<Mesh> ExtractMeshes(GameObject gameObject)
+        {
+            List<Mesh> result = new List<Mesh>();
+            List<SkinnedMeshRenderer> skrList = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).ToList();
+            List<MeshFilter> meshFilterList = gameObject.GetComponentsInChildren<MeshFilter>(true).ToList();
+
+            foreach ( var skr in skrList )
+            {
+                if ( skr.sharedMesh == null )
+                    continue;
+
+                result.Add(skr.sharedMesh);
+            }
+
+            foreach ( var meshFilter in meshFilterList )
+            {
+                if ( meshFilter.mesh == null )
+                    continue;
+
+                result.Add( meshFilter.mesh );
+            }
+
+            // Ensure meshes are unique
+            result = result.Distinct().ToList();
+
+            return result;
         }
     }
 }
