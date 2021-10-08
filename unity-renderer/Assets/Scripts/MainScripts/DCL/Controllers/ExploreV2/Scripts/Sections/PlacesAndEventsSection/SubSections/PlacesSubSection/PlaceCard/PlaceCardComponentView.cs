@@ -83,6 +83,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text placeDescText;
     [SerializeField] internal TMP_Text placeAuthorText;
     [SerializeField] internal TMP_Text numberOfUsersText;
+    [SerializeField] internal TMP_Text coordsText;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal GameObject imageContainer;
@@ -265,12 +266,15 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void SetJumpInConfiguration(JumpInConfig jumpInConfig)
     {
-        jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
-        jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
-        jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
+        if (jumpinButton != null)
+        {
+            jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
+            jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
+            jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
+        }
 
-        if (isPlaceCardModal)
-            jumpinButton.SetText($"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}");
+        if (coordsText != null)
+            coordsText.text = $"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}";
     }
 
     private void OnPlaceImageLoaded(Sprite sprite) { SetPlacePicture(sprite); }

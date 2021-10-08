@@ -464,12 +464,15 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public void SetJumpInConfiguration(JumpInConfig jumpInConfig)
     {
-        jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
-        jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
-        jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
+        if (jumpinButton != null)
+        {
+            jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
+            jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
+            jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
 
-        if (isEventCardModal)
-            jumpinButton.SetText($"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}");
+            if (isEventCardModal)
+                jumpinButton.SetText($"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}");
+        }
     }
 
     private void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
