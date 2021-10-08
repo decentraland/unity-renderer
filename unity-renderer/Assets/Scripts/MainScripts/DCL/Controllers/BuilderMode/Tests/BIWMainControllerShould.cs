@@ -22,7 +22,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-
+        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController = new BuilderInWorldEditor();
         BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize(BIWTestUtils.CreateMockedContext());
