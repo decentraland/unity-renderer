@@ -19,6 +19,9 @@ public class PlayerName : MonoBehaviour, IPlayerName
     [SerializeField] private Transform pivot;
     [SerializeField] private Animator talkingAnimator;
 
+    private BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
+    private BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
+
     private float alpha;
     private float targetAlpha;
     private bool forceShow = false;
@@ -27,8 +30,11 @@ public class PlayerName : MonoBehaviour, IPlayerName
     {
         alpha = 1;
         canvas.sortingOrder = DEFAULT_CANVAS_SORTING_ORDER;
+        namesVisible.OnChange += OnNamesVisibleChanged;
+        OnNamesVisibleChanged(namesVisible.Get(), true);
         Show(true);
     }
+    private void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current; }
 
     public void SetName(string name)
     {
@@ -59,6 +65,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
          */
         float distanceToPlayer = Vector3.Distance(cameraPosition, gameObject.transform.position);
         float resolvedAlpha = ResolveAlphaByDistance(alpha, distanceToPlayer, forceShow);
+        resolvedAlpha *= namesOpacity.Get();
         UpdateVisuals(resolvedAlpha);
         ScalePivotByDistance(distanceToPlayer);
         LookAtCamera(cameraRight, cameraRotation.eulerAngles);
@@ -117,4 +124,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     private void UpdateVisuals(float resolvedAlpha) { canvasGroup.alpha = resolvedAlpha; }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
+
+    private void OnDestroy() { namesVisible.OnChange -= OnNamesVisibleChanged; }
 }
