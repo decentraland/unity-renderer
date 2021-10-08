@@ -9,7 +9,7 @@ namespace DCL
     {
         private IWebRequest genericWebRequest;
         private IWebRequestAssetBundle assetBundleWebRequest;
-        private IWebRequest textureWebRequest;
+        private IWebRequestTexture textureWebRequest;
         private IWebRequestAudio audioClipWebRequest;
         private List<WebRequestAsyncOperation> ongoingWebRequests = new List<WebRequestAsyncOperation>();
 
@@ -29,7 +29,7 @@ namespace DCL
         public void Initialize(
             IWebRequest genericWebRequest,
             IWebRequestAssetBundle assetBundleWebRequest,
-            IWebRequest textureWebRequest,
+            IWebRequestTexture textureWebRequest,
             IWebRequestAudio audioClipWebRequest)
         {
             this.genericWebRequest = genericWebRequest;
@@ -81,8 +81,10 @@ namespace DCL
             Action<UnityWebRequest> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true)
+            bool disposeOnCompleted = true,
+            bool isReadable = true)
         {
+            textureWebRequest.isReadable = isReadable;
             return SendWebRequest(textureWebRequest, url, null, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
         }
 

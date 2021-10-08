@@ -1,14 +1,18 @@
 using System;
+using DCL.Helpers.NFT.Markets;
 
 public class ServiceProviders : IServiceProviders
 {
-    public ITheGraph theGraph { get ; } = new TheGraph();
-    public ICatalyst catalyst { get ; } = new Catalyst();
-    public IAnalytics analytics { get ; } = new Analytics();
+    public INFTMarket openSea { get; } = new OpenSea();
+    public ITheGraph theGraph { get; } = new TheGraph();
+    public ICatalyst catalyst { get; } = new Catalyst();
+    public IAnalytics analytics { get; } = new Analytics();
 
     public void Dispose()
     {
         catalyst.Dispose();
         analytics.Dispose();
+        theGraph.Dispose();
+        openSea.Dispose();
     }
 }

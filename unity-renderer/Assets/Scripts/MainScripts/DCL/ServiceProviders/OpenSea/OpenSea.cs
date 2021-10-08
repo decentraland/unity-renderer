@@ -5,7 +5,7 @@ using DCL.Helpers.NFT.Markets.OpenSea_Internal;
 
 namespace DCL.Helpers.NFT.Markets
 {
-    internal class OpenSea : INFTMarket
+    public class OpenSea : INFTMarket
     {
         readonly MarketInfo openSeaMarketInfo = new MarketInfo() { name = "OpenSea" };
 
@@ -250,6 +250,11 @@ namespace DCL.Helpers.NFT.Markets
             }
 
             return null;
+        }
+
+        public void Dispose()
+        {
+            requestController?.Dispose();
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public struct QualitySettings
+    public class QualitySettings : ICloneable
     {
         public enum BaseResolution
         {
@@ -108,5 +108,6 @@ namespace DCL.SettingsCommon
 
             return true;
         }
+        public object Clone() { return MemberwiseClone(); }
     }
 }

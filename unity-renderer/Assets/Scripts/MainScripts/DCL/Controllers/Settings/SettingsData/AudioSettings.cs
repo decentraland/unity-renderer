@@ -3,7 +3,7 @@ using System;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public struct AudioSettings
+    public class AudioSettings : ICloneable
     {
         public float masterVolume;
         public float voiceChatVolume;
@@ -23,5 +23,7 @@ namespace DCL.SettingsCommon
                    && musicVolume == settings.musicVolume
                    && chatSFXEnabled == settings.chatSFXEnabled;
         }
+
+        public object Clone() { return MemberwiseClone(); }
     }
 }

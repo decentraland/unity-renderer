@@ -21,9 +21,9 @@ public class SceneBoundarieCheckerFeedbackStyleShould : IntegrationTestSuite
             textureWebRequest: new WebRequestTexture(),
             null);
 
-        var context = DCL.Tests.PlatformContextFactory.CreateWithCustomMocks
+        var context = DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
         (
-            webRequestController: webRequestController
+            webRequestController
         );
 
         return context;
