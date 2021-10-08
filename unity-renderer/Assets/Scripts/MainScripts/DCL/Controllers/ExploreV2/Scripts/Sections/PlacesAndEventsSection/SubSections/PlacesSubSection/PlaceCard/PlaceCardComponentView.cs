@@ -67,12 +67,6 @@ public interface IPlaceCardComponentView
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
-
-    /// <summary>
-    /// Set the configuration of the JumpIn button.
-    /// </summary>
-    /// <param name="jumpInConfig">JumpIn configuration.</param>
-    void SetJumpInConfiguration(JumpInConfig jumpInConfig);
 }
 
 public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
@@ -91,7 +85,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal GameObject loadingSpinner;
 
     [Header("Configuration")]
-    [SerializeField] internal bool isPlaceCardModal = false;
     [SerializeField] internal PlaceCardComponentModel model;
 
     public Button.ButtonClickedEvent onJumpInClick
@@ -162,7 +155,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceDescription(model.placeDescription);
         SetPlaceAuthor(model.placeAuthor);
         SetNumberOfUsers(model.numberOfUsers);
-        SetJumpInConfiguration(model.jumpInConfiguration);
         onJumpInClick = model.onJumpInClick;
         onInfoClick = model.onInfoClick;
     }
@@ -262,19 +254,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         imageContainer.SetActive(!isVisible);
         placeInfoContainer.SetActive(!isVisible);
         loadingSpinner.SetActive(isVisible);
-    }
-
-    public void SetJumpInConfiguration(JumpInConfig jumpInConfig)
-    {
-        if (jumpinButton != null)
-        {
-            jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
-            jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
-            jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
-        }
-
-        if (coordsText != null)
-            coordsText.text = $"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}";
     }
 
     private void OnPlaceImageLoaded(Sprite sprite) { SetPlacePicture(sprite); }

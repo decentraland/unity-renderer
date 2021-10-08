@@ -1130,10 +1130,6 @@ MonoBehaviour:
     eventPlace: 
     subscribedUsers: 153
     isSubscribed: 0
-    jumpInConfiguration:
-      coords: {x: 0, y: 0}
-      serverName: 
-      layerName: 
     onJumpInClick:
       m_PersistentCalls:
         m_Calls: []
@@ -2037,7 +2033,8 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 11.55
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1323953455831319416, guid: b53f82112c401e94eb453570ac440340, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b53f82112c401e94eb453570ac440340, type: 3}
 --- !u!224 &7604159088282183137 stripped
 RectTransform:

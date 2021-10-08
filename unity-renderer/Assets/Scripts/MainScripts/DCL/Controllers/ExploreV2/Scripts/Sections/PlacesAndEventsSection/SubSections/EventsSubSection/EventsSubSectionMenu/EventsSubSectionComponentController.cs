@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -219,10 +220,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventCardModel.eventPlace = FormatEventPlace(eventFromAPI);
         eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
         eventCardModel.isSubscribed = false;
-        eventCardModel.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
 
         // Card events
-        ConfigureOnJumpInActions(eventCardModel);
+        ConfigureOnJumpInActions(eventCardModel, eventFromAPI);
         ConfigureOnInfoActions(eventCardModel);
         ConfigureOnSubscribeActions(eventCardModel);
         ConfigureOnUnsubscribeActions(eventCardModel);
@@ -279,23 +279,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal string FormatEventPlace(EventFromAPIModel eventFromAPI) { return string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name; }
 
-    internal JumpInConfig GetJumpInConfigFromAPIEvent(EventFromAPIModel eventFromAPI)
-    {
-        JumpInConfig result = new JumpInConfig();
-
-        result.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
-
-        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new string[] { "", "" } : eventFromAPI.realm.Split('-');
-        result.serverName = realmFromAPI[0];
-        result.layerName = realmFromAPI[1];
-
-        return result;
-    }
-
-    internal void ConfigureOnJumpInActions(EventCardComponentModel eventModel)
+    internal void ConfigureOnJumpInActions(EventCardComponentModel eventModel, EventFromAPIModel eventFromAPI)
     {
         eventModel.onJumpInClick = new UnityEngine.UI.Button.ButtonClickedEvent();
         eventModel.onJumpInClick.AddListener(RequestExploreV2Closing);
+        eventModel.onJumpInClick.AddListener(() => JumpInToEvent(eventFromAPI));
     }
 
     internal void ConfigureOnInfoActions(EventCardComponentModel eventModel)
@@ -340,6 +328,19 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                     Debug.LogError($"Error posting 'attend' message to the API: {error}");
                 });
         });
+    }
+
+    internal static void JumpInToEvent(EventFromAPIModel eventFromAPI)
+    {
+        Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
+        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new string[] { "", "" } : eventFromAPI.realm.Split('-');
+        string serverName = realmFromAPI[0];
+        string layerName = realmFromAPI[1];
+
+        if (string.IsNullOrEmpty(serverName))
+            WebInterface.GoTo(coords.x, coords.y);
+        else
+            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
     }
 
     internal void RequestExploreV2Closing()

@@ -113,12 +113,6 @@ public interface IEventCardComponentView
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
-
-    /// <summary>
-    /// Set the configuration of the JumpIn button.
-    /// </summary>
-    /// <param name="jumpInConfig">JumpIn configuration.</param>
-    void SetJumpInConfiguration(JumpInConfig jumpInConfig);
 }
 
 public class EventCardComponentView : BaseComponentView, IEventCardComponentView
@@ -260,7 +254,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventOrganizer(model.eventOrganizer);
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
-        SetJumpInConfiguration(model.jumpInConfiguration);
         onJumpInClick = model.onJumpInClick;
         onInfoClick = model.onInfoClick;
         onSubscribeClick = model.onSubscribeClick;
@@ -460,19 +453,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         imageContainer.SetActive(!isVisible);
         eventInfoContainer.SetActive(!isVisible);
         loadingSpinner.SetActive(isVisible);
-    }
-
-    public void SetJumpInConfiguration(JumpInConfig jumpInConfig)
-    {
-        if (jumpinButton != null)
-        {
-            jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
-            jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
-            jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
-
-            if (isEventCardModal)
-                jumpinButton.SetText($"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}");
-        }
     }
 
     private void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }

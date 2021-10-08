@@ -8,19 +8,17 @@ public class JumpInAction : MonoBehaviour
     public string serverName;
     public string layerName;
 
-    private ButtonComponentView button;
+    internal ButtonComponentView button;
 
-    private void Start()
+    private void Awake()
     {
         button = GetComponent<ButtonComponentView>();
-        button.onClick.AddListener(JumpIn);
+
+        if (button != null)
+            button.OnFullyInitialized += OnButtonFullyInitialized;
     }
 
-    private void OnDestroy()
-    {
-        if (button != null)
-            button.onClick.RemoveAllListeners();
-    }
+    internal void OnButtonFullyInitialized() { button.onClick.AddListener(JumpIn); }
 
     internal void JumpIn()
     {
@@ -28,5 +26,14 @@ public class JumpInAction : MonoBehaviour
             WebInterface.GoTo(coords.x, coords.y);
         else
             WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
+    }
+
+    private void OnDestroy()
+    {
+        if (button != null)
+        {
+            button.OnFullyInitialized -= OnButtonFullyInitialized;
+            button.onClick.RemoveAllListeners();
+        }
     }
 }

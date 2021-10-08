@@ -12,7 +12,6 @@ public class PlaceCardComponentModel
     public string placeDescription;
     public string placeAuthor;
     public int numberOfUsers;
-    public JumpInConfig jumpInConfiguration;
     public Button.ButtonClickedEvent onJumpInClick;
     public Button.ButtonClickedEvent onInfoClick;
 }

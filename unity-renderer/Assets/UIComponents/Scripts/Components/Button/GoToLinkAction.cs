@@ -5,19 +5,17 @@ public class GoToLinkAction : MonoBehaviour
 {
     public string urlToGo;
 
-    private ButtonComponentView button;
+    internal ButtonComponentView button;
 
-    private void Start()
+    private void Awake()
     {
         button = GetComponent<ButtonComponentView>();
-        button.onClick.AddListener(GoToUrl);
+
+        if (button != null)
+            button.OnFullyInitialized += OnButtonFullyInitialized;
     }
 
-    private void OnDestroy()
-    {
-        if (button != null)
-            button.onClick.RemoveAllListeners();
-    }
+    internal void OnButtonFullyInitialized() { button.onClick.AddListener(GoToUrl); }
 
     internal void GoToUrl()
     {
@@ -25,5 +23,14 @@ public class GoToLinkAction : MonoBehaviour
             return;
 
         Application.OpenURL(urlToGo);
+    }
+
+    private void OnDestroy()
+    {
+        if (button != null)
+        {
+            button.OnFullyInitialized -= OnButtonFullyInitialized;
+            button.onClick.RemoveAllListeners();
+        }
     }
 }

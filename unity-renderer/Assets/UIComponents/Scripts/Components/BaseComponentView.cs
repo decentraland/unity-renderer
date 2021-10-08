@@ -72,7 +72,11 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
-    private void OnEnable() { OnScreenSizeChange(Vector2Int.zero, Vector2Int.zero); }
+    private void OnEnable()
+    {
+        // After an UI is enabled, we must wait for 2 frames to allow time for it to fully resize itself
+        StartCoroutine(RaisePostScreenSizeChangedAfterDelay(2));
+    }
 
     private void Awake() { Initialize(); }
 
@@ -91,12 +95,16 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         if (!gameObject.activeInHierarchy)
             return;
 
-        StartCoroutine(RefreshControlAfterScreenSize());
+        StartCoroutine(RaisePostScreenSizeChangedAfterDelay());
     }
 
-    internal IEnumerator RefreshControlAfterScreenSize()
+    internal IEnumerator RaisePostScreenSizeChangedAfterDelay(int framesToWait = 1)
     {
-        yield return null;
+        for (int i = 0; i < framesToWait; i++)
+        {
+            yield return null;
+        }
+
         PostScreenSizeChanged();
     }
 

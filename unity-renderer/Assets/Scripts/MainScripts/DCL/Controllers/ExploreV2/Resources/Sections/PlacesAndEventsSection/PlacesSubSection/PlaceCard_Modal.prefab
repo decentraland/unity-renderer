@@ -528,7 +528,6 @@ MonoBehaviour:
   imageContainer: {fileID: 1969214295826712859}
   placeInfoContainer: {fileID: 1734101464184123948}
   loadingSpinner: {fileID: 9205862197534924893}
-  isPlaceCardModal: 1
   model:
     placePictureSprite: {fileID: 21300000, guid: a75caa85e28974fc7b7a20b9942ca0fd,
       type: 3}
@@ -538,10 +537,6 @@ MonoBehaviour:
     placeDescription: This is a test description...
     placeAuthor: Author <b>Name</b>
     numberOfUsers: 0
-    jumpInConfiguration:
-      coords: {x: -15, y: 98}
-      serverName: 
-      layerName: 
     onJumpInClick:
       m_PersistentCalls:
         m_Calls: []
@@ -1625,7 +1620,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1323953455831319416, guid: b53f82112c401e94eb453570ac440340, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b53f82112c401e94eb453570ac440340, type: 3}
 --- !u!224 &6028053476797439618 stripped
 RectTransform:
