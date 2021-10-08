@@ -46,6 +46,8 @@ public class GPUSkinningVisualTests : VisualTestsBase
         // but our loading process is so convoluted that it made impossible to reuse the same wearableController.
 
         AvatarMeshCombinerHelper originalCombiner = new AvatarMeshCombinerHelper();
+        originalCombiner.uploadMeshToGpu = false;
+
         GameObject originalGO = CreateTestGameObject("_Original", new Vector3(8, 0, 8));
         yield return LoadWearable("urn:decentraland:off-chain:base-avatars:bee_t_shirt", WearableLiterals.BodyShapes.FEMALE, originalGO, originalCombiner);
         Animation originalAnim = originalGO.transform.GetChild(0).gameObject.AddComponent<Animation>();
@@ -56,6 +58,8 @@ public class GPUSkinningVisualTests : VisualTestsBase
         originalAnim.Sample();
 
         AvatarMeshCombinerHelper gpuSkinningCombiner = new AvatarMeshCombinerHelper();
+        gpuSkinningCombiner.uploadMeshToGpu = false;
+
         GameObject gpuSkinningGO = CreateTestGameObject("_Original", new Vector3(7, 0, 8));
         yield return LoadWearable("urn:decentraland:off-chain:base-avatars:bee_t_shirt", WearableLiterals.BodyShapes.FEMALE, gpuSkinningGO, gpuSkinningCombiner);
         Animation gpuSkinningAnim = gpuSkinningGO.transform.GetChild(0).gameObject.AddComponent<Animation>();
@@ -72,6 +76,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
         //Assert
         yield return VisualTestHelpers.TakeSnapshot();
     }
+
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject container, AvatarMeshCombinerHelper combiner)
     {
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);

@@ -18,6 +18,18 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return JsonConvert.DeserializeObject<Model>(json); }
         }
 
+        public override void Initialize(IParcelScene scene, IDCLEntity entity)
+        {
+            base.Initialize(scene, entity);
+            scene.metricsCounter.AddExcludedEntity(entity.entityId);
+        }
+
+        public override void Cleanup()
+        {
+            scene.metricsCounter.RemoveExcludedEntity(entity.entityId);
+            base.Cleanup();
+        }
+
         private void Awake() { model = new Model(); }
 
         public override IEnumerator ApplyChanges(BaseModel newModel) { yield break; }

@@ -38,26 +38,82 @@ namespace DCL.Components
         [System.NonSerialized]
         public Animation animComponent = null;
 
+        private string lastLoadedModelSrc;
+
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
 
         private void Awake() { model = new Model(); }
 
-        private void OnDestroy() { entity.OnShapeUpdated -= OnComponentUpdated; }
+        private void OnDestroy()
+        {
+            entity.OnShapeLoaded -= OnEntityShapeLoaded;
+
+            var animationShape = entity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+
+            if (animationShape != null)
+                animationShape.OnLoaded -= OnShapeLoaded;
+        }
 
         public override IEnumerator ApplyChanges(BaseModel model)
         {
-            entity.OnShapeUpdated -= OnComponentUpdated;
-            entity.OnShapeUpdated += OnComponentUpdated;
+            entity.OnShapeLoaded -= OnEntityShapeLoaded;
+            entity.OnShapeLoaded += OnEntityShapeLoaded;
 
-            UpdateAnimationState();
+            //Note: If the entity is still loading the Shape, We wait until it is fully loaded to init it
+            //      If we don't wait, this can cause an issue with the asset bundles not loadings animations
+
+            if (IsEntityShapeLoaded())
+                UpdateAnimationState();
 
             return null;
         }
 
         new public Model GetModel() { return (Model) model; }
 
-        private void OnComponentUpdated(IDCLEntity e) { UpdateAnimationState(); }
+        private bool IsEntityShapeLoaded()
+        {
+            var animationShape = entity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+
+            if (animationShape == null)
+                return false;
+
+            return animationShape.isLoaded;
+        }
+
+        private void OnEntityShapeLoaded(IDCLEntity shapeEntity)
+        {
+            var animationShape = shapeEntity.GetSharedComponent(typeof(BaseShape)) as LoadableShape;
+
+            if (animationShape == null)
+                return;
+
+            var shapeModel = animationShape.GetModel() as LoadableShape.Model;
+
+            if (shapeModel == null)
+                return;
+
+            if ( shapeModel.src == lastLoadedModelSrc )
+                return;
+
+            lastLoadedModelSrc = shapeModel.src;
+
+            if ( animationShape.isLoaded )
+            {
+                UpdateAnimationState();
+            }
+            else
+            {
+                animationShape.OnLoaded -= OnShapeLoaded;
+                animationShape.OnLoaded += OnShapeLoaded;
+            }
+        }
+
+        private void OnShapeLoaded(LoadableShape shape)
+        {
+            shape.OnLoaded -= OnShapeLoaded;
+            UpdateAnimationState();
+        }
 
         private void Initialize()
         {

@@ -5,18 +5,25 @@ public class FeatureFlagController : IFeatureFlagController
 {
     internal FeatureFlagBridge featureFlagBridgeComponent;
 
-    public FeatureFlagController()
+    public FeatureFlagController(GameObject bridgeGameObject = null)
     {
-        if (InitialSceneReferences.i.bridgeGameObject != null)
-            AddBridgeComponent(InitialSceneReferences.i.bridgeGameObject );
+        if ( bridgeGameObject == null )
+            bridgeGameObject = new GameObject("Bridges");
+
+        AddBridgeComponent(bridgeGameObject);
     }
 
     public void AddBridgeComponent(GameObject gameObjectToAddBridge)
     {
         if (featureFlagBridgeComponent != null)
             Dispose();
+
         featureFlagBridgeComponent = gameObjectToAddBridge.AddComponent<FeatureFlagBridge>();
     }
 
-    public void Dispose() { GameObject.Destroy(featureFlagBridgeComponent); }
+    public void Dispose()
+    {
+        Object.Destroy(featureFlagBridgeComponent);
+        featureFlagBridgeComponent = null;
+    }
 }

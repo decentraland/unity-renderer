@@ -47,7 +47,8 @@ namespace NFTShape_Internal
             if (!isPlayerNear)
                 return;
 
-            isCameraInFront = Vector3.Dot(nftControllerT.forward,
+            isCameraInFront = camera == null ||
+                              Vector3.Dot(nftControllerT.forward,
                                   nftControllerT.position - camera.transform.position)
                               > config.nftConfig.hqImgInFrontDotProdMinValue;
 
@@ -62,7 +63,8 @@ namespace NFTShape_Internal
                 return;
             }
 
-            isPlayerLooking = Vector3.Dot(nftControllerT.forward, camera.transform.forward) >=
+            isPlayerLooking = camera == null ||
+                              Vector3.Dot(nftControllerT.forward, camera.transform.forward) >=
                               config.nftConfig.hqImgFacingDotProdMinValue;
 
             if (config.nftConfig.verbose)

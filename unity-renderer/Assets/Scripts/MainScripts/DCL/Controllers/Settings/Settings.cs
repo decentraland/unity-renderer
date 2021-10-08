@@ -79,7 +79,8 @@ namespace DCL.SettingsCommon
                 maxNonLODAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
                 voiceChatVolume = 1,
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
-                autoqualityOn = false
+                autoqualityOn = false,
+                namesOpacity = 1f
             };
         }
 

@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Configuration;
 using UnityEngine;
 using System.Collections.Generic;
+using DCL.Models;
 
 namespace DCL
 {
@@ -47,6 +48,7 @@ namespace DCL
 
         protected override void OnReuse(Action OnSuccess)
         {
+            asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
             asset.Show(OnSuccess);
         }
 
@@ -140,10 +142,15 @@ namespace DCL
                     break;
 
                 GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i], asset.container.transform);
-                var list = new List<Renderer>(assetBundleModelGO.GetComponentsInChildren<Renderer>(true));
+
+                List<Renderer> rendererList = assetBundleModelGO.GetComponentsInChildren<Renderer>(true).ToList();
+
+                asset.renderers.AddRange(rendererList);
+                UploadMeshesToGPU(MeshesInfoUtils.ExtractMeshes(assetBundleModelGO));
+                asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
-                yield return MaterialCachingHelper.Process(list, enableRenderers: false, settings.cachingFlags);
+                yield return MaterialCachingHelper.Process(rendererList, enableRenderers: false, settings.cachingFlags);
 
                 var animators = assetBundleModelGO.GetComponentsInChildren<Animation>(true);
 
@@ -158,6 +165,20 @@ namespace DCL
                 //assetBundleModelGO.transform.SetParent(asset.container.transform, false);
                 assetBundleModelGO.transform.ResetLocalTRS();
                 yield return null;
+            }
+        }
+
+        private void UploadMeshesToGPU(List<Mesh> meshesList)
+        {
+            foreach ( Mesh mesh in meshesList )
+            {
+                if ( !mesh.isReadable )
+                    continue;
+
+                Physics.BakeMesh(mesh.GetInstanceID(), false);
+                asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
+                asset.meshes.Add(mesh);
+                mesh.UploadMeshData(true);
             }
         }
 

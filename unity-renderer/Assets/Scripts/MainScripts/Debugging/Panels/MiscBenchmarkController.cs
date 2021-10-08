@@ -146,10 +146,10 @@ namespace DCL
                 foreach (var v in loadedScenes)
                 {
                     ParcelScene scene = v.Value as ParcelScene;
-                    if (scene.metricsController != null)
+                    if (scene.metricsCounter != null)
                     {
-                        meshesCount += scene.metricsController.GetModel().meshes;
-                        materialCount += scene.metricsController.GetModel().materials;
+                        meshesCount += scene.metricsCounter.GetModel().meshes;
+                        materialCount += scene.metricsCounter.GetModel().materials;
                     }
 
                     sharedCount += scene.disposableComponents.Count;

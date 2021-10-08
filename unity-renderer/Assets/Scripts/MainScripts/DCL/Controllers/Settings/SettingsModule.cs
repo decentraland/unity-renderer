@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.SettingsCommon
 {
-    public class SettingsModule<T> where T : struct
+    public class SettingsModule<T> where T : class, ICloneable
     {
         public event Action<T> OnChanged;
 
@@ -20,26 +20,20 @@ namespace DCL.SettingsCommon
             this.defaultPreset = defaultPreset;
             Preload();
         }
-        
+
         private void Preload()
         {
-            bool isQualitySettingsSet = false;
-            if (PlayerPrefsUtils.HasKey(playerPrefsKey))
-            {
-                try
-                {
-                    dataValue = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
-                    isQualitySettingsSet = true;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e.Message);
-                }
-            }
+            dataValue = (T)defaultPreset.Clone();
+            if (!PlayerPrefsUtils.HasKey(playerPrefsKey))
+                return;
 
-            if (!isQualitySettingsSet)
+            try
             {
-                dataValue = defaultPreset;
+                JsonUtility.FromJsonOverwrite(PlayerPrefsUtils.GetString(playerPrefsKey), Data);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
             }
         }
 
@@ -50,7 +44,7 @@ namespace DCL.SettingsCommon
             if (dataValue.Equals(newSettings))
                 return;
 
-            dataValue = newSettings;
+            dataValue = (T)newSettings.Clone();
             OnChanged?.Invoke(dataValue);
         }
 

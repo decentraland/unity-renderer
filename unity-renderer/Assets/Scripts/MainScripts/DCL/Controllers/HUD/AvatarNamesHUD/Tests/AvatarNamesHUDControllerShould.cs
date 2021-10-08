@@ -26,6 +26,8 @@ namespace Tests.AvatarNamesHUD
         public void InitializeProperly()
         {
             hudController.Initialize();
+
+            Assert.NotNull(hudController.toggleHUDAction);
             Assert.AreEqual(hudView, hudController.view);
             hudView.Received().Initialize();
         }
@@ -95,6 +97,28 @@ namespace Tests.AvatarNamesHUD
             Assert.AreEqual(2, hudController.trackingPlayers.Count);
             Assert.IsTrue(hudController.trackingPlayers.Contains("user1"));
             Assert.IsTrue(hudController.trackingPlayers.Contains("user2"));
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ReactToAvatarNamesVariable(bool visible)
+        {
+            DataStore.i.HUDs.avatarNamesVisible.Set(true, false);
+            hudController.Initialize();
+            DataStore.i.HUDs.avatarNamesVisible.Set(visible);
+            hudView.Received().SetVisibility(visible);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ReactToToggleAction(bool initialVisible)
+        {
+            DataStore.i.HUDs.avatarNamesVisible.Set(initialVisible);
+            hudController.Initialize();
+            hudController.toggleHUDAction.RaiseOnTriggered();
+            hudView.Received().SetVisibility(!initialVisible);
         }
 
         [TearDown]
