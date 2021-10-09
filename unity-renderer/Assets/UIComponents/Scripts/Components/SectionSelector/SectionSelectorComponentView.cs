@@ -66,6 +66,9 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         {
             CreateSection(sections[i], $"Section_{i}");
         }
+
+        if (sections.Count > 0)
+            instantiatedSections[0].SelectToggle();
     }
 
     public ISectionToggle GetSection(int index)

@@ -31,8 +31,15 @@ public interface ISectionToggle
 public class SectionToggle : MonoBehaviour, ISectionToggle
 {
     [SerializeField] private Toggle toggle;
+    [SerializeField] private Image toggleBackground;
     [SerializeField] private TMP_Text sectionText;
     [SerializeField] private Image sectionImage;
+    [SerializeField] private Color selectedBackgroundColor;
+    [SerializeField] private Color selectedTextColor;
+    [SerializeField] private Color selectedImageColor;
+    [SerializeField] private Color unselectedBackgroundColor;
+    [SerializeField] private Color unselectedTextColor;
+    [SerializeField] private Color unselectedImageColor;
 
     public ToggleEvent onSelect
     {
@@ -43,7 +50,14 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             toggle?.onValueChanged.AddListener((isOn) =>
             {
                 if (isOn)
+                {
+                    SetSelectedVisuals();
                     value?.Invoke(isOn);
+                }
+                else
+                {
+                    SetUnselectedVisuals();
+                }
             });
         }
     }
@@ -72,6 +86,13 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             sectionImage.sprite = model.icon;
         }
 
+        selectedBackgroundColor = model.selectedBackgroundColor;
+        selectedTextColor = model.selectedTextColor;
+        selectedImageColor = model.selectedImageColor;
+        unselectedBackgroundColor = model.unselectedBackgroundColor;
+        unselectedTextColor = model.unselectedTextColor;
+        unselectedImageColor = model.unselectedImageColor;
+
         onSelect = model.onSelect;
     }
 
@@ -81,6 +102,20 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             return;
 
         toggle.isOn = true;
+    }
+
+    public void SetSelectedVisuals()
+    {
+        toggleBackground.color = selectedBackgroundColor;
+        sectionText.color = selectedTextColor;
+        sectionImage.color = selectedImageColor;
+    }
+
+    public void SetUnselectedVisuals()
+    {
+        toggleBackground.color = unselectedBackgroundColor;
+        sectionText.color = unselectedTextColor;
+        sectionImage.color = unselectedImageColor;
     }
 
     private void OnDestroy()
