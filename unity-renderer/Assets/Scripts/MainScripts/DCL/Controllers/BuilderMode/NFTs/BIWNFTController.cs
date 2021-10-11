@@ -59,6 +59,7 @@ public class BIWNFTController
             if (info.assetContract.address == id)
                 return true;
         }
+
         return false;
     }
 
@@ -95,7 +96,6 @@ public class BIWNFTController
 
             nftsAlreadyInUse.Add(info);
             OnNFTUsageChange?.Invoke();
-
         }
     }
 
@@ -121,7 +121,7 @@ public class BIWNFTController
         string userId = userProfile.ethAddress;
         if (!string.IsNullOrEmpty(userId))
         {
-            yield return NFTHelper.FetchNFTsFromOwner(userId, (nftOwner) =>
+            yield return NFTUtils.FetchNFTsFromOwner(userId, (nftOwner) =>
                 {
                     NftsFeteched(nftOwner);
                 },

@@ -12,11 +12,13 @@ public class TeleportPromptHUDView : MonoBehaviour
 
     [Header("Images")]
     [SerializeField] RawImage imageSceneThumbnail;
+
     [SerializeField] Image imageGotoCrowd;
     [SerializeField] Image imageGotoMagic;
 
     [Header("Containers")]
     [SerializeField] GameObject containerCoords;
+
     [SerializeField] GameObject containerMagic;
     [SerializeField] GameObject containerCrowd;
     [SerializeField] GameObject containerScene;
@@ -24,21 +26,25 @@ public class TeleportPromptHUDView : MonoBehaviour
 
     [Header("Scene info")]
     [SerializeField] TextMeshProUGUI textCoords;
+
     [SerializeField] TextMeshProUGUI textSceneName;
     [SerializeField] TextMeshProUGUI textSceneOwner;
 
     [Header("Event info")]
     [SerializeField] TextMeshProUGUI textEventInfo;
+
     [SerializeField] TextMeshProUGUI textEventName;
     [SerializeField] TextMeshProUGUI textEventAttendees;
 
     [Header("Buttons")]
     [SerializeField] Button closeButton;
+
     [SerializeField] Button continueButton;
     [SerializeField] Button cancelButton;
 
     [Header("Spinners")]
     [SerializeField] GameObject spinnerGeneral;
+
     [SerializeField] GameObject spinnerImage;
 
     public event Action OnCloseEvent;
@@ -123,7 +129,7 @@ public class TeleportPromptHUDView : MonoBehaviour
             return;
 
         spinnerImage.SetActive(true);
-        fetchParcelImageOp = Utils.FetchTexture(previewImageUrl, (texture) =>
+        fetchParcelImageOp = Utils.FetchTexture(previewImageUrl, false, (texture) =>
         {
             downloadedBanner = texture;
             imageSceneThumbnail.texture = texture;

@@ -44,7 +44,6 @@ namespace DCL.Components
             var loadableShape = GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
             loadableShape.entity = entity;
-            loadableShape.component = this;
             loadableShape.initialVisibility = model.visible;
 
             loadableShape.withCollisions = model.withCollisions;

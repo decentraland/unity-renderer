@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using DCL;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Networking;
 using Environment = DCL.Environment;
 
@@ -25,6 +26,7 @@ namespace UnityGLTF.Loader
 
         public WebRequestLoader(string rootURI, IWebRequestController webRequestController, AssetIdConverter fileToHashConverter = null)
         {
+            Assert.IsNotNull(webRequestController, "webRequestController should never be null!");
             _rootURI = rootURI;
             HasSyncLoadMethod = false;
             this.webRequestController = webRequestController;
@@ -81,10 +83,16 @@ namespace UnityGLTF.Loader
                 timeout: 5000,
                 disposeOnCompleted: false);
 
+            Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
+
             yield return asyncOp;
 
             bool error = false;
             string errorMessage = null;
+
+            if (asyncOp == null)
+            {
+            }
 
             if (!asyncOp.isSucceded)
             {

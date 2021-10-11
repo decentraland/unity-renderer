@@ -3,17 +3,46 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
+using DCL.Controllers;
+using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class NFTShape_Tests : IntegrationTestSuite_Legacy
+public class NFTShape_Tests : IntegrationTestSuite
 {
+    private ParcelScene scene;
+
+    protected override WorldRuntimeContext CreateRuntimeContext()
+    {
+        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
+        (
+            new SceneController(),
+            new WorldState(),
+            new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory)
+        );
+    }
+
+    protected override PlatformContext CreatePlatformContext()
+    {
+        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
+            WebRequestController.Create());
+    }
+
+    [UnitySetUp]
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+
+        scene = (ParcelScene)DCL.Environment.i.world.sceneController.CreateTestScene();
+        scene.contentProvider = new ContentProvider_Dummy();
+        DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+        CommonScriptableObjects.rendererState.Set(true);
+    }
 
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-
-
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -48,8 +77,6 @@ public class NFTShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator MissingValuesGetDefaultedOnUpdate()
     {
-
-
         var component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE);
         yield return component.routine;
 
@@ -63,8 +90,6 @@ public class NFTShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-
-
         string entityId = "entityId";
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];

@@ -69,6 +69,8 @@ namespace DCL
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
             avatarMeshCombiner = new AvatarMeshCombinerHelper();
+            avatarMeshCombiner.prepareMeshForGpuSkinning = true;
+            avatarMeshCombiner.uploadMeshToGpu = true;
 
             if (impostorRenderer != null)
                 SetImpostorVisibility(false);
@@ -101,7 +103,7 @@ namespace DCL
 
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
-            
+
             ResetImpostor();
 
             // TODO(Brian): Find a better approach than overloading callbacks like this. This code is not readable.
@@ -138,7 +140,7 @@ namespace DCL
         public void InitializeImpostor()
         {
             initializedImpostor = true;
-            
+
             // The fetched snapshot can take its time so it's better to assign a generic impostor first.
             AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
 
@@ -468,15 +470,7 @@ namespace DCL
             bool mergeSuccess = MergeAvatar(allRenderers);
 
             if (mergeSuccess)
-            {
-                // Sample the animation manually and force an update in the GPUSkinning to avoid giant avatars
-                animator.SetIdleFrame();
-                animator.animation.Sample();
-                gpuSkinning = new SimpleGPUSkinning(avatarMeshCombiner.renderer);
-
-                gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
-                gpuSkinningThrottler.SetThrottling(gpuSkinningFramesBetweenUpdates);
-            }
+                PrepareGpuSkinning();
             else
                 loadSoftFailed = true;
 
@@ -491,6 +485,20 @@ namespace DCL
             {
                 OnSuccessEvent?.Invoke();
             }
+        }
+
+        private void PrepareGpuSkinning()
+        {
+            // Sample the animation manually and force an update in the GPUSkinning to avoid giant avatars
+            animator.SetIdleFrame();
+            animator.animation.Sample();
+
+            gpuSkinning = new SimpleGPUSkinning(
+                avatarMeshCombiner.renderer,
+                false); // Bind poses are encoded by the AvatarMeshCombiner before making the mesh unreadable.
+
+            gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
+            gpuSkinningThrottler.SetThrottling(gpuSkinningFramesBetweenUpdates);
         }
 
         void SetupHairAndSkinColors()
@@ -620,13 +628,14 @@ namespace DCL
         {
             if (impostorVisibility && !initializedImpostor)
                 InitializeImpostor();
-            
+
             impostorRenderer.gameObject.SetActive(impostorVisibility);
         }
 
         public void SetImpostorForward(Vector3 newForward) { impostorRenderer.transform.forward = newForward; }
 
         public void SetImpostorColor(Color newColor) { AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, newColor); }
+
         public void SetThrottling(int framesBetweenUpdates)
         {
             gpuSkinningFramesBetweenUpdates = framesBetweenUpdates;
@@ -696,7 +705,11 @@ namespace DCL
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
-            bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
+
+            bool success = avatarMeshCombiner.Combine(
+                bodyShapeController.upperBodyRenderer,
+                renderersToCombine.ToArray(),
+                defaultMaterial);
 
             if ( success )
             {
@@ -713,12 +726,12 @@ namespace DCL
         {
             if (impostorRenderer == null)
                 return;
-            
+
             if (bodySnapshotTexturePromise != null)
                 AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
-            
+
             AvatarRendererHelpers.ResetImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
-            
+
             initializedImpostor = false;
         }
 

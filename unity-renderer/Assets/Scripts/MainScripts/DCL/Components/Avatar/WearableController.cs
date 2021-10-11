@@ -18,7 +18,7 @@ public class WearableController
     public string id => wearable.id;
     public string category => wearable.data.category;
 
-    public GameObject assetContainer => loader?.loadedAsset;
+    public GameObject assetContainer => loader?.loadedAsset.container;
     public bool isReady => loader != null && loader.isFinished && assetContainer != null;
 
     public bool boneRetargetingDirty = false;
@@ -73,16 +73,16 @@ public class WearableController
 
         assetRenderers = null;
 
-        void OnSuccessWrapper(GameObject gameObject)
+        void OnSuccessWrapper(Rendereable rendereable)
         {
             if (loader != null)
             {
                 loader.OnSuccessEvent -= OnSuccessWrapper;
             }
 
-            assetRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            assetRenderers = rendereable.container.GetComponentsInChildren<SkinnedMeshRenderer>();
             StoreOriginalMaterials();
-            PrepareWearable(gameObject);
+            PrepareWearable(rendereable.container);
             onSuccess?.Invoke(this);
         }
 

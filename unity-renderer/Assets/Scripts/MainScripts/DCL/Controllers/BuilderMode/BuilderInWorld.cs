@@ -40,6 +40,7 @@ public class BuilderInWorld : PluginFeature
     private readonly List<IBIWController> controllers = new List<IBIWController>();
 
     internal ParcelScene sceneToEdit;
+    private BiwSceneMetricsAnalyticsHelper sceneMetricsAnalyticsHelper;
 
     private Material skyBoxMaterial;
 
@@ -187,6 +188,8 @@ public class BuilderInWorld : PluginFeature
     {
         base.Dispose();
 
+        sceneMetricsAnalyticsHelper?.Dispose();
+
         if (userProfile != null)
             userProfile.OnUpdate -= OnUserProfileUpdate;
 
@@ -197,7 +200,6 @@ public class BuilderInWorld : PluginFeature
 
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
         Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
-
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -445,7 +447,7 @@ public class BuilderInWorld : PluginFeature
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
         sceneToEdit = (ParcelScene)Environment.i.world.state.GetScene(sceneToEditId);
-        sceneToEdit.metricsController = new BIWSceneMetricsController(sceneToEdit);
+        sceneMetricsAnalyticsHelper = new BiwSceneMetricsAnalyticsHelper(sceneToEdit);
         sceneToEdit.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
     }
 
@@ -803,7 +805,7 @@ public class BuilderInWorld : PluginFeature
         if (activeFeature)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             TryStartEnterEditMode(targetScene);
         }
     }
@@ -833,23 +835,23 @@ public class BuilderInWorld : PluginFeature
             return;
 
         DeployedScenesFetcher.FetchLandsFromOwner(
-                                 Environment.i.platform.serviceProviders.catalyst,
-                                 Environment.i.platform.serviceProviders.theGraph,
-                                 userProfile.ethAddress,
-                                 KernelConfig.i.Get().network,
-                                 BIWSettings.CACHE_TIME_LAND,
-                                 BIWSettings.CACHE_TIME_SCENES)
-                             .Then(lands =>
-                             {
-                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                                 {
-                                     CheckSceneToEditByShorcut();
-                                 }
+                Environment.i.platform.serviceProviders.catalyst,
+                Environment.i.platform.serviceProviders.theGraph,
+                userProfile.ethAddress,
+                KernelConfig.i.Get().network,
+                BIWSettings.CACHE_TIME_LAND,
+                BIWSettings.CACHE_TIME_SCENES)
+            .Then(lands =>
+            {
+                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                {
+                    CheckSceneToEditByShorcut();
+                }
 
-                                 isWaitingForPermission = false;
-                                 alreadyAskedForLandPermissions = true;
-                             });
+                isWaitingForPermission = false;
+                alreadyAskedForLandPermissions = true;
+            });
     }
 
     private static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )

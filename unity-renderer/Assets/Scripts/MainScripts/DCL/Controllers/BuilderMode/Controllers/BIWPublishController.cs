@@ -74,7 +74,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if (creatorController.IsAnyErrorOnEntities())
             return false;
 
-        if (!sceneToEdit.metricsController.IsInsideTheLimits())
+        if (!sceneToEdit.metricsCounter.IsInsideTheLimits())
             return false;
 
         if (!entityHandler.AreAllEntitiesInsideBoundaries())
@@ -98,7 +98,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
         {
             feedbackMessage = FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES;
         }
-        else if (!sceneToEdit.metricsController.IsInsideTheLimits())
+        else if (!sceneToEdit.metricsCounter.IsInsideTheLimits())
         {
             feedbackMessage = FEEDBACK_MESSAGE_TOO_MANY_ENTITIES;
         }
@@ -120,7 +120,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
     private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)
     {
         startPublishingTimestamp = Time.realtimeSinceStartup;
-        BIWAnalytics.StartScenePublish(sceneToEdit.metricsController.GetModel());
+        BIWAnalytics.StartScenePublish(sceneToEdit.metricsCounter.GetModel());
         builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot);
     }
 
@@ -129,6 +129,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.PublishEnd(isOk, message);
         string successString = isOk ? "Success" : message;
-        BIWAnalytics.EndScenePublish(sceneToEdit.metricsController.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+        BIWAnalytics.EndScenePublish(sceneToEdit.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
     }
 }
