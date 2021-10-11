@@ -78,13 +78,16 @@ public interface IPlaceCardComponentView
 
 public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 {
-    const int THMBL_MARKETPLACE_WIDTH = 196;
-    const int THMBL_MARKETPLACE_HEIGHT = 143;
-    const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
+    internal const int THMBL_MARKETPLACE_WIDTH = 196;
+    internal const int THMBL_MARKETPLACE_HEIGHT = 143;
+    internal const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
+
+    internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
 
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView placeImage;
-    [SerializeField] internal TMP_Text placeNameText;
+    [SerializeField] internal TMP_Text placeNameOnIdleText;
+    [SerializeField] internal TMP_Text placeNameOnFocusText;
     [SerializeField] internal TMP_Text placeDescText;
     [SerializeField] internal TMP_Text placeAuthorText;
     [SerializeField] internal TMP_Text numberOfUsersText;
@@ -94,6 +97,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject placeInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal Animator cardAnimator;
+    [SerializeField] internal GameObject cardSelectionFrame;
 
     [Header("Configuration")]
     [SerializeField] internal PlaceCardComponentModel model;
@@ -139,6 +144,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (placeImage != null)
             placeImage.OnLoaded += OnPlaceImageLoaded;
 
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(false);
+
         Configure(model);
     }
 
@@ -170,6 +178,28 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetNumberOfUsers(model.numberOfUsers);
         onJumpInClick = model.onJumpInClick;
         onInfoClick = model.onInfoClick;
+    }
+
+    public override void OnFocus()
+    {
+        base.OnFocus();
+
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(true);
+
+        if (cardAnimator != null)
+            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+    }
+
+    public override void OnLoseFocus()
+    {
+        base.OnLoseFocus();
+
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(false);
+
+        if (cardAnimator != null)
+            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
     }
 
     public override void Dispose()
@@ -226,10 +256,11 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     {
         model.placeName = newText;
 
-        if (placeNameText == null)
-            return;
+        if (placeNameOnIdleText != null)
+            placeNameOnIdleText.text = newText;
 
-        placeNameText.text = newText;
+        if (placeNameOnFocusText != null)
+            placeNameOnFocusText.text = newText;
     }
 
     public void SetPlaceDescription(string newText)

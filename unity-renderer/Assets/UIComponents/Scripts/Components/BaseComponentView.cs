@@ -2,8 +2,9 @@ using DCL;
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public interface IBaseComponentView : IDisposable
+public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
     /// <summary>
     /// It will be triggered after the UI component is fully initialized (PostInitialization included).
@@ -41,6 +42,16 @@ public interface IBaseComponentView : IDisposable
     /// It is called just after the screen size has changed.
     /// </summary>
     void PostScreenSizeChanged();
+
+    /// <summary>
+    /// It is called when the focus is set into the component.
+    /// </summary>
+    void OnFocus();
+
+    /// <summary>
+    /// It is called when the focus is lost from the component.
+    /// </summary>
+    void OnLoseFocus();
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]
@@ -70,6 +81,10 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void PostScreenSizeChanged() { }
 
+    public virtual void OnFocus() { }
+
+    public virtual void OnLoseFocus() { }
+
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
     private void OnEnable() { PostScreenSizeChanged(); }
@@ -83,6 +98,10 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         isFullyInitialized = true;
         OnFullyInitialized?.Invoke();
     }
+
+    public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
+
+    public void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
 
     private void OnDestroy() { Dispose(); }
 

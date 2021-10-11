@@ -148,7 +148,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5454718784493665768}
   - component: {fileID: 2209637355426339790}
-  - component: {fileID: 7462663790748257866}
   - component: {fileID: 5391171010353527407}
   - component: {fileID: 4380955063599979998}
   - component: {fileID: 434956858947737177}
@@ -190,36 +189,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3118676430322830111}
   m_CullTransparentMesh: 0
---- !u!114 &7462663790748257866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3118676430322830111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.08627451, g: 0.08235294, b: 0.09411766, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6067442b4b5ee49e68ff2720d1aedddd, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 2
 --- !u!95 &5391171010353527407
 Animator:
   serializedVersion: 3
@@ -279,12 +248,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4df6174eae7c4840b1729c3829bfa00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  refreshOnScreenSizeChange: 1
   itemsContainer: {fileID: 9098407598896035524}
   horizontalLayout: {fileID: 2326470932528800288}
   itemsScroll: {fileID: 3238503515836443779}
   viewport: {fileID: 4502190433165648352}
-  background: {fileID: 7462663790748257866}
+  background: {fileID: 0}
   previousButton: {fileID: 2573473210683253683}
   nextButton: {fileID: 6875030513066093076}
   model:
@@ -394,7 +362,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!114 &8553540864272409239
 MonoBehaviour:
   m_ObjectHideFlags: 0

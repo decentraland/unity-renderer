@@ -117,6 +117,8 @@ public interface IEventCardComponentView
 
 public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 {
+    internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
+
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
     [SerializeField] internal TagComponentView liveTag;
@@ -139,6 +141,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject eventInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal Animator cardAnimator;
 
     [Header("Configuration")]
     [SerializeField] internal bool isEventCardModal = false;
@@ -258,6 +261,22 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         onInfoClick = model.onInfoClick;
         onSubscribeClick = model.onSubscribeClick;
         onUnsubscribeClick = model.onUnsubscribeClick;
+    }
+
+    public override void OnFocus()
+    {
+        base.OnFocus();
+
+        if (cardAnimator != null)
+            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+    }
+
+    public override void OnLoseFocus()
+    {
+        base.OnLoseFocus();
+
+        if (cardAnimator != null)
+            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
     }
 
     public override void Dispose()
