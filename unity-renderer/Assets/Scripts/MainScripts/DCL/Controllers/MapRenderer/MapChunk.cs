@@ -27,22 +27,18 @@ namespace DCL
 
             string url = $"{MAP_API_BASE}?center={center.x},{center.y}&width={size.x}&height={size.y}&size={tileSize}";
 
-            Texture result = null;
+            Texture2D result = null;
 
-            return Utils.FetchTexture(url, (x) =>
+            return Utils.FetchTexture(url, false, (x) =>
             {
                 result = x;
 
-                if (result != null)
-                {
-                    result.filterMode = FilterMode.Trilinear;
-                    result.wrapMode = TextureWrapMode.Clamp;
-                    result.anisoLevel = 16;
+                if (result == null)
+                    return;
 
-                    targetImage.texture = result;
-                    targetImage.SetNativeSize();
-                    targetImage.color = Color.white;
-                }
+                targetImage.texture = result;
+                targetImage.SetNativeSize();
+                targetImage.color = Color.white;
             });
         }
 

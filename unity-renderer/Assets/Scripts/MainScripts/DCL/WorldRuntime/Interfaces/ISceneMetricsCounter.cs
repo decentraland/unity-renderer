@@ -1,7 +1,10 @@
-﻿namespace DCL
+﻿using System;
+
+namespace DCL
 {
-    public interface ISceneMetricsController
+    public interface ISceneMetricsCounter : IDisposable
     {
+        event System.Action<ISceneMetricsCounter> OnMetricsUpdated;
         SceneMetricsModel GetLimits();
         SceneMetricsModel GetModel();
 
@@ -12,6 +15,8 @@
         void SendEvent();
 
         bool IsInsideTheLimits();
+        void RemoveExcludedEntity(string entityId);
+        void AddExcludedEntity(string entityId);
     }
 
     [System.Serializable]
@@ -26,5 +31,10 @@
         public float sceneHeight;
 
         public SceneMetricsModel Clone() { return (SceneMetricsModel) MemberwiseClone(); }
+
+        public override string ToString()
+        {
+            return $"Textures: {textures} - Triangles: {triangles} - Materials: {materials} - Meshes: {meshes} - Bodies: {bodies} - Entities: {entities} - Scene Height: {sceneHeight}";
+        }
     }
 }

@@ -4,10 +4,8 @@ using DCL.Helpers.NFT.Markets;
 
 namespace DCL.Helpers.NFT
 {
-    public static class NFTHelper
+    public static class NFTUtils
     {
-        static INFTMarket market = new OpenSea();
-
         /// <summary>
         /// Fetch NFT from owner
         /// </summary>
@@ -80,15 +78,15 @@ namespace DCL.Helpers.NFT
         }
 
         // NOTE: this method doesn't make sense now, but it will when support for other market is added
-        static public IEnumerator GetMarket(string assetContractAddress, string tokenId, Action<INFTMarket> onSuccess)
+        public static IEnumerator GetMarket(string assetContractAddress, string tokenId, Action<INFTMarket> onSuccess)
         {
-            onSuccess?.Invoke(market);
+            onSuccess?.Invoke(DCL.Environment.i.platform.serviceProviders.openSea);
             yield break;
         }
 
-        static public IEnumerator GetMarket(string assetContractAddress, Action<INFTMarket> onSuccess)
+        public static IEnumerator GetMarket(string assetContractAddress, Action<INFTMarket> onSuccess)
         {
-            onSuccess?.Invoke(market);
+            onSuccess?.Invoke(DCL.Environment.i.platform.serviceProviders.openSea);
             yield break;
         }
     }

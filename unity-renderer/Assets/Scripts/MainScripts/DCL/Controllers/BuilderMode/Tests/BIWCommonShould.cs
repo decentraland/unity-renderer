@@ -165,14 +165,15 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
         ParcelScene scene = mockedGameObject.AddComponent<ParcelScene>();
         var data = new LoadParcelScenesMessage.UnityParcelScene();
         data.parcels = parcels;
+        data.id = "scene-for-size-test";
         scene.SetData(data);
         return scene;
     }
 
     protected override IEnumerator TearDown()
     {
-        if (mockedGameObject != null)
-            GameObject.Destroy(mockedGameObject);
+        UnityEngine.Object.Destroy(mockedGameObject);
+
         AssetCatalogBridge.i.ClearCatalog();
         BIWCatalogManager.ClearCatalog();
         yield return base.TearDown();

@@ -5,8 +5,13 @@ namespace DCL
     /// <summary>
     /// Our custom implementation of the UnityWebRequestTexture.
     /// </summary>
-    public class WebRequestTexture : IWebRequest
+    public class WebRequestTexture : IWebRequestTexture
     {
-        public UnityWebRequest CreateWebRequest(string url) { return UnityWebRequestTexture.GetTexture(url); }
+        public bool isReadable { get; set; }
+
+        public UnityWebRequest CreateWebRequest(string url)
+        {
+            return UnityWebRequestTexture.GetTexture(url, !isReadable);
+        }
     }
 }
