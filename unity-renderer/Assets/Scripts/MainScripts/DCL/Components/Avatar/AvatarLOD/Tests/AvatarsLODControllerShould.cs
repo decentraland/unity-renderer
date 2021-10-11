@@ -436,7 +436,7 @@ namespace Tests.AvatarsLODController
         private Player CreateMockPlayer(string id, Vector3 worldPosition, out IAvatarRenderer renderer)
         {
             renderer = Substitute.For<IAvatarRenderer>();
-            return new Player { name = id, id = id, renderer = renderer, worldPosition = worldPosition };
+            return new Player { name = id, id = id, renderer = renderer, worldPosition = worldPosition, playerName = Substitute.For<IPlayerName>() };
         }
         private IAvatarLODController CreateMockLODController(Player player)
         {
