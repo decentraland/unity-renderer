@@ -65,10 +65,10 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator FailCorrectlyWhenGivenWrongURL()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-
+            
             //NOTE(Brian): Expect the 404 error
-            LogAssert.Expect(LogType.Error, new Regex("^*.?404"));
-
+            LogAssert.Expect(LogType.Error, new Regex("^.*?404"));
+            
             string url = TestAssetsUtils.GetPath() + "/non_existing_url.glb";
 
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
