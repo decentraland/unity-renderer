@@ -8,4 +8,5 @@ public interface IPlayerName
     void SetForceShow(bool forceShow);
     void SetIsTalking(bool talking);
     Rect ScreenSpaceRect(Camera mainCamera);
+    Vector3 ScreenSpacePos(Camera mainCamera);
 }

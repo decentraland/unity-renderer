@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class PlayerName : MonoBehaviour, IPlayerName
 {
     internal const int DEFAULT_CANVAS_SORTING_ORDER = 0;
+    internal const int FORCE_CANVAS_SORTING_ORDER = 40;
     internal static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
     internal const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
     internal const float TARGET_ALPHA_SHOW = 1;
@@ -110,7 +111,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     }
     public void SetForceShow(bool forceShow)
     {
-        canvas.sortingOrder = forceShow ? int.MaxValue : DEFAULT_CANVAS_SORTING_ORDER;
+        canvas.sortingOrder = forceShow ? FORCE_CANVAS_SORTING_ORDER : DEFAULT_CANVAS_SORTING_ORDER;
         background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, forceShow ? 1 : namesOpacity.Get());
         this.forceShow = forceShow;
         if (this.forceShow)
@@ -125,6 +126,8 @@ public class PlayerName : MonoBehaviour, IPlayerName
         Vector2 size = background.rectTransform.sizeDelta;
         return new Rect(origin.x, Screen.height - origin.y, size.x, size.y);
     }
+
+    public Vector3 ScreenSpacePos(Camera mainCamera) { return mainCamera.WorldToScreenPoint(background.transform.position); }
 
     internal static float ResolveAlphaByDistance(float alphaValue, float distanceToCamera, bool forceShow)
     {

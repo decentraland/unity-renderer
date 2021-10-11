@@ -8,7 +8,7 @@ namespace DCL
     public class AvatarsLODController : IAvatarsLODController
     {
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
-        private const float NAMES_OVERLAPPING_TOLERANCE = 0.5f;
+        private const float MIN_DISTANCE_BETWEEN_NAMES_PIXELS = 70f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
@@ -18,7 +18,7 @@ namespace DCL
         private Vector3 cameraPosition;
         private Vector3 cameraForward;
         private GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
-        private RectsOverlappingTracker rectsOverlappingTracker = new RectsOverlappingTracker(NAMES_OVERLAPPING_TOLERANCE);
+        private SimpleOverlappingTracker overlappingTracker = new SimpleOverlappingTracker(MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         internal bool enabled;
@@ -121,7 +121,7 @@ namespace DCL
             float simpleAvatarDistance = this.simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
-            rectsOverlappingTracker.Reset();
+            overlappingTracker.Reset();
 
             (IAvatarLODController lodController, float distance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
@@ -146,7 +146,7 @@ namespace DCL
                     if (mainCamera == null)
                         lodController.SetNameVisible(true);
                     else
-                        lodController.SetNameVisible(rectsOverlappingTracker.RegisterRect(lodController.player.playerName.ScreenSpaceRect(mainCamera)));
+                        lodController.SetNameVisible(overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(mainCamera)));
                     continue;
                 }
 
