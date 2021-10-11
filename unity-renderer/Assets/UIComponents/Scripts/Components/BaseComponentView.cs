@@ -22,6 +22,16 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void PostInitialization();
 
     /// <summary>
+    /// It is called every frame.
+    /// </summary>
+    void Update();
+
+    /// <summary>
+    /// It is called every frame (after Update).
+    /// </summary>
+    void LateUpdate();
+
+    /// <summary>
     /// Shows the UI component.
     /// </summary>
     /// <param name="instant">True for not apply progressive animation.</param>
@@ -39,11 +49,6 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void RefreshControl();
 
     /// <summary>
-    /// It is called just after the screen size has changed.
-    /// </summary>
-    void PostScreenSizeChanged();
-
-    /// <summary>
     /// It is called when the focus is set into the component.
     /// </summary>
     void OnFocus();
@@ -52,6 +57,11 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     /// It is called when the focus is lost from the component.
     /// </summary>
     void OnLoseFocus();
+
+    /// <summary>
+    /// It is called just after the screen size has changed.
+    /// </summary>
+    void PostScreenSizeChanged();
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]
@@ -79,11 +89,11 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public abstract void RefreshControl();
 
-    public virtual void PostScreenSizeChanged() { }
-
     public virtual void OnFocus() { }
 
     public virtual void OnLoseFocus() { }
+
+    public virtual void PostScreenSizeChanged() { }
 
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
@@ -99,6 +109,10 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         OnFullyInitialized?.Invoke();
     }
 
+    public virtual void Update() { }
+
+    public virtual void LateUpdate() { }
+
     public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 
     public void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
@@ -113,13 +127,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         StartCoroutine(RaisePostScreenSizeChangedAfterDelay());
     }
 
-    internal IEnumerator RaisePostScreenSizeChangedAfterDelay(int framesToWait = 1)
+    internal IEnumerator RaisePostScreenSizeChangedAfterDelay()
     {
-        for (int i = 0; i < framesToWait; i++)
-        {
-            yield return null;
-        }
-
+        yield return null;
         PostScreenSizeChanged();
     }
 

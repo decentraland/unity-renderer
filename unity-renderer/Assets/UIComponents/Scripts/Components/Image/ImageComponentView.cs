@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,6 +36,12 @@ public interface IImageComponentView
     void SetImage(string uri);
 
     /// <summary>
+    /// Resize the image size to fit into the parent.
+    /// </summary>
+    /// <param name="fitParent">True to fit the size.</param>
+    void SetFitParent(bool fitParent);
+
+    /// <summary>
     /// Active or deactive the loading indicator.
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the image.</param>
@@ -54,11 +61,20 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
 
     internal Sprite currentSprite;
     internal ILazyTextureObserver imageObserver = new LazyTextureObserver();
+    internal Vector2 lastParentSize;
 
     public override void PostInitialization()
     {
         imageObserver.AddListener(OnImageObserverUpdated);
         Configure(model);
+    }
+
+    public override void LateUpdate()
+    {
+        base.LateUpdate();
+
+        if (model.fitParent && HasParentSizeChanged())
+            SetFitParent(model.fitParent);
     }
 
     public void Configure(ImageComponentModel model)
@@ -98,6 +114,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
             return;
 
         image.sprite = sprite;
+        SetFitParent(model.fitParent);
     }
 
     public void SetImage(Texture2D texture)
@@ -112,6 +129,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
 
         imageObserver.RefreshWithTexture(texture);
         SetLoadingIndicatorVisible(true);
+        SetFitParent(model.fitParent);
     }
 
     public void SetImage(string uri)
@@ -127,6 +145,14 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
             OnImageObserverUpdated(null);
 
         SetLoadingIndicatorVisible(true);
+    }
+
+    public void SetFitParent(bool fitParent)
+    {
+        model.fitParent = fitParent;
+
+        if (fitParent)
+            ResizeFillParent();
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)
@@ -146,5 +172,45 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
         SetImage(currentSprite);
         SetLoadingIndicatorVisible(false);
         OnLoaded?.Invoke(currentSprite);
+    }
+
+    internal void ResizeFillParent()
+    {
+        RectTransform imageRectTransform = (RectTransform)image.transform;
+
+        imageRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        imageRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        imageRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        imageRectTransform.localPosition = Vector2.zero;
+
+        if (transform.parent == null)
+            return;
+
+        RectTransform parent = transform.parent as RectTransform;
+
+        float h, w;
+        h = parent.rect.height;
+        w = h * (image.mainTexture.width / (float)image.mainTexture.height);
+
+        if ((parent.rect.width - w) > 0)
+        {
+            w = parent.rect.width;
+            h = w * (image.mainTexture.height / (float)image.mainTexture.width);
+        }
+
+        imageRectTransform.sizeDelta = new Vector2(w, h);
+    }
+
+    internal bool HasParentSizeChanged()
+    {
+        Vector2 currentParentSize = ((RectTransform)transform.parent).rect.size;
+
+        if (lastParentSize != currentParentSize)
+        {
+            lastParentSize = currentParentSize;
+            return true;
+        }
+
+        return false;
     }
 }
