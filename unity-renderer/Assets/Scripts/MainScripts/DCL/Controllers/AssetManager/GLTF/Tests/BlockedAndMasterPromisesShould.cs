@@ -67,7 +67,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var keeper = new AssetPromiseKeeper_GLTF();
             
             //NOTE(Brian): Expect the 404 error
-            LogAssert.Expect(LogType.Error, new Regex("^.*?404"));
+            LogAssert.Expect(LogType.Log, new Regex("^.*?404"));
             
             string url = TestAssetsUtils.GetPath() + "/non_existing_url.glb";
 
