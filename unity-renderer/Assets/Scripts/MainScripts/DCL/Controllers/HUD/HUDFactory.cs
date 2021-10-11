@@ -100,9 +100,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.LOADING:
                 hudElement = new LoadingHUDController();
                 break;
-            case HUDElementID.AVATAR_NAMES:
-                return null;
-                break;
         }
 
         return hudElement;

@@ -32,17 +32,10 @@ namespace Tests
             // There must be a hud controller
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
 
-            List<HUDElementID> deprecatedIDs = new List<HUDElementID>()
-            {
-                HUDElementID.AVATAR_NAMES
-            };
-
             hudController.Cleanup();
             // HUD controllers are created
             for (int i = 1; i < (int) HUDElementID.COUNT; i++)
             {
-                if (deprecatedIDs.Contains((HUDElementID)i))
-                    continue;
                 Assert.IsNull(hudController.GetHUDElement((HUDElementID) i));
             }
 
