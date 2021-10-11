@@ -14,7 +14,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal const float TARGET_ALPHA_SHOW = 1;
     internal const float TARGET_ALPHA_HIDE = 0;
     internal const int BACKGROUND_HEIGHT = 30;
-    internal const int BACKGROUND_EXTRA_WIDTH = 50;
+    internal const int BACKGROUND_EXTRA_WIDTH = 10;
 
     [SerializeField] internal Canvas canvas;
     [SerializeField] internal CanvasGroup canvasGroup;
@@ -43,7 +43,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     }
     internal void OnNamesOpacityChanged(float current, float previous) { background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, current); }
 
-    internal void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current; }
+    internal void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current || forceShow; }
 
     public void SetName(string name)
     {
@@ -111,6 +111,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     }
     public void SetForceShow(bool forceShow)
     {
+        canvas.enabled = forceShow || namesVisible.Get();
         canvas.sortingOrder = forceShow ? FORCE_CANVAS_SORTING_ORDER : DEFAULT_CANVAS_SORTING_ORDER;
         background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, forceShow ? 1 : namesOpacity.Get());
         this.forceShow = forceShow;
