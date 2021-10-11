@@ -7,31 +7,32 @@ using UnityEngine.UI;
 [Serializable]
 public class PlayerName : MonoBehaviour, IPlayerName
 {
-    private const int DEFAULT_CANVAS_SORTING_ORDER = 0;
-    private static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
-    private const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
-    private const float TARGET_ALPHA_SHOW = 1;
-    private const float TARGET_ALPHA_HIDE = 0;
+    internal const int DEFAULT_CANVAS_SORTING_ORDER = 0;
+    internal static readonly int TALKING_ANIMATOR_BOOL = Animator.StringToHash("Talking");
+    internal const float ALPHA_TRANSITION_STEP_PER_SECOND =  1f / 0.25f;
+    internal const float TARGET_ALPHA_SHOW = 1;
+    internal const float TARGET_ALPHA_HIDE = 0;
+    internal const int BACKGROUND_HEIGHT = 30;
+    internal const int BACKGROUND_EXTRA_WIDTH = 50;
 
-    [SerializeField] private Canvas canvas;
-    [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private Image background;
-    [SerializeField] private Transform pivot;
-    [SerializeField] private Animator talkingAnimator;
+    [SerializeField] internal Canvas canvas;
+    [SerializeField] internal CanvasGroup canvasGroup;
+    [SerializeField] internal TextMeshProUGUI nameText;
+    [SerializeField] internal Image background;
+    [SerializeField] internal Transform pivot;
+    [SerializeField] internal Animator talkingAnimator;
 
-    private BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
-    private BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
+    internal BaseVariable<float> namesOpacity => DataStore.i.HUDs.avatarNamesOpacity;
+    internal BaseVariable<bool> namesVisible => DataStore.i.HUDs.avatarNamesVisible;
 
-    private float alpha;
-    private float targetAlpha;
-    private bool forceShow = false;
-    private Color backgroundOriginalColor;
+    internal float alpha;
+    internal float targetAlpha;
+    internal bool forceShow = false;
+    internal Color backgroundOriginalColor;
 
     private void Awake()
     {
         backgroundOriginalColor = background.color;
-        alpha = 1;
         canvas.sortingOrder = DEFAULT_CANVAS_SORTING_ORDER;
         namesVisible.OnChange += OnNamesVisibleChanged;
         namesOpacity.OnChange += OnNamesOpacityChanged;
@@ -39,22 +40,24 @@ public class PlayerName : MonoBehaviour, IPlayerName
         OnNamesOpacityChanged(namesOpacity.Get(), 1);
         Show(true);
     }
-    private void OnNamesOpacityChanged(float current, float previous) { background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, current); }
+    internal void OnNamesOpacityChanged(float current, float previous) { background.color = new Color(backgroundOriginalColor.r, backgroundOriginalColor.g, backgroundOriginalColor.b, current); }
 
-    private void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current; }
+    internal void OnNamesVisibleChanged(bool current, bool previous) { canvas.enabled = current; }
 
     public void SetName(string name)
     {
         nameText.text = name;
-        background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + 50, 30);
+        background.rectTransform.sizeDelta = new Vector2(nameText.GetPreferredValues().x + BACKGROUND_EXTRA_WIDTH, BACKGROUND_HEIGHT);
     }
 
-    private void Update()
+    private void Update() { Update(Time.deltaTime); }
+
+    internal void Update(float deltaTime)
     {
         float finalTargetAlpha = forceShow ? TARGET_ALPHA_SHOW : targetAlpha;
 
         if (!Mathf.Approximately(alpha, finalTargetAlpha))
-            alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * Time.deltaTime);
+            alpha = Mathf.MoveTowards(alpha, finalTargetAlpha, ALPHA_TRANSITION_STEP_PER_SECOND * deltaTime);
         else if (alpha == 0)
         {
             UpdateVisuals(0);
@@ -77,7 +80,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         LookAtCamera(cameraRight, cameraRotation.eulerAngles);
     }
 
-    private void LookAtCamera(Vector3 cameraRight, Vector3 cameraEulerAngles)
+    internal void LookAtCamera(Vector3 cameraRight, Vector3 cameraEulerAngles)
     {
         Transform cachedTransform = transform;
         cachedTransform.right = -cameraRight; // This will set the Y rotation
@@ -123,7 +126,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         return new Rect(origin.x, Screen.height - origin.y, size.x, size.y);
     }
 
-    private static float ResolveAlphaByDistance(float alphaValue, float distanceToCamera, bool forceShow)
+    internal static float ResolveAlphaByDistance(float alphaValue, float distanceToCamera, bool forceShow)
     {
         if (forceShow)
             return alphaValue;
@@ -135,7 +138,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
         return alphaValue * Mathf.Lerp(1, 0, (distanceToCamera - MIN_DISTANCE) / (DataStore.i.avatarsLOD.LODDistance.Get() - MIN_DISTANCE));
     }
 
-    private void UpdateVisuals(float resolvedAlpha) { canvasGroup.alpha = resolvedAlpha; }
+    internal void UpdateVisuals(float resolvedAlpha) { canvasGroup.alpha = resolvedAlpha; }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
 
