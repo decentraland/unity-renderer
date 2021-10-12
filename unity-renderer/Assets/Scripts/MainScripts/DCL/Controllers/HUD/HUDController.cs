@@ -369,7 +369,6 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
-                return;
                 break;
         }
 
