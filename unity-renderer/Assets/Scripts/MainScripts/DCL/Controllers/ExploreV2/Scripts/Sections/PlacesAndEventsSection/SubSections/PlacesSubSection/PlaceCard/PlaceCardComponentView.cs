@@ -1,10 +1,14 @@
 using DCL.Helpers;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public interface IPlaceCardComponentView
 {
+    FriendsHandler friendsHandler { get; set; }
+
     /// <summary>
     /// Event that will be triggered when the jumpIn button is clicked.
     /// </summary>
@@ -84,6 +88,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
 
+    [Header("Assets References")]
+    [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
+
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView placeImage;
     [SerializeField] internal TMP_Text placeNameOnIdleText;
@@ -94,6 +101,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text coordsText;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
+    [SerializeField] internal GridContainerComponentView friendsGrid;
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject placeInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
@@ -102,6 +110,11 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     [Header("Configuration")]
     [SerializeField] internal PlaceCardComponentModel model;
+
+    public FriendsHandler friendsHandler { get; set; }
+    internal MapInfoHandler mapInfoHandler { get; set; }
+
+    internal Dictionary<string, BaseComponentView> currentFriendHeads = new Dictionary<string, BaseComponentView>();
 
     public Button.ButtonClickedEvent onJumpInClick
     {
@@ -147,11 +160,15 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
 
+        InitializeFriendsTracker();
         Configure(model);
     }
 
     public void Configure(PlaceCardComponentModel model)
     {
+        if (mapInfoHandler != null)
+            mapInfoHandler.SetMinimapSceneInfo(model.hotSceneInfo);
+
         this.model = model;
         RefreshControl();
     }
@@ -214,6 +231,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (jumpinButton != null)
             jumpinButton.onClick.RemoveAllListeners();
+
+        if (friendsHandler != null)
+        {
+            friendsHandler.OnFriendAddedEvent -= OnFriendAdded;
+            friendsHandler.OnFriendRemovedEvent -= OnFriendRemoved;
+        }
     }
 
     public void SetPlacePicture(Sprite sprite)
@@ -308,5 +331,54 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             SetPlacePicture(sprite);
         else
             SetPlacePicture(MapUtils.GetMarketPlaceThumbnailUrl(model.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR));
+    }
+
+    internal void InitializeFriendsTracker()
+    {
+        if (friendsGrid != null)
+            friendsGrid.SetItems(new List<BaseComponentView>(), false);
+
+        mapInfoHandler = new MapInfoHandler();
+        friendsHandler = new FriendsHandler(mapInfoHandler);
+        friendsHandler.OnFriendAddedEvent += OnFriendAdded;
+        friendsHandler.OnFriendRemovedEvent += OnFriendRemoved;
+    }
+
+    internal void OnFriendAdded(UserProfile profile, Color backgroundColor)
+    {
+        if (currentFriendHeads.ContainsKey(profile.userId))
+            return;
+
+        BaseComponentView newFriend = IntantiateAndConfigureFriendHead(
+            new FriendHeadForPlaceCardComponentModel
+            {
+                userProfile = profile,
+                backgroundColor = backgroundColor
+            },
+            friendHeadPrefab);
+
+        currentFriendHeads.Add(profile.userId, newFriend);
+
+        if (friendsGrid != null)
+            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList(), false);
+    }
+
+    internal void OnFriendRemoved(UserProfile profile)
+    {
+        if (!currentFriendHeads.ContainsKey(profile.userId))
+            return;
+
+        currentFriendHeads.Remove(profile.userId);
+
+        if (friendsGrid != null)
+            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList(), false);
+    }
+
+    internal BaseComponentView IntantiateAndConfigureFriendHead(FriendHeadForPlaceCardComponentModel friendInfo, FriendHeadForPlaceCardComponentView prefabToUse)
+    {
+        FriendHeadForPlaceCardComponentView friendHeadGO = GameObject.Instantiate(prefabToUse);
+        friendHeadGO.OnFullyInitialized += () => friendHeadGO.Configure(friendInfo);
+
+        return friendHeadGO;
     }
 }

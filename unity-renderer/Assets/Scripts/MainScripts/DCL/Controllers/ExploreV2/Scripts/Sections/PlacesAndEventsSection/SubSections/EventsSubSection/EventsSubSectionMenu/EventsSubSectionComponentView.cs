@@ -224,7 +224,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         foreach (EventCardComponentModel eventInfo in events)
         {
             EventCardComponentView eventGO = GameObject.Instantiate(prefabToUse);
-            eventGO.Configure(eventInfo);
+            eventGO.OnFullyInitialized += () => eventGO.Configure(eventInfo);
             instantiatedEvents.Add(eventGO);
         }
 

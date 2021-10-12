@@ -22,7 +22,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
         placesSubSectionComponentController = new PlacesSubSectionComponentController(
             view.currentPlacesSubSectionComponentView,
-            new PlacesAPIController());
+            new PlacesAPIController(),
+            FriendsController.i);
 
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 

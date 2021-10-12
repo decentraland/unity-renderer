@@ -127,8 +127,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
             return;
         }
 
-        imageObserver.RefreshWithTexture(texture);
         SetLoadingIndicatorVisible(true);
+        imageObserver.RefreshWithTexture(texture);
         SetFitParent(model.fitParent);
     }
 
@@ -139,12 +139,11 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
         if (!Application.isPlaying)
             return;
 
+        SetLoadingIndicatorVisible(true);
         if (!string.IsNullOrEmpty(uri))
             imageObserver.RefreshWithUri(uri);
         else
             OnImageObserverUpdated(null);
-
-        SetLoadingIndicatorVisible(true);
     }
 
     public void SetFitParent(bool fitParent)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,4 +16,7 @@ public class PlaceCardComponentModel
     public Vector2Int[] parcels;
     public Button.ButtonClickedEvent onJumpInClick;
     public Button.ButtonClickedEvent onInfoClick;
+
+    [HideInInspector]
+    public HotScenesController.HotSceneInfo hotSceneInfo;
 }

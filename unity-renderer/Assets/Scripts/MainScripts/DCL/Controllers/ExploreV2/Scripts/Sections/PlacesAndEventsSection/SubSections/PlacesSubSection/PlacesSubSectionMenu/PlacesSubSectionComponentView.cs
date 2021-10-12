@@ -6,10 +6,14 @@ using UnityEngine;
 
 public interface IPlacesSubSectionComponentView
 {
+    Color[] currentFriendColors { get; }
+
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
     event Action OnReady;
+
+    event Action<FriendsHandler> OnFriendHandlerAdded;
 
     /// <summary>
     /// It will be triggered each time the view is enabled.
@@ -50,11 +54,15 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal GridContainerComponentView places;
     [SerializeField] internal GameObject placesLoading;
     [SerializeField] internal TMP_Text placesNoDataText;
+    [SerializeField] internal Color[] friendColors = null;
 
     public event Action OnReady;
+    public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
 
     internal PlaceCardComponentView placeModal;
+
+    public Color[] currentFriendColors => friendColors;
 
     private void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
 
@@ -104,7 +112,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         foreach (PlaceCardComponentModel placeInfo in places)
         {
             PlaceCardComponentView placeGO = GameObject.Instantiate(prefabToUse);
-            placeGO.Configure(placeInfo);
+            placeGO.OnFullyInitialized += () =>
+            {
+                placeGO.Configure(placeInfo);
+                OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
+            };
             instantiatedPlaces.Add(placeGO);
         }
 

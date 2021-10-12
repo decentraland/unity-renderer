@@ -1,7 +1,6 @@
 using DCL;
 using DCL.Interface;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,16 +31,20 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
+    internal FriendTrackerController friendsTrackerController;
     internal List<HotSceneInfo> placesFromAPI = new List<HotSceneInfo>();
     internal bool reloadPlaces = false;
 
-    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI)
+    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
+        this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
 
         placesAPIApiController = placesAPI;
         OnPlacesFromAPIUpdated += OnRequestedPlacesUpdated;
+
+        friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
     }
 
     private void FirstLoading()
@@ -88,6 +91,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public void LoadPlaces()
     {
         view.SetPlaces(new List<PlaceCardComponentModel>());
+        friendsTrackerController.RemoveAllHandlers();
 
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
         List<HotSceneInfo> placesFiltered = placesFromAPI;
@@ -105,6 +109,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         view.OnReady -= FirstLoading;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
+        view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         OnPlacesFromAPIUpdated -= OnRequestedPlacesUpdated;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
@@ -120,6 +125,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         placeCardModel.placeAuthor = FormatAuthorName(placeFromAPI);
         placeCardModel.numberOfUsers = placeFromAPI.usersTotalCount;
         placeCardModel.parcels = placeFromAPI.parcels;
+        placeCardModel.hotSceneInfo = placeFromAPI;
 
         // Card events
         ConfigureOnJumpInActions(placeCardModel, placeFromAPI);
@@ -164,4 +170,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
     }
+
+    internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) { friendsTrackerController.AddHandler(friendsHandler); }
 }
