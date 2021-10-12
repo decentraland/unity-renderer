@@ -9,7 +9,7 @@ namespace DCL
     public class AvatarsLODController : IAvatarsLODController
     {
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
-        internal const float AVATARS_INVISIBILITY_DISTANCE = 2f;
+        internal const float AVATARS_INVISIBILITY_DISTANCE = 1.75f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
@@ -156,8 +156,7 @@ namespace DCL
 
         private bool IsInInvisibleDistance(float distance)
         {
-            // TODO: read first person camera state from somewhere... data store???
-            bool firstPersonCamera = true;
+            bool firstPersonCamera = CommonScriptableObjects.cameraMode.Get() == CameraMode.ModeId.FirstPerson;
             
             return firstPersonCamera ? distance < AVATARS_INVISIBILITY_DISTANCE : distance < 0f; // < 0 is behind camera
         }
