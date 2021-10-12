@@ -302,7 +302,7 @@ namespace DCL.Controllers
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
             {
-                Debug.LogError($"Couldn't remove entity with ID: {id} as it doesn't exist.");
+                Debug.LogWarning($"Couldn't remove entity with ID: {id} as it doesn't exist.");
             }
 #endif
         }
