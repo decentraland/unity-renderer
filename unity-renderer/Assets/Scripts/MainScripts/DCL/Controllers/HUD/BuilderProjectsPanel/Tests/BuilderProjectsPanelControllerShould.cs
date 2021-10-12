@@ -15,6 +15,7 @@ namespace Tests
         private ISectionsController sectionsController;
         private IScenesViewController scenesViewController;
         private ILandController landsController;
+        private IProjectsController projectsController;
 
         private bool condtionMet = false;
 
@@ -26,6 +27,7 @@ namespace Tests
             sectionsController = Substitute.For<ISectionsController>();
             scenesViewController = Substitute.For<IScenesViewController>();
             landsController = Substitute.For<ILandController>();
+            projectsController = Substitute.For<IProjectsController>();
 
             ITheGraph theGraph = Substitute.For<ITheGraph>();
             theGraph.Query(Arg.Any<string>(), Arg.Any<string>()).Returns(new Promise<string>());
@@ -39,7 +41,7 @@ namespace Tests
             catalyst.GetDeployedScenes(Arg.Any<string[]>()).Returns(new Promise<CatalystSceneEntityPayload[]>());
 
             controller.Initialize(sectionsController, scenesViewController,
-                landsController, theGraph, catalyst);
+                landsController, projectsController, theGraph, catalyst);
         }
 
         [TearDown]
@@ -131,7 +133,7 @@ namespace Tests
         [Test]
         public void ViewVisibleCorrectly()
         {
-            BuilderProjectsPanelView view = (BuilderProjectsPanelView)controller.view;
+            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
             Assert.IsFalse(view.gameObject.activeSelf);
 
             controller.SetVisibility(true);
@@ -141,7 +143,7 @@ namespace Tests
         [Test]
         public void ViewHideCorrectly()
         {
-            BuilderProjectsPanelView view = (BuilderProjectsPanelView)controller.view;
+            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
 
             controller.SetVisibility(true);
             Assert.IsTrue(view.gameObject.activeSelf);
@@ -153,7 +155,7 @@ namespace Tests
         [Test]
         public void ViewHideCorrectlyOnClosePressed()
         {
-            BuilderProjectsPanelView view = (BuilderProjectsPanelView)controller.view;
+            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
 
             controller.SetVisibility(true);
             Assert.IsTrue(view.gameObject.activeSelf);
@@ -165,7 +167,7 @@ namespace Tests
         [Test]
         public void ViewHideAndShowCorrectlyOnEvent()
         {
-            BuilderProjectsPanelView view = (BuilderProjectsPanelView)controller.view;
+            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
 
             DataStore.i.HUDs.builderProjectsPanelVisible.Set(true);
             Assert.IsTrue(view.showHideAnimator.isVisible);
@@ -203,9 +205,9 @@ namespace Tests
         [Test]
         public void HandleLeftMenuCorrectly()
         {
-            BuilderProjectsPanelView view = (BuilderProjectsPanelView)controller.view;
+            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
 
-            sectionsController.OnOpenSectionId += Raise.Event<Action<SectionId>>(SectionId.SCENES_DEPLOYED);
+            sectionsController.OnOpenSectionId += Raise.Event<Action<SectionId>>(SectionId.SCENES);
             Assert.IsTrue(view.leftPanelMain.activeSelf);
             Assert.IsFalse(view.leftPanelProjectSettings.activeSelf);
 
@@ -214,7 +216,7 @@ namespace Tests
             Assert.IsFalse(view.leftPanelMain.activeSelf);
 
             view.backToMainPanelButton.onClick.Invoke();
-            sectionsController.Received(1).OpenSection(SectionId.SCENES_DEPLOYED);
+            sectionsController.Received(1).OpenSection(SectionId.SCENES);
         }
 
         [Test]

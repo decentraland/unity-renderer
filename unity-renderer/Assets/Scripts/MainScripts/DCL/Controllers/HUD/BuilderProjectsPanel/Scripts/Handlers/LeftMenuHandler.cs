@@ -41,9 +41,8 @@ internal class LeftMenuHandler : IDisposable
     {
         view.SetTogglOnWithoutNotify(sectionId);
 
-        bool isMainPanelSection = sectionId == SectionId.SCENES_MAIN ||
-                                  sectionId == SectionId.SCENES_DEPLOYED ||
-                                  sectionId == SectionId.SCENES_PROJECT ||
+        bool isMainPanelSection = sectionId == SectionId.SCENES ||
+                                  sectionId == SectionId.PROJECTS ||
                                   sectionId == SectionId.LAND;
 
         if (isMainPanelSection)
