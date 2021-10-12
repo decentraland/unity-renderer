@@ -119,6 +119,26 @@ namespace Tests.AvatarLODController
             Assert.NotNull(controller.currentTransition);
             Assert.AreEqual(DCL.AvatarLODController.State.Impostor , controller.lastRequestedState);
         }
+        
+        [UnityTest]
+        public IEnumerator AffectAvatarColliderBasedOnVisibility()
+        {
+            controller.SetInvisible();
+            
+            Assert.NotNull(controller.currentTransition);
+            yield return controller.currentTransition;
+            
+            Assert.AreEqual(0, controller.avatarFade);
+            controller.player.renderer.Received().SetColliderEnabled(false);
+
+            controller.SetFullAvatar();
+            
+            Assert.NotNull(controller.currentTransition);
+            yield return controller.currentTransition;
+            
+            Assert.AreEqual(1, controller.avatarFade);
+            controller.player.renderer.Received().SetColliderEnabled(true);
+        }
 
         [Test]
         public void SetImpostorStateStateProperly_NullRenderer()
