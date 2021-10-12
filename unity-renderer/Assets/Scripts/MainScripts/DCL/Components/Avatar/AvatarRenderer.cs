@@ -20,7 +20,7 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
-
+        public Collider avatarCollider;
         public MeshRenderer impostorRenderer;
         public MeshFilter impostorMeshFilter;
 
@@ -622,6 +622,14 @@ namespace DCL
                 return;
 
             mainMeshRenderer.enabled = newVisibility;
+        }
+        
+        public void SetColliderEnabled(bool newState)
+        {
+            if (avatarCollider == null)
+                return;
+
+            avatarCollider.enabled = newState;
         }
 
         public void SetImpostorVisibility(bool impostorVisibility)
