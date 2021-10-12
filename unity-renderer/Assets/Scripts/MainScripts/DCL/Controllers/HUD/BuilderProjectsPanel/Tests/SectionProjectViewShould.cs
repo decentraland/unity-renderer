@@ -20,9 +20,8 @@ namespace Tests
         public void TearDown() { Object.Destroy(view.gameObject); }
 
         [Test]
-        public void HaveScenesContainerEmptyAtInstantiation() { Assert.AreEqual(0, view.contentContainer.transform.childCount); }
-
-        [Test]
+        [Explicit("Not implemented yet")]
+        [Category("Explicit")]
         public void ShowCardsInCorrectSortOrder()
         {
             const string prefabAssetPath =
@@ -37,7 +36,6 @@ namespace Tests
                 card.Setup(new ProjectData());
                 cardViews.Add(i.ToString(), card);
             }
-
 
             SectionProjectController controller = new SectionProjectController(view);
             controller.searchHandler.SetSortType(SectionSearchHandler.SIZE_SORT_TYPE_DESC);
