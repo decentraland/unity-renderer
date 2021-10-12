@@ -68,12 +68,14 @@ public class BuilderInWorldEditor : IBIWEditor
     private bool previousAllUIHidden;
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
+    private bool areCatalogHeadersAsked = false;
     internal bool areCatalogHeadersReady = false;
     private float beginStartFlowTimeStamp = 0;
     private float startEditorTimeStamp = 0;
     internal bool isCatalogRequested = false;
     internal bool isEnteringEditMode = false;
     private bool activeFeature = false;
+    private int catalogsReceivedAmount = 0;
 
     private UserProfile userProfile;
     internal Coroutine updateLandsWithAcessCoroutine;
@@ -109,7 +111,13 @@ public class BuilderInWorldEditor : IBIWEditor
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
-        builderInWorldBridge.AskKernelForCatalogHeaders();
+        userProfile = UserProfile.GetOwnUserProfile();
+
+        if (string.IsNullOrEmpty(userProfile.userId))
+            userProfile.OnUpdate += OnUserProfileUpdate;
+        else
+            AskHeadersToKernel();
+
 
         isCatalogLoading = true;
         BIWNFTController.i.Initialize();
@@ -121,6 +129,13 @@ public class BuilderInWorldEditor : IBIWEditor
         biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
+    }
+
+    private void AskHeadersToKernel()
+    {
+        string ethAddress =  string.IsNullOrEmpty(userProfile.ethAddress) ? "default" : userProfile.ethAddress;
+        areCatalogHeadersAsked = true;
+        builderInWorldBridge.AskKernelForCatalogHeadersWithParams("get", "/assetPacks?owner=" + ethAddress);
     }
 
     public void InitReferences(InitialSceneReferences.Data sceneReferences)
@@ -271,19 +286,20 @@ public class BuilderInWorldEditor : IBIWEditor
                 CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
             updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
         }
-        else
-        {
-            userProfile.OnUpdate += OnUserProfileUpdate;
-        }
     }
 
     private void BuilderProjectPanelInfo(string title, string description) {  context.editorContext.editorHUD.SetBuilderProjectInfo(title, description); }
 
     internal void CatalogReceived(string catalogJson)
     {
-        isCatalogLoading = false;
+        catalogsReceivedAmount++;
+
         AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
-        CatalogLoaded();
+        if (catalogsReceivedAmount >= 2)
+        {
+            isCatalogLoading = false;
+            CatalogLoaded();
+        }
     }
 
     public void CatalogLoaded()
@@ -308,9 +324,18 @@ public class BuilderInWorldEditor : IBIWEditor
             return;
 
         if (areCatalogHeadersReady)
-            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(), CatalogReceived, catalogCallHeaders);
+        {
+            string ethAddress = "";
+            var userProfile = UserProfile.GetOwnUserProfile();
+            if (userProfile != null)
+                ethAddress = userProfile.ethAddress;
+            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
+            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
+        }
         else
-            builderInWorldBridge.AskKernelForCatalogHeaders();
+        {
+            AskHeadersToKernel();
+        }
 
         isCatalogRequested = true;
     }
@@ -781,7 +806,9 @@ public class BuilderInWorldEditor : IBIWEditor
     internal void OnUserProfileUpdate(UserProfile user)
     {
         userProfile.OnUpdate -= OnUserProfileUpdate;
-        updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
+
+        if (!areCatalogHeadersAsked)
+            AskHeadersToKernel();
     }
 
     private IEnumerator CheckLandsAccess()

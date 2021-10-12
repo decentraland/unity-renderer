@@ -80,7 +80,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     #region MessagesToKernel
 
-    public void AskKernelForCatalogHeaders() { WebInterface.SendMessage(BIWSettings.BIW_HEADER_REQUEST_EVENT_NAME); }
+    public void AskKernelForCatalogHeadersWithParams(string method, string url) { WebInterface.SendRequestHeadersForUrl(BIWSettings.BIW_HEADER_REQUEST_WITH_PARAM_EVENT_NAME, method, url); }
 
     public void UpdateSmartItemComponent(BIWEntity entity, ParcelScene scene)
     {
