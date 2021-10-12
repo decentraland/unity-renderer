@@ -147,6 +147,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal static void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
+        placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
+
         Vector2Int coords = placeFromAPI.baseCoords;
         string serverName = placeFromAPI.realms.Length == 0 ? "" : placeFromAPI.realms[0].serverName;
         string layerName = placeFromAPI.realms.Length == 0 ? "" : placeFromAPI.realms[0].layer;
