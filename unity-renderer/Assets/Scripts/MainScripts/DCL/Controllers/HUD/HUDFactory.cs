@@ -21,7 +21,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new MinimapHUDController();
                 break;
             case HUDElementID.PROFILE_HUD:
-                hudElement = new ProfileHUDController(new UserProfileWebInterfaceGateway());
+                hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());
                 break;
             case HUDElementID.NOTIFICATION:
                 hudElement = new NotificationHUDController();

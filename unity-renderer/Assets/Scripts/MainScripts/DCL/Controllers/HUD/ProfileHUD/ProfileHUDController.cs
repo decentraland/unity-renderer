@@ -10,7 +10,7 @@ using WaitUntil = UnityEngine.WaitUntil;
 
 public class ProfileHUDController : IHUD
 {
-    private readonly IUserProfileGateway userProfileGateway;
+    private readonly IUserProfileBridge userProfileBridge;
 
     [Serializable]
     public struct Configuration
@@ -38,9 +38,9 @@ public class ProfileHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
-    public ProfileHUDController(IUserProfileGateway userProfileGateway)
+    public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
-        this.userProfileGateway = userProfileGateway;
+        this.userProfileBridge = userProfileBridge;
         mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
 
 
@@ -234,7 +234,7 @@ public class ProfileHUDController : IHUD
             view.ActivateProfileNameEditionMode(false);
         }
 
-        userProfileGateway.SaveUnverifiedName(newName);
+        userProfileBridge.SaveUnverifiedName(newName);
     }
 
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { view?.SetNameRegex(current.profiles.nameValidRegex); }
@@ -252,7 +252,7 @@ public class ProfileHUDController : IHUD
         view.SetDescription(description);
         view.ActivateDescriptionEditionMode(false);
 
-        userProfileGateway.SaveDescription(description);
+        userProfileBridge.SaveDescription(description);
     }
 
     private void ResetViewingDescription()

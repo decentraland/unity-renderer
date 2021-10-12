@@ -1,6 +1,6 @@
 ﻿using DCL.Interface;
 
-public class UserProfileWebInterfaceGateway : IUserProfileGateway
+public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
     public void SaveUnverifiedName(string name)
     {

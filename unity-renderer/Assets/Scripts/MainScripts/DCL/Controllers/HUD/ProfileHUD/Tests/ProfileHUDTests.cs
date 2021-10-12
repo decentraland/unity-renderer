@@ -9,17 +9,17 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     protected override bool justSceneSetUp => true;
     
     private ProfileHUDController controller;
-    private IUserProfileGateway userProfileGateway;
+    private IUserProfileBridge userProfileBridge;
     private bool allUIHiddenOriginalValue;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        userProfileGateway = Substitute.For<IUserProfileGateway>();
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
         allUIHiddenOriginalValue = CommonScriptableObjects.allUIHidden.Get();
         CommonScriptableObjects.allUIHidden.Set(false);
-        controller = new ProfileHUDController(userProfileGateway);
+        controller = new ProfileHUDController(userProfileBridge);
         controller.view.inputDescription.interactable = true;
     }
 
@@ -197,7 +197,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         const string aboutMe = "i make pancakes";
         controller.view.inputDescription.text = aboutMe;
         controller.view.inputDescription.OnSubmit(null);
-        userProfileGateway.Received(1).SaveDescription(aboutMe);
+        userProfileBridge.Received(1).SaveDescription(aboutMe);
     }
 
     [Test]
@@ -207,7 +207,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         controller.view.inputDescription.characterLimit = 5;
         controller.view.inputDescription.text = aboutMe;
         controller.view.inputDescription.OnSubmit(null);
-        userProfileGateway.Received(0).SaveDescription(Arg.Any<string>());
+        userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
     }
 
     [Test]
@@ -226,7 +226,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         controller.view.inputDescription.text = aboutMe;
         controller.view.inputDescription.OnSubmit(null);
         
-        userProfileGateway.Received(0).SaveDescription(Arg.Any<string>());
+        userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
     }
 
     [TestCase(true)]
