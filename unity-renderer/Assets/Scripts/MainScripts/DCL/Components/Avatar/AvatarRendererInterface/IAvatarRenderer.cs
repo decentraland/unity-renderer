@@ -17,7 +17,6 @@ namespace DCL
         void SetExpression(string id, long timestamp);
         void SetGOVisibility(bool newVisibility);
         void SetRendererEnabled(bool newVisibility);
-        void SetColliderEnabled(bool newState);
         void SetImpostorVisibility(bool impostorVisibility);
         void SetImpostorForward(Vector3 newForward);
         void SetAvatarFade(float avatarFade);

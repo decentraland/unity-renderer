@@ -38,6 +38,7 @@ namespace DCL
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+            avatarRenderer.OnAvatarAlphaValueUpdate += OnAvatarAlphaValueUpdate;
         }
 
         private void PlayerClicked()
@@ -55,6 +56,7 @@ namespace DCL
                 poolableObject.RemoveFromPool();
 
             avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
+            avatarRenderer.OnAvatarAlphaValueUpdate -= OnAvatarAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -192,6 +194,14 @@ namespace DCL
 
         void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
 
+        void OnAvatarAlphaValueUpdate(float newAlphaValue)
+        {
+            if (newAlphaValue > 0.9f)
+                EnablePassport();
+            else
+                DisablePassport();
+        }
+        
         public override void Cleanup()
         {
             base.Cleanup();

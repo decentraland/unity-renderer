@@ -138,7 +138,6 @@ namespace DCL
 
             bool avatarVisibility = !Mathf.Approximately(avatarFade, 0);
             player.renderer.SetRendererEnabled(avatarVisibility);
-            player.renderer.SetColliderEnabled(avatarVisibility);
 
             bool impostorVisibility = !Mathf.Approximately(impostorFade, 0);
             player.renderer.SetImpostorVisibility(impostorVisibility);

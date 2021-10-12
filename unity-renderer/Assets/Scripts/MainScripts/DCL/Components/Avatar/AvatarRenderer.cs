@@ -20,7 +20,6 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
-        public Collider avatarCollider;
         public MeshRenderer impostorRenderer;
         public MeshFilter impostorMeshFilter;
 
@@ -44,6 +43,7 @@ namespace DCL
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
         public event Action<float> OnImpostorAlphaValueUpdate;
+        public event Action<float> OnAvatarAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
@@ -623,14 +623,6 @@ namespace DCL
 
             mainMeshRenderer.enabled = newVisibility;
         }
-        
-        public void SetColliderEnabled(bool newState)
-        {
-            if (avatarCollider == null)
-                return;
-
-            avatarCollider.enabled = newState;
-        }
 
         public void SetImpostorVisibility(bool impostorVisibility)
         {
@@ -660,6 +652,8 @@ namespace DCL
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
+            
+            OnAvatarAlphaValueUpdate?.Invoke(avatarFade);
         }
 
         public void SetImpostorFade(float impostorFade)
