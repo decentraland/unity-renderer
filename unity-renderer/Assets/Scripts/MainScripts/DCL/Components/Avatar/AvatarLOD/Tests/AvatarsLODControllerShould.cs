@@ -233,6 +233,34 @@ namespace Tests.AvatarsLODController
             impostorAvatarPlayerController.Received().SetImpostor();
             invisibleAvatarPlayerController.Received().SetInvisible();
         }
+        
+        [Test]
+        public void HideCharacterClippingAvatars()
+        {
+            DataStore.i.avatarsLOD.maxAvatars.Set(2);
+            controller.enabled = true;
+            
+            Vector3 cameraPosition = Vector3.zero;
+            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
+            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
+            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+            float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
+
+            Player avatar = CreateMockPlayer("avatar");
+            IAvatarLODController avatarPlayerController = Substitute.For<IAvatarLODController>();
+            avatarPlayerController.player.Returns(avatar);
+            controller.lodControllers.Add(avatar.id, avatarPlayerController);
+            
+            // Place at normal distance
+            avatar.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f);
+            controller.Update();
+            avatarPlayerController.Received().SetFullAvatar();
+            
+            // Place super close to the main player
+            avatar.worldPosition = cameraPosition + Vector3.forward * 0.75f;
+            controller.Update();
+            avatarPlayerController.Received().SetInvisible();
+        }
 
         [Test]
         public void UpdateImpostorsTintAndInterpolationMovement()
