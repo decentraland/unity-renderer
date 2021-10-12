@@ -227,21 +227,34 @@ namespace DCL.Skybox
                 return;
             }
             float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, layer.timeSpan_End, dayTime);
-            selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.layerType);
 
-            if (layer.layerType == LayerType.Cubemap)
+            if (layer.LayerType == LayerType.Particle)
             {
-                ApplyCubemapTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
-                return;
-            }
-            else if (layer.layerType == LayerType.Planar || layer.layerType == LayerType.Radial)
-            {
-                ApplyPlanarTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
-                return;
+                selectedMat.SetFloat("_useParticles_" + layerNum, 1);
             }
             else
             {
-                ApplySatelliteTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.LayerType);
+                selectedMat.SetFloat("_useParticles_" + layerNum, 0);
+            }
+
+            switch (layer.LayerType)
+            {
+                case LayerType.Planar:
+                case LayerType.Radial:
+                    ApplyPlanarTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    break;
+                case LayerType.Satellite:
+                    ApplySatelliteTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    break;
+                case LayerType.Cubemap:
+                    ApplyCubemapTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    break;
+                case LayerType.Particle:
+                    ApplyParticleTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -249,32 +262,37 @@ namespace DCL.Skybox
         {
             if (changeAlllValues)
             {
-                selectedMat.SetTexture("_cubemap_" + layerNum, layer.cubemap);
-
+                selectedMat.SetFloat("_RenderDistance_" + layerNum, 0);
                 selectedMat.SetTexture("_tex_" + layerNum, null);
+                selectedMat.SetTexture("_cubemap_" + layerNum, layer.cubemap);
                 selectedMat.SetTexture("_normals_" + layerNum, null);
-                selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
-                selectedMat.SetFloat("_rotation_" + layerNum, 0);
                 selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
                 selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
                 selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
-                selectedMat.SetFloat("_RenderDistance_" + layerNum, 0);
+                selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
             }
 
 
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
 
             // Set cubemap rotation. (Shader variable reused)   
-            Vector3 currentRotation = GetTransitionValue(layer.cubemapRotations, normalizedLayerTime * 100);
-            selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(currentRotation.x, currentRotation.y, currentRotation.z, 0));
+            if (layer.movementType == MovementType.PointBased)
+            {
+                Vector3 currentRotation = GetTransitionValue(layer.cubemapRotations, normalizedLayerTime * 100);
+                selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(currentRotation.x, currentRotation.y, currentRotation.z, 0));
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(0, 0, 0, 0));
+            }
+            else
+            {
+                selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(0, 0, 0, 0));
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vector3.x, layer.speed_Vector3.y, layer.speed_Vector3.z, 0));
+            }
 
-            // Set speed float to vector2
-            //selectedMat.SetVector("_speed_" + layerNum, new Vector2(layer.speed, 0));
         }
 
         void ApplyPlanarTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
-            if (layer.layerType == LayerType.Planar)
+            if (layer.LayerType == LayerType.Planar)
             {
                 selectedMat.SetFloat("_RenderDistance_" + layerNum, GetTransitionValue(layer.renderDistance, normalizedLayerTime * 100, 3.4f));
             }
@@ -294,7 +312,7 @@ namespace DCL.Skybox
             //selectedMat.SetVector("_speed_" + layerNum, layer.speed_Vec2);
             // speed and Rotation
             float rot = 0;
-            if (layer.layerType == LayerType.Planar)
+            if (layer.LayerType == LayerType.Planar)
             {
                 rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
             }
@@ -341,6 +359,29 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+        }
+
+        void ApplyParticleTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
+        {
+            selectedMat.SetFloat("_RenderDistance_" + layerNum, 0);
+            selectedMat.SetTexture("_normals_" + layerNum, null);
+            selectedMat.SetTexture("_cubemap_" + layerNum, null);
+            selectedMat.SetVector("_tilingAndOffset_" + layerNum, Vector2.one);
+            selectedMat.SetVector("_speedAndRotation_" + layerNum, Vector4.zero);
+            selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
+
+            // Time frame
+            selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
+            //Fade time
+            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
+            // Tint
+            selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+
+            // Particles
+            selectedMat.SetTexture("_tex_" + layerNum, layer.texture);
+            selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
+            selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, new Vector2(layer.particlesSpeed, layer.particlesFrequency));
         }
 
         #endregion

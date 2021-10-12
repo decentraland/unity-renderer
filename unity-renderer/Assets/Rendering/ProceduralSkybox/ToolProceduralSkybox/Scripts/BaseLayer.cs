@@ -7,6 +7,7 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
+        private LayerType layerType;
         public bool enabled;
         public string nameInEditor;
         public bool expandedInEditor;
@@ -15,7 +16,7 @@ namespace DCL.Skybox
         public float fadingIn, fadingOut;
         public float tintercentage;
         public List<TransitioningFloat> renderDistance;
-        public LayerType layerType;
+
         public Texture2D texture;
         public Texture2D textureNormal;
         public Cubemap cubemap;
@@ -32,15 +33,41 @@ namespace DCL.Skybox
         public List<TransitioningFloat> rotation_float;
         public List<TransitioningVector3> cubemapRotations;
 
+        public Vector3 speed_Vector3;
         public Vector2 speed_Vec2;
         public float speed;
         public float normalIntensity;
+        public MovementType movementType;
+
+        // Particles
+        public bool useParticles;
+        public Vector2 particlesRowsAndColumns;
+        public float particlesSpeed;
+        public float particlesFrequency;
+
+        public LayerType LayerType
+        {
+            get => layerType;
+            set
+            {
+                layerType = value;
+                if (layerType == LayerType.Particle)
+                {
+                    useParticles = true;
+                }
+                else
+                {
+                    useParticles = false;
+                }
+            }
+        }
 
         public TextureLayer(string name = "noname")
         {
             enabled = true;
             tiling = new Vector2(1, 1);
             speed_Vec2 = new Vector2(0, 0);
+            speed_Vector3 = new Vector3(0, 0, 0);
             nameInEditor = name;
             offset = new List<TransitioningVector2>();
             renderDistance = new List<TransitioningFloat>();
@@ -48,6 +75,7 @@ namespace DCL.Skybox
             satelliteWidthHeight = new List<TransitioningVector2>();
             cubemapRotations = new List<TransitioningVector3>();
             color = new Gradient();
+            movementType = MovementType.Speed;
         }
     }
 
@@ -56,7 +84,14 @@ namespace DCL.Skybox
         Planar = 0,
         Radial = 1,
         Satellite = 2,
-        Cubemap = 3
+        Cubemap = 3,
+        Particle = 4
+    }
+
+    public enum MovementType
+    {
+        Speed,
+        PointBased
     }
 
     [System.Serializable]
