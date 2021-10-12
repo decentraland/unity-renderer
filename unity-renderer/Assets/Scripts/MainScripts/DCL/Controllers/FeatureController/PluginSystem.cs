@@ -63,7 +63,7 @@ public class PluginSystem
 
     public void ApplyFeaturesConfig(FeatureFlag featureFlag)
     {
-        HandleFeature<BuilderInWorldPlugin>(featureFlag.IsFeatureEnabled("builder_in_world"));
+        HandleFeature<BuilderInWorld>(featureFlag.IsFeatureEnabled("builder_in_world"));
         HandleFeature<TutorialController>(featureFlag.IsFeatureEnabled("tutorial"));
         HandleFeature<ExploreV2Feature>(featureFlag.IsFeatureEnabled("explorev2"));
         currentConfig = featureFlag;
