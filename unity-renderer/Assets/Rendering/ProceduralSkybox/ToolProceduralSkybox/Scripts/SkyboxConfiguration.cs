@@ -228,13 +228,14 @@ namespace DCL.Skybox
             }
             float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, layer.timeSpan_End, dayTime);
 
-            if (layer.LayerType == LayerType.Particle)
+            selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.LayerType);
+
+            if (layer.useParticles)
             {
                 selectedMat.SetFloat("_useParticles_" + layerNum, 1);
             }
             else
             {
-                selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.LayerType);
                 selectedMat.SetFloat("_useParticles_" + layerNum, 0);
             }
 
@@ -249,9 +250,6 @@ namespace DCL.Skybox
                     break;
                 case LayerType.Cubemap:
                     ApplyCubemapTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
-                    break;
-                case LayerType.Particle:
-                    ApplyParticleTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
                     break;
                 default:
                     break;
@@ -270,6 +268,11 @@ namespace DCL.Skybox
                 selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
                 selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
                 selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
+                selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
+                selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
+                // Particles
+                selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
+                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, Vector2.zero);
             }
 
 
@@ -327,6 +330,26 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+
+            // Particles
+            if (layer.useParticles)
+            {
+                selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
+                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, new Vector2(layer.particlesSpeed, layer.particlesFrequency));
+            }
+            else
+            {
+                selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
+                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, Vector2.zero);
+            }
+
+            // Apply Distortion Values
+            Vector2 distortIntAndSize = new Vector2(GetTransitionValue(layer.distortIntensity, normalizedLayerTime * 100), GetTransitionValue(layer.distortSize, normalizedLayerTime * 100));
+            selectedMat.SetVector("_distortIntAndSize_" + layerNum, distortIntAndSize);
+
+            Vector2 distortSpeed = GetTransitionValue(layer.distortSpeed, normalizedLayerTime * 100);
+            Vector2 distortSharpness = GetTransitionValue(layer.distortSharpness, normalizedLayerTime * 100);
+            selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, new Vector4(distortSpeed.x, distortSpeed.y, distortSharpness.x, distortSharpness.y));
         }
 
         void ApplySatelliteTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
@@ -359,6 +382,24 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+
+            // Particles
+            if (layer.useParticles)
+            {
+                selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
+                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, new Vector2(layer.particlesSpeed, layer.particlesFrequency));
+            }
+            else
+            {
+                selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
+                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, Vector2.zero);
+            }
+
+
+            // Distortion values
+            selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
+            selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
+
         }
 
         void ApplyParticleTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
@@ -380,8 +421,10 @@ namespace DCL.Skybox
             // Particles
             selectedMat.SetTexture("_tex_" + layerNum, layer.texture);
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
-            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
-            selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, new Vector2(layer.particlesSpeed, layer.particlesFrequency));
+
+            // Distortion values
+            selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
+            selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
         }
 
         #endregion
@@ -402,7 +445,7 @@ namespace DCL.Skybox
 
             TransitioningFloat min = _list[0], max = _list[0];
 
-            // Apply Direction
+
             for (int i = 0; i < _list.Count; i++)
             {
                 if (percentage <= _list[i].percentage)
