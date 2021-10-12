@@ -7,7 +7,7 @@ internal interface IProjectsController
 {
     event Action<Vector2Int> OnEditorPressed;
     event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
-    void SetProjects(Dictionary<string, IProjectCardView> projects);
+    void SetProjects(ProjectData[] projects);
     void AddListener(IProjectsListener listener);
     void RemoveListener(IProjectsListener listener);
     Dictionary<string, IProjectCardView> GetProjects();
@@ -33,10 +33,14 @@ internal class ProjectsController : IProjectsController
         this.defaultParent = defaultParent;
     }
 
-    public void SetProjects(Dictionary<string, IProjectCardView> projects)
+    public void SetProjects(ProjectData[] projects)
     {
-        this.projects = projects;
-        OnProjectsSet?.Invoke(projects);
+        this.projects = new Dictionary<string, IProjectCardView>();
+        foreach (var project in projects)
+        {
+            this.projects.Add(project.id, CreateCardView());
+        }
+        OnProjectsSet?.Invoke(this.projects);
     }
 
     public void AddListener(IProjectsListener listener)

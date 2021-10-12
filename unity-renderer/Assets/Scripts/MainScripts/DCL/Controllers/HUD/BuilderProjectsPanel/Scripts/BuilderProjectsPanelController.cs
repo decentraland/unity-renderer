@@ -49,6 +49,7 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
     private bool sendPlayerOpenPanelEvent = false;
     private Coroutine fetchDataInterval;
     private Promise<LandWithAccess[]> fetchLandPromise = null;
+    private Promise<ProjectData[]> fetchProjectsPromise = null;
 
     public event Action OnJumpInOrEdit;
 
@@ -77,6 +78,7 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
         unpublishPopupController?.Dispose();
 
         fetchLandPromise?.Dispose();
+        fetchProjectsPromise?.Dispose();
 
         leftMenuSettingsViewHandler?.Dispose();
         sectionsHandler?.Dispose();
@@ -157,7 +159,10 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
 
             FetchPanelInfo();
             StartFetchInterval();
-            sectionsController.OpenSection(SectionId.PROJECTS);
+            if (DataStore.i.builderInWorld.isDevBuild.Get())
+                sectionsController.OpenSection(SectionId.PROJECTS);
+            else
+                sectionsController.OpenSection(SectionId.SCENES);
         }
         else
         {
@@ -244,10 +249,24 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
             .Then(LandsFetched)
             .Catch(LandsFetchedError);
 
-        ProjectsFetched(new Dictionary<string, IProjectCardView>());
+        if (!DataStore.i.builderInWorld.isDevBuild.Get())
+            return;
+        fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData();
+        fetchProjectsPromise
+            .Then(ProjectsFetched)
+            .Catch(ProjectsFetchedError);
     }
 
-    internal void ProjectsFetched(Dictionary<string, IProjectCardView> projects) { projectsController.SetProjects(projects); }
+    internal void ProjectsFetched(ProjectData[] data) { projectsController.SetProjects(data); }
+
+    internal void ProjectsFetchedError(string error)
+    {
+        isFetching = false;
+        sectionsController.SetFetchingDataEnd();
+        landsController.SetLands(new LandWithAccess[] { });
+        scenesViewController.SetScenes(new ISceneData[] { });
+        Debug.LogError(error);
+    }
 
     internal void LandsFetchedError(string error)
     {
