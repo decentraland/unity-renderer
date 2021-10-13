@@ -15,7 +15,6 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal const float TARGET_ALPHA_HIDE = 0;
     internal const int BACKGROUND_HEIGHT = 30;
     internal const int BACKGROUND_EXTRA_WIDTH = 10;
-    internal const float Y_OFFSET = 0.1f;
 
     [SerializeField] internal Canvas canvas;
     [SerializeField] internal CanvasGroup canvasGroup;
@@ -75,11 +74,12 @@ public class PlayerName : MonoBehaviour, IPlayerName
          * TODO: We could obtain distance to player from the AvatarLODController but that coupling it's overkill and ugly
          * instead we should have a provider so all the subsystems can use it
          */
-        float distanceToPlayer = Vector3.Distance(cameraPosition, gameObject.transform.position);
-        float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToPlayer, forceShow);
+        float distanceToCamera = Vector3.Distance(cameraPosition, gameObject.transform.position);
+        float resolvedAlpha = forceShow ? TARGET_ALPHA_SHOW : ResolveAlphaByDistance(alpha, distanceToCamera, forceShow);
         UpdateVisuals(resolvedAlpha);
-        ScalePivotByDistance(distanceToPlayer);
+        ScalePivotByDistance(distanceToCamera);
         LookAtCamera(cameraRight, cameraRotation.eulerAngles);
+        pivot.transform.localPosition = Vector3.up * GetPivotYOffsetByDistance(distanceToCamera);
     }
 
     internal void LookAtCamera(Vector3 cameraRight, Vector3 cameraEulerAngles)
@@ -122,7 +122,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
 
     public void SetIsTalking(bool talking) { talkingAnimator.SetBool(TALKING_ANIMATOR_BOOL, talking); }
 
-    public void SetYOffset(float yOffset) { transform.localPosition = Vector3.up * (yOffset + Y_OFFSET); }
+    public void SetYOffset(float yOffset) { transform.localPosition = Vector3.up * yOffset; }
 
     public Rect ScreenSpaceRect(Camera mainCamera)
     {
@@ -148,6 +148,17 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal void UpdateVisuals(float resolvedAlpha) { canvasGroup.alpha = resolvedAlpha; }
 
     internal void ScalePivotByDistance(float distanceToCamera) { pivot.transform.localScale = Vector3.one * 0.15f * distanceToCamera; }
+
+    internal float GetPivotYOffsetByDistance(float distanceToCamera)
+    {
+        const float NEAR_Y_OFFSET = 0f;
+        const float FAR_Y_OFFSET = 0.1f;
+        const float MAX_DISTANCE = 5;
+        if (distanceToCamera >= MAX_DISTANCE)
+            return FAR_Y_OFFSET;
+
+        return Mathf.Lerp(NEAR_Y_OFFSET, FAR_Y_OFFSET, distanceToCamera / MAX_DISTANCE);
+    }
 
     private void OnDestroy()
     {
