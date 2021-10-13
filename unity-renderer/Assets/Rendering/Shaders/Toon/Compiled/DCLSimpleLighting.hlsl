@@ -47,7 +47,10 @@ half4 DCL_SimpleFragmentPBR(InputData inputData, SurfaceData surfaceData)
     color += inputData.vertexLighting * brdfData.diffuse;
     #endif
 
-    color += surfaceData.emission;
+    // NOTE(Brian): This is here to ensure backwards compatibility with existing wearables.
+    // Originally this fixed a color inconsistency due to bad color space (srgb vs linear).
+    const float DCL_EMISSIVE_MULTIPLIER = 8;
+    color += surfaceData.emission * DCL_EMISSIVE_MULTIPLIER;
 
     return half4(color, surfaceData.alpha);
 }

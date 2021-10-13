@@ -52,14 +52,14 @@ public class WearablesVisualTests : VisualTestsBase
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator CascoCruzado_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(CascoCruzado()); }
+    public IEnumerator EmissiveWearableThatDependsOnOldEmissionCalculation_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearableThatDependsOnOldEmissionCalculation()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
-    public IEnumerator CascoCruzado()
+    public IEnumerator EmissiveWearableThatDependsOnOldEmissionCalculation()
     {
         //Arrange
-        yield return InitVisualTestsScene("WearableVisualTests_CascoCruzado");
+        yield return InitVisualTestsScene("WearableVisualTests_EmissiveWearableThatDependsOnOldEmissionCalculation");
         VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
         const string WEARABLE_ID = "cascoCruzado";
 
@@ -180,6 +180,7 @@ public class WearablesVisualTests : VisualTestsBase
     }
 
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject holder) => LoadWearable(wearableId, bodyShapeId, holder, CreateCombiner());
+
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject holder, AvatarMeshCombinerHelper combiner)
     {
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
