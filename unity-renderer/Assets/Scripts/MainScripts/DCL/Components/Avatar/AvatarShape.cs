@@ -39,7 +39,6 @@ namespace DCL
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
-            avatarRenderer.OnAvatarAlphaValueUpdate += OnAvatarAlphaValueUpdate;
         }
 
         private void PlayerClicked()
@@ -57,7 +56,6 @@ namespace DCL
                 poolableObject.RemoveFromPool();
 
             avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
-            avatarRenderer.OnAvatarAlphaValueUpdate -= OnAvatarAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -138,11 +136,14 @@ namespace DCL
                 player = new Player();
                 isNew = true;
             }
+            
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
+            player.onPointerDownCollider = onPointerDown;
+            
             if (isNew)
             {
                 visibleNames.Add(player.id);
@@ -164,7 +165,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.collider.enabled = false;
+            onPointerDown.ToggleCollider(false);
         }
 
         public void EnablePassport()
@@ -172,7 +173,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.collider.enabled = true;
+            onPointerDown.ToggleCollider(true);
         }
 
         private void OnEntityTransformChanged(object newModel)
@@ -195,13 +196,13 @@ namespace DCL
 
         void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
  
-        void OnAvatarAlphaValueUpdate(float newAlphaValue)
+        /*void OnAvatarAlphaValueUpdate(float newAlphaValue)
         {
             if (newAlphaValue > AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD)
                 EnablePassport();
             else
                 DisablePassport();
-        }
+        }*/
         
         public override void Cleanup()
         {

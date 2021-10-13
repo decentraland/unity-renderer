@@ -60,6 +60,8 @@ namespace DCL
             lastRequestedState = State.FullAvatar;
             if (player?.renderer == null)
                 return;
+            
+            player.onPointerDownCollider.ToggleCollider(true);
 
             SetAvatarFeatures(true, true);
             StartTransition(1, 0);
@@ -73,6 +75,8 @@ namespace DCL
             lastRequestedState = State.SimpleAvatar;
             if (player?.renderer == null)
                 return;
+            
+            player.onPointerDownCollider.ToggleCollider(true);
 
             SetAvatarFeatures(false, false);
             StartTransition(1, 0);
@@ -86,6 +90,8 @@ namespace DCL
             lastRequestedState = State.Impostor;
             if (player?.renderer == null)
                 return;
+            
+            player.onPointerDownCollider.ToggleCollider(false);
 
             SetAvatarFeatures(false, false);
             StartTransition(0, 1);
@@ -100,6 +106,8 @@ namespace DCL
             if (player?.renderer == null)
                 return;
 
+            player.onPointerDownCollider.ToggleCollider(false);
+            
             SetAvatarFeatures(false, false);
             StartTransition(0, 0, TRANSITION_DURATION * 1.5f);
         }

@@ -6,7 +6,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public class AvatarOnPointerDown : MonoBehaviour, IPointerEvent, IPoolLifecycleHandler
+    public class AvatarOnPointerDown : MonoBehaviour, IPointerEvent, IPoolLifecycleHandler, IAvatarOnPointerDownCollider
     {
         public new Collider collider;
         private OnPointerEvent.Model model;
@@ -87,6 +87,10 @@ namespace DCL.Components
                 return;
 
             enabled = true;
+        }
+        public void ToggleCollider(bool newEnabledState)
+        {
+            collider.enabled = newEnabledState;
         }
 
         public Transform GetTransform() { return transform; }
