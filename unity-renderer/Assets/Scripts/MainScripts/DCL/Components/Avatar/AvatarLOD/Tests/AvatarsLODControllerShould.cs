@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using DCL;
+using DCL.Helpers;
 using KernelConfigurationTypes;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -25,7 +27,8 @@ namespace Tests.AvatarsLODController
         [Test]
         public void BeInitializedProperly()
         {
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            FeatureFlag flag =  TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME });
+            controller.Initialize(flag);
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(0, controller.lodControllers.Count);
@@ -38,7 +41,7 @@ namespace Tests.AvatarsLODController
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
 
             otherPlayers.Add("player0", new Player { name = "player0", id = "player0", renderer = Substitute.For<IAvatarRenderer>() });
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(1, controller.lodControllers.Count);
@@ -50,7 +53,7 @@ namespace Tests.AvatarsLODController
         {
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
 
@@ -64,7 +67,7 @@ namespace Tests.AvatarsLODController
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             otherPlayers.Remove("player0");
 

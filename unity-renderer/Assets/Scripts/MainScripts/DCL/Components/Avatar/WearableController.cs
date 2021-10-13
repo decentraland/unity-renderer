@@ -11,6 +11,7 @@ public class WearableController
 {
     private const string MATERIAL_FILTER_HAIR = "hair";
     private const string MATERIAL_FILTER_SKIN = "skin";
+    private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
     public readonly WearableItem wearable;
     protected RendereableAssetLoadHelper loader;
@@ -30,19 +31,26 @@ public class WearableController
 
     public IReadOnlyList<SkinnedMeshRenderer> GetRenderers() { return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers); }
 
-    public WearableController(WearableItem wearableItem, bool useAssetBundles = true)
+    public WearableController(WearableItem wearableItem)
     {
         this.wearable = wearableItem;
-        this.useAssetBundles = useAssetBundles;
+        SetupAssetBundlesConfig();
     }
 
-    protected WearableController(WearableController original, bool useAssetBundles = true)
+    protected WearableController(WearableController original)
     {
         wearable = original.wearable;
         loader = original.loader;
         assetRenderers = original.assetRenderers;
-        
-        this.useAssetBundles = useAssetBundles;
+
+        SetupAssetBundlesConfig();
+    }
+
+    private void SetupAssetBundlesConfig()
+    {
+        // In preview mode featureFlags.flags.Get() can be null.
+        var featureFlags = DataStore.i.featureFlags.flags.Get();
+        useAssetBundles = featureFlags != null && featureFlags.IsFeatureEnabled(AB_FEATURE_FLAG_NAME); 
     }
 
     public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)

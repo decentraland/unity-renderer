@@ -99,21 +99,7 @@ public class ExploreV2MenuComponentControllerTests
         //Assert
         exploreV2MenuView.currentProfileCard.Received().SetProfileName(testUserProfile.userName);
         exploreV2MenuView.currentProfileCard.Received().SetProfileAddress(testUserProfile.ethAddress);
-        exploreV2MenuView.currentProfileCard.Received().SetLoadingIndicatorVisible(true);
-    }
-
-    [Test]
-    public void SetProfileImageCorrectly()
-    {
-        // Arrange
-        Texture2D testTexture = new Texture2D(10, 10);
-
-        // Act
-        exploreV2MenuController.SetProfileImage(testTexture);
-
-        //Assert
-        exploreV2MenuView.currentProfileCard.Received().SetLoadingIndicatorVisible(false);
-        exploreV2MenuView.currentProfileCard.Received().SetProfilePicture(testTexture);
+        exploreV2MenuView.currentProfileCard.Received().SetProfilePicture(testUserProfile.face128SnapshotURL);
     }
 
     [Test]

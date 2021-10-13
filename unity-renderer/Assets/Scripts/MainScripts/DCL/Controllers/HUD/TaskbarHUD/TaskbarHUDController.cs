@@ -236,6 +236,7 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnExploreV2ToggleOn()
     {
+        DataStore.i.taskbar.isExploreV2Enabled.Set(false);
         DataStore.i.taskbar.isExploreV2Enabled.Set(true);
         OnAnyTaskbarButtonClicked?.Invoke();
     }
@@ -385,6 +386,7 @@ public class TaskbarHUDController : IHUD
         {
             view.settingsButton.SetToggleState(true, false);
             view.exploreButton.SetToggleState(false);
+            view.exploreV2Button.SetToggleState(false);
         };
         settingsPanelHud.OnClose += () =>
         {
@@ -439,11 +441,12 @@ public class TaskbarHUDController : IHUD
         if (current)
         {
             view.exploreV2Button.SetToggleState(true, false);
-            view.exploreV2Button.SetToggleState(false);
+            view.settingsButton.SetToggleState(false);
         }
         else
         {
             view.exploreV2Button.SetToggleState(false, false);
+            MarkWorldChatAsReadIfOtherWindowIsOpen();
         }
     }
 

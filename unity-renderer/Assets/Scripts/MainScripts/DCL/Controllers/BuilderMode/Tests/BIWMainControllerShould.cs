@@ -340,6 +340,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
         // Act
         mainController.CatalogReceived(jsonValue);
+        mainController.CatalogReceived(jsonValue);
 
         // Assert
         Assert.IsTrue(mainController.catalogAdded);
