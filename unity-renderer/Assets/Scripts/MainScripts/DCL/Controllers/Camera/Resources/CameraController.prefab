@@ -1411,6 +1411,7 @@ GameObject:
   - component: {fileID: 8626449322338435419}
   - component: {fileID: 682333195972692980}
   - component: {fileID: 1060609013}
+  - component: {fileID: 5137756179740078520}
   - component: {fileID: 1237533442}
   m_Layer: 15
   m_Name: MainCamera
@@ -1531,6 +1532,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5137756179740078520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5902165421965975136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02bbc8e3366b7e64da589a40091e64a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1237533442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1624,7 +1637,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.8690249, y: 1}
+    m_SensorSize: {x: 2.1663113, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 1

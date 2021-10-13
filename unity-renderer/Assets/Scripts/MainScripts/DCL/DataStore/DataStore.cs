@@ -35,6 +35,7 @@ namespace DCL
         public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
         public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
+        public readonly DataStore_Camera camera = new DataStore_Camera();
 
         public class DataStore_WorldObjects
         {
@@ -68,7 +69,7 @@ namespace DCL
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
-            public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
             public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
             public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
@@ -98,7 +99,6 @@ namespace DCL
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(30f);
             public readonly BaseVariable<int> maxAvatars = new BaseVariable<int>(DEFAULT_MAX_AVATAR);
             public readonly BaseVariable<int> maxImpostors = new BaseVariable<int>(DEFAULT_MAX_IMPOSTORS);
-            public readonly BaseHashSet<string> visibleNames = new BaseHashSet<string>();
         }
 
         /// <summary>
@@ -141,6 +141,11 @@ namespace DCL
         public class DataStore_FeatureFlag
         {
             public readonly BaseVariable<FeatureFlag> flags = new BaseVariable<FeatureFlag>();
+        }
+
+        public class DataStore_Camera
+        {
+            public readonly BaseVariable<Quaternion> rotation =  new BaseVariable<Quaternion>();
         }
     }
 }

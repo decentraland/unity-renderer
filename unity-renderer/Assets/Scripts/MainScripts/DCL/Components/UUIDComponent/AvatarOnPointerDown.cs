@@ -13,10 +13,32 @@ namespace DCL.Components
         private OnPointerEventHandler eventHandler;
         public IDCLEntity entity { get; private set; }
         public event System.Action OnPointerDownReport;
+        public event System.Action OnPointerEnterReport;
+        public event System.Action OnPointerExitReport;
+        private bool isHovering = false;
 
         public WebInterface.ACTION_BUTTON GetActionButton() { return model.GetActionButton(); }
 
-        public void SetHoverState(bool state) { eventHandler.SetFeedbackState(model.showFeedback, state, model.button, model.hoverText); }
+        public void SetHoverState(bool state)
+        {
+            bool isHoveringDirty = state != isHovering;
+            isHovering = state;
+            eventHandler.SetFeedbackState(model.showFeedback, state, model.button, model.hoverText);
+            if (!isHoveringDirty)
+                return;
+            if (isHovering)
+                OnPointerEnterReport?.Invoke();
+            else
+                OnPointerExitReport?.Invoke();
+        }
+
+        private void OnDisable()
+        {
+            if (!isHovering)
+                return;
+            isHovering = false;
+            OnPointerExitReport?.Invoke();
+        }
 
         void Awake() { CommonScriptableObjects.playerInfoCardVisibleState.OnChange += ReEnableOnInfoCardClosed; }
 

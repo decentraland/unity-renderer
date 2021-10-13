@@ -10,4 +10,5 @@ public class Player
     public bool isTalking;
     public IAvatarRenderer renderer;
     public IAvatarOnPointerDownCollider onPointerDownCollider;
+    public IPlayerName playerName;
 }
