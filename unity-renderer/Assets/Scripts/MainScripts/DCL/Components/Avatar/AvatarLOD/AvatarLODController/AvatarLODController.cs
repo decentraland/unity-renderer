@@ -101,15 +101,15 @@ namespace DCL
                 return;
 
             SetAvatarFeatures(false, false);
-            StartTransition(0, 0);
+            StartTransition(0, 0, TRANSITION_DURATION * 1.5f);
         }
 
         public void SetThrottling(int framesBetweenUpdates) { player?.renderer?.SetThrottling(framesBetweenUpdates); }
 
-        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
+        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade, float transitionDuration = TRANSITION_DURATION)
         {
             CoroutineStarter.Stop(currentTransition);
-            currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
+            currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade, transitionDuration));
         }
 
         internal IEnumerator Transition(float targetAvatarFade, float targetImpostorFade, float transitionDuration = TRANSITION_DURATION)
