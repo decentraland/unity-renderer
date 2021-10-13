@@ -832,7 +832,15 @@ namespace DCL
             newScene.SetData(data);
 
             if (!string.IsNullOrEmpty(globalScene.icon))
-                newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
+            {
+                if (globalScene.icon.StartsWith("http://") || globalScene.icon.StartsWith("https://"))
+                {
+                    newScene.iconUrl = globalScene.icon;
+                }
+                else{
+                    newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
+                }
+            }
 
             worldState.loadedScenes.Add(newGlobalSceneId, newScene);
             OnNewSceneAdded?.Invoke(newScene);
