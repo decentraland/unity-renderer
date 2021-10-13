@@ -52,6 +52,7 @@ public class ProfileHUDController : IHUD
         SetBackpackButtonVisibility(false);
         view.connectedWalletSection.SetActive(false);
         view.nonConnectedWalletSection.SetActive(false);
+        view.charLimitDescriptionContainer.SetActive(false);
 
         view.buttonBackpack.onClick.AddListener(OpenBackpackWindow);
         view.buttonLogOut.onClick.AddListener(WebInterface.LogOut);
