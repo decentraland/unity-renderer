@@ -40,6 +40,7 @@ public class BuilderInWorld : PluginFeature
     private readonly List<IBIWController> controllers = new List<IBIWController>();
 
     internal ParcelScene sceneToEdit;
+    private BiwSceneMetricsAnalyticsHelper sceneMetricsAnalyticsHelper;
 
     private Material skyBoxMaterial;
 
@@ -57,12 +58,14 @@ public class BuilderInWorld : PluginFeature
     private bool previousAllUIHidden;
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
+    private bool areCatalogHeadersAsked = false;
     internal bool areCatalogHeadersReady = false;
     private float beginStartFlowTimeStamp = 0;
     private float startEditorTimeStamp = 0;
     internal bool isCatalogRequested = false;
     internal bool isEnteringEditMode = false;
     private bool activeFeature = false;
+    private int catalogsReceivedAmount = 0;
 
     internal IBuilderInWorldLoadingController initialLoadingController;
 
@@ -128,7 +131,13 @@ public class BuilderInWorld : PluginFeature
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
-        builderInWorldBridge.AskKernelForCatalogHeaders();
+        userProfile = UserProfile.GetOwnUserProfile();
+
+        if (string.IsNullOrEmpty(userProfile.userId))
+            userProfile.OnUpdate += OnUserProfileUpdate;
+        else
+            AskHeadersToKernel();
+
 
         isCatalogLoading = true;
         BIWNFTController.i.Initialize();
@@ -140,6 +149,13 @@ public class BuilderInWorld : PluginFeature
         biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
+    }
+
+    private void AskHeadersToKernel()
+    {
+        string ethAddress =  string.IsNullOrEmpty(userProfile.ethAddress) ? "default" : userProfile.ethAddress;
+        areCatalogHeadersAsked = true;
+        builderInWorldBridge.AskKernelForCatalogHeadersWithParams("get", "/assetPacks?owner=" + ethAddress);
     }
 
     public void InitReferences(InitialSceneReferences.Data sceneReferences)
@@ -187,6 +203,8 @@ public class BuilderInWorld : PluginFeature
     {
         base.Dispose();
 
+        sceneMetricsAnalyticsHelper?.Dispose();
+
         if (userProfile != null)
             userProfile.OnUpdate -= OnUserProfileUpdate;
 
@@ -197,7 +215,6 @@ public class BuilderInWorld : PluginFeature
 
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
         Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
-
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -299,19 +316,20 @@ public class BuilderInWorld : PluginFeature
                 CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
             updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
         }
-        else
-        {
-            userProfile.OnUpdate += OnUserProfileUpdate;
-        }
     }
 
     private void BuilderProjectPanelInfo(string title, string description) { HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(title, description); }
 
     internal void CatalogReceived(string catalogJson)
     {
-        isCatalogLoading = false;
+        catalogsReceivedAmount++;
+
         AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
-        CatalogLoaded();
+        if (catalogsReceivedAmount >= 2)
+        {
+            isCatalogLoading = false;
+            CatalogLoaded();
+        }
     }
 
     public void CatalogLoaded()
@@ -336,9 +354,18 @@ public class BuilderInWorld : PluginFeature
             return;
 
         if (areCatalogHeadersReady)
-            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(), CatalogReceived, catalogCallHeaders);
+        {
+            string ethAddress = "";
+            var userProfile = UserProfile.GetOwnUserProfile();
+            if (userProfile != null)
+                ethAddress = userProfile.ethAddress;
+            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
+            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
+        }
         else
-            builderInWorldBridge.AskKernelForCatalogHeaders();
+        {
+            AskHeadersToKernel();
+        }
 
         isCatalogRequested = true;
     }
@@ -445,7 +472,7 @@ public class BuilderInWorld : PluginFeature
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
         sceneToEdit = (ParcelScene)Environment.i.world.state.GetScene(sceneToEditId);
-        sceneToEdit.metricsController = new BIWSceneMetricsController(sceneToEdit);
+        sceneMetricsAnalyticsHelper = new BiwSceneMetricsAnalyticsHelper(sceneToEdit);
         sceneToEdit.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
     }
 
@@ -803,7 +830,7 @@ public class BuilderInWorld : PluginFeature
         if (activeFeature)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             TryStartEnterEditMode(targetScene);
         }
     }
@@ -815,7 +842,9 @@ public class BuilderInWorld : PluginFeature
     internal void OnUserProfileUpdate(UserProfile user)
     {
         userProfile.OnUpdate -= OnUserProfileUpdate;
-        updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
+
+        if (!areCatalogHeadersAsked)
+            AskHeadersToKernel();
     }
 
     private IEnumerator CheckLandsAccess()
@@ -833,23 +862,23 @@ public class BuilderInWorld : PluginFeature
             return;
 
         DeployedScenesFetcher.FetchLandsFromOwner(
-                                 Environment.i.platform.serviceProviders.catalyst,
-                                 Environment.i.platform.serviceProviders.theGraph,
-                                 userProfile.ethAddress,
-                                 KernelConfig.i.Get().network,
-                                 BIWSettings.CACHE_TIME_LAND,
-                                 BIWSettings.CACHE_TIME_SCENES)
-                             .Then(lands =>
-                             {
-                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                                 {
-                                     CheckSceneToEditByShorcut();
-                                 }
+                Environment.i.platform.serviceProviders.catalyst,
+                Environment.i.platform.serviceProviders.theGraph,
+                userProfile.ethAddress,
+                KernelConfig.i.Get().network,
+                BIWSettings.CACHE_TIME_LAND,
+                BIWSettings.CACHE_TIME_SCENES)
+            .Then(lands =>
+            {
+                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                {
+                    CheckSceneToEditByShorcut();
+                }
 
-                                 isWaitingForPermission = false;
-                                 alreadyAskedForLandPermissions = true;
-                             });
+                isWaitingForPermission = false;
+                alreadyAskedForLandPermissions = true;
+            });
     }
 
     private static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -10,7 +9,8 @@ namespace DCL.Components
         {
             ASSET_BUNDLE_WITH_GLTF_FALLBACK,
             ASSET_BUNDLE_ONLY,
-            GLTF_ONLY
+            GLTF_ONLY,
+            DEFAULT
         }
 
         public static bool VERBOSE = false;
@@ -18,11 +18,11 @@ namespace DCL.Components
         public static bool useCustomContentServerUrl = false;
         public static string customContentServerUrl;
 
-        public static LoadingType loadingType = LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK;
+        public static LoadingType defaultLoadingType = LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK;
 
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
 
-        public GameObject loadedAsset { get; protected set; }
+        public Rendereable loadedAsset { get; protected set; }
 
         public bool isFinished
         {
@@ -79,41 +79,59 @@ namespace DCL.Components
             this.bundlesContentUrl = bundlesContentUrl;
         }
 
-        public event Action<GameObject> OnSuccessEvent;
-        public event Action OnFailEvent;
+        public event System.Action<Rendereable> OnSuccessEvent;
+        public event System.Action OnFailEvent;
 
-        public void Load(string targetUrl)
+        public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
         {
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
 #endif
-            switch (loadingType)
+            
+            LoadingType finalLoadingType = forcedLoadingType == LoadingType.DEFAULT ? defaultLoadingType : forcedLoadingType;
+            switch (finalLoadingType)
             {
-                case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, () => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
-                    break;
                 case LoadingType.ASSET_BUNDLE_ONLY:
                     LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent);
                     break;
                 case LoadingType.GLTF_ONLY:
                     LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
                     break;
+                case LoadingType.DEFAULT:
+                case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, () => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
+                    break;
             }
         }
 
         public void Unload()
         {
-            AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
-            AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
+            UnloadAB();
+            UnloadGLTF();
         }
 
-        void LoadAssetBundle(string targetUrl, Action<GameObject> OnSuccess, Action OnFail)
+        void UnloadAB()
+        {
+            if ( abPromise != null )
+            {
+                AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
+            }
+        }
+
+        void UnloadGLTF()
+        {
+            if ( gltfPromise != null )
+            {
+                AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+            }
+        }
+
+        void LoadAssetBundle(string targetUrl, System.Action<Rendereable> OnSuccess, System.Action OnFail)
         {
             if (abPromise != null)
             {
-                AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
-
+                UnloadAB();
                 if (VERBOSE)
                     Debug.Log("Forgetting not null promise..." + targetUrl);
             }
@@ -135,17 +153,30 @@ namespace DCL.Components
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
 
-            abPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
+            abPromise.OnSuccessEvent += (x) =>
+            {
+                var r = new Rendereable()
+                {
+                    container = x.container,
+                    totalTriangleCount = x.totalTriangleCount,
+                    meshes = x.meshes,
+                    renderers = x.renderers,
+                    meshToTriangleCount = x.meshToTriangleCount
+                };
+
+                OnSuccessWrapper(r, OnSuccess);
+            };
+
             abPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
-        void LoadGltf(string targetUrl, Action<GameObject> OnSuccess, Action OnFail)
+        void LoadGltf(string targetUrl, System.Action<Rendereable> OnSuccess, System.Action OnFail)
         {
             if (gltfPromise != null)
             {
-                AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+                UnloadGLTF();
 
                 if (VERBOSE)
                     Debug.Log("Forgetting not null promise... " + targetUrl);
@@ -160,13 +191,25 @@ namespace DCL.Components
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
             gltfPromise.settings = this.settings;
 
-            gltfPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
+            gltfPromise.OnSuccessEvent += (x) =>
+            {
+                var r = new Rendereable()
+                {
+                    container = x.container,
+                    totalTriangleCount = x.totalTriangleCount,
+                    meshes = x.meshes,
+                    renderers = x.renderers,
+                    meshToTriangleCount = x.meshToTriangleCount
+                };
+
+                OnSuccessWrapper(r, OnSuccess);
+            };
             gltfPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
 
-        private void OnFailWrapper(Asset_WithPoolableContainer loadedAsset, Action OnFail)
+        private void OnFailWrapper(Asset_WithPoolableContainer loadedAsset, System.Action OnFail)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
@@ -177,7 +220,7 @@ namespace DCL.Components
             ClearEvents();
         }
 
-        private void OnSuccessWrapper(Asset_WithPoolableContainer loadedAsset, Action<GameObject> OnSuccess)
+        private void OnSuccessWrapper(Rendereable loadedAsset, System.Action<Rendereable> OnSuccess)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
@@ -190,8 +233,8 @@ namespace DCL.Components
                     Debug.Log($"AB Load(): target URL -> {abPromise.hash}. Success!");
             }
 
-            this.loadedAsset = loadedAsset.container;
-            OnSuccess?.Invoke(loadedAsset.container);
+            this.loadedAsset = loadedAsset;
+            OnSuccess?.Invoke(loadedAsset);
             ClearEvents();
         }
 

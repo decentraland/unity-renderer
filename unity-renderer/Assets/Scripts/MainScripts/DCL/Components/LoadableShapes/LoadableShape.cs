@@ -20,6 +20,10 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
+        public bool isLoaded { get; protected set; }
+
+        public Action<LoadableShape> OnLoaded;
+
         protected Model previousModel = new Model();
 
         protected static Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
@@ -77,7 +81,6 @@ namespace DCL.Components
         where LoadWrapperType : LoadWrapper, new()
         where LoadWrapperModelType : LoadableShape.Model, new()
     {
-        private bool isLoaded = false;
         private bool failed = false;
         private event Action<BaseDisposable> OnFinishCallbacks;
         public System.Action<IDCLEntity> OnEntityShapeUpdated;
@@ -165,6 +168,7 @@ namespace DCL.Components
                         OnLoadFailed(null);
                         return;
                     }
+
                     model.src = sceneObject.model;
                 }
             }
@@ -254,15 +258,16 @@ namespace DCL.Components
             }
 
             isLoaded = true;
+            OnLoaded?.Invoke(this);
 
             entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
 
             var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
+
             ConfigureVisibility(entity.meshRootGameObject, model.visible, loadWrapper.entity.meshesInfo.renderers);
-
             ConfigureColliders(entity);
-
             RaiseOnShapeUpdated(entity);
+            RaiseOnShapeLoaded(entity);
 
             OnFinishCallbacks?.Invoke(this);
             OnFinishCallbacks = null;
@@ -298,6 +303,14 @@ namespace DCL.Components
                 return;
 
             entity.OnShapeUpdated?.Invoke(entity);
+        }
+
+        private void RaiseOnShapeLoaded(IDCLEntity entity)
+        {
+            if (!isLoaded)
+                return;
+
+            entity.OnShapeLoaded?.Invoke(entity);
         }
     }
 }

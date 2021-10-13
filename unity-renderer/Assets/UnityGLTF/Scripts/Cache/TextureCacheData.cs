@@ -5,7 +5,6 @@ namespace UnityGLTF.Cache
 {
     public class TextureCacheData
     {
-        public GLTFTexture TextureDefinition;
         public RefCountedTextureData CachedTexture;
 
         /// <summary>

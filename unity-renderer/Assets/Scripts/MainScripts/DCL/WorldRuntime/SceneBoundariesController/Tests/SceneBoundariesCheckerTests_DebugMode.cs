@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections;
 using DCL;
 using DCL.Components;
@@ -18,7 +17,6 @@ namespace SceneBoundariesCheckerTests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
             yield return SetUp_CharacterController();
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());

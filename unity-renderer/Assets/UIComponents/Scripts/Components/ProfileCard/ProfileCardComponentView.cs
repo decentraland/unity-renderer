@@ -16,16 +16,22 @@ public interface IProfileCardComponentView
     void Configure(ProfileCardComponentModel model);
 
     /// <summary>
-    /// Set the profile picture.
+    /// Set the profile picture directly from a sprite.
     /// </summary>
-    /// <param name="newPicture">Profile picture (sprite).</param>
-    void SetProfilePicture(Sprite newPicture);
+    /// <param name="sprite">Profile picture (sprite).</param>
+    void SetProfilePicture(Sprite sprite);
 
     /// <summary>
-    /// Set the profile picture.
+    /// Set the profile picture from a 2D texture.
     /// </summary>
-    /// <param name="newPicture">Profile picture (texture).</param>
+    /// <param name="newPicture">Profile picture (2D texture).</param>
     void SetProfilePicture(Texture2D newPicture);
+
+    /// <summary>
+    /// Set the profile picture from an uri.
+    /// </summary>
+    /// <param name="uri">Profile picture (url).</param>
+    void SetProfilePicture(string uri);
 
     /// <summary>
     /// Set the profile name.
@@ -81,7 +87,13 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         }
     }
 
-    public override void PostInitialization() { Configure(model); }
+    public override void PostInitialization()
+    {
+        if (profileImage != null)
+            profileImage.OnLoaded += OnProfileImageLoaded;
+
+        Configure(model);
+    }
 
     public void Configure(ProfileCardComponentModel model)
     {
@@ -94,7 +106,15 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         if (model == null)
             return;
 
-        SetProfilePicture(model.profilePicture);
+        if (model.profilePictureSprite != null)
+            SetProfilePicture(model.profilePictureSprite);
+        else if (model.profilePictureTexture != null)
+            SetProfilePicture(model.profilePictureTexture);
+        else if (!string.IsNullOrEmpty(model.profilePictureUri))
+            SetProfilePicture(model.profilePictureUri);
+        else
+            SetProfilePicture(sprite: null);
+
         SetProfileName(model.profileName);
         SetProfileAddress(model.profileAddress);
         onClick = model.onClick;
@@ -104,26 +124,49 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
     {
         base.Dispose();
 
+        if (profileImage != null)
+            profileImage.OnLoaded += OnProfileImageLoaded;
+
         if (button == null)
             return;
 
         button.onClick.RemoveAllListeners();
     }
 
-    public void SetProfilePicture(Sprite newPicture)
+    public void SetProfilePicture(Sprite sprite)
     {
-        model.profilePicture = newPicture;
+        model.profilePictureSprite = sprite;
 
         if (profileImage == null)
             return;
 
-        profileImage.SetImage(newPicture);
+        profileImage.SetImage(sprite);
     }
 
-    public void SetProfilePicture(Texture2D newPicture)
+    public void SetProfilePicture(Texture2D texture)
     {
-        Sprite newPictureSprite = Sprite.Create(newPicture, new Rect(0, 0, newPicture.width, newPicture.height), new Vector2(0.5f, 0.5f));
-        SetProfilePicture(newPictureSprite);
+        model.profilePictureTexture = texture;
+
+        if (!Application.isPlaying)
+            return;
+
+        if (profileImage == null)
+            return;
+
+        profileImage.SetImage(texture);
+    }
+
+    public void SetProfilePicture(string uri)
+    {
+        model.profilePictureUri = uri;
+
+        if (!Application.isPlaying)
+            return;
+
+        if (profileImage == null)
+            return;
+
+        profileImage.SetImage(uri);
     }
 
     public void SetProfileName(string newName)
@@ -150,4 +193,6 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible) { profileImage.SetLoadingIndicatorVisible(isVisible); }
+
+    internal void OnProfileImageLoaded(Sprite sprite) { SetProfilePicture(sprite); }
 }

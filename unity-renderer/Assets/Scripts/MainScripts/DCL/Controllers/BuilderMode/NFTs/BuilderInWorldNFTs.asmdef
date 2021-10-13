@@ -1,5 +1,6 @@
 {
     "name": "BuilderInWorldNFT",
+    "rootNamespace": "",
     "references": [
         "GUID:e555144732b726c4cba5b0f6337fea75",
         "GUID:39ab26aaceb94724999ced1e8a9aa080",
@@ -8,7 +9,8 @@
         "GUID:91b3e67997f21408dae5a247c35f91ad",
         "GUID:760a1d365aad58044916992b072cf2a6",
         "GUID:85ae2f0b8e8614c42bebf9817fc6f2be",
-        "GUID:4623a7b5e6ee6e24c833abc6c810140f"
+        "GUID:4623a7b5e6ee6e24c833abc6c810140f",
+        "GUID:4339091ce1655134b92fc0df855d2084"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

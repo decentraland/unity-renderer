@@ -5,6 +5,11 @@ using UnityEngine.UI;
 public interface IEventCardComponentView
 {
     /// <summary>
+    /// Event that will be triggered when the jumpIn button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onJumpInClick { get; set; }
+
+    /// <summary>
     /// Event that will be triggered when the info button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onInfoClick { get; set; }
@@ -20,27 +25,28 @@ public interface IEventCardComponentView
     Button.ButtonClickedEvent onUnsubscribeClick { get; set; }
 
     /// <summary>
-    /// Event that will be triggered when the JumpIn button is clicked.
-    /// </summary>
-    Button.ButtonClickedEvent onJumpInClick { get; set; }
-
-    /// <summary>
     /// Fill the model and updates the event card with this data.
     /// </summary>
     /// <param name="model">Data to configure the event card.</param>
     void Configure(EventCardComponentModel model);
 
     /// <summary>
-    /// Set the event picture.
+    /// Set the event picture directly from a sprite.
     /// </summary>
-    /// <param name="newPicture">Event picture (sprite).</param>
-    void SetEventPicture(Sprite newPicture);
+    /// <param name="sprite">Event picture (sprite).</param>
+    void SetEventPicture(Sprite sprite);
 
     /// <summary>
-    /// Set the event picture.
+    /// Set the event picture from a 2D texture.
     /// </summary>
-    /// <param name="newPicture">Event picture (texture).</param>
-    void SetEventPicture(Texture2D newPicture);
+    /// <param name="texture">Event picture (url).</param>
+    void SetEventPicture(Texture2D texture);
+
+    /// <summary>
+    /// Set the event picture from an uri.
+    /// </summary>
+    /// <param name="uri"></param>
+    void SetEventPicture(string uri);
 
     /// <summary>
     /// Set the event card as live mode.
@@ -77,6 +83,12 @@ public interface IEventCardComponentView
     /// </summary>
     /// <param name="newText">New event started time.</param>
     void SetEventStartedIn(string newText);
+
+    /// <summary>
+    /// Set the event dates range in the card.
+    /// </summary>
+    /// <param name="newText">New event date range.</param>
+    void SetEventStartsInFromTo(string newText);
 
     /// <summary>
     /// Set the event organizer in the card.
@@ -117,9 +129,14 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal TMP_Text eventDateText;
     [SerializeField] internal TMP_Text eventNameText;
     [SerializeField] internal TMP_Text eventDescText;
+    [SerializeField] internal TMP_Text eventStartedInTitleForLive;
+    [SerializeField] internal TMP_Text eventStartedInTitleForNotLive;
     [SerializeField] internal TMP_Text eventStartedInText;
+    [SerializeField] internal TMP_Text eventStartsInFromToText;
     [SerializeField] internal TMP_Text eventOrganizerText;
     [SerializeField] internal TMP_Text eventPlaceText;
+    [SerializeField] internal TMP_Text subscribedUsersTitleForLive;
+    [SerializeField] internal TMP_Text subscribedUsersTitleForNotLive;
     [SerializeField] internal TMP_Text subscribedUsersText;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
@@ -132,6 +149,24 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [Header("Configuration")]
     [SerializeField] internal bool isEventCardModal = false;
     [SerializeField] internal EventCardComponentModel model;
+
+    public Button.ButtonClickedEvent onJumpInClick
+    {
+        get
+        {
+            if (jumpinButton == null)
+                return null;
+
+            return jumpinButton.onClick;
+        }
+        set
+        {
+            model.onJumpInClick = value;
+
+            if (jumpinButton != null)
+                jumpinButton.onClick = value;
+        }
+    }
 
     public Button.ButtonClickedEvent onInfoClick
     {
@@ -187,25 +222,13 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         }
     }
 
-    public Button.ButtonClickedEvent onJumpInClick
+    public override void PostInitialization()
     {
-        get
-        {
-            if (jumpinButton == null)
-                return null;
+        if (eventImage != null)
+            eventImage.OnLoaded += OnEventImageLoaded;
 
-            return jumpinButton.onClick;
-        }
-        set
-        {
-            model.onJumpInClick = value;
-
-            if (jumpinButton != null)
-                jumpinButton.onClick = value;
-        }
+        Configure(model);
     }
-
-    public override void PostInitialization() { Configure(model); }
 
     public void Configure(EventCardComponentModel model)
     {
@@ -218,26 +241,38 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (model == null)
             return;
 
-        SetEventPicture(model.eventPicture);
+        if (model.eventPictureSprite != null)
+            SetEventPicture(model.eventPictureSprite);
+        else if (model.eventPictureTexture != null)
+            SetEventPicture(model.eventPictureTexture);
+        else if (!string.IsNullOrEmpty(model.eventPictureUri))
+            SetEventPicture(model.eventPictureUri);
+        else
+            SetEventPicture(sprite: null);
+
         SetEventAsLive(model.isLive);
         SetLiveTagText(model.liveTagText);
         SetEventDate(model.eventDateText);
         SetEventName(model.eventName);
         SetEventDescription(model.eventDescription);
         SetEventStartedIn(model.eventStartedIn);
+        SetEventStartsInFromTo(model.eventStartsInFromTo);
         SetEventOrganizer(model.eventOrganizer);
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
         SetJumpInConfiguration(model.jumpInConfiguration);
+        onJumpInClick = model.onJumpInClick;
         onInfoClick = model.onInfoClick;
         onSubscribeClick = model.onSubscribeClick;
         onUnsubscribeClick = model.onUnsubscribeClick;
-        onJumpInClick = model.onJumpInClick;
     }
 
     public override void Dispose()
     {
         base.Dispose();
+
+        if (eventImage != null)
+            eventImage.OnLoaded -= OnEventImageLoaded;
 
         if (infoButton != null)
             infoButton.onClick.RemoveAllListeners();
@@ -252,20 +287,40 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             jumpinButton.onClick.RemoveAllListeners();
     }
 
-    public void SetEventPicture(Sprite newPicture)
+    public void SetEventPicture(Sprite sprite)
     {
-        model.eventPicture = newPicture;
+        model.eventPictureSprite = sprite;
 
         if (eventImage == null)
             return;
 
-        eventImage.SetImage(newPicture);
+        eventImage.SetImage(sprite);
     }
 
-    public void SetEventPicture(Texture2D newPicture)
+    public void SetEventPicture(Texture2D texture)
     {
-        Sprite newPictureSprite = Sprite.Create(newPicture, new Rect(0, 0, newPicture.width, newPicture.height), new Vector2(0.5f, 0.5f));
-        SetEventPicture(newPictureSprite);
+        model.eventPictureTexture = texture;
+
+        if (!Application.isPlaying)
+            return;
+
+        if (eventImage == null)
+            return;
+
+        eventImage.SetImage(texture);
+    }
+
+    public void SetEventPicture(string uri)
+    {
+        model.eventPictureUri = uri;
+
+        if (!Application.isPlaying)
+            return;
+
+        if (eventImage == null)
+            return;
+
+        eventImage.SetImage(uri);
     }
 
     public void SetEventAsLive(bool isLive)
@@ -286,6 +341,18 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (unsubscribeEventButton != null)
             unsubscribeEventButton.gameObject.SetActive(!isLive && model.isSubscribed);
+
+        if (eventStartedInTitleForLive)
+            eventStartedInTitleForLive.gameObject.SetActive(isLive);
+
+        if (eventStartedInTitleForNotLive)
+            eventStartedInTitleForNotLive.gameObject.SetActive(!isLive);
+
+        if (subscribedUsersTitleForLive != null)
+            subscribedUsersTitleForLive.gameObject.SetActive(isLive);
+
+        if (subscribedUsersTitleForNotLive != null)
+            subscribedUsersTitleForNotLive.gameObject.SetActive(!isLive);
     }
 
     public void SetLiveTagText(string newText)
@@ -338,6 +405,16 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         eventStartedInText.text = newText;
     }
 
+    public void SetEventStartsInFromTo(string newText)
+    {
+        model.eventStartsInFromTo = newText;
+
+        if (eventStartsInFromToText == null)
+            return;
+
+        eventStartsInFromToText.text = newText;
+    }
+
     public void SetEventOrganizer(string newText)
     {
         model.eventOrganizer = newText;
@@ -365,7 +442,17 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (subscribedUsersText == null)
             return;
 
-        subscribedUsersText.text = (isEventCardModal && newNumberOfUsers == 0) ? "Nobody confirmed yet" : newNumberOfUsers.ToString();
+        if (!isEventCardModal)
+        {
+            subscribedUsersText.text = newNumberOfUsers.ToString();
+        }
+        else
+        {
+            if (newNumberOfUsers > 0)
+                subscribedUsersText.text = $"{newNumberOfUsers} confirmed";
+            else
+                subscribedUsersText.text = "Nobody confirmed yet";
+        }
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)
@@ -380,5 +467,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
         jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
         jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
+
+        if (isEventCardModal)
+            jumpinButton.SetText($"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}");
     }
+
+    private void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
 }

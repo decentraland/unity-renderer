@@ -20,26 +20,20 @@ namespace DCL.SettingsCommon
             this.defaultPreset = defaultPreset;
             Preload();
         }
-        
+
         private void Preload()
         {
-            bool isQualitySettingsSet = false;
-            if (PlayerPrefsUtils.HasKey(playerPrefsKey))
-            {
-                try
-                {
-                    dataValue = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
-                    isQualitySettingsSet = true;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e.Message);
-                }
-            }
+            dataValue = defaultPreset;
+            if (!PlayerPrefsUtils.HasKey(playerPrefsKey))
+                return;
 
-            if (!isQualitySettingsSet)
+            try
             {
-                dataValue = defaultPreset;
+                dataValue = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
             }
         }
 

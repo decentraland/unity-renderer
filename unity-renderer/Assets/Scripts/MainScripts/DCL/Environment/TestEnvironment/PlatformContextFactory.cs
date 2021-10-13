@@ -18,8 +18,9 @@ namespace DCL.Tests
             IServiceProviders serviceProviders = Substitute.For<IServiceProviders>();
             IIdleChecker idleChecker = Substitute.For<IIdleChecker>();
             IAvatarsLODController avatarsLODController = Substitute.For<IAvatarsLODController>();
+            IFeatureFlagController featureFlagController = Substitute.For<IFeatureFlagController>();
 
-            foreach ( var mock in mocks)
+            foreach (var mock in mocks)
             {
                 switch ( mock )
                 {
@@ -50,18 +51,23 @@ namespace DCL.Tests
                     case IAvatarsLODController alodc:
                         avatarsLODController = alodc;
                         break;
+                    case IFeatureFlagController iffc:
+                        featureFlagController = iffc;
+                        break;
                 }
             }
 
-            return new PlatformContext(memoryManager,
+            return new PlatformContext(
+                memoryManager,
                 cullingController,
                 clipboard,
                 physicsSyncController,
-                parcelScenesCleaner, 
+                parcelScenesCleaner,
                 webRequest,
                 serviceProviders,
                 idleChecker,
-                avatarsLODController);
+                avatarsLODController,
+                featureFlagController);
         }
 
         public static PlatformContext CreateWithCustomMocks(
@@ -73,18 +79,20 @@ namespace DCL.Tests
             IWebRequestController webRequestController = null,
             IServiceProviders serviceProviders = null,
             IIdleChecker idleChecker = null,
-            IAvatarsLODController avatarsLODController = null)
+            IAvatarsLODController avatarsLODController = null,
+            IFeatureFlagController featureFlagController = null)
         {
             return new PlatformContext(
                 memoryManager: memoryManager ?? Substitute.For<IMemoryManager>(),
                 cullingController: cullingController ?? Substitute.For<ICullingController>(),
                 clipboard: clipboard ?? Substitute.For<IClipboard>(),
                 physicsSyncController: physicsSyncController ?? Substitute.For<IPhysicsSyncController>(),
-                parcelScenesCleaner: parcelScenesCleaner ?? Substitute.For<IParcelScenesCleaner>(), 
+                parcelScenesCleaner: parcelScenesCleaner ?? Substitute.For<IParcelScenesCleaner>(),
                 webRequest: webRequestController ?? GetWebRequestControllerMock(),
                 serviceProviders: serviceProviders ?? GetServiceProvidersMock(),
                 idleChecker: idleChecker ?? Substitute.For<IIdleChecker>(),
-                avatarsLODController: avatarsLODController ?? Substitute.For<IAvatarsLODController>());
+                avatarsLODController: avatarsLODController ?? Substitute.For<IAvatarsLODController>(),
+                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>() );
         }
 
         private static IWebRequestController GetWebRequestControllerMock()
@@ -93,7 +101,7 @@ namespace DCL.Tests
             webRequestControllerMock.Initialize(
                 genericWebRequest: Substitute.For<IWebRequest>(),
                 assetBundleWebRequest: Substitute.For<IWebRequestAssetBundle>(),
-                textureWebRequest: Substitute.For<IWebRequest>(),
+                textureWebRequest: Substitute.For<IWebRequestTexture>(),
                 audioWebRequest: Substitute.For<IWebRequestAudio>());
 
             return webRequestControllerMock;

@@ -600,6 +600,13 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class HeadersPayload
+        {
+            public string method;
+            public string url;
+        }
+
+        [System.Serializable]
         public class SearchENSOwnerPayload
         {
             public string name;
@@ -720,6 +727,7 @@ namespace DCL.Interface
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
+        private static HeadersPayload headersPayload = new HeadersPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -762,6 +770,13 @@ namespace DCL.Interface
         }
 
         public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent { SendMessage("ControlEvent", controlEvent); }
+
+        public static void SendRequestHeadersForUrl(string eventName, string method, string url)
+        {
+            headersPayload.method = method;
+            headersPayload.url = url;
+            SendMessage(eventName, headersPayload );
+        }
 
         public static void BuilderInWorldMessage(string type, string message) { MessageFromEngine(type, message); }
 
@@ -1015,6 +1030,17 @@ namespace DCL.Interface
         {
             public string newUnverifiedName;
         }
+        
+        [System.Serializable]
+        public class SendSaveUserDescriptionPayload
+        {
+            public string description;
+
+            public SendSaveUserDescriptionPayload(string description)
+            {
+                this.description = description;
+            }
+        }
 
         [Serializable]
         public class SendVideoProgressEvent
@@ -1055,6 +1081,11 @@ namespace DCL.Interface
             };
 
             SendMessage("SaveUserUnverifiedName", payload);
+        }
+        
+        public static void SendSaveUserDescription(string about)
+        {
+            SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about));
         }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
@@ -1291,8 +1322,8 @@ namespace DCL.Interface
         public static void ReportVideoProgressEvent(
             string componentId,
             string sceneId,
-            string videoClipId, 
-            int videoStatus, 
+            string videoClipId,
+            int videoStatus,
             float currentOffset,
             float length)
         {

@@ -580,7 +580,6 @@ namespace Builder
             {
                 currentScene.OnEntityAdded += OnEntityIsAdded;
                 currentScene.OnEntityRemoved += OnEntityIsRemoved;
-                currentScene.metricsController = new DCLBuilderSceneMetricsController(currentScene);
 
                 if (DCLBuilderConfig.config.environment.disableFloor)
                 {

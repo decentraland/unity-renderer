@@ -144,7 +144,17 @@ PrefabInstance:
     - target: {fileID: 1442316120381234285, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: model.text
-      value: LINK
+      value: GO TO URL
+      objectReference: {fileID: 0}
+    - target: {fileID: 3681794151070768315, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_MinWidth
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3681794151070768315, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_MinHeight
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -162,15 +172,20 @@ PrefabInstance:
       propertyPath: m_Color.g
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_text
-      value: LINK
+      value: GO TO URL
       objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_fontSize
-      value: 29.3
+      value: 13.7
       objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -233,6 +248,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 0ecdb22970854454890362ba85a9f59c,
         type: 3}
+    - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8616488889774720505, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_AnchorMax.y

@@ -24,7 +24,8 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             });
         }
 
-        protected override IEnumerator TearDown() {
+        protected override IEnumerator TearDown()
+        {
             Settings.i.Dispose();
             return base.TearDown();
         }
