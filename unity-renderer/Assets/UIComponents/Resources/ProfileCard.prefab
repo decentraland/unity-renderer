@@ -168,10 +168,10 @@ RectTransform:
   m_Father: {fileID: 3337524177640211239}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 3, y: 0}
-  m_SizeDelta: {x: 40, y: 40}
+  m_SizeDelta: {x: 40, y: -6}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3800592869886521503
 CanvasRenderer:
@@ -373,6 +373,7 @@ GameObject:
   - component: {fileID: 6334887852217859306}
   - component: {fileID: 6497680598100426265}
   - component: {fileID: 5359282505615785361}
+  - component: {fileID: 1950086143980331083}
   - component: {fileID: 3783691952606929711}
   m_Layer: 5
   m_Name: ProfileCard
@@ -532,6 +533,22 @@ MonoBehaviour:
   animSpeedFactor: 1
   disableAfterFadeOut: 0
   visibleParam: visible
+--- !u!114 &1950086143980331083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7299534126958377997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!114 &3783691952606929711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,12 +561,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c47209a872c4314a8b0d6143186444b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refreshOnScreenSizeChange: 0
   button: {fileID: 7528735507517742048}
   profileImage: {fileID: 2421935006137242597}
   profileName: {fileID: 1195385098958599846}
   profileAddress: {fileID: 723462149448302663}
   model:
-    profilePicture: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
+    profilePictureSprite: {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24,
+      type: 3}
+    profilePictureTexture: {fileID: 0}
+    profilePictureUri: 
     profileName: Name
     profileAddress: 0x8947234hj32g42j3h4g234g423b47f
     onClick:

@@ -71,11 +71,11 @@ namespace AvatarShape_Tests
             //Act
             bool succeeded = false;
             bool failed = false;
-            RendereableAssetLoadHelper.LoadingType cacheLoadingType = RendereableAssetLoadHelper.loadingType;
-            RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_ONLY;
+            RendereableAssetLoadHelper.LoadingType cacheLoadingType = RendereableAssetLoadHelper.defaultLoadingType;
+            RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_ONLY;
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, x => failed = true);
             yield return new WaitUntil(() => succeeded || failed);
-            RendereableAssetLoadHelper.loadingType = cacheLoadingType;
+            RendereableAssetLoadHelper.defaultLoadingType = cacheLoadingType;
 
             //Assert
             Assert.IsFalse(succeeded);

@@ -20,8 +20,8 @@ namespace Tests
 
             ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
-            var prevLoadingType = RendereableAssetLoadHelper.loadingType;
-            RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
+            var prevLoadingType = RendereableAssetLoadHelper.defaultLoadingType;
+            RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
 
             Shader hologramShader = Shader.Find("DCL/FX/Hologram");
 
@@ -77,7 +77,7 @@ namespace Tests
 
             Assert.Less(timeout, 10.1f, "Timeout! MaterialTransitionController never appeared?");
 
-            RendereableAssetLoadHelper.loadingType = prevLoadingType;
+            RendereableAssetLoadHelper.defaultLoadingType = prevLoadingType;
 
             yield return null;
         }

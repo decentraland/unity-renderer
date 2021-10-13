@@ -12,6 +12,7 @@ namespace DCL
     public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
         private static readonly int BASE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
+        
         private const int MAX_RETRIES = 5;
 
         public Material defaultMaterial;
@@ -131,6 +132,7 @@ namespace DCL
             }
 
             StopLoadingCoroutines();
+
             isLoading = true;
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
         }
@@ -355,6 +357,7 @@ namespace DCL
             if (bodyShapeController == null)
             {
                 HideAll();
+                
                 bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
