@@ -41,6 +41,7 @@ namespace DCL.Models
         Dictionary<CLASS_ID_COMPONENT, IEntityComponent> components { get; }
         Dictionary<System.Type, ISharedComponent> sharedComponents { get; }
         Action<IDCLEntity> OnShapeUpdated { get; set; }
+        Action<IDCLEntity> OnShapeLoaded { get; set; }
         Action<IDCLEntity> OnRemoved { get; set; }
         Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
         Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }

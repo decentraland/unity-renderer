@@ -42,7 +42,7 @@ public class ProfileCardComponentViewTests
         // Arrange
         ProfileCardComponentModel testModel = new ProfileCardComponentModel
         {
-            profilePicture = Sprite.Create(testTexture, new Rect(), Vector2.zero),
+            profilePictureSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             profileName = "Test name",
             profileAddress = "Test address",
             onClick = new Button.ButtonClickedEvent()
@@ -64,7 +64,7 @@ public class ProfileCardComponentViewTests
         string testAddress = "Test address";
         Button.ButtonClickedEvent testClickedEvent = new Button.ButtonClickedEvent();
 
-        profileCardComponent.model.profilePicture = testPicture;
+        profileCardComponent.model.profilePictureSprite = testPicture;
         profileCardComponent.model.profileName = testName;
         profileCardComponent.model.profileAddress = testAddress;
         profileCardComponent.model.onClick = testClickedEvent;
@@ -73,7 +73,7 @@ public class ProfileCardComponentViewTests
         profileCardComponent.RefreshControl();
 
         // Assert
-        Assert.AreEqual(testPicture, profileCardComponent.model.profilePicture, "The profile picture does not match in the model.");
+        Assert.AreEqual(testPicture, profileCardComponent.model.profilePictureSprite, "The profile picture does not match in the model.");
         Assert.AreEqual(testName, profileCardComponent.model.profileName, "The profile name does not match in the model.");
         Assert.AreEqual(testAddress, profileCardComponent.model.profileAddress, "The profile address does not match in the model.");
         Assert.AreEqual(testClickedEvent, profileCardComponent.model.onClick, "The onClick event does not match in the model.");
@@ -89,22 +89,8 @@ public class ProfileCardComponentViewTests
         profileCardComponent.SetProfilePicture(testPicture);
 
         // Assert
-        Assert.AreEqual(testPicture, profileCardComponent.model.profilePicture, "The profile picture does not match in the model.");
+        Assert.AreEqual(testPicture, profileCardComponent.model.profilePictureSprite, "The profile picture does not match in the model.");
         Assert.AreEqual(testPicture, profileCardComponent.profileImage.image.sprite, "The profile image does not match.");
-    }
-
-    [Test]
-    public void SetProfilePictureFromTextureCorrectly()
-    {
-        // Arrange
-        Sprite testPictureSprite = Sprite.Create(testTexture, new Rect(0, 0, testTexture.width, testTexture.height), new Vector2(0.5f, 0.5f));
-
-        // Act
-        profileCardComponent.SetProfilePicture(testTexture);
-
-        // Assert
-        Assert.AreEqual(testPictureSprite.texture, profileCardComponent.model.profilePicture.texture, "The profile picture does not match in the model.");
-        Assert.AreEqual(testPictureSprite.texture, profileCardComponent.profileImage.image.sprite.texture, "The profile image does not match.");
     }
 
     [Test]

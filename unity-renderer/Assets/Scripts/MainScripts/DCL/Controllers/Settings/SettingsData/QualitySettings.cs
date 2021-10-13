@@ -68,45 +68,5 @@ namespace DCL.SettingsCommon
 
         [Tooltip("Amount of HQ Avatars visible at any time")]
         public int maxHQAvatars;
-
-        public bool Equals(QualitySettings otherSetting)
-        {
-            // The precision is set to 1 because the wholeNumbers setting
-            // in the slider can clamp the values, thus we can have a 0 > n > 1 precision error.
-            const float comparePrecision = 1.0f;
-
-            if (baseResolution != otherSetting.baseResolution)
-                return false;
-            if (antiAliasing != otherSetting.antiAliasing)
-                return false;
-            if (Mathf.Abs(renderScale - otherSetting.renderScale) > 0.001f)
-                return false;
-            if (shadows != otherSetting.shadows)
-                return false;
-            if (softShadows != otherSetting.softShadows)
-                return false;
-            if (shadowResolution != otherSetting.shadowResolution)
-                return false;
-            if (!Utils.CompareFloats(cameraDrawDistance, otherSetting.cameraDrawDistance, comparePrecision))
-                return false;
-            if (bloom != otherSetting.bloom)
-                return false;
-            if (fpsCap != otherSetting.fpsCap)
-                return false;
-            if (colorGrading != otherSetting.colorGrading)
-                return false;
-            if (!Utils.CompareFloats(shadowDistance, otherSetting.shadowDistance, comparePrecision))
-                return false;
-            if (enableDetailObjectCulling != otherSetting.enableDetailObjectCulling)
-                return false;
-            if (!Utils.CompareFloats(detailObjectCullingLimit, otherSetting.detailObjectCullingLimit, comparePrecision))
-                return false;
-            if (ssaoQuality != otherSetting.ssaoQuality)
-                return false;
-            if (maxHQAvatars != otherSetting.maxHQAvatars)
-                return false;
-
-            return true;
-        }
     }
 }

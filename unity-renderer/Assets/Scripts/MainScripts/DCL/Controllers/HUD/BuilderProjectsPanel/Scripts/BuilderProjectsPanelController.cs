@@ -43,7 +43,9 @@ public class BuilderProjectsPanelController : IHUD
     public event Action OnJumpInOrEdit;
 
     public BuilderProjectsPanelController() : this(
-        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH))) { }
+        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH)))
+    {
+    }
 
     internal BuilderProjectsPanelController(IBuilderProjectsPanelView view)
     {
@@ -133,7 +135,7 @@ public class BuilderProjectsPanelController : IHUD
 
         if (isVisible)
         {
-            if (DataStore.i.builderInWorld.landsWithAccess != null)
+            if (DataStore.i.builderInWorld.landsWithAccess.Get() != null)
                 PanelOpenEvent(DataStore.i.builderInWorld.landsWithAccess.Get());
             else
                 sendPlayerOpenPanelEvent = true;
@@ -182,6 +184,7 @@ public class BuilderProjectsPanelController : IHUD
             else
                 operatorLandsCount++;
         }
+
         return new Vector2Int(ownedLandsCount, operatorLandsCount);
     }
 
@@ -241,11 +244,11 @@ public class BuilderProjectsPanelController : IHUD
         try
         {
             var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                              .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                              .Aggregate((i, j) => i.Concat(j))
-                              .ToArray();
+                .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                .Aggregate((i, j) => i.Concat(j))
+                .ToArray();
 
-            if (sendPlayerOpenPanelEvent)PanelOpenEvent(lands);
+            if (sendPlayerOpenPanelEvent) PanelOpenEvent(lands);
             landsController.SetLands(lands);
             scenesViewController.SetScenes(scenes);
         }
@@ -272,6 +275,7 @@ public class BuilderProjectsPanelController : IHUD
         {
             SetVisibility(false);
         }
+
         OnJumpInOrEdit?.Invoke();
     }
 

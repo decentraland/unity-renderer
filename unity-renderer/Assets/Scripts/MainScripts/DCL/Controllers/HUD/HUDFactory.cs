@@ -1,5 +1,4 @@
 using System;
-using AvatarNamesHUD;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
@@ -100,9 +99,6 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.LOADING:
                 hudElement = new LoadingHUDController();
-                break;
-            case HUDElementID.AVATAR_NAMES:
-                hudElement = new AvatarNamesHUDController();
                 break;
         }
 

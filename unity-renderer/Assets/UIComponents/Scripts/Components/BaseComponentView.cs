@@ -1,7 +1,9 @@
+using DCL;
 using System;
+using System.Collections;
 using UnityEngine;
 
-public interface IBaseComponentView
+public interface IBaseComponentView : IDisposable
 {
     /// <summary>
     /// It will be triggered after the UI component is fully initialized (PostInitialization included).
@@ -36,9 +38,9 @@ public interface IBaseComponentView
     void RefreshControl();
 
     /// <summary>
-    /// It is called when the UI component is destroyed.
+    /// It is called just after the screen size has changed.
     /// </summary>
-    void Dispose();
+    void PostScreenSizeChanged();
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]
@@ -55,10 +57,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
 
-        PostInitialization();
-
-        isFullyInitialized = true;
-        OnFullyInitialized?.Invoke();
+        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
     }
 
     public abstract void PostInitialization();
@@ -69,11 +68,37 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public abstract void RefreshControl();
 
-    public virtual void Dispose() { }
+    public virtual void PostScreenSizeChanged() { }
+
+    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
+
+    private void OnEnable() { OnScreenSizeChange(Vector2Int.zero, Vector2Int.zero); }
 
     private void Awake() { Initialize(); }
 
+    private void Start()
+    {
+        PostInitialization();
+
+        isFullyInitialized = true;
+        OnFullyInitialized?.Invoke();
+    }
+
     private void OnDestroy() { Dispose(); }
+
+    internal void OnScreenSizeChange(Vector2Int current, Vector2Int previous)
+    {
+        if (!gameObject.activeInHierarchy)
+            return;
+
+        StartCoroutine(RefreshControlAfterScreenSize());
+    }
+
+    internal IEnumerator RefreshControlAfterScreenSize()
+    {
+        yield return null;
+        PostScreenSizeChanged();
+    }
 
     internal static T Create<T>(string resourceName) where T : BaseComponentView
     {

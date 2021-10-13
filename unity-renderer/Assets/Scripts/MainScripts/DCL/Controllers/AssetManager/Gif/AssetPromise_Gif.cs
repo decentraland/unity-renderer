@@ -21,6 +21,13 @@ namespace DCL
                     frames =>
                     {
                         asset.frames = frames;
+
+                        foreach ( var frame in asset.frames )
+                        {
+                            frame.texture.Compress(false);
+                            frame.texture.Apply(true, true);
+                        }
+
                         OnSuccess?.Invoke();
                     }, OnFail));
         }
@@ -34,6 +41,7 @@ namespace DCL
                 Debug.Log("add to library fail?");
                 return false;
             }
+
             asset = library.Get(asset.id);
             return true;
         }

@@ -26,8 +26,9 @@ public class GridContainerComponentViewTests
         {
             items = new List<BaseComponentView>(),
             itemSize = new Vector2Int(10, 10),
-            numColumns = 3,
-            spaceBetweenItems = new Vector2Int(5, 5)
+            constranitCount = 3,
+            spaceBetweenItems = new Vector2Int(5, 5),
+            adaptItemSizeToContainer = false
         };
 
         // Act
@@ -46,11 +47,11 @@ public class GridContainerComponentViewTests
         int testNumColumns = 3;
         Vector2 testSpaceBetweenItems = new Vector2(5f, 5f);
 
-
         gridContainerComponent.model.items = testItems;
         gridContainerComponent.model.itemSize = testItemSize;
-        gridContainerComponent.model.numColumns = testNumColumns;
+        gridContainerComponent.model.constranitCount = testNumColumns;
         gridContainerComponent.model.spaceBetweenItems = testSpaceBetweenItems;
+        gridContainerComponent.model.adaptItemSizeToContainer = false;
 
         // Act
         gridContainerComponent.RefreshControl();
@@ -58,7 +59,7 @@ public class GridContainerComponentViewTests
         // Assert
         Assert.AreEqual(testItems, gridContainerComponent.model.items, "The items does not match in the model.");
         Assert.AreEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
-        Assert.AreEqual(testNumColumns, gridContainerComponent.model.numColumns, "The number of columns does not match in the model.");
+        Assert.AreEqual(testNumColumns, gridContainerComponent.model.constranitCount, "The number of columns does not match in the model.");
         Assert.AreEqual(testSpaceBetweenItems, gridContainerComponent.model.spaceBetweenItems, "The space between items does not match in the model.");
     }
 
@@ -69,25 +70,39 @@ public class GridContainerComponentViewTests
         int testNumColumns = 3;
 
         // Act
-        gridContainerComponent.SetNumColumns(testNumColumns);
+        gridContainerComponent.SetConstraintCount(testNumColumns);
 
         // Assert
-        Assert.AreEqual(testNumColumns, gridContainerComponent.model.numColumns, "The number of columns does not match in the model.");
+        Assert.AreEqual(testNumColumns, gridContainerComponent.model.constranitCount, "The number of columns does not match in the model.");
         Assert.AreEqual(testNumColumns, gridContainerComponent.gridLayoutGroup.constraintCount, "The number of columns does not match.");
     }
 
     [Test]
-    public void SetItemSizeCorrectly()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetItemSizeCorrectly(bool autoItemSize)
     {
         // Arrange
+        gridContainerComponent.model.adaptItemSizeToContainer = autoItemSize;
+        gridContainerComponent.model.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
         Vector2 testItemSize = new Vector2(10f, 10f);
+        if (autoItemSize)
+            ((RectTransform)gridContainerComponent.transform).rect.Set(0, 0, 100, 100);
 
         // Act
         gridContainerComponent.SetItemSize(testItemSize);
 
         // Assert
-        Assert.AreEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
-        Assert.AreEqual(testItemSize, gridContainerComponent.gridLayoutGroup.cellSize, "The item size does not match.");
+        if (autoItemSize)
+        {
+            Assert.AreNotEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
+            Assert.AreNotEqual(testItemSize, gridContainerComponent.gridLayoutGroup.cellSize, "The item size does not match.");
+        }
+        else
+        {
+            Assert.AreEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
+            Assert.AreEqual(testItemSize, gridContainerComponent.gridLayoutGroup.cellSize, "The item size does not match.");
+        }
     }
 
     [Test]
@@ -173,7 +188,7 @@ public class GridContainerComponentViewTests
         gridContainerComponent.SetItems(testItems);
 
         // Act
-        gridContainerComponent.RemoveAllInstantiatedItems();
+        gridContainerComponent.DestroyInstantiatedItems(true);
         yield return null;
 
         // Assert

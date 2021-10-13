@@ -24,6 +24,7 @@ namespace DCL
         public int? layer;
 
         public bool forceNewInstance;
+        public bool forceGPUOnlyMesh = false;
 
         public void ApplyBeforeLoad(Transform t)
         {

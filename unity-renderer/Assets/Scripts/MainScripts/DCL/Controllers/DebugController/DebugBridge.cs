@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace DCL
 {
@@ -16,7 +17,7 @@ namespace DCL
         {
             this.debugController = debugController;
         }
-        
+
         // Beware this SetDebug() may be called before Awake() somehow...
         [ContextMenu("Set Debug mode")]
         public void SetDebug() { debugController.SetDebug(); }
@@ -40,7 +41,7 @@ namespace DCL
             }
         }
 
-        public void SetDisableAssetBundles() { RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY; }
+        public void SetDisableAssetBundles() { RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY; }
 
         [ContextMenu("Dump Renderers Lockers Info")]
         public void DumpRendererLockersInfo()
@@ -85,6 +86,8 @@ namespace DCL
         [ContextMenu("Dump Crash Payload")]
         public void DumpCrashPayload()
         {
+            debugLogger.Log($"MEMORY -- total {Profiler.GetTotalAllocatedMemoryLong()} ... used by mono {Profiler.GetMonoUsedSizeLong()}");
+
             var payload = CrashPayloadUtils.ComputePayload
             (
                 DCL.Environment.i.world.state.loadedScenes,

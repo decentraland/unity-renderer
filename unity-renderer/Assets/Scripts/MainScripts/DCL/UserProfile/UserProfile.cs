@@ -6,7 +6,6 @@ using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 
-
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject //TODO Move to base variable
 {
@@ -20,6 +19,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string description => model.description;
     public string email => model.email;
     public string bodySnapshotURL => model.snapshots.body;
+    public string face128SnapshotURL => model.snapshots.face128;
     public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
     public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
