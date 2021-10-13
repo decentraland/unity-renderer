@@ -107,6 +107,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal GameObject loadingSpinner;
     [SerializeField] internal Animator cardAnimator;
     [SerializeField] internal GameObject cardSelectionFrame;
+    [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
+    [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
 
     [Header("Configuration")]
     [SerializeField] internal PlaceCardComponentModel model;
@@ -195,6 +197,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetNumberOfUsers(model.numberOfUsers);
         onJumpInClick = model.onJumpInClick;
         onInfoClick = model.onInfoClick;
+
+        RebuildCardLayouts();
     }
 
     public override void OnFocus()
@@ -380,5 +384,14 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         friendHeadGO.OnFullyInitialized += () => friendHeadGO.Configure(friendInfo);
 
         return friendHeadGO;
+    }
+
+    internal void RebuildCardLayouts()
+    {
+        if (contentVerticalLayout != null)
+            Utils.ForceRebuildLayoutImmediate(contentVerticalLayout.transform as RectTransform);
+
+        if (infoVerticalLayout != null)
+            Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
     }
 }

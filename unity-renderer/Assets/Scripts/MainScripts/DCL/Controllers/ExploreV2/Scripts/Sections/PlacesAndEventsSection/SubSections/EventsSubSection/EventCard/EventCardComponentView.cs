@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -145,6 +146,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal GameObject eventInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
     [SerializeField] internal Animator cardAnimator;
+    [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
+    [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
 
     [Header("Configuration")]
     [SerializeField] internal bool isEventCardModal = false;
@@ -264,6 +267,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         onInfoClick = model.onInfoClick;
         onSubscribeClick = model.onSubscribeClick;
         onUnsubscribeClick = model.onUnsubscribeClick;
+
+        RebuildCardLayouts();
     }
 
     public override void OnFocus()
@@ -477,5 +482,14 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         loadingSpinner.SetActive(isVisible);
     }
 
-    private void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
+    internal void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
+
+    internal void RebuildCardLayouts()
+    {
+        if (contentVerticalLayout != null)
+            Utils.ForceRebuildLayoutImmediate(contentVerticalLayout.transform as RectTransform);
+
+        if (infoVerticalLayout != null)
+            Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
+    }
 }
