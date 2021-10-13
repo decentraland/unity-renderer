@@ -13,7 +13,7 @@ namespace DCL
         // This heuristic forces double-sided opaque objects to have backface culling.
         // As many wearables are incorrectly modeled as double-sided, this greatly increases
         // the cases of avatars rendered with one draw call. Temporarily disabled until some wearables are fixed.
-        private static bool ENABLE_CULL_OPAQUE_HEURISTIC = false;
+        public static bool ENABLE_CULL_OPAQUE_HEURISTIC = false;
 
         private static bool VERBOSE = false;
         private const int MAX_TEXTURE_ID_COUNT = 12;

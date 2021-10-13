@@ -66,9 +66,11 @@ namespace DCL
 
         private void Awake()
         {
+            var featureFlags = DataStore.i.featureFlags.flags.Get();
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
             avatarMeshCombiner = new AvatarMeshCombinerHelper();
+            avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.prepareMeshForGpuSkinning = true;
             avatarMeshCombiner.uploadMeshToGpu = true;
 
@@ -358,7 +360,7 @@ namespace DCL
             if (bodyShapeController == null)
             {
                 HideAll();
-                
+
                 bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
@@ -660,7 +662,7 @@ namespace DCL
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
-            
+
             OnAvatarAlphaValueUpdate?.Invoke(avatarFade);
         }
 
