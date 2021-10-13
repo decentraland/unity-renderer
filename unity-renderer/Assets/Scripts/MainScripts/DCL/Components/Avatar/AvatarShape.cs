@@ -10,6 +10,7 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -193,10 +194,10 @@ namespace DCL
         }
 
         void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
-
+ 
         void OnAvatarAlphaValueUpdate(float newAlphaValue)
         {
-            if (newAlphaValue > 0.9f)
+            if (newAlphaValue > AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD)
                 EnablePassport();
             else
                 DisablePassport();
