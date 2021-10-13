@@ -1,7 +1,5 @@
-using DCL;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -146,6 +144,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         SetBackgroundColor(model.backgroundColor);
         SetManualControlsActive(model.showManualControls);
         SetItems(model.items);
+    }
+
+    public override void PostScreenSizeChanged()
+    {
+        base.PostScreenSizeChanged();
+
+        ResizeAllItems();
     }
 
     public override void Dispose()
@@ -309,15 +314,27 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         }
 
         newGO.name = name;
-        ((RectTransform)newGO.transform).sizeDelta = new Vector2(viewport.rect.width, viewport.rect.height);
-
         instantiatedItems.Add(newGO);
+        ResizeItem(newGO);
+    }
+
+    internal void ResizeItem(BaseComponentView item)
+    {
+        ((RectTransform)item.transform).sizeDelta = new Vector2(viewport.rect.width, viewport.rect.height);
 
         itemsContainer.offsetMin = Vector2.zero;
         if (instantiatedItems.Count > 1)
         {
             float extraSpace = (instantiatedItems.Count - 1) * model.spaceBetweenItems;
             itemsContainer.offsetMax = new Vector2(viewport.rect.width * (instantiatedItems.Count - 1) + extraSpace, 0);
+        }
+    }
+
+    internal void ResizeAllItems()
+    {
+        foreach (BaseComponentView item in instantiatedItems)
+        {
+            ResizeItem(item);
         }
     }
 
@@ -479,6 +496,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
             yield return null;
         }
 
+        itemsScroll.horizontalNormalizedPosition = currentFinalNormalizedPos;
         isInTransition = false;
     }
 }

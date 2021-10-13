@@ -28,9 +28,9 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     private AvatarAnimationEventAudioHandler animEventAudioHandler;
 
-    public BodyShapeController(WearableItem wearableItem, bool useAssetBundles = true) : base(wearableItem, useAssetBundles) { }
+    public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
-    protected BodyShapeController(BodyShapeController original, bool useAssetBundles = true) : base(original, useAssetBundles)
+    protected BodyShapeController(BodyShapeController original) : base(original)
     {
         headRenderer = original.headRenderer;
         eyebrowsRenderer = original.eyebrowsRenderer;

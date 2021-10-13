@@ -14,7 +14,6 @@ namespace DCL
         private static readonly int BASE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
 
         private const int MAX_RETRIES = 5;
-        private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
         public Material defaultMaterial;
         public Material eyeMaterial;
@@ -134,6 +133,7 @@ namespace DCL
             }
 
             StopLoadingCoroutines();
+
             isLoading = true;
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
         }
@@ -358,7 +358,8 @@ namespace DCL
             if (bodyShapeController == null)
             {
                 HideAll();
-                bodyShapeController = new BodyShapeController(resolvedBody, DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(AB_FEATURE_FLAG_NAME));
+                
+                bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
                 mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
@@ -599,7 +600,7 @@ namespace DCL
                     break;
 
                 default:
-                    var wearableController = new WearableController(wearable, DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(AB_FEATURE_FLAG_NAME));
+                    var wearableController = new WearableController(wearable);
                     wearableControllers.Add(wearable, wearableController);
                     break;
             }

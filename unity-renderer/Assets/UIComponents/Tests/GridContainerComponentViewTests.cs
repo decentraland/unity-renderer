@@ -26,9 +26,9 @@ public class GridContainerComponentViewTests
         {
             items = new List<BaseComponentView>(),
             itemSize = new Vector2Int(10, 10),
-            numColumns = 3,
+            constranitCount = 3,
             spaceBetweenItems = new Vector2Int(5, 5),
-            autoAdaptItemSizeToContainerWidth = false
+            adaptItemSizeToContainer = false
         };
 
         // Act
@@ -49,9 +49,9 @@ public class GridContainerComponentViewTests
 
         gridContainerComponent.model.items = testItems;
         gridContainerComponent.model.itemSize = testItemSize;
-        gridContainerComponent.model.numColumns = testNumColumns;
+        gridContainerComponent.model.constranitCount = testNumColumns;
         gridContainerComponent.model.spaceBetweenItems = testSpaceBetweenItems;
-        gridContainerComponent.model.autoAdaptItemSizeToContainerWidth = false;
+        gridContainerComponent.model.adaptItemSizeToContainer = false;
 
         // Act
         gridContainerComponent.RefreshControl();
@@ -59,7 +59,7 @@ public class GridContainerComponentViewTests
         // Assert
         Assert.AreEqual(testItems, gridContainerComponent.model.items, "The items does not match in the model.");
         Assert.AreEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
-        Assert.AreEqual(testNumColumns, gridContainerComponent.model.numColumns, "The number of columns does not match in the model.");
+        Assert.AreEqual(testNumColumns, gridContainerComponent.model.constranitCount, "The number of columns does not match in the model.");
         Assert.AreEqual(testSpaceBetweenItems, gridContainerComponent.model.spaceBetweenItems, "The space between items does not match in the model.");
     }
 
@@ -70,10 +70,10 @@ public class GridContainerComponentViewTests
         int testNumColumns = 3;
 
         // Act
-        gridContainerComponent.SetNumColumns(testNumColumns);
+        gridContainerComponent.SetConstraintCount(testNumColumns);
 
         // Assert
-        Assert.AreEqual(testNumColumns, gridContainerComponent.model.numColumns, "The number of columns does not match in the model.");
+        Assert.AreEqual(testNumColumns, gridContainerComponent.model.constranitCount, "The number of columns does not match in the model.");
         Assert.AreEqual(testNumColumns, gridContainerComponent.gridLayoutGroup.constraintCount, "The number of columns does not match.");
     }
 
@@ -83,7 +83,8 @@ public class GridContainerComponentViewTests
     public void SetItemSizeCorrectly(bool autoItemSize)
     {
         // Arrange
-        gridContainerComponent.model.autoAdaptItemSizeToContainerWidth = autoItemSize;
+        gridContainerComponent.model.adaptItemSizeToContainer = autoItemSize;
+        gridContainerComponent.model.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
         Vector2 testItemSize = new Vector2(10f, 10f);
         if (autoItemSize)
             ((RectTransform)gridContainerComponent.transform).rect.Set(0, 0, 100, 100);

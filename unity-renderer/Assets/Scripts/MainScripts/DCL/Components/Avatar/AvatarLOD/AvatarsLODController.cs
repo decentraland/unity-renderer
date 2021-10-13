@@ -7,6 +7,7 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
+        internal const string AVATAR_LODS_FLAG_NAME = "avatar_lods";
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
         private const float MIN_DISTANCE_BETWEEN_NAMES_PIXELS = 70f;
 
@@ -27,24 +28,19 @@ namespace DCL
         public AvatarsLODController()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
-            KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            KernelConfig.i.OnChange += OnKernelConfigChanged;
-                            OnKernelConfigChanged(config, null);
-                        });
+            DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagChanged;
         }
 
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        private void OnFeatureFlagChanged(FeatureFlag current, FeatureFlag previous)
         {
-            if (enabled == current.features.enableAvatarLODs)
+            if (enabled == current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME))
                 return;
             Initialize(current);
         }
 
-        internal void Initialize(KernelConfigModel config)
+        internal void Initialize(FeatureFlag current)
         {
-            enabled = config.features.enableAvatarLODs;
+            enabled = current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME);
             if (!enabled)
                 return;
 
@@ -187,7 +183,7 @@ namespace DCL
 
         public void Dispose()
         {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagChanged;
             foreach (IAvatarLODController lodController in lodControllers.Values)
             {
                 lodController.Dispose();
