@@ -570,7 +570,7 @@ namespace DCL
                 lastStickerTimestamp = model.stickerTriggerTimestamp;
 
                 if ( stickersController != null )
-                    stickersController.PlayEmote(model.stickerTriggerId);
+                    stickersController.PlaySticker(model.stickerTriggerId);
             }
         }
 
