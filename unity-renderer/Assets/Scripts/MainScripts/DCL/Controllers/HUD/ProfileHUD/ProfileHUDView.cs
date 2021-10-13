@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -91,9 +92,6 @@ internal class ProfileHUDView : MonoBehaviour
 
     [Header("Name Edition")]
     [SerializeField]
-    internal GameObject editNameTooltipGO;
-
-    [SerializeField]
     internal Button_OnPointerDown buttonEditName;
 
     [SerializeField]
@@ -117,7 +115,10 @@ internal class ProfileHUDView : MonoBehaviour
 
     [Header("Description")]
     [SerializeField]
-    internal TMP_InputField inputDescription;
+    internal TMP_InputField descriptionPreviewInput;
+    
+    [SerializeField]
+    internal TMP_InputField descriptionEditionInput;
     
     [SerializeField]
     internal GameObject charLimitDescriptionContainer;
@@ -127,9 +128,6 @@ internal class ProfileHUDView : MonoBehaviour
 
     [SerializeField]
     internal GameObject descriptionContainer;
-
-    [SerializeField]
-    private Image descriptionBackgroundImage;
 
     private InputAction_Trigger.Triggered closeActionDelegate;
 
@@ -150,13 +148,13 @@ internal class ProfileHUDView : MonoBehaviour
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
         inputName.onValueChanged.AddListener(UpdateNameCharLimit);
         inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
-        inputDescription.onSelect.AddListener(x =>
+        descriptionPreviewInput.onSelect.AddListener(x =>
         {
             ActivateDescriptionEditionMode(true);
-            UpdateDescriptionCharLimit(inputDescription.text);
+            UpdateDescriptionCharLimit(descriptionPreviewInput.text);
         });
-        inputDescription.onValueChanged.AddListener(UpdateDescriptionCharLimit);
-        inputDescription.onDeselect.AddListener(x => ActivateDescriptionEditionMode(false));
+        descriptionEditionInput.onValueChanged.AddListener(UpdateDescriptionCharLimit);
+        descriptionEditionInput.onDeselect.AddListener(x => ActivateDescriptionEditionMode(false));
         copyToast.gameObject.SetActive(false);
     }
 
@@ -326,7 +324,6 @@ internal class ProfileHUDView : MonoBehaviour
         if (profile != null && profile.hasClaimedName)
             return;
 
-        editNameTooltipGO.SetActive(!activate);
         textName.gameObject.SetActive(!activate);
         inputName.gameObject.SetActive(activate);
 
@@ -354,19 +351,31 @@ internal class ProfileHUDView : MonoBehaviour
     internal void ActivateDescriptionEditionMode(bool active)
     {
         charLimitDescriptionContainer.SetActive(active);
-        var targetColor = descriptionBackgroundImage.color;
-        targetColor.a = active ? 1f : 0f;
-        descriptionBackgroundImage.color = targetColor;
+        descriptionEditionInput.gameObject.SetActive(active);
+        descriptionPreviewInput.gameObject.SetActive(!active);
+        
+        if (active)
+        {
+            descriptionEditionInput.text = descriptionPreviewInput.text;
+            StartCoroutine(SelectComponentOnNextFrame(descriptionEditionInput));
+        }
+    }
+
+    private IEnumerator SelectComponentOnNextFrame(Selectable inputField)
+    {
+        yield return null;
+        inputField.Select();
     }
     
     internal void SetDescription(string description)
     {
-        inputDescription.text = description;
+        descriptionPreviewInput.text = description;
+        descriptionEditionInput.text = description;
     }
     
     private void UpdateDescriptionCharLimit(string newValue)
     {
-        textCharLimitDescription.text = $"{newValue.Length}/{inputDescription.characterLimit}";
+        textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}";
     }
     
     private void SetDescriptionEnabled(bool enabled)

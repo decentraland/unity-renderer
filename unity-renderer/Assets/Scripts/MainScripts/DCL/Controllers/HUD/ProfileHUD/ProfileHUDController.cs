@@ -52,7 +52,7 @@ public class ProfileHUDController : IHUD
         SetBackpackButtonVisibility(false);
         view.connectedWalletSection.SetActive(false);
         view.nonConnectedWalletSection.SetActive(false);
-        view.charLimitDescriptionContainer.SetActive(false);
+        view.ActivateDescriptionEditionMode(false);
 
         view.buttonBackpack.onClick.AddListener(OpenBackpackWindow);
         view.buttonLogOut.onClick.AddListener(WebInterface.LogOut);
@@ -63,8 +63,7 @@ public class ProfileHUDController : IHUD
         view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
         view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
         view.inputName.onSubmit.AddListener(UpdateProfileName);
-        view.inputDescription.onSubmit.AddListener(UpdateProfileDescription);
-        view.inputDescription.onDeselect.AddListener(HandleInputDescriptionDeselection);
+        view.descriptionEditionInput.onSubmit.AddListener(UpdateProfileDescription);
         view.OnOpen += () =>
         {
             WebInterface.RequestOwnProfileUpdate();
@@ -144,8 +143,7 @@ public class ProfileHUDController : IHUD
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
         
-        view.inputDescription.onSubmit.RemoveListener(UpdateProfileDescription);
-        view.inputDescription.onDeselect.RemoveListener(HandleInputDescriptionDeselection);
+        view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
     }
 
     void OnProfileUpdated(UserProfile profile) { view?.SetProfile(profile); }
@@ -242,24 +240,16 @@ public class ProfileHUDController : IHUD
 
     private void UpdateProfileDescription(string description)
     {
-        if (view.inputDescription.wasCanceled
+        if (view.descriptionEditionInput.wasCanceled
             || !ownUserProfile.hasConnectedWeb3
-            || description.Length > view.inputDescription.characterLimit)
+            || description.Length > view.descriptionEditionInput.characterLimit)
         {
-            ResetViewingDescription();
+            view.ActivateDescriptionEditionMode(false);
             return;
         }
 
         view.SetDescription(description);
         view.ActivateDescriptionEditionMode(false);
-
         userProfileBridge.SaveDescription(description);
     }
-
-    private void ResetViewingDescription()
-    {
-        view.inputDescription.text = ownUserProfile.description;
-    }
-
-    private void HandleInputDescriptionDeselection(string description) => ResetViewingDescription();
 }

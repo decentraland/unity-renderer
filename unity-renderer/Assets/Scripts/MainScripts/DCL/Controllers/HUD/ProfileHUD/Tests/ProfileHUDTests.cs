@@ -20,7 +20,6 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         allUIHiddenOriginalValue = CommonScriptableObjects.allUIHidden.Get();
         CommonScriptableObjects.allUIHidden.Set(false);
         controller = new ProfileHUDController(userProfileBridge);
-        controller.view.inputDescription.interactable = true;
     }
 
     [UnityTearDown]
@@ -150,13 +149,11 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         controller.view.textName.text = "test name";
 
         controller.view.ActivateProfileNameEditionMode(true);
-        Assert.IsFalse(controller.view.editNameTooltipGO.activeSelf);
         Assert.IsFalse(controller.view.textName.gameObject.activeSelf);
         Assert.IsTrue(controller.view.inputName.gameObject.activeSelf);
         Assert.IsTrue(controller.view.inputName.text == controller.view.textName.text);
 
         controller.view.ActivateProfileNameEditionMode(false);
-        Assert.IsTrue(controller.view.editNameTooltipGO.activeSelf);
         Assert.IsTrue(controller.view.textName.gameObject.activeSelf);
         Assert.IsFalse(controller.view.inputName.gameObject.activeSelf);
     }
@@ -188,15 +185,17 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     {
         const string aboutMe = "i make pancakes";
         controller.view.SetDescription(aboutMe);
-        Assert.IsTrue(controller.view.inputDescription.text == aboutMe);
+        Assert.IsTrue(controller.view.descriptionPreviewInput.text == aboutMe);
+        Assert.IsTrue(controller.view.descriptionEditionInput.text == aboutMe);
     }
 
     [Test]
     public void UpdateProfileDescriptionIntoGatewayWhenSubmitInputField()
     {
         const string aboutMe = "i make pancakes";
-        controller.view.inputDescription.text = aboutMe;
-        controller.view.inputDescription.OnSubmit(null);
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
         userProfileBridge.Received(1).SaveDescription(aboutMe);
     }
 
@@ -204,9 +203,10 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     public void DoNotUpdateProfileDescriptionWhenIsTooLong()
     {
         const string aboutMe = "i make pancakes";
-        controller.view.inputDescription.characterLimit = 5;
-        controller.view.inputDescription.text = aboutMe;
-        controller.view.inputDescription.OnSubmit(null);
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.characterLimit = 5;
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
         userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
     }
 
@@ -223,8 +223,9 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         profile.UpdateData(profileModel);
         
         const string aboutMe = "i make pancakes";
-        controller.view.inputDescription.text = aboutMe;
-        controller.view.inputDescription.OnSubmit(null);
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
         
         userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
     }
