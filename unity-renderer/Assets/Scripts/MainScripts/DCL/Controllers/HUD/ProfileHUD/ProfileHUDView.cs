@@ -361,10 +361,10 @@ internal class ProfileHUDView : MonoBehaviour
         }
     }
 
-    private IEnumerator SelectComponentOnNextFrame(Selectable inputField)
+    private IEnumerator SelectComponentOnNextFrame(Selectable selectable)
     {
         yield return null;
-        inputField.Select();
+        selectable.Select();
     }
     
     internal void SetDescription(string description)
