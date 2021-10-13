@@ -9,5 +9,6 @@ public class Player
     public Vector3 forwardDirection;
     public bool isTalking;
     public IAvatarRenderer renderer;
+    public IAvatarOnPointerDownCollider onPointerDownCollider;
     public IPlayerName playerName;
 }

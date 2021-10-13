@@ -19,7 +19,6 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
-
         public MeshRenderer impostorRenderer;
         public MeshFilter impostorMeshFilter;
 
@@ -43,6 +42,7 @@ namespace DCL
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
         public event Action<float> OnImpostorAlphaValueUpdate;
+        public event Action<float> OnAvatarAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
@@ -660,6 +660,8 @@ namespace DCL
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
+            
+            OnAvatarAlphaValueUpdate?.Invoke(avatarFade);
         }
 
         public void SetImpostorFade(float impostorFade)

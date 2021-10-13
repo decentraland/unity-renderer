@@ -9,6 +9,7 @@ namespace DCL
     {
         internal const string AVATAR_LODS_FLAG_NAME = "avatar_lods";
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
+        internal const float AVATARS_INVISIBILITY_DISTANCE = 1.75f;
         private const float MIN_DISTANCE_BETWEEN_NAMES_PIXELS = 70f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
@@ -113,7 +114,6 @@ namespace DCL
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            float lodDistance = LODDistance.Get();
             float simpleAvatarDistance = this.simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
@@ -123,7 +123,7 @@ namespace DCL
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
                 (IAvatarLODController lodController, float distance) = lodControllersByDistance[index];
-                if (distance < 0) //Behind camera
+                if (IsInInvisibleDistance(distance))
                 {
                     lodController.SetNameVisible(false);
                     lodController.SetInvisible();
@@ -157,6 +157,13 @@ namespace DCL
 
                 lodController.SetInvisible();
             }
+        }
+
+        private bool IsInInvisibleDistance(float distance)
+        {
+            bool firstPersonCamera = CommonScriptableObjects.cameraMode.Get() == CameraMode.ModeId.FirstPerson;
+            
+            return firstPersonCamera ? distance < AVATARS_INVISIBILITY_DISTANCE : distance < 0f; // < 0 is behind camera
         }
 
         private (IAvatarLODController lodController, float distance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)

@@ -10,6 +10,7 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -148,11 +149,14 @@ namespace DCL
                 player = new Player();
                 isNew = true;
             }
+            
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
+            player.onPointerDownCollider = onPointerDown;
+            
             if (isNew)
             {
                 player.playerName = playerName;
@@ -178,7 +182,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.collider.enabled = false;
+            onPointerDown.SetColliderEnabled(false);
         }
 
         public void EnablePassport()
@@ -186,7 +190,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.collider.enabled = true;
+            onPointerDown.SetColliderEnabled(true);
         }
 
         private void OnEntityTransformChanged(object newModel)
@@ -208,7 +212,7 @@ namespace DCL
         }
 
         void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
-
+        
         public override void Cleanup()
         {
             base.Cleanup();
