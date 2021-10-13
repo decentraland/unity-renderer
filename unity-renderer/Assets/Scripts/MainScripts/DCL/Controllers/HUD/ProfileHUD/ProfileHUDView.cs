@@ -118,6 +118,9 @@ internal class ProfileHUDView : MonoBehaviour
     [Header("Description")]
     [SerializeField]
     internal TMP_InputField inputDescription;
+    
+    [SerializeField]
+    internal GameObject charLimitDescriptionContainer;
 
     [SerializeField]
     internal TextMeshProUGUI textCharLimitDescription;
@@ -350,7 +353,7 @@ internal class ProfileHUDView : MonoBehaviour
 
     internal void ActivateDescriptionEditionMode(bool active)
     {
-        textCharLimitDescription.gameObject.SetActive(active);
+        charLimitDescriptionContainer.SetActive(active);
         var targetColor = descriptionBackgroundImage.color;
         targetColor.a = active ? 1f : 0f;
         descriptionBackgroundImage.color = targetColor;
