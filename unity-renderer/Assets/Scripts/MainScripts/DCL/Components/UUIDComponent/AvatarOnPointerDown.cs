@@ -88,7 +88,7 @@ namespace DCL.Components
 
             enabled = true;
         }
-        public void ToggleCollider(bool newEnabledState)
+        public void SetColliderEnabled(bool newEnabledState)
         {
             collider.enabled = newEnabledState;
         }

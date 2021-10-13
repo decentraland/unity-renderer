@@ -165,7 +165,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.ToggleCollider(false);
+            onPointerDown.SetColliderEnabled(false);
         }
 
         public void EnablePassport()
@@ -173,7 +173,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.ToggleCollider(true);
+            onPointerDown.SetColliderEnabled(true);
         }
 
         private void OnEntityTransformChanged(object newModel)

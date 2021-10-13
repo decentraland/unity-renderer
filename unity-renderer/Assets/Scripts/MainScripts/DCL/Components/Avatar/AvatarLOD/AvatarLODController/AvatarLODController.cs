@@ -61,7 +61,7 @@ namespace DCL
             if (player?.renderer == null)
                 return;
             
-            player.onPointerDownCollider.ToggleCollider(true);
+            player.onPointerDownCollider.SetColliderEnabled(true);
 
             SetAvatarFeatures(true, true);
             StartTransition(1, 0);
@@ -76,7 +76,7 @@ namespace DCL
             if (player?.renderer == null)
                 return;
             
-            player.onPointerDownCollider.ToggleCollider(true);
+            player.onPointerDownCollider.SetColliderEnabled(true);
 
             SetAvatarFeatures(false, false);
             StartTransition(1, 0);
@@ -91,7 +91,7 @@ namespace DCL
             if (player?.renderer == null)
                 return;
             
-            player.onPointerDownCollider.ToggleCollider(false);
+            player.onPointerDownCollider.SetColliderEnabled(false);
 
             SetAvatarFeatures(false, false);
             StartTransition(0, 1);
@@ -106,7 +106,7 @@ namespace DCL
             if (player?.renderer == null)
                 return;
 
-            player.onPointerDownCollider.ToggleCollider(false);
+            player.onPointerDownCollider.SetColliderEnabled(false);
             
             SetAvatarFeatures(false, false);
             StartTransition(0, 0, TRANSITION_DURATION * 1.5f);

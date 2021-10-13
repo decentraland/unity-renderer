@@ -131,7 +131,7 @@ namespace Tests.AvatarLODController
             yield return controller.currentTransition;
 
             Assert.AreEqual(0, controller.avatarFade);
-            controller.player.onPointerDownCollider.Received().ToggleCollider(false);
+            controller.player.onPointerDownCollider.Received().SetColliderEnabled(false);
 
             controller.SetFullAvatar();
 
@@ -139,7 +139,7 @@ namespace Tests.AvatarLODController
             yield return controller.currentTransition;
 
             Assert.AreEqual(1, controller.avatarFade);
-            controller.player.onPointerDownCollider.Received().ToggleCollider(true);
+            controller.player.onPointerDownCollider.Received().SetColliderEnabled(true);
         }
 
         [Test]

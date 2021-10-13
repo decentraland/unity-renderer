@@ -1,5 +1,5 @@
 
 public interface IAvatarOnPointerDownCollider
 {
-    void ToggleCollider(bool newEnabledState);
+    void SetColliderEnabled(bool newEnabledState);
 }
