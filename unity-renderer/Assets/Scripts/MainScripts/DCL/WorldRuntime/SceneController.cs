@@ -837,7 +837,8 @@ namespace DCL
                 {
                     newScene.iconUrl = globalScene.icon;
                 }
-                else{
+                else
+                {
                     newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
                 }
             }
