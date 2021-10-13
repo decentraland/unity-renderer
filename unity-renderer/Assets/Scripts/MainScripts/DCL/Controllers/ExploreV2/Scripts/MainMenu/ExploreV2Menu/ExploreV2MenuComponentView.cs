@@ -47,6 +47,7 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
     [SerializeField] internal ProfileCardComponentView profileCard;
     [SerializeField] internal RealmViewerComponentView realmViewer;
     [SerializeField] internal ButtonComponentView closeMenuButton;
+    [SerializeField] internal InputAction_Trigger closeAction;
 
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
@@ -96,10 +97,8 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
     internal void ConfigureCloseButton()
     {
-        closeMenuButton.onClick.AddListener(() =>
-        {
-            OnCloseButtonPressed?.Invoke();
-        });
+        closeMenuButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke());
+        closeAction.OnTriggered += (action) => OnCloseButtonPressed?.Invoke();
     }
 
     internal void ShowDefaultSection() { placesAndEventsSection.gameObject.SetActive(true); }

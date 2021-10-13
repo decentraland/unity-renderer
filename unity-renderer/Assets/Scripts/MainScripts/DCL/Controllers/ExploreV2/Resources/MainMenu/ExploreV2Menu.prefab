@@ -1636,6 +1636,7 @@ MonoBehaviour:
   profileCard: {fileID: 473306627002153747}
   realmViewer: {fileID: 5724359877345737668}
   closeMenuButton: {fileID: 3975853955809606077}
+  closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   placesAndEventsSection: {fileID: 9218004316370049640}
 --- !u!1 &4223377927872049633
 GameObject:
@@ -3274,7 +3275,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -1}
-  m_SizeDelta: {x: -440, y: -120}
+  m_SizeDelta: {x: -586, y: -120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &432704907593103731
 CanvasRenderer:
