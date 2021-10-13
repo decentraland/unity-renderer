@@ -39,7 +39,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     public void Dispose()
     {
         placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
-        eventsSubSectionComponentController.Dispose();
+        placesSubSectionComponentController.Dispose();
 
         eventsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         eventsSubSectionComponentController.Dispose();

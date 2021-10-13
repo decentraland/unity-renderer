@@ -143,54 +143,59 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     public void SetItemSize(Vector2 newItemSize)
     {
         Vector2 newSizeToApply = newItemSize;
+
         if (model.adaptItemSizeToContainer)
         {
-            if (model.constraint == Constraint.FixedColumnCount)
-            {
-                float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
-                float extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
-                newSizeToApply = new Vector2(
-                    (width / model.constranitCount) - extraSpaceToRemove,
-                    model.itemSize.y);
-            }
-            else if (model.constraint == Constraint.FixedRowCount)
-            {
-                float height = ((RectTransform)transform).rect.height;
-                float extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
-                newSizeToApply = new Vector2(
-                    model.itemSize.x,
-                    (height / model.constranitCount) - extraSpaceToRemove);
-            }
-            else if (model.constraint == Constraint.Flexible)
-            {
-                float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
-                int numberOfPossibleItems = (int)(width / model.minWidthForFlexibleItems);
+            float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+            float height = ((RectTransform)transform).rect.height;
+            float extraSpaceToRemove;
 
-                SetConstraint(Constraint.FixedColumnCount);
+            switch (model.constraint)
+            {
+                case Constraint.FixedColumnCount:
+                    extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
+                    newSizeToApply = new Vector2(
+                        (width / model.constranitCount) - extraSpaceToRemove,
+                        model.itemSize.y);
 
-                if (numberOfPossibleItems > 0)
-                {
-                    for (int numColumnsToTry = 1; numColumnsToTry <= numberOfPossibleItems; numColumnsToTry++)
+                    break;
+                case Constraint.FixedRowCount:
+                    extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
+                    newSizeToApply = new Vector2(
+                        model.itemSize.x,
+                        (height / model.constranitCount) - extraSpaceToRemove);
+
+                    break;
+                case Constraint.Flexible:
+                    int numberOfPossibleItems = (int)(width / model.minWidthForFlexibleItems);
+
+                    SetConstraint(Constraint.FixedColumnCount);
+
+                    if (numberOfPossibleItems > 0)
                     {
-                        SetConstraintCount(numColumnsToTry);
-                        SetItemSize(model.itemSize);
-
-                        if (model.itemSize.x < model.minWidthForFlexibleItems)
+                        for (int numColumnsToTry = 1; numColumnsToTry <= numberOfPossibleItems; numColumnsToTry++)
                         {
-                            SetConstraintCount(numColumnsToTry - 1);
+                            SetConstraintCount(numColumnsToTry);
                             SetItemSize(model.itemSize);
-                            break;
+
+                            if (model.itemSize.x < model.minWidthForFlexibleItems)
+                            {
+                                SetConstraintCount(numColumnsToTry - 1);
+                                SetItemSize(model.itemSize);
+                                break;
+                            }
+
+                            newSizeToApply = model.itemSize;
                         }
-
-                        newSizeToApply = model.itemSize;
                     }
-                }
-                else
-                {
-                    newSizeToApply = new Vector2(model.minWidthForFlexibleItems, newSizeToApply.y);
-                }
+                    else
+                    {
+                        newSizeToApply = new Vector2(model.minWidthForFlexibleItems, newSizeToApply.y);
+                    }
 
-                SetConstraint(Constraint.Flexible);
+                    SetConstraint(Constraint.Flexible);
+
+                    break;
             }
         }
 

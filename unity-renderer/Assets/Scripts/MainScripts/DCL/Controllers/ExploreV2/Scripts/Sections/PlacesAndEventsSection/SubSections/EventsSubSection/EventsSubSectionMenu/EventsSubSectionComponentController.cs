@@ -51,6 +51,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 6;
     internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 6;
+    internal const string LIVE_TAG_TEXT = "LIVE";
 
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
@@ -210,7 +211,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventCardModel.eventId = eventFromAPI.id;
         eventCardModel.eventPictureUri = eventFromAPI.image;
         eventCardModel.isLive = eventFromAPI.live;
-        eventCardModel.liveTagText = "LIVE";
+        eventCardModel.liveTagText = LIVE_TAG_TEXT;
         eventCardModel.eventDateText = FormatEventDate(eventFromAPI);
         eventCardModel.eventName = eventFromAPI.name;
         eventCardModel.eventDescription = eventFromAPI.description;

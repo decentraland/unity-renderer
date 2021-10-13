@@ -117,6 +117,9 @@ public interface IEventCardComponentView
 
 public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 {
+    internal const string USERS_CONFIRMED_MESSAGE = "{0} confirmed";
+    internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
+
     internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
 
     [Header("Prefab References")]
@@ -461,9 +464,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         else
         {
             if (newNumberOfUsers > 0)
-                subscribedUsersText.text = $"{newNumberOfUsers} confirmed";
+                subscribedUsersText.text = string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers);
             else
-                subscribedUsersText.text = "Nobody confirmed yet";
+                subscribedUsersText.text = NOBODY_CONFIRMED_MESSAGE;
         }
     }
 
