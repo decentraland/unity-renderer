@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using DCL.Interface;
 
 namespace DCL
 {
@@ -10,19 +9,21 @@ namespace DCL
     {
         internal const string AVATAR_LODS_FLAG_NAME = "avatar_lods";
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
+        private const float MIN_DISTANCE_BETWEEN_NAMES_PIXELS = 70f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
         private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
         private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
         private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
-        private BaseHashSet<string> visibleNames => DataStore.i.avatarsLOD.visibleNames;
         private Vector3 cameraPosition;
         private Vector3 cameraForward;
         private GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
+        private SimpleOverlappingTracker overlappingTracker = new SimpleOverlappingTracker(MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         internal bool enabled;
+        private UnityEngine.Camera mainCamera;
 
         public AvatarsLODController()
         {
@@ -107,6 +108,8 @@ namespace DCL
 
         internal void UpdateAllLODs(int maxAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
+            if (mainCamera == null)
+                mainCamera = UnityEngine.Camera.main;
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
@@ -114,13 +117,15 @@ namespace DCL
             float simpleAvatarDistance = this.simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
 
+            overlappingTracker.Reset();
+
             (IAvatarLODController lodController, float distance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
                 (IAvatarLODController lodController, float distance) = lodControllersByDistance[index];
                 if (distance < 0) //Behind camera
                 {
-                    visibleNames.Remove(lodController.player.id);
+                    lodController.SetNameVisible(false);
                     lodController.SetInvisible();
                     continue;
                 }
@@ -133,11 +138,15 @@ namespace DCL
                     else
                         lodController.SetSimpleAvatar();
                     avatarsCount++;
-                    visibleNames.Add(lodController.player.id);
+
+                    if (mainCamera == null)
+                        lodController.SetNameVisible(true);
+                    else
+                        lodController.SetNameVisible(overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(mainCamera)));
                     continue;
                 }
 
-                visibleNames.Remove(lodController.player.id);
+                lodController.SetNameVisible(false);
                 if (impostorCount < maxImpostors)
                 {
                     lodController.SetImpostor();

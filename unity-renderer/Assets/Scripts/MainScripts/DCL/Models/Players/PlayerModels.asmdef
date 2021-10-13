@@ -2,7 +2,8 @@
     "name": "PlayerModels",
     "rootNamespace": "",
     "references": [
-        "GUID:46cbc133d57a24117993396eb0fbbc5a"
+        "GUID:46cbc133d57a24117993396eb0fbbc5a",
+        "GUID:896ac1ef7dceedf49b9a9b0f3c8e798d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
