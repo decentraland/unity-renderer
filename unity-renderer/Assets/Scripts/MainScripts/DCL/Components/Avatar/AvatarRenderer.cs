@@ -12,7 +12,7 @@ namespace DCL
     public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
         private static readonly int BASE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
-        
+
         private const int MAX_RETRIES = 5;
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
@@ -58,6 +58,7 @@ namespace DCL
 
         public bool isLoading;
         public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
+        public float maxY { get; private set; } = 0;
 
         private Coroutine loadCoroutine;
         private AssetPromise_Texture bodySnapshotTexturePromise;
@@ -473,6 +474,12 @@ namespace DCL
                 PrepareGpuSkinning();
             else
                 loadSoftFailed = true;
+
+            maxY = allRenderers.Max(x =>
+            {
+                Bounds bounds = x.bounds;
+                return bounds.center.y + bounds.extents.y - transform.position.y;
+            });
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
             //              before reaching this branching statement. The failure should be caught with a throw or other

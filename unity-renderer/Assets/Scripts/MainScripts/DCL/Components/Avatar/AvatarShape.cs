@@ -161,6 +161,7 @@ namespace DCL
                 otherPlayers.Add(player.id, player);
             }
             player.playerName.SetIsTalking(model.talking);
+            player.playerName.SetYOffset(avatarRenderer.maxY);
         }
 
         private void Update()

@@ -15,6 +15,7 @@ public class PlayerName : MonoBehaviour, IPlayerName
     internal const float TARGET_ALPHA_HIDE = 0;
     internal const int BACKGROUND_HEIGHT = 30;
     internal const int BACKGROUND_EXTRA_WIDTH = 10;
+    internal const float Y_OFFSET = 0.1f;
 
     [SerializeField] internal Canvas canvas;
     [SerializeField] internal CanvasGroup canvasGroup;
@@ -120,6 +121,8 @@ public class PlayerName : MonoBehaviour, IPlayerName
     }
 
     public void SetIsTalking(bool talking) { talkingAnimator.SetBool(TALKING_ANIMATOR_BOOL, talking); }
+
+    public void SetYOffset(float yOffset) { transform.localPosition = Vector3.up * (yOffset + Y_OFFSET); }
 
     public Rect ScreenSpaceRect(Camera mainCamera)
     {

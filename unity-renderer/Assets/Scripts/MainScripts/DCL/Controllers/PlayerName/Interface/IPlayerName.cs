@@ -7,6 +7,7 @@ public interface IPlayerName
     void Hide(bool instant = false);
     void SetForceShow(bool forceShow);
     void SetIsTalking(bool talking);
+    void SetYOffset(float yOffset);
     Rect ScreenSpaceRect(Camera mainCamera);
     Vector3 ScreenSpacePos(Camera mainCamera);
 }
