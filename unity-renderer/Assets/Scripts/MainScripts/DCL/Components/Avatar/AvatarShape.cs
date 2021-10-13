@@ -195,14 +195,6 @@ namespace DCL
         }
 
         void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
- 
-        /*void OnAvatarAlphaValueUpdate(float newAlphaValue)
-        {
-            if (newAlphaValue > AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD)
-                EnablePassport();
-            else
-                DisablePassport();
-        }*/
         
         public override void Cleanup()
         {
