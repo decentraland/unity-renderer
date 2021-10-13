@@ -51,20 +51,20 @@ namespace DCL
             buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.PrimaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.PRIMARY, useRaycast = true });
             buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.SecondaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.SECONDARY, useRaycast = true });
             
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.ForwardButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.FORWARD, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.ForwardButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.FORWARD, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.ForwardButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.FORWARD, useRaycast = false });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.ForwardButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.FORWARD, useRaycast = false });
             
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.BackwardButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.BACKWARD, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.BackwardButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.BACKWARD, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.BackwardButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.BACKWARD, useRaycast = false });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.BackwardButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.BACKWARD, useRaycast = false });
             
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.RightButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.RIGHT, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.RightButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.RIGHT, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.RightButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.RIGHT, useRaycast = false });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.RightButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.RIGHT, useRaycast = false });
             
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.LeftButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.LEFT, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.LeftButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.LEFT, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.LeftButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.LEFT, useRaycast = false });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.LeftButtonKeyCodeAlt, buttonId = WebInterface.ACTION_BUTTON.LEFT, useRaycast = false });
             
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.WalkButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.WALK, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.JumpButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.JUMP, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.WalkButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.WALK, useRaycast = false });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.JumpButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.JUMP, useRaycast = false });
             
             buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.OneButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.ACTION_1, useRaycast = true });
             buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.TwoButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.ACTION_2, useRaycast = true });
