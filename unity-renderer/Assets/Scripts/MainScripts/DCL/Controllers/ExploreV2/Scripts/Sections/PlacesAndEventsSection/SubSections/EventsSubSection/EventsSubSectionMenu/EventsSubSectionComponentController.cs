@@ -129,6 +129,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         List<EventCardComponentModel> featuredEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+
+        if (eventsFiltered.Count == 0)
+            eventsFiltered = eventsFromAPI.Take(3).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
