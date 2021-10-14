@@ -47,9 +47,25 @@ namespace DCL.Skybox
         {
             for (int i = 0; i < layers.Count; i++)
             {
-                if (currentTime >= layers[i].timeSpan_start && currentTime <= layers[i].timeSpan_End)
+                if (layers[i].timeSpan_End < layers[i].timeSpan_start)
                 {
-                    return layers[i];
+                    if (currentTime >= layers[i].timeSpan_start || currentTime <= layers[i].timeSpan_End)
+                    {
+                        if (layers[i].enabled)
+                        {
+                            return layers[i];
+                        }
+                    }
+                }
+                else
+                {
+                    if (currentTime >= layers[i].timeSpan_start && currentTime <= layers[i].timeSpan_End)
+                    {
+                        if (layers[i].enabled)
+                        {
+                            return layers[i];
+                        }
+                    }
                 }
             }
             return null;

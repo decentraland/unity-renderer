@@ -221,11 +221,7 @@ namespace DCL.Skybox
 
         void ApplyTextureLayer(Material selectedMat, float dayTime, float normalizedDayTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
-            // Time not reached for current layer
-            if (dayTime < layer.timeSpan_start || dayTime > layer.timeSpan_End)
-            {
-                return;
-            }
+
             float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, layer.timeSpan_End, dayTime);
 
             selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.LayerType);
