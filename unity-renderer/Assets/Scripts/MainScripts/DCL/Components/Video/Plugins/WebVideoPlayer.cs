@@ -41,13 +41,19 @@ namespace DCL.Components.Video.Plugin
             {
                 case (int)VideoState.ERROR:
                     Debug.LogError(plugin.GetError(videoPlayerId));
+                    Log($"UpdateWebVideoTexture() - STATE: ERROR");
                     isError = true;
                     break;
                 case (int)VideoState.READY:
                     if (!initialized)
                     {
                         initialized = true;
-                        texture = CreateTexture(plugin.GetWidth(videoPlayerId), plugin.GetHeight(videoPlayerId));
+                        
+                        int width = plugin.GetWidth(videoPlayerId);
+                        int height = plugin.GetHeight(videoPlayerId);
+                        Log($"UpdateWebVideoTexture() - STATE: READY - W:{width} H:{height}");
+                        
+                        texture = CreateTexture(width, height);
                         textureNativePtr = texture.GetNativeTexturePtr();
                         OnTextureReady?.Invoke(texture);
                     }
@@ -57,6 +63,8 @@ namespace DCL.Components.Video.Plugin
                     {
                         int width = plugin.GetWidth(videoPlayerId);
                         int height = plugin.GetHeight(videoPlayerId);
+                        Log($"UpdateWebVideoTexture() - STATE: PLAYING - W:{width} H:{height}");
+                        
                         if (texture.width != width || texture.height != height)
                         {
                             if (texture.Resize(width, height))
@@ -72,6 +80,14 @@ namespace DCL.Components.Video.Plugin
                     }
                     break;
             }
+        }
+
+        void Log(string message)
+        {
+            bool originalValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+            Debug.Log("WebVideoPlayer - " + message);
+            Debug.unityLogger.logEnabled = originalValue;
         }
 
         public void Play()

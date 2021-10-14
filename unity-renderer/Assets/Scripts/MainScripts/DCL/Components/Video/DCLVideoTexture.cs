@@ -58,8 +58,12 @@ namespace DCL.Components
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
+        const string DISABLE_VIDEO_URL_PARAM = "DISABLE_VIDEO"; 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            if (WebInterface.CheckURLParam(DISABLE_VIDEO_URL_PARAM))
+                yield break;
+            
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
@@ -94,7 +98,7 @@ namespace DCL.Components
                     Debug.LogError("Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
-
+                
                 string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
                 texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
