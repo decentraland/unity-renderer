@@ -9,12 +9,9 @@ namespace KernelConfigurationTypes
         public bool enableAvatarLODs = false;
         public bool enableTutorial = true;
         public bool enablePeopleCounter = false;
-        public bool enableProceduralSkybox = false;
+        public bool enableProceduralSkybox = true;
 
-        public override bool Equals(object obj)
-        {
-            return obj is Features other && Equals(other);
-        }
+        public override bool Equals(object obj) { return obj is Features other && Equals(other); }
         protected bool Equals(Features other)
         {
             return enableBuilderInWorld == other.enableBuilderInWorld

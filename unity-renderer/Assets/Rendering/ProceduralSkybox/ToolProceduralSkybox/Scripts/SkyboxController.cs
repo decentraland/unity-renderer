@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -13,22 +14,25 @@ namespace DCL.Skybox
         public static SkyboxController i { get; private set; }
 
         public const string DEFAULT_SKYBOX_ID = "Generic Skybox";
-        public float timeOfTheDay;                                      // (Nishant.K) Time will be provided from outside, So remove this variable
 
+        //Time for one complete circle. In Hours. default 24
+        public float cycleTime = 24;
+        public float minutesPerSecond = 60;
+
+        private float timeOfTheDay;                            // (Nishant.K) Time will be provided from outside, So remove this variable
         private Light directionalLight;
         private SkyboxConfiguration configuration;
         private Material selectedMat;
         private bool overrideDefaultSkybox;
         private string overrideSkyboxID;
         private bool isPaused;
+        private float timeNormalizationFactor;
 
         public override void Initialize()
         {
             base.Initialize();
 
             i = this;
-
-            SelectSkyboxConfiguration();
 
             // Enable/Disable or Create new Directional Light Object
             directionalLight = GameObject.FindObjectsOfType<Light>().Where(s => s.type == LightType.Directional).FirstOrDefault();
@@ -40,7 +44,9 @@ namespace DCL.Skybox
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
             }
-            DCL.DataStore.i.isProceduralSkyboxInUse.Set(true);
+
+            UpdateConfig();
+            DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
         }
 
         private void SelectSkyboxConfiguration()
@@ -50,6 +56,7 @@ namespace DCL.Skybox
             if (overrideDefaultSkybox)
             {
                 configToLoad = overrideSkyboxID;
+                overrideDefaultSkybox = false;
             }
             configuration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
 
@@ -63,31 +70,94 @@ namespace DCL.Skybox
 
             // Apply material as per number of Layers.
             //TODO: Change shader on same materialinstead of having multiple material.
-            MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(configuration.textureLayers.Count);
+            MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(configuration.slots.Count);
             if (matLayer == null)
             {
                 matLayer = MaterialReferenceContainer.i.materials[0];
             }
 
-            configuration.ResetMaterial(matLayer.material, matLayer.maxLayer);
+            configuration.ResetMaterial(matLayer.material, matLayer.numberOfSlots);
             selectedMat = matLayer.material;
-            RenderSettings.skybox = selectedMat;
+
+            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
+            {
+                RenderSettings.skybox = selectedMat;
+            }
+        }
+
+        public void UpdateConfig(bool current = true, bool previous = false)
+        {
+            // Apply configuration
+            overrideDefaultSkybox = true;
+            overrideSkyboxID = DataStore.i.skyboxConfig.configToLoad.Get();
+
+            // Apply time
+            minutesPerSecond = DataStore.i.skyboxConfig.minutesPerSecond.Get();
+
+            // if Paused
+            if (DataStore.i.skyboxConfig.pauseTime.Get())
+            {
+                PauseTime();
+            }
+            else
+            {
+                ResumeTime();
+            }
+
+            // Jump to time
+            if (DataStore.i.skyboxConfig.jumpTime)
+            {
+                float jumpTime = DataStore.i.skyboxConfig.jumpToTime.Get();
+                timeOfTheDay = Mathf.Clamp(jumpTime, 0, cycleTime);
+                DataStore.i.skyboxConfig.jumpTime = false;
+            }
+
+            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
+            {
+                Applyconfig();
+            }
+            else
+            {
+                RenderProfileManifest.i.currentProfile.Apply();
+            }
+
+            // Reset Object Update value without notifying
+            DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
+        }
+
+        void Applyconfig()
+        {
+            SelectSkyboxConfiguration();
+
+            if (!configuration.useDirectionalLight)
+            {
+                directionalLight.gameObject.SetActive(false);
+            }
+            //DCL.DataStore.i.isProceduralSkyboxInUse.Set(true);
+
+            timeOfTheDay = 0;
+
+            // Calculate time factor
+            if (minutesPerSecond <= 0)
+            {
+                minutesPerSecond = 0.01f;
+            }
+            timeNormalizationFactor = 60 / minutesPerSecond;
         }
 
         // Update is called once per frame
         public override void Update()
         {
-            if (configuration == null || isPaused)
+            if (configuration == null || isPaused || !DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {
                 return;
             }
-
-            timeOfTheDay += Time.deltaTime;
-            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, 24);
+            timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
+            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
 
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), directionalLight);
 
-            if (timeOfTheDay >= 24)
+            if (timeOfTheDay >= cycleTime)
             {
                 timeOfTheDay = 0.01f;
             }
@@ -96,7 +166,8 @@ namespace DCL.Skybox
         public override void Dispose()
         {
             base.Dispose();
-            DCL.DataStore.i.isProceduralSkyboxInUse.Set(false);
+            //DCL.DataStore.i.isProceduralSkyboxInUse.Set(false);
+            DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
         }
 
         public void PauseTime() { isPaused = true; }
@@ -116,11 +187,12 @@ namespace DCL.Skybox
         {
             float tTime = 0;
 
-            tTime = timeOfTheDay / 24;
+            tTime = timeOfTheDay / cycleTime;
 
             tTime = Mathf.Clamp(tTime, 0, 1);
 
             return tTime;
         }
+
     }
 }

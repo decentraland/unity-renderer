@@ -10,9 +10,8 @@ namespace DCL.Skybox
         [System.Serializable]
         public class Mat_Layer
         {
-            public int numberOfLayers;
+            public int numberOfSlots;
             public Material material;
-            public int maxLayer;
         }
 
         private static MaterialReferenceContainer instance;
@@ -34,7 +33,7 @@ namespace DCL.Skybox
         {
             for (int i = 0; i < materials.Length; i++)
             {
-                if (numOfLayer <= materials[i].numberOfLayers)
+                if (numOfLayer <= materials[i].numberOfSlots)
                 {
                     return materials[i].material;
                 }
@@ -42,11 +41,11 @@ namespace DCL.Skybox
             return null;
         }
 
-        public Mat_Layer GetMat_LayerForLayers(int numOfLayer)
+        public Mat_Layer GetMat_LayerForLayers(int numOfSlots)
         {
             for (int i = 0; i < materials.Length; i++)
             {
-                if (numOfLayer <= materials[i].numberOfLayers)
+                if (numOfSlots <= materials[i].numberOfSlots)
                 {
                     return materials[i];
                 }

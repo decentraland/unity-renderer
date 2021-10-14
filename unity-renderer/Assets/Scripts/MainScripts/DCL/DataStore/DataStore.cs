@@ -31,8 +31,7 @@ namespace DCL
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
         public readonly DataStore_Screen screen = new DataStore_Screen();
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
-        public readonly BaseVariable<bool> isProceduralSkyboxInUse = new BaseVariable<bool>();
-
+        public readonly DataStore_SkyboxConfig skyboxConfig = new DataStore_SkyboxConfig();
 
         public class DataStore_BuilderInWorld
         {
@@ -110,6 +109,17 @@ namespace DCL
 
             public readonly BaseVariable<bool> communicationEstablished = new BaseVariable<bool>();
             public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
+        }
+
+        public class DataStore_SkyboxConfig
+        {
+            public BaseVariable<bool> objectUpdated = new BaseVariable<bool>(false);
+            public BaseVariable<bool> useProceduralSkybox = new BaseVariable<bool>(false);
+            public BaseVariable<string> configToLoad = new BaseVariable<string>("Generic Skybox");
+            public BaseVariable<float> minutesPerSecond = new BaseVariable<float>(60);
+            public BaseVariable<bool> pauseTime = new BaseVariable<bool>(false);
+            public bool jumpTime = false;
+            public BaseVariable<float> jumpToTime = new BaseVariable<float>(0);
         }
     }
 }
