@@ -228,7 +228,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public override void PostInitialization()
     {
         if (eventImage != null)
+        {
+            eventImage.SetImage(sprite: null);
             eventImage.OnLoaded += OnEventImageLoaded;
+        }
 
         Configure(model);
     }

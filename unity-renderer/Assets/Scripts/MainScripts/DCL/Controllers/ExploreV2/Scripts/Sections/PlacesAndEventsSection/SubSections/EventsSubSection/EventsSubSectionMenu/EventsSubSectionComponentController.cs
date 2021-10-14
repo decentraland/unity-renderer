@@ -95,9 +95,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetTrendingEventsAsLoading(true);
         view.SetUpcomingEventsAsLoading(true);
         view.SetGoingEventsAsLoading(true);
-
         RequestAllEventsFromAPI();
-
         reloadEvents = false;
     }
 
@@ -125,8 +123,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void LoadFeaturedEvents()
     {
-        view.SetFeaturedEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> featuredEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
 
@@ -139,41 +135,39 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             featuredEvents.Add(eventCardModel);
         }
 
-        view.SetFeaturedEventsAsLoading(false);
         view.SetFeaturedEvents(featuredEvents);
+        view.SetFeaturedEventsAsLoading(false);
     }
 
     public void LoadTrendingEvents()
     {
-        view.SetTrendingEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> trendingEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.trending).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             trendingEvents.Add(eventCardModel);
         }
 
-        view.SetTrendingEventsAsLoading(false);
         view.SetTrendingEvents(trendingEvents);
+        view.SetTrendingEventsAsLoading(false);
     }
 
     public void LoadUpcomingEvents()
     {
-        view.SetUpcomingEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(currentUpcomingEventsShowed).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             upcomingEvents.Add(eventCardModel);
         }
 
-        view.SetUpcomingEventsAsLoading(false);
         view.SetUpcomingEvents(upcomingEvents);
         view.SetShowMoreUpcomingEventsButtonActive(eventsFromAPI.Count > currentUpcomingEventsShowed);
+        view.SetUpcomingEventsAsLoading(false);
     }
 
     public void ShowMoreUpcomingEvents()
@@ -184,18 +178,17 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void LoadGoingEvents()
     {
-        view.SetGoingEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> goingEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.attending).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             goingEvents.Add(eventCardModel);
         }
 
-        view.SetGoingEventsAsLoading(false);
         view.SetGoingEvents(goingEvents);
+        view.SetGoingEventsAsLoading(false);
     }
 
     public void Dispose()
