@@ -15,6 +15,7 @@ namespace Tests.AvatarLODController
         private DCL.AvatarLODController controller;
         private Player player;
         private IAvatarRenderer renderer;
+        private IAvatarOnPointerDownCollider onPointerDownCollider;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         [SetUp]
@@ -22,7 +23,8 @@ namespace Tests.AvatarLODController
         {
             renderer = Substitute.For<IAvatarRenderer>();
             renderer.isReady.Returns(true);
-            player = new Player { id = "player", renderer = renderer };
+            onPointerDownCollider = Substitute.For<IAvatarOnPointerDownCollider>();
+            player = new Player { id = "player", renderer = renderer, onPointerDownCollider = onPointerDownCollider };
             controller = new DCL.AvatarLODController(player);
         }
 
@@ -118,6 +120,26 @@ namespace Tests.AvatarLODController
             renderer.Received().SetFacialFeaturesVisible(false);
             Assert.NotNull(controller.currentTransition);
             Assert.AreEqual(DCL.AvatarLODController.State.Impostor , controller.lastRequestedState);
+        }
+        
+        [UnityTest]
+        public IEnumerator AffectAvatarColliderBasedOnVisibility()
+        {
+            controller.SetInvisible();
+
+            Assert.NotNull(controller.currentTransition);
+            yield return controller.currentTransition;
+
+            Assert.AreEqual(0, controller.avatarFade);
+            controller.player.onPointerDownCollider.Received().SetColliderEnabled(false);
+
+            controller.SetFullAvatar();
+
+            Assert.NotNull(controller.currentTransition);
+            yield return controller.currentTransition;
+
+            Assert.AreEqual(1, controller.avatarFade);
+            controller.player.onPointerDownCollider.Received().SetColliderEnabled(true);
         }
 
         [Test]

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.10252202, g: 0.24458984, b: 0.36489132, a: 1}
+  m_IndirectSpecularColor: {r: 0.00076876703, g: 0.8351885, b: 0.8361403, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1054,7 +1054,7 @@ MonoBehaviour:
   testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
-  soloScene: 0
+  soloScene: 1
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
@@ -1123,7 +1123,7 @@ MonoBehaviour:
   inputControllerReference: {fileID: 326638024064006571}
   cursorCanvasReference: {fileID: 326638024064006572}
   builderInWorldBridgeReference: {fileID: 322303338}
-  playerAvatarControllerReference: {fileID: 2021276774}
+  playerAvatarControllerReference: {fileID: 0}
   cameraControllerReference: {fileID: 1608366483}
   mainCameraReference: {fileID: 326638024064006573}
   bridgeGameObjectReference: {fileID: 1125593360}
@@ -1147,18 +1147,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 326638024064006570}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2021276774 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1312815038965150261, guid: b0965b55b892d438da492708ea09799c,
-    type: 3}
-  m_PrefabInstance: {fileID: 326638024064006570}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f6940e8f999878409de9cb43a484943, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2038581388 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4563922593988327124, guid: b0965b55b892d438da492708ea09799c,
