@@ -66,11 +66,9 @@ namespace DCL
 
         private void Awake()
         {
-            var featureFlags = DataStore.i.featureFlags.flags.Get();
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
             avatarMeshCombiner = new AvatarMeshCombinerHelper();
-            avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.prepareMeshForGpuSkinning = true;
             avatarMeshCombiner.uploadMeshToGpu = true;
 
@@ -717,6 +715,9 @@ namespace DCL
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+
+            var featureFlags = DataStore.i.featureFlags.flags.Get();
+            avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
 
             bool success = avatarMeshCombiner.Combine(
                 bodyShapeController.upperBodyRenderer,
