@@ -820,6 +820,8 @@ namespace DCL.Skybox
                 return;
             }
 
+            EditorGUILayout.Space(10);
+
             EditorGUI.indentLevel++;
             // Speed
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
@@ -828,18 +830,32 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
 
-            // Particle Speed
-            layer.particlesSpeed = EditorGUILayout.Slider("Speed", layer.particlesSpeed, 0, 10, GUILayout.Width(500));
+            // Particles Main Param
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Main Params", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            layer.particlesMainParams = EditorGUILayout.Vector4Field("", layer.particlesMainParams, GUILayout.Width(400), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
 
-            // Particle frequency
-            layer.particlesFrequency = EditorGUILayout.Slider("Frequency", layer.particlesFrequency, 0, 10, GUILayout.Width(500));
+            // Particles Secondary Param
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Secondary Params", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            layer.particlesSecondaryParams = EditorGUILayout.Vector4Field("", layer.particlesSecondaryParams, GUILayout.Width(400), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+
+            //// Particle Speed
+            //layer.particlesSpeed = EditorGUILayout.Slider("Speed", layer.particlesSpeed, 0, 10, GUILayout.Width(500));
+
+            //// Particle frequency
+            //layer.particlesFrequency = EditorGUILayout.Slider("Frequency", layer.particlesFrequency, 0, 10, GUILayout.Width(500));
 
             EditorGUI.indentLevel--;
         }
 
         void RenderDistortionVariables(TextureLayer layer)
         {
-            layer.distortionExpanded = EditorGUILayout.Foldout(layer.distortionExpanded, "Distortion Values");
+            layer.distortionExpanded = EditorGUILayout.Foldout(layer.distortionExpanded, "Distortion Values", true, EditorStyles.foldoutHeader);
             //EditorGUILayout.LabelField("Particles", EditorStyles.boldLabel, GUILayout.Width(100), GUILayout.ExpandWidth(false));
 
             if (!layer.distortionExpanded)
@@ -870,6 +886,8 @@ namespace DCL.Skybox
 
             // Distortion Sharpness
             RenderTransitioningVector2(layer.distortSharpness, "Sharpness", "%", "Value", layer.timeSpan_start, layer.timeSpan_End);
+
+            EditorGUILayout.Space(10);
 
             EditorGUI.indentLevel--;
         }

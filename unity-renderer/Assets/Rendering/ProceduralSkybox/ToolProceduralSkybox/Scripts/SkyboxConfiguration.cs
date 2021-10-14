@@ -335,12 +335,14 @@ namespace DCL.Skybox
             if (layer.useParticles)
             {
                 selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
-                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, new Vector2(layer.particlesSpeed, layer.particlesFrequency));
+                selectedMat.SetVector("_particlesMainParameters_" + layerNum, layer.particlesMainParams);
+                selectedMat.SetVector("_particlesMainParameters_" + layerNum, layer.particlesSecondaryParams);
             }
             else
             {
                 selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
-                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, Vector2.zero);
+                selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
+                selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
             }
 
             // Apply Distortion Values
@@ -387,12 +389,14 @@ namespace DCL.Skybox
             if (layer.useParticles)
             {
                 selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
-                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, new Vector2(layer.particlesSpeed, layer.particlesFrequency));
+                selectedMat.SetVector("_particlesMainParameters_" + layerNum, layer.particlesMainParams);
+                selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, layer.particlesSecondaryParams);
             }
             else
             {
                 selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
-                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, Vector2.zero);
+                selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
+                selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, Vector4.zero);
             }
 
 

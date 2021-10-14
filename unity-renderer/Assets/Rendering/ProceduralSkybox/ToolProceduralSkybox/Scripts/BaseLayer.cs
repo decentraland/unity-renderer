@@ -43,8 +43,10 @@ namespace DCL.Skybox
         public bool particleExpanded;
         public bool useParticles;
         public Vector2 particlesRowsAndColumns;
-        public float particlesSpeed;
-        public float particlesFrequency;
+        public Vector4 particlesMainParams;
+        public Vector4 particlesSecondaryParams;
+        //public float particlesSpeed;
+        //public float particlesFrequency;
 
         // Distortion Values
         public bool distortionExpanded;
