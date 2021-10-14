@@ -13,12 +13,9 @@ MonoBehaviour:
   m_Name: SkyboxMaterialData
   m_EditorClassIdentifier: 
   materials:
-  - numberOfLayers: 1
+  - numberOfSlots: 0
     material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
-    maxLayer: 3
-  - numberOfLayers: 2
+  - numberOfSlots: 0
     material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
-    maxLayer: 3
-  - numberOfLayers: 3
+  - numberOfSlots: 0
     material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
-    maxLayer: 3

@@ -84,7 +84,7 @@ public class RenderProfileWorld : ScriptableObject
     {
         avatarProfile.Apply();
 
-        if (DataStore.i.isProceduralSkyboxInUse.Get())
+        if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
         {
             return;
         }

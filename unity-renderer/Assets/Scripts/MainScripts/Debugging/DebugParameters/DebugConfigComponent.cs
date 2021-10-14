@@ -9,6 +9,7 @@ namespace DCL
     public class DebugConfigComponent : MonoBehaviour
     {
         public DebugConfig debugConfig;
+
         public enum DebugPanel
         {
             Off,
@@ -33,7 +34,7 @@ namespace DCL
 
         private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
         private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
-        
+
         public bool openBrowserWhenStart;
 
         [Header("Kernel General Settings")]
@@ -45,7 +46,6 @@ namespace DCL
         public BaseUrl baseUrlMode;
 
         public string baseUrlCustom;
-
 
         [Space(10)]
         public Environment environment;
@@ -65,12 +65,23 @@ namespace DCL
         public bool soloScene = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
+        [Header("Skybox Settings")]
+        public bool useProceduralSkybox;
+        public string configToLoad = "Generic Skybox";
+        public float minutesPerSecond = 60.0f;
+        public bool pauseTime;
+        public bool jumpTime;
+        public float jumpToTime;
+
         private void Awake()
         {
             DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
             DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
+
+            // Apply Skybox config to the skybox controller
+            ApplySkyboxConfig();
         }
 
         private void Start()
@@ -167,7 +178,7 @@ namespace DCL
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
             }
 
-            if ( !string.IsNullOrEmpty(realm))
+            if (!string.IsNullOrEmpty(realm))
             {
                 debugString += $"realm={realm}&";
             }
@@ -187,10 +198,23 @@ namespace DCL
                 $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}");
 #endif
         }
-        
-        private void OnDestroy()
+
+        private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
+
+        [ContextMenu("Update Skybox Config")]
+        private void ApplySkyboxConfig()
         {
-            DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
+            DataStore.i.skyboxConfig.useProceduralSkybox.Set(useProceduralSkybox);
+            DataStore.i.skyboxConfig.configToLoad.Set(configToLoad);
+            DataStore.i.skyboxConfig.minutesPerSecond.Set(minutesPerSecond);
+            DataStore.i.skyboxConfig.pauseTime.Set(pauseTime);
+            if (jumpTime)
+            {
+                DataStore.i.skyboxConfig.jumpTime = true;
+                DataStore.i.skyboxConfig.jumpToTime.Set(jumpToTime);
+                jumpTime = false;
+            }
+            DataStore.i.skyboxConfig.objectUpdated.Set(true);
         }
     }
 }

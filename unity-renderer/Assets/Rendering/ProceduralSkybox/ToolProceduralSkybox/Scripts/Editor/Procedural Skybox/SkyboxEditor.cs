@@ -177,7 +177,7 @@ namespace DCL.Skybox
             }
 
             selectedMat = matLayer.material;
-            selectedConfiguration.ResetMaterial(selectedMat, matLayer.maxLayer);
+            selectedConfiguration.ResetMaterial(selectedMat, matLayer.numberOfSlots);
             RenderSettings.skybox = selectedMat;
             //initialized = true;
         }
