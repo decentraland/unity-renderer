@@ -137,26 +137,6 @@ public class GridContainerComponentViewTests
     }
 
     [Test]
-    public void GetItemCorrectly()
-    {
-        // Arrange
-        ButtonComponentView testItem1 = BaseComponentView.Create<ButtonComponentView>("Button_Common");
-        ImageComponentView testItem2 = BaseComponentView.Create<ImageComponentView>("Image");
-        List<BaseComponentView> testItems = new List<BaseComponentView>();
-        testItems.Add(testItem1);
-        testItems.Add(testItem2);
-        gridContainerComponent.SetItems(testItems);
-
-        // Act
-        BaseComponentView existingItem1 = gridContainerComponent.GetItem(0);
-        BaseComponentView existingItem2 = gridContainerComponent.GetItem(1);
-
-        // Assert
-        Assert.IsTrue(existingItem1 is ButtonComponentView, "The item 1 gotten does not match.");
-        Assert.IsTrue(existingItem2 is ImageComponentView, "The item 2 gotten does not match.");
-    }
-
-    [Test]
     public void GetAllItemsCorrectly()
     {
         // Arrange
@@ -168,7 +148,7 @@ public class GridContainerComponentViewTests
         gridContainerComponent.SetItems(testItems);
 
         // Act
-        List<BaseComponentView> allExistingItems = gridContainerComponent.GetAllItems();
+        List<BaseComponentView> allExistingItems = gridContainerComponent.GetItems();
 
         // Assert
         Assert.IsTrue(allExistingItems[0] is ButtonComponentView, "The item 1 gotten does not match.");

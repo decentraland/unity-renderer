@@ -1,9 +1,9 @@
 using DCL.Helpers;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public interface IPlaceCardComponentView
 {
@@ -157,10 +157,16 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public override void PostInitialization()
     {
         if (placeImage != null)
+        {
+            placeImage.SetImage(sprite: null);
             placeImage.OnLoaded += OnPlaceImageLoaded;
+        }
 
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
+
+        if (friendsGrid != null)
+            friendsGrid.OnFullyInitialized += () => CleanFriendHeadsItems();
 
         InitializeFriendsTracker();
         Configure(model);
@@ -168,6 +174,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void Configure(PlaceCardComponentModel model)
     {
+        CleanFriendHeadsItems();
+
         if (mapInfoHandler != null)
             mapInfoHandler.SetMinimapSceneInfo(model.hotSceneInfo);
 
@@ -339,9 +347,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     internal void InitializeFriendsTracker()
     {
-        if (friendsGrid != null)
-            friendsGrid.SetItems(new List<BaseComponentView>(), false);
-
+        CleanFriendHeadsItems();
         mapInfoHandler = new MapInfoHandler();
         friendsHandler = new FriendsHandler(mapInfoHandler);
         friendsHandler.OnFriendAddedEvent += OnFriendAdded;
@@ -376,6 +382,15 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (friendsGrid != null)
             friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList(), false);
+    }
+
+    internal void CleanFriendHeadsItems()
+    {
+        if (friendsGrid != null)
+        {
+            friendsGrid.RemoveItems();
+            currentFriendHeads.Clear();
+        }
     }
 
     internal BaseComponentView IntantiateAndConfigureFriendHead(FriendHeadForPlaceCardComponentModel friendInfo, FriendHeadForPlaceCardComponentView prefabToUse)

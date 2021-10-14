@@ -201,6 +201,8 @@ MonoBehaviour:
   loadingSpinner: {fileID: 2767975575042969055}
   cardAnimator: {fileID: 8870024113284376444}
   cardSelectionFrame: {fileID: 755781203522913821}
+  contentVerticalLayout: {fileID: 0}
+  infoVerticalLayout: {fileID: 0}
   model:
     placePictureSprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
       type: 3}

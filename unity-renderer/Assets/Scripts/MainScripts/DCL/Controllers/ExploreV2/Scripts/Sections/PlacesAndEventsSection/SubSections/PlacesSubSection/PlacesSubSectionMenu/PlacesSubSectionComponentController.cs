@@ -70,9 +70,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             return;
 
         view.SetPlacesAsLoading(true);
-
         RequestAllPlacesFromAPI();
-
         reloadPlaces = false;
     }
 
@@ -90,19 +88,18 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void LoadPlaces()
     {
-        view.SetPlaces(new List<PlaceCardComponentModel>());
         friendsTrackerController.RemoveAllHandlers();
 
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI;
+        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(50).ToList();
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
             PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
-        view.SetPlacesAsLoading(false);
         view.SetPlaces(places);
+        view.SetPlacesAsLoading(false);
     }
 
     public void Dispose()

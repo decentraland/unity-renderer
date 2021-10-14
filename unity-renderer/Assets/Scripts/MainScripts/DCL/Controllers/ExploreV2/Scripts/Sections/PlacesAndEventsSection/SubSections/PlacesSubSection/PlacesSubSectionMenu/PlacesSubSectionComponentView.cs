@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,6 +47,8 @@ public interface IPlacesSubSectionComponentView
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
+    internal const string PLACE_CARDS_POOL_NAME = "PlaceCardsPool";
+
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
@@ -61,6 +64,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public event Action OnPlacesSubSectionEnable;
 
     internal PlaceCardComponentView placeModal;
+    internal Pool placeCardsPool;
 
     public Color[] currentFriendColors => friendColors;
 
@@ -68,24 +72,26 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void PostInitialization()
     {
+        ConfigurePlaceCardModal();
+        ConfigurePlaceCardsPool();
         StartCoroutine(WaitForComponentsInitialization());
+    }
 
-        placeModal = GameObject.Instantiate(placeCardModalPrefab);
-        placeModal.gameObject.SetActive(false);
+    internal IEnumerator WaitForComponentsInitialization()
+    {
+        yield return new WaitUntil(() => places.isFullyInitialized);
+
+        places.RemoveItems();
+        OnReady?.Invoke();
     }
 
     public override void RefreshControl() { places.RefreshControl(); }
 
-    public IEnumerator WaitForComponentsInitialization()
-    {
-        yield return new WaitUntil(() => places.isFullyInitialized);
-
-        OnReady?.Invoke();
-    }
-
     public void SetPlaces(List<PlaceCardComponentModel> places)
     {
-        List<BaseComponentView> placeComponentsToAdd = IntantiateAndConfigurePlaceCards(places, placeCardPrefab);
+        this.places.ExtractItems();
+        placeCardsPool.ReleaseAll();
+        List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
         this.places.SetItems(placeComponentsToAdd, false);
         placesNoDataText.gameObject.SetActive(places.Count == 0);
     }
@@ -105,18 +111,39 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void HidePlaceModal() { placeModal.gameObject.SetActive(false); }
 
-    internal List<BaseComponentView> IntantiateAndConfigurePlaceCards(List<PlaceCardComponentModel> places, PlaceCardComponentView prefabToUse)
+    internal void ConfigurePlaceCardModal()
+    {
+        placeModal = Instantiate(placeCardModalPrefab);
+        placeModal.gameObject.SetActive(false);
+    }
+
+    internal void ConfigurePlaceCardsPool()
+    {
+        placeCardsPool = PoolManager.i.GetPool(PLACE_CARDS_POOL_NAME);
+        if (placeCardsPool == null)
+        {
+            placeCardsPool = PoolManager.i.AddPool(
+                PLACE_CARDS_POOL_NAME,
+                Instantiate(placeCardPrefab).gameObject,
+                maxPrewarmCount: 200,
+                isPersistent: true);
+        }
+    }
+
+    internal List<BaseComponentView> InstantiateAndConfigurePlaceCards(List<PlaceCardComponentModel> places)
     {
         List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
 
         foreach (PlaceCardComponentModel placeInfo in places)
         {
-            PlaceCardComponentView placeGO = GameObject.Instantiate(prefabToUse);
-            placeGO.OnFullyInitialized += () =>
-            {
-                placeGO.Configure(placeInfo);
+            PlaceCardComponentView placeGO = placeCardsPool.Get().gameObject.GetComponent<PlaceCardComponentView>();
+            placeGO.Configure(placeInfo);
+
+            if (placeGO.isFullyInitialized)
                 OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
-            };
+            else
+                placeGO.OnFullyInitialized += () => OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
+
             instantiatedPlaces.Add(placeGO);
         }
 

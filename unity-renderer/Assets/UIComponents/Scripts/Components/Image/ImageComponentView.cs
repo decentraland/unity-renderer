@@ -119,21 +119,28 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
 
     public void SetImage(Texture2D texture)
     {
-        model.texture = texture;
-
-        if (!Application.isPlaying)
+        if (model.texture != texture)
         {
-            OnImageObserverUpdated(texture);
-            return;
+            model.texture = texture;
+
+            if (!Application.isPlaying)
+            {
+                OnImageObserverUpdated(texture);
+                return;
+            }
+
+            SetLoadingIndicatorVisible(true);
+            imageObserver.RefreshWithTexture(texture);
         }
 
-        SetLoadingIndicatorVisible(true);
-        imageObserver.RefreshWithTexture(texture);
         SetFitParent(model.fitParent);
     }
 
     public void SetImage(string uri)
     {
+        if (model.uri == uri)
+            return;
+
         model.uri = uri;
 
         if (!Application.isPlaying)

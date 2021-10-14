@@ -55,17 +55,21 @@ public interface ICarouselComponentView
     void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true);
 
     /// <summary>
-    /// Get an item of the carousel.
-    /// </summary>
-    /// <param name="index">Index of the list of items.</param>
-    /// <returns>A specific UI component.</returns>
-    BaseComponentView GetItem(int index);
-
-    /// <summary>
     /// Get all the items of the carousel.
     /// </summary>
     /// <returns>The list of items.</returns>
-    List<BaseComponentView> GetAllItems();
+    List<BaseComponentView> GetItems();
+
+    /// <summary>
+    /// Extract all items out of the carousel.
+    /// </summary>
+    /// <returns>The list of extracted items.</returns>
+    List<BaseComponentView> ExtractItems();
+
+    /// <summary>
+    /// Remove all existing items from the carousel.
+    /// </summary>
+    void RemoveItems();
 
     /// <summary>
     /// Start carousel animation.
@@ -213,15 +217,24 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
             destroyOnlyUnnecesaryItems = true;
     }
 
-    public BaseComponentView GetItem(int index)
-    {
-        if (index >= instantiatedItems.Count)
-            return null;
+    public List<BaseComponentView> GetItems() { return instantiatedItems; }
 
-        return instantiatedItems[index];
+    public List<BaseComponentView> ExtractItems()
+    {
+        List<BaseComponentView> extractedItems = new List<BaseComponentView>();
+        foreach (BaseComponentView item in instantiatedItems)
+        {
+            item.transform.SetParent(null);
+            extractedItems.Add(item);
+        }
+
+        model.items.Clear();
+        instantiatedItems.Clear();
+
+        return extractedItems;
     }
 
-    public List<BaseComponentView> GetAllItems() { return instantiatedItems; }
+    public void RemoveItems() { DestroyInstantiatedItems(true); }
 
     public void StartCarousel(
         int fromIndex = 0,

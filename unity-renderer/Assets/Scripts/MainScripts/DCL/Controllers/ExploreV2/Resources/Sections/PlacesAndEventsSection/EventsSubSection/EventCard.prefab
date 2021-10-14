@@ -1232,6 +1232,8 @@ MonoBehaviour:
   eventInfoContainer: {fileID: 6076383061504269825}
   loadingSpinner: {fileID: 4892156300981809585}
   cardAnimator: {fileID: 8514878343383041345}
+  contentVerticalLayout: {fileID: 0}
+  infoVerticalLayout: {fileID: 0}
   isEventCardModal: 0
   model:
     eventId: 
@@ -1626,7 +1628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

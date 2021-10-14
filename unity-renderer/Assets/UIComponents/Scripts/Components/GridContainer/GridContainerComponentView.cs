@@ -49,24 +49,28 @@ public interface IGridContainerComponentView
     void SetMinWidthForFlexibleItems(float minWidthForFlexibleItems);
 
     /// <summary>
-    /// Set the items of the grid.
+    /// Set the items of the grid. All previously existing items will be removed.
     /// </summary>
     /// <param name="items">List of UI components.</param>
     /// <param name="instantiateNewCopyOfItems">Indicates if the items provided will be instantiated as a new copy or not.</param>
     void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true);
 
     /// <summary>
-    /// Get an item of the grid.
-    /// </summary>
-    /// <param name="index">Index of the list of items.</param>
-    /// <returns>A specific UI component.</returns>
-    BaseComponentView GetItem(int index);
-
-    /// <summary>
     /// Get all the items of the grid.
     /// </summary>
-    /// <returns>The list of items.</returns>
-    List<BaseComponentView> GetAllItems();
+    /// <returns></returns>
+    List<BaseComponentView> GetItems();
+
+    /// <summary>
+    /// Extract all items out of the grid.
+    /// </summary>
+    /// <returns>The list of extracted items.</returns>
+    List<BaseComponentView> ExtractItems();
+
+    /// <summary>
+    /// Remove all existing items from the grid.
+    /// </summary>
+    void RemoveItems();
 }
 
 public class GridContainerComponentView : BaseComponentView, IGridContainerComponentView
@@ -242,15 +246,24 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         SetItemSize(model.itemSize);
     }
 
-    public BaseComponentView GetItem(int index)
-    {
-        if (index >= instantiatedItems.Count)
-            return null;
+    public List<BaseComponentView> GetItems() { return instantiatedItems; }
 
-        return instantiatedItems[index];
+    public List<BaseComponentView> ExtractItems()
+    {
+        List<BaseComponentView> extractedItems = new List<BaseComponentView>();
+        foreach (BaseComponentView item in instantiatedItems)
+        {
+            item.transform.SetParent(null);
+            extractedItems.Add(item);
+        }
+
+        model.items.Clear();
+        instantiatedItems.Clear();
+
+        return extractedItems;
     }
 
-    public List<BaseComponentView> GetAllItems() { return instantiatedItems; }
+    public void RemoveItems() { DestroyInstantiatedItems(true); }
 
     internal void CreateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
     {
