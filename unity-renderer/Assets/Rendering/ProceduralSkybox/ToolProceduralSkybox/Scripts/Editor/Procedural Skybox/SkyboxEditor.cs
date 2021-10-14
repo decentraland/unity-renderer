@@ -664,12 +664,12 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
 
             // Movement Type
-            layer.movementType = (MovementType)EditorGUILayout.EnumPopup("Movemnt Type", layer.movementType, GUILayout.Width(500), GUILayout.ExpandWidth(false));
+            layer.movementTypeCubemap = (MovementType)EditorGUILayout.EnumPopup("Movemnt Type", layer.movementTypeCubemap, GUILayout.Width(500), GUILayout.ExpandWidth(false));
 
             EditorGUILayout.Separator();
 
             // Rotation
-            if (layer.movementType == MovementType.PointBased)
+            if (layer.movementTypeCubemap == MovementType.PointBased)
             {
                 RenderTransitioningVector3(layer.cubemapRotations, "Rotation", "%", "Rot:", layer.timeSpan_start, layer.timeSpan_End);
 
@@ -687,13 +687,6 @@ namespace DCL.Skybox
 
         void RenderPlanarLayer(TextureLayer layer, bool isRadial = false)
         {
-            // Render Distance
-            if (!isRadial)
-            {
-                RenderTransitioningFloat(layer.renderDistance, "Render Distance", "", "", true, 0, 20, layer.timeSpan_start, layer.timeSpan_End);
-            }
-
-            EditorGUILayout.Separator();
 
             // Texture
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
@@ -726,17 +719,33 @@ namespace DCL.Skybox
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
 
-            // Offset
-            RenderTransitioningVector2(layer.offset, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+            layer.movementTypePlanar_Radial = (MovementType)EditorGUILayout.EnumPopup("Movemnt Type", layer.movementTypePlanar_Radial, GUILayout.Width(500), GUILayout.ExpandWidth(false));
 
+            EditorGUI.indentLevel++;
             EditorGUILayout.Separator();
 
-            // Speed
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Speed", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            layer.speed_Vec2 = EditorGUILayout.Vector2Field("", layer.speed_Vec2, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            GUILayout.EndHorizontal();
-            EditorGUILayout.Separator();
+            if (layer.movementTypePlanar_Radial == MovementType.Speed)
+            {
+                // Speed
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField("Speed", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                layer.speed_Vec2 = EditorGUILayout.Vector2Field("", layer.speed_Vec2, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                // Offset
+                RenderTransitioningVector2(layer.offset, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+            }
+
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.Space(15);
+
+            // Render Distance
+            RenderTransitioningFloat(layer.renderDistance, "Render Distance", "", "", true, 0, 20, layer.timeSpan_start, layer.timeSpan_End);
+
+            EditorGUILayout.Space(15);
 
             // Rotation
             if (!isRadial)
@@ -777,30 +786,45 @@ namespace DCL.Skybox
             // Gradient
             RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
 
+
+            EditorGUILayout.Space(10);
+
+
+            EditorGUILayout.Space(10);
+
+
+            layer.movementTypeSatellite = (MovementType)EditorGUILayout.EnumPopup("Movemnt Type", layer.movementTypeSatellite, GUILayout.Width(500), GUILayout.ExpandWidth(false));
+
+            EditorGUI.indentLevel++;
             EditorGUILayout.Separator();
 
-            // Size
-            RenderTransitioningVector2(layer.satelliteWidthHeight, "Width & Height", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+            if (layer.movementTypeSatellite == MovementType.Speed)
+            {
+                // Speed
+                GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField("Speed", GUILayout.Width(100), GUILayout.ExpandWidth(false));
+                layer.speed_Vec2 = EditorGUILayout.Vector2Field("", layer.speed_Vec2, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                // Offset
+                RenderTransitioningVector2(layer.offset, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+            }
 
-            EditorGUILayout.Space(10);
+            EditorGUI.indentLevel--;
 
-            // Offset
-            RenderTransitioningVector2(layer.offset, "Position", "%", "", layer.timeSpan_start, layer.timeSpan_End);
-
-            EditorGUILayout.Space(10);
-
-            // Speed
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Speed", GUILayout.Width(100), GUILayout.ExpandWidth(false));
-            layer.speed_Vec2 = EditorGUILayout.Vector2Field("", layer.speed_Vec2, GUILayout.Width(200), GUILayout.ExpandWidth(false));
-            GUILayout.EndHorizontal();
-
-            EditorGUILayout.Space(10);
+            EditorGUILayout.Space(20);
 
             // Rotation
             RenderTransitioningFloat(layer.rotation_float, "Rotation", "", "", true, 0, 360, layer.timeSpan_start, layer.timeSpan_End);
 
-            EditorGUILayout.Space(10);
+            EditorGUILayout.Space(12);
+
+            // Size
+            RenderTransitioningVector2(layer.satelliteWidthHeight, "Width & Height", "%", "", layer.timeSpan_start, layer.timeSpan_End);
+
+            EditorGUILayout.Space(15);
 
             // Particle variables
             RenderParticleLayer(layer);
