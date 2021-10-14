@@ -201,7 +201,6 @@ namespace DCL
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
 
-        [ContextMenu("Update Skybox Config")]
         private void ApplySkyboxConfig()
         {
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(useProceduralSkybox);
@@ -215,6 +214,14 @@ namespace DCL
                 jumpTime = false;
             }
             DataStore.i.skyboxConfig.objectUpdated.Set(true);
+        }
+
+        private void OnValidate()
+        {
+            if (Application.isPlaying)
+            {
+                ApplySkyboxConfig();
+            }
         }
     }
 }

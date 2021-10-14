@@ -37,7 +37,6 @@ namespace DCL.Skybox
         public Vector2 speed_Vec2;
         public float speed;
         public float normalIntensity;
-        public MovementType movementType;
 
         // Particles
         public bool particleExpanded;
@@ -55,6 +54,10 @@ namespace DCL.Skybox
         public List<TransitioningVector2> distortSpeed;
         public List<TransitioningVector2> distortSharpness;
 
+        public MovementType movementTypeCubemap;
+        public MovementType movementTypePlanar_Radial;
+        public MovementType movementTypeSatellite;
+
         public LayerType LayerType { get => layerType; set { layerType = value; } }
 
         public TextureLayer(string name = "noname")
@@ -70,7 +73,7 @@ namespace DCL.Skybox
             satelliteWidthHeight = new List<TransitioningVector2>();
             cubemapRotations = new List<TransitioningVector3>();
             color = new Gradient();
-            movementType = MovementType.Speed;
+            movementTypeCubemap = MovementType.Speed;
 
             distortIntensity = new List<TransitioningFloat>();
             distortSize = new List<TransitioningFloat>();

@@ -275,7 +275,7 @@ namespace DCL.Skybox
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
 
             // Set cubemap rotation. (Shader variable reused)   
-            if (layer.movementType == MovementType.PointBased)
+            if (layer.movementTypeCubemap == MovementType.PointBased)
             {
                 Vector3 currentRotation = GetTransitionValue(layer.cubemapRotations, normalizedLayerTime * 100);
                 selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(currentRotation.x, currentRotation.y, currentRotation.z, 0));
@@ -302,21 +302,39 @@ namespace DCL.Skybox
 
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
 
-            // Tiling and Offset
-            Vector2 currentOffset = GetTransitionValue(layer.offset, normalizedLayerTime * 100);
-            Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, currentOffset.x, currentOffset.y);
-            selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
 
-            // Set speed float to vector2
-            //selectedMat.SetVector("_speed_" + layerNum, layer.speed_Vec2);
-            // speed and Rotation
-            float rot = 0;
-            if (layer.LayerType == LayerType.Planar)
+            if (layer.movementTypePlanar_Radial == MovementType.Speed)
             {
-                rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                // speed and Rotation
+                float rot = 0;
+                if (layer.LayerType == LayerType.Planar)
+                {
+                    rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                }
+
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vec2.x, layer.speed_Vec2.y, rot));
+
+                // Tiling and Offset
+                Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, 0, 0);
+                selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
+            }
+            else
+            {
+                // speed and Rotation
+                float rot = 0;
+                if (layer.LayerType == LayerType.Planar)
+                {
+                    rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                }
+
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(0, 0, rot));
+
+                // Tiling and Offset
+                Vector2 currentOffset = GetTransitionValue(layer.offset, normalizedLayerTime * 100);
+                Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, currentOffset.x, currentOffset.y);
+                selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
             }
 
-            selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vec2.x, layer.speed_Vec2.y, rot));
 
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
@@ -360,17 +378,30 @@ namespace DCL.Skybox
 
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
 
-            // Tiling and Offset
-            Vector2 currentOffset = GetTransitionValue(layer.offset, normalizedLayerTime * 100);
-            Vector2 currentWidthHeight = GetTransitionValue(layer.satelliteWidthHeight, normalizedLayerTime * 100, new Vector2(1, 1));
-            Vector4 t = new Vector4(currentWidthHeight.x, currentWidthHeight.y, currentOffset.x, currentOffset.y);
-            selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
+            if (layer.movementTypeSatellite == MovementType.Speed)
+            {
+                // Tiling and Offset
+                Vector2 currentWidthHeight = GetTransitionValue(layer.satelliteWidthHeight, normalizedLayerTime * 100, new Vector2(1, 1));
+                Vector4 t = new Vector4(currentWidthHeight.x, currentWidthHeight.y, 0, 0);
+                selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
 
-            // Set speed float to vector2
-            //selectedMat.SetVector("_speed_" + layerNum, layer.speed_Vec2);
-            // speed and Rotation
-            float rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
-            selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vec2.x, layer.speed_Vec2.y, rot));
+
+                // speed and Rotation
+                float rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vec2.x, layer.speed_Vec2.y, rot));
+            }
+            else
+            {
+                // Tiling and Offset
+                Vector2 currentOffset = GetTransitionValue(layer.offset, normalizedLayerTime * 100);
+                Vector2 currentWidthHeight = GetTransitionValue(layer.satelliteWidthHeight, normalizedLayerTime * 100, new Vector2(1, 1));
+                Vector4 t = new Vector4(currentWidthHeight.x, currentWidthHeight.y, currentOffset.x, currentOffset.y);
+                selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
+
+                // speed and Rotation
+                float rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(0, 0, rot));
+            }
 
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));

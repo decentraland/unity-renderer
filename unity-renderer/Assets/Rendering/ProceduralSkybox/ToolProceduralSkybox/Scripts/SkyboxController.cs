@@ -45,6 +45,8 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
+            timeOfTheDay = 0;
+
             UpdateConfig();
             DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
         }
@@ -107,8 +109,8 @@ namespace DCL.Skybox
             // Jump to time
             if (DataStore.i.skyboxConfig.jumpTime)
             {
-                float jumpTime = DataStore.i.skyboxConfig.jumpToTime.Get();
-                timeOfTheDay = Mathf.Clamp(jumpTime, 0, cycleTime);
+                float jumpToTime = DataStore.i.skyboxConfig.jumpToTime.Get();
+                timeOfTheDay = Mathf.Clamp(jumpToTime, 0, cycleTime);
                 DataStore.i.skyboxConfig.jumpTime = false;
             }
 
@@ -134,8 +136,6 @@ namespace DCL.Skybox
                 directionalLight.gameObject.SetActive(false);
             }
             //DCL.DataStore.i.isProceduralSkyboxInUse.Set(true);
-
-            timeOfTheDay = 0;
 
             // Calculate time factor
             if (minutesPerSecond <= 0)
