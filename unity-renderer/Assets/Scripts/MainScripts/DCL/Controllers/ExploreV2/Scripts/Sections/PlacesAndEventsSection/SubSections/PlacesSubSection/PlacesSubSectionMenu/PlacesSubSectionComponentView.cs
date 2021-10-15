@@ -7,19 +7,30 @@ using UnityEngine;
 
 public interface IPlacesSubSectionComponentView
 {
-    Color[] currentFriendColors { get; }
-
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
     event Action OnReady;
 
+    /// <summary>
+    /// It will be triggered when a new friend handler is added by a place card.
+    /// </summary>
     event Action<FriendsHandler> OnFriendHandlerAdded;
 
     /// <summary>
     /// It will be triggered each time the view is enabled.
     /// </summary>
     event Action OnPlacesSubSectionEnable;
+
+    /// <summary>
+    /// It will be triggered when the "Show More" button is clicked.
+    /// </summary>
+    event Action OnShowMorePlacesClicked;
+
+    /// <summary>
+    /// Colors used for the background of the friends heads.
+    /// </summary>
+    Color[] currentFriendColors { get; }
 
     /// <summary>
     /// Set the places component with a list of places.
@@ -32,6 +43,12 @@ public interface IPlacesSubSectionComponentView
     /// </summary>
     /// <param name="isVisible">True for activating the loading mode.</param>
     void SetPlacesAsLoading(bool isVisible);
+
+    /// <summary>
+    /// Activates/Deactivates the "Show More" button.
+    /// </summary>
+    /// <param name="isActive">True for activating it.</param>
+    void SetShowMorePlacesButtonActive(bool isActive);
 
     /// <summary>
     /// Shows the Place Card modal with the provided information.
@@ -58,10 +75,13 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal GameObject placesLoading;
     [SerializeField] internal TMP_Text placesNoDataText;
     [SerializeField] internal Color[] friendColors = null;
+    [SerializeField] internal GameObject showMorePlacesButtonContainer;
+    [SerializeField] internal ButtonComponentView showMorePlacesButton;
 
     public event Action OnReady;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
+    public event Action OnShowMorePlacesClicked;
 
     internal PlaceCardComponentView placeModal;
     internal Pool placeCardsPool;
@@ -79,13 +99,25 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     internal IEnumerator WaitForComponentsInitialization()
     {
-        yield return new WaitUntil(() => places.isFullyInitialized);
+        yield return new WaitUntil(() => places.isFullyInitialized &&
+                                         showMorePlacesButton.isFullyInitialized);
 
         places.RemoveItems();
+
+        showMorePlacesButton.onClick.RemoveAllListeners();
+        showMorePlacesButton.onClick.AddListener(() => OnShowMorePlacesClicked?.Invoke());
+
         OnReady?.Invoke();
     }
 
     public override void RefreshControl() { places.RefreshControl(); }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        showMorePlacesButton.onClick.RemoveAllListeners();
+    }
 
     public void SetPlaces(List<PlaceCardComponentModel> places)
     {
@@ -100,8 +132,12 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         places.gameObject.SetActive(!isVisible);
         placesLoading.SetActive(isVisible);
-        placesNoDataText.gameObject.SetActive(false);
+
+        if (isVisible)
+            placesNoDataText.gameObject.SetActive(false);
     }
+
+    public void SetShowMorePlacesButtonActive(bool isActive) { showMorePlacesButtonContainer.gameObject.SetActive(isActive); }
 
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {

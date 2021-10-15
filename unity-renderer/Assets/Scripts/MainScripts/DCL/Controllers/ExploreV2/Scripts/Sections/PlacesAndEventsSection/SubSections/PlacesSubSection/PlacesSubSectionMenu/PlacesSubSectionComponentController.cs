@@ -22,6 +22,11 @@ public interface IPlacesSubSectionComponentController : IDisposable
     /// Load the places with the last requested ones.
     /// </summary>
     void LoadPlaces();
+
+    /// <summary>
+    /// Increment the number of places loaded.
+    /// </summary>
+    void ShowMorePlaces();
 }
 
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
@@ -29,10 +34,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnPlacesFromAPIUpdated;
 
+    internal const int INITIAL_NUMBER_OF_PLACES = 50;
+    internal const int SHOW_MORE_PLACES_INCREMENT = 20;
+
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal FriendTrackerController friendsTrackerController;
     internal List<HotSceneInfo> placesFromAPI = new List<HotSceneInfo>();
+    internal int currentPlacesShowed = INITIAL_NUMBER_OF_PLACES;
     internal bool reloadPlaces = false;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController)
@@ -40,6 +49,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view = view;
         this.view.OnReady += FirstLoading;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
+        this.view.OnShowMorePlacesClicked += ShowMorePlaces;
 
         placesAPIApiController = placesAPI;
         OnPlacesFromAPIUpdated += OnRequestedPlacesUpdated;
@@ -69,7 +79,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         if (!reloadPlaces)
             return;
 
+        currentPlacesShowed = INITIAL_NUMBER_OF_PLACES;
         view.SetPlacesAsLoading(true);
+        view.SetShowMorePlacesButtonActive(false);
         RequestAllPlacesFromAPI();
         reloadPlaces = false;
     }
@@ -91,7 +103,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController.RemoveAllHandlers();
 
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(50).ToList();
+        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(currentPlacesShowed).ToList();
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
             PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
@@ -99,7 +111,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
 
         view.SetPlaces(places);
+        view.SetShowMorePlacesButtonActive(placesFromAPI.Count > currentPlacesShowed);
         view.SetPlacesAsLoading(false);
+    }
+
+    public void ShowMorePlaces()
+    {
+        currentPlacesShowed += SHOW_MORE_PLACES_INCREMENT;
+        LoadPlaces();
     }
 
     public void Dispose()
@@ -107,6 +126,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnReady -= FirstLoading;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
+        view.OnShowMorePlacesClicked -= ShowMorePlaces;
         OnPlacesFromAPIUpdated -= OnRequestedPlacesUpdated;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }

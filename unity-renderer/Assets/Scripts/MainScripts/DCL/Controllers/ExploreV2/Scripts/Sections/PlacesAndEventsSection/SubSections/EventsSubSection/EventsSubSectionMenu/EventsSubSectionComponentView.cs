@@ -198,7 +198,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         trendingEvents.gameObject.SetActive(!isVisible);
         trendingEventsLoading.SetActive(isVisible);
-        trendingEventsNoDataText.gameObject.SetActive(false);
+
+        if (isVisible)
+            trendingEventsNoDataText.gameObject.SetActive(false);
     }
 
     public void SetUpcomingEvents(List<EventCardComponentModel> events)
@@ -214,7 +216,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         upcomingEvents.gameObject.SetActive(!isVisible);
         upcomingEventsLoading.SetActive(isVisible);
-        upcomingEventsNoDataText.gameObject.SetActive(false);
+
+        if (isVisible)
+            upcomingEventsNoDataText.gameObject.SetActive(false);
     }
 
     public void SetGoingEvents(List<EventCardComponentModel> events)
@@ -230,7 +234,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         goingEvents.gameObject.SetActive(!isVisible);
         goingEventsLoading.SetActive(isVisible);
-        goingEventsNoDataText.gameObject.SetActive(false);
+
+        if (isVisible)
+            goingEventsNoDataText.gameObject.SetActive(false);
     }
 
     public void ShowEventModal(EventCardComponentModel eventInfo)

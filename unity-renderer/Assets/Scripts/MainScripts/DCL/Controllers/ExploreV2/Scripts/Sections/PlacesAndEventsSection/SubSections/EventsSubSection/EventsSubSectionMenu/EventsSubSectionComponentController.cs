@@ -49,7 +49,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnEventsFromAPIUpdated;
 
-    internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 6;
+    internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 3;
     internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 6;
     internal const string LIVE_TAG_TEXT = "LIVE";
 
@@ -94,6 +94,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetFeaturedEventsAsLoading(true);
         view.SetTrendingEventsAsLoading(true);
         view.SetUpcomingEventsAsLoading(true);
+        view.SetShowMoreUpcomingEventsButtonActive(false);
         view.SetGoingEventsAsLoading(true);
         RequestAllEventsFromAPI();
         reloadEvents = false;
