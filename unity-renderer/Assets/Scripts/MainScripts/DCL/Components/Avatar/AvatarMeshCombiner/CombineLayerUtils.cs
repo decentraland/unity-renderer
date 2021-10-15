@@ -59,18 +59,18 @@ namespace DCL
             }
 
             // No valid materials were found
-            if ( result.Count == 1 && result[0].textureToId.Count == 0 && result[0].renderers.Count == 0)
+            if (result.Count == 1 && result[0].textureToId.Count == 0 && result[0].renderers.Count == 0)
             {
                 logger.Log("Slice End Fail!");
                 return null;
             }
 
-            result = result.Where( x => x.renderers != null && x.renderers.Count > 0 ).ToList();
+            result = result.Where(x => x.renderers != null && x.renderers.Count > 0).ToList();
 
-            if ( VERBOSE )
+            if (VERBOSE)
             {
                 int layInd = 0;
-                foreach ( var layer in result )
+                foreach (var layer in result)
                 {
                     string rendererNames = layer.renderers
                         .Select( (x) => $"{x.transform.parent.name}" )
@@ -99,7 +99,7 @@ namespace DCL
         /// <returns>A list that at least is guaranteed to contain the given layer.
         /// If the given layer exceeds the max texture count, more than a layer can be returned.
         /// </returns>
-        internal static List<CombineLayer> SubsliceLayerByTextures( CombineLayer layer )
+        internal static List<CombineLayer> SubsliceLayerByTextures(CombineLayer layer)
         {
             var result = new List<CombineLayer>();
             int textureId = 0;
@@ -111,7 +111,7 @@ namespace DCL
             {
                 var r = layer.renderers[rendererIndex];
 
-                if ( shouldAddLayerToResult )
+                if (shouldAddLayerToResult)
                 {
                     shouldAddLayerToResult = false;
                     textureId = 0;
@@ -130,7 +130,7 @@ namespace DCL
                 var mapIdsToInsert = GetMapIds(
                     new ReadOnlyDictionary<Texture2D, int>(currentResultLayer.textureToId),
                     mats,
-                    textureId );
+                    textureId);
 
                 // The renderer is too big to fit in a single layer? (This should never happen).
                 if (mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT)
@@ -142,7 +142,7 @@ namespace DCL
 
                 // The renderer can fit in a single layer.
                 // But can't fit in this one, as previous renderers filled this layer out.
-                if ( textureId + mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT )
+                if (textureId + mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT)
                 {
                     rendererIndex--;
                     shouldAddLayerToResult = true;
@@ -150,22 +150,22 @@ namespace DCL
                 }
 
                 // put GetMapIds result into currentLayer id map.
-                foreach ( var kvp in mapIdsToInsert )
+                foreach (var kvp in mapIdsToInsert)
                 {
-                    currentResultLayer.textureToId[ kvp.Key ] = kvp.Value;
+                    currentResultLayer.textureToId[kvp.Key] = kvp.Value;
                 }
 
                 currentResultLayer.renderers.Add(r);
 
                 textureId += mapIdsToInsert.Count;
 
-                if ( textureId >= MAX_TEXTURE_ID_COUNT )
+                if (textureId >= MAX_TEXTURE_ID_COUNT)
                 {
                     shouldAddLayerToResult = true;
                 }
             }
 
-            if ( VERBOSE )
+            if (VERBOSE)
             {
                 for (int i = 0; i < result.Count; i++)
                 {
@@ -212,9 +212,9 @@ namespace DCL
                     getCullModeFunc = GetCullMode;
                 }
 
-                var rendererByCullingMode = byOpaqueMode.GroupBy( getCullModeFunc );
+                var rendererByCullingMode = byOpaqueMode.GroupBy(getCullModeFunc);
 
-                foreach ( var byCulling in rendererByCullingMode )
+                foreach (var byCulling in rendererByCullingMode)
                 {
                     var byCullingRenderers = byCulling.ToList();
 

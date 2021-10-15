@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -32,36 +32,34 @@ namespace DCL
 
 
         /// <summary>
-        /// This method iterates over all the renderers contained in the given CombineLayer list, and
-        /// outputs an array of all the BoneWeights of the renderers in order.
+        /// This method iterates over all the renderers contained in the given SkinnedMeshRenderer list, and
+        /// combines all the BoneWeights of the renderers in order.
         ///
         /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
         /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
         /// not the same skeleton.
         /// </summary>
-        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
+        /// <param name="renderers">A SkinnedMeshRenderer list with the boneWeights to combine.</param>
         /// <returns>A list of BoneWeights that share the same skeleton.</returns>
-        public static List<BoneWeight> ComputeBoneWeights( List<CombineLayer> layers )
+        public static BoneWeight[] CombineBoneWeights(SkinnedMeshRenderer[] renderers)
         {
-            List<BoneWeight> result = new List<BoneWeight>();
-            int layersCount = layers.Count;
+            int boneWeightCount = 0;
+            BoneWeight[][] boneWeights = new BoneWeight[renderers.Length][];
 
-            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
+            for ( int i = 0; i < renderers.Length; ++i )
             {
-                CombineLayer layer = layers[layerIndex];
-                var layerRenderers = layer.renderers;
+                SkinnedMeshRenderer renderer = renderers[i];
+                boneWeights[i] = renderer.sharedMesh.boneWeights;
+                boneWeightCount += boneWeights[i].Length;
+            }
 
-                int layerRenderersCount = layerRenderers.Count;
+            BoneWeight[] result = new BoneWeight[boneWeightCount];
+            int offset = 0;
 
-                for (int i = 0; i < layerRenderersCount; i++)
-                {
-                    var renderer = layerRenderers[i];
-
-                    // Bone Weights
-                    var sharedMesh = renderer.sharedMesh;
-                    var meshBoneWeights = sharedMesh.boneWeights;
-                    result.AddRange(meshBoneWeights);
-                }
+            for ( int i = 0; i < boneWeights.Length; ++i )
+            {
+                Array.Copy(boneWeights[i], 0, result, offset, boneWeights[i].Length);
+                offset += boneWeights[i].Length;
             }
 
             return result;
@@ -82,6 +80,7 @@ namespace DCL
         {
             var result = new FlattenedMaterialsData();
             int layersCount = layers.Count;
+            result.materials = new Material[layersCount];
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
@@ -100,7 +99,7 @@ namespace DCL
 
                 newMaterial.SetInt(ShaderUtils.Cull, (int)cullMode);
 
-                result.materials.Add( newMaterial );
+                result.materials[layerIndex] = newMaterial;
 
                 int layerRenderersCount = layerRenderers.Count;
 
@@ -125,7 +124,8 @@ namespace DCL
                     int baseMapId = baseMapIdIsValid ? layer.textureToId[baseMap] : -1;
                     int emissionMapId = emissionMapIdIsValid ? layer.textureToId[emissionMap] : -1;
 
-                    result.texturePointers.AddRange(Enumerable.Repeat(new Vector3(baseMapId, emissionMapId, cutoff), vertexCount));
+                    result.texturePointers = new Vector3[vertexCount];
+                    Array.Copy(Enumerable.Repeat(new Vector3(baseMapId, emissionMapId, cutoff), vertexCount).ToArray(), result.texturePointers, vertexCount);
 
                     if ( baseMapId != -1 )
                     {
@@ -155,11 +155,13 @@ namespace DCL
 
                     // Base Colors
                     Vector4 baseColor = mat.GetVector(ShaderUtils.BaseColor);
-                    result.colors.AddRange(Enumerable.Repeat(baseColor, vertexCount));
+                    result.colors = new Vector4[vertexCount];
+                    Array.Copy(Enumerable.Repeat(baseColor, vertexCount).ToArray(), result.colors, vertexCount);
 
                     // Emission Colors
                     Vector4 emissionColor = mat.GetVector(ShaderUtils.EmissionColor);
-                    result.emissionColors.AddRange(Enumerable.Repeat(emissionColor, vertexCount));
+                    result.emissionColors = new Vector4[vertexCount];
+                    Array.Copy(Enumerable.Repeat(emissionColor, vertexCount).ToArray(), result.emissionColors, vertexCount);
 
                     logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
                 }
@@ -266,7 +268,7 @@ namespace DCL
 
             for (int i = 0; i < layers.Count; i++)
             {
-                layerRenderers.AddRange( layers[i].renderers );
+                layerRenderers.AddRange(layers[i].renderers);
             }
 
             using (var bakedInstances = new BakedCombineInstances())

@@ -41,10 +41,10 @@ namespace DCL
     /// </summary>
     public class FlattenedMaterialsData
     {
-        public List<Material> materials = new List<Material>();
-        public List<Vector3> texturePointers = new List<Vector3>();
-        public List<Vector4> colors = new List<Vector4>();
-        public List<Vector4> emissionColors = new List<Vector4>();
+        public Material[] materials;
+        public Vector3[] texturePointers;
+        public Vector4[] colors;
+        public Vector4[] emissionColors;
     }
 
     /// <summary>
@@ -100,21 +100,24 @@ namespace DCL
             //
             // Layers are divided accounting for the 12 textures limit and transparency/opaque limit.
             //
-            List<CombineLayer> layers = CombineLayerUtils.Slice( renderers );
+            List<CombineLayer> layers = CombineLayerUtils.Slice(renderers);
 
-            if ( layers == null )
+            if (layers == null)
             {
                 result.isValid = false;
                 return result;
             }
 
             // Here, the final combined mesh is generated. This mesh still doesn't have the UV encoded
-            // samplers and some needed attributes. Those will be added below.
-            var combineInstancesData = AvatarMeshCombinerUtils.ComputeCombineInstancesData( layers );
+            // samplers and some needed attributes. Those will be added below:
+
+            List<CombineInstance> combineInstancesData = AvatarMeshCombinerUtils.ComputeCombineInstancesData(layers);
             Mesh finalMesh = AvatarMeshCombinerUtils.CombineMeshesWithLayers(combineInstancesData, layers);
 
             // Note about bindPoses and boneWeights reassignment:
-            //
+
+            finalMesh.bindposes = bindPoses;
+
             // This has to be done because CombineMeshes doesn't identify different meshes
             // with boneWeights that correspond to the same bones. Also, bindposes are
             // stacked and repeated for each mesh when they shouldn't.
@@ -122,26 +125,28 @@ namespace DCL
             // This is OK when combining multiple SkinnedMeshRenderers that animate independently,
             // but not in our use case. 
 
-            finalMesh.bindposes = bindPoses;
+            BoneWeight[] boneWeights = AvatarMeshCombinerUtils.CombineBoneWeights(renderers);
+            finalMesh.boneWeights = boneWeights;
 
-            var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
-            finalMesh.boneWeights = boneWeights.ToArray();
-
-            var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
+            FlattenedMaterialsData flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials(layers, materialAsset);
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);
             finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, flattenedMaterialsData.texturePointers);
 
-            var tempArray = new NativeArray<Vector4>(flattenedMaterialsData.colors.Count, Allocator.Temp);
-            tempArray.CopyFrom(flattenedMaterialsData.colors.ToArray());
+            var tempArray = new NativeArray<Vector4>(flattenedMaterialsData.colors.Length, Allocator.Temp);
+            tempArray.CopyFrom(flattenedMaterialsData.colors);
             finalMesh.SetColors(tempArray);
             tempArray.Dispose();
+
             // Each layer corresponds with a subMesh. This is to take advantage of the sharedMaterials array.
             //
             // When a renderer has many sub-meshes, each materials array element correspond to the sub-mesh of
             // the same index. Each layer needs to be renderer with its own material, so it becomes very useful.
             //
-            var subMeshDescriptors = AvatarMeshCombinerUtils.ComputeSubMeshes( layers );
-            if ( subMeshDescriptors.Count > 1 )
+            // In the following code we set the subMeshes to work with this feature:
+
+            List<SubMeshDescriptor> subMeshDescriptors = AvatarMeshCombinerUtils.ComputeSubMeshes(layers);
+
+            if (subMeshDescriptors.Count > 1)
             {
                 finalMesh.subMeshCount = subMeshDescriptors.Count;
                 finalMesh.SetSubMeshes(subMeshDescriptors);
@@ -150,7 +155,7 @@ namespace DCL
             finalMesh.Optimize();
 
             result.mesh = finalMesh;
-            result.materials = flattenedMaterialsData.materials.ToArray();
+            result.materials = flattenedMaterialsData.materials;
             result.isValid = true;
 
             return result;

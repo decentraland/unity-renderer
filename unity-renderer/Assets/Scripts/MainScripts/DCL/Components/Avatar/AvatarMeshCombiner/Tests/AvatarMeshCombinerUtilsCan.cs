@@ -110,7 +110,6 @@ public class AvatarMeshCombinerUtilsCan
     public void ComputeBoneWeights()
     {
         // Arrange
-        var layers = new List<CombineLayer>();
         int counter = 0;
 
         SkinnedMeshRenderer CreateRendererWithWeights()
@@ -134,22 +133,14 @@ public class AvatarMeshCombinerUtilsCan
             return renderer;
         }
 
-        for ( int i = 0; i < 2; i++ )
+        var renderers = new SkinnedMeshRenderer[]
         {
-            layers.Add(
-                new CombineLayer()
-                {
-                    renderers = new List<SkinnedMeshRenderer>()
-                    {
-                        CreateRendererWithWeights(),
-                        CreateRendererWithWeights(),
-                    }
-                }
-            );
-        }
+            CreateRendererWithWeights(),
+            CreateRendererWithWeights(),
+        };
 
         // Act
-        var result = AvatarMeshCombinerUtils.ComputeBoneWeights(layers);
+        var result = AvatarMeshCombinerUtils.CombineBoneWeights(renderers);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(96));
@@ -165,7 +156,7 @@ public class AvatarMeshCombinerUtilsCan
 
         Assert.That(assertCounter, Is.EqualTo(counter));
 
-        layers.SelectMany( (x) => x.renderers ).ToList().ForEach(
+        renderers.ToList().ForEach(
             DCL.Helpers.SkinnedMeshRenderer.DestroyAndUnload
         );
     }
@@ -183,17 +174,17 @@ public class AvatarMeshCombinerUtilsCan
 
         // Assert
         FlattenedMaterialsData expected = new FlattenedMaterialsData();
-        expected.colors = new List<Vector4>();
-        expected.texturePointers = new List<Vector3>();
-        expected.emissionColors = new List<Vector4>();
+        expected.colors = new Vector4[24];
+        expected.texturePointers = new Vector3[24];
+        expected.emissionColors = new Vector4[24];
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.blue, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+        Array.Copy(Enumerable.Repeat((Vector4)Color.blue, 24).ToArray(), expected.colors, 24);
+        Array.Copy(Enumerable.Repeat((Vector4)Color.yellow, 24).ToArray(), expected.emissionColors, 24);
+        Array.Copy(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24).ToArray(), expected.texturePointers, 24);
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.red, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+        Array.Copy(Enumerable.Repeat((Vector4)Color.red, 24).ToArray(), expected.colors, 24);
+        Array.Copy(Enumerable.Repeat((Vector4)Color.white, 24).ToArray(), expected.emissionColors, 24);
+        Array.Copy(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24).ToArray(), expected.texturePointers, 24);
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
@@ -219,17 +210,17 @@ public class AvatarMeshCombinerUtilsCan
 
         // Assert
         FlattenedMaterialsData expected = new FlattenedMaterialsData();
-        expected.colors = new List<Vector4>();
-        expected.texturePointers = new List<Vector3>();
-        expected.emissionColors = new List<Vector4>();
+        expected.colors = new Vector4[24];
+        expected.texturePointers = new Vector3[24];
+        expected.emissionColors = new Vector4[24];
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.blue, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+        Array.Copy(Enumerable.Repeat((Vector4)Color.blue, 24).ToArray(), expected.colors, 24);
+        Array.Copy(Enumerable.Repeat((Vector4)Color.yellow, 24).ToArray(), expected.emissionColors, 24);
+        Array.Copy(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24).ToArray(), expected.texturePointers, 24);
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.red, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+        Array.Copy(Enumerable.Repeat((Vector4)Color.red, 24).ToArray(), expected.colors, 24);
+        Array.Copy(Enumerable.Repeat((Vector4)Color.white, 24).ToArray(), expected.emissionColors, 24);
+        Array.Copy(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24).ToArray(), expected.texturePointers, 24);
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
