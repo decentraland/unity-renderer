@@ -12,12 +12,12 @@ public interface IPlaceCardComponentView
     /// <summary>
     /// Event that will be triggered when the jumpIn button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onJumpInClick { get; set; }
+    Button.ButtonClickedEvent onJumpInClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the info button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onInfoClick { get; set; }
+    Button.ButtonClickedEvent onInfoClick { get; }
 
     /// <summary>
     /// Fill the model and updates the place card with this data.
@@ -99,6 +99,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text placeAuthorText;
     [SerializeField] internal TMP_Text numberOfUsersText;
     [SerializeField] internal TMP_Text coordsText;
+    [SerializeField] internal Button modalBackgroundButton;
+    [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal GridContainerComponentView friendsGrid;
@@ -118,63 +120,29 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     internal Dictionary<string, BaseComponentView> currentFriendHeads = new Dictionary<string, BaseComponentView>();
 
-    public Button.ButtonClickedEvent onJumpInClick
-    {
-        get
-        {
-            if (jumpinButton == null)
-                return null;
-
-            return jumpinButton.onClick;
-        }
-        set
-        {
-            model.onJumpInClick = value;
-
-            if (jumpinButton != null)
-                jumpinButton.onClick = value;
-        }
-    }
-
-    public Button.ButtonClickedEvent onInfoClick
-    {
-        get
-        {
-            if (infoButton == null)
-                return null;
-
-            return infoButton.onClick;
-        }
-        set
-        {
-            model.onInfoClick = value;
-
-            if (infoButton != null)
-                infoButton.onClick = value;
-        }
-    }
+    public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
+    public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
 
     public override void PostInitialization()
     {
         if (placeImage != null)
-        {
-            placeImage.SetImage(sprite: null);
             placeImage.OnLoaded += OnPlaceImageLoaded;
-        }
 
         if (cardSelectionFrame != null)
             cardSelectionFrame.SetActive(false);
 
-        if (friendsGrid != null)
-            friendsGrid.OnFullyInitialized += () => CleanFriendHeadsItems();
+        if (closeCardButton != null)
+            closeCardButton.onClick.AddListener(CloseModal);
 
-        InitializeFriendsTracker();
-        Configure(model);
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.AddListener(CloseModal);
+
+        CleanFriendHeadsItems();
     }
 
     public void Configure(PlaceCardComponentModel model)
     {
-        CleanFriendHeadsItems();
+        InitializeFriendsTracker();
 
         if (mapInfoHandler != null)
             mapInfoHandler.SetMinimapSceneInfo(model.hotSceneInfo);
@@ -203,8 +171,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceDescription(model.placeDescription);
         SetPlaceAuthor(model.placeAuthor);
         SetNumberOfUsers(model.numberOfUsers);
-        onJumpInClick = model.onJumpInClick;
-        onInfoClick = model.onInfoClick;
+
+        onJumpInClick?.RemoveAllListeners();
+        onJumpInClick?.AddListener(() => model.onJumpInClick.Invoke());
+
+        onInfoClick?.RemoveAllListeners();
+        onInfoClick?.AddListener(() => model.onInfoClick.Invoke());
 
         RebuildCardLayouts();
     }
@@ -238,11 +210,17 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (placeImage != null)
             placeImage.OnLoaded -= OnPlaceImageLoaded;
 
-        if (infoButton != null)
-            infoButton.onClick.RemoveAllListeners();
+        if (onInfoClick != null)
+            onInfoClick.RemoveAllListeners();
 
-        if (jumpinButton != null)
-            jumpinButton.onClick.RemoveAllListeners();
+        if (onJumpInClick != null)
+            onJumpInClick.RemoveAllListeners();
+
+        if (closeCardButton != null)
+            closeCardButton.onClick.RemoveAllListeners();
+
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.RemoveAllListeners();
 
         if (friendsHandler != null)
         {
@@ -348,10 +326,16 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal void InitializeFriendsTracker()
     {
         CleanFriendHeadsItems();
-        mapInfoHandler = new MapInfoHandler();
-        friendsHandler = new FriendsHandler(mapInfoHandler);
-        friendsHandler.OnFriendAddedEvent += OnFriendAdded;
-        friendsHandler.OnFriendRemovedEvent += OnFriendRemoved;
+
+        if (mapInfoHandler == null)
+            mapInfoHandler = new MapInfoHandler();
+
+        if (friendsHandler == null)
+        {
+            friendsHandler = new FriendsHandler(mapInfoHandler);
+            friendsHandler.OnFriendAddedEvent += OnFriendAdded;
+            friendsHandler.OnFriendRemovedEvent += OnFriendRemoved;
+        }
     }
 
     internal void OnFriendAdded(UserProfile profile, Color backgroundColor)
@@ -396,7 +380,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal BaseComponentView IntantiateAndConfigureFriendHead(FriendHeadForPlaceCardComponentModel friendInfo, FriendHeadForPlaceCardComponentView prefabToUse)
     {
         FriendHeadForPlaceCardComponentView friendHeadGO = GameObject.Instantiate(prefabToUse);
-        friendHeadGO.OnFullyInitialized += () => friendHeadGO.Configure(friendInfo);
+        friendHeadGO.Configure(friendInfo);
 
         return friendHeadGO;
     }
@@ -409,4 +393,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (infoVerticalLayout != null)
             Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
     }
+
+    internal void CloseModal() { gameObject.SetActive(false); }
 }

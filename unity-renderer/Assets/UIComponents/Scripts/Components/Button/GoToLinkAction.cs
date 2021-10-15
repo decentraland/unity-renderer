@@ -12,10 +12,8 @@ public class GoToLinkAction : MonoBehaviour
         button = GetComponent<ButtonComponentView>();
 
         if (button != null)
-            button.OnFullyInitialized += OnButtonFullyInitialized;
+            button.onClick.AddListener(GoToUrl);
     }
-
-    internal void OnButtonFullyInitialized() { button.onClick.AddListener(GoToUrl); }
 
     internal void GoToUrl()
     {
@@ -28,9 +26,6 @@ public class GoToLinkAction : MonoBehaviour
     private void OnDestroy()
     {
         if (button != null)
-        {
-            button.OnFullyInitialized -= OnButtonFullyInitialized;
             button.onClick.RemoveAllListeners();
-        }
     }
 }

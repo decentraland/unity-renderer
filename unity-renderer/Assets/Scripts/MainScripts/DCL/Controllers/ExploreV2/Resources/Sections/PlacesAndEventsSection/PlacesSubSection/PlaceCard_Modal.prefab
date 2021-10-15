@@ -329,7 +329,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1071488361356379080}
   m_HandleRect: {fileID: 4120738107523320214}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -492,8 +492,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 360, y: 0}
-  m_SizeDelta: {x: 720, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8391442166639773757
 MonoBehaviour:
@@ -1045,6 +1045,8 @@ MonoBehaviour:
   placeAuthorText: {fileID: 137311636302676078}
   numberOfUsersText: {fileID: 0}
   coordsText: {fileID: 3036884130066497032}
+  modalBackgroundButton: {fileID: 9072824849294888897}
+  closeCardButton: {fileID: 9179686715425177228}
   infoButton: {fileID: 0}
   jumpinButton: {fileID: 5143636963063585730}
   friendsGrid: {fileID: 0}
@@ -1363,8 +1365,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 61, y: 0}
-  m_SizeDelta: {x: 598, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &2297358043593535066
 CanvasRenderer:
@@ -1882,19 +1884,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4028164908723677342}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3079638372364182006}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &3522448121738721895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2031,7 +2021,7 @@ PrefabInstance:
     - target: {fileID: 9189916629297864620, guid: fba0fec118dd0e346a80979a4c65028d,
         type: 3}
       propertyPath: model.onClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9189916629297864620, guid: fba0fec118dd0e346a80979a4c65028d,
         type: 3}
@@ -2071,6 +2061,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 66964748830974240}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9179686715425177228 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9189916629297864620, guid: fba0fec118dd0e346a80979a4c65028d,
+    type: 3}
+  m_PrefabInstance: {fileID: 66964748830974240}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &647162040541456859
 PrefabInstance:
   m_ObjectHideFlags: 0

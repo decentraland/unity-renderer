@@ -7,16 +7,6 @@ using UnityEngine.EventSystems;
 public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
     /// <summary>
-    /// It will be triggered after the UI component is fully initialized (PostInitialization included).
-    /// </summary>
-    event Action OnFullyInitialized;
-
-    /// <summary>
-    /// Returns true if the UI component is already fully initialized (PostInitialization included).
-    /// </summary>
-    bool isFullyInitialized { get; }
-
-    /// <summary>
     /// It is called just after the UI component has been initialized.
     /// </summary>
     void PostInitialization();
@@ -68,14 +58,10 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
-    public event Action OnFullyInitialized;
-    public bool isFullyInitialized { get; private set; }
-
     internal ShowHideAnimator showHideAnimator;
 
     internal void Initialize()
     {
-        isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
 
         DataStore.i.screen.size.OnChange += OnScreenSizeChange;
@@ -101,13 +87,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     private void Awake() { Initialize(); }
 
-    private void Start()
-    {
-        PostInitialization();
-
-        isFullyInitialized = true;
-        OnFullyInitialized?.Invoke();
-    }
+    private void Start() { PostInitialization(); }
 
     public virtual void Update() { }
 

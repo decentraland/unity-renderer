@@ -101,13 +101,6 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         ConfigurePlaceCardModal();
         ConfigurePlaceCardsPool();
-        StartCoroutine(WaitForComponentsInitialization());
-    }
-
-    internal IEnumerator WaitForComponentsInitialization()
-    {
-        yield return new WaitUntil(() => places.isFullyInitialized &&
-                                         showMorePlacesButton.isFullyInitialized);
 
         places.RemoveItems();
 
@@ -183,12 +176,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         {
             PlaceCardComponentView placeGO = placeCardsPool.Get().gameObject.GetComponent<PlaceCardComponentView>();
             placeGO.Configure(placeInfo);
-
-            if (placeGO.isFullyInitialized)
-                OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
-            else
-                placeGO.OnFullyInitialized += () => OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
-
+            OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
             instantiatedPlaces.Add(placeGO);
         }
 

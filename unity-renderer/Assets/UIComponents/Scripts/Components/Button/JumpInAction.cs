@@ -15,10 +15,8 @@ public class JumpInAction : MonoBehaviour
         button = GetComponent<ButtonComponentView>();
 
         if (button != null)
-            button.OnFullyInitialized += OnButtonFullyInitialized;
+            button.onClick.AddListener(JumpIn);
     }
-
-    internal void OnButtonFullyInitialized() { button.onClick.AddListener(JumpIn); }
 
     internal void JumpIn()
     {
@@ -31,9 +29,6 @@ public class JumpInAction : MonoBehaviour
     private void OnDestroy()
     {
         if (button != null)
-        {
-            button.OnFullyInitialized -= OnButtonFullyInitialized;
             button.onClick.RemoveAllListeners();
-        }
     }
 }

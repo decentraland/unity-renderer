@@ -8,22 +8,22 @@ public interface IEventCardComponentView
     /// <summary>
     /// Event that will be triggered when the jumpIn button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onJumpInClick { get; set; }
+    Button.ButtonClickedEvent onJumpInClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the info button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onInfoClick { get; set; }
+    Button.ButtonClickedEvent onInfoClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the subscribe event button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onSubscribeClick { get; set; }
+    Button.ButtonClickedEvent onSubscribeClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the unsubscribe event button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onUnsubscribeClick { get; set; }
+    Button.ButtonClickedEvent onUnsubscribeClick { get; }
 
     /// <summary>
     /// Fill the model and updates the event card with this data.
@@ -138,6 +138,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal TMP_Text subscribedUsersTitleForLive;
     [SerializeField] internal TMP_Text subscribedUsersTitleForNotLive;
     [SerializeField] internal TMP_Text subscribedUsersText;
+    [SerializeField] internal Button modalBackgroundButton;
+    [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
@@ -153,87 +155,21 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal bool isEventCardModal = false;
     [SerializeField] internal EventCardComponentModel model;
 
-    public Button.ButtonClickedEvent onJumpInClick
-    {
-        get
-        {
-            if (jumpinButton == null)
-                return null;
-
-            return jumpinButton.onClick;
-        }
-        set
-        {
-            model.onJumpInClick = value;
-
-            if (jumpinButton != null)
-                jumpinButton.onClick = value;
-        }
-    }
-
-    public Button.ButtonClickedEvent onInfoClick
-    {
-        get
-        {
-            if (infoButton == null)
-                return null;
-
-            return infoButton.onClick;
-        }
-        set
-        {
-            model.onInfoClick = value;
-
-            if (infoButton != null)
-                infoButton.onClick = value;
-        }
-    }
-
-    public Button.ButtonClickedEvent onSubscribeClick
-    {
-        get
-        {
-            if (subscribeEventButton == null)
-                return null;
-
-            return subscribeEventButton.onClick;
-        }
-        set
-        {
-            model.onSubscribeClick = value;
-
-            if (subscribeEventButton != null)
-                subscribeEventButton.onClick = value;
-        }
-    }
-
-    public Button.ButtonClickedEvent onUnsubscribeClick
-    {
-        get
-        {
-            if (unsubscribeEventButton == null)
-                return null;
-
-            return unsubscribeEventButton.onClick;
-        }
-        set
-        {
-            model.onUnsubscribeClick = value;
-
-            if (unsubscribeEventButton != null)
-                unsubscribeEventButton.onClick = value;
-        }
-    }
+    public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
+    public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
+    public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
+    public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 
     public override void PostInitialization()
     {
         if (eventImage != null)
-        {
-            eventImage.SetImage(sprite: null);
             eventImage.OnLoaded += OnEventImageLoaded;
-        }
 
-        Configure(model);
+        if (closeCardButton != null)
+            closeCardButton.onClick.AddListener(CloseModal);
+
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.AddListener(CloseModal);
     }
 
     public void Configure(EventCardComponentModel model)
@@ -266,10 +202,18 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventOrganizer(model.eventOrganizer);
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
-        onJumpInClick = model.onJumpInClick;
-        onInfoClick = model.onInfoClick;
-        onSubscribeClick = model.onSubscribeClick;
-        onUnsubscribeClick = model.onUnsubscribeClick;
+
+        onJumpInClick?.RemoveAllListeners();
+        onJumpInClick?.AddListener(() => model.onJumpInClick.Invoke());
+
+        onInfoClick?.RemoveAllListeners();
+        onInfoClick?.AddListener(() => model.onInfoClick.Invoke());
+
+        onSubscribeClick?.RemoveAllListeners();
+        onSubscribeClick?.AddListener(() => model.onSubscribeClick.Invoke());
+
+        onUnsubscribeClick?.RemoveAllListeners();
+        onUnsubscribeClick?.AddListener(() => model.onUnsubscribeClick.Invoke());
 
         RebuildCardLayouts();
     }
@@ -297,17 +241,23 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (eventImage != null)
             eventImage.OnLoaded -= OnEventImageLoaded;
 
-        if (infoButton != null)
-            infoButton.onClick.RemoveAllListeners();
+        if (onInfoClick != null)
+            onInfoClick.RemoveAllListeners();
 
-        if (subscribeEventButton != null)
-            subscribeEventButton.onClick.RemoveAllListeners();
+        if (onSubscribeClick != null)
+            onSubscribeClick.RemoveAllListeners();
 
-        if (unsubscribeEventButton != null)
-            unsubscribeEventButton.onClick.RemoveAllListeners();
+        if (onUnsubscribeClick != null)
+            onUnsubscribeClick.RemoveAllListeners();
 
-        if (jumpinButton != null)
-            jumpinButton.onClick.RemoveAllListeners();
+        if (onJumpInClick != null)
+            onJumpInClick.RemoveAllListeners();
+
+        if (closeCardButton != null)
+            closeCardButton.onClick.RemoveAllListeners();
+
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.RemoveAllListeners();
     }
 
     public void SetEventPicture(Sprite sprite)
@@ -495,4 +445,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (infoVerticalLayout != null)
             Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
     }
+
+    internal void CloseModal() { gameObject.SetActive(false); }
 }

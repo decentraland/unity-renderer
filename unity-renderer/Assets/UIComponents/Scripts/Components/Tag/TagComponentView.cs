@@ -32,11 +32,7 @@ public class TagComponentView : BaseComponentView, ITagComponentView
     [Header("Configuration")]
     [SerializeField] internal TagComponentModel model;
 
-    public override void PostInitialization()
-    {
-        ;
-        Configure(model);
-    }
+    public override void PostInitialization() { }
 
     public void Configure(TagComponentModel model)
     {

@@ -125,7 +125,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
 
     public override void PostInitialization()
     {
-        Configure(model);
         ConfigureManualButtonsEvents();
         StartCarousel();
     }

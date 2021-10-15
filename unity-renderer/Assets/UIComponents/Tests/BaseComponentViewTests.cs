@@ -29,7 +29,6 @@ public class BaseComponentViewTests
         baseComponent.Initialize();
 
         // Assert
-        Assert.IsFalse(baseComponent.isFullyInitialized, "The base component should not be initialized.");
         Assert.IsNotNull(baseComponent.showHideAnimator, "The base component show/hide animator is null.");
     }
 

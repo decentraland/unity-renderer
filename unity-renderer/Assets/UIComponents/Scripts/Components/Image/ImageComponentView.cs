@@ -63,11 +63,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
     internal ILazyTextureObserver imageObserver = new LazyTextureObserver();
     internal Vector2 lastParentSize;
 
-    public override void PostInitialization()
-    {
-        imageObserver.AddListener(OnImageObserverUpdated);
-        Configure(model);
-    }
+    public override void PostInitialization() { imageObserver.AddListener(OnImageObserverUpdated); }
 
     public override void LateUpdate()
     {

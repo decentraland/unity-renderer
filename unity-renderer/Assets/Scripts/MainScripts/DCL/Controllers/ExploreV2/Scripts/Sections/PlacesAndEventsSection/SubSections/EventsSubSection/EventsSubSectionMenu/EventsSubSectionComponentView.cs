@@ -141,16 +141,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
         ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
         ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
-        StartCoroutine(WaitForComponentsInitialization());
-    }
-
-    internal IEnumerator WaitForComponentsInitialization()
-    {
-        yield return new WaitUntil(() => featuredEvents.isFullyInitialized &&
-                                         trendingEvents.isFullyInitialized &&
-                                         upcomingEvents.isFullyInitialized &&
-                                         goingEvents.isFullyInitialized &&
-                                         showMoreUpcomingEventsButton.isFullyInitialized);
 
         featuredEvents.RemoveItems();
         trendingEvents.RemoveItems();

@@ -64,22 +64,14 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
     private void Start()
     {
-        if (sectionSelector.isFullyInitialized)
-            CreateSectionSelectorMappings();
-        else
-            sectionSelector.OnFullyInitialized += CreateSectionSelectorMappings;
-
-        if (closeMenuButton.isFullyInitialized)
-            ConfigureCloseButton();
-        else
-            closeMenuButton.OnFullyInitialized += ConfigureCloseButton;
+        CreateSectionSelectorMappings();
+        ConfigureCloseButton();
 
         OnInitialized?.Invoke();
     }
 
     private void OnDestroy()
     {
-        sectionSelector.OnFullyInitialized -= CreateSectionSelectorMappings;
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
     }

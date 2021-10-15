@@ -85,7 +85,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
     internal bool destroyOnlyUnnecesaryItems = false;
 
-    public override void PostInitialization() { Configure(model); }
+    public override void PostInitialization() { }
 
     public void Configure(GridContainerComponentModel model)
     {

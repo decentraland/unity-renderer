@@ -7,7 +7,7 @@ public interface IProfileCardComponentView
     /// <summary>
     /// Event that will be triggered when the profile card is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onClick { get; set; }
+    Button.ButtonClickedEvent onClick { get; }
 
     /// <summary>
     /// Fill the model and updates the profile card with this data.
@@ -63,36 +63,12 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
     [Header("Configuration")]
     [SerializeField] internal ProfileCardComponentModel model;
 
-    public Button.ButtonClickedEvent onClick
-    {
-        get
-        {
-            if (button == null)
-                return null;
-
-            return button.onClick;
-        }
-        set
-        {
-            model.onClick = value;
-
-            if (button != null)
-            {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() =>
-                {
-                    value?.Invoke();
-                });
-            }
-        }
-    }
+    public Button.ButtonClickedEvent onClick => button?.onClick;
 
     public override void PostInitialization()
     {
         if (profileImage != null)
             profileImage.OnLoaded += OnProfileImageLoaded;
-
-        Configure(model);
     }
 
     public void Configure(ProfileCardComponentModel model)
@@ -117,7 +93,9 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
         SetProfileName(model.profileName);
         SetProfileAddress(model.profileAddress);
-        onClick = model.onClick;
+
+        onClick.RemoveAllListeners();
+        onClick.AddListener(() => model.onClick.Invoke());
     }
 
     public override void Dispose()
@@ -130,7 +108,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
         if (button == null)
             return;
 
-        button.onClick.RemoveAllListeners();
+        onClick.RemoveAllListeners();
     }
 
     public void SetProfilePicture(Sprite sprite)

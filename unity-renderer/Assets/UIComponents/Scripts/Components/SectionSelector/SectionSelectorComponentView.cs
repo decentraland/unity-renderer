@@ -40,7 +40,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
-    public override void PostInitialization() { Configure(model); }
+    public override void PostInitialization() { }
 
     public void Configure(SectionSelectorComponentModel model)
     {
@@ -67,8 +67,18 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
             CreateSection(sections[i], $"Section_{i}");
         }
 
-        if (sections.Count > 0)
-            instantiatedSections[0].SelectToggle();
+        for (int i = 0; i < instantiatedSections.Count; i++)
+        {
+            if (i == 0)
+            {
+                instantiatedSections[i].SelectToggle();
+                instantiatedSections[i].SetSelectedVisuals();
+            }
+            else
+            {
+                instantiatedSections[i].SetUnselectedVisuals();
+            }
+        }
     }
 
     public ISectionToggle GetSection(int index)
@@ -83,19 +93,6 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     internal void CreateSection(SectionToggleModel newSectionModel, string name)
     {
-        if (Application.isPlaying)
-        {
-            IntantiateSectionToggle(newSectionModel, name);
-        }
-        else
-        {
-            if (isActiveAndEnabled)
-                StartCoroutine(InstantiateSectionToggleOnEditor(newSectionModel, name));
-        }
-    }
-
-    internal void IntantiateSectionToggle(SectionToggleModel newSectionModel, string name)
-    {
         if (sectionToggleTemplate == null)
             return;
 
@@ -104,12 +101,6 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         newGO.SetInfo(newSectionModel);
         newGO.gameObject.SetActive(true);
         instantiatedSections.Add(newGO);
-    }
-
-    internal IEnumerator InstantiateSectionToggleOnEditor(SectionToggleModel sectionModel, string name)
-    {
-        yield return null;
-        IntantiateSectionToggle(sectionModel, name);
     }
 
     internal void RemoveAllInstantiatedSections()

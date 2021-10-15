@@ -7,7 +7,7 @@ public interface IButtonComponentView
     /// <summary>
     /// Event that will be triggered when the button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onClick { get; set; }
+    Button.ButtonClickedEvent onClick { get; }
 
     /// <summary>
     /// Fill the model and updates the button with this data.
@@ -38,31 +38,9 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
     [Header("Configuration")]
     [SerializeField] internal ButtonComponentModel model;
 
-    public Button.ButtonClickedEvent onClick
-    {
-        get
-        {
-            if (button == null)
-                return null;
+    public Button.ButtonClickedEvent onClick => button?.onClick;
 
-            return button.onClick;
-        }
-        set
-        {
-            model.onClick = value;
-
-            if (button != null)
-            {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() =>
-                {
-                    value?.Invoke();
-                });
-            }
-        }
-    }
-
-    public override void PostInitialization() { Configure(model); }
+    public override void PostInitialization() { }
 
     public virtual void Configure(ButtonComponentModel model)
     {
@@ -77,7 +55,9 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         SetText(model.text);
         SetIcon(model.icon);
-        onClick = model.onClick;
+
+        onClick.RemoveAllListeners();
+        onClick.AddListener(() => model.onClick.Invoke());
     }
 
     public override void Dispose()

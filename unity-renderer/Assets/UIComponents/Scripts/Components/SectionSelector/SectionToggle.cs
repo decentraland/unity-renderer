@@ -8,7 +8,7 @@ public interface ISectionToggle
     /// <summary>
     /// Event that will be triggered when the toggle is selected.
     /// </summary>
-    ToggleEvent onSelect { get; set; }
+    ToggleEvent onSelect { get; }
 
     /// <summary>
     /// Get the toggle info.
@@ -26,6 +26,16 @@ public interface ISectionToggle
     /// Invoke the action of selecting the toggle.
     /// </summary>
     void SelectToggle();
+
+    /// <summary>
+    /// Set the toggle visuals as selected.
+    /// </summary>
+    void SetSelectedVisuals();
+
+    /// <summary>
+    /// Set the toggle visuals as unselected.
+    /// </summary>
+    void SetUnselectedVisuals();
 }
 
 public class SectionToggle : MonoBehaviour, ISectionToggle
@@ -41,26 +51,9 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
-    public ToggleEvent onSelect
-    {
-        get { return toggle?.onValueChanged; }
-        set
-        {
-            toggle?.onValueChanged.RemoveAllListeners();
-            toggle?.onValueChanged.AddListener((isOn) =>
-            {
-                if (isOn)
-                {
-                    SetSelectedVisuals();
-                    value?.Invoke(isOn);
-                }
-                else
-                {
-                    SetUnselectedVisuals();
-                }
-            });
-        }
-    }
+    public ToggleEvent onSelect => toggle?.onValueChanged;
+
+    private void Awake() { ConfigureDefaultOnSelectAction(); }
 
     public SectionToggleModel GetInfo()
     {
@@ -93,7 +86,9 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         unselectedTextColor = model.unselectedTextColor;
         unselectedImageColor = model.unselectedImageColor;
 
-        onSelect = model.onSelect;
+        onSelect.RemoveAllListeners();
+        ConfigureDefaultOnSelectAction();
+        onSelect.AddListener((isOn) => model.onSelect.Invoke(isOn));
     }
 
     public void SelectToggle()
@@ -116,6 +111,17 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         toggleBackground.color = unselectedBackgroundColor;
         sectionText.color = unselectedTextColor;
         sectionImage.color = unselectedImageColor;
+    }
+
+    internal void ConfigureDefaultOnSelectAction()
+    {
+        onSelect.AddListener((isOn) =>
+        {
+            if (isOn)
+                SetSelectedVisuals();
+            else
+                SetUnselectedVisuals();
+        });
     }
 
     private void OnDestroy()

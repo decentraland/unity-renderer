@@ -10,7 +10,7 @@ public class ButtonComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        buttonComponent = CreateButtonComponent();
+        buttonComponent = BaseComponentView.Create<ButtonComponentView>("Button_Common");
         testTexture = new Texture2D(20, 20);
     }
 
@@ -109,16 +109,4 @@ public class ButtonComponentViewTests
         else
             Assert.IsTrue(buttonComponent.icon.gameObject.activeSelf);
     }
-
-    protected virtual ButtonComponentView CreateButtonComponent() { return BaseComponentView.Create<ButtonComponentView>("Button_Common"); }
-}
-
-public class JumpInButtonComponentViewTests : ButtonComponentViewTests
-{
-    protected override ButtonComponentView CreateButtonComponent() { return BaseComponentView.Create<ButtonComponentView>("Button_JumpIn"); }
-}
-
-public class LinkButtonComponentViewTests : ButtonComponentViewTests
-{
-    protected override ButtonComponentView CreateButtonComponent() { return BaseComponentView.Create<ButtonComponentView>("Button_Link"); }
 }

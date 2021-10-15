@@ -25,22 +25,13 @@ public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEven
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
     public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
 
-    private void Start()
-    {
-        if (subSectionSelector.isFullyInitialized)
-            CreateSubSectionSelectorMappings();
-        else
-            subSectionSelector.OnFullyInitialized += CreateSubSectionSelectorMappings;
-    }
+    private void Start() { CreateSubSectionSelectorMappings(); }
 
-    private void OnDestroy()
-    {
-        subSectionSelector.OnFullyInitialized -= CreateSubSectionSelectorMappings;
-        RemoveSectionSelectorMappings();
-    }
+    private void OnDestroy() { RemoveSectionSelectorMappings(); }
 
     internal void CreateSubSectionSelectorMappings()
     {
+        subSectionSelector.RefreshControl();
         subSectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
         subSectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
 
