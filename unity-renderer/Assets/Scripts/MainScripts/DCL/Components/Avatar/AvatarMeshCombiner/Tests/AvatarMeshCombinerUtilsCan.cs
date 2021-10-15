@@ -183,17 +183,22 @@ public class AvatarMeshCombinerUtilsCan
 
         // Assert
         FlattenedMaterialsData expected = new FlattenedMaterialsData();
-        expected.colors = new List<Vector4>();
-        expected.texturePointers = new List<Vector3>();
-        expected.emissionColors = new List<Vector4>();
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.blue, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+        var colors = new List<Vector4>();
+        var texturePointers = new List<Vector3>();
+        var emissionColors = new List<Vector4>();
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.red, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+        colors.AddRange(Enumerable.Repeat((Vector4)Color.blue, 24));
+        emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
+        texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+
+        colors.AddRange(Enumerable.Repeat((Vector4)Color.red, 24));
+        emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
+        texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+
+        expected.colors = colors.ToArray();
+        expected.emissionColors = emissionColors.ToArray();
+        expected.texturePointers = texturePointers.ToArray();
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
@@ -219,17 +224,22 @@ public class AvatarMeshCombinerUtilsCan
 
         // Assert
         FlattenedMaterialsData expected = new FlattenedMaterialsData();
-        expected.colors = new List<Vector4>();
-        expected.texturePointers = new List<Vector3>();
-        expected.emissionColors = new List<Vector4>();
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.blue, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+        var colors = new List<Vector4>();
+        var texturePointers = new List<Vector3>();
+        var emissionColors = new List<Vector4>();
 
-        expected.colors.AddRange(Enumerable.Repeat((Vector4)Color.red, 24));
-        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
-        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+        colors.AddRange(Enumerable.Repeat((Vector4)Color.blue, 24));
+        emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
+        texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+
+        colors.AddRange(Enumerable.Repeat((Vector4)Color.red, 24));
+        emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
+        texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+
+        expected.colors = colors.ToArray();
+        expected.emissionColors = emissionColors.ToArray();
+        expected.texturePointers = texturePointers.ToArray();
 
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
