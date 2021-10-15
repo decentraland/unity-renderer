@@ -198,8 +198,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         if (previousButton == null || nextButton == null)
             return;
 
-        previousButton.gameObject.SetActive(isActived);
-        nextButton.gameObject.SetActive(isActived);
+        previousButton.gameObject.SetActive(isActived && model.items.Count > 1);
+        nextButton.gameObject.SetActive(isActived && model.items.Count > 1);
     }
 
     public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)
@@ -405,7 +405,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     {
         currentItemIndex = fromIndex;
 
-        while (true)
+        while (model.items.Count > 1)
         {
             if (!startInmediately)
                 yield return new WaitForSeconds(model.timeBetweenItems);
