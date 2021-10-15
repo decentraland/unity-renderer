@@ -16,6 +16,7 @@ namespace Tests
         private IScenesViewController scenesViewController;
         private ILandController landsController;
         private IProjectsController projectsController;
+        private INewProjectFlowController newProjectFlowController;
 
         private bool condtionMet = false;
 
@@ -28,6 +29,7 @@ namespace Tests
             scenesViewController = Substitute.For<IScenesViewController>();
             landsController = Substitute.For<ILandController>();
             projectsController = Substitute.For<IProjectsController>();
+            newProjectFlowController = Substitute.For<INewProjectFlowController>();
 
             ITheGraph theGraph = Substitute.For<ITheGraph>();
             theGraph.Query(Arg.Any<string>(), Arg.Any<string>()).Returns(new Promise<string>());
@@ -41,7 +43,7 @@ namespace Tests
             catalyst.GetDeployedScenes(Arg.Any<string[]>()).Returns(new Promise<CatalystSceneEntityPayload[]>());
 
             controller.Initialize(sectionsController, scenesViewController,
-                landsController, projectsController, theGraph, catalyst);
+                landsController, projectsController, newProjectFlowController, theGraph, catalyst);
         }
 
         [TearDown]

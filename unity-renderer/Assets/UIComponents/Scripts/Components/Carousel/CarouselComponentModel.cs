@@ -12,4 +12,6 @@ public class CarouselComponentModel
     public AnimationCurve animationCurve;
     public Color backgroundColor;
     public bool showManualControls = true;
+    public bool automaticTransition = true;
+    public bool staticContent = false;
 }

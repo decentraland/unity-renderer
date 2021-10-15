@@ -36,6 +36,8 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
     private ILandController landsController;
     private UnpublishPopupController unpublishPopupController;
 
+    private INewProjectFlowController newProjectFlowController;
+
     private SectionsHandler sectionsHandler;
     private SceneContextMenuHandler sceneContextMenuHandler;
     private LeftMenuHandler leftMenuHandler;
@@ -88,6 +90,8 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
         sectionsController?.Dispose();
         scenesViewController?.Dispose();
 
+        newProjectFlowController?.Dispose();
+
         view.Dispose();
     }
 
@@ -97,12 +101,13 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
             new ScenesViewController(view.GetCardViewPrefab(), view.GetTransform()),
             new LandController(),
             new ProjectsController(view.GetCardViewPrefab(), view.GetTransform()),
+            new NewProjectFlowController(),
             Environment.i.platform.serviceProviders.theGraph,
             Environment.i.platform.serviceProviders.catalyst);
     }
 
     internal void Initialize(ISectionsController sectionsController,
-        IScenesViewController scenesViewController, ILandController landsController, IProjectsController projectsController, ITheGraph theGraph, ICatalyst catalyst)
+        IScenesViewController scenesViewController, ILandController landsController, IProjectsController projectsController, INewProjectFlowController newProjectFlowController, ITheGraph theGraph, ICatalyst catalyst)
     {
         if (isInitialized)
             return;
@@ -113,6 +118,8 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
         this.scenesViewController = scenesViewController;
         this.landsController = landsController;
         this.projectsController = projectsController;
+
+        this.newProjectFlowController = newProjectFlowController;
 
         this.theGraph = theGraph;
         this.catalyst = catalyst;
@@ -136,6 +143,7 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
         scenesViewController.OnEditorPressed += OnGoToEditScene;
+        view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;

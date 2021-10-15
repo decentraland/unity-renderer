@@ -121,9 +121,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
 
     public override void PostInitialization()
     {
-        Configure(model);
+        //TODO: This should be refactored so no more configure is called after the PostInitialization
+        //  Configure(model);
         ConfigureManualButtonsEvents();
-        StartCarousel();
+        if (model.staticContent)
+            AssociatedCurrentItems();
+        if (model.automaticTransition)
+            StartCarousel();
     }
 
     public void Configure(CarouselComponentModel model)
@@ -143,7 +147,11 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         SetAnimationCurve(model.animationCurve);
         SetBackgroundColor(model.backgroundColor);
         SetManualControlsActive(model.showManualControls);
-        SetItems(model.items);
+
+        if (model.staticContent)
+            AssociatedCurrentItems();
+        else
+            SetItems(model.items);
     }
 
     public override void PostScreenSizeChanged()
@@ -201,7 +209,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)
     {
         model.items = items;
-
         DestroyInstantiatedItems(!destroyOnlyUnnecesaryItems);
 
         for (int i = 0; i < items.Count; i++)
@@ -211,6 +218,19 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
 
         if (!instantiateNewCopyOfItems)
             destroyOnlyUnnecesaryItems = true;
+    }
+
+    private void AssociatedCurrentItems()
+    {
+        instantiatedItems = model.items;
+
+        foreach (BaseComponentView item in instantiatedItems)
+        {
+            item.transform.SetParent(itemsContainer);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localScale = Vector3.one;
+            ResizeItem(item);
+        }
     }
 
     public BaseComponentView GetItem(int index)
@@ -392,7 +412,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     {
         currentItemIndex = fromIndex;
 
-        while (true)
+        bool continueCarrousel = true;
+        while (continueCarrousel)
         {
             if (!startInmediately)
                 yield return new WaitForSeconds(model.timeBetweenItems);
@@ -410,6 +431,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
                         direction = CarouselDirection.Left;
                         changeDirectionAfterFirstTransition = false;
                     }
+                    continueCarrousel = model.automaticTransition;
                 }
                 else
                 {
@@ -420,6 +442,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
                         direction = CarouselDirection.Right;
                         changeDirectionAfterFirstTransition = false;
                     }
+                    continueCarrousel = model.automaticTransition;
                 }
             }
         }

@@ -41,6 +41,7 @@ public interface IBaseComponentView : IDisposable
     /// It is called just after the screen size has changed.
     /// </summary>
     void PostScreenSizeChanged();
+
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]
