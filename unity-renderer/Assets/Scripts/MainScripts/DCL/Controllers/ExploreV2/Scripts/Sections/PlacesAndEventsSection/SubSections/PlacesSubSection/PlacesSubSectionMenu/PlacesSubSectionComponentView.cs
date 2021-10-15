@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public interface IPlacesSubSectionComponentView
 {
@@ -60,6 +61,11 @@ public interface IPlacesSubSectionComponentView
     /// Hides the Place Card modal.
     /// </summary>
     void HidePlaceModal();
+
+    /// <summary>
+    /// Set the current scroll view position to 1.
+    /// </summary>
+    void RestartScrollViewPosition();
 }
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
@@ -71,6 +77,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
 
     [Header("Prefab References")]
+    [SerializeField] internal ScrollRect scrollView;
     [SerializeField] internal GridContainerComponentView places;
     [SerializeField] internal GameObject placesLoading;
     [SerializeField] internal TMP_Text placesNoDataText;
@@ -146,6 +153,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     }
 
     public void HidePlaceModal() { placeModal.gameObject.SetActive(false); }
+
+    public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
 
     internal void ConfigurePlaceCardModal()
     {

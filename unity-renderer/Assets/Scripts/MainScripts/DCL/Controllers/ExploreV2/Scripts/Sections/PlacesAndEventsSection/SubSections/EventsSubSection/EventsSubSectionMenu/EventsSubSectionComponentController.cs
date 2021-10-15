@@ -91,6 +91,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (!reloadEvents)
             return;
 
+        currentUpcomingEventsShowed = INITIAL_NUMBER_OF_UPCOMING_EVENTS;
+        view.RestartScrollViewPosition();
         view.SetFeaturedEventsAsLoading(true);
         view.SetTrendingEventsAsLoading(true);
         view.SetUpcomingEventsAsLoading(true);

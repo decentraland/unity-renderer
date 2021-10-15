@@ -34,7 +34,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnPlacesFromAPIUpdated;
 
-    internal const int INITIAL_NUMBER_OF_PLACES = 50;
+    internal const int INITIAL_NUMBER_OF_PLACES = 30;
     internal const int SHOW_MORE_PLACES_INCREMENT = 20;
 
     internal IPlacesSubSectionComponentView view;
@@ -80,6 +80,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             return;
 
         currentPlacesShowed = INITIAL_NUMBER_OF_PLACES;
+        view.RestartScrollViewPosition();
         view.SetPlacesAsLoading(true);
         view.SetShowMorePlacesButtonActive(false);
         RequestAllPlacesFromAPI();

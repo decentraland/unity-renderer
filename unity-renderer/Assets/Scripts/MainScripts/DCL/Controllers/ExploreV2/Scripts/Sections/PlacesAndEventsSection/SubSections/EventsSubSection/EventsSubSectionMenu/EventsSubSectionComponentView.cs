@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public interface IEventsSubSectionComponentView
 {
@@ -86,6 +87,11 @@ public interface IEventsSubSectionComponentView
     /// Hides the Event Card modal.
     /// </summary>
     void HideEventModal();
+
+    /// <summary>
+    /// Set the current scroll view position to 1.
+    /// </summary>
+    void RestartScrollViewPosition();
 }
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
@@ -101,6 +107,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal EventCardComponentView eventCardModalPrefab;
 
     [Header("Prefab References")]
+    [SerializeField] internal ScrollRect scrollView;
     [SerializeField] internal CarouselComponentView featuredEvents;
     [SerializeField] internal GameObject featuredEventsLoading;
     [SerializeField] internal GridContainerComponentView trendingEvents;
@@ -246,6 +253,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     }
 
     public void HideEventModal() { eventModal.gameObject.SetActive(false); }
+
+    public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
 
     public void SetShowMoreUpcomingEventsButtonActive(bool isActive) { showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive); }
 

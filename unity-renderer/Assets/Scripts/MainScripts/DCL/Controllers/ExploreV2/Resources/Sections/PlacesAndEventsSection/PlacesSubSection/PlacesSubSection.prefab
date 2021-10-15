@@ -1822,6 +1822,7 @@ MonoBehaviour:
     type: 3}
   placeCardModalPrefab: {fileID: 6938330954477096662, guid: ab186ea8747757847957451f6ec22160,
     type: 3}
+  scrollView: {fileID: 1756152051762512818}
   places: {fileID: 9001267973490917559}
   placesLoading: {fileID: 1900073503392890984}
   placesNoDataText: {fileID: 1809535868246845109}

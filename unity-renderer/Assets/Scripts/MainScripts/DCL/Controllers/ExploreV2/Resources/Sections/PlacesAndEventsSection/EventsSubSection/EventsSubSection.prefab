@@ -4444,6 +4444,7 @@ MonoBehaviour:
     type: 3}
   eventCardModalPrefab: {fileID: 5942660468817174801, guid: 471a351208321e646a1b5be5934eddf3,
     type: 3}
+  scrollView: {fileID: 4292377001071907803}
   featuredEvents: {fileID: 6022349602316275512}
   featuredEventsLoading: {fileID: 8561189935689558162}
   trendingEvents: {fileID: 4939075942637025318}
@@ -7193,6 +7194,8 @@ MonoBehaviour:
   eventInfoContainer: {fileID: 4676813681745545832}
   loadingSpinner: {fileID: 2428034704868552909}
   cardAnimator: {fileID: 3254815793395406381}
+  contentVerticalLayout: {fileID: 0}
+  infoVerticalLayout: {fileID: 0}
   isEventCardModal: 0
   model:
     eventId: 
@@ -9542,6 +9545,8 @@ MonoBehaviour:
   eventInfoContainer: {fileID: 3534392188539312385}
   loadingSpinner: {fileID: 8689120629405434888}
   cardAnimator: {fileID: 5585596105667942533}
+  contentVerticalLayout: {fileID: 0}
+  infoVerticalLayout: {fileID: 0}
   isEventCardModal: 0
   model:
     eventId: 
@@ -10449,7 +10454,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3139007853373197222}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.4050026
+  m_Size: 0.40565062
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11464,6 +11469,8 @@ MonoBehaviour:
   eventInfoContainer: {fileID: 3499022853674168275}
   loadingSpinner: {fileID: 3673092938477266615}
   cardAnimator: {fileID: 2393204349933344508}
+  contentVerticalLayout: {fileID: 0}
+  infoVerticalLayout: {fileID: 0}
   isEventCardModal: 0
   model:
     eventId: 
@@ -18241,6 +18248,8 @@ MonoBehaviour:
   eventInfoContainer: {fileID: 3574569197092629653}
   loadingSpinner: {fileID: 2548295006557032903}
   cardAnimator: {fileID: 1367595947040983890}
+  contentVerticalLayout: {fileID: 0}
+  infoVerticalLayout: {fileID: 0}
   isEventCardModal: 0
   model:
     eventId: 
