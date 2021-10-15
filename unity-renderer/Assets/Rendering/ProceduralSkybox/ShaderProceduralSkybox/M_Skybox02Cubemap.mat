@@ -245,7 +245,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 54745b55af2f79e4297e9183c10654c0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_2:
@@ -324,7 +324,7 @@ Material:
     - _isRadial_1: 2
     - _isRadial_2: 1
     - _layerType_0: 2
-    - _layerType_1: 0
+    - _layerType_1: 2
     - _layerType_2: 0
     - _layerType_3: 2
     - _layerType_4: 1
@@ -353,7 +353,7 @@ Material:
     - _speed_0: 0
     - _speed_1: 0.1
     - _speed_2: 0.1
-    - _useParticles_0: 1
+    - _useParticles_0: 0
     - _useParticles_1: 0
     - _useParticles_2: 0
     - _useParticles_3: 0
@@ -384,7 +384,7 @@ Material:
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
     - _color_0: {r: 0, g: 0.5369127, b: 1, a: 1}
-    - _color_1: {r: 1, g: 1, b: 1, a: 0}
+    - _color_1: {r: 1, g: 1, b: 1, a: 1}
     - _color_2: {r: 0.37638143, g: 0.31011927, b: 0.6509434, a: 0}
     - _color_3: {r: 0, g: 6.4980197, b: 0.42937273, a: 0}
     - _color_4: {r: 11.313707, g: 3.329958, b: 0, a: 0}
@@ -393,7 +393,7 @@ Material:
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_4: {r: 0, g: 0, b: 0, a: 0}
-    - _distortSpeedAndSharp_0: {r: 0.1, g: 0, b: 0, a: 1}
+    - _distortSpeedAndSharp_0: {r: 0, g: 0, b: 0, a: 1}
     - _distortSpeedAndSharp_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
@@ -409,25 +409,25 @@ Material:
     - _particleSpeedAndFrequency_2: {r: 1, g: 5, b: 0, a: 0}
     - _particleSpeedAndFrequency_3: {r: 0, g: 0, b: 0, a: 0}
     - _particleSpeedAndFrequency_4: {r: 0, g: 0, b: 0, a: 0}
-    - _particlesMainParameters_0: {r: 10, g: 50, b: 1, a: 10}
-    - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
+    - _particlesMainParameters_0: {r: 10, g: 100, b: 1, a: 10}
+    - _particlesMainParameters_1: {r: 0, g: 49, b: 1, a: 1}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_4: {r: 0, g: 0, b: 0, a: 0}
     - _particlesParameters_0: {r: 5, g: 500, b: 1, a: 0}
-    - _particlesSecondaryParameters_0: {r: 7.2, g: 2.75, b: 0.5, a: 2}
-    - _particlesSecondaryParameters_1: {r: 0, g: 0, b: 0, a: 0}
+    - _particlesSecondaryParameters_0: {r: 10.86, g: 4.94, b: 0.5, a: 2}
+    - _particlesSecondaryParameters_1: {r: 1, g: 1, b: 1, a: 1}
     - _particlesSecondaryParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_4: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_0: {r: 2, g: 2, b: 0, a: 0}
-    - _rowAndCollumns_1: {r: 0, g: 0, b: 0, a: 0}
+    - _rowAndCollumns_1: {r: 1, g: 1, b: 0, a: 0}
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
     - _skyColor: {r: 0.1549928, g: 0.08410466, b: 0.509434, a: 1}
     - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
-    - _speedAndRotation_1: {r: 0, g: 1, b: 0, a: 0}
+    - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_2: {r: 0, g: -0.01, b: 0, a: 0}
     - _speedAndRotation_3: {r: 0, g: 10, b: 0, a: 0}
     - _speedAndRotation_4: {r: 0, g: 0, b: 0, a: 0}
@@ -437,8 +437,8 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 2, g: 2, b: 0, a: 0}
-    - _tilingAndOffset_1: {r: 0.1, g: 0.1, b: 0.1, a: 0}
+    - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
+    - _tilingAndOffset_1: {r: 1, g: 1, b: 0.1, a: 0}
     - _tilingAndOffset_2: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset_3: {r: 1, g: 1, b: 0, a: -27.21}
     - _tilingAndOffset_4: {r: 0.5, g: 0.25, b: 0, a: 0}
@@ -446,7 +446,7 @@ Material:
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
     - _timeFrame_0: {r: 0, g: 24, b: 0, a: 0}
-    - _timeFrame_1: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_1: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame_3: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame_4: {r: 0, g: 0, b: 0, a: 0}
