@@ -45,8 +45,6 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void PostScreenSizeChanged();
 }
 
-[RequireComponent(typeof(ShowHideAnimator))]
-[RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
     internal BaseComponentModel baseModel;
@@ -54,9 +52,21 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void PostInitialization() { }
 
-    public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
+    public virtual void Show(bool instant = false)
+    {
+        if (showHideAnimator == null)
+            return;
 
-    public virtual void Hide(bool instant = false) { showHideAnimator.Hide(instant); }
+        showHideAnimator.Show(instant);
+    }
+
+    public virtual void Hide(bool instant = false)
+    {
+        if (showHideAnimator == null)
+            return;
+
+        showHideAnimator.Hide(instant);
+    }
 
     public void Configure(BaseComponentModel model)
     {
