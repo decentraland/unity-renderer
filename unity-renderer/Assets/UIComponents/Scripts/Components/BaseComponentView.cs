@@ -24,9 +24,10 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void Hide(bool instant = false);
 
     /// <summary>
-    /// Updates the UI component with the current model.
+    /// Fill the model and updates the component with this data.
     /// </summary>
-    void RefreshControl();
+    /// <param name="model">Data to configure the component.</param>
+    void Configure(BaseComponentModel model);
 
     /// <summary>
     /// It is called when the focus is set into the component.
@@ -51,20 +52,17 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
-    internal void Initialize()
-    {
-        showHideAnimator = GetComponent<ShowHideAnimator>();
-
-        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
-    }
-
     public virtual void PostInitialization() { }
 
     public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
 
     public virtual void Hide(bool instant = false) { showHideAnimator.Hide(instant); }
 
-    public abstract void RefreshControl();
+    public void Configure(BaseComponentModel model)
+    {
+        SetModel(model);
+        RefreshControl();
+    }
 
     public virtual void OnFocus() { }
 
@@ -74,9 +72,17 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
-    private void OnEnable() { PostScreenSizeChanged(); }
+    public abstract void SetModel(BaseComponentModel newModel);
 
-    private void Awake() { Initialize(); }
+    public abstract void RefreshControl();
+
+    private void Awake()
+    {
+        showHideAnimator = GetComponent<ShowHideAnimator>();
+        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
+    }
+
+    private void OnEnable() { PostScreenSizeChanged(); }
 
     private void Start() { PostInitialization(); }
 

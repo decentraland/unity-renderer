@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
-public class EventCardComponentModel
+public class EventCardComponentModel : BaseComponentModel
 {
     public string eventId;
     public Sprite eventPictureSprite;

@@ -5,12 +5,6 @@ using UnityEngine.UI;
 public interface IFriendHeadForPlaceCardComponentView
 {
     /// <summary>
-    /// Fill the model and updates the friend head with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the friend head.</param>
-    void Configure(FriendHeadForPlaceCardComponentModel model);
-
-    /// <summary>
     /// Set the background color for the friend.
     /// </summary>
     /// <param name="newText">New color.</param>
@@ -36,11 +30,7 @@ public class FriendHeadForPlaceCardComponentView : BaseComponentView, IFriendHea
 
     public override void PostInitialization() { friendNameShowHideAnimator.gameObject.SetActive(false); }
 
-    public void Configure(FriendHeadForPlaceCardComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (FriendHeadForPlaceCardComponentModel)newModel; }
 
     public override void RefreshControl()
     {

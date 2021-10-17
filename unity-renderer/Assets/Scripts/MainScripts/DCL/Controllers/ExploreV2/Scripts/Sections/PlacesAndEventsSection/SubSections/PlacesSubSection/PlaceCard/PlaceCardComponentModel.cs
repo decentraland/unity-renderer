@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
-public class PlaceCardComponentModel
+public class PlaceCardComponentModel : BaseComponentModel
 {
     public Sprite placePictureSprite;
     public Texture2D placePictureTexture;

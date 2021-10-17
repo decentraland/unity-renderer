@@ -5,12 +5,6 @@ using UnityEngine;
 public interface ISectionSelectorComponentView
 {
     /// <summary>
-    /// Fill the model and updates the section selector with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the section selector.</param>
-    void Configure(SectionSelectorComponentModel model);
-
-    /// <summary>
     /// Set the sections of the selector.
     /// </summary>
     /// <param name="sections">List of UI components.</param>
@@ -40,11 +34,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
-    public void Configure(SectionSelectorComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (SectionSelectorComponentModel)newModel; }
 
     public override void RefreshControl()
     {

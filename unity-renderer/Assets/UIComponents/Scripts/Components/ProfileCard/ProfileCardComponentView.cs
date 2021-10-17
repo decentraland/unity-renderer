@@ -10,12 +10,6 @@ public interface IProfileCardComponentView
     Button.ButtonClickedEvent onClick { get; }
 
     /// <summary>
-    /// Fill the model and updates the profile card with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the profile card.</param>
-    void Configure(ProfileCardComponentModel model);
-
-    /// <summary>
     /// Set the profile picture directly from a sprite.
     /// </summary>
     /// <param name="sprite">Profile picture (sprite).</param>
@@ -71,11 +65,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
             profileImage.OnLoaded += OnProfileImageLoaded;
     }
 
-    public void Configure(ProfileCardComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (ProfileCardComponentModel)newModel; }
 
     public override void RefreshControl()
     {

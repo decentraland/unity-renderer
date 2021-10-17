@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class ImageComponentModel
+public class ImageComponentModel : BaseComponentModel
 {
     public Sprite sprite;
     public Texture2D texture;

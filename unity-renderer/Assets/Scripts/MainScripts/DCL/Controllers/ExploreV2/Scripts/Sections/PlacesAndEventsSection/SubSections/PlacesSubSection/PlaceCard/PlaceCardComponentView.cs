@@ -20,12 +20,6 @@ public interface IPlaceCardComponentView
     Button.ButtonClickedEvent onInfoClick { get; }
 
     /// <summary>
-    /// Fill the model and updates the place card with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the place card.</param>
-    void Configure(PlaceCardComponentModel model);
-
-    /// <summary>
     /// Set the place picture directly from a sprite.
     /// </summary>
     /// <param name="sprite">Place picture (sprite).</param>
@@ -140,15 +134,14 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         CleanFriendHeadsItems();
     }
 
-    public void Configure(PlaceCardComponentModel model)
+    public override void SetModel(BaseComponentModel newModel)
     {
+        model = (PlaceCardComponentModel)newModel;
+
         InitializeFriendsTracker();
 
         if (mapInfoHandler != null)
             mapInfoHandler.SetMinimapSceneInfo(model.hotSceneInfo);
-
-        this.model = model;
-        RefreshControl();
     }
 
     public override void RefreshControl()

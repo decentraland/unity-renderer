@@ -22,16 +22,6 @@ public class BaseComponentViewTests
         GameObject.Destroy(baseComponent.gameObject);
     }
 
-    [Test]
-    public void InitializeComponentCorrectly()
-    {
-        // Act
-        baseComponent.Initialize();
-
-        // Assert
-        Assert.IsNotNull(baseComponent.showHideAnimator, "The base component show/hide animator is null.");
-    }
-
     [UnityTest]
     public IEnumerator ShowComponentCorrectly()
     {

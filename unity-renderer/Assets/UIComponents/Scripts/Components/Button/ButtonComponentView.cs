@@ -10,12 +10,6 @@ public interface IButtonComponentView
     Button.ButtonClickedEvent onClick { get; }
 
     /// <summary>
-    /// Fill the model and updates the button with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the button.</param>
-    void Configure(ButtonComponentModel model);
-
-    /// <summary>
     /// Set the button text.
     /// </summary>
     /// <param name="newText">New text.</param>
@@ -40,11 +34,7 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public Button.ButtonClickedEvent onClick => button?.onClick;
 
-    public virtual void Configure(ButtonComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (ButtonComponentModel)newModel; }
 
     public override void RefreshControl()
     {

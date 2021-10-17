@@ -6,12 +6,6 @@ using UnityEngine.UI;
 public interface ICarouselComponentView
 {
     /// <summary>
-    /// Fill the model and updates the carousel with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the carousel.</param>
-    void Configure(CarouselComponentModel model);
-
-    /// <summary>
     /// Set the distance between carousel items.
     /// </summary>
     /// <param name="newSpace">Distance between items.</param>
@@ -129,11 +123,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         StartCarousel();
     }
 
-    public void Configure(CarouselComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (CarouselComponentModel)newModel; }
 
     public override void RefreshControl()
     {

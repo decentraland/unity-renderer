@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
-public class SectionSelectorComponentModel
+public class SectionSelectorComponentModel : BaseComponentModel
 {
     public List<SectionToggleModel> sections;
 }

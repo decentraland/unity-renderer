@@ -4,12 +4,6 @@ using UnityEngine;
 public interface IRealmViewerComponentView
 {
     /// <summary>
-    /// Fill the model and updates the realm viewer with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the real viewer.</param>
-    void Configure(RealmViewerComponentModel model);
-
-    /// <summary>
     /// Set the realm label.
     /// </summary>
     /// <param name="newRealm">New realm.</param>
@@ -31,11 +25,7 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
     [Header("Configuration")]
     [SerializeField] internal RealmViewerComponentModel model;
 
-    public virtual void Configure(RealmViewerComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (RealmViewerComponentModel)newModel; }
 
     public override void RefreshControl()
     {

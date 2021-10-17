@@ -7,12 +7,6 @@ using static UnityEngine.UI.GridLayoutGroup;
 public interface IGridContainerComponentView
 {
     /// <summary>
-    /// Fill the model and updates the grid with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the grid.</param>
-    void Configure(GridContainerComponentModel model);
-
-    /// <summary>
     /// Set the type of constraint of the grid.
     /// </summary>
     /// <param name="newConstraint">Type of constraint.</param>
@@ -85,11 +79,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
     internal bool destroyOnlyUnnecesaryItems = false;
 
-    public void Configure(GridContainerComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (GridContainerComponentModel)newModel; }
 
     public override void RefreshControl()
     {

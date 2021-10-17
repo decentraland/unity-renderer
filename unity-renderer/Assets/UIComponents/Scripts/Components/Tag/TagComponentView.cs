@@ -5,12 +5,6 @@ using UnityEngine.UI;
 public interface ITagComponentView
 {
     /// <summary>
-    /// Fill the model and updates the tag with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the tag.</param>
-    void Configure(TagComponentModel model);
-
-    /// <summary>
     /// Set the tag text.
     /// </summary>
     /// <param name="newText">New text.</param>
@@ -32,11 +26,7 @@ public class TagComponentView : BaseComponentView, ITagComponentView
     [Header("Configuration")]
     [SerializeField] internal TagComponentModel model;
 
-    public void Configure(TagComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (TagComponentModel)newModel; }
 
     public override void RefreshControl()
     {

@@ -26,12 +26,6 @@ public interface IEventCardComponentView
     Button.ButtonClickedEvent onUnsubscribeClick { get; }
 
     /// <summary>
-    /// Fill the model and updates the event card with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the event card.</param>
-    void Configure(EventCardComponentModel model);
-
-    /// <summary>
     /// Set the event picture directly from a sprite.
     /// </summary>
     /// <param name="sprite">Event picture (sprite).</param>
@@ -172,11 +166,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             modalBackgroundButton.onClick.AddListener(CloseModal);
     }
 
-    public void Configure(EventCardComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (EventCardComponentModel)newModel; }
 
     public override void RefreshControl()
     {

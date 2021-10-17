@@ -153,6 +153,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         OnReady?.Invoke();
     }
 
+    public override void SetModel(BaseComponentModel newModel) { }
+
     public override void RefreshControl()
     {
         featuredEvents.RefreshControl();

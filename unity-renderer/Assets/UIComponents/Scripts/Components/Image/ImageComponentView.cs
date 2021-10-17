@@ -12,12 +12,6 @@ public interface IImageComponentView
     event Action<Sprite> OnLoaded;
 
     /// <summary>
-    /// Fill the model and updates the image with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the image.</param>
-    void Configure(ImageComponentModel model);
-
-    /// <summary>
     /// Set an image directly from a sprite.
     /// </summary>
     /// <param name="sprite">A sprite.</param>
@@ -71,11 +65,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
             SetFitParent(model.fitParent);
     }
 
-    public void Configure(ImageComponentModel model)
-    {
-        this.model = model;
-        RefreshControl();
-    }
+    public override void SetModel(BaseComponentModel newModel) { model = (ImageComponentModel)newModel; }
 
     public override void RefreshControl()
     {

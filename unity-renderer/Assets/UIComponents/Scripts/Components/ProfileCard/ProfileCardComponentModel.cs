@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
-public class ProfileCardComponentModel
+public class ProfileCardComponentModel : BaseComponentModel
 {
     public Sprite profilePictureSprite;
     public Texture2D profilePictureTexture;
