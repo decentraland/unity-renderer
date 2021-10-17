@@ -193,18 +193,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
 
-        onJumpInClick?.RemoveAllListeners();
-        onJumpInClick?.AddListener(() => model.onJumpInClick.Invoke());
-
-        onInfoClick?.RemoveAllListeners();
-        onInfoClick?.AddListener(() => model.onInfoClick.Invoke());
-
-        onSubscribeClick?.RemoveAllListeners();
-        onSubscribeClick?.AddListener(() => model.onSubscribeClick.Invoke());
-
-        onUnsubscribeClick?.RemoveAllListeners();
-        onUnsubscribeClick?.AddListener(() => model.onUnsubscribeClick.Invoke());
-
         RebuildCardLayouts();
     }
 
@@ -230,18 +218,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (eventImage != null)
             eventImage.OnLoaded -= OnEventImageLoaded;
-
-        if (onInfoClick != null)
-            onInfoClick.RemoveAllListeners();
-
-        if (onSubscribeClick != null)
-            onSubscribeClick.RemoveAllListeners();
-
-        if (onUnsubscribeClick != null)
-            onUnsubscribeClick.RemoveAllListeners();
-
-        if (onJumpInClick != null)
-            onJumpInClick.RemoveAllListeners();
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();

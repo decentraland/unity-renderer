@@ -48,6 +48,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
+        this.view.OnInfoClicked += ShowPlaceDetailedInfo;
+        this.view.OnJumpInClicked += JumpInToPlace;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
 
@@ -125,6 +127,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public void Dispose()
     {
         view.OnReady -= FirstLoading;
+        view.OnInfoClicked -= ShowPlaceDetailedInfo;
+        view.OnJumpInClicked -= JumpInToPlace;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
@@ -135,8 +139,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal PlaceCardComponentModel CreatePlaceCardModelFromAPIPlace(HotSceneInfo placeFromAPI)
     {
         PlaceCardComponentModel placeCardModel = new PlaceCardComponentModel();
-
-        // Card data
         placeCardModel.placePictureUri = placeFromAPI.thumbnail;
         placeCardModel.placeName = placeFromAPI.name;
         placeCardModel.placeDescription = FormatDescription(placeFromAPI);
@@ -145,10 +147,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         placeCardModel.parcels = placeFromAPI.parcels;
         placeCardModel.hotSceneInfo = placeFromAPI;
 
-        // Card events
-        ConfigureOnJumpInActions(placeCardModel, placeFromAPI);
-        ConfigureOnInfoActions(placeCardModel);
-
         return placeCardModel;
     }
 
@@ -156,20 +154,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal string FormatAuthorName(HotSceneInfo placeFromAPI) { return $"Author <b>{placeFromAPI.creator}</b>"; }
 
-    internal void ConfigureOnJumpInActions(PlaceCardComponentModel placeModel, HotSceneInfo placeFromAPI)
-    {
-        placeModel.onJumpInClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        placeModel.onJumpInClick.AddListener(RequestExploreV2Closing);
-        placeModel.onJumpInClick.AddListener(() => JumpInToPlace(placeFromAPI));
-    }
+    internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel) { view.ShowPlaceModal(placeModel); }
 
-    internal void ConfigureOnInfoActions(PlaceCardComponentModel placeModel)
-    {
-        placeModel.onInfoClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        placeModel.onInfoClick.AddListener(() => view.ShowPlaceModal(placeModel));
-    }
-
-    internal static void JumpInToPlace(HotSceneInfo placeFromAPI)
+    internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
         placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
 
@@ -181,10 +168,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             WebInterface.GoTo(coords.x, coords.y);
         else
             WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
-    }
 
-    internal void RequestExploreV2Closing()
-    {
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
     }

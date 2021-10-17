@@ -165,12 +165,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceAuthor(model.placeAuthor);
         SetNumberOfUsers(model.numberOfUsers);
 
-        onJumpInClick?.RemoveAllListeners();
-        onJumpInClick?.AddListener(() => model.onJumpInClick.Invoke());
-
-        onInfoClick?.RemoveAllListeners();
-        onInfoClick?.AddListener(() => model.onInfoClick.Invoke());
-
         RebuildCardLayouts();
     }
 
@@ -202,12 +196,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (placeImage != null)
             placeImage.OnLoaded -= OnPlaceImageLoaded;
-
-        if (onInfoClick != null)
-            onInfoClick.RemoveAllListeners();
-
-        if (onJumpInClick != null)
-            onJumpInClick.RemoveAllListeners();
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
@@ -336,7 +324,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (currentFriendHeads.ContainsKey(profile.userId))
             return;
 
-        BaseComponentView newFriend = IntantiateAndConfigureFriendHead(
+        BaseComponentView newFriend = InstantiateAndConfigureFriendHead(
             new FriendHeadForPlaceCardComponentModel
             {
                 userProfile = profile,
@@ -370,7 +358,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         }
     }
 
-    internal BaseComponentView IntantiateAndConfigureFriendHead(FriendHeadForPlaceCardComponentModel friendInfo, FriendHeadForPlaceCardComponentView prefabToUse)
+    internal BaseComponentView InstantiateAndConfigureFriendHead(FriendHeadForPlaceCardComponentModel friendInfo, FriendHeadForPlaceCardComponentView prefabToUse)
     {
         FriendHeadForPlaceCardComponentView friendHeadGO = GameObject.Instantiate(prefabToUse);
         friendHeadGO.Configure(friendInfo);

@@ -1,6 +1,5 @@
 using DCL;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -12,6 +11,16 @@ public interface IPlacesSubSectionComponentView
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
     event Action OnReady;
+
+    /// <summary>
+    /// It will be triggered when the info button is clicked.
+    /// </summary>
+    event Action<PlaceCardComponentModel> OnInfoClicked;
+
+    /// <summary>
+    /// It will be triggered when the JumpIn button is clicked.
+    /// </summary>
+    event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
 
     /// <summary>
     /// It will be triggered when a new friend handler is added by a place card.
@@ -86,6 +95,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal ButtonComponentView showMorePlacesButton;
 
     public event Action OnReady;
+    public event Action<PlaceCardComponentModel> OnInfoClicked;
+    public event Action<HotScenesController.HotSceneInfo> OnJumpInClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
     public event Action OnShowMorePlacesClicked;
@@ -144,7 +155,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.gameObject.SetActive(true);
-        placeModal.Configure(placeInfo);
+        ConfigurePlaceCard(placeModal, placeInfo);
     }
 
     public void HidePlaceModal() { placeModal.gameObject.SetActive(false); }
@@ -177,11 +188,20 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         foreach (PlaceCardComponentModel placeInfo in places)
         {
             PlaceCardComponentView placeGO = placeCardsPool.Get().gameObject.GetComponent<PlaceCardComponentView>();
-            placeGO.Configure(placeInfo);
+            ConfigurePlaceCard(placeGO, placeInfo);
             OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
             instantiatedPlaces.Add(placeGO);
         }
 
         return instantiatedPlaces;
+    }
+
+    internal void ConfigurePlaceCard(PlaceCardComponentView eventCard, PlaceCardComponentModel placeInfo)
+    {
+        eventCard.Configure(placeInfo);
+        eventCard.onInfoClick?.RemoveAllListeners();
+        eventCard.onInfoClick?.AddListener(() => OnInfoClicked?.Invoke(placeInfo));
+        eventCard.onJumpInClick?.RemoveAllListeners();
+        eventCard.onJumpInClick?.AddListener(() => OnJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
     }
 }

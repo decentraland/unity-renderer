@@ -7,5 +7,4 @@ public class ButtonComponentModel : BaseComponentModel
 {
     public string text;
     public Sprite icon;
-    public Button.ButtonClickedEvent onClick;
 }

@@ -63,6 +63,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
+        this.view.OnInfoClicked += ShowEventDetailedInfo;
+        this.view.OnJumpInClicked += JumpInToEvent;
+        this.view.OnSubscribeEventClicked += SubscribeToEvent;
+        this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
 
         eventsAPIApiController = eventsAPI;
@@ -197,6 +201,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public void Dispose()
     {
         view.OnReady -= FirstLoading;
+        view.OnInfoClicked -= ShowEventDetailedInfo;
+        view.OnJumpInClicked -= JumpInToEvent;
+        view.OnSubscribeEventClicked -= SubscribeToEvent;
+        view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
         OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
@@ -206,8 +214,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal EventCardComponentModel CreateEventCardModelFromAPIEvent(EventFromAPIModel eventFromAPI)
     {
         EventCardComponentModel eventCardModel = new EventCardComponentModel();
-
-        // Card data
         eventCardModel.eventId = eventFromAPI.id;
         eventCardModel.eventPictureUri = eventFromAPI.image;
         eventCardModel.isLive = eventFromAPI.live;
@@ -221,13 +227,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventCardModel.eventPlace = FormatEventPlace(eventFromAPI);
         eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
         eventCardModel.isSubscribed = false;
+        eventCardModel.eventFromAPIInfo = eventFromAPI;
 
         // Card events
-        ConfigureOnJumpInActions(eventCardModel, eventFromAPI);
-        ConfigureOnInfoActions(eventCardModel);
-        ConfigureOnSubscribeActions(eventCardModel);
-        ConfigureOnUnsubscribeActions(eventCardModel);
-
         return eventCardModel;
     }
 
@@ -280,58 +282,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal string FormatEventPlace(EventFromAPIModel eventFromAPI) { return string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name; }
 
-    internal void ConfigureOnJumpInActions(EventCardComponentModel eventModel, EventFromAPIModel eventFromAPI)
-    {
-        eventModel.onJumpInClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onJumpInClick.AddListener(RequestExploreV2Closing);
-        eventModel.onJumpInClick.AddListener(() => JumpInToEvent(eventFromAPI));
-    }
+    internal void ShowEventDetailedInfo(EventCardComponentModel eventModel) { view.ShowEventModal(eventModel); }
 
-    internal void ConfigureOnInfoActions(EventCardComponentModel eventModel)
-    {
-        eventModel.onInfoClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onInfoClick.AddListener(() => view.ShowEventModal(eventModel));
-    }
-
-    internal void ConfigureOnSubscribeActions(EventCardComponentModel eventModel)
-    {
-        eventModel.onSubscribeClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onSubscribeClick.AddListener(() =>
-        {
-            eventsAPIApiController.RegisterAttendEvent(
-                eventModel.eventId,
-                true,
-                () =>
-                {
-                    // Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-                },
-                (error) =>
-                {
-                    Debug.LogError($"Error posting 'attend' message to the API: {error}");
-                });
-        });
-    }
-
-    internal void ConfigureOnUnsubscribeActions(EventCardComponentModel eventModel)
-    {
-        eventModel.onUnsubscribeClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onUnsubscribeClick.AddListener(() =>
-        {
-            eventsAPIApiController.RegisterAttendEvent(
-                eventModel.eventId,
-                false,
-                () =>
-                {
-                    // Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
-                },
-                (error) =>
-                {
-                    Debug.LogError($"Error posting 'attend' message to the API: {error}");
-                });
-        });
-    }
-
-    internal static void JumpInToEvent(EventFromAPIModel eventFromAPI)
+    internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
         Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new string[] { "", "" } : eventFromAPI.realm.Split('-');
@@ -342,11 +295,38 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             WebInterface.GoTo(coords.x, coords.y);
         else
             WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
-    }
 
-    internal void RequestExploreV2Closing()
-    {
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
+    }
+
+    internal void SubscribeToEvent(string eventId)
+    {
+        eventsAPIApiController.RegisterAttendEvent(
+            eventId,
+            true,
+            () =>
+            {
+                // Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
+            },
+            (error) =>
+            {
+                Debug.LogError($"Error posting 'attend' message to the API: {error}");
+            });
+    }
+
+    internal void UnsubscribeToEvent(string eventId)
+    {
+        eventsAPIApiController.RegisterAttendEvent(
+            eventId,
+            false,
+            () =>
+            {
+                // Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
+            },
+            (error) =>
+            {
+                Debug.LogError($"Error posting 'attend' message to the API: {error}");
+            });
     }
 }

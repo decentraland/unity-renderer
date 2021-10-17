@@ -20,8 +20,7 @@ public class EventCardComponentModel : BaseComponentModel
     public string eventPlace;
     public int subscribedUsers;
     public bool isSubscribed;
-    public Button.ButtonClickedEvent onJumpInClick;
-    public Button.ButtonClickedEvent onInfoClick;
-    public Button.ButtonClickedEvent onSubscribeClick;
-    public Button.ButtonClickedEvent onUnsubscribeClick;
+
+    [HideInInspector]
+    public EventFromAPIModel eventFromAPIInfo;
 }

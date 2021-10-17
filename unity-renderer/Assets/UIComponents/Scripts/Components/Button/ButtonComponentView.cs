@@ -43,19 +43,6 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         SetText(model.text);
         SetIcon(model.icon);
-
-        onClick.RemoveAllListeners();
-        onClick.AddListener(() => model.onClick.Invoke());
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        if (button == null)
-            return;
-
-        button.onClick.RemoveAllListeners();
     }
 
     public void SetText(string newText)

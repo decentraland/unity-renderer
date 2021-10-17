@@ -43,8 +43,7 @@ public class ButtonComponentViewTests
         ButtonComponentModel testModel = new ButtonComponentModel
         {
             icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
-            text = "Test",
-            onClick = new Button.ButtonClickedEvent()
+            text = "Test"
         };
 
         // Act
@@ -64,7 +63,6 @@ public class ButtonComponentViewTests
 
         buttonComponent.model.icon = testSprite;
         buttonComponent.model.text = testText;
-        buttonComponent.model.onClick = testClickedEvent;
 
         // Act
         buttonComponent.RefreshControl();
@@ -72,7 +70,6 @@ public class ButtonComponentViewTests
         // Assert
         Assert.AreEqual(testSprite, buttonComponent.model.icon, "The icon does not match in the model.");
         Assert.AreEqual(testText, buttonComponent.model.text, "The text does not match in the model.");
-        Assert.AreEqual(testClickedEvent, buttonComponent.model.onClick, "The onClick event does not match in the model.");
     }
 
     [Test]

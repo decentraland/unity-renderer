@@ -14,6 +14,26 @@ public interface IEventsSubSectionComponentView
     event Action OnReady;
 
     /// <summary>
+    /// It will be triggered when the info button is clicked.
+    /// </summary>
+    event Action<EventCardComponentModel> OnInfoClicked;
+
+    /// <summary>
+    /// It will be triggered when the JumpIn button is clicked.
+    /// </summary>
+    event Action<EventFromAPIModel> OnJumpInClicked;
+
+    /// <summary>
+    /// It will be triggered when the subscribe event button is clicked.
+    /// </summary>
+    event Action<string> OnSubscribeEventClicked;
+
+    /// <summary>
+    /// It will be triggered when the unsubscribe event button is clicked.
+    /// </summary>
+    event Action<string> OnUnsubscribeEventClicked;
+
+    /// <summary>
     /// It will be triggered when the "Show More" button is clicked.
     /// </summary>
     event Action OnShowMoreUpcomingEventsClicked;
@@ -123,6 +143,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
 
     public event Action OnReady;
+    public event Action<EventCardComponentModel> OnInfoClicked;
+    public event Action<EventFromAPIModel> OnJumpInClicked;
+    public event Action<string> OnSubscribeEventClicked;
+    public event Action<string> OnUnsubscribeEventClicked;
     public event Action OnShowMoreUpcomingEventsClicked;
     public event Action OnEventsSubSectionEnable;
 
@@ -174,7 +198,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         featuredEvents.ExtractItems();
         featuredEventCardsPool.ReleaseAll();
-        List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEventCards(events, featuredEventCardsPool);
+        List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, featuredEventCardsPool);
         featuredEvents.SetItems(eventComponentsToAdd, false);
         featuredEvents.gameObject.SetActive(events.Count > 0);
     }
@@ -188,7 +212,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         trendingEvents.ExtractItems();
         trendingEventCardsPool.ReleaseAll();
-        List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEventCards(events, trendingEventCardsPool);
+        List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, trendingEventCardsPool);
         trendingEvents.SetItems(eventComponentsToAdd, false);
         trendingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
@@ -206,7 +230,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         upcomingEvents.ExtractItems();
         upcomingEventCardsPool.ReleaseAll();
-        List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEventCards(events, upcomingEventCardsPool);
+        List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, upcomingEventCardsPool);
         upcomingEvents.SetItems(eventComponentsToAdd, false);
         upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
@@ -224,7 +248,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         goingEvents.ExtractItems();
         goingEventCardsPool.ReleaseAll();
-        List<BaseComponentView> eventComponentsToAdd = IntantiateAndConfigureEventCards(events, goingEventCardsPool);
+        List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, goingEventCardsPool);
         goingEvents.SetItems(eventComponentsToAdd, false);
         goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
@@ -241,7 +265,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.gameObject.SetActive(true);
-        eventModal.Configure(eventInfo);
+        ConfigureEventCard(eventModal, eventInfo);
     }
 
     public void HideEventModal() { eventModal.gameObject.SetActive(false); }
@@ -269,17 +293,30 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         }
     }
 
-    internal List<BaseComponentView> IntantiateAndConfigureEventCards(List<EventCardComponentModel> events, Pool pool)
+    internal List<BaseComponentView> InstantiateAndConfigureEventCards(List<EventCardComponentModel> events, Pool pool)
     {
         List<BaseComponentView> instantiatedEvents = new List<BaseComponentView>();
 
         foreach (EventCardComponentModel eventInfo in events)
         {
             EventCardComponentView eventGO = pool.Get().gameObject.GetComponent<EventCardComponentView>();
-            eventGO.Configure(eventInfo);
+            ConfigureEventCard(eventGO, eventInfo);
             instantiatedEvents.Add(eventGO);
         }
 
         return instantiatedEvents;
+    }
+
+    internal void ConfigureEventCard(EventCardComponentView eventCard, EventCardComponentModel eventInfo)
+    {
+        eventCard.Configure(eventInfo);
+        eventCard.onInfoClick?.RemoveAllListeners();
+        eventCard.onInfoClick?.AddListener(() => OnInfoClicked?.Invoke(eventInfo));
+        eventCard.onJumpInClick?.RemoveAllListeners();
+        eventCard.onJumpInClick?.AddListener(() => OnJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
+        eventCard.onSubscribeClick?.RemoveAllListeners();
+        eventCard.onSubscribeClick?.AddListener(() => OnSubscribeEventClicked?.Invoke(eventInfo.eventId));
+        eventCard.onUnsubscribeClick?.RemoveAllListeners();
+        eventCard.onUnsubscribeClick?.AddListener(() => OnUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
     }
 }

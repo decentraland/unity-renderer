@@ -14,7 +14,6 @@ public class SectionToggleModel
 {
     public Sprite icon;
     public string title;
-    public Toggle.ToggleEvent onSelect;
     public Color selectedBackgroundColor;
     public Color selectedTextColor;
     public Color selectedImageColor;

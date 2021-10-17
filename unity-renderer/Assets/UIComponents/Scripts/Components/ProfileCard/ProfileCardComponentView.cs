@@ -83,9 +83,6 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
         SetProfileName(model.profileName);
         SetProfileAddress(model.profileAddress);
-
-        onClick.RemoveAllListeners();
-        onClick.AddListener(() => model.onClick.Invoke());
     }
 
     public override void Dispose()
@@ -94,11 +91,6 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
         if (profileImage != null)
             profileImage.OnLoaded += OnProfileImageLoaded;
-
-        if (button == null)
-            return;
-
-        onClick.RemoveAllListeners();
     }
 
     public void SetProfilePicture(Sprite sprite)

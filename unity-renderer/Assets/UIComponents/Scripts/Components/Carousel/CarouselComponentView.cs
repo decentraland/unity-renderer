@@ -293,7 +293,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         else
         {
             if (isActiveAndEnabled)
-                StartCoroutine(IntantiateItemOnEditor(newItem, name));
+                StartCoroutine(InstantiateItemOnEditor(newItem, name));
         }
     }
 
@@ -340,7 +340,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         }
     }
 
-    internal IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
+    internal IEnumerator InstantiateItemOnEditor(BaseComponentView newItem, string name)
     {
         yield return null;
         InstantiateItem(newItem, name);

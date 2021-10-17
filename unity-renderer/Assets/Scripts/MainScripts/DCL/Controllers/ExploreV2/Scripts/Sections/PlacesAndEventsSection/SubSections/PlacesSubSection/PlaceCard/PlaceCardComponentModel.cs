@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 [Serializable]
 public class PlaceCardComponentModel : BaseComponentModel
@@ -14,8 +12,6 @@ public class PlaceCardComponentModel : BaseComponentModel
     public string placeAuthor;
     public int numberOfUsers;
     public Vector2Int[] parcels;
-    public Button.ButtonClickedEvent onJumpInClick;
-    public Button.ButtonClickedEvent onInfoClick;
 
     [HideInInspector]
     public HotScenesController.HotSceneInfo hotSceneInfo;

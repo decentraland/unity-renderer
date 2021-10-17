@@ -60,8 +60,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         return new SectionToggleModel
         {
             icon = sectionImage.sprite,
-            title = sectionText.text,
-            onSelect = onSelect
+            title = sectionText.text
         };
     }
 
@@ -88,7 +87,6 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
         onSelect.RemoveAllListeners();
         ConfigureDefaultOnSelectAction();
-        onSelect.AddListener((isOn) => model.onSelect.Invoke(isOn));
     }
 
     public void SelectToggle()
@@ -122,11 +120,5 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             else
                 SetUnselectedVisuals();
         });
-    }
-
-    private void OnDestroy()
-    {
-        if (toggle != null)
-            toggle.onValueChanged.RemoveAllListeners();
     }
 }
