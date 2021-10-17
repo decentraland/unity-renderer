@@ -31,8 +31,6 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
     [Header("Configuration")]
     [SerializeField] internal RealmViewerComponentModel model;
 
-    public override void PostInitialization() { }
-
     public virtual void Configure(RealmViewerComponentModel model)
     {
         this.model = model;

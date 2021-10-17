@@ -26,6 +26,6 @@ public class GoToLinkAction : MonoBehaviour
     private void OnDestroy()
     {
         if (button != null)
-            button.onClick.RemoveAllListeners();
+            button.onClick.RemoveListener(GoToUrl);
     }
 }

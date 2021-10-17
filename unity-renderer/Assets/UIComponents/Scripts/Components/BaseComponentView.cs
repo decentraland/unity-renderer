@@ -12,16 +12,6 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void PostInitialization();
 
     /// <summary>
-    /// It is called every frame.
-    /// </summary>
-    void Update();
-
-    /// <summary>
-    /// It is called every frame (after Update).
-    /// </summary>
-    void LateUpdate();
-
-    /// <summary>
     /// Shows the UI component.
     /// </summary>
     /// <param name="instant">True for not apply progressive animation.</param>
@@ -58,6 +48,7 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
+    internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
     internal void Initialize()
@@ -67,7 +58,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         DataStore.i.screen.size.OnChange += OnScreenSizeChange;
     }
 
-    public abstract void PostInitialization();
+    public virtual void PostInitialization() { }
 
     public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
 
@@ -88,10 +79,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     private void Awake() { Initialize(); }
 
     private void Start() { PostInitialization(); }
-
-    public virtual void Update() { }
-
-    public virtual void LateUpdate() { }
 
     public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 

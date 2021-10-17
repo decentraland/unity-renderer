@@ -29,6 +29,6 @@ public class JumpInAction : MonoBehaviour
     private void OnDestroy()
     {
         if (button != null)
-            button.onClick.RemoveAllListeners();
+            button.onClick.RemoveListener(JumpIn);
     }
 }

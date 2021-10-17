@@ -40,8 +40,6 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public Button.ButtonClickedEvent onClick => button?.onClick;
 
-    public override void PostInitialization() { }
-
     public virtual void Configure(ButtonComponentModel model)
     {
         this.model = model;

@@ -65,10 +65,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
 
     public override void PostInitialization() { imageObserver.AddListener(OnImageObserverUpdated); }
 
-    public override void LateUpdate()
+    private void LateUpdate()
     {
-        base.LateUpdate();
-
         if (model.fitParent && HasParentSizeChanged())
             SetFitParent(model.fitParent);
     }
