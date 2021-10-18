@@ -9,6 +9,7 @@ using UnityEngine.TestTools;
 
 public class InitialSceneShould
 {
+    //Note: this test should be deleted when we don't need to get the references from the initial scene anymore
     [UnityTest]
     public IEnumerator HaveReferencesAssgigned()
     {
@@ -24,8 +25,7 @@ public class InitialSceneShould
         Assert.IsNotNull(InitialSceneReferences.i.builderInWorldBridge);
         Assert.IsNotNull(InitialSceneReferences.i.playerAvatarController);
         Assert.IsNotNull(InitialSceneReferences.i.bridgeGameObject);
-    }
 
-    [TearDown]
-    public void TearDown() { SceneManager.UnloadSceneAsync("InitialScene"); }
+        yield return SceneManager.UnloadSceneAsync("InitialScene");
+    }
 }
