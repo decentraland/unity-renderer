@@ -113,28 +113,17 @@ var WebVideoPlayer = {
         const id = Pointer_stringify(videoId);
 
         if (videos[id].state !== 4) return; //PLAYING
-
+        
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texturePtr]);
-        if (isWebGL1) {
-            GLctx.texImage2D(
-                GLctx.TEXTURE_2D,
-                0,
-                GLctx.RGBA,
-                GLctx.RGBA,
-                GLctx.UNSIGNED_BYTE,
-                videos[id].video
-            );
-        } else {
-            GLctx.texSubImage2D(
-                GLctx.TEXTURE_2D,
-                0,
-                0,
-                0,
-                GLctx.RGBA,
-                GLctx.UNSIGNED_BYTE,
-                videos[id].video
-            );
-        }
+        
+        GLctx.texImage2D(
+            GLctx.TEXTURE_2D,
+            0,
+            GLctx.RGBA,
+            GLctx.RGBA,
+            GLctx.UNSIGNED_BYTE,
+            videos[id].video
+        );
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {
