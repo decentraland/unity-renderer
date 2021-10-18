@@ -7,6 +7,11 @@ using UnityEngine.EventSystems;
 public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
     /// <summary>
+    /// It is called at the beggining of the UI component lyfe-cicle.
+    /// </summary>
+    void Initialization();
+
+    /// <summary>
     /// It is called just after the UI component has been initialized.
     /// </summary>
     void PostInitialization();
@@ -58,6 +63,12 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
+    public virtual void Initialization()
+    {
+        showHideAnimator = GetComponent<ShowHideAnimator>();
+        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
+    }
+
     public virtual void PostInitialization() { }
 
     public abstract void RefreshControl();
@@ -86,11 +97,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
 
-    private void Awake()
-    {
-        showHideAnimator = GetComponent<ShowHideAnimator>();
-        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
-    }
+    private void Awake() { Initialization(); }
 
     private void OnEnable() { PostScreenSizeChanged(); }
 

@@ -135,7 +135,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         this.places.ExtractItems();
         placeCardsPool.ReleaseAll();
         List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
-        this.places.SetItems(placeComponentsToAdd, false);
+        this.places.SetItems(placeComponentsToAdd);
         placesNoDataText.gameObject.SetActive(places.Count == 0);
     }
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
@@ -12,5 +11,4 @@ public class GridContainerComponentModel : BaseComponentModel
     public Vector2 itemSize;
     public Vector2 spaceBetweenItems;
     public float minWidthForFlexibleItems;
-    public List<BaseComponentView> items;
 }

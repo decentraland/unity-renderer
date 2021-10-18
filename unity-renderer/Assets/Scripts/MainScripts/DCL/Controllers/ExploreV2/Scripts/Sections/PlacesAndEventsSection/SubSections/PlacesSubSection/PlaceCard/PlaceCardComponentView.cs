@@ -354,7 +354,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         currentFriendHeads.Add(profile.userId, newFriend);
 
         if (friendsGrid != null)
-            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList(), false);
+            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList());
     }
 
     internal void OnFriendRemoved(UserProfile profile)
@@ -365,7 +365,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         currentFriendHeads.Remove(profile.userId);
 
         if (friendsGrid != null)
-            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList(), false);
+            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList());
     }
 
     internal void CleanFriendHeadsItems()

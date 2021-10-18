@@ -24,7 +24,6 @@ public class GridContainerComponentViewTests
         // Arrange
         GridContainerComponentModel testModel = new GridContainerComponentModel
         {
-            items = new List<BaseComponentView>(),
             itemSize = new Vector2Int(10, 10),
             constranitCount = 3,
             spaceBetweenItems = new Vector2Int(5, 5),
@@ -47,7 +46,6 @@ public class GridContainerComponentViewTests
         int testNumColumns = 3;
         Vector2 testSpaceBetweenItems = new Vector2(5f, 5f);
 
-        gridContainerComponent.model.items = testItems;
         gridContainerComponent.model.itemSize = testItemSize;
         gridContainerComponent.model.constranitCount = testNumColumns;
         gridContainerComponent.model.spaceBetweenItems = testSpaceBetweenItems;
@@ -57,7 +55,6 @@ public class GridContainerComponentViewTests
         gridContainerComponent.RefreshControl();
 
         // Assert
-        Assert.AreEqual(testItems, gridContainerComponent.model.items, "The items does not match in the model.");
         Assert.AreEqual(testItemSize, gridContainerComponent.model.itemSize, "The item size does not match in the model.");
         Assert.AreEqual(testNumColumns, gridContainerComponent.model.constranitCount, "The number of columns does not match in the model.");
         Assert.AreEqual(testSpaceBetweenItems, gridContainerComponent.model.spaceBetweenItems, "The space between items does not match in the model.");
@@ -132,7 +129,6 @@ public class GridContainerComponentViewTests
         gridContainerComponent.SetItems(testItems);
 
         // Assert
-        Assert.AreEqual(testItems, gridContainerComponent.model.items, "The items list does not match in the model.");
         Assert.AreEqual(testItems.Count, gridContainerComponent.transform.childCount, "The number of items list does not match.");
     }
 
@@ -168,7 +164,7 @@ public class GridContainerComponentViewTests
         gridContainerComponent.SetItems(testItems);
 
         // Act
-        gridContainerComponent.DestroyInstantiatedItems(true);
+        gridContainerComponent.DestroyInstantiatedItems();
         yield return null;
 
         // Assert

@@ -197,7 +197,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         featuredEvents.ExtractItems();
         featuredEventCardsPool.ReleaseAll();
         List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, featuredEventCardsPool);
-        featuredEvents.SetItems(eventComponentsToAdd, false);
+        featuredEvents.SetItems(eventComponentsToAdd);
         featuredEvents.gameObject.SetActive(events.Count > 0);
     }
     public void SetFeaturedEventsAsLoading(bool isVisible)
@@ -211,7 +211,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEvents.ExtractItems();
         trendingEventCardsPool.ReleaseAll();
         List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, trendingEventCardsPool);
-        trendingEvents.SetItems(eventComponentsToAdd, false);
+        trendingEvents.SetItems(eventComponentsToAdd);
         trendingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
@@ -229,7 +229,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEvents.ExtractItems();
         upcomingEventCardsPool.ReleaseAll();
         List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, upcomingEventCardsPool);
-        upcomingEvents.SetItems(eventComponentsToAdd, false);
+        upcomingEvents.SetItems(eventComponentsToAdd);
         upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
@@ -247,7 +247,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         goingEvents.ExtractItems();
         goingEventCardsPool.ReleaseAll();
         List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, goingEventCardsPool);
-        goingEvents.SetItems(eventComponentsToAdd, false);
+        goingEvents.SetItems(eventComponentsToAdd);
         goingEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
 
