@@ -19,22 +19,22 @@ namespace Tests
             webVideoPlayer = new WebVideoPlayer(ID, "url", true, plugin);
             plugin.GetError(ID).Returns(ERROR_MESSAGE);
         }
-        
+
         [Test]
         public void VideoPlays()
         {
             webVideoPlayer.Play();
-            
+
             plugin.Received(1).Play(ID, -1);
         }
-        
+
         [Test]
         public void VideoPlaysAtPausedPosition()
         {
             webVideoPlayer.SetTime(100);
-            
+
             webVideoPlayer.Play();
-            
+
             plugin.Received(1).Play(ID, 100);
         }
 
@@ -42,9 +42,9 @@ namespace Tests
         public void VideoGetTimeReturnsNativeTime()
         {
             plugin.GetTime(ID).Returns(7);
-            
+
             var time = webVideoPlayer.GetTime();
-            
+
             plugin.Received(1).GetTime(ID);
             Assert.AreEqual(7, time);
         }
@@ -54,7 +54,7 @@ namespace Tests
         {
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
-            
+
             plugin.Received(1).Pause(ID);
             Assert.IsTrue(webVideoPlayer.IsPaused());
         }
@@ -63,11 +63,11 @@ namespace Tests
         public void VideoIsResumedAtPausedTime()
         {
             plugin.GetTime(ID).Returns(80);
-            
+
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
             webVideoPlayer.Play();
-            
+
             plugin.Received(1).Play(ID, -1);
             plugin.Received(1).Play(ID, 80);
         }
@@ -76,7 +76,7 @@ namespace Tests
         public void VideoVolumeIsSet()
         {
             webVideoPlayer.SetVolume(77);
-            
+
             plugin.Received(1).SetVolume(ID, 77);
         }
 
@@ -85,7 +85,7 @@ namespace Tests
         {
             webVideoPlayer.SetLoop(true);
             webVideoPlayer.SetLoop(false);
-            
+
             plugin.Received(1).SetLoop(ID, true);
             plugin.Received(1).SetLoop(ID, false);
         }
@@ -94,7 +94,7 @@ namespace Tests
         public void VideoPlaybackRateIsSet()
         {
             webVideoPlayer.SetPlaybackRate(55);
-            
+
             plugin.Received(1).SetPlaybackRate(ID, 55);
         }
 
@@ -104,7 +104,7 @@ namespace Tests
             plugin.GetDuration(ID).Returns(200);
 
             var duration = webVideoPlayer.GetDuration();
-            
+
             Assert.AreEqual(200, duration);
         }
 
@@ -112,7 +112,7 @@ namespace Tests
         public void VideoIsDisposed()
         {
             webVideoPlayer.Dispose();
-            
+
             plugin.Received(1).Remove(ID);
         }
 
@@ -120,7 +120,7 @@ namespace Tests
         public void VideoErrorStateOnUpdate()
         {
             plugin.GetState(ID).Returns((int)VideoState.ERROR);
-            
+
             webVideoPlayer.UpdateWebVideoTexture();
 
             plugin.Received(1).GetError(ID);
@@ -132,7 +132,7 @@ namespace Tests
         public void OnVideoErrorPlayerWontDoAnything()
         {
             plugin.GetState(ID).Returns((int)VideoState.ERROR);
-            
+
             webVideoPlayer.UpdateWebVideoTexture();
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
@@ -142,7 +142,7 @@ namespace Tests
             webVideoPlayer.SetPlaybackRate(8);
             webVideoPlayer.GetTime();
             webVideoPlayer.GetDuration();
-            
+
             plugin.Received(0).Play(ID, Arg.Any<float>());
             plugin.Received(0).Pause(ID);
             plugin.Received(0).SetVolume(ID, Arg.Any<float>());
@@ -167,7 +167,7 @@ namespace Tests
                 timesTextureWasReady++;
                 texture = t;
             };
-            
+
             webVideoPlayer.UpdateWebVideoTexture();
             webVideoPlayer.UpdateWebVideoTexture();
 
@@ -183,7 +183,7 @@ namespace Tests
             plugin.GetWidth(ID).Returns(5);
             plugin.GetHeight(ID).Returns(5);
             plugin.GetState(ID).Returns((int)VideoState.READY);
-            
+
             webVideoPlayer.OnTextureReady += t =>
             {
                 texture = t;
@@ -191,13 +191,13 @@ namespace Tests
             webVideoPlayer.Play();
             webVideoPlayer.visible = true;
             webVideoPlayer.UpdateWebVideoTexture();
-            
+
             plugin.GetWidth(ID).Returns(64);
             plugin.GetHeight(ID).Returns(64);
             plugin.GetState(ID).Returns((int)VideoState.PLAYING);
-            
+
             webVideoPlayer.UpdateWebVideoTexture();
-            plugin.Received(1).TextureUpdate(ID, texture.GetNativeTexturePtr(), Arg.Any<bool>() );
+            plugin.Received(1).TextureUpdate(ID);
         }
 
         [Test]
@@ -206,17 +206,17 @@ namespace Tests
             plugin.GetState(ID).Returns(3);
 
             VideoState state = webVideoPlayer.GetState();
-            
+
             Assert.AreEqual(VideoState.READY, state);
         }
-        
+
         [Test]
         public void WhenVideoDurationIsNaNReturnAValidNumber()
         {
             plugin.GetDuration(ID).Returns(float.NaN);
 
             var duration = webVideoPlayer.GetDuration();
-            
+
             Assert.AreEqual(-1, duration);
         }
     }
