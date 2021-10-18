@@ -9,6 +9,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.Controllers;
 using DCL.Interface;
+using DCL.SettingsCommon;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace Tests
 {
@@ -45,7 +47,7 @@ namespace Tests
                 seek = 10
             };
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
-            
+
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
                 sceneId = scene.sceneData.id,
@@ -55,7 +57,7 @@ namespace Tests
                 currentOffset = 0,
                 status = (int)VideoState.ERROR // status is always error when not on WebGL
             };
-            
+
             var json = JsonUtility.ToJson(expectedEvent);
             var wasEventSent = false;
             yield return TestHelpers.WaitForMessageFromEngine("VideoProgressEvent", json,
@@ -75,7 +77,7 @@ namespace Tests
                 playing = false
             };
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
-            
+
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
                 sceneId = scene.sceneData.id,
@@ -85,12 +87,12 @@ namespace Tests
                 currentOffset = 0,
                 status = (int)VideoState.ERROR
             };
-            
+
             var json = JsonUtility.ToJson(expectedEvent);
             var wasEventSent = false;
             yield return TestHelpers.WaitForMessageFromEngine("VideoProgressEvent", json,
                 () => { },
-                () =>wasEventSent = true);
+                () => wasEventSent = true);
 
             Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
         }
@@ -104,7 +106,7 @@ namespace Tests
                 playing = true
             };
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
-            
+
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
                 sceneId = scene.sceneData.id,
@@ -296,6 +298,41 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator UpdateTexturePlayerVolumeWhenAudioSettingsChange()
+        {
+            var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
+            DCLVideoTexture.Model model = new DCLVideoTexture.Model()
+            {
+                videoClipId = id,
+                playing = true,
+                volume = 1
+            };
+            var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+
+            yield return null;
+
+            AreAproximatedlyEqual(1f, component.texturePlayer.volume);
+
+            AudioSettings settings = Settings.i.audioSettings.Data;
+            settings.sceneSFXVolume = 0.5f;
+            Settings.i.audioSettings.Apply(settings);
+            
+            var expectedVolume = Utils.ToVolumeCurve(0.5f);
+            AreAproximatedlyEqual(expectedVolume, component.texturePlayer.volume);
+            
+            settings.sceneSFXVolume = 1f;
+            Settings.i.audioSettings.Apply(settings);
+            
+            AreAproximatedlyEqual(1f, component.texturePlayer.volume);
+
+        }
+
+        private void AreAproximatedlyEqual(float expected, float current)
+        {
+            Assert.IsTrue(Mathf.Abs(current - expected) < Mathf.Epsilon, $"expected {expected} but was {current}");
+        }
+
+        [UnityTest]
         public IEnumerator VolumeWhenVideoCreatedWithUserInScene()
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
@@ -430,10 +467,7 @@ namespace Tests
         }
 
         static DCLVideoTexture CreateDCLVideoTexture(ParcelScene scn, string url) { return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, "http://" + url)); }
-        static DCLVideoTexture CreateDCLVideoTextureWithCustomTextureModel(ParcelScene scn, DCLVideoTexture.Model model)
-        {
-            return CreateDCLVideoTextureWithModel(scn, model);
-        }
+        static DCLVideoTexture CreateDCLVideoTextureWithCustomTextureModel(ParcelScene scn, DCLVideoTexture.Model model) { return CreateDCLVideoTextureWithModel(scn, model); }
 
     }
 }
