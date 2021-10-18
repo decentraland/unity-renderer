@@ -14,8 +14,13 @@ namespace Tests.AvatarsLODController
     {
         private DCL.AvatarsLODController controller;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+
         [SetUp]
-        public void SetUp() { controller = Substitute.ForPartsOf<DCL.AvatarsLODController>(); }
+        public void SetUp()
+        {
+            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
+            controller = Substitute.ForPartsOf<DCL.AvatarsLODController>();
+        }
 
         [Test]
         public void BeCreatedProperly()
@@ -236,13 +241,13 @@ namespace Tests.AvatarsLODController
             impostorAvatarPlayerController.Received().SetImpostor();
             invisibleAvatarPlayerController.Received().SetInvisible();
         }
-        
+
         [Test]
         public void HideCharacterClippingAvatars()
         {
             DataStore.i.avatarsLOD.maxAvatars.Set(2);
             controller.enabled = true;
-            
+
             Vector3 cameraPosition = Vector3.zero;
             CommonScriptableObjects.cameraForward.Set(Vector3.forward);
             CommonScriptableObjects.cameraPosition.Set(cameraPosition);
@@ -253,12 +258,12 @@ namespace Tests.AvatarsLODController
             IAvatarLODController avatarPlayerController = Substitute.For<IAvatarLODController>();
             avatarPlayerController.player.Returns(avatar);
             controller.lodControllers.Add(avatar.id, avatarPlayerController);
-            
+
             // Place at normal distance
             avatar.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f);
             controller.Update();
             avatarPlayerController.Received().SetFullAvatar();
-            
+
             // Place super close to the main player
             avatar.worldPosition = cameraPosition + Vector3.forward * 0.75f;
             controller.Update();
