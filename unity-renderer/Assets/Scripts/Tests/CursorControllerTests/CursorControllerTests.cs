@@ -164,8 +164,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit]
         public IEnumerator FeedbackIsNotDisplayedOnParent()
         {
             var cursorController = GameObject.FindObjectOfType<CursorController>();
@@ -286,7 +284,7 @@ namespace Tests
 
             DCLCharacterController.i.ResumeGravity();
         }
-        
+
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackIsNotBlockedByFullyAlphaUIContainer()
         {
@@ -346,6 +344,6 @@ namespace Tests
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
             DCLCharacterController.i.ResumeGravity();
-        }        
+        }
     }
 }
