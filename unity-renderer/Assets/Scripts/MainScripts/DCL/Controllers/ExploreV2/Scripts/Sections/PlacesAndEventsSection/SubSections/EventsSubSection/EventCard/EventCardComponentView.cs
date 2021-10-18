@@ -104,6 +104,12 @@ public interface IEventCardComponentView
     void SetSubscribersUsers(int newNumberOfUsers);
 
     /// <summary>
+    /// Set the event coords.
+    /// </summary>
+    /// <param name="newCoords">Event coords.</param>
+    void SetCoords(Vector2Int newCoords);
+
+    /// <summary>
     /// Active or deactive the loading indicator.
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
@@ -192,6 +198,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventOrganizer(model.eventOrganizer);
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
+        SetCoords(model.coords);
 
         RebuildCardLayouts();
     }
@@ -392,6 +399,16 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             else
                 subscribedUsersText.text = NOBODY_CONFIRMED_MESSAGE;
         }
+    }
+
+    public void SetCoords(Vector2Int newCoords)
+    {
+        model.coords = newCoords;
+
+        if (jumpinButton == null || !isEventCardModal)
+            return;
+
+        jumpinButton.SetText($"{newCoords.x},{newCoords.y}");
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)

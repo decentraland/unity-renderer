@@ -227,6 +227,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventCardModel.eventPlace = FormatEventPlace(eventFromAPI);
         eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
         eventCardModel.isSubscribed = false;
+        eventCardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         eventCardModel.eventFromAPIInfo = eventFromAPI;
 
         // Card events

@@ -145,6 +145,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         placeCardModel.placeAuthor = FormatAuthorName(placeFromAPI);
         placeCardModel.numberOfUsers = placeFromAPI.usersTotalCount;
         placeCardModel.parcels = placeFromAPI.parcels;
+        placeCardModel.coords = placeFromAPI.baseCoords;
         placeCardModel.hotSceneInfo = placeFromAPI;
 
         return placeCardModel;

@@ -20,6 +20,7 @@ public class EventCardComponentModel : BaseComponentModel
     public string eventPlace;
     public int subscribedUsers;
     public bool isSubscribed;
+    public Vector2Int coords;
 
     [HideInInspector]
     public EventFromAPIModel eventFromAPIInfo;

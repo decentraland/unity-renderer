@@ -62,6 +62,12 @@ public interface IPlaceCardComponentView
     void SetNumberOfUsers(int newNumberOfUsers);
 
     /// <summary>
+    /// Set the place coords.
+    /// </summary>
+    /// <param name="newCoords">Place coords.</param>
+    void SetCoords(Vector2Int newCoords);
+
+    /// <summary>
     /// Set the parcels contained in the place.
     /// </summary>
     /// <param name="parcels">List of parcels.</param>
@@ -164,6 +170,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceDescription(model.placeDescription);
         SetPlaceAuthor(model.placeAuthor);
         SetNumberOfUsers(model.numberOfUsers);
+        SetCoords(model.coords);
 
         RebuildCardLayouts();
     }
@@ -285,6 +292,16 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             return;
 
         numberOfUsersText.text = newNumberOfUsers.ToString();
+    }
+
+    public void SetCoords(Vector2Int newCoords)
+    {
+        model.coords = newCoords;
+
+        if (coordsText == null)
+            return;
+
+        coordsText.text = $"{newCoords.x},{newCoords.y}";
     }
 
     public void SetParcels(Vector2Int[] parcels) { model.parcels = parcels; }
