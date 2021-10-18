@@ -121,8 +121,6 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         OnReady?.Invoke();
     }
 
-    public override void SetModel(BaseComponentModel newModel) { }
-
     public override void RefreshControl() { places.RefreshControl(); }
 
     public override void Dispose()

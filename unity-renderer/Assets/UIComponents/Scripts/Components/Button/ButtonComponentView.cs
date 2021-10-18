@@ -22,7 +22,7 @@ public interface IButtonComponentView
     void SetIcon(Sprite newIcon);
 }
 
-public class ButtonComponentView : BaseComponentView, IButtonComponentView
+public class ButtonComponentView : BaseComponentView, IButtonComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
@@ -34,7 +34,11 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
     public Button.ButtonClickedEvent onClick => button?.onClick;
 
-    public override void SetModel(BaseComponentModel newModel) { model = (ButtonComponentModel)newModel; }
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (ButtonComponentModel)newModel;
+        RefreshControl();
+    }
 
     public override void RefreshControl()
     {

@@ -46,7 +46,7 @@ public interface IProfileCardComponentView
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class ProfileCardComponentView : BaseComponentView, IProfileCardComponentView
+public class ProfileCardComponentView : BaseComponentView, IProfileCardComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
@@ -65,7 +65,11 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
             profileImage.OnLoaded += OnProfileImageLoaded;
     }
 
-    public override void SetModel(BaseComponentModel newModel) { model = (ProfileCardComponentModel)newModel; }
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (ProfileCardComponentModel)newModel;
+        RefreshControl();
+    }
 
     public override void RefreshControl()
     {

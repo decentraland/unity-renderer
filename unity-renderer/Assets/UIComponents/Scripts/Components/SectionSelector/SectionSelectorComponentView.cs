@@ -24,7 +24,7 @@ public interface ISectionSelectorComponentView
     List<ISectionToggle> GetAllSections();
 }
 
-public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView
+public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal SectionToggle sectionToggleTemplate;
@@ -34,7 +34,11 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
-    public override void SetModel(BaseComponentModel newModel) { model = (SectionSelectorComponentModel)newModel; }
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (SectionSelectorComponentModel)newModel;
+        RefreshControl();
+    }
 
     public override void RefreshControl()
     {

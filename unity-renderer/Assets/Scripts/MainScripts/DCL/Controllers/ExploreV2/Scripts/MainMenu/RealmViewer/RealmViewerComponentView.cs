@@ -16,7 +16,7 @@ public interface IRealmViewerComponentView
     void SetNumberOfUsers(int newNumberOfUsers);
 }
 
-public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView
+public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal TMP_Text realm;
@@ -25,7 +25,11 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
     [Header("Configuration")]
     [SerializeField] internal RealmViewerComponentModel model;
 
-    public override void SetModel(BaseComponentModel newModel) { model = (RealmViewerComponentModel)newModel; }
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (RealmViewerComponentModel)newModel;
+        RefreshControl();
+    }
 
     public override void RefreshControl()
     {

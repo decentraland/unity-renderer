@@ -67,7 +67,7 @@ public interface IGridContainerComponentView
     void RemoveItems();
 }
 
-public class GridContainerComponentView : BaseComponentView, IGridContainerComponentView
+public class GridContainerComponentView : BaseComponentView, IGridContainerComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal GridLayoutGroup gridLayoutGroup;
@@ -79,7 +79,11 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
     internal bool destroyOnlyUnnecesaryItems = false;
 
-    public override void SetModel(BaseComponentModel newModel) { model = (GridContainerComponentModel)newModel; }
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (GridContainerComponentModel)newModel;
+        RefreshControl();
+    }
 
     public override void RefreshControl()
     {

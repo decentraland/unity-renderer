@@ -80,7 +80,7 @@ public interface IPlaceCardComponentView
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
+public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView, IComponentModelConfig
 {
     internal const int THMBL_MARKETPLACE_WIDTH = 196;
     internal const int THMBL_MARKETPLACE_HEIGHT = 143;
@@ -140,7 +140,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         CleanFriendHeadsItems();
     }
 
-    public override void SetModel(BaseComponentModel newModel)
+    public void Configure(BaseComponentModel newModel)
     {
         model = (PlaceCardComponentModel)newModel;
 
@@ -148,6 +148,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (mapInfoHandler != null)
             mapInfoHandler.SetMinimapSceneInfo(model.hotSceneInfo);
+
+        RefreshControl();
     }
 
     public override void RefreshControl()
