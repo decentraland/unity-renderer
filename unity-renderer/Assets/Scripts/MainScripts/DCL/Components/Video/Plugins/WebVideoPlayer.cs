@@ -166,7 +166,8 @@ namespace DCL.Components.Video.Plugin
 
         private Texture2D CreateTexture(int width, int height)
         {
-            Texture2D tex = new Texture2D(width, height, TextureFormat.ARGB32, false);
+            // We use RGBA instead of ARGB to avoid internal bit swapping in the Hls plugin that uses RGBA
+            Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
             tex.wrapMode = TextureWrapMode.Clamp;
             return tex;
         }

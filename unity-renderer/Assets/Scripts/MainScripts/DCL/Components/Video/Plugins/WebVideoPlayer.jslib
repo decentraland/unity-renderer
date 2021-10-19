@@ -116,14 +116,28 @@ var WebVideoPlayer = {
         
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texturePtr]);
         
-        GLctx.texImage2D(
-            GLctx.TEXTURE_2D,
-            0,
-            GLctx.RGBA,
-            GLctx.RGBA,
-            GLctx.UNSIGNED_BYTE,
-            videos[id].video
-        );
+        if (isWebGL1) {
+            GLctx.texImage2D(
+                GLctx.TEXTURE_2D,
+                0,
+                GLctx.RGBA,
+                GLctx.RGBA,
+                GLctx.UNSIGNED_BYTE,
+                videos[id].video
+            );
+        } else {
+            GLctx.texImage2D(
+                GLctx.TEXTURE_2D,
+                0,
+                GLctx.RGBA,
+                videos[id].video.videoWidth,
+                videos[id].video.videoHeight,
+                0,
+                GLctx.RGBA,
+                GLctx.UNSIGNED_BYTE,
+                videos[id].video
+            );
+        }
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {
