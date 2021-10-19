@@ -366,11 +366,7 @@ workflows:
           requires:
             - checkout
       - editmode-tests:
-          # <<: *all_branches_and_tags
-          filters:
-            branches:
-              only:
-                - editmode-branch
+          <<: *all_branches_and_tags
           requires:
             - checkout
       - build-unity:
