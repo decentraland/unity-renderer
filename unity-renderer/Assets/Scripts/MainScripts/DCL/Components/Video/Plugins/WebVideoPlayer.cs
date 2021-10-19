@@ -5,18 +5,21 @@ namespace DCL.Components.Video.Plugin
 {
     public class WebVideoPlayer : IDisposable
     {
-        public event Action<Texture> OnTextureReady;
+        public event Action<Texture2D> OnTextureReady;
+
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
         public bool playing { get { return shouldBePlaying; } }
         public bool visible { get; set; }
         public bool isError { get; private set; }
 
-        private static bool isWebGL1 => SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2;
+        //private static bool isWebGL1 => SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2;
 
         private string videoPlayerId;
+
         private readonly IWebVideoPlayerPlugin plugin;
-        private IntPtr textureNativePtr;
+
+        //private IntPtr textureNativePtr;
         private bool initialized = false;
         private bool shouldBePlaying = false;
         private float pausedAtTime = -1;
@@ -27,6 +30,7 @@ namespace DCL.Components.Video.Plugin
             videoPlayerId = id;
             this.plugin = plugin;
 
+            texture = new Texture2D(1, 1);
             plugin.Create(id, url, useHls);
         }
 
@@ -47,29 +51,24 @@ namespace DCL.Components.Video.Plugin
                     if (!initialized)
                     {
                         initialized = true;
-                        texture = CreateTexture(plugin.GetWidth(videoPlayerId), plugin.GetHeight(videoPlayerId));
-                        textureNativePtr = texture.GetNativeTexturePtr();
+                        texture.UpdateExternalTexture((IntPtr)plugin.GetTexture(videoPlayerId));
+                        texture.Apply();
                         OnTextureReady?.Invoke(texture);
                     }
+
                     break;
                 case (int)VideoState.PLAYING:
                     if (shouldBePlaying && visible)
                     {
                         int width = plugin.GetWidth(videoPlayerId);
                         int height = plugin.GetHeight(videoPlayerId);
-                        if (texture.width != width || texture.height != height)
+
+                        if (width > 0 && height > 0)
                         {
-                            if (texture.Resize(width, height))
-                            {
-                                texture.Apply();
-                                textureNativePtr = texture.GetNativeTexturePtr();
-                            }
-                        }
-                        if (texture.width > 0 && texture.height > 0)
-                        {
-                            plugin.TextureUpdate(videoPlayerId, textureNativePtr, isWebGL1);
+                            plugin.TextureUpdate(videoPlayerId);
                         }
                     }
+
                     break;
             }
         }
@@ -145,10 +144,10 @@ namespace DCL.Components.Video.Plugin
                 return 0;
 
             float duration = plugin.GetDuration(videoPlayerId);
-            
+
             if (float.IsNaN(duration))
                 duration = -1;
-            
+
             return duration;
         }
 
@@ -159,17 +158,19 @@ namespace DCL.Components.Video.Plugin
 
         public void Dispose()
         {
+            Debug.unityLogger.logEnabled = true;
+            Debug.Log($"Disposing texture = {plugin.GetTexture(videoPlayerId)}");
+            Debug.unityLogger.logEnabled = false;
+
             plugin.Remove(videoPlayerId);
-            UnityEngine.Object.Destroy(texture);
-            texture = null;
         }
 
-        private Texture2D CreateTexture(int width, int height)
-        {
-            // We use RGBA instead of ARGB to avoid internal bit swapping in the Hls plugin that uses RGBA
-            Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
-            tex.wrapMode = TextureWrapMode.Clamp;
-            return tex;
-        }
+        // private Texture2D CreateTexture(int width, int height)
+        // {
+        //     // We use RGBA instead of ARGB to avoid internal bit swapping in the Hls plugin that uses RGBA
+        //     Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        //     tex.wrapMode = TextureWrapMode.Clamp;
+        //     return tex;
+        // }
     }
 }
