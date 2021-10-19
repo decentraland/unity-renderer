@@ -1,6 +1,5 @@
 using DCL;
 using System.Collections;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
@@ -19,13 +18,15 @@ namespace AssetPromiseKeeper_Tests
         protected override IEnumerator SetUp()
         {
             keeper = new APKType();
-            yield break;
+            yield return base.SetUp();
         }
 
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
+
             keeper.Cleanup();
+            yield return base.TearDown();
             yield break;
         }
 
