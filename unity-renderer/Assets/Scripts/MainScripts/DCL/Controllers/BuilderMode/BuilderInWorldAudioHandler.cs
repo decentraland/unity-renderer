@@ -84,10 +84,13 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         UpdateEntityCount();
 
-        if (startBuilderMusicCoroutine != null)
-            CoroutineStarter.Stop(startBuilderMusicCoroutine);
+        if (eventBuilderMusic.source.gameObject.activeSelf)
+        {
+            if (startBuilderMusicCoroutine != null)
+                CoroutineStarter.Stop(startBuilderMusicCoroutine);
 
-        startBuilderMusicCoroutine = CoroutineStarter.Start(StartBuilderMusic());
+            startBuilderMusicCoroutine = CoroutineStarter.Start(StartBuilderMusic());
+        }
 
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
