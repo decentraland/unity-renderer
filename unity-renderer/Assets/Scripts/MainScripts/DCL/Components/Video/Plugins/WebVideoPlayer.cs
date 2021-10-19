@@ -13,17 +13,13 @@ namespace DCL.Components.Video.Plugin
         public bool visible { get; set; }
         public bool isError { get; private set; }
 
-        //private static bool isWebGL1 => SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2;
-
         private string videoPlayerId;
 
         private readonly IWebVideoPlayerPlugin plugin;
 
-        //private IntPtr textureNativePtr;
         private bool initialized = false;
         private bool shouldBePlaying = false;
         private float pausedAtTime = -1;
-
 
         public WebVideoPlayer(string id, string url, bool useHls, IWebVideoPlayerPlugin plugin)
         {
@@ -158,19 +154,7 @@ namespace DCL.Components.Video.Plugin
 
         public void Dispose()
         {
-            Debug.unityLogger.logEnabled = true;
-            Debug.Log($"Disposing texture = {plugin.GetTexture(videoPlayerId)}");
-            Debug.unityLogger.logEnabled = false;
-
             plugin.Remove(videoPlayerId);
         }
-
-        // private Texture2D CreateTexture(int width, int height)
-        // {
-        //     // We use RGBA instead of ARGB to avoid internal bit swapping in the Hls plugin that uses RGBA
-        //     Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
-        //     tex.wrapMode = TextureWrapMode.Clamp;
-        //     return tex;
-        // }
     }
 }
