@@ -20,7 +20,7 @@ internal class ProjectsController : IProjectsController
     public event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
 
     private Dictionary<string, IProjectCardView> projects = new Dictionary<string, IProjectCardView>();
-    private readonly SceneCardView projectCardViewPrefab;
+    private readonly PlaceCardView projectCardViewPrefab;
     private readonly Transform defaultParent;
 
     /// <summary>
@@ -28,7 +28,7 @@ internal class ProjectsController : IProjectsController
     /// </summary>
     /// <param name="projectCardViewPrefab">prefab for project's card</param>
     /// <param name="defaultParent">default parent for scene's card</param>
-    public ProjectsController(SceneCardView projectCardViewPrefab, Transform defaultParent = null)
+    public ProjectsController(PlaceCardView projectCardViewPrefab, Transform defaultParent = null)
     {
         this.projectCardViewPrefab = projectCardViewPrefab;
         this.defaultParent = defaultParent;

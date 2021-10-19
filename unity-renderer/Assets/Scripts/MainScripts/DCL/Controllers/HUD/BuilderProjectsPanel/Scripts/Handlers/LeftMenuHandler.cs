@@ -1,78 +1,81 @@
 ﻿using System;
 
-internal class LeftMenuHandler : IDisposable
+namespace DCL.Builder
 {
-    private readonly IBuilderMainPanelView view;
-    private readonly ISectionsController sectionsController;
-
-    private bool isMainPanel = false;
-    private SectionId lastMainSectionId;
-
-    public LeftMenuHandler(IBuilderMainPanelView view, ISectionsController sectionsController)
+    internal class LeftMenuHandler : IDisposable
     {
-        this.view = view;
-        this.sectionsController = sectionsController;
+        private readonly IBuilderMainPanelView view;
+        private readonly ISectionsController sectionsController;
 
-        view.OnBackToMainMenuPressed += OnSceneSettingsBackPressed;
+        private bool isMainPanel = false;
+        private SectionId lastMainSectionId;
 
-        sectionsController.OnOpenSectionId += OnOpenSectionId;
-        LeftMenuButtonToggleView.OnToggleOn += OnToggleOn;
-    }
-
-    public void Dispose()
-    {
-        view.OnBackToMainMenuPressed -= OnSceneSettingsBackPressed;
-
-        sectionsController.OnOpenSectionId -= OnOpenSectionId;
-        LeftMenuButtonToggleView.OnToggleOn -= OnToggleOn;
-    }
-
-    public void SetToPreviousMainPanel()
-    {
-        if (isMainPanel)
-            return;
-
-        sectionsController.OpenSection(lastMainSectionId);
-    }
-
-    void OnToggleOn(LeftMenuButtonToggleView toggle) { sectionsController.OpenSection(toggle.openSection); }
-
-    void OnOpenSectionId(SectionId sectionId)
-    {
-        view.SetTogglOnWithoutNotify(sectionId);
-
-        bool isMainPanelSection = sectionId == SectionId.SCENES ||
-                                  sectionId == SectionId.PROJECTS ||
-                                  sectionId == SectionId.LAND;
-
-        if (isMainPanelSection)
+        public LeftMenuHandler(IBuilderMainPanelView view, ISectionsController sectionsController)
         {
-            lastMainSectionId = sectionId;
-            SetMainLeftPanel();
+            this.view = view;
+            this.sectionsController = sectionsController;
+
+            view.OnBackToMainMenuPressed += OnSceneSettingsBackPressed;
+
+            sectionsController.OnOpenSectionId += OnOpenSectionId;
+            LeftMenuButtonToggleView.OnToggleOn += OnToggleOn;
         }
-        else
+
+        public void Dispose()
         {
-            SetSettingsLeftPanel();
+            view.OnBackToMainMenuPressed -= OnSceneSettingsBackPressed;
+
+            sectionsController.OnOpenSectionId -= OnOpenSectionId;
+            LeftMenuButtonToggleView.OnToggleOn -= OnToggleOn;
         }
-    }
 
-    void OnSceneSettingsBackPressed() { SetToPreviousMainPanel(); }
+        public void SetToPreviousMainPanel()
+        {
+            if (isMainPanel)
+                return;
 
-    void SetMainLeftPanel()
-    {
-        if (isMainPanel)
-            return;
+            sectionsController.OpenSection(lastMainSectionId);
+        }
 
-        isMainPanel = true;
-        view.SetMainLeftPanel();
-    }
+        void OnToggleOn(LeftMenuButtonToggleView toggle) { sectionsController.OpenSection(toggle.openSection); }
 
-    void SetSettingsLeftPanel()
-    {
-        if (!isMainPanel)
-            return;
+        void OnOpenSectionId(SectionId sectionId)
+        {
+            view.SetTogglOnWithoutNotify(sectionId);
 
-        isMainPanel = false;
-        view.SetProjectSettingsLeftPanel();
+            bool isMainPanelSection = sectionId == SectionId.SCENES ||
+                                      sectionId == SectionId.PROJECTS ||
+                                      sectionId == SectionId.LAND;
+
+            if (isMainPanelSection)
+            {
+                lastMainSectionId = sectionId;
+                SetMainLeftPanel();
+            }
+            else
+            {
+                SetSettingsLeftPanel();
+            }
+        }
+
+        void OnSceneSettingsBackPressed() { SetToPreviousMainPanel(); }
+
+        void SetMainLeftPanel()
+        {
+            if (isMainPanel)
+                return;
+
+            isMainPanel = true;
+            view.SetMainLeftPanel();
+        }
+
+        void SetSettingsLeftPanel()
+        {
+            if (!isMainPanel)
+                return;
+
+            isMainPanel = false;
+            view.SetProjectSettingsLeftPanel();
+        }
     }
 }

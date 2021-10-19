@@ -33,8 +33,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private ISectionsController sectionsController;
     private IProjectsController projectsController;
-    private IScenesViewController scenesViewController;
-    private ILandController landsController;
+    private IPlacesViewController placesViewController;
+    private ILandsController landsesController;
     private UnpublishPopupController unpublishPopupController;
 
     private INewProjectFlowController newProjectFlowController;
@@ -89,7 +89,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         leftMenuHandler?.Dispose();
 
         sectionsController?.Dispose();
-        scenesViewController?.Dispose();
+        placesViewController?.Dispose();
 
         newProjectFlowController?.Dispose();
 
@@ -99,8 +99,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     public void Initialize()
     {
         Initialize(new SectionsController(view.GetSectionContainer()),
-            new ScenesViewController(view.GetCardViewPrefab(), view.GetTransform()),
-            new LandController(),
+            new PlacesViewController(view.GetCardViewPrefab(), view.GetTransform()),
+            new LandsController(),
             new ProjectsController(view.GetCardViewPrefab(), view.GetTransform()),
             new NewProjectFlowController(),
             Environment.i.platform.serviceProviders.theGraph,
@@ -108,7 +108,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     }
 
     internal void Initialize(ISectionsController sectionsController,
-        IScenesViewController scenesViewController, ILandController landsController, IProjectsController projectsController, INewProjectFlowController newProjectFlowController, ITheGraph theGraph, ICatalyst catalyst)
+        IPlacesViewController placesViewController, ILandsController landsesController, IProjectsController projectsController, INewProjectFlowController newProjectFlowController, ITheGraph theGraph, ICatalyst catalyst)
     {
         if (isInitialized)
             return;
@@ -116,8 +116,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         isInitialized = true;
 
         this.sectionsController = sectionsController;
-        this.scenesViewController = scenesViewController;
-        this.landsController = landsController;
+        this.placesViewController = placesViewController;
+        this.landsesController = landsesController;
         this.projectsController = projectsController;
 
         this.newProjectFlowController = newProjectFlowController;
@@ -128,22 +128,22 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         this.unpublishPopupController = new UnpublishPopupController(view.GetUnpublishPopup());
 
         // set listeners for sections, setup searchbar for section, handle request for opening a new section
-        sectionsHandler = new SectionsHandler(sectionsController, scenesViewController, landsController, projectsController, view.GetSearchBar());
+        sectionsHandler = new SectionsHandler(sectionsController, placesViewController, landsesController, projectsController, view.GetSearchBar());
         // handle if main panel or settings panel should be shown in current section
         leftMenuHandler = new LeftMenuHandler(view, sectionsController);
         // handle project scene info on the left menu panel
-        leftMenuSettingsViewHandler = new LeftMenuSettingsViewHandler(view.GetSettingsViewReferences(), scenesViewController);
+        leftMenuSettingsViewHandler = new LeftMenuSettingsViewHandler(view.GetSettingsViewReferences(), placesViewController);
         // handle scene's context menu options
-        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController, unpublishPopupController);
+        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, placesViewController, unpublishPopupController);
 
         SetView();
 
         sectionsController.OnRequestOpenUrl += OpenUrl;
         sectionsController.OnRequestGoToCoords += GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords += OnGoToEditScene;
-        scenesViewController.OnJumpInPressed += GoToCoords;
-        scenesViewController.OnRequestOpenUrl += OpenUrl;
-        scenesViewController.OnEditorPressed += OnGoToEditScene;
+        placesViewController.OnJumpInPressed += GoToCoords;
+        placesViewController.OnRequestOpenUrl += OpenUrl;
+        placesViewController.OnEditorPressed += OnGoToEditScene;
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
@@ -186,7 +186,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         SetVisibility(false);
 
-        LandWithAccess[] lands = landsController.GetLands();
+        LandWithAccess[] lands = landsesController.GetLands();
         if (lands != null)
         {
             Vector2Int totalLands = GetAmountOfLandsOwnedAndOperator(lands);
@@ -222,8 +222,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void SetView()
     {
-        scenesViewController.AddListener((IDeployedSceneListener) view);
-        scenesViewController.AddListener((IScenesListener) view);
+        placesViewController.AddListener((IPlaceListener) view);
+        placesViewController.AddListener((IProjectListener) view);
     }
 
     private void FetchPanelInfo(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
@@ -272,8 +272,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         isFetching = false;
         sectionsController.SetFetchingDataEnd();
-        landsController.SetLands(new LandWithAccess[] { });
-        scenesViewController.SetScenes(new ISceneData[] { });
+        landsesController.SetLands(new LandWithAccess[] { });
+        placesViewController.SetPlaces(new IPlaceData[] { });
         Debug.LogError(error);
     }
 
@@ -281,8 +281,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         isFetching = false;
         sectionsController.SetFetchingDataEnd();
-        landsController.SetLands(new LandWithAccess[] { });
-        scenesViewController.SetScenes(new ISceneData[] { });
+        landsesController.SetLands(new LandWithAccess[] { });
+        placesViewController.SetPlaces(new IPlaceData[] { });
         Debug.LogError(error);
     }
 
@@ -294,20 +294,20 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         try
         {
-            var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                              .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+            var places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
+                              .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (IPlaceData)new PlaceData(scene)))
                               .Aggregate((i, j) => i.Concat(j))
                               .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);
-            landsController.SetLands(lands);
-            scenesViewController.SetScenes(scenes);
+            landsesController.SetLands(lands);
+            placesViewController.SetPlaces(places);
         }
         catch (Exception e)
         {
-            landsController.SetLands(lands);
-            scenesViewController.SetScenes(new ISceneData[] { });
+            landsesController.SetLands(lands);
+            placesViewController.SetPlaces(new IPlaceData[] { });
         }
     }
 

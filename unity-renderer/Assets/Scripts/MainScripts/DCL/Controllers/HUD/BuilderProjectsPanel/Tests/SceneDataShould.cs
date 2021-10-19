@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -19,11 +20,11 @@ public class SceneDataShould
         metadata.metadata.contact = new CatalystSceneEntityMetadata.Contact();
         metadata.metadata.contact.name = "";
         metadata.metadata.policy = new CatalystSceneEntityMetadata.Policy();
-        DeployedScene scene = new DeployedScene(metadata, "TestURL");
+        Place scene = new Place(metadata, "TestURL");
         scene.parcelsCoord = new [] { new Vector2Int(1, 1) };
 
         //Act
-        SceneData data = new SceneData(scene);
+        PlaceData data = new PlaceData(scene);
 
         //Assert
         Assert.AreEqual(data.size, new Vector2Int(1, 1));

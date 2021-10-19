@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -313,11 +314,11 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         land.parcels = new List<Parcel>() { parcel };
 
         LandWithAccess landWithAccess = new LandWithAccess(land);
-        DeployedScene deployedScene = new DeployedScene();
-        deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
-        deployedScene.deploymentSource = DeployedScene.Source.SDK;
+        Place place = new Place();
+        place.parcelsCoord = new Vector2Int[] { parcelCoords };
+        place.deploymentSource = Place.Source.SDK;
 
-        landWithAccess.scenes = new List<DeployedScene>() { deployedScene };
+        landWithAccess.scenes = new List<Place>() { place };
         var lands = new LandWithAccess[]
         {
             landWithAccess
@@ -467,7 +468,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         land.parcels = new List<Parcel>() { parcel };
 
         var landWithAccess = new LandWithAccess(land);
-        landWithAccess.scenes = new List<DeployedScene>();
+        landWithAccess.scenes = new List<Place>();
 
         var lands = new LandWithAccess[]
         {

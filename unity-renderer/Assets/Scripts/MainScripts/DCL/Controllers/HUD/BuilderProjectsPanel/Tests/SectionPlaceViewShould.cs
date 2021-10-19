@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEditor;
@@ -7,14 +8,14 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class SectionDeployedScenesViewShould
+    public class SectionPlaceViewShould
     {
-        private SectionDeployedScenesView view;
+        private SectionPlacesView view;
 
         [SetUp]
         public void SetUp()
         {
-            var prefab = Resources.Load<SectionDeployedScenesView>(SectionDeployedScenesController.VIEW_PREFAB_PATH);
+            var prefab = Resources.Load<SectionPlacesView>(SectionPlacesController.VIEW_PREFAB_PATH);
             view = Object.Instantiate(prefab);
         }
 
@@ -29,30 +30,30 @@ namespace Tests
         {
             const string prefabAssetPath =
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
+            var prefab = AssetDatabase.LoadAssetAtPath<PlaceCardView>(prefabAssetPath);
 
-            Dictionary<string, ISceneCardView> cardViews = new Dictionary<string, ISceneCardView>();
+            Dictionary<string, IPlaceCardView> cardViews = new Dictionary<string, IPlaceCardView>();
             const int cardsCount = 10;
             for (int i = 0; i < cardsCount; i++)
             {
-                var card = (ISceneCardView)Object.Instantiate(prefab);
-                card.Setup(new SceneData() { size = new Vector2Int(i, i), id = i.ToString() });
+                var card = (IPlaceCardView)Object.Instantiate(prefab);
+                card.Setup(new PlaceData() { size = new Vector2Int(i, i), id = i.ToString() });
                 cardViews.Add(i.ToString(), card);
             }
 
 
-            SectionDeployedScenesController controller = new SectionDeployedScenesController(view);
+            SectionPlacesController controller = new SectionPlacesController(view);
             controller.searchHandler.SetSortType(SectionSearchHandler.SIZE_SORT_TYPE_ASC);
 
-            ((IDeployedSceneListener)controller).OnSetScenes(cardViews);
+            ((IPlaceListener)controller).SetPlaces(cardViews);
 
             Assert.AreEqual(cardsCount, view.scenesCardContainer.childCount);
 
-            var prev = (ISceneCardView)view.scenesCardContainer.GetChild(0).GetComponent<SceneCardView>();
+            var prev = (IPlaceCardView)view.scenesCardContainer.GetChild(0).GetComponent<PlaceCardView>();
             for (int i = 1; i < cardsCount; i++)
             {
-                var current = (ISceneCardView)view.scenesCardContainer.GetChild(i).GetComponent<SceneCardView>();
-                Assert.GreaterOrEqual(current.sceneData.size.x * current.sceneData.size.y, prev.sceneData.size.x * prev.sceneData.size.y);
+                var current = (IPlaceCardView)view.scenesCardContainer.GetChild(i).GetComponent<PlaceCardView>();
+                Assert.GreaterOrEqual(current.PlaceData.size.x * current.PlaceData.size.y, prev.PlaceData.size.x * prev.PlaceData.size.y);
                 prev = current;
             }
 
@@ -106,21 +107,21 @@ namespace Tests
         [Test]
         public void SetSectionStateCorrectly()
         {
-            SectionDeployedScenesController controller = new SectionDeployedScenesController(view);
-            IDeployedSceneListener listener = controller;
+            SectionPlacesController controller = new SectionPlacesController(view);
+            IPlaceListener listener = controller;
 
             controller.SetFetchingDataState(true);
-            listener.OnSetScenes(new Dictionary<string, ISceneCardView>());
+            listener.SetPlaces(new Dictionary<string, IPlaceCardView>());
             Assert.IsTrue(view.loadingAnimationContainer.activeSelf);
 
             controller.SetFetchingDataState(false);
-            listener.OnSetScenes(new Dictionary<string, ISceneCardView>());
+            listener.SetPlaces(new Dictionary<string, IPlaceCardView>());
             Assert.IsTrue(view.emptyContainer.activeSelf);
 
-            listener.OnSetScenes(new Dictionary<string, ISceneCardView>() { { "1", Substitute.For<ISceneCardView>() }, { "2", Substitute.For<ISceneCardView>() } });
+            listener.SetPlaces(new Dictionary<string, IPlaceCardView>() { { "1", Substitute.For<IPlaceCardView>() }, { "2", Substitute.For<IPlaceCardView>() } });
             Assert.IsTrue(view.contentContainer.activeSelf);
 
-            listener.OnSetScenes(new Dictionary<string, ISceneCardView>() { { "1", Substitute.For<ISceneCardView>() } });
+            listener.SetPlaces(new Dictionary<string, IPlaceCardView>() { { "1", Substitute.For<IPlaceCardView>() } });
             Assert.IsTrue(view.contentContainer.activeSelf);
 
             controller.Dispose();

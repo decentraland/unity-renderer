@@ -1,4 +1,5 @@
 using System.Linq;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -7,14 +8,14 @@ namespace Tests
     public class SectionSceneContributorsSettingsShould
     {
         private SectionSceneContributorsSettingsView view;
-        private SectionSceneContributorsSettingsController controller;
+        private SectionPlaceContributorsSettingsController controller;
 
         [SetUp]
         public void SetUp()
         {
-            var prefab = Resources.Load<SectionSceneContributorsSettingsView>(SectionSceneContributorsSettingsController.VIEW_PREFAB_PATH);
+            var prefab = Resources.Load<SectionSceneContributorsSettingsView>(SectionPlaceContributorsSettingsController.VIEW_PREFAB_PATH);
             view = Object.Instantiate(prefab);
-            controller = new SectionSceneContributorsSettingsController(view, new FriendsController_Mock());
+            controller = new SectionPlaceContributorsSettingsController(view, new FriendsController_Mock());
         }
 
         [TearDown]

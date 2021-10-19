@@ -6,14 +6,14 @@ namespace Tests
 {
     public class SceneCardViewShould
     {
-        private SceneCardView cardView;
+        private PlaceCardView cardView;
 
         [SetUp]
         public void SetUp()
         {
             const string prefabAssetPath =
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
+            var prefab = AssetDatabase.LoadAssetAtPath<PlaceCardView>(prefabAssetPath);
             cardView = UnityEngine.Object.Instantiate(prefab);
         }
 
@@ -23,7 +23,7 @@ namespace Tests
         [Test]
         public void DisplayCorrectlyWhenSceneIsDeployed()
         {
-            ((ISceneCardView)cardView).Setup(new SceneData()
+            ((IPlaceCardView)cardView).Setup(new PlaceData()
             {
                 id = "",
                 isDeployed = true,
@@ -51,7 +51,7 @@ namespace Tests
         [Test]
         public void DisplayCorrectlyWhenSceneIsNotDeployed()
         {
-            ((ISceneCardView)cardView).Setup(new SceneData()
+            ((IPlaceCardView)cardView).Setup(new PlaceData()
             {
                 id = "",
                 isDeployed = false,
@@ -79,7 +79,7 @@ namespace Tests
         [Test]
         public void DisplayCorrectlyWhenSceneIsNotEditable()
         {
-            ((ISceneCardView)cardView).Setup(new SceneData()
+            ((IPlaceCardView)cardView).Setup(new PlaceData()
             {
                 id = "",
                 isDeployed = false,
@@ -97,7 +97,7 @@ namespace Tests
         [Test]
         public void DisplayCorrectlyWhenSceneIsEditable()
         {
-            ((ISceneCardView)cardView).Setup(new SceneData()
+            ((IPlaceCardView)cardView).Setup(new PlaceData()
             {
                 id = "",
                 isDeployed = false,

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 

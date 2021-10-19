@@ -27,7 +27,7 @@ namespace Tests
         {
             const string prefabAssetPath =
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/ProjectCardView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
+            var prefab = AssetDatabase.LoadAssetAtPath<PlaceCardView>(prefabAssetPath);
 
             Dictionary<string, IProjectCardView> cardViews = new Dictionary<string, IProjectCardView>();
             const int cardsCount = 10;
@@ -45,11 +45,11 @@ namespace Tests
 
             Assert.AreEqual(cardsCount, view.contentContainer.transform.childCount);
 
-            var prev = (ISceneCardView)view.contentContainer.transform.GetChild(0).GetComponent<SceneCardView>();
+            var prev = (IPlaceCardView)view.contentContainer.transform.GetChild(0).GetComponent<PlaceCardView>();
             for (int i = 1; i < cardsCount; i++)
             {
-                var current = (ISceneCardView)view.contentContainer.transform.GetChild(i).GetComponent<SceneCardView>();
-                Assert.LessOrEqual(current.sceneData.size.x * current.sceneData.size.y, prev.sceneData.size.x * prev.sceneData.size.y);
+                var current = (IPlaceCardView)view.contentContainer.transform.GetChild(i).GetComponent<PlaceCardView>();
+                Assert.LessOrEqual(current.PlaceData.size.x * current.PlaceData.size.y, prev.PlaceData.size.x * prev.PlaceData.size.y);
                 prev = current;
             }
 

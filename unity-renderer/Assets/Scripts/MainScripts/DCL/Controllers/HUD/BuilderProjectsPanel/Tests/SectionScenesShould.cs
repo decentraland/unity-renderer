@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,26 +10,26 @@ namespace Tests
     public class SectionScenesShould
     {
         private SectionController sectionController;
-        private IScenesViewController scenesController;
+        private IPlacesViewController placesController;
 
         [SetUp]
         public void SetUp()
         {
             const string sceneCardPrefabPath =
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
-            var sceneCardPrefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(sceneCardPrefabPath);
+            var sceneCardPrefab = AssetDatabase.LoadAssetAtPath<PlaceCardView>(sceneCardPrefabPath);
 
             sectionController = new SectionController();
-            scenesController = new ScenesViewController(sceneCardPrefab);
+            placesController = new PlacesViewController(sceneCardPrefab);
 
-            scenesController.AddListener((IDeployedSceneListener)sectionController);
-            scenesController.AddListener((IScenesListener)sectionController);
+            placesController.AddListener((IPlaceListener)sectionController);
+            placesController.AddListener((IProjectListener)sectionController);
         }
 
         [TearDown]
         public void TearDown()
         {
-            scenesController.Dispose();
+            placesController.Dispose();
             sectionController.Dispose();
         }
 
@@ -49,21 +50,21 @@ namespace Tests
         [Test]
         public void ShowAndHideCardsCorrectly()
         {
-            List<ISceneData> scenes = new List<ISceneData>();
+            List<IPlaceData> scenes = new List<IPlaceData>();
             Assert.IsFalse(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsFalse(sectionController.view.projectsContainer.activeSelf);
 
             //add project scene
-            scenes.Add(new SceneData() { isDeployed = false, id = "Project1" });
-            scenesController.SetScenes(scenes.ToArray());
+            scenes.Add(new PlaceData() { isDeployed = false, id = "Project1" });
+            placesController.SetPlaces(scenes.ToArray());
             Assert.IsFalse(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsTrue(sectionController.view.projectsContainer.activeSelf);
 
             //add deployed scenes
-            scenes.Add(new SceneData() { isDeployed = true, id = "Deployed1" });
-            scenes.Add(new SceneData() { isDeployed = true, id = "Deployed2" });
-            scenes.Add(new SceneData() { isDeployed = true, id = "Deployed3" });
-            scenesController.SetScenes(scenes.ToArray());
+            scenes.Add(new PlaceData() { isDeployed = true, id = "Deployed1" });
+            scenes.Add(new PlaceData() { isDeployed = true, id = "Deployed2" });
+            scenes.Add(new PlaceData() { isDeployed = true, id = "Deployed3" });
+            placesController.SetPlaces(scenes.ToArray());
             Assert.IsTrue(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsTrue(sectionController.view.projectsContainer.activeSelf);
             Assert.AreEqual(1, sectionController.view.projectSceneContainer.childCount);
@@ -74,8 +75,8 @@ namespace Tests
             Assert.AreEqual(sectionController.view.deployedSceneContainer.childCount, sectionController.deployedViews.Count);
 
             //add deployed scene
-            scenes.Add(new SceneData() { isDeployed = true, id = "Deployed4" });
-            scenesController.SetScenes(scenes.ToArray());
+            scenes.Add(new PlaceData() { isDeployed = true, id = "Deployed4" });
+            placesController.SetPlaces(scenes.ToArray());
             Assert.IsTrue(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsTrue(sectionController.view.projectsContainer.activeSelf);
             Assert.AreEqual(1, sectionController.view.projectSceneContainer.childCount);
@@ -87,7 +88,7 @@ namespace Tests
 
             //remove deployed scene
             scenes = scenes.FindAll((data) => data.id != "Deployed3");
-            scenesController.SetScenes(scenes.ToArray());
+            placesController.SetPlaces(scenes.ToArray());
             Assert.IsTrue(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsTrue(sectionController.view.projectsContainer.activeSelf);
             Assert.AreEqual(1, sectionController.view.projectSceneContainer.childCount);
@@ -98,23 +99,23 @@ namespace Tests
             Assert.AreEqual(sectionController.view.deployedSceneContainer.childCount, sectionController.deployedViews.Count);
 
             //remove all deployed
-            scenes = new List<ISceneData>() { new SceneData() { isDeployed = false, id = "Project1" } };
-            scenesController.SetScenes(scenes.ToArray());
+            scenes = new List<IPlaceData>() { new PlaceData() { isDeployed = false, id = "Project1" } };
+            placesController.SetPlaces(scenes.ToArray());
             Assert.IsFalse(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsTrue(sectionController.view.projectsContainer.activeSelf);
             Assert.AreEqual(sectionController.view.projectSceneContainer.childCount, sectionController.projectViews.Count);
             Assert.AreEqual(sectionController.view.deployedSceneContainer.childCount, sectionController.deployedViews.Count);
 
             //switch project to deployed
-            scenes = new List<ISceneData>() { new SceneData() { isDeployed = true, id = "Project1" } };
-            scenesController.SetScenes(scenes.ToArray());
+            scenes = new List<IPlaceData>() { new PlaceData() { isDeployed = true, id = "Project1" } };
+            placesController.SetPlaces(scenes.ToArray());
             Assert.IsTrue(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsFalse(sectionController.view.projectsContainer.activeSelf);
             Assert.AreEqual(sectionController.view.projectSceneContainer.childCount, sectionController.projectViews.Count);
             Assert.AreEqual(sectionController.view.deployedSceneContainer.childCount, sectionController.deployedViews.Count);
 
             //remove all scenes
-            scenesController.SetScenes(new ISceneData[] { });
+            placesController.SetPlaces(new IPlaceData[] { });
             Assert.IsFalse(sectionController.view.inWorldContainer.activeSelf);
             Assert.IsFalse(sectionController.view.projectsContainer.activeSelf);
             Assert.AreEqual(sectionController.view.projectSceneContainer.childCount, sectionController.projectViews.Count);

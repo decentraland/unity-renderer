@@ -3,7 +3,7 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
-internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
+internal class SectionPlacesView : MonoBehaviour, IDisposable
 {
     public event Action OnScrollRectValueChanged;
 

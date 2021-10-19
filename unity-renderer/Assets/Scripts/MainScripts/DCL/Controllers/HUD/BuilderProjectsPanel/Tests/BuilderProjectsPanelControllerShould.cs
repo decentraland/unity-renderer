@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
@@ -13,8 +14,8 @@ namespace Tests
     {
         private BuilderMainPanelController controller;
         private ISectionsController sectionsController;
-        private IScenesViewController scenesViewController;
-        private ILandController landsController;
+        private IPlacesViewController placesViewController;
+        private ILandsController landsesController;
         private IProjectsController projectsController;
         private INewProjectFlowController newProjectFlowController;
 
@@ -26,8 +27,8 @@ namespace Tests
             controller = new BuilderMainPanelController();
 
             sectionsController = Substitute.For<ISectionsController>();
-            scenesViewController = Substitute.For<IScenesViewController>();
-            landsController = Substitute.For<ILandController>();
+            placesViewController = Substitute.For<IPlacesViewController>();
+            landsesController = Substitute.For<ILandsController>();
             projectsController = Substitute.For<IProjectsController>();
             newProjectFlowController = Substitute.For<INewProjectFlowController>();
 
@@ -42,8 +43,8 @@ namespace Tests
             catalyst.GetEntities(Arg.Any<string>(), Arg.Any<string[]>()).Returns(new Promise<string>());
             catalyst.GetDeployedScenes(Arg.Any<string[]>()).Returns(new Promise<CatalystSceneEntityPayload[]>());
 
-            controller.Initialize(sectionsController, scenesViewController,
-                landsController, projectsController, newProjectFlowController, theGraph, catalyst);
+            controller.Initialize(sectionsController, placesViewController,
+                landsesController, projectsController, newProjectFlowController, theGraph, catalyst);
         }
 
         [TearDown]
@@ -82,11 +83,11 @@ namespace Tests
             land.parcels = new List<Parcel>() { parcel };
 
             LandWithAccess landWithAccess = new LandWithAccess(land);
-            DeployedScene deployedScene = new DeployedScene();
-            deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
-            deployedScene.deploymentSource = DeployedScene.Source.SDK;
+            Place place = new Place();
+            place.parcelsCoord = new Vector2Int[] { parcelCoords };
+            place.deploymentSource = Place.Source.SDK;
 
-            landWithAccess.scenes = new List<DeployedScene>() { deployedScene };
+            landWithAccess.scenes = new List<Place>() { place };
             var lands = new LandWithAccess[]
             {
                 landWithAccess
@@ -96,7 +97,7 @@ namespace Tests
             controller.LandsFetched(lands);
 
             //Assert
-            landsController.Received().SetLands(lands);
+            landsesController.Received().SetLands(lands);
         }
 
         [Test]
@@ -181,25 +182,25 @@ namespace Tests
         [Test]
         public void AddScenesListenerOnSectionShow()
         {
-            var section = Substitute.For<SectionDeployedScenesController>();
+            var section = Substitute.For<SectionPlacesController>();
             sectionsController.OnSectionShow += Raise.Event<Action<SectionBase>>(section);
-            scenesViewController.Received(1).AddListener(section);
+            placesViewController.Received(1).AddListener(section);
         }
 
         [Test]
         public void RemoveScenesListenerOnSectionHide()
         {
-            var section = Substitute.For<SectionDeployedScenesController>();
+            var section = Substitute.For<SectionPlacesController>();
             sectionsController.OnSectionHide += Raise.Event<Action<SectionBase>>(section);
-            scenesViewController.Received(1).RemoveListener(section);
+            placesViewController.Received(1).RemoveListener(section);
         }
 
         [Test]
         public void CallOpenSectionWhenSceneSelected()
         {
             var cardView = UnityEngine.Object.Instantiate(controller.view.GetCardViewPrefab());
-            ((ISceneCardView)cardView).Setup(new SceneData());
-            scenesViewController.OnSceneSelected += Raise.Event<Action<ISceneCardView>>(cardView);
+            ((IPlaceCardView)cardView).Setup(new PlaceData());
+            placesViewController.OnProjectSelected += Raise.Event<Action<IPlaceCardView>>(cardView);
             sectionsController.Received(1).OpenSection(Arg.Any<SectionId>());
             UnityEngine.Object.DestroyImmediate(cardView.gameObject);
         }
@@ -228,13 +229,13 @@ namespace Tests
             const string author = "Temptation Creator";
 
             var cardView = UnityEngine.Object.Instantiate(controller.view.GetCardViewPrefab());
-            ((ISceneCardView)cardView).Setup(new SceneData()
+            ((IPlaceCardView)cardView).Setup(new PlaceData()
             {
                 isDeployed = true,
                 coords = coords,
                 authorName = author
             });
-            scenesViewController.OnSceneSelected += Raise.Event<Action<ISceneCardView>>(cardView);
+            placesViewController.OnProjectSelected += Raise.Event<Action<IPlaceCardView>>(cardView);
 
             LeftMenuSettingsViewReferences viewReferences = controller.view.GetSettingsViewReferences();
 
