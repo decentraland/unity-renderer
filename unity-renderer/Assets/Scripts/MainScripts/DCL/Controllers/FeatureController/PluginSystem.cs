@@ -17,7 +17,11 @@ public class PluginSystem
 
     public FeatureFlag GetCurrentConfig() { return currentConfig; }
 
-    public PluginSystem() { DataStore.i.featureFlags.flags.OnChange += ApplyConfig; }
+    public PluginSystem()
+    {
+        DataStore.i.featureFlags.flags.OnChange += ApplyConfig;
+        AddBasePlugins();
+    }
 
     public void OnGUI()
     {
@@ -55,11 +59,12 @@ public class PluginSystem
 
     public void ApplyConfig(FeatureFlag newConfig, FeatureFlag oldConfig) { ApplyFeaturesConfig(newConfig); }
 
+    public void AddBasePlugins() { HandleFeature<DebugPluginFeature>(true); }
+
     public void ApplyFeaturesConfig(FeatureFlag featureFlag)
     {
         HandleFeature<BuilderInWorldPlugin>(featureFlag.IsFeatureEnabled("builder_in_world"));
         HandleFeature<TutorialController>(featureFlag.IsFeatureEnabled("tutorial"));
-        HandleFeature<DebugPluginFeature>(true);
         HandleFeature<ExploreV2Feature>(featureFlag.IsFeatureEnabled("explorev2"));
         currentConfig = featureFlag;
     }

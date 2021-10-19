@@ -36,6 +36,11 @@ public interface IBaseComponentView : IDisposable
     /// Updates the UI component with the current model.
     /// </summary>
     void RefreshControl();
+
+    /// <summary>
+    /// It is called just after the screen size has changed.
+    /// </summary>
+    void PostScreenSizeChanged();
 }
 
 [RequireComponent(typeof(ShowHideAnimator))]
@@ -44,9 +49,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
     public event Action OnFullyInitialized;
     public bool isFullyInitialized { get; private set; }
-
-    [Header("Common")]
-    [SerializeField] internal bool refreshOnScreenSizeChange = false;
 
     internal ShowHideAnimator showHideAnimator;
 
@@ -66,7 +68,11 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public abstract void RefreshControl();
 
+    public virtual void PostScreenSizeChanged() { }
+
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
+
+    private void OnEnable() { OnScreenSizeChange(Vector2Int.zero, Vector2Int.zero); }
 
     private void Awake() { Initialize(); }
 
@@ -82,7 +88,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     internal void OnScreenSizeChange(Vector2Int current, Vector2Int previous)
     {
-        if (!refreshOnScreenSizeChange)
+        if (!gameObject.activeInHierarchy)
             return;
 
         StartCoroutine(RefreshControlAfterScreenSize());
@@ -91,7 +97,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal IEnumerator RefreshControlAfterScreenSize()
     {
         yield return null;
-        RefreshControl();
+        PostScreenSizeChanged();
     }
 
     internal static T Create<T>(string resourceName) where T : BaseComponentView

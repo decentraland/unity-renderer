@@ -12,15 +12,13 @@ namespace DCL
     public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
         private static readonly int BASE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
-        
+
         private const int MAX_RETRIES = 5;
-        private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
         public Material defaultMaterial;
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
-
         public MeshRenderer impostorRenderer;
         public MeshFilter impostorMeshFilter;
 
@@ -44,6 +42,7 @@ namespace DCL
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
         public event Action<float> OnImpostorAlphaValueUpdate;
+        public event Action<float> OnAvatarAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
@@ -58,6 +57,7 @@ namespace DCL
 
         public bool isLoading;
         public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
+        public float maxY { get; private set; } = 0;
 
         private Coroutine loadCoroutine;
         private AssetPromise_Texture bodySnapshotTexturePromise;
@@ -133,6 +133,7 @@ namespace DCL
             }
 
             StopLoadingCoroutines();
+
             isLoading = true;
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
         }
@@ -357,7 +358,8 @@ namespace DCL
             if (bodyShapeController == null)
             {
                 HideAll();
-                bodyShapeController = new BodyShapeController(resolvedBody, DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(AB_FEATURE_FLAG_NAME));
+
+                bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
                 mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
@@ -474,6 +476,12 @@ namespace DCL
             else
                 loadSoftFailed = true;
 
+            maxY = allRenderers.Max(x =>
+            {
+                Bounds bounds = x.bounds;
+                return bounds.center.y + bounds.extents.y - transform.position.y;
+            });
+
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
             //              before reaching this branching statement. The failure should be caught with a throw or other
             //              proper language feature.
@@ -562,7 +570,7 @@ namespace DCL
                 lastStickerTimestamp = model.stickerTriggerTimestamp;
 
                 if ( stickersController != null )
-                    stickersController.PlayEmote(model.stickerTriggerId);
+                    stickersController.PlaySticker(model.stickerTriggerId);
             }
         }
 
@@ -592,7 +600,7 @@ namespace DCL
                     break;
 
                 default:
-                    var wearableController = new WearableController(wearable, DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(AB_FEATURE_FLAG_NAME));
+                    var wearableController = new WearableController(wearable);
                     wearableControllers.Add(wearable, wearableController);
                     break;
             }
@@ -652,6 +660,8 @@ namespace DCL
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
+
+            OnAvatarAlphaValueUpdate?.Invoke(avatarFade);
         }
 
         public void SetImpostorFade(float impostorFade)
@@ -705,6 +715,9 @@ namespace DCL
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+
+            var featureFlags = DataStore.i.featureFlags.flags.Get();
+            avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
 
             bool success = avatarMeshCombiner.Combine(
                 bodyShapeController.upperBodyRenderer,

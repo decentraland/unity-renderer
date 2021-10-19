@@ -26,11 +26,11 @@ public class BodyShapeController : WearableController, IBodyShapeController
     private bool upperBodyActive = true;
     private bool feetActive = true;
 
-    private AvatarAnimationEventAudioHandler animEventAudioHandler;
+    private AvatarAnimationEventHandler animEventHandler;
 
-    public BodyShapeController(WearableItem wearableItem, bool useAssetBundles = true) : base(wearableItem, useAssetBundles) { }
+    public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
-    protected BodyShapeController(BodyShapeController original, bool useAssetBundles = true) : base(original, useAssetBundles)
+    protected BodyShapeController(BodyShapeController original) : base(original)
     {
         headRenderer = original.headRenderer;
         eyebrowsRenderer = original.eyebrowsRenderer;
@@ -189,7 +189,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
         var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
         animator.BindBodyShape(animation, bodyShapeId, animationTarget);
 
-        InitializeAvatarAudioHandlers(assetContainer, animation);
+        InitializeAvatarAudioAndParticleHandlers(assetContainer, animation);
     }
 
     public SkinnedMeshRenderer headRenderer { get; private set; }
@@ -215,14 +215,14 @@ public class BodyShapeController : WearableController, IBodyShapeController
         lowerBodyRenderer.enabled = lowerBodyActive && !currentHiddenList.Contains(WearableLiterals.Categories.LOWER_BODY);
     }
 
-    private void InitializeAvatarAudioHandlers(GameObject container, Animation createdAnimation)
+    private void InitializeAvatarAudioAndParticleHandlers(GameObject container, Animation createdAnimation)
     {
-        //NOTE(Mordi): Adds audio handler for animation events, and passes in the audioContainer for the avatar
-        AvatarAnimationEventAudioHandler animationEventAudioHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventAudioHandler>();
+        //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
+        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
         AudioContainer audioContainer = container.transform.parent.parent.GetComponentInChildren<AudioContainer>();
         if (audioContainer != null)
         {
-            animationEventAudioHandler.Init(audioContainer);
+            animationEventHandler.Init(audioContainer);
 
             //NOTE(Mordi): If this is a remote avatar, pass the animation component so we can keep track of whether it is culled (off-screen) or not
             AvatarAudioHandlerRemote audioHandlerRemote = audioContainer.GetComponent<AvatarAudioHandlerRemote>();
@@ -232,12 +232,12 @@ public class BodyShapeController : WearableController, IBodyShapeController
             }
         }
 
-        animEventAudioHandler = animationEventAudioHandler;
+        animEventHandler = animationEventHandler;
     }
 
     public override void CleanUp()
     {
-        UnityEngine.Object.Destroy(animEventAudioHandler);
+        UnityEngine.Object.Destroy(animEventHandler);
         facialFeaturesVisible = true;
         base.CleanUp();
     }
