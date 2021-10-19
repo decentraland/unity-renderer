@@ -232,7 +232,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
             CoroutineStarter.Stop(startBuilderMusicCoroutine);
 
         if (fadeOutCoroutine != null)
-            StopCoroutine(fadeOutCoroutine);
+            CoroutineStarter.Stop(fadeOutCoroutine);
 
         startBuilderMusicCoroutine = null;
         fadeOutCoroutine = null;
