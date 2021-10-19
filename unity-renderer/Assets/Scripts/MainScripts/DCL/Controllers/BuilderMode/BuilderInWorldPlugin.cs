@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using UnityEngine;
 
 public class BuilderInWorldPlugin : PluginFeature
 {
     private const string DEV_FLAG_NAME = "builder-dev";
     internal IBIWEditor editor;
-    internal IBuilderProjectsPanelController panelController;
+    internal IBuilderMainPanelController panelController;
 
     internal Context context;
 
@@ -16,7 +17,7 @@ public class BuilderInWorldPlugin : PluginFeature
         if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(DEV_FLAG_NAME))
             DataStore.i.builderInWorld.isDevBuild.Set(true);
 
-        panelController = new BuilderProjectsPanelController();
+        panelController = new BuilderMainPanelController();
         editor = new BuilderInWorldEditor();
         context = new Context(editor,
             panelController,

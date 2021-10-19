@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 using static BIWCompleteAction;

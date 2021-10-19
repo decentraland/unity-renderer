@@ -3,6 +3,7 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 

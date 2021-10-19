@@ -5,14 +5,14 @@ namespace Tests
 {
     public class BuilderProjectsPanelViewPrefabCheck
     {
-        private BuilderScenesesPanelView prefab;
+        private BuilderMainPanelView prefab;
 
         [SetUp]
         public void SetUp()
         {
             const string prefabAssetPath =
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Resources/BuilderProjectsPanel.prefab";
-            prefab = AssetDatabase.LoadAssetAtPath<BuilderScenesesPanelView>(prefabAssetPath);
+            prefab = AssetDatabase.LoadAssetAtPath<BuilderMainPanelView>(prefabAssetPath);
         }
 
         [Test]

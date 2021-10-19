@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-internal interface IBuilderProjectsPanelView : IDisposable
+internal interface IBuilderMainPanelView : IDisposable
 {
     event Action OnBackToMainMenuPressed;
     event Action OnClosePressed;
@@ -22,7 +22,7 @@ internal interface IBuilderProjectsPanelView : IDisposable
     IUnpublishPopupView GetUnpublishPopup();
 }
 
-internal class BuilderScenesesPanelView : MonoBehaviour, IBuilderProjectsPanelView, IDeployedSceneListener, IScenesListener
+internal class BuilderMainPanelView : MonoBehaviour, IBuilderMainPanelView, IDeployedSceneListener, IScenesListener
 {
     [Header("General")]
     [SerializeField] internal Button closeButton;
@@ -60,7 +60,7 @@ internal class BuilderScenesesPanelView : MonoBehaviour, IBuilderProjectsPanelVi
 
     public bool IsVisible() { return gameObject.activeSelf; }
 
-    void IBuilderProjectsPanelView.SetVisible(bool visible)
+    void IBuilderMainPanelView.SetVisible(bool visible)
     {
         if (visible)
         {
@@ -76,7 +76,7 @@ internal class BuilderScenesesPanelView : MonoBehaviour, IBuilderProjectsPanelVi
         }
     }
 
-    void IBuilderProjectsPanelView.SetTogglOnWithoutNotify(SectionId sectionId)
+    void IBuilderMainPanelView.SetTogglOnWithoutNotify(SectionId sectionId)
     {
         for (int i = 0; i < sectionToggles.Length; i++)
         {
@@ -84,31 +84,31 @@ internal class BuilderScenesesPanelView : MonoBehaviour, IBuilderProjectsPanelVi
         }
     }
 
-    void IBuilderProjectsPanelView.SetMainLeftPanel()
+    void IBuilderMainPanelView.SetMainLeftPanel()
     {
         leftPanelMain.SetActive(true);
         leftPanelProjectSettings.SetActive(false);
     }
 
-    void IBuilderProjectsPanelView.SetProjectSettingsLeftPanel()
+    void IBuilderMainPanelView.SetProjectSettingsLeftPanel()
     {
         leftPanelMain.SetActive(false);
         leftPanelProjectSettings.SetActive(true);
     }
 
-    SceneCardView IBuilderProjectsPanelView.GetCardViewPrefab() { return sceneCardViewPrefab; }
+    SceneCardView IBuilderMainPanelView.GetCardViewPrefab() { return sceneCardViewPrefab; }
 
-    Transform IBuilderProjectsPanelView.GetSectionContainer() { return sectionsContainer; }
+    Transform IBuilderMainPanelView.GetSectionContainer() { return sectionsContainer; }
 
-    Transform IBuilderProjectsPanelView.GetTransform() { return transform; }
+    Transform IBuilderMainPanelView.GetTransform() { return transform; }
 
-    SearchBarView IBuilderProjectsPanelView.GetSearchBar() { return  searchBarView; }
+    SearchBarView IBuilderMainPanelView.GetSearchBar() { return  searchBarView; }
 
-    LeftMenuSettingsViewReferences IBuilderProjectsPanelView.GetSettingsViewReferences() { return settingsViewReferences; }
+    LeftMenuSettingsViewReferences IBuilderMainPanelView.GetSettingsViewReferences() { return settingsViewReferences; }
 
-    SceneCardViewContextMenu IBuilderProjectsPanelView.GetSceneCardViewContextMenu() { return contextMenu; }
+    SceneCardViewContextMenu IBuilderMainPanelView.GetSceneCardViewContextMenu() { return contextMenu; }
 
-    IUnpublishPopupView IBuilderProjectsPanelView.GetUnpublishPopup() { return unpublishPopupView; }
+    IUnpublishPopupView IBuilderMainPanelView.GetUnpublishPopup() { return unpublishPopupView; }
 
     public void Dispose()
     {

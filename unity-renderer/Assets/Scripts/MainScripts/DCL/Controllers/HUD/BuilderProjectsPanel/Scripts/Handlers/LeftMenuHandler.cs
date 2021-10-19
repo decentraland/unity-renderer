@@ -2,13 +2,13 @@
 
 internal class LeftMenuHandler : IDisposable
 {
-    private readonly IBuilderProjectsPanelView view;
+    private readonly IBuilderMainPanelView view;
     private readonly ISectionsController sectionsController;
 
     private bool isMainPanel = false;
     private SectionId lastMainSectionId;
 
-    public LeftMenuHandler(IBuilderProjectsPanelView view, ISectionsController sectionsController)
+    public LeftMenuHandler(IBuilderMainPanelView view, ISectionsController sectionsController)
     {
         this.view = view;
         this.sectionsController = sectionsController;

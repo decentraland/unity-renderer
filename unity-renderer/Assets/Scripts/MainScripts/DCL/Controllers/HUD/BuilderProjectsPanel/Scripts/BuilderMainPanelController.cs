@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Builder;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -10,14 +11,14 @@ using Variables.RealmsInfo;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
-public interface IBuilderProjectsPanelController
+public interface IBuilderMainPanelController
 {
+    event Action OnJumpInOrEdit;
     void Initialize();
     void Dispose();
-    event Action OnJumpInOrEdit;
 }
 
-public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelController
+public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
@@ -28,7 +29,7 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
     private const float CACHE_TIME_SCENES = 1 * 60;
     private const float REFRESH_INTERVAL = 2 * 60;
 
-    internal IBuilderProjectsPanelView view;
+    internal IBuilderMainPanelView view;
 
     private ISectionsController sectionsController;
     private IProjectsController projectsController;
@@ -55,15 +56,15 @@ public class BuilderProjectsPanelController : IHUD, IBuilderProjectsPanelControl
 
     public event Action OnJumpInOrEdit;
 
-    public BuilderProjectsPanelController()
+    public BuilderMainPanelController()
     {
         if (DataStore.i.builderInWorld.isDevBuild.Get())
-            SetView(Object.Instantiate(Resources.Load<BuilderScenesesPanelView>(VIEW_PREFAB_PATH_DEV)));
+            SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH_DEV)));
         else
-            SetView(Object.Instantiate(Resources.Load<BuilderScenesesPanelView>(VIEW_PREFAB_PATH)));
+            SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
     }
 
-    internal void SetView(IBuilderProjectsPanelView view)
+    internal void SetView(IBuilderMainPanelView view)
     {
         this.view = view;
         view.OnClosePressed += OnClose;

@@ -93,7 +93,7 @@ public class HUDController : IHUDController
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-    public BuilderProjectsPanelController builderProjectsPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderProjectsPanelController;
+    public BuilderMainPanelController BuilderMainPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderMainPanelController;
     public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
     public AvatarNamesHUDController avatarNamesController => GetHUDElement(HUDElementID.AVATAR_NAMES) as AvatarNamesHUDController;
 

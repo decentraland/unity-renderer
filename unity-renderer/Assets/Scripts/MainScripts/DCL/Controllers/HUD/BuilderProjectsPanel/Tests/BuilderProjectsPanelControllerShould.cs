@@ -11,7 +11,7 @@ namespace Tests
 {
     public class BuilderProjectsPanelControllerShould
     {
-        private BuilderProjectsPanelController controller;
+        private BuilderMainPanelController controller;
         private ISectionsController sectionsController;
         private IScenesViewController scenesViewController;
         private ILandController landsController;
@@ -23,7 +23,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            controller = new BuilderProjectsPanelController();
+            controller = new BuilderMainPanelController();
 
             sectionsController = Substitute.For<ISectionsController>();
             scenesViewController = Substitute.For<IScenesViewController>();
@@ -135,7 +135,7 @@ namespace Tests
         [Test]
         public void ViewVisibleCorrectly()
         {
-            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
+            BuilderMainPanelView view = (BuilderMainPanelView)controller.view;
             Assert.IsFalse(view.gameObject.activeSelf);
 
             controller.SetVisibility(true);
@@ -145,7 +145,7 @@ namespace Tests
         [Test]
         public void ViewHideCorrectly()
         {
-            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
+            BuilderMainPanelView view = (BuilderMainPanelView)controller.view;
 
             controller.SetVisibility(true);
             Assert.IsTrue(view.gameObject.activeSelf);
@@ -157,7 +157,7 @@ namespace Tests
         [Test]
         public void ViewHideCorrectlyOnClosePressed()
         {
-            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
+            BuilderMainPanelView view = (BuilderMainPanelView)controller.view;
 
             controller.SetVisibility(true);
             Assert.IsTrue(view.gameObject.activeSelf);
@@ -169,7 +169,7 @@ namespace Tests
         [Test]
         public void ViewHideAndShowCorrectlyOnEvent()
         {
-            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
+            BuilderMainPanelView view = (BuilderMainPanelView)controller.view;
 
             DataStore.i.HUDs.builderProjectsPanelVisible.Set(true);
             Assert.IsTrue(view.showHideAnimator.isVisible);
@@ -207,7 +207,7 @@ namespace Tests
         [Test]
         public void HandleLeftMenuCorrectly()
         {
-            BuilderScenesesPanelView view = (BuilderScenesesPanelView)controller.view;
+            BuilderMainPanelView view = (BuilderMainPanelView)controller.view;
 
             sectionsController.OnOpenSectionId += Raise.Event<Action<SectionId>>(SectionId.SCENES);
             Assert.IsTrue(view.leftPanelMain.activeSelf);
