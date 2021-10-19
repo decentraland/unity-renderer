@@ -253,7 +253,7 @@ namespace DCL
 
         public Ray GetRayFromCamera() { return charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)); }
 
-        void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController_Legacy.EVENT evt, bool useRaycast)
+        void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController_Legacy.EVENT evt, bool useRaycast, bool enablePointerEvent)
         {
             //TODO(Brian): We should remove this when we get a proper initialization layer
             if (!EnvironmentSettings.RUNNING_TESTS)
@@ -278,17 +278,21 @@ namespace DCL
 
             if (evt == InputController_Legacy.EVENT.BUTTON_DOWN)
             {
-                ProcessButtonDown(buttonId, useRaycast, pointerEventLayer, globalLayer);
+                ProcessButtonDown(buttonId, useRaycast, enablePointerEvent, pointerEventLayer, globalLayer);
             }
             else if (evt == InputController_Legacy.EVENT.BUTTON_UP)
             {
-                ProcessButtonUp(buttonId, useRaycast, pointerEventLayer, globalLayer);
+                ProcessButtonUp(buttonId, useRaycast, enablePointerEvent, pointerEventLayer, globalLayer);
             }
         }
 
-        private void ProcessButtonUp(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, LayerMask pointerEventLayer, int globalLayer)
+        private void ProcessButtonUp(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, bool enablePointerEvent, LayerMask pointerEventLayer, int globalLayer)
         {
             IWorldState worldState = Environment.i.world.state;
+
+            if (string.IsNullOrEmpty(worldState.currentSceneId))
+                return;
+            
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 
@@ -304,7 +308,7 @@ namespace DCL
                 bool isOnClickComponentBlocked = IsBlockingOnClick(raycastInfoPointerEventLayer.hitInfo, raycastGlobalLayerHitInfo);
                 bool isSameEntityThatWasPressed = AreCollidersFromSameEntity(raycastInfoPointerEventLayer.hitInfo, lastPointerDownEventHitInfo);
 
-                if (!isOnClickComponentBlocked && isSameEntityThatWasPressed)
+                if (!isOnClickComponentBlocked && isSameEntityThatWasPressed && enablePointerEvent)
                 {
                     pointerUpEvent.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                 }
@@ -325,9 +329,13 @@ namespace DCL
             }
         }
 
-        private void ProcessButtonDown(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, LayerMask pointerEventLayer, int globalLayer)
+        private void ProcessButtonDown(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, bool enablePointerEvent, LayerMask pointerEventLayer, int globalLayer)
         {
             IWorldState worldState = Environment.i.world.state;
+            
+            if (string.IsNullOrEmpty(worldState.currentSceneId))
+                return;
+            
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 
@@ -361,15 +369,15 @@ namespace DCL
                     switch (e.GetEventType())
                     {
                         case PointerEventType.CLICK:
-                            if (areSameEntity)
+                            if (areSameEntity && enablePointerEvent)
                                 e.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                             break;
                         case PointerEventType.DOWN:
-                            if (areSameEntity)
+                            if (areSameEntity && enablePointerEvent)
                                 e.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                             break;
                         case PointerEventType.UP:
-                            if (areSameEntity)
+                            if (areSameEntity && enablePointerEvent)
                                 pointerUpEvent = e;
                             else
                                 pointerUpEvent = null;
