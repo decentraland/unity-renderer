@@ -19,7 +19,7 @@ namespace DCL.Components
         internal static bool isTest = false;
 #endif
 
-        private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
+        private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = float.MaxValue;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
 
         [System.Serializable]
@@ -168,7 +168,7 @@ namespace DCL.Components
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
             scene.OnEntityRemoved += OnEntityRemoved;
-            
+
             Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
 
             OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
@@ -219,7 +219,7 @@ namespace DCL.Components
         private void UpdateProgressReport()
         {
             var currentState = texturePlayer.GetState();
-            if ( currentState == VideoState.PLAYING 
+            if ( currentState == VideoState.PLAYING
                  && IsTimeToReportVideoProgress()
                  || previousVideoState != currentState)
             {
@@ -403,7 +403,7 @@ namespace DCL.Components
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
-            
+
             if (scene != null)
                 scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)
