@@ -82,8 +82,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 hudElement = new GraphicCardWarningHUDController();
                 break;
-            case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                break;
             case HUDElementID.QUESTS_PANEL:
                 hudElement = new QuestsPanelHUDController();
                 break;
@@ -92,8 +90,6 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.SIGNUP:
                 hudElement = new SignupHUDController();
-                break;
-            case HUDElementID.BUILDER_PROJECTS_PANEL:
                 break;
             case HUDElementID.LOADING:
                 hudElement = new LoadingHUDController();
