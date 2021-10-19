@@ -49,7 +49,6 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     bool playPlacementSoundOnDeselect;
     private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
 
-    private Coroutine fadeInCoroutine;
     private Coroutine fadeOutCoroutine;
     private Coroutine startBuilderMusicCoroutine;
 
@@ -85,8 +84,10 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         UpdateEntityCount();
 
-        if (eventBuilderMusic.source.gameObject.activeSelf)
-            startBuilderMusicCoroutine = StartCoroutine(StartBuilderMusic());
+        if (startBuilderMusicCoroutine != null)
+            CoroutineStarter.Stop(startBuilderMusicCoroutine);
+
+        startBuilderMusicCoroutine = CoroutineStarter.Start(StartBuilderMusic());
 
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
@@ -98,7 +99,12 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         eventBuilderExit.Play();
         if (eventBuilderMusic.source.gameObject.activeSelf)
-            fadeOutCoroutine =  StartCoroutine(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
+        {
+            if (fadeOutCoroutine != null)
+                CoroutineStarter.Stop(fadeOutCoroutine);
+            fadeOutCoroutine = CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
+        }
+
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
 
@@ -145,13 +151,21 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private void OnTutorialEnabled()
     {
         if (gameObject.activeInHierarchy)
-            fadeOutCoroutine =  StartCoroutine(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
+        {
+            if (fadeOutCoroutine != null)
+                CoroutineStarter.Stop(fadeOutCoroutine);
+            fadeOutCoroutine =  CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
+        }
     }
 
     private void OnTutorialDisabled()
     {
         if (gameObject.activeInHierarchy)
-            startBuilderMusicCoroutine = StartCoroutine(StartBuilderMusic());
+        {
+            if (startBuilderMusicCoroutine != null)
+                CoroutineStarter.Stop(startBuilderMusicCoroutine);
+            startBuilderMusicCoroutine = CoroutineStarter.Start(StartBuilderMusic());
+        }
     }
 
     private IEnumerator StartBuilderMusic()
@@ -212,16 +226,12 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     public void Dispose()
     {
         if (startBuilderMusicCoroutine != null)
-            StopCoroutine(startBuilderMusicCoroutine);
-
-        if (fadeInCoroutine != null)
-            StopCoroutine(fadeInCoroutine);
+            CoroutineStarter.Stop(startBuilderMusicCoroutine);
 
         if (fadeOutCoroutine != null)
             StopCoroutine(fadeOutCoroutine);
 
         startBuilderMusicCoroutine = null;
-        fadeInCoroutine = null;
         fadeOutCoroutine = null;
 
         RemoveListeners();
