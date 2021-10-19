@@ -6,26 +6,26 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace AssetPromiseKeeper_Tests
 {
-    public abstract class APKWithRefCountedAssetShouldWorkWhen_Base<APKType, AssetPromiseType, AssetType, AssetLibraryType> : IntegrationTestSuite_Legacy
+    public abstract class APKWithRefCountedAssetShouldWorkWhen_Base<APKType, AssetPromiseType, AssetType, AssetLibraryType>
+        : TestsBase_APK<APKType, AssetPromiseType, AssetType, AssetLibraryType>
         where AssetPromiseType : AssetPromise<AssetType>
         where AssetType : Asset, new()
         where AssetLibraryType : AssetLibrary_RefCounted<AssetType>, new()
         where APKType : AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType>, new()
     {
-        protected APKType keeper;
-
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             keeper = new APKType();
-            yield break;
+            yield return base.SetUp();
         }
 
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             keeper.Cleanup();
-            yield break;
+            AssetPromise_AB.assetBundlesLoader.Stop();
+            yield return base.TearDown();
         }
 
         protected abstract AssetPromiseType CreatePromise();
@@ -111,9 +111,6 @@ namespace AssetPromiseKeeper_Tests
         [UnityTest]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
-            //We need to do an Enviroment setup only for this test since we need the webrequest 
-            yield return base.SetUp();
-
             var prom = CreatePromise();
             AssetType asset = null;
             prom.OnSuccessEvent += (x) => { asset = x; };
@@ -138,9 +135,6 @@ namespace AssetPromiseKeeper_Tests
 
             Assert.IsTrue(!keeper.library.Contains(asset));
             Assert.AreEqual(0, keeper.library.masterAssets.Count);
-
-            //We need to do an Enviroment teardown only for this test
-            yield return base.TearDown();
         }
 
         [UnityTest]
