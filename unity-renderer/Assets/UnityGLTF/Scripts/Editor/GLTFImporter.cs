@@ -214,6 +214,10 @@ namespace UnityGLTF
                         {
                             matName = matName.Substring(Mathf.Min(matName.LastIndexOf("/") + 1, matName.Length - 1));
                         }
+                        
+                        // Patch for invalid material names
+                        matName = matName.Replace(":", "_");
+                        matName = matName.Replace("|", "_");
 
                         // Ensure name is unique
                         matName = ObjectNames.NicifyVariableName(matName);
@@ -311,7 +315,9 @@ namespace UnityGLTF
                                 if (File.Exists(absolutePath) || cachedTextures.Contains(tex))
                                     continue;
 
-                                File.WriteAllBytes(texPath, _useJpgTextures ? tex.EncodeToJPG() : tex.EncodeToPNG());
+                                Texture2D finalTex = tex.isReadable ? tex : DuplicateTextureAsReadable(tex);
+                                
+                                File.WriteAllBytes(texPath, _useJpgTextures ? finalTex.EncodeToJPG() : finalTex.EncodeToPNG());
                                 AssetDatabase.ImportAsset(texPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
                             }
 
@@ -487,6 +493,26 @@ namespace UnityGLTF
             }
 
             ctx.SetMainObject(gltfScene);
+        }
+        
+        Texture2D DuplicateTextureAsReadable(Texture2D source)
+        {
+            RenderTexture renderTex = RenderTexture.GetTemporary(
+                source.width,
+                source.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.Linear);
+ 
+            Graphics.Blit(source, renderTex);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTex;
+            Texture2D readableText = new Texture2D(source.width, source.height);
+            readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
+            readableText.Apply();
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTex);
+            return readableText;
         }
 
         public static event System.Action<GLTFRoot> OnGLTFRootIsConstructed;
