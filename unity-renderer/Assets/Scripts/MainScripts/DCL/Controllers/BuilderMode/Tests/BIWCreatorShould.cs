@@ -14,7 +14,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
 {
     private BIWEntityHandler entityHandler;
     private BIWCreatorController biwCreatorController;
-    private BIWContext context;
+    private Context context;
 
     protected override IEnumerator SetUp()
     {
