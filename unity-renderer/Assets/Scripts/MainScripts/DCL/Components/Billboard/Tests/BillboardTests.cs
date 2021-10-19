@@ -12,6 +12,12 @@ namespace Tests
         Billboard billboard;
         string entityId = "e1";
 
+        protected override IEnumerator SetUp()
+        {
+            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
+            return base.SetUp();
+        }
+
         [UnityTest]
         public IEnumerator AddBillboardComponent()
         {

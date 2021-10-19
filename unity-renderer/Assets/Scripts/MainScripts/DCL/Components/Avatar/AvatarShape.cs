@@ -78,6 +78,16 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
+            // To deal with the cases in which the entity transform was configured before the AvatarShape
+            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
+            {
+                initializedPosition = true;
+
+                avatarMovementController.MoveTo(
+                    entity.gameObject.transform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2,
+                    entity.gameObject.transform.localRotation, true);
+            }
+
             avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
 
             yield return new WaitUntil(() => avatarDone || avatarFailed);
@@ -105,15 +115,6 @@ namespace DCL
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
-            // To deal with the cases in which the entity transform was configured before the AvatarShape
-            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
-            {
-                initializedPosition = true;
-
-                avatarMovementController.MoveTo(
-                    entity.gameObject.transform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2,
-                    entity.gameObject.transform.localRotation, true);
-            }
 
             UpdatePlayerStatus(model);
 
@@ -149,14 +150,14 @@ namespace DCL
                 player = new Player();
                 isNew = true;
             }
-            
+
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
             player.onPointerDownCollider = onPointerDown;
-            
+
             if (isNew)
             {
                 player.playerName = playerName;
@@ -212,7 +213,7 @@ namespace DCL
         }
 
         void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
-        
+
         public override void Cleanup()
         {
             base.Cleanup();

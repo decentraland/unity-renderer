@@ -358,7 +358,7 @@ namespace DCL
             if (bodyShapeController == null)
             {
                 HideAll();
-                
+
                 bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
@@ -570,7 +570,7 @@ namespace DCL
                 lastStickerTimestamp = model.stickerTriggerTimestamp;
 
                 if ( stickersController != null )
-                    stickersController.PlayEmote(model.stickerTriggerId);
+                    stickersController.PlaySticker(model.stickerTriggerId);
             }
         }
 
@@ -660,7 +660,7 @@ namespace DCL
             {
                 mats[j].SetFloat(ShaderUtils.DitherFade, avatarFade);
             }
-            
+
             OnAvatarAlphaValueUpdate?.Invoke(avatarFade);
         }
 
@@ -715,6 +715,9 @@ namespace DCL
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+
+            var featureFlags = DataStore.i.featureFlags.flags.Get();
+            avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
 
             bool success = avatarMeshCombiner.Combine(
                 bodyShapeController.upperBodyRenderer,
