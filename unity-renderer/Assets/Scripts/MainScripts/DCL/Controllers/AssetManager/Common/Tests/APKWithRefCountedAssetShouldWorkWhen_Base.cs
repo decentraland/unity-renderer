@@ -18,15 +18,13 @@ namespace AssetPromiseKeeper_Tests
         protected override IEnumerator SetUp()
         {
             keeper = new APKType();
-            yield return base.SetUp();
+            yield break;
         }
 
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
-
             keeper.Cleanup();
-            yield return base.TearDown();
             yield break;
         }
 
@@ -113,6 +111,9 @@ namespace AssetPromiseKeeper_Tests
         [UnityTest]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
+            //We need to do an Enviroment setup only for this test since we need the webrequest 
+            yield return base.SetUp();
+
             var prom = CreatePromise();
             AssetType asset = null;
             prom.OnSuccessEvent += (x) => { asset = x; };
@@ -137,6 +138,9 @@ namespace AssetPromiseKeeper_Tests
 
             Assert.IsTrue(!keeper.library.Contains(asset));
             Assert.AreEqual(0, keeper.library.masterAssets.Count);
+
+            //We need to do an Enviroment teardown only for this test
+            yield return base.TearDown();
         }
 
         [UnityTest]
