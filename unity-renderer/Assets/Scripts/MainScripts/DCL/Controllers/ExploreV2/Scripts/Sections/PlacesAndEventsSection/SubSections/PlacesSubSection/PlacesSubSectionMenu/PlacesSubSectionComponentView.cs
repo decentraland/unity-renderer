@@ -152,18 +152,18 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
-        placeModal.gameObject.SetActive(true);
+        placeModal.Show();
         ConfigurePlaceCard(placeModal, placeInfo);
     }
 
-    public void HidePlaceModal() { placeModal.gameObject.SetActive(false); }
+    public void HidePlaceModal() { placeModal.Hide(); }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
 
     internal void ConfigurePlaceCardModal()
     {
         placeModal = Instantiate(placeCardModalPrefab);
-        placeModal.gameObject.SetActive(false);
+        placeModal.Hide(true);
     }
 
     internal void ConfigurePlaceCardsPool()

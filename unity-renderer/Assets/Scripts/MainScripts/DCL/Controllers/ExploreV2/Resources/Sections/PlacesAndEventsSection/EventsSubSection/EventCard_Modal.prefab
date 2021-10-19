@@ -1049,7 +1049,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hideOnEnable: 0
+  hideOnEnable: 1
   animSpeedFactor: 1
   disableAfterFadeOut: 0
   visibleParam: visible
@@ -1122,18 +1122,23 @@ MonoBehaviour:
     eventPlace: Signum ARK Gallery
     subscribedUsers: 0
     isSubscribed: 0
-    onJumpInClick:
-      m_PersistentCalls:
-        m_Calls: []
-    onInfoClick:
-      m_PersistentCalls:
-        m_Calls: []
-    onSubscribeClick:
-      m_PersistentCalls:
-        m_Calls: []
-    onUnsubscribeClick:
-      m_PersistentCalls:
-        m_Calls: []
+    coords: {x: 0, y: 0}
+    eventFromAPIInfo:
+      id: 
+      name: 
+      image: 
+      description: 
+      next_start_at: 
+      finish_at: 
+      scene_name: 
+      coordinates: 
+      realm: 
+      total_attendees: 0
+      live: 0
+      user_name: 
+      highlighted: 0
+      trending: 0
+      attending: 0
 --- !u!1 &3308387748642753088
 GameObject:
   m_ObjectHideFlags: 0
@@ -1254,7 +1259,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4781038414291623031}
   m_HandleRect: {fileID: 783446947716498125}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

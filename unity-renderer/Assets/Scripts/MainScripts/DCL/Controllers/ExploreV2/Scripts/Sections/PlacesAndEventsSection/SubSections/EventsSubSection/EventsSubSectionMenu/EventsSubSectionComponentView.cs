@@ -262,11 +262,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
-        eventModal.gameObject.SetActive(true);
+        eventModal.Show();
         ConfigureEventCard(eventModal, eventInfo);
     }
 
-    public void HideEventModal() { eventModal.gameObject.SetActive(false); }
+    public void HideEventModal() { eventModal.Hide(); }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
 
@@ -275,7 +275,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     internal void ConfigureEventCardModal()
     {
         eventModal = GameObject.Instantiate(eventCardModalPrefab);
-        eventModal.gameObject.SetActive(false);
+        eventModal.Hide(true);
     }
 
     internal void ConfigureEventCardsPool(out Pool pool, string poolName, EventCardComponentView eventCardPrefab, int maxPrewarmCount)

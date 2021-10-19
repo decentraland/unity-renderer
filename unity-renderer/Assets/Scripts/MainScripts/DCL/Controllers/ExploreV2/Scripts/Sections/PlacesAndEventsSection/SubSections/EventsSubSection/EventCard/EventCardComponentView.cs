@@ -433,5 +433,5 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
     }
 
-    internal void CloseModal() { gameObject.SetActive(false); }
+    internal void CloseModal() { Hide(); }
 }
