@@ -115,7 +115,11 @@ var WebVideoPlayer = {
             delete videos[id].hlsInstance;
         }
 
-        GLctx.deleteTexture(GL.textures[videos[id].textureId]);
+        const textureId = videos[id].textureId;
+        var texture = GL.textures[textureId];
+        texture.name = 0;
+        GLctx.deleteTexture(texture);
+        GL.textures[textureId] = null;
         delete videos[id];
     },
 
