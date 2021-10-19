@@ -119,14 +119,11 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     {
         base.Initialization();
 
-        RegisterCurrentInstantiatedItems();
+        StartCoroutine(RegisterCurrentInstantiatedItems());
+        ConfigureManualButtonsEvents();
     }
 
-    public override void PostInitialization()
-    {
-        ConfigureManualButtonsEvents();
-        StartCarousel();
-    }
+    public override void PostInitialization() { StartCarousel(); }
 
     public void Configure(BaseComponentModel newModel)
     {
@@ -459,7 +456,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         isInTransition = false;
     }
 
-    internal void RegisterCurrentInstantiatedItems()
+    internal IEnumerator RegisterCurrentInstantiatedItems()
     {
         instantiatedItems.Clear();
 
@@ -472,6 +469,11 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
                 Destroy(child.gameObject);
         }
 
+        // In the first loading, before calculating the size of the current items, it is needed to wait for a frame in order to
+        // allow time for the carousel viewport to get its final size to be able to execute the 'ResizeAllItems' function correctly.
+        yield return null;
+
+        ResizeAllItems();
         SetManualControlsActive(model.showManualControls);
     }
 }

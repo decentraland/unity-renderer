@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -315,7 +314,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             if (existingItem != null)
                 instantiatedItems.Add(existingItem);
             else
-                Destroy(child.gameObject);
+                DestroyImmediate(child.gameObject);
         }
+
+        ResizeGridContainer();
     }
 }
