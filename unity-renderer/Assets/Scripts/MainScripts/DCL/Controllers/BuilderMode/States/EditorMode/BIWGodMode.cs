@@ -49,37 +49,38 @@ public class BIWGodMode : BIWMode
 
     public const float RAYCAST_MAX_DISTANCE = 10000f;
 
-    public override void Init(BIWContext context)
+    public override void Init(Context context)
     {
         base.Init(context);
 
+        this.context = context;
         lookAtTransform = new GameObject("BIWGodModeTransform").transform;
-        maxDistanceToSelectEntitiesValue = context.godModeDynamicVariablesAsset.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = context.editorContext.godModeDynamicVariablesAsset.maxDistanceToSelectEntities;
 
-        snapFactor = context.godModeDynamicVariablesAsset.snapFactor;
-        snapRotationDegresFactor = context.godModeDynamicVariablesAsset.snapRotationDegresFactor;
-        snapScaleFactor =  context.godModeDynamicVariablesAsset.snapScaleFactor;
-        snapDistanceToActivateMovement =  context.godModeDynamicVariablesAsset.snapDistanceToActivateMovement;
+        snapFactor = context.editorContext.godModeDynamicVariablesAsset.snapFactor;
+        snapRotationDegresFactor = context.editorContext.godModeDynamicVariablesAsset.snapRotationDegresFactor;
+        snapScaleFactor =  context.editorContext.godModeDynamicVariablesAsset.snapScaleFactor;
+        snapDistanceToActivateMovement =  context.editorContext.godModeDynamicVariablesAsset.snapDistanceToActivateMovement;
 
-        initialEagleCameraHeight = context.godModeDynamicVariablesAsset.initialEagleCameraHeight;
-        initialEagleCameraDistance = context.godModeDynamicVariablesAsset.initialEagleCameraDistance;
-        initialEagleCameraLookAtHeight = context.godModeDynamicVariablesAsset.initialEagleCameraLookAtHeight;
+        initialEagleCameraHeight = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraHeight;
+        initialEagleCameraDistance = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraDistance;
+        initialEagleCameraLookAtHeight = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraLookAtHeight;
 
-        snapDragFactor = context.godModeDynamicVariablesAsset.snapDragFactor;
+        snapDragFactor = context.editorContext.godModeDynamicVariablesAsset.snapDragFactor;
 
-        outlinerController = context.outlinerController;
-        gizmoManager = context.gizmosController;
+        outlinerController = context.editorContext.outlinerController;
+        gizmoManager = context.editorContext.gizmosController;
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction += TranslateMode;
-            HUDController.i.builderInWorldMainHud.OnRotateSelectedAction += RotateMode;
-            HUDController.i.builderInWorldMainHud.OnScaleSelectedAction += ScaleMode;
-            HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange += UpdateSelectionPosition;
-            HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
-            HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
-            HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
-            HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshotForPublish;
+            context.editorContext.editorHUD.OnTranslateSelectedAction += TranslateMode;
+            context.editorContext.editorHUD.OnRotateSelectedAction += RotateMode;
+            context.editorContext.editorHUD.OnScaleSelectedAction += ScaleMode;
+            context.editorContext.editorHUD.OnSelectedObjectPositionChange += UpdateSelectionPosition;
+            context.editorContext.editorHUD.OnSelectedObjectRotationChange += UpdateSelectionRotation;
+            context.editorContext.editorHUD.OnSelectedObjectScaleChange += UpdateSelectionScale;
+            context.editorContext.editorHUD.OnResetCameraAction += ResetCamera;
+            context.editorContext.editorHUD.OnPublishAction += TakeSceneScreenshotForPublish;
         }
 
         if (context.sceneReferences.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
@@ -125,17 +126,17 @@ public class BIWGodMode : BIWMode
         if (lookAtTransform.gameObject != null)
             GameObject.Destroy(lookAtTransform.gameObject);
 
-        if (HUDController.i.builderInWorldMainHud == null)
+        if ( context.editorContext.editorHUD == null)
             return;
 
-        HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange -= UpdateSelectionPosition;
-        HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange -= UpdateSelectionRotation;
-        HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange -= UpdateSelectionScale;
-        HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction -= TranslateMode;
-        HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
-        HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
-        HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
-        HUDController.i.builderInWorldMainHud.OnPublishAction -= TakeSceneScreenshotForPublish;
+        context.editorContext.editorHUD.OnSelectedObjectPositionChange -= UpdateSelectionPosition;
+        context.editorContext.editorHUD.OnSelectedObjectRotationChange -= UpdateSelectionRotation;
+        context.editorContext.editorHUD.OnSelectedObjectScaleChange -= UpdateSelectionScale;
+        context.editorContext.editorHUD.OnTranslateSelectedAction -= TranslateMode;
+        context.editorContext.editorHUD.OnRotateSelectedAction -= RotateMode;
+        context.editorContext.editorHUD.OnScaleSelectedAction -= ScaleMode;
+        context.editorContext.editorHUD.OnResetCameraAction -= ResetCamera;
+        context.editorContext.editorHUD.OnPublishAction -= TakeSceneScreenshotForPublish;
     }
 
     public override void Update()
@@ -500,7 +501,7 @@ public class BIWGodMode : BIWMode
         editionGO.transform.SetParent(null);
         avatarRenderer.SetAvatarVisibility(false);
 
-        HUDController.i.builderInWorldMainHud?.ActivateGodModeUI();
+        context.editorContext.editorHUD?.ActivateGodModeUI();
     }
 
     public void ActivateCamera(IParcelScene parcelScene)
@@ -619,8 +620,8 @@ public class BIWGodMode : BIWMode
     private void UpdateActionsInteractable()
     {
         bool areInteratable = selectedEntities.Count > 0;
-        if (HUDController.i.builderInWorldMainHud != null)
-            HUDController.i.builderInWorldMainHud.SetActionsButtonsInteractable(areInteratable);
+        if ( context.editorContext.editorHUD != null)
+            context.editorContext.editorHUD.SetActionsButtonsInteractable(areInteratable);
     }
 
     public override bool ShouldCancelUndoAction()
@@ -705,7 +706,7 @@ public class BIWGodMode : BIWMode
             return;
         if (gizmoManager.GetSelectedGizmo() != gizmos)
         {
-            HUDController.i.builderInWorldMainHud?.SetGizmosActive(gizmos);
+            context.editorContext.editorHUD?.SetGizmosActive(gizmos);
             gizmoManager.SetGizmoType(gizmos);
             if (selectedEntities.Count > 0 )
                 gizmoManager.ShowGizmo();
@@ -714,7 +715,7 @@ public class BIWGodMode : BIWMode
         // else
         // {
         //     gizmoManager.HideGizmo(true);
-        //     HUDController.i.builderInWorldMainHud?.SetGizmosActive(BIWSettings.EMPTY_GIZMO_NAME);
+        //      context.editorContext.editorHUD?.SetGizmosActive(BIWSettings.EMPTY_GIZMO_NAME);
         // }
     }
 
@@ -797,7 +798,7 @@ public class BIWGodMode : BIWMode
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
-            HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
+            context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
         });
     }
 
@@ -807,7 +808,7 @@ public class BIWGodMode : BIWMode
 
         freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
         {
-            HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
+            context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
         });
     }
 
@@ -817,7 +818,7 @@ public class BIWGodMode : BIWMode
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
-            HUDController.i.builderInWorldMainHud?.NewProjectStart(sceneSnapshot);
+            context.editorContext.editorHUD?.NewProjectStart(sceneSnapshot);
         });
     }
 }

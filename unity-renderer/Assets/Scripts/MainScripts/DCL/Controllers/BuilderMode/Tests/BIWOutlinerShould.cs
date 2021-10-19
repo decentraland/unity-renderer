@@ -16,7 +16,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
-    private BIWContext context;
+    private Context context;
 
     protected override IEnumerator SetUp()
     {

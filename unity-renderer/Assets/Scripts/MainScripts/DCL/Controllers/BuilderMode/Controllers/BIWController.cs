@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface IBIWController
 {
-    void Initialize(BIWContext context);
+    void Initialize(Context context);
     void EnterEditMode(IParcelScene scene);
     void ExitEditMode();
     void OnGUI();
@@ -21,8 +21,12 @@ public abstract class BIWController : IBIWController
     internal ParcelScene sceneToEdit;
 
     protected bool isEditModeActive = false;
-
-    public virtual void Initialize(BIWContext context) { isEditModeActive = false; }
+    protected Context context;
+    public virtual void Initialize(Context context)
+    {
+        this.context = context;
+        isEditModeActive = false;
+    }
 
     public virtual void EnterEditMode(IParcelScene scene)
     {

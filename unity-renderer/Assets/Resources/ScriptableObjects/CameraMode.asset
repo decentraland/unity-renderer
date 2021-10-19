@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10dca2aa7ece74222942af653d7c93ad, type: 3}
   m_Name: CameraMode
   m_EditorClassIdentifier: ScriptableObjects::CameraMode
-  value: 0
+  value: 1

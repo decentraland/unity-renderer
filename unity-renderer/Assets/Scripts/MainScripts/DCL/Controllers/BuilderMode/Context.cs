@@ -3,18 +3,90 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
-public class BIWContext
+public class Context
 {
     private const string PROJECT_REFERENCES_PATH = "ScriptableObjects/ProjectReferences";
-    private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
-    private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
     private const string INPUTS_PATH = "ScriptableObjects/InputReferences";
 
     //Scriptable Objects
     public BIWProjectReferences projectReferencesAsset { get; private set; }
+    public BIWInputsReferences inputsReferencesAsset { get; private set; }
+
+    //Panel HUD
+    public IBuilderProjectsPanelController panelHUD { get; private set; }
+    public IBIWEditor editor;
+
+    public InitialSceneReferences.Data sceneReferences { get; private set; }
+
+    //Editor
+    public EditorContext editorContext { get; private set; }
+
+    public Context(IBIWEditor editor,
+        IBuilderProjectsPanelController panelHUD,
+        IBuilderEditorHUDController editorHUD,
+        IBIWOutlinerController outlinerController,
+        IBIWInputHandler inputHandler,
+        IBIWInputWrapper inputWrapper,
+        IBIWPublishController publishController,
+        IBIWCreatorController creatorController,
+        IBIWModeController modeController,
+        IBIWFloorHandler floorHandler,
+        IBIWEntityHandler entityHandler,
+        IBIWActionController actionController,
+        IBIWSaveController saveController,
+        IBIWRaycastController raycastController,
+        IBIWGizmosController gizmosController,
+        InitialSceneReferences.Data sceneReferences)
+    {
+
+        projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
+        inputsReferencesAsset = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
+
+        this.sceneReferences = sceneReferences;
+
+        //Builder parts
+        this.panelHUD = panelHUD;
+        this.editor = editor;
+
+        editorContext = new EditorContext(editorHUD,
+            outlinerController,
+            inputHandler,
+            inputWrapper,
+            publishController,
+            creatorController,
+            modeController,
+            floorHandler,
+            entityHandler,
+            actionController,
+            saveController,
+            raycastController,
+            gizmosController,
+            sceneReferences
+        );
+
+    }
+
+    public void Dispose()
+    {
+        editorContext.Dispose();
+        panelHUD.Dispose();
+        projectReferencesAsset = null;
+        inputsReferencesAsset = null;
+    }
+}
+
+public class EditorContext
+{
+
+    private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
+    private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
+
+    //Scriptable Objects
     public BIWGodModeDynamicVariables godModeDynamicVariablesAsset { get; private set; }
     public BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAsset { get; private set; }
-    public BIWInputsReferences inputsReferencesAsset { get; private set; }
+
+    //HUD
+    public IBuilderEditorHUDController editorHUD { get; private set; }
 
     // BIW Controllers
     public IBIWOutlinerController outlinerController { get; private set; }
@@ -31,7 +103,8 @@ public class BIWContext
     public IBIWGizmosController gizmosController { get; private set; }
     public InitialSceneReferences.Data sceneReferences { get; private set; }
 
-    public void Initialize(IBIWOutlinerController outlinerController,
+    public EditorContext(IBuilderEditorHUDController editorHUD,
+        IBIWOutlinerController outlinerController,
         IBIWInputHandler inputHandler,
         IBIWInputWrapper inputWrapper,
         IBIWPublishController publishController,
@@ -45,10 +118,10 @@ public class BIWContext
         IBIWGizmosController gizmosController,
         InitialSceneReferences.Data sceneReferences)
     {
-        projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
         godModeDynamicVariablesAsset = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
         firstPersonDynamicVariablesAsset = Resources.Load<BIWFirstPersonDynamicVariables>(FIRST_PERSON_DYNAMIC_VARIABLE_PATH);
-        inputsReferencesAsset = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
+
+        this.editorHUD = editorHUD;
 
         this.outlinerController = outlinerController;
         this.inputHandler = inputHandler;
@@ -67,6 +140,8 @@ public class BIWContext
 
     public void Dispose()
     {
+        editorHUD.Dispose();
+
         outlinerController.Dispose();
         inputHandler.Dispose();
         inputWrapper.Dispose();
@@ -80,9 +155,7 @@ public class BIWContext
         raycastController.Dispose();
         gizmosController.Dispose();
 
-        projectReferencesAsset = null;
         godModeDynamicVariablesAsset = null;
         firstPersonDynamicVariablesAsset = null;
-        inputsReferencesAsset = null;
     }
 }
