@@ -22,7 +22,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     private BIWRaycastController raycastController;
     private BIWGizmosController gizmosController;
     private BIWGodMode godMode;
-    private BIWContext context;
+    private Context context;
     private GameObject mockedGameObject, entityGameObject;
     private List<BIWEntity> selectedEntities;
 
@@ -67,15 +67,15 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
-        context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+        context.editorContext.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
         godMode.lastMousePosition = Vector3.zero;
 
         //Act
         godMode.EndBoundMultiSelection(Vector3.one * 9999);
 
         //Assert
-        context.outlinerController.Received().CancelAllOutlines();
-        context.entityHandler.Received().SelectEntity(entity);
+        context.editorContext.outlinerController.Received().CancelAllOutlines();
+        context.editorContext.entityHandler.Received().SelectEntity(entity);
     }
 
     [Test]
@@ -168,14 +168,14 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
-        context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+        context.editorContext.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
         godMode.lastMousePosition = Vector3.zero;
 
         //Act
         godMode.CheckOutlineEntitiesInSquareSelection(Vector3.one * 9999);
 
         //Assert
-        context.outlinerController.Received().OutlineEntity(entity);
+        context.editorContext.outlinerController.Received().OutlineEntity(entity);
     }
 
     [Test]
@@ -371,7 +371,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.MouseClickDetected();
 
         //Assert
-        context.entityHandler.Received().DeselectEntities();
+        context.editorContext.entityHandler.Received().DeselectEntities();
     }
 
     [Test]
@@ -439,7 +439,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         newEntity.Configure().gameObject.Returns(entityGameObject);
         biwEntity.Initialize(newEntity, null);
         selectedEntities.Add(biwEntity);
-        context.entityHandler.Configure().IsPointerInSelectedEntity().Returns(true);
+        context.editorContext.entityHandler.Configure().IsPointerInSelectedEntity().Returns(true);
 
         //Act
         godMode.StarDraggingSelectedEntities();

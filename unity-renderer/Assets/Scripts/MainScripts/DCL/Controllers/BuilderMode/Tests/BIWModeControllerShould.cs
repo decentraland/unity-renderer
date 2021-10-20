@@ -7,7 +7,7 @@ using UnityEngine;
 public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 {
     private BIWModeController biwModeController;
-    private BIWContext context;
+    private Context context;
 
     protected override IEnumerator SetUp()
     {

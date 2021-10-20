@@ -89,7 +89,7 @@ namespace DCL
 
         private void Start() { Environment.i.world.sceneController.Start(); }
 
-        private void Update()
+        protected virtual void Update()
         {
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
@@ -97,7 +97,7 @@ namespace DCL
             pluginSystem?.Update();
         }
 
-        private void LateUpdate()
+        protected virtual void LateUpdate()
         {
             Environment.i.world.sceneController.LateUpdate();
             pluginSystem?.LateUpdate();

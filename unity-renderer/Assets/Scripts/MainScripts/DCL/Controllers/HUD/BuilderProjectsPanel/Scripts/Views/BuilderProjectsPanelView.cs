@@ -8,6 +8,7 @@ internal interface IBuilderProjectsPanelView : IDisposable
     event Action OnBackToMainMenuPressed;
     event Action OnClosePressed;
     void SetVisible(bool visible);
+    bool IsVisible();
     void SetTogglOnWithoutNotify(SectionId sectionId);
     void SetMainLeftPanel();
     void SetProjectSettingsLeftPanel();
@@ -57,6 +58,8 @@ internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelVi
     private int deployedScenesCount = 0;
     private int projectScenesCount = 0;
     private bool isDestroyed = false;
+
+    public bool IsVisible() { return gameObject.activeSelf; }
 
     void IBuilderProjectsPanelView.SetVisible(bool visible)
     {

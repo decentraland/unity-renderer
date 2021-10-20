@@ -38,14 +38,14 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private readonly List<string> loadedFloorEntities = new List<string>();
     private Camera mainCamera;
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
 
-        actionController = context.actionController;
-        entityHandler = context.entityHandler;
-        creatorController = context.creatorController;
-        saveController = context.saveController;
+        actionController = context.editorContext.actionController;
+        entityHandler = context.editorContext.entityHandler;
+        creatorController = context.editorContext.creatorController;
+        saveController = context.editorContext.saveController;
         mainCamera = context.sceneReferences.mainCamera;
         floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
 

@@ -25,19 +25,19 @@ public class BIWFirstPersonMode : BIWMode
     private InputAction_Hold.Started rotationHoldStartDelegate;
     private InputAction_Hold.Finished rotationHoldFinishedDelegate;
 
-    public override void Init(BIWContext context)
+    public override void Init(Context context)
     {
         base.Init(context);
-        maxDistanceToSelectEntitiesValue = context.firstPersonDynamicVariablesAsset.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = context.editorContext.firstPersonDynamicVariablesAsset.maxDistanceToSelectEntities;
 
-        snapFactor = context.firstPersonDynamicVariablesAsset.snapFactor;
-        snapRotationDegresFactor = context.firstPersonDynamicVariablesAsset.snapRotationDegresFactor;
-        snapScaleFactor =  context.firstPersonDynamicVariablesAsset.snapScaleFactor;
-        snapDistanceToActivateMovement =  context.firstPersonDynamicVariablesAsset.snapDistanceToActivateMovement;
+        snapFactor = context.editorContext.firstPersonDynamicVariablesAsset.snapFactor;
+        snapRotationDegresFactor = context.editorContext.firstPersonDynamicVariablesAsset.snapRotationDegresFactor;
+        snapScaleFactor =  context.editorContext.firstPersonDynamicVariablesAsset.snapScaleFactor;
+        snapDistanceToActivateMovement =  context.editorContext.firstPersonDynamicVariablesAsset.snapDistanceToActivateMovement;
 
-        scaleSpeed =  context.firstPersonDynamicVariablesAsset.scaleSpeed;
-        rotationSpeed =  context.firstPersonDynamicVariablesAsset.rotationSpeed;
-        distanceFromCameraForNewEntitties =  context.firstPersonDynamicVariablesAsset.distanceFromCameraForNewEntitties;
+        scaleSpeed =  context.editorContext.firstPersonDynamicVariablesAsset.scaleSpeed;
+        rotationSpeed =  context.editorContext.firstPersonDynamicVariablesAsset.rotationSpeed;
+        distanceFromCameraForNewEntitties =  context.editorContext.firstPersonDynamicVariablesAsset.distanceFromCameraForNewEntitties;
 
         rotationHold = context.inputsReferencesAsset.firstPersonRotationHold;
 
@@ -152,10 +152,10 @@ public class BIWFirstPersonMode : BIWMode
         base.Activate(scene);
         SetEditObjectParent();
         freeMovementGO.transform.SetParent(Camera.main.transform);
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.ActivateFirstPersonModeUI();
-            HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(false);
+            context.editorContext.editorHUD.ActivateFirstPersonModeUI();
+            context.editorContext.editorHUD.SetVisibilityOfCatalog(false);
         }
     }
 
