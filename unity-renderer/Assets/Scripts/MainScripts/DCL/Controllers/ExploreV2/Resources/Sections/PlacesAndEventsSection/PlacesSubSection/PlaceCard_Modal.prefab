@@ -1047,6 +1047,7 @@ MonoBehaviour:
   coordsText: {fileID: 3036884130066497032}
   modalBackgroundButton: {fileID: 9072824849294888897}
   closeCardButton: {fileID: 9179686715425177228}
+  closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   infoButton: {fileID: 0}
   jumpinButton: {fileID: 5143636963063585730}
   friendsGrid: {fileID: 0}

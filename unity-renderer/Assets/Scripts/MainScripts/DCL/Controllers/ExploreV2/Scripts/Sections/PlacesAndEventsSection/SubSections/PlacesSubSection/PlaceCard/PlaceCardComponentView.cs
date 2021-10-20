@@ -101,6 +101,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text coordsText;
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
+    [SerializeField] internal InputAction_Trigger closeAction;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal GridContainerComponentView friendsGrid;
@@ -133,6 +134,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
+
+        if (closeAction != null)
+            closeAction.OnTriggered += OnCloseActionTriggered;
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
@@ -208,6 +212,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
+
+        if (closeAction != null)
+            closeAction.OnTriggered -= OnCloseActionTriggered;
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.RemoveAllListeners();
@@ -395,4 +402,6 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     }
 
     internal void CloseModal() { Hide(); }
+
+    internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
 }

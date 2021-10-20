@@ -276,7 +276,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         if (isInTransition)
             return;
 
-        //StopCarousel();
         StartCarousel(
             fromIndex: currentItemIndex,
             startInmediately: true,
@@ -290,7 +289,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         if (isInTransition)
             return;
 
-        //StopCarousel();
         StartCarousel(
             fromIndex: currentItemIndex,
             startInmediately: true,
@@ -304,7 +302,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         if (isInTransition)
             return;
 
-        //StopCarousel();
         StartCarousel(
             fromIndex: currentItemIndex,
             startInmediately: true,
@@ -356,7 +353,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal void ResizeAllItems()
     {
         itemsScroll.horizontalNormalizedPosition = 0f;
-        //StopCarousel();
         StartCarousel();
 
         foreach (Transform child in itemsContainer)
@@ -388,7 +384,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         currentItemIndex = fromIndex;
         SetSelectedDot(currentItemIndex);
 
-        while (itemsContainer.childCount > 1)
+        while (gameObject.activeInHierarchy && itemsContainer.childCount > 1)
         {
             if (!startInmediately)
                 yield return new WaitForSeconds(model.timeBetweenItems);

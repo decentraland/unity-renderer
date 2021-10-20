@@ -140,6 +140,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal TMP_Text subscribedUsersText;
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
+    [SerializeField] internal InputAction_Trigger closeAction;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
@@ -167,6 +168,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
+
+        if (closeAction != null)
+            closeAction.OnTriggered += OnCloseActionTriggered;
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
@@ -232,6 +236,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
+
+        if (closeAction != null)
+            closeAction.OnTriggered -= OnCloseActionTriggered;
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.RemoveAllListeners();
@@ -434,4 +441,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     }
 
     internal void CloseModal() { Hide(); }
+
+    internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
 }

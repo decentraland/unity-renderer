@@ -1093,6 +1093,7 @@ MonoBehaviour:
   subscribedUsersText: {fileID: 974946582953303008}
   modalBackgroundButton: {fileID: 6326002928928245743}
   closeCardButton: {fileID: 9179686715425177228}
+  closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   infoButton: {fileID: 0}
   jumpinButton: {fileID: 1803946320734803440}
   subscribeEventButton: {fileID: 5147457318263248526}
