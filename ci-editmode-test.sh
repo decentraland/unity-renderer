@@ -21,6 +21,8 @@ UNITY_EXIT_CODE=$?
 
 # Print unity log output
 ls -la $PROJECT_PATH
+find . --name editmode-results.xml
+find $PROJECT_PATH --name editmode-results.xml
 cat "$PROJECT_PATH/editmode-results.xml"
 
 # Display results
