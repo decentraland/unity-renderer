@@ -29,7 +29,6 @@ namespace DCL
             GameObject view = Object.Instantiate(Resources.Load("DebugView")) as GameObject;
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
-            previewSceneLimitsWarning = new PreviewSceneLimitsWarning(Environment.i.world.state);
 
             OnKernelConfigChanged(KernelConfig.i.Get(), null);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
@@ -142,7 +141,7 @@ namespace DCL
         public void Dispose()
         {
             positionTracker.Dispose();
-            previewSceneLimitsWarning.Dispose();
+            previewSceneLimitsWarning?.Dispose();
             isFPSPanelVisible.OnChange -= OnFPSPanelToggle;
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
 
@@ -159,8 +158,14 @@ namespace DCL
             {
                 debugView.SetSceneDebugPanel();
             }
-            
-            previewSceneLimitsWarning.SetActive(!string.IsNullOrEmpty(current.debugConfig.sceneLimitsWarningSceneId));
+
+            bool enablePrevewSceneLimitWarning = !string.IsNullOrEmpty(current.debugConfig.sceneLimitsWarningSceneId);
+            if (enablePrevewSceneLimitWarning && previewSceneLimitsWarning == null)
+            {
+                previewSceneLimitsWarning = new PreviewSceneLimitsWarning(Environment.i.world.state);
+            }
+
+            previewSceneLimitsWarning?.SetActive(enablePrevewSceneLimitWarning);
         }
     }
 }
