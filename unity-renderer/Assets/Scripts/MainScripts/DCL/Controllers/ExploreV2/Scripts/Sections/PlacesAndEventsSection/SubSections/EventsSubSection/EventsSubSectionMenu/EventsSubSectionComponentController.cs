@@ -49,10 +49,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnEventsFromAPIUpdated;
 
+    internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 3;
     internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 6;
     internal const string LIVE_TAG_TEXT = "LIVE";
-
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
@@ -134,7 +134,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
 
         if (eventsFiltered.Count == 0)
-            eventsFiltered = eventsFromAPI.Take(3).ToList();
+            eventsFiltered = eventsFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_EVENTS).ToList();
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
