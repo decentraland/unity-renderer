@@ -17,12 +17,12 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-mkdir -p "$PROJECT_PATH/test-results/editormode"
-cp "$PROJECT_PATH/editmode-results.xml" "$PROJECT_PATH/test-results/editormode/results.xml" || true
+#mkdir -p "$PROJECT_PATH/test-results/editormode"
+#cp "$PROJECT_PATH/editmode-results.xml" "$PROJECT_PATH/test-results/editormode/results.xml" || true
 
 # Print unity log output
 cat "$PROJECT_PATH/editmode-results.xml"
-cat "$PROJECT_PATH/editmode-results.xml" | grep test-run | grep Passed
+#cat "$PROJECT_PATH/editmode-results.xml" | grep test-run | grep Passed
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
