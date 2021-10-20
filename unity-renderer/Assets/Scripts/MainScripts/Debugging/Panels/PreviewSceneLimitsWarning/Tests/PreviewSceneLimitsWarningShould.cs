@@ -26,11 +26,11 @@ public class PreviewSceneLimitsWarningShould
 
         scenes = new Dictionary<string, IParcelScene>() { { SCENE_ID, scene } };
 
-        ISceneMetricsController sceneMetrics = Substitute.For<ISceneMetricsController>();
+        ISceneMetricsCounter sceneMetrics = Substitute.For<ISceneMetricsCounter>();
         sceneMetrics.GetModel().Returns(metrics);
         sceneMetrics.GetLimits().Returns(limit);
 
-        scene.metricsController.Returns(sceneMetrics);
+        scene.metricsCounter.Returns(sceneMetrics);
         worldState.loadedScenes.Returns(scenes);
 
         kernelConfigModel.debugConfig.sceneLimitsWarningSceneId = SCENE_ID;

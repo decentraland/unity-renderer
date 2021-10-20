@@ -71,6 +71,7 @@ namespace DCL
             }
         }
 
+        // NOTE: we are doing the check inside a coroutine since scene might be unloaded and loaded again
         private IEnumerator UpdateRoutine()
         {
             while (true)
@@ -83,11 +84,12 @@ namespace DCL
         internal void HandleWarningNotification()
         {
             bool isLimitReached = false;
+            bool isLimitReachedAndMessageChanged = false;
 
             if (!string.IsNullOrEmpty(sceneId))
             {
                 worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene);
-                ISceneMetricsController metricsController = scene?.metricsController;
+                ISceneMetricsCounter metricsController = scene?.metricsCounter;
                 SceneMetricsModel currentMetrics = metricsController?.GetModel();
                 SceneMetricsModel limit = metricsController?.GetLimits();
 
@@ -95,11 +97,14 @@ namespace DCL
                 isLimitReached = IsLimitReached(currentMetrics, limit, ref warningMessage);
                 if (isLimitReached)
                 {
-                    limitReachedNotification.message = string.Format(NOTIFICATION_MESSAGE, warningMessage);
+                    string prevMessage = limitReachedNotification.message;
+                    string newMessage = string.Format(NOTIFICATION_MESSAGE, warningMessage);
+                    limitReachedNotification.message = newMessage;
+                    isLimitReachedAndMessageChanged = prevMessage != newMessage;
                 }
             }
 
-            if (isShowingNotification != isLimitReached)
+            if (isShowingNotification != isLimitReached || isLimitReachedAndMessageChanged)
             {
                 ShowNotification(isLimitReached);
             }
