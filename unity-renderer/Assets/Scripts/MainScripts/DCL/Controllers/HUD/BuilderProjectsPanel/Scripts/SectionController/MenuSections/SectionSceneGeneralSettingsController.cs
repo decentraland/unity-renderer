@@ -5,25 +5,25 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Builder
 {
-    internal class SectionPlaceGeneralSettingsController : SectionBase, ISelectPlaceListener, ISectionUpdateSceneDataRequester
+    internal class SectionSceneGeneralSettingsController : SectionBase, ISelectSceneListener, ISectionUpdateSceneDataRequester
     {
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneGeneralSettingsView";
 
         internal const string PERMISSION_MOVE_PLAYER = "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE";
         internal const string PERMISSION_TRIGGER_EMOTES = "ALLOW_TO_TRIGGER_AVATAR_EMOTE";
 
-        private IPlaceData placeData;
+        private ISceneData sceneData;
 
         private readonly SceneDataUpdatePayload sceneDataUpdatePayload = new SceneDataUpdatePayload();
         private readonly SectionSceneGeneralSettingsView view;
 
         public event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
 
-        public SectionPlaceGeneralSettingsController() : this(
+        public SectionSceneGeneralSettingsController() : this(
             Object.Instantiate(Resources.Load<SectionSceneGeneralSettingsView>(VIEW_PREFAB_PATH))
         ) { }
 
-        public SectionPlaceGeneralSettingsController(SectionSceneGeneralSettingsView view)
+        public SectionSceneGeneralSettingsController(SectionSceneGeneralSettingsView view)
         {
             this.view = view;
             view.OnApplyChanges += OnApplyChanges;
@@ -37,28 +37,28 @@ namespace DCL.Builder
 
         public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
 
-        public void SetSceneData(IPlaceData placeData)
+        public void SetSceneData(ISceneData sceneData)
         {
-            this.placeData = placeData;
+            this.sceneData = sceneData;
 
-            view.SetName(placeData.name);
-            view.SetDescription(placeData.description);
-            view.SetConfigurationActive(placeData.isDeployed);
-            view.SetPermissionsActive(placeData.isDeployed);
+            view.SetName(sceneData.name);
+            view.SetDescription(sceneData.description);
+            view.SetConfigurationActive(sceneData.isDeployed);
+            view.SetPermissionsActive(sceneData.isDeployed);
 
-            if (placeData.isDeployed)
+            if (sceneData.isDeployed)
             {
-                view.SetAllowMovePlayer(placeData.requiredPermissions != null && placeData.requiredPermissions.Contains(PERMISSION_MOVE_PLAYER));
-                view.SetAllowTriggerEmotes(placeData.requiredPermissions != null && placeData.requiredPermissions.Contains(PERMISSION_TRIGGER_EMOTES));
-                view.SetAllowVoiceChat(placeData.allowVoiceChat);
-                view.SetMatureContent(placeData.isMatureContent);
+                view.SetAllowMovePlayer(sceneData.requiredPermissions != null && sceneData.requiredPermissions.Contains(PERMISSION_MOVE_PLAYER));
+                view.SetAllowTriggerEmotes(sceneData.requiredPermissions != null && sceneData.requiredPermissions.Contains(PERMISSION_TRIGGER_EMOTES));
+                view.SetAllowVoiceChat(sceneData.allowVoiceChat);
+                view.SetMatureContent(sceneData.isMatureContent);
             }
         }
 
         protected override void OnShow() { view.SetActive(true); }
 
         protected override void OnHide() { view.SetActive(false); }
-        void ISelectPlaceListener.OnSelectScene(IPlaceCardView placeCardView) { SetSceneData(placeCardView.PlaceData); }
+        void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView) { SetSceneData(sceneCardView.SceneData); }
 
         void OnApplyChanges()
         {
@@ -81,7 +81,7 @@ namespace DCL.Builder
                 permissions = new [] { PERMISSION_TRIGGER_EMOTES };
             }
             sceneDataUpdatePayload.requiredPermissions = permissions;
-            OnRequestUpdateSceneData?.Invoke(placeData.id, sceneDataUpdatePayload);
+            OnRequestUpdateSceneData?.Invoke(sceneData.id, sceneDataUpdatePayload);
         }
     }
 }

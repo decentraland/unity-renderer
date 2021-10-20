@@ -14,7 +14,7 @@ namespace Tests
     {
         private BuilderMainPanelController controller;
         private ISectionsController sectionsController;
-        private IPlacesViewController placesViewController;
+        private IScenesViewController scenesViewController;
         private ILandsController landsesController;
         private IProjectsController projectsController;
         private INewProjectFlowController newProjectFlowController;
@@ -27,7 +27,7 @@ namespace Tests
             controller = new BuilderMainPanelController();
 
             sectionsController = Substitute.For<ISectionsController>();
-            placesViewController = Substitute.For<IPlacesViewController>();
+            scenesViewController = Substitute.For<IScenesViewController>();
             landsesController = Substitute.For<ILandsController>();
             projectsController = Substitute.For<IProjectsController>();
             newProjectFlowController = Substitute.For<INewProjectFlowController>();
@@ -43,7 +43,7 @@ namespace Tests
             catalyst.GetEntities(Arg.Any<string>(), Arg.Any<string[]>()).Returns(new Promise<string>());
             catalyst.GetDeployedScenes(Arg.Any<string[]>()).Returns(new Promise<CatalystSceneEntityPayload[]>());
 
-            controller.Initialize(sectionsController, placesViewController,
+            controller.Initialize(sectionsController, scenesViewController,
                 landsesController, projectsController, newProjectFlowController, theGraph, catalyst);
         }
 
@@ -83,11 +83,11 @@ namespace Tests
             land.parcels = new List<Parcel>() { parcel };
 
             LandWithAccess landWithAccess = new LandWithAccess(land);
-            Place place = new Place();
-            place.parcelsCoord = new Vector2Int[] { parcelCoords };
-            place.deploymentSource = Place.Source.SDK;
+            Scene scene = new Scene();
+            scene.parcelsCoord = new Vector2Int[] { parcelCoords };
+            scene.deploymentSource = Scene.Source.SDK;
 
-            landWithAccess.scenes = new List<Place>() { place };
+            landWithAccess.scenes = new List<Scene>() { scene };
             var lands = new LandWithAccess[]
             {
                 landWithAccess
@@ -182,25 +182,25 @@ namespace Tests
         [Test]
         public void AddScenesListenerOnSectionShow()
         {
-            var section = Substitute.For<SectionPlacesController>();
+            var section = Substitute.For<SectionScenesController>();
             sectionsController.OnSectionShow += Raise.Event<Action<SectionBase>>(section);
-            placesViewController.Received(1).AddListener(section);
+            scenesViewController.Received(1).AddListener(section);
         }
 
         [Test]
         public void RemoveScenesListenerOnSectionHide()
         {
-            var section = Substitute.For<SectionPlacesController>();
+            var section = Substitute.For<SectionScenesController>();
             sectionsController.OnSectionHide += Raise.Event<Action<SectionBase>>(section);
-            placesViewController.Received(1).RemoveListener(section);
+            scenesViewController.Received(1).RemoveListener(section);
         }
 
         [Test]
         public void CallOpenSectionWhenSceneSelected()
         {
             var cardView = UnityEngine.Object.Instantiate(controller.view.GetCardViewPrefab());
-            ((IPlaceCardView)cardView).Setup(new PlaceData());
-            placesViewController.OnProjectSelected += Raise.Event<Action<IPlaceCardView>>(cardView);
+            ((ISceneCardView)cardView).Setup(new SceneData());
+            scenesViewController.OnProjectSelected += Raise.Event<Action<ISceneCardView>>(cardView);
             sectionsController.Received(1).OpenSection(Arg.Any<SectionId>());
             UnityEngine.Object.DestroyImmediate(cardView.gameObject);
         }
@@ -229,13 +229,13 @@ namespace Tests
             const string author = "Temptation Creator";
 
             var cardView = UnityEngine.Object.Instantiate(controller.view.GetCardViewPrefab());
-            ((IPlaceCardView)cardView).Setup(new PlaceData()
+            ((ISceneCardView)cardView).Setup(new SceneData()
             {
                 isDeployed = true,
                 coords = coords,
                 authorName = author
             });
-            placesViewController.OnProjectSelected += Raise.Event<Action<IPlaceCardView>>(cardView);
+            scenesViewController.OnProjectSelected += Raise.Event<Action<ISceneCardView>>(cardView);
 
             LeftMenuSettingsViewReferences viewReferences = controller.view.GetSettingsViewReferences();
 

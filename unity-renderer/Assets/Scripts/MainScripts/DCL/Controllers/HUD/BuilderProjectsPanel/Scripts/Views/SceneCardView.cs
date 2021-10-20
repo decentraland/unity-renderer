@@ -5,16 +5,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-internal interface IPlaceCardView : IDisposable
+internal interface ISceneCardView : IDisposable
 {
     event Action<Vector2Int> OnJumpInPressed;
     event Action<Vector2Int> OnEditorPressed;
-    event Action<IPlaceData> OnSettingsPressed;
-    event Action<IPlaceData, IPlaceCardView> OnContextMenuPressed;
-    IPlaceData PlaceData { get; }
+    event Action<ISceneData> OnSettingsPressed;
+    event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
+    ISceneData SceneData { get; }
     ISearchInfo searchInfo { get; }
     Vector3 contextMenuButtonPosition { get; }
-    void Setup(IPlaceData placeData);
+    void Setup(ISceneData sceneData);
     void SetParent(Transform parent);
     void SetToDefaultParent();
     void ConfigureDefaultParent(Transform parent);
@@ -30,7 +30,7 @@ internal interface IPlaceCardView : IDisposable
     void SetSiblingIndex(int index);
 }
 
-internal class PlaceCardView : MonoBehaviour, IPlaceCardView
+internal class SceneCardView : MonoBehaviour, ISceneCardView
 {
     const int THMBL_MARKETPLACE_WIDTH = 196;
     const int THMBL_MARKETPLACE_HEIGHT = 143;
@@ -40,8 +40,8 @@ internal class PlaceCardView : MonoBehaviour, IPlaceCardView
 
     public event Action<Vector2Int> OnJumpInPressed;
     public event Action<Vector2Int> OnEditorPressed;
-    public event Action<IPlaceData> OnSettingsPressed;
-    public event Action<IPlaceData, IPlaceCardView> OnContextMenuPressed;
+    public event Action<ISceneData> OnSettingsPressed;
+    public event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
 
     [SerializeField] private Texture2D defaultThumbnail;
 
@@ -82,11 +82,11 @@ internal class PlaceCardView : MonoBehaviour, IPlaceCardView
 
     private static readonly int isLoadingAnimation = Animator.StringToHash("isLoading");
 
-    ISearchInfo IPlaceCardView.searchInfo { get; } = new SearchInfo();
-    IPlaceData IPlaceCardView.PlaceData => placeData;
-    Vector3 IPlaceCardView.contextMenuButtonPosition => contextMenuButton.transform.position + CONTEXT_MENU_OFFSET;
+    ISearchInfo ISceneCardView.searchInfo { get; } = new SearchInfo();
+    ISceneData ISceneCardView.SceneData => sceneData;
+    Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position + CONTEXT_MENU_OFFSET;
 
-    private IPlaceData placeData;
+    private ISceneData sceneData;
     private string thumbnailUrl = null;
     private AssetPromise_Texture thumbnailPromise;
     private bool isDestroyed = false;
@@ -97,8 +97,8 @@ internal class PlaceCardView : MonoBehaviour, IPlaceCardView
     {
         jumpInButton.onClick.AddListener( JumpInButtonPressed );
         editorButton.onClick.AddListener( EditorButtonPressed );
-        contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(placeData, this));
-        settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(placeData));
+        contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
+        settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
 
         editorLockedGO.SetActive(false);
         editorLockedTooltipGO.SetActive(false);
@@ -106,42 +106,42 @@ internal class PlaceCardView : MonoBehaviour, IPlaceCardView
 
     private void JumpInButtonPressed()
     {
-        OnJumpInPressed?.Invoke(placeData.coords);
-        BIWAnalytics.PlayerJumpOrEdit("Scene", "JumpIn", placeData.coords, "Scene Owner");
+        OnJumpInPressed?.Invoke(sceneData.coords);
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "JumpIn", sceneData.coords, "Scene Owner");
     }
 
     private void EditorButtonPressed()
     {
-        OnEditorPressed?.Invoke(placeData.coords);
-        BIWAnalytics.PlayerJumpOrEdit("Scene", "Editor", placeData.coords, "Scene Owner");
+        OnEditorPressed?.Invoke(sceneData.coords);
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "Editor", sceneData.coords, "Scene Owner");
     }
 
     private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
 
-    void IPlaceCardView.Setup(IPlaceData placeData)
+    void ISceneCardView.Setup(ISceneData sceneData)
     {
-        this.placeData = placeData;
+        this.sceneData = sceneData;
 
-        string sceneThumbnailUrl = placeData.thumbnailUrl;
-        if (string.IsNullOrEmpty(sceneThumbnailUrl) && placeData.parcels != null)
+        string sceneThumbnailUrl = sceneData.thumbnailUrl;
+        if (string.IsNullOrEmpty(sceneThumbnailUrl) && sceneData.parcels != null)
         {
-            sceneThumbnailUrl = MapUtils.GetMarketPlaceThumbnailUrl(placeData.parcels,
+            sceneThumbnailUrl = MapUtils.GetMarketPlaceThumbnailUrl(sceneData.parcels,
                 THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR);
         }
 
-        IPlaceCardView thisView = this;
+        ISceneCardView thisView = this;
         thisView.SetThumbnail(sceneThumbnailUrl);
-        thisView.SetName(placeData.name);
-        thisView.SetCoords(placeData.coords);
-        thisView.SetSize(placeData.size);
-        thisView.SetDeployed(placeData.isDeployed);
-        thisView.SetUserRole(placeData.isOwner, placeData.isOperator, placeData.isContributor);
-        thisView.SetEditable(placeData.isEditable);
+        thisView.SetName(sceneData.name);
+        thisView.SetCoords(sceneData.coords);
+        thisView.SetSize(sceneData.size);
+        thisView.SetDeployed(sceneData.isDeployed);
+        thisView.SetUserRole(sceneData.isOwner, sceneData.isOperator, sceneData.isContributor);
+        thisView.SetEditable(sceneData.isEditable);
 
-        thisView.searchInfo.SetId(placeData.id);
+        thisView.searchInfo.SetId(sceneData.id);
     }
 
-    void IPlaceCardView.SetParent(Transform parent)
+    void ISceneCardView.SetParent(Transform parent)
     {
         if (transform.parent == parent)
             return;
@@ -150,26 +150,26 @@ internal class PlaceCardView : MonoBehaviour, IPlaceCardView
         transform.ResetLocalTRS();
     }
 
-    void IPlaceCardView.SetName(string name)
+    void ISceneCardView.SetName(string name)
     {
         sceneName.text = name;
-        ((IPlaceCardView)this).searchInfo.SetName(name);
+        ((ISceneCardView)this).searchInfo.SetName(name);
     }
 
-    void IPlaceCardView.SetCoords(Vector2Int coords)
+    void ISceneCardView.SetCoords(Vector2Int coords)
     {
         string coordStr = $"{coords.x},{coords.y}";
         coordsText.text = coordStr;
-        ((IPlaceCardView)this).searchInfo.SetCoords(coordStr);
+        ((ISceneCardView)this).searchInfo.SetCoords(coordStr);
     }
 
-    void IPlaceCardView.SetSize(Vector2Int size)
+    void ISceneCardView.SetSize(Vector2Int size)
     {
         sizeText.text = $"{size.x},{size.y}m";
-        ((IPlaceCardView)this).searchInfo.SetSize(size.x * size.y);
+        ((ISceneCardView)this).searchInfo.SetSize(size.x * size.y);
     }
 
-    void IPlaceCardView.SetThumbnail(string thumbnailUrl)
+    void ISceneCardView.SetThumbnail(string thumbnailUrl)
     {
         if (this.thumbnailUrl == thumbnailUrl)
             return;
@@ -188,37 +188,37 @@ internal class PlaceCardView : MonoBehaviour, IPlaceCardView
 
         if (string.IsNullOrEmpty(thumbnailUrl))
         {
-            ((IPlaceCardView)this).SetThumbnail((Texture2D) null);
+            ((ISceneCardView)this).SetThumbnail((Texture2D) null);
             return;
         }
 
         thumbnailPromise = new AssetPromise_Texture(thumbnailUrl);
-        thumbnailPromise.OnSuccessEvent += texture => ((IPlaceCardView)this).SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => ((IPlaceCardView)this).SetThumbnail((Texture2D) null);
+        thumbnailPromise.OnSuccessEvent += texture => ((ISceneCardView)this).SetThumbnail(texture.texture);
+        thumbnailPromise.OnFailEvent += texture => ((ISceneCardView)this).SetThumbnail((Texture2D) null);
 
         AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
     }
 
-    void IPlaceCardView.SetThumbnail(Texture2D thumbnailTexture)
+    void ISceneCardView.SetThumbnail(Texture2D thumbnailTexture)
     {
         thumbnail.texture = thumbnailTexture ?? defaultThumbnail;
         isLoadingThumbnail = false;
         loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
     }
 
-    void IPlaceCardView.SetDeployed(bool deployed)
+    void ISceneCardView.SetDeployed(bool deployed)
     {
         coordsContainer.SetActive(deployed);
         sizeContainer.SetActive(!deployed);
         jumpInButton.gameObject.SetActive(deployed);
     }
 
-    void IPlaceCardView.SetUserRole(bool isOwner, bool isOperator, bool isContributor)
+    void ISceneCardView.SetUserRole(bool isOwner, bool isOperator, bool isContributor)
     {
         roleOwnerGO.SetActive(false);
         roleOperatorGO.SetActive(false);
         roleContributorGO.SetActive(false);
-        ((IPlaceCardView)this).searchInfo.SetRole(isOwner);
+        ((ISceneCardView)this).searchInfo.SetRole(isOwner);
 
         if (isOwner)
         {
@@ -234,14 +234,14 @@ internal class PlaceCardView : MonoBehaviour, IPlaceCardView
         }
     }
 
-    void IPlaceCardView.SetActive(bool active) { gameObject.SetActive(active); }
+    void ISceneCardView.SetActive(bool active) { gameObject.SetActive(active); }
 
-    void IPlaceCardView.SetSiblingIndex(int index) { transform.SetSiblingIndex(index); }
-    void IPlaceCardView.SetToDefaultParent() { transform.SetParent(defaultParent); }
+    void ISceneCardView.SetSiblingIndex(int index) { transform.SetSiblingIndex(index); }
+    void ISceneCardView.SetToDefaultParent() { transform.SetParent(defaultParent); }
 
-    void IPlaceCardView.ConfigureDefaultParent(Transform parent) { defaultParent = parent; }
+    void ISceneCardView.ConfigureDefaultParent(Transform parent) { defaultParent = parent; }
 
-    void IPlaceCardView.SetEditable(bool isEditable)
+    void ISceneCardView.SetEditable(bool isEditable)
     {
         editorButton.gameObject.SetActive(isEditable);
         editorLockedGO.SetActive(!isEditable);

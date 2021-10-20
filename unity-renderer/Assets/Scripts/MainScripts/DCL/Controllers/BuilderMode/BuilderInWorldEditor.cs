@@ -470,10 +470,10 @@ public class BuilderInWorldEditor : IBIWEditor
 
     internal bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
     {
-        List<Place> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
-        foreach (Place scene in allDeployedScenesWithAccess)
+        List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
+        foreach (Scene scene in allDeployedScenesWithAccess)
         {
-            if (scene.source != Place.Source.SDK)
+            if (scene.source != Scene.Source.SDK)
                 continue;
 
             List<Vector2Int> parcelsDeployedFromSDK = scene.parcels.ToList();

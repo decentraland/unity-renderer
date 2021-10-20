@@ -8,14 +8,14 @@ namespace Tests
     public class SectionSceneAdminsSettingsShould
     {
         private SectionSceneAdminsSettingsView view;
-        private SectionPlaceAdminsSettingsController controller;
+        private SectionSceneAdminsSettingsController controller;
 
         [SetUp]
         public void SetUp()
         {
-            var prefab = Resources.Load<SectionSceneAdminsSettingsView>(SectionPlaceAdminsSettingsController.VIEW_PREFAB_PATH);
+            var prefab = Resources.Load<SectionSceneAdminsSettingsView>(SectionSceneAdminsSettingsController.VIEW_PREFAB_PATH);
             view = Object.Instantiate(prefab);
-            controller = new SectionPlaceAdminsSettingsController(view, new FriendsController_Mock());
+            controller = new SectionSceneAdminsSettingsController(view, new FriendsController_Mock());
         }
 
         [TearDown]

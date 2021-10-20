@@ -15,7 +15,7 @@ namespace DCL.Builder
         void SetTogglOnWithoutNotify(SectionId sectionId);
         void SetMainLeftPanel();
         void SetProjectSettingsLeftPanel();
-        PlaceCardView GetCardViewPrefab();
+        SceneCardView GetCardViewPrefab();
         Transform GetSectionContainer();
         Transform GetTransform();
         SearchBarView GetSearchBar();
@@ -24,7 +24,7 @@ namespace DCL.Builder
         IUnpublishPopupView GetUnpublishPopup();
     }
 
-    internal class BuilderMainPanelView : MonoBehaviour, IBuilderMainPanelView, IPlaceListener, IProjectListener
+    internal class BuilderMainPanelView : MonoBehaviour, IBuilderMainPanelView, ISceneListener, IProjectListener
     {
         [Header("General")]
         [SerializeField] internal Button closeButton;
@@ -46,7 +46,7 @@ namespace DCL.Builder
         [SerializeField] internal LeftMenuSettingsViewReferences settingsViewReferences;
 
         [Header("Assets")]
-        [SerializeField] internal PlaceCardView placeCardViewPrefab;
+        [SerializeField] internal SceneCardView sceneCardViewPrefab;
 
         [Header("Popups")]
         [SerializeField] internal UnpublishPopupView unpublishPopupView;
@@ -98,7 +98,7 @@ namespace DCL.Builder
             leftPanelProjectSettings.SetActive(true);
         }
 
-        PlaceCardView IBuilderMainPanelView.GetCardViewPrefab() { return placeCardViewPrefab; }
+        SceneCardView IBuilderMainPanelView.GetCardViewPrefab() { return sceneCardViewPrefab; }
 
         Transform IBuilderMainPanelView.GetSectionContainer() { return sectionsContainer; }
 
@@ -143,16 +143,16 @@ namespace DCL.Builder
 
         private void CloseTriggerOnOnTriggered(DCLAction_Trigger action) { OnClosePressed?.Invoke(); }
 
-        void IPlaceListener.SetPlaces(Dictionary<string, IPlaceCardView> scenes) { scenesCount = scenes.Count; }
+        void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes) { scenesCount = scenes.Count; }
 
-        void IProjectListener.SetPlaces(Dictionary<string, IPlaceCardView> scenes) { projectScenesCount = scenes.Count; }
+        void IProjectListener.SetScenes(Dictionary<string, ISceneCardView> scenes) { projectScenesCount = scenes.Count; }
 
-        void IPlaceListener.PlaceAdded(IPlaceCardView place) { scenesCount++; }
+        void ISceneListener.SceneAdded(ISceneCardView scene) { scenesCount++; }
 
-        void IProjectListener.PlaceAdded(IPlaceCardView place) { projectScenesCount++; }
+        void IProjectListener.SceneAdded(ISceneCardView scene) { projectScenesCount++; }
 
-        void IPlaceListener.PlaceRemoved(IPlaceCardView place) { scenesCount--; }
+        void ISceneListener.SceneRemoved(ISceneCardView scene) { scenesCount--; }
 
-        void IProjectListener.PlaceRemoved(IPlaceCardView place) { projectScenesCount--; }
+        void IProjectListener.SceneRemoved(ISceneCardView scene) { projectScenesCount--; }
     }
 }

@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Builder
 {
-    internal class SectionPlaceContributorsSettingsController : SectionBase, ISelectPlaceListener, ISectionUpdateSceneContributorsRequester
+    internal class SectionSceneContributorsSettingsController : SectionBase, ISelectSceneListener, ISectionUpdateSceneContributorsRequester
     {
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneContributorsSettingsView";
 
@@ -20,12 +20,12 @@ namespace DCL.Builder
         private List<string> contributorsList = new List<string>();
         private string sceneId;
 
-        public SectionPlaceContributorsSettingsController() : this(
+        public SectionSceneContributorsSettingsController() : this(
             Object.Instantiate(Resources.Load<SectionSceneContributorsSettingsView>(VIEW_PREFAB_PATH)),
             FriendsController.i
         ) { }
 
-        public SectionPlaceContributorsSettingsController(SectionSceneContributorsSettingsView view, IFriendsController friendsController)
+        public SectionSceneContributorsSettingsController(SectionSceneContributorsSettingsView view, IFriendsController friendsController)
         {
             this.view = view;
             friendsSearchPromptController = new FriendsSearchPromptController(view.GetSearchPromptView(), friendsController);
@@ -48,10 +48,10 @@ namespace DCL.Builder
 
         protected override void OnHide() { view.SetActive(false); }
 
-        void ISelectPlaceListener.OnSelectScene(IPlaceCardView placeCardView)
+        void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
         {
-            sceneId = placeCardView.PlaceData.id;
-            UpdateContributors(placeCardView.PlaceData.contributors);
+            sceneId = sceneCardView.SceneData.id;
+            UpdateContributors(sceneCardView.SceneData.contributors);
         }
 
         internal void UpdateContributors(string[] contributors)

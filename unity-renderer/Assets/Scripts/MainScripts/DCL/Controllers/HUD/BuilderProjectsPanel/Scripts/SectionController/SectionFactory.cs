@@ -16,7 +16,7 @@ namespace DCL.Builder
             switch (id)
             {
                 case SectionId.SCENES:
-                    result = new SectionPlacesController();
+                    result = new SectionScenesController();
                     break;
                 case SectionId.PROJECTS:
                     result = new SectionProjectController();
@@ -25,13 +25,13 @@ namespace DCL.Builder
                     result = new SectionLandController();
                     break;
                 case SectionId.SETTINGS_PROJECT_GENERAL:
-                    result = new SectionPlaceGeneralSettingsController();
+                    result = new SectionSceneGeneralSettingsController();
                     break;
                 case SectionId.SETTINGS_PROJECT_CONTRIBUTORS:
-                    result = new SectionPlaceContributorsSettingsController();
+                    result = new SectionSceneContributorsSettingsController();
                     break;
                 case SectionId.SETTINGS_PROJECT_ADMIN:
-                    result = new SectionPlaceAdminsSettingsController();
+                    result = new SectionSceneAdminsSettingsController();
                     break;
             }
 

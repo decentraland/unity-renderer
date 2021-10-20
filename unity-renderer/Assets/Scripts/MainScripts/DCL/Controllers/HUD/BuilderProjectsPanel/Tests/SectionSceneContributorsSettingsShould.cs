@@ -8,14 +8,14 @@ namespace Tests
     public class SectionSceneContributorsSettingsShould
     {
         private SectionSceneContributorsSettingsView view;
-        private SectionPlaceContributorsSettingsController controller;
+        private SectionSceneContributorsSettingsController controller;
 
         [SetUp]
         public void SetUp()
         {
-            var prefab = Resources.Load<SectionSceneContributorsSettingsView>(SectionPlaceContributorsSettingsController.VIEW_PREFAB_PATH);
+            var prefab = Resources.Load<SectionSceneContributorsSettingsView>(SectionSceneContributorsSettingsController.VIEW_PREFAB_PATH);
             view = Object.Instantiate(prefab);
-            controller = new SectionPlaceContributorsSettingsController(view, new FriendsController_Mock());
+            controller = new SectionSceneContributorsSettingsController(view, new FriendsController_Mock());
         }
 
         [TearDown]

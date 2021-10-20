@@ -20,11 +20,11 @@ public class SceneDataShould
         metadata.metadata.contact = new CatalystSceneEntityMetadata.Contact();
         metadata.metadata.contact.name = "";
         metadata.metadata.policy = new CatalystSceneEntityMetadata.Policy();
-        Place scene = new Place(metadata, "TestURL");
+        Scene scene = new Scene(metadata, "TestURL");
         scene.parcelsCoord = new [] { new Vector2Int(1, 1) };
 
         //Act
-        PlaceData data = new PlaceData(scene);
+        SceneData data = new SceneData(scene);
 
         //Assert
         Assert.AreEqual(data.size, new Vector2Int(1, 1));

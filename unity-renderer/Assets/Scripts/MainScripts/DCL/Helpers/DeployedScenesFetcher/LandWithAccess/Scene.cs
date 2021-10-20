@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Builder
 {
-    public class Place
+    public class Scene
     {
         public enum Source { BUILDER, BUILDER_IN_WORLD, SDK }
 
@@ -32,9 +32,9 @@ namespace DCL.Builder
 
         internal LandWithAccess sceneLand;
 
-        public Place() { }
+        public Scene() { }
 
-        public Place(CatalystSceneEntityPayload pointerData, string contentUrl)
+        public Scene(CatalystSceneEntityPayload pointerData, string contentUrl)
         {
             const string builderInWorldStateJson = "scene-state-definition.json";
             const string builderSourceName = "builder";

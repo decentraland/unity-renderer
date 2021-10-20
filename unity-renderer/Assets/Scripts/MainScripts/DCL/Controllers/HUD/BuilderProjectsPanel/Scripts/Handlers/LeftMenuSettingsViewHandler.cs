@@ -29,25 +29,25 @@ namespace DCL.Builder
         internal const string SCENE_TITLE = "Scene settings";
 
         private readonly LeftMenuSettingsViewReferences viewReferences;
-        private readonly IPlacesViewController placesViewController;
+        private readonly IScenesViewController scenesViewController;
         private readonly Texture defaultThumbnail;
 
         private AssetPromise_Texture promiseAvatarThumbnail;
         private AssetPromise_Texture promiseSceneThumbnail;
 
-        public LeftMenuSettingsViewHandler(LeftMenuSettingsViewReferences viewReferences, IPlacesViewController placesViewController)
+        public LeftMenuSettingsViewHandler(LeftMenuSettingsViewReferences viewReferences, IScenesViewController scenesViewController)
         {
             this.viewReferences = viewReferences;
-            this.placesViewController = placesViewController;
+            this.scenesViewController = scenesViewController;
 
             defaultThumbnail = viewReferences.thumbnail.texture;
 
-            placesViewController.OnProjectSelected += SelectProject;
+            scenesViewController.OnProjectSelected += SelectProject;
         }
 
         public void Dispose()
         {
-            placesViewController.OnProjectSelected -= SelectProject;
+            scenesViewController.OnProjectSelected -= SelectProject;
 
             if (promiseAvatarThumbnail != null)
             {
@@ -62,24 +62,24 @@ namespace DCL.Builder
             promiseSceneThumbnail = null;
         }
 
-        void SetProjectData(IPlaceData placeData)
+        void SetProjectData(ISceneData sceneData)
         {
-            viewReferences.titleLabel.text = placeData.isDeployed ? SCENE_TITLE : PROJECT_TITLE;
-            viewReferences.coordsContainer.SetActive(placeData.isDeployed);
-            viewReferences.sizeContainer.SetActive(!placeData.isDeployed);
-            viewReferences.entitiesCountContainer.SetActive(!placeData.isDeployed);
-            viewReferences.coordsText.text = $"{placeData.coords.x},{placeData.coords.y}";
-            viewReferences.sizeText.text = $"{placeData.size.x},{placeData.size.y}m";
-            viewReferences.entitiesCountText.text = placeData.entitiesCount.ToString();
-            viewReferences.authorNameText.text = placeData.authorName;
-            viewReferences.adminsMenuToggle.gameObject.SetActive(placeData.isDeployed);
+            viewReferences.titleLabel.text = sceneData.isDeployed ? SCENE_TITLE : PROJECT_TITLE;
+            viewReferences.coordsContainer.SetActive(sceneData.isDeployed);
+            viewReferences.sizeContainer.SetActive(!sceneData.isDeployed);
+            viewReferences.entitiesCountContainer.SetActive(!sceneData.isDeployed);
+            viewReferences.coordsText.text = $"{sceneData.coords.x},{sceneData.coords.y}";
+            viewReferences.sizeText.text = $"{sceneData.size.x},{sceneData.size.y}m";
+            viewReferences.entitiesCountText.text = sceneData.entitiesCount.ToString();
+            viewReferences.authorNameText.text = sceneData.authorName;
+            viewReferences.adminsMenuToggle.gameObject.SetActive(sceneData.isDeployed);
 
-            SetThumbnails(placeData);
+            SetThumbnails(sceneData);
         }
 
-        void SetThumbnails(IPlaceData placeData)
+        void SetThumbnails(ISceneData sceneData)
         {
-            if (string.IsNullOrEmpty(placeData.authorThumbnail))
+            if (string.IsNullOrEmpty(sceneData.authorThumbnail))
             {
                 viewReferences.avatarThumbnailContainer.SetActive(false);
             }
@@ -90,7 +90,7 @@ namespace DCL.Builder
                     AssetPromiseKeeper_Texture.i.Forget(promiseAvatarThumbnail);
                 }
 
-                promiseAvatarThumbnail = new AssetPromise_Texture(placeData.authorThumbnail);
+                promiseAvatarThumbnail = new AssetPromise_Texture(sceneData.authorThumbnail);
                 promiseAvatarThumbnail.OnFailEvent += asset => viewReferences.avatarThumbnailContainer.SetActive(false);
                 promiseAvatarThumbnail.OnSuccessEvent += asset =>
                 {
@@ -100,7 +100,7 @@ namespace DCL.Builder
                 AssetPromiseKeeper_Texture.i.Keep(promiseAvatarThumbnail);
             }
 
-            if (string.IsNullOrEmpty(placeData.thumbnailUrl))
+            if (string.IsNullOrEmpty(sceneData.thumbnailUrl))
             {
                 viewReferences.thumbnail.texture = defaultThumbnail;
             }
@@ -111,7 +111,7 @@ namespace DCL.Builder
                     AssetPromiseKeeper_Texture.i.Forget(promiseSceneThumbnail);
                 }
 
-                promiseSceneThumbnail = new AssetPromise_Texture(placeData.thumbnailUrl);
+                promiseSceneThumbnail = new AssetPromise_Texture(sceneData.thumbnailUrl);
                 promiseSceneThumbnail.OnFailEvent += asset => viewReferences.thumbnail.texture = defaultThumbnail;
                 promiseSceneThumbnail.OnSuccessEvent += asset =>
                 {
@@ -121,6 +121,6 @@ namespace DCL.Builder
             }
         }
 
-        private void SelectProject(IPlaceCardView placeCardView) { SetProjectData(placeCardView.PlaceData); }
+        private void SelectProject(ISceneCardView sceneCardView) { SetProjectData(sceneCardView.SceneData); }
     }
 }

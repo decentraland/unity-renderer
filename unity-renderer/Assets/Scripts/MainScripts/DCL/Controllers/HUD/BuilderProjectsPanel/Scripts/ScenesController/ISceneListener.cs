@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-internal interface IProjectListener
+internal interface ISceneListener
 {
     void SetScenes(Dictionary<string, ISceneCardView> scenes);
     void SceneAdded(ISceneCardView scene);

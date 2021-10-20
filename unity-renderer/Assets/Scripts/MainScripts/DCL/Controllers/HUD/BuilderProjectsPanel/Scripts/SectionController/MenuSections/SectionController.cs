@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Builder
 {
-    internal class SectionController : SectionBase, IPlaceListener, IProjectListener, ISectionOpenSectionRequester
+    internal class SectionController : SectionBase, ISceneListener, IProjectListener, ISectionOpenSectionRequester
     {
         public event Action<SectionId> OnRequestOpenSection;
 
@@ -27,8 +27,8 @@ namespace DCL.Builder
 
         private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
 
-        internal Dictionary<string, IPlaceCardView> deployedViews;
-        internal Dictionary<string, IPlaceCardView> projectViews;
+        internal Dictionary<string, ISceneCardView> deployedViews;
+        internal Dictionary<string, ISceneCardView> projectViews;
         private List<ISearchInfo> searchList = new List<ISearchInfo>();
 
         public SectionController()
@@ -72,44 +72,44 @@ namespace DCL.Builder
             view.projectsContainer.SetActive(hasProjectScenes);
         }
 
-        void IPlaceListener.SetPlaces(Dictionary<string, IPlaceCardView> scenes)
+        void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             UpdateDictionary(ref deployedViews, scenes);
             searchList.AddRange(scenes.Values.Select(scene => scene.searchInfo));
             sceneSearchHandler.SetSearchableList(searchList);
         }
 
-        void IProjectListener.SetPlaces(Dictionary<string, IPlaceCardView> scenes)
+        void IProjectListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             UpdateDictionary(ref projectViews, scenes);
             searchList.AddRange(scenes.Values.Select(scene => scene.searchInfo));
             sceneSearchHandler.SetSearchableList(searchList);
         }
 
-        void IPlaceListener.PlaceAdded(IPlaceCardView place)
+        void ISceneListener.SceneAdded(ISceneCardView scene)
         {
-            deployedViews.Add(place.PlaceData.id, place);
-            sceneSearchHandler.AddItem(place.searchInfo);
+            deployedViews.Add(scene.SceneData.id, scene);
+            sceneSearchHandler.AddItem(scene.searchInfo);
         }
 
-        void IProjectListener.PlaceAdded(IPlaceCardView place)
+        void IProjectListener.SceneAdded(ISceneCardView scene)
         {
-            projectViews.Add(place.PlaceData.id, place);
-            sceneSearchHandler.AddItem(place.searchInfo);
+            projectViews.Add(scene.SceneData.id, scene);
+            sceneSearchHandler.AddItem(scene.searchInfo);
         }
 
-        void IPlaceListener.PlaceRemoved(IPlaceCardView place)
+        void ISceneListener.SceneRemoved(ISceneCardView scene)
         {
-            place.SetToDefaultParent();
-            deployedViews.Remove(place.PlaceData.id);
-            sceneSearchHandler.RemoveItem(place.searchInfo);
+            scene.SetToDefaultParent();
+            deployedViews.Remove(scene.SceneData.id);
+            sceneSearchHandler.RemoveItem(scene.searchInfo);
         }
 
-        void IProjectListener.PlaceRemoved(IPlaceCardView place)
+        void IProjectListener.SceneRemoved(ISceneCardView scene)
         {
-            place.SetToDefaultParent();
-            projectViews.Remove(place.PlaceData.id);
-            sceneSearchHandler.RemoveItem(place.searchInfo);
+            scene.SetToDefaultParent();
+            projectViews.Remove(scene.SceneData.id);
+            sceneSearchHandler.RemoveItem(scene.searchInfo);
         }
 
         private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
@@ -123,14 +123,14 @@ namespace DCL.Builder
             ViewDirty();
         }
 
-        private void SetResult(Dictionary<string, IPlaceCardView> scenesViews, List<ISearchInfo> searchInfoScenes,
+        private void SetResult(Dictionary<string, ISceneCardView> scenesViews, List<ISearchInfo> searchInfoScenes,
             Transform parent)
         {
             int count = 0;
 
             for (int i = 0; i < searchInfoScenes.Count; i++)
             {
-                if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out IPlaceCardView sceneView))
+                if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out ISceneCardView sceneView))
                 {
                     continue;
                 }
@@ -147,14 +147,14 @@ namespace DCL.Builder
             }
         }
 
-        private void UpdateDictionary(ref Dictionary<string, IPlaceCardView> target, Dictionary<string, IPlaceCardView> newData)
+        private void UpdateDictionary(ref Dictionary<string, ISceneCardView> target, Dictionary<string, ISceneCardView> newData)
         {
             if (newData.Count == 0)
                 return;
 
             if (target == null)
             {
-                target = new Dictionary<string, IPlaceCardView>(newData);
+                target = new Dictionary<string, ISceneCardView>(newData);
                 return;
             }
 

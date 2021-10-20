@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Builder
 {
-    internal class SectionPlacesController : SectionBase, IPlaceListener, ISectionHideContextMenuRequester
+    internal class SectionScenesController : SectionBase, ISceneListener, ISectionHideContextMenuRequester
     {
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionDeployedScenesView";
 
@@ -17,13 +17,13 @@ namespace DCL.Builder
         private readonly SectionPlacesView view;
 
         private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
-        private Dictionary<string, IPlaceCardView> scenesViews;
+        private Dictionary<string, ISceneCardView> scenesViews;
 
-        public SectionPlacesController() : this(
+        public SectionScenesController() : this(
             Object.Instantiate(Resources.Load<SectionPlacesView>(VIEW_PREFAB_PATH))
         ) { }
 
-        public SectionPlacesController(SectionPlacesView view)
+        public SectionScenesController(SectionPlacesView view)
         {
             this.view = view;
 
@@ -43,22 +43,22 @@ namespace DCL.Builder
 
         protected override void OnHide() { view.SetActive(false); }
 
-        void IPlaceListener.SetPlaces(Dictionary<string, IPlaceCardView> scenes)
+        void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
         {
-            scenesViews = new Dictionary<string, IPlaceCardView>(scenes);
+            scenesViews = new Dictionary<string, ISceneCardView>(scenes);
             sceneSearchHandler.SetSearchableList(scenes.Values.Select(scene => scene.searchInfo).ToList());
         }
 
-        void IPlaceListener.PlaceAdded(IPlaceCardView place)
+        void ISceneListener.SceneAdded(ISceneCardView scene)
         {
-            scenesViews.Add(place.PlaceData.id, place);
-            sceneSearchHandler.AddItem(place.searchInfo);
+            scenesViews.Add(scene.SceneData.id, scene);
+            sceneSearchHandler.AddItem(scene.searchInfo);
         }
 
-        void IPlaceListener.PlaceRemoved(IPlaceCardView place)
+        void ISceneListener.SceneRemoved(ISceneCardView scene)
         {
-            scenesViews.Remove(place.PlaceData.id);
-            place.SetActive(false);
+            scenesViews.Remove(scene.SceneData.id);
+            scene.SetActive(false);
         }
 
         private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
@@ -77,7 +77,7 @@ namespace DCL.Builder
 
             for (int i = 0; i < searchInfoScenes.Count; i++)
             {
-                if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out IPlaceCardView cardView))
+                if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out ISceneCardView cardView))
                     continue;
 
                 cardView.SetActive(true);

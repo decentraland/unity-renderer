@@ -15,7 +15,7 @@ internal class UnpublishPopupController : IDisposable
 
     private IUnpublishPopupView view;
     private Vector2Int coordinates;
-    private Place.Source source;
+    private Scene.Source source;
     private Coroutine fakeProgressRoutine = null;
 
     public UnpublishPopupController(IUnpublishPopupView view)
@@ -38,7 +38,7 @@ internal class UnpublishPopupController : IDisposable
         }
     }
 
-    public void Show(Vector2Int coordinates, Place.Source source = Place.Source.BUILDER_IN_WORLD)
+    public void Show(Vector2Int coordinates, Scene.Source source = Scene.Source.BUILDER_IN_WORLD)
     {
         this.coordinates = coordinates;
         this.source = source;

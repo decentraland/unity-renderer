@@ -7,14 +7,14 @@ namespace Tests
     public class SectionSceneGeneralSettingsViewShould
     {
         private SectionSceneGeneralSettingsView view;
-        private SectionPlaceGeneralSettingsController controller;
+        private SectionSceneGeneralSettingsController controller;
 
         [SetUp]
         public void SetUp()
         {
-            var prefab = Resources.Load<SectionSceneGeneralSettingsView>(SectionPlaceGeneralSettingsController.VIEW_PREFAB_PATH);
+            var prefab = Resources.Load<SectionSceneGeneralSettingsView>(SectionSceneGeneralSettingsController.VIEW_PREFAB_PATH);
             view = Object.Instantiate(prefab);
-            controller = new SectionPlaceGeneralSettingsController(view);
+            controller = new SectionSceneGeneralSettingsController(view);
         }
 
         [TearDown]
@@ -27,7 +27,7 @@ namespace Tests
         [Test]
         public void DisplayCorrectlyForProjects()
         {
-            var sceneData = new PlaceData() { isDeployed = false };
+            var sceneData = new SceneData() { isDeployed = false };
             controller.SetSceneData(sceneData);
 
             Assert.IsFalse(view.configurationContainer.activeInHierarchy);
@@ -37,7 +37,7 @@ namespace Tests
         [Test]
         public void DisplayCorrectlyForDeployedScenes()
         {
-            var sceneData = new PlaceData() { isDeployed = true };
+            var sceneData = new SceneData() { isDeployed = true };
             controller.SetSceneData(sceneData);
 
             Assert.IsTrue(view.configurationContainer.activeInHierarchy);
@@ -47,14 +47,14 @@ namespace Tests
         [Test]
         public void UpdateCorrectlySceneData()
         {
-            var sceneData = new PlaceData()
+            var sceneData = new SceneData()
             {
                 isDeployed = true,
                 name = "TheRealPravus",
                 description = "LookingForTemptation",
                 allowVoiceChat = false,
                 isMatureContent = true,
-                requiredPermissions = new [] { SectionPlaceGeneralSettingsController.PERMISSION_MOVE_PLAYER }
+                requiredPermissions = new [] { SectionSceneGeneralSettingsController.PERMISSION_MOVE_PLAYER }
             };
             controller.SetSceneData(sceneData);
 

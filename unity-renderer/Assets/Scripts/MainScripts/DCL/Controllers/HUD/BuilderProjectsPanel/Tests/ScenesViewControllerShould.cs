@@ -6,7 +6,7 @@ namespace Tests
 {
     public class ScenesViewControllerShould
     {
-        private IPlacesViewController placesViewController;
+        private IScenesViewController scenesViewController;
         private Listener_Mock listenerMock;
 
         [SetUp]
@@ -14,27 +14,27 @@ namespace Tests
         {
             const string prefabAssetPath =
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<PlaceCardView>(prefabAssetPath);
+            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
 
-            placesViewController = new PlacesViewController(prefab);
+            scenesViewController = new ScenesViewController(prefab);
             listenerMock = new Listener_Mock();
 
-            placesViewController.OnPlaceRemoved += ((IPlaceListener)listenerMock).PlaceRemoved;
-            placesViewController.OnPlaceAdded += ((IPlaceListener)listenerMock).PlaceAdded;
-            placesViewController.OnPlacesSet += ((IPlaceListener)listenerMock).SetPlaces;
+            scenesViewController.OnSceneRemoved += ((ISceneListener)listenerMock).SceneRemoved;
+            scenesViewController.OnSceneAdded += ((ISceneListener)listenerMock).SceneAdded;
+            scenesViewController.OnScenesSet += ((ISceneListener)listenerMock).SetScenes;
 
-            placesViewController.OnProjectSceneRemoved += ((IProjectListener)listenerMock).PlaceRemoved;
-            placesViewController.OnProjectSceneAdded += ((IProjectListener)listenerMock).PlaceAdded;
-            placesViewController.OnProjectScenesSet += ((IProjectListener)listenerMock).SetPlaces;
+            scenesViewController.OnProjectSceneRemoved += ((IProjectListener)listenerMock).SceneRemoved;
+            scenesViewController.OnProjectSceneAdded += ((IProjectListener)listenerMock).SceneAdded;
+            scenesViewController.OnProjectScenesSet += ((IProjectListener)listenerMock).SetScenes;
         }
 
         [TearDown]
-        public void TearDown() { placesViewController.Dispose(); }
+        public void TearDown() { scenesViewController.Dispose(); }
 
         [Test]
         public void CallListenerEventsCorrectly()
         {
-            placesViewController.SetPlaces(new IPlaceData[] { new PlaceData() { id = "1", isDeployed = true } });
+            scenesViewController.SetScenes(new ISceneData[] { new SceneData() { id = "1", isDeployed = true } });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
             Assert.AreEqual(1, listenerMock.setScenes.Count);
@@ -44,10 +44,10 @@ namespace Tests
 
             listenerMock.Clear();
 
-            placesViewController.SetPlaces(new IPlaceData[]
+            scenesViewController.SetScenes(new ISceneData[]
             {
-                new PlaceData() { id = "1", isDeployed = true },
-                new PlaceData() { id = "2", isDeployed = true }
+                new SceneData() { id = "1", isDeployed = true },
+                new SceneData() { id = "2", isDeployed = true }
             });
 
             Assert.AreEqual(2, listenerMock.deployedScenes.Count);
@@ -58,10 +58,10 @@ namespace Tests
 
             listenerMock.Clear();
 
-            placesViewController.SetPlaces(new IPlaceData[]
+            scenesViewController.SetScenes(new ISceneData[]
             {
-                new PlaceData() { id = "1", isDeployed = true },
-                new PlaceData() { id = "2", isDeployed = false }
+                new SceneData() { id = "1", isDeployed = true },
+                new SceneData() { id = "2", isDeployed = false }
             });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
@@ -72,10 +72,10 @@ namespace Tests
 
             listenerMock.Clear();
 
-            placesViewController.SetPlaces(new IPlaceData[]
+            scenesViewController.SetScenes(new ISceneData[]
             {
-                new PlaceData() { id = "1", isDeployed = true },
-                new PlaceData() { id = "2", isDeployed = false }
+                new SceneData() { id = "1", isDeployed = true },
+                new SceneData() { id = "2", isDeployed = false }
             });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
@@ -86,10 +86,10 @@ namespace Tests
 
             listenerMock.Clear();
 
-            placesViewController.SetPlaces(new IPlaceData[]
+            scenesViewController.SetScenes(new ISceneData[]
             {
-                new PlaceData() { id = "1", isDeployed = false },
-                new PlaceData() { id = "2", isDeployed = false }
+                new SceneData() { id = "1", isDeployed = false },
+                new SceneData() { id = "2", isDeployed = false }
             });
 
             Assert.AreEqual(0, listenerMock.deployedScenes.Count);
@@ -100,7 +100,7 @@ namespace Tests
         }
     }
 
-    class Listener_Mock : IPlaceListener, IProjectListener
+    class Listener_Mock : ISceneListener, IProjectListener
     {
         public List<string> setScenes = new List<string>();
         public List<string> addedScenes = new List<string>();
@@ -116,46 +116,46 @@ namespace Tests
             removedScenes.Clear();
         }
 
-        void IPlaceListener.SetPlaces(Dictionary<string, IPlaceCardView> scenes)
+        void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             foreach (var view in scenes.Values)
             {
-                setScenes.Add(view.PlaceData.id);
-                deployedScenes.Add(view.PlaceData.id);
+                setScenes.Add(view.SceneData.id);
+                deployedScenes.Add(view.SceneData.id);
             }
         }
 
-        void IPlaceListener.PlaceAdded(IPlaceCardView place)
+        void ISceneListener.SceneAdded(ISceneCardView scene)
         {
-            addedScenes.Add(place.PlaceData.id);
-            deployedScenes.Add(place.PlaceData.id);
+            addedScenes.Add(scene.SceneData.id);
+            deployedScenes.Add(scene.SceneData.id);
         }
 
-        void IPlaceListener.PlaceRemoved(IPlaceCardView place)
+        void ISceneListener.SceneRemoved(ISceneCardView scene)
         {
-            removedScenes.Add(place.PlaceData.id);
-            deployedScenes.Remove(place.PlaceData.id);
+            removedScenes.Add(scene.SceneData.id);
+            deployedScenes.Remove(scene.SceneData.id);
         }
 
-        void IProjectListener.SetPlaces(Dictionary<string, IPlaceCardView> scenes)
+        void IProjectListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             foreach (var view in scenes.Values)
             {
-                setScenes.Add(view.PlaceData.id);
-                projectScenes.Add(view.PlaceData.id);
+                setScenes.Add(view.SceneData.id);
+                projectScenes.Add(view.SceneData.id);
             }
         }
 
-        void IProjectListener.PlaceAdded(IPlaceCardView place)
+        void IProjectListener.SceneAdded(ISceneCardView scene)
         {
-            addedScenes.Add(place.PlaceData.id);
-            projectScenes.Add(place.PlaceData.id);
+            addedScenes.Add(scene.SceneData.id);
+            projectScenes.Add(scene.SceneData.id);
         }
 
-        void IProjectListener.PlaceRemoved(IPlaceCardView place)
+        void IProjectListener.SceneRemoved(ISceneCardView scene)
         {
-            removedScenes.Add(place.PlaceData.id);
-            projectScenes.Remove(place.PlaceData.id);
+            removedScenes.Add(scene.SceneData.id);
+            projectScenes.Remove(scene.SceneData.id);
         }
     }
 }

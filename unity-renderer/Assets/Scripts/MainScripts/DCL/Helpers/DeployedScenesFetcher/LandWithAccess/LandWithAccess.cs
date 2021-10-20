@@ -12,7 +12,7 @@ public class LandWithAccess
     public string name => rawData.name;
     public string owner => rawData.owner;
 
-    public List<Place> scenes;
+    public List<Scene> scenes;
     public Vector2Int[] parcels;
     public Vector2Int baseCoords;
     public Land rawData;

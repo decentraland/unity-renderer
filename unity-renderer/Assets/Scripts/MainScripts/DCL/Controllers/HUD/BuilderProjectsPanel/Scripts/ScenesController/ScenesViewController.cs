@@ -4,27 +4,27 @@ using DCL.Builder;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-internal interface IPlacesViewController : IDisposable
+internal interface IScenesViewController : IDisposable
 {
-    event Action<Dictionary<string, IPlaceCardView>> OnPlacesSet;
-    event Action<IPlaceCardView> OnPlaceAdded;
-    event Action<IPlaceCardView> OnPlaceRemoved;
-    event Action<Dictionary<string, IPlaceCardView>> OnProjectScenesSet;
-    event Action<IPlaceCardView> OnProjectSceneAdded;
-    event Action<IPlaceCardView> OnProjectSceneRemoved;
-    event Action<IPlaceCardView> OnProjectSelected;
+    event Action<Dictionary<string, ISceneCardView>> OnScenesSet;
+    event Action<ISceneCardView> OnSceneAdded;
+    event Action<ISceneCardView> OnSceneRemoved;
+    event Action<Dictionary<string, ISceneCardView>> OnProjectScenesSet;
+    event Action<ISceneCardView> OnProjectSceneAdded;
+    event Action<ISceneCardView> OnProjectSceneRemoved;
+    event Action<ISceneCardView> OnProjectSelected;
     event Action<Vector2Int> OnJumpInPressed;
     event Action<Vector2Int> OnEditorPressed;
-    event Action<IPlaceData, IPlaceCardView> OnContextMenuPressed;
+    event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
     event Action<string> OnRequestOpenUrl;
-    void SetPlaces(IPlaceData[] scenesData);
-    void SelectPlace(string id);
-    void AddListener(IPlaceListener listener);
+    void SetScenes(ISceneData[] scenesData);
+    void SelectScene(string id);
+    void AddListener(ISceneListener listener);
     void AddListener(IProjectListener listener);
-    void AddListener(ISelectPlaceListener listener);
-    void RemoveListener(IPlaceListener listener);
+    void AddListener(ISelectSceneListener listener);
+    void RemoveListener(ISceneListener listener);
     void RemoveListener(IProjectListener listener);
-    void RemoveListener(ISelectPlaceListener listener);
+    void RemoveListener(ISelectSceneListener listener);
 }
 
 /// <summary>
@@ -33,37 +33,37 @@ internal interface IPlacesViewController : IDisposable
 /// when new scenes are added or removed.
 /// It instantiate and hold all the SceneCardViews to make them re-utilizable in every menu section screen.
 /// </summary>
-internal class PlacesViewController : IPlacesViewController
+internal class ScenesViewController : IScenesViewController
 {
-    public event Action<Dictionary<string, IPlaceCardView>> OnPlacesSet;
-    public event Action<IPlaceCardView> OnPlaceAdded;
-    public event Action<IPlaceCardView> OnPlaceRemoved;
-    public event Action<Dictionary<string, IPlaceCardView>> OnProjectScenesSet;
-    public event Action<IPlaceCardView> OnProjectSceneAdded;
-    public event Action<IPlaceCardView> OnProjectSceneRemoved;
-    public event Action<IPlaceCardView> OnProjectSelected;
+    public event Action<Dictionary<string, ISceneCardView>> OnScenesSet;
+    public event Action<ISceneCardView> OnSceneAdded;
+    public event Action<ISceneCardView> OnSceneRemoved;
+    public event Action<Dictionary<string, ISceneCardView>> OnProjectScenesSet;
+    public event Action<ISceneCardView> OnProjectSceneAdded;
+    public event Action<ISceneCardView> OnProjectSceneRemoved;
+    public event Action<ISceneCardView> OnProjectSelected;
     public event Action<Vector2Int> OnJumpInPressed;
     public event Action<Vector2Int> OnEditorPressed;
-    public event Action<IPlaceData, IPlaceCardView> OnContextMenuPressed;
+    public event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
     public event Action<string> OnRequestOpenUrl;
 
-    private Dictionary<string, IPlaceCardView> scenes = new Dictionary<string, IPlaceCardView>();
-    private Dictionary<string, IPlaceCardView> projects = new Dictionary<string, IPlaceCardView>();
+    private Dictionary<string, ISceneCardView> scenes = new Dictionary<string, ISceneCardView>();
+    private Dictionary<string, ISceneCardView> projects = new Dictionary<string, ISceneCardView>();
 
-    private IPlaceCardView selectedPlace;
+    private ISceneCardView selectedScene;
 
-    private readonly PlacesRefreshHelper placesRefreshHelper = new PlacesRefreshHelper();
-    private readonly PlaceCardView placeCardViewPrefab;
+    private readonly ScenesRefreshHelper scenesRefreshHelper = new ScenesRefreshHelper();
+    private readonly SceneCardView sceneCardViewPrefab;
     private readonly Transform defaultParent;
 
     /// <summary>
     /// Ctor
     /// </summary>
-    /// <param name="placeCardViewPrefab">prefab for scene's card</param>
+    /// <param name="sceneCardViewPrefab">prefab for scene's card</param>
     /// <param name="defaultParent">default parent for scene's card</param>
-    public PlacesViewController(PlaceCardView placeCardViewPrefab, Transform defaultParent = null)
+    public ScenesViewController(SceneCardView sceneCardViewPrefab, Transform defaultParent = null)
     {
-        this.placeCardViewPrefab = placeCardViewPrefab;
+        this.sceneCardViewPrefab = sceneCardViewPrefab;
         this.defaultParent = defaultParent;
     }
 
@@ -71,12 +71,12 @@ internal class PlacesViewController : IPlacesViewController
     /// Set current user scenes (deployed and projects)
     /// </summary>
     /// <param name="scenesData">list of scenes</param>
-    void IPlacesViewController.SetPlaces(IPlaceData[] scenesData)
+    void IScenesViewController.SetScenes(ISceneData[] scenesData)
     {
-        placesRefreshHelper.Set(scenes, projects);
+        scenesRefreshHelper.Set(scenes, projects);
 
-        scenes = new Dictionary<string, IPlaceCardView>();
-        projects = new Dictionary<string, IPlaceCardView>();
+        scenes = new Dictionary<string, ISceneCardView>();
+        projects = new Dictionary<string, ISceneCardView>();
 
         // update or create new scenes view
         for (int i = 0; i < scenesData.Length; i++)
@@ -85,22 +85,22 @@ internal class PlacesViewController : IPlacesViewController
         }
 
         // remove old deployed scenes
-        if (placesRefreshHelper.oldDeployedScenes != null)
+        if (scenesRefreshHelper.oldDeployedScenes != null)
         {
-            using (var iterator = placesRefreshHelper.oldDeployedScenes.GetEnumerator())
+            using (var iterator = scenesRefreshHelper.oldDeployedScenes.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    OnPlaceRemoved?.Invoke(iterator.Current.Value);
+                    OnSceneRemoved?.Invoke(iterator.Current.Value);
                     DestroyCardView(iterator.Current.Value);
                 }
             }
         }
 
         // remove old project scenes
-        if (placesRefreshHelper.oldProjectsScenes != null)
+        if (scenesRefreshHelper.oldProjectsScenes != null)
         {
-            using (var iterator = placesRefreshHelper.oldProjectsScenes.GetEnumerator())
+            using (var iterator = scenesRefreshHelper.oldProjectsScenes.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
@@ -111,12 +111,12 @@ internal class PlacesViewController : IPlacesViewController
         }
 
         // notify scenes set if needed
-        if (placesRefreshHelper.isOldDeployedScenesEmpty)
+        if (scenesRefreshHelper.isOldDeployedScenesEmpty)
         {
-            OnPlacesSet?.Invoke(scenes);
+            OnScenesSet?.Invoke(scenes);
         }
 
-        if (placesRefreshHelper.isOldProjectScenesEmpty)
+        if (scenesRefreshHelper.isOldProjectScenesEmpty)
         {
             OnProjectScenesSet?.Invoke(projects);
         }
@@ -126,61 +126,61 @@ internal class PlacesViewController : IPlacesViewController
     /// Set selected scene
     /// </summary>
     /// <param name="id">scene id</param>
-    void IPlacesViewController.SelectPlace(string id)
+    void IScenesViewController.SelectScene(string id)
     {
-        IPlaceCardView placeCardView = null;
-        if (scenes.TryGetValue(id, out IPlaceCardView deployedSceneCardView))
+        ISceneCardView sceneCardView = null;
+        if (scenes.TryGetValue(id, out ISceneCardView deployedSceneCardView))
         {
-            placeCardView = deployedSceneCardView;
+            sceneCardView = deployedSceneCardView;
         }
-        else if (projects.TryGetValue(id, out IPlaceCardView projectSceneCardView))
+        else if (projects.TryGetValue(id, out ISceneCardView projectSceneCardView))
         {
-            placeCardView = projectSceneCardView;
+            sceneCardView = projectSceneCardView;
         }
 
-        selectedPlace = placeCardView;
+        selectedScene = sceneCardView;
 
-        if (placeCardView != null)
+        if (sceneCardView != null)
         {
-            OnProjectSelected?.Invoke(placeCardView);
+            OnProjectSelected?.Invoke(sceneCardView);
         }
     }
 
-    void IPlacesViewController.AddListener(IPlaceListener listener)
+    void IScenesViewController.AddListener(ISceneListener listener)
     {
-        OnPlaceAdded += listener.PlaceAdded;
-        OnPlaceRemoved += listener.PlaceRemoved;
-        OnPlacesSet += listener.SetPlaces;
-        listener.SetPlaces(scenes);
+        OnSceneAdded += listener.SceneAdded;
+        OnSceneRemoved += listener.SceneRemoved;
+        OnScenesSet += listener.SetScenes;
+        listener.SetScenes(scenes);
     }
 
-    void IPlacesViewController.AddListener(IProjectListener listener)
+    void IScenesViewController.AddListener(IProjectListener listener)
     {
-        OnProjectSceneAdded += listener.PlaceAdded;
-        OnProjectSceneRemoved += listener.PlaceRemoved;
-        OnProjectScenesSet += listener.SetPlaces;
-        listener.SetPlaces(projects);
+        OnProjectSceneAdded += listener.SceneAdded;
+        OnProjectSceneRemoved += listener.SceneRemoved;
+        OnProjectScenesSet += listener.SetScenes;
+        listener.SetScenes(projects);
     }
 
-    void IPlacesViewController.AddListener(ISelectPlaceListener listener)
+    void IScenesViewController.AddListener(ISelectSceneListener listener)
     {
         OnProjectSelected += listener.OnSelectScene;
-        listener.OnSelectScene(selectedPlace);
+        listener.OnSelectScene(selectedScene);
     }
 
-    void IPlacesViewController.RemoveListener(IPlaceListener listener)
+    void IScenesViewController.RemoveListener(ISceneListener listener)
     {
-        OnPlaceAdded -= listener.PlaceAdded;
-        OnPlaceRemoved -= listener.PlaceRemoved;
-        OnPlacesSet -= listener.SetPlaces;
+        OnSceneAdded -= listener.SceneAdded;
+        OnSceneRemoved -= listener.SceneRemoved;
+        OnScenesSet -= listener.SetScenes;
     }
-    void IPlacesViewController.RemoveListener(IProjectListener listener)
+    void IScenesViewController.RemoveListener(IProjectListener listener)
     {
-        OnProjectSceneAdded -= listener.PlaceAdded;
-        OnProjectSceneRemoved -= listener.PlaceRemoved;
-        OnProjectScenesSet -= listener.SetPlaces;
+        OnProjectSceneAdded -= listener.SceneAdded;
+        OnProjectSceneRemoved -= listener.SceneRemoved;
+        OnProjectScenesSet -= listener.SetScenes;
     }
-    void IPlacesViewController.RemoveListener(ISelectPlaceListener listener) { OnProjectSelected -= listener.OnSelectScene; }
+    void IScenesViewController.RemoveListener(ISelectSceneListener listener) { OnProjectSelected -= listener.OnSelectScene; }
 
     public void Dispose()
     {
@@ -205,59 +205,59 @@ internal class PlacesViewController : IPlacesViewController
         projects.Clear();
     }
 
-    private void SetScene(IPlaceData placeData)
+    private void SetScene(ISceneData sceneData)
     {
-        bool shouldNotifyAdd = (placeData.isDeployed && !placesRefreshHelper.isOldDeployedScenesEmpty) ||
-                               (!placeData.isDeployed && !placesRefreshHelper.isOldProjectScenesEmpty);
+        bool shouldNotifyAdd = (sceneData.isDeployed && !scenesRefreshHelper.isOldDeployedScenesEmpty) ||
+                               (!sceneData.isDeployed && !scenesRefreshHelper.isOldProjectScenesEmpty);
 
-        if (placesRefreshHelper.IsSceneDeployStatusChanged(placeData))
+        if (scenesRefreshHelper.IsSceneDeployStatusChanged(sceneData))
         {
-            ChangeSceneDeployStatus(placeData, shouldNotifyAdd);
+            ChangeSceneDeployStatus(sceneData, shouldNotifyAdd);
         }
-        else if (placesRefreshHelper.IsSceneUpdate(placeData))
+        else if (scenesRefreshHelper.IsSceneUpdate(sceneData))
         {
-            UpdateScene(placeData);
+            UpdateScene(sceneData);
         }
         else
         {
-            CreateScene(placeData, shouldNotifyAdd);
+            CreateScene(sceneData, shouldNotifyAdd);
         }
     }
 
-    private void ChangeSceneDeployStatus(IPlaceData placeData, bool shouldNotifyAdd)
+    private void ChangeSceneDeployStatus(ISceneData sceneData, bool shouldNotifyAdd)
     {
-        var cardView = RemoveScene(placeData, true);
-        cardView.Setup(placeData);
-        AddScene(placeData, cardView, shouldNotifyAdd);
+        var cardView = RemoveScene(sceneData, true);
+        cardView.Setup(sceneData);
+        AddScene(sceneData, cardView, shouldNotifyAdd);
     }
 
-    private void UpdateScene(IPlaceData placeData)
+    private void UpdateScene(ISceneData sceneData)
     {
-        var cardView = RemoveScene(placeData, false);
-        cardView.Setup(placeData);
-        AddScene(placeData, cardView, false);
+        var cardView = RemoveScene(sceneData, false);
+        cardView.Setup(sceneData);
+        AddScene(sceneData, cardView, false);
     }
 
-    private void CreateScene(IPlaceData placeData, bool shouldNotifyAdd)
+    private void CreateScene(ISceneData sceneData, bool shouldNotifyAdd)
     {
         var cardView = CreateCardView();
-        cardView.Setup(placeData);
-        AddScene(placeData, cardView, shouldNotifyAdd);
+        cardView.Setup(sceneData);
+        AddScene(sceneData, cardView, shouldNotifyAdd);
     }
 
-    private IPlaceCardView RemoveScene(IPlaceData placeData, bool notify)
+    private ISceneCardView RemoveScene(ISceneData sceneData, bool notify)
     {
-        bool wasDeployed = placesRefreshHelper.WasDeployedScene(placeData);
-        var dictionary = wasDeployed ? placesRefreshHelper.oldDeployedScenes : placesRefreshHelper.oldProjectsScenes;
+        bool wasDeployed = scenesRefreshHelper.WasDeployedScene(sceneData);
+        var dictionary = wasDeployed ? scenesRefreshHelper.oldDeployedScenes : scenesRefreshHelper.oldProjectsScenes;
 
-        if (dictionary.TryGetValue(placeData.id, out IPlaceCardView sceneCardView))
+        if (dictionary.TryGetValue(sceneData.id, out ISceneCardView sceneCardView))
         {
-            dictionary.Remove(placeData.id);
+            dictionary.Remove(sceneData.id);
 
             if (notify)
             {
                 if (wasDeployed)
-                    OnPlaceRemoved?.Invoke(sceneCardView);
+                    OnSceneRemoved?.Invoke(sceneCardView);
                 else
                     OnProjectSceneRemoved?.Invoke(sceneCardView);
             }
@@ -268,26 +268,26 @@ internal class PlacesViewController : IPlacesViewController
         return null;
     }
 
-    private void AddScene(IPlaceData placeData, IPlaceCardView placeCardView, bool notify)
+    private void AddScene(ISceneData sceneData, ISceneCardView sceneCardView, bool notify)
     {
-        var dictionary = placeData.isDeployed ? scenes : projects;
-        if (dictionary.ContainsKey(placeData.id))
+        var dictionary = sceneData.isDeployed ? scenes : projects;
+        if (dictionary.ContainsKey(sceneData.id))
             return;
-        dictionary.Add(placeData.id, placeCardView);
+        dictionary.Add(sceneData.id, sceneCardView);
 
         if (notify)
         {
-            if (placeData.isDeployed)
-                OnPlaceAdded?.Invoke(placeCardView);
+            if (sceneData.isDeployed)
+                OnSceneAdded?.Invoke(sceneCardView);
             else
-                OnProjectSceneAdded?.Invoke(placeCardView);
+                OnProjectSceneAdded?.Invoke(sceneCardView);
         }
     }
 
-    private IPlaceCardView CreateCardView()
+    private ISceneCardView CreateCardView()
     {
-        PlaceCardView placeCardView = Object.Instantiate(placeCardViewPrefab);
-        IPlaceCardView view = placeCardView;
+        SceneCardView sceneCardView = Object.Instantiate(sceneCardViewPrefab);
+        ISceneCardView view = sceneCardView;
 
         view.SetActive(false);
         view.ConfigureDefaultParent(defaultParent);
@@ -301,16 +301,16 @@ internal class PlacesViewController : IPlacesViewController
         return view;
     }
 
-    private void DestroyCardView(IPlaceCardView placeCardView)
+    private void DestroyCardView(ISceneCardView sceneCardView)
     {
         // NOTE: there is actually no need to unsubscribe here, but, just in case...
-        placeCardView.OnEditorPressed -= OnEditorPressed;
-        placeCardView.OnContextMenuPressed -= OnContextMenuPressed;
-        placeCardView.OnJumpInPressed -= OnJumpInPressed;
-        placeCardView.OnSettingsPressed -= OnSceneSettingsPressed;
+        sceneCardView.OnEditorPressed -= OnEditorPressed;
+        sceneCardView.OnContextMenuPressed -= OnContextMenuPressed;
+        sceneCardView.OnJumpInPressed -= OnJumpInPressed;
+        sceneCardView.OnSettingsPressed -= OnSceneSettingsPressed;
 
-        placeCardView.Dispose();
+        sceneCardView.Dispose();
     }
 
-    private void OnSceneSettingsPressed(IPlaceData placeData) { OnRequestOpenUrl?.Invoke($"https://builder.decentraland.org/scenes/{placeData.projectId}"); }
+    private void OnSceneSettingsPressed(ISceneData sceneData) { OnRequestOpenUrl?.Invoke($"https://builder.decentraland.org/scenes/{sceneData.projectId}"); }
 }

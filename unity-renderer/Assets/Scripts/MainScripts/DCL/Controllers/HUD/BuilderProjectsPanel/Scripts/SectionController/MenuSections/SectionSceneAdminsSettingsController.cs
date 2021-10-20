@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Builder
 {
-    internal class SectionPlaceAdminsSettingsController : SectionBase, ISelectPlaceListener,
+    internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneListener,
                                                           ISectionUpdateSceneAdminsRequester, ISectionUpdateSceneBannedUsersRequester
     {
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneAdminsSettingsView";
@@ -26,12 +26,12 @@ namespace DCL.Builder
         private List<string> bannedUsers = new List<string>();
         private string sceneId;
 
-        public SectionPlaceAdminsSettingsController() : this(
+        public SectionSceneAdminsSettingsController() : this(
             Object.Instantiate(Resources.Load<SectionSceneAdminsSettingsView>(VIEW_PREFAB_PATH)),
             FriendsController.i
         ) { }
 
-        public SectionPlaceAdminsSettingsController(SectionSceneAdminsSettingsView view, IFriendsController friendsController)
+        public SectionSceneAdminsSettingsController(SectionSceneAdminsSettingsView view, IFriendsController friendsController)
         {
             this.view = view;
             friendsSearchPromptController = new FriendsSearchPromptController(view.GetAdminsSearchPromptView(), friendsController);
@@ -60,11 +60,11 @@ namespace DCL.Builder
 
         protected override void OnHide() { view.SetActive(false); }
 
-        void ISelectPlaceListener.OnSelectScene(IPlaceCardView placeCardView)
+        void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
         {
-            sceneId = placeCardView.PlaceData.id;
-            SetAdmins(placeCardView.PlaceData.admins);
-            SetBannedUsers(placeCardView.PlaceData.bannedUsers);
+            sceneId = sceneCardView.SceneData.id;
+            SetAdmins(sceneCardView.SceneData.admins);
+            SetBannedUsers(sceneCardView.SceneData.bannedUsers);
         }
 
         internal void SetAdmins(string[] usersId)

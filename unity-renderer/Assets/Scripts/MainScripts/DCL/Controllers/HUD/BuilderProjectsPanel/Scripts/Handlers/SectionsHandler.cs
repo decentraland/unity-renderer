@@ -4,46 +4,46 @@ using DCL.Builder;
 internal class SectionsHandler : IDisposable
 {
     private readonly ISectionsController sectionsController;
-    private readonly IPlacesViewController placesViewController;
+    private readonly IScenesViewController scenesViewController;
     private readonly SearchBarView searchBarView;
     private readonly ILandsController landsController;
     private readonly IProjectsController projectsController;
 
-    public SectionsHandler(ISectionsController sectionsController, IPlacesViewController placesViewController, ILandsController landsController, IProjectsController projectsController, SearchBarView searchBarView)
+    public SectionsHandler(ISectionsController sectionsController, IScenesViewController scenesViewController, ILandsController landsController, IProjectsController projectsController, SearchBarView searchBarView)
     {
         this.sectionsController = sectionsController;
-        this.placesViewController = placesViewController;
+        this.scenesViewController = scenesViewController;
         this.searchBarView = searchBarView;
         this.landsController = landsController;
         this.projectsController = projectsController;
 
         sectionsController.OnSectionShow += OnSectionShow;
         sectionsController.OnSectionHide += OnSectionHide;
-        placesViewController.OnProjectSelected += SelectProject;
+        scenesViewController.OnProjectSelected += SelectProject;
     }
 
     public void Dispose()
     {
         sectionsController.OnSectionShow -= OnSectionShow;
         sectionsController.OnSectionHide -= OnSectionHide;
-        placesViewController.OnProjectSelected -= SelectProject;
+        scenesViewController.OnProjectSelected -= SelectProject;
     }
 
     void OnSectionShow(SectionBase sectionBase)
     {
-        if (sectionBase is IPlaceListener deployedSceneListener)
+        if (sectionBase is ISceneListener deployedSceneListener)
         {
-            placesViewController.AddListener(deployedSceneListener);
+            scenesViewController.AddListener(deployedSceneListener);
         }
 
         if (sectionBase is IProjectListener projectSceneListener)
         {
-            placesViewController.AddListener(projectSceneListener);
+            scenesViewController.AddListener(projectSceneListener);
         }
 
-        if (sectionBase is ISelectPlaceListener selectSceneListener)
+        if (sectionBase is ISelectSceneListener selectSceneListener)
         {
-            placesViewController.AddListener(selectSceneListener);
+            scenesViewController.AddListener(selectSceneListener);
         }
 
         if (sectionBase is ILandsListener landsListener)
@@ -61,19 +61,19 @@ internal class SectionsHandler : IDisposable
 
     void OnSectionHide(SectionBase sectionBase)
     {
-        if (sectionBase is IPlaceListener deployedSceneListener)
+        if (sectionBase is ISceneListener deployedSceneListener)
         {
-            placesViewController.RemoveListener(deployedSceneListener);
+            scenesViewController.RemoveListener(deployedSceneListener);
         }
 
         if (sectionBase is IProjectListener projectSceneListener)
         {
-            placesViewController.RemoveListener(projectSceneListener);
+            scenesViewController.RemoveListener(projectSceneListener);
         }
 
-        if (sectionBase is ISelectPlaceListener selectSceneListener)
+        if (sectionBase is ISelectSceneListener selectSceneListener)
         {
-            placesViewController.RemoveListener(selectSceneListener);
+            scenesViewController.RemoveListener(selectSceneListener);
         }
 
         if (sectionBase is ILandsListener landsListener)
@@ -84,5 +84,5 @@ internal class SectionsHandler : IDisposable
         searchBarView.SetSearchBar(null, null);
     }
 
-    void SelectProject(IPlaceCardView placeCardView) { sectionsController.OpenSection(SectionId.SETTINGS_PROJECT_GENERAL); }
+    void SelectProject(ISceneCardView sceneCardView) { sectionsController.OpenSection(SectionId.SETTINGS_PROJECT_GENERAL); }
 }

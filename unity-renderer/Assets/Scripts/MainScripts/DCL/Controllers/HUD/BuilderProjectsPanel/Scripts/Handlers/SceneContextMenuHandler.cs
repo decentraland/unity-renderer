@@ -7,23 +7,23 @@ internal class SceneContextMenuHandler : IDisposable
 {
     private readonly SceneCardViewContextMenu contextMenu;
     private readonly ISectionsController sectionsController;
-    private readonly IPlacesViewController placesViewController;
+    private readonly IScenesViewController scenesViewController;
     private readonly UnpublishPopupController unpublishPopupController;
 
     private Vector2Int sceneCoords;
-    private Place.Source sceneSource;
+    private Scene.Source sceneSource;
 
     public SceneContextMenuHandler(SceneCardViewContextMenu contextMenu, ISectionsController sectionsController,
-        IPlacesViewController placesViewController, UnpublishPopupController unpublishPopupController)
+        IScenesViewController scenesViewController, UnpublishPopupController unpublishPopupController)
     {
         this.contextMenu = contextMenu;
         this.sectionsController = sectionsController;
-        this.placesViewController = placesViewController;
+        this.scenesViewController = scenesViewController;
         this.unpublishPopupController = unpublishPopupController;
 
         sectionsController.OnRequestContextMenuHide += OnRequestContextMenuHide;
 
-        placesViewController.OnContextMenuPressed += OnContextMenuOpen;
+        scenesViewController.OnContextMenuPressed += OnContextMenuOpen;
 
         contextMenu.OnSettingsPressed += OnContextMenuSettingsPressed;
         contextMenu.OnDuplicatePressed += OnContextMenuDuplicatePressed;
@@ -38,7 +38,7 @@ internal class SceneContextMenuHandler : IDisposable
     {
         sectionsController.OnRequestContextMenuHide -= OnRequestContextMenuHide;
 
-        placesViewController.OnContextMenuPressed -= OnContextMenuOpen;
+        scenesViewController.OnContextMenuPressed -= OnContextMenuOpen;
 
         contextMenu.OnSettingsPressed -= OnContextMenuSettingsPressed;
         contextMenu.OnDuplicatePressed -= OnContextMenuDuplicatePressed;
@@ -49,18 +49,18 @@ internal class SceneContextMenuHandler : IDisposable
         contextMenu.OnQuitContributorPressed -= OnContextMenuQuitContributorPressed;
     }
 
-    void OnContextMenuOpen(IPlaceData placeData, IPlaceCardView placeCard)
+    void OnContextMenuOpen(ISceneData sceneData, ISceneCardView sceneCard)
     {
-        contextMenu.transform.position = placeCard.contextMenuButtonPosition;
-        contextMenu.Show(placeData.id, placeData.isDeployed,
-            placeData.isOwner || placeData.isOperator, placeData.isContributor);
-        sceneCoords = placeData.coords;
-        sceneSource = placeData.source;
+        contextMenu.transform.position = sceneCard.contextMenuButtonPosition;
+        contextMenu.Show(sceneData.id, sceneData.isDeployed,
+            sceneData.isOwner || sceneData.isOperator, sceneData.isContributor);
+        sceneCoords = sceneData.coords;
+        sceneSource = sceneData.source;
     }
 
     void OnRequestContextMenuHide() { contextMenu.Hide(); }
 
-    void OnContextMenuSettingsPressed(string id) { placesViewController.SelectPlace(id); }
+    void OnContextMenuSettingsPressed(string id) { scenesViewController.SelectScene(id); }
 
     void OnContextMenuDuplicatePressed(string id) { }
 

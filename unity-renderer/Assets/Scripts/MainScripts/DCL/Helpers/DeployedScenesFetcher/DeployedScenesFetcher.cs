@@ -9,13 +9,13 @@ public static class DeployedScenesFetcher
     private const float DEFAULT_SCENES_CACHE_TIME = 3 * 60;
     private const float DEFAULT_LAND_CACHE_TIME = 5 * 60;
 
-    public static Promise<Place[]> FetchScenes(ICatalyst catalyst, string[] parcels, float cacheMaxAgeSeconds = DEFAULT_SCENES_CACHE_TIME)
+    public static Promise<Scene[]> FetchScenes(ICatalyst catalyst, string[] parcels, float cacheMaxAgeSeconds = DEFAULT_SCENES_CACHE_TIME)
     {
-        Promise<Place[]> promise = new Promise<Place[]>();
+        Promise<Scene[]> promise = new Promise<Scene[]>();
         catalyst.GetDeployedScenes(parcels, cacheMaxAgeSeconds)
                 .Then(result =>
                 {
-                    promise.Resolve(result.Select(deployment => new Place(deployment, catalyst.contentUrl)).ToArray());
+                    promise.Resolve(result.Select(deployment => new Scene(deployment, catalyst.contentUrl)).ToArray());
                 })
                 .Catch(err => promise.Reject(err));
         return promise;
@@ -29,7 +29,7 @@ public static class DeployedScenesFetcher
         List<Land> lands = new List<Land>();
 
         Promise<string[]> getOwnedParcelsPromise = new Promise<string[]>();
-        Promise<Place[]> getDeployedScenesPromise = new Promise<Place[]>();
+        Promise<Scene[]> getDeployedScenesPromise = new Promise<Scene[]>();
         theGraph.QueryLands(network, ethAddress, cacheMaxAgeSecondsLand)
                 .Then(landsReceived =>
                 {
@@ -58,7 +58,7 @@ public static class DeployedScenesFetcher
                                   }
                                   else
                                   {
-                                      getDeployedScenesPromise.Resolve(new Place[] { });
+                                      getDeployedScenesPromise.Resolve(new Scene[] { });
                                   }
                               })
                               .Catch(err => getDeployedScenesPromise.Reject(err));
@@ -72,7 +72,7 @@ public static class DeployedScenesFetcher
         return resultPromise;
     }
 
-    private static LandWithAccess[] GetLands(List<Land> lands, Place[] scenes)
+    private static LandWithAccess[] GetLands(List<Land> lands, Scene[] scenes)
     {
         LandWithAccess[] result = new LandWithAccess[lands.Count];
 
@@ -84,14 +84,14 @@ public static class DeployedScenesFetcher
         return result;
     }
 
-    private static LandWithAccess ProcessLand(Land land, Place[] scenes)
+    private static LandWithAccess ProcessLand(Land land, Scene[] scenes)
     {
-        List<Place> scenesInLand = new List<Place>();
+        List<Scene> scenesInLand = new List<Scene>();
 
         LandWithAccess result = new LandWithAccess(land);
         for (int i = 0; i < result.parcels.Length; i++)
         {
-            Place sceneInParcel = scenes.FirstOrDefault(scene => scene.parcels.Contains(result.parcels[i]) && !scenesInLand.Contains(scene));
+            Scene sceneInParcel = scenes.FirstOrDefault(scene => scene.parcels.Contains(result.parcels[i]) && !scenesInLand.Contains(scene));
             if (sceneInParcel != null)
             {
                 sceneInParcel.SetScene(result);
