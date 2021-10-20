@@ -176,7 +176,7 @@ namespace UnityGLTF
                                             mesh.name = ObjectNames.GetUniqueName(meshNames.ToArray(), meshName);
                                             meshNames.Add(mesh.name);
                                         }
-
+                                        
                                         return mesh;
                                     })
                                     .ToArray();
@@ -190,11 +190,7 @@ namespace UnityGLTF
                     Directory.CreateDirectory(animationsRoot);
                     foreach (AnimationClip clip in animationClips)
                     {
-                        string fileName = clip.name;
-                        foreach (char c in System.IO.Path.GetInvalidFileNameChars())
-                        {
-                            fileName = fileName.Replace(c, '_');
-                        }
+                        string fileName = PatchInvalidFileNameChars(clip.name);
 
                         AssetDatabase.CreateAsset(clip, animationsRoot + fileName + ".anim");
                         var importer = AssetImporter.GetAtPath(animationsRoot + fileName + ".anim");
@@ -215,9 +211,7 @@ namespace UnityGLTF
                             matName = matName.Substring(Mathf.Min(matName.LastIndexOf("/") + 1, matName.Length - 1));
                         }
                         
-                        // Patch for invalid material names
-                        matName = matName.Replace(":", "_");
-                        matName = matName.Replace("|", "_");
+                        matName = PatchInvalidFileNameChars(matName);
 
                         // Ensure name is unique
                         matName = ObjectNames.NicifyVariableName(matName);
@@ -314,10 +308,8 @@ namespace UnityGLTF
 
                                 if (File.Exists(absolutePath) || cachedTextures.Contains(tex))
                                     continue;
-
-                                Texture2D finalTex = tex.isReadable ? tex : DuplicateTextureAsReadable(tex);
                                 
-                                File.WriteAllBytes(texPath, _useJpgTextures ? finalTex.EncodeToJPG() : finalTex.EncodeToPNG());
+                                File.WriteAllBytes(texPath, _useJpgTextures ? tex.EncodeToJPG() : tex.EncodeToPNG());
                                 AssetDatabase.ImportAsset(texPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
                             }
 
@@ -494,26 +486,6 @@ namespace UnityGLTF
 
             ctx.SetMainObject(gltfScene);
         }
-        
-        Texture2D DuplicateTextureAsReadable(Texture2D source)
-        {
-            RenderTexture renderTex = RenderTexture.GetTemporary(
-                source.width,
-                source.height,
-                0,
-                RenderTextureFormat.Default,
-                RenderTextureReadWrite.Linear);
- 
-            Graphics.Blit(source, renderTex);
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = renderTex;
-            Texture2D readableText = new Texture2D(source.width, source.height);
-            readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
-            readableText.Apply();
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(renderTex);
-            return readableText;
-        }
 
         public static event System.Action<GLTFRoot> OnGLTFRootIsConstructed;
         public static event System.Action<GLTFSceneImporter> OnGLTFWillLoad;
@@ -536,6 +508,8 @@ namespace UnityGLTF
                 loader.useMaterialTransition = false;
                 loader.maximumLod = _maximumLod;
                 loader.isMultithreaded = true;
+                loader.forceGPUOnlyMesh = false;
+                loader.forceGPUOnlyTex = false;
 
                 OnGLTFWillLoad?.Invoke(loader);
 
@@ -567,6 +541,19 @@ namespace UnityGLTF
 
                 return loader.lastLoadedScene;
             }
+        }
+        
+        private string PatchInvalidFileNameChars(string fileName)
+        {
+            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(c, '_');
+            }
+            
+            fileName = fileName.Replace(":", "_");
+            fileName = fileName.Replace("|", "_");
+
+            return fileName;
         }
 
         private void CopyOrNew<T>(T asset, string assetPath, Action<T> replaceReferences) where T : Object

@@ -121,6 +121,7 @@ namespace UnityGLTF
         public static float budgetPerFrameInMilliseconds { get => renderingIsDisabled ? float.MaxValue : budgetPerFrameInMillisecondsValue; set => budgetPerFrameInMillisecondsValue = value; }
 
         public bool forceGPUOnlyMesh = true;
+        public bool forceGPUOnlyTex = true;
 
         private bool useMaterialTransitionValue = true;
 
@@ -2359,7 +2360,7 @@ namespace UnityGLTF
 
             settings.filterMode = desiredFilterMode;
             settings.wrapMode = desiredWrapMode;
-            settings.uploadToGpu = true;
+            settings.uploadToGpu = forceGPUOnlyTex;
             settings.generateMipmaps = true;
             return settings;
         }
