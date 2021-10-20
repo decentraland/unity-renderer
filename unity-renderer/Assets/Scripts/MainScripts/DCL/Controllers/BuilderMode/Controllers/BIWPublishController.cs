@@ -2,9 +2,7 @@ using System;
 using DCL;
 using UnityEngine;
 
-public interface IBIWPublishController : IBIWController
-{
-}
+public interface IBIWPublishController : IBIWController { }
 
 public class BIWPublishController : BIWController, IBIWPublishController
 {
@@ -22,17 +20,17 @@ public class BIWPublishController : BIWController, IBIWPublishController
 
     private float startPublishingTimestamp = 0;
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
 
-        entityHandler = context.entityHandler;
-        creatorController = context.creatorController;
+        entityHandler = context.editorContext.entityHandler;
+        creatorController = context.editorContext.creatorController;
 
-        if (HUDController.i?.builderInWorldMainHud != null)
+        if (context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnPublishAction += StartPublishFlow;
-            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += StartPublishScene;
+            context.editorContext.editorHUD.OnPublishAction += StartPublishFlow;
+            context.editorContext.editorHUD.OnConfirmPublishAction += StartPublishScene;
         }
 
         builderInWorldBridge = context.sceneReferences.builderInWorldBridge;
@@ -59,10 +57,10 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         base.Dispose();
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnPublishAction -= StartPublishFlow;
-            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= StartPublishScene;
+            context.editorContext.editorHUD.OnPublishAction -= StartPublishFlow;
+            context.editorContext.editorHUD.OnConfirmPublishAction -= StartPublishScene;
         }
 
         if (builderInWorldBridge != null)
@@ -103,8 +101,8 @@ public class BIWPublishController : BIWController, IBIWPublishController
             feedbackMessage = FEEDBACK_MESSAGE_TOO_MANY_ENTITIES;
         }
 
-        if (HUDController.i.builderInWorldMainHud != null)
-            HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+        if ( context.editorContext.editorHUD != null)
+            context.editorContext.editorHUD.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
 
         return feedbackMessage;
     }
@@ -114,7 +112,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if (!CanPublish())
             return;
 
-        HUDController.i.builderInWorldMainHud.PublishStart();
+        context.editorContext.editorHUD.PublishStart();
     }
 
     private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)
@@ -126,8 +124,8 @@ public class BIWPublishController : BIWController, IBIWPublishController
 
     private void PublishEnd(bool isOk, string message)
     {
-        if (HUDController.i.builderInWorldMainHud != null)
-            HUDController.i.builderInWorldMainHud.PublishEnd(isOk, message);
+        if ( context.editorContext.editorHUD != null)
+            context.editorContext.editorHUD.PublishEnd(isOk, message);
         string successString = isOk ? "Success" : message;
         BIWAnalytics.EndScenePublish(sceneToEdit.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
     }
