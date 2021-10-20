@@ -2,48 +2,46 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using DCL.Interface;
 
 namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
+        internal const string AVATAR_LODS_FLAG_NAME = "avatar_lods";
         internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
+        internal const float AVATARS_INVISIBILITY_DISTANCE = 1.75f;
+        private const float MIN_DISTANCE_BETWEEN_NAMES_PIXELS = 70f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
         private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
         private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
         private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
-        private BaseHashSet<string> visibleNames => DataStore.i.avatarsLOD.visibleNames;
         private Vector3 cameraPosition;
         private Vector3 cameraForward;
         private GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
+        private SimpleOverlappingTracker overlappingTracker = new SimpleOverlappingTracker(MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         internal bool enabled;
+        private UnityEngine.Camera mainCamera;
 
         public AvatarsLODController()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
-            KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            KernelConfig.i.OnChange += OnKernelConfigChanged;
-                            OnKernelConfigChanged(config, null);
-                        });
+            DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagChanged;
         }
 
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        private void OnFeatureFlagChanged(FeatureFlag current, FeatureFlag previous)
         {
-            if (enabled == current.features.enableAvatarLODs)
+            if (enabled == current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME))
                 return;
             Initialize(current);
         }
 
-        internal void Initialize(KernelConfigModel config)
+        internal void Initialize(FeatureFlag current)
         {
-            enabled = config.features.enableAvatarLODs;
+            enabled = current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME);
             if (!enabled)
                 return;
 
@@ -111,20 +109,23 @@ namespace DCL
 
         internal void UpdateAllLODs(int maxAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
+            if (mainCamera == null)
+                mainCamera = UnityEngine.Camera.main;
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
 
-            float lodDistance = LODDistance.Get();
             float simpleAvatarDistance = this.simpleAvatarDistance.Get();
             Vector3 ownPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
+
+            overlappingTracker.Reset();
 
             (IAvatarLODController lodController, float distance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
                 (IAvatarLODController lodController, float distance) = lodControllersByDistance[index];
-                if (distance < 0) //Behind camera
+                if (IsInInvisibleDistance(distance))
                 {
-                    visibleNames.Remove(lodController.player.id);
+                    lodController.SetNameVisible(false);
                     lodController.SetInvisible();
                     continue;
                 }
@@ -137,11 +138,15 @@ namespace DCL
                     else
                         lodController.SetSimpleAvatar();
                     avatarsCount++;
-                    visibleNames.Add(lodController.player.id);
+
+                    if (mainCamera == null)
+                        lodController.SetNameVisible(true);
+                    else
+                        lodController.SetNameVisible(overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(mainCamera)));
                     continue;
                 }
 
-                visibleNames.Remove(lodController.player.id);
+                lodController.SetNameVisible(false);
                 if (impostorCount < maxImpostors)
                 {
                     lodController.SetImpostor();
@@ -152,6 +157,13 @@ namespace DCL
 
                 lodController.SetInvisible();
             }
+        }
+
+        private bool IsInInvisibleDistance(float distance)
+        {
+            bool firstPersonCamera = CommonScriptableObjects.cameraMode.Get() == CameraMode.ModeId.FirstPerson;
+            
+            return firstPersonCamera ? distance < AVATARS_INVISIBILITY_DISTANCE : distance < 0f; // < 0 is behind camera
         }
 
         private (IAvatarLODController lodController, float distance)[] ComposeLODControllersSortedByDistance(IEnumerable<IAvatarLODController> lodControllers, Vector3 ownPlayerPosition)
@@ -178,7 +190,7 @@ namespace DCL
 
         public void Dispose()
         {
-            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+            DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagChanged;
             foreach (IAvatarLODController lodController in lodControllers.Values)
             {
                 lodController.Dispose();

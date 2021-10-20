@@ -85,6 +85,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     public void AddSettingsWindowProperly()
     {
         settingsPanelHudController = new SettingsPanelHUDController();
+        settingsPanelHudController.Initialize();
         controller.AddSettingsWindow(settingsPanelHudController);
 
         Assert.IsTrue(settingsPanelHudController.view.gameObject.activeSelf, "Settings window is disabled!");

@@ -32,6 +32,7 @@ namespace UnityGLTF
             public bool? initialVisibility;
             public Shader shaderOverride;
             public bool addMaterialsToPersistentCaching;
+            public bool forceGPUOnlyMesh = true;
         }
 
         public string GLTFUri = null;
@@ -89,7 +90,7 @@ namespace UnityGLTF
         private bool alreadyDecrementedRefCount;
         private AsyncCoroutineHelper asyncCoroutineHelper;
         private Coroutine loadingRoutine = null;
-        private GLTFSceneImporter sceneImporter;
+        public GLTFSceneImporter sceneImporter { get; private set; }
         private Camera mainCamera;
         private IWebRequestController webRequestController;
         private bool prioritizeDownload = false;
@@ -132,7 +133,7 @@ namespace UnityGLTF
 
             this.fileToHashConverter = fileToHashConverter;
 
-            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
+            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(settings), OnFail_Internal);
         }
 
         void ApplySettings(Settings settings)
@@ -178,7 +179,6 @@ namespace UnityGLTF
                     Destroy(gameObject);
                 }
 
-
                 Debug.Log($"GLTF Failure {obj} ... url = {this.GLTFUri}\n{obj.StackTrace}");
             }
         }
@@ -208,7 +208,7 @@ namespace UnityGLTF
             }
         }
 
-        public IEnumerator LoadAssetCoroutine()
+        public IEnumerator LoadAssetCoroutine(Settings settings)
         {
             if (!string.IsNullOrEmpty(GLTFUri))
             {
@@ -271,6 +271,7 @@ namespace UnityGLTF
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.initialVisibility = initialVisibility;
                     sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
+                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh;
 
                     float time = Time.realtimeSinceStartup;
 
@@ -335,7 +336,10 @@ namespace UnityGLTF
                     CoroutineStarter.Stop(loadingRoutine);
                     loadingRoutine = null;
 
-                    OnFinishedLoadingAsset?.Invoke();
+                    if ( state == State.COMPLETED )
+                        OnFinishedLoadingAsset?.Invoke();
+                    else
+                        OnFailedLoadingAsset?.Invoke();
 
                     Destroy(loadingPlaceholder);
                     Destroy(this);
@@ -355,22 +359,6 @@ namespace UnityGLTF
         public void SetPrioritized()
         {
             prioritizeDownload = true;
-        }
-
-        public void CancelIfQueued()
-        {
-            if (IsInQueue())
-            {
-                OnFail_Internal(null);
-            }
-        }
-
-        public bool IsInQueue()
-        {
-            if (prioritizeDownload)
-                return false;
-            
-            return state == State.QUEUED || state == State.NONE;
         }
 
 #if UNITY_EDITOR
@@ -408,11 +396,6 @@ namespace UnityGLTF
             }
 
             downloadQueueHandler.Dequeue(this);
-
-            if (loadingRoutine != null)
-            {
-                Debug.LogWarning($"ERROR: GLTF destroyed while loading -> {name}");
-            }
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {

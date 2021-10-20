@@ -1,5 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
-using DCL.SettingsControls;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using TMPro;
 using UnityEngine;
 
@@ -30,18 +31,20 @@ namespace DCL.SettingsPanelHUD.Controls
         }
         private void SetOption(string option)
         {
-            var index = dropdown.options.FindIndex(o => o.text == option);
-            if (index >= 0)
-            {
-                dropdown.value = index;
-            }
+            dropdown.captionText.text = option;
         }
         private void SetLabels(string[] labels)
         {
             if (labels.Length == 0)
                 return;
 
-            dropdown.options = labels.Select(l => new TMP_Dropdown.OptionData(l)).ToList();
+            dropdown.ClearOptions();
+            List<TMP_Dropdown.OptionData> dropdownOptions = labels.Select(l => new TMP_Dropdown.OptionData(l)).ToList();
+            foreach (TMP_Dropdown.OptionData data in dropdownOptions)
+            {
+                dropdown.options.Add(data);
+            }
+            dropdown.RefreshShownValue();
         }
 
         protected override void OnDestroy()

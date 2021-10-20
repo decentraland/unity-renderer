@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL.FPSDisplay;
+using DCL.SettingsCommon;
 using Newtonsoft.Json;
 
 namespace DCL
@@ -211,23 +212,23 @@ namespace DCL
                 + "\n * System Info -> Device Name -> " + SystemInfo.deviceName
                 + "\n * System Info -> Graphics Device Name -> " + SystemInfo.graphicsDeviceName
                 + "\n * System Info -> System RAM Size -> " + SystemInfo.systemMemorySize
-                + "\n * General Settings -> Auto Quality ON -> " + Settings.i.generalSettings.autoqualityOn
-                + "\n * General Settings -> Scenes Load Radius -> " + Settings.i.generalSettings.scenesLoadRadius
-                + "\n * Quality Settings -> FPSCap -> " + Settings.i.currentQualitySettings.fpsCap
-                + "\n * Quality Settings -> Bloom -> " + Settings.i.currentQualitySettings.bloom
-                + "\n * Quality Settings -> Shadow -> " + Settings.i.currentQualitySettings.shadows
-                + "\n * Quality Settings -> Antialising -> " + Settings.i.currentQualitySettings.antiAliasing
-                + "\n * Quality Settings -> Base Resolution -> " + Settings.i.currentQualitySettings.baseResolution
-                + "\n * Quality Settings -> Color Grading -> " + Settings.i.currentQualitySettings.colorGrading
-                + "\n * Quality Settings -> Display Name -> " + Settings.i.currentQualitySettings.displayName
-                + "\n * Quality Settings -> Render Scale -> " + Settings.i.currentQualitySettings.renderScale
-                + "\n * Quality Settings -> Shadow Distance -> " + Settings.i.currentQualitySettings.shadowDistance
-                + "\n * Quality Settings -> Shadow Resolution -> " + Settings.i.currentQualitySettings.shadowResolution
-                + "\n * Quality Settings -> Soft Shadows -> " + Settings.i.currentQualitySettings.softShadows
-                + "\n * Quality Settings -> SSAO Quality -> " + Settings.i.currentQualitySettings.ssaoQuality
-                + "\n * Quality Settings -> Camera Draw Distance -> " + Settings.i.currentQualitySettings.cameraDrawDistance
-                + "\n * Quality Settings -> Detail Object Culling Enabled -> " + Settings.i.currentQualitySettings.enableDetailObjectCulling
-                + "\n * Quality Settings -> Detail Object Culling Limit -> " + Settings.i.currentQualitySettings.detailObjectCullingLimit
+                + "\n * General Settings -> Auto Quality ON -> " + Settings.i.generalSettings.Data.autoqualityOn
+                + "\n * General Settings -> Scenes Load Radius -> " + Settings.i.generalSettings.Data.scenesLoadRadius
+                + "\n * Quality Settings -> FPSCap -> " + Settings.i.qualitySettings.Data.fpsCap
+                + "\n * Quality Settings -> Bloom -> " + Settings.i.qualitySettings.Data.bloom
+                + "\n * Quality Settings -> Shadow -> " + Settings.i.qualitySettings.Data.shadows
+                + "\n * Quality Settings -> Antialising -> " + Settings.i.qualitySettings.Data.antiAliasing
+                + "\n * Quality Settings -> Base Resolution -> " + Settings.i.qualitySettings.Data.baseResolution
+                + "\n * Quality Settings -> Color Grading -> " + Settings.i.qualitySettings.Data.colorGrading
+                + "\n * Quality Settings -> Display Name -> " + Settings.i.qualitySettings.Data.displayName
+                + "\n * Quality Settings -> Render Scale -> " + Settings.i.qualitySettings.Data.renderScale
+                + "\n * Quality Settings -> Shadow Distance -> " + Settings.i.qualitySettings.Data.shadowDistance
+                + "\n * Quality Settings -> Shadow Resolution -> " + Settings.i.qualitySettings.Data.shadowResolution
+                + "\n * Quality Settings -> Soft Shadows -> " + Settings.i.qualitySettings.Data.softShadows
+                + "\n * Quality Settings -> SSAO Quality -> " + Settings.i.qualitySettings.Data.ssaoQuality
+                + "\n * Quality Settings -> Camera Draw Distance -> " + Settings.i.qualitySettings.Data.cameraDrawDistance
+                + "\n * Quality Settings -> Detail Object Culling Enabled -> " + Settings.i.qualitySettings.Data.enableDetailObjectCulling
+                + "\n * Quality Settings -> Detail Object Culling Limit -> " + Settings.i.qualitySettings.Data.detailObjectCullingLimit
             );
 
             // Step 2 - report processed data
@@ -263,7 +264,7 @@ namespace DCL
         /// </summary>
         private float CalculatePerformanceScore()
         {
-            float topFPS = Settings.i.currentQualitySettings.fpsCap ? 30f : 60f;
+            float topFPS = Settings.i.qualitySettings.Data.fpsCap ? 30f : 60f;
             float fpsScore = Mathf.Min(averageFPS / topFPS, 1); // from 0 to 1
             float hiccupsScore = 1 - ((float)totalHiccupFrames / samples.Count); // from 0 to 1
             float performanceScore = (fpsScore + hiccupsScore) / 2 * 100; // scores sum / amount of scores * 100 to have a 0-100 scale

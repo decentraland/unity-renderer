@@ -22,7 +22,7 @@ public class NFTPromptHUDController : IHUD
     public NFTPromptHUDController()
     {
         view = Object.Instantiate(Resources.Load<GameObject>(VIEW_PREFAB_PATH))
-                     .GetComponent<NFTPromptHUDView>();
+            .GetComponent<NFTPromptHUDView>();
         view.SetActive(false);
 
         view.OnOwnerLabelPointerEnter += ShowOwnersTooltip;
@@ -54,7 +54,7 @@ public class NFTPromptHUDController : IHUD
 
             view.SetLoading();
 
-            fetchNFTRoutine = CoroutineStarter.Start(NFTHelper.FetchNFTInfoSingleAsset(model.contactAddress, model.tokenId,
+            fetchNFTRoutine = CoroutineStarter.Start(NFTUtils.FetchNFTInfoSingleAsset(model.contactAddress, model.tokenId,
                 (nftInfo) => SetNFT(nftInfo, model.comment, true),
                 (error) => view.OnError(string.Format(COULD_NOT_FETCH_NFT_FROM_API + " " + error + ". " + DOES_NOT_SUPPORT_POLYGON, model.contactAddress, model.tokenId))
             ));

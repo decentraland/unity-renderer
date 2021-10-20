@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:unity-renderer/Assets/Scripts/MainScripts/DCL/Controllers/ExploreV2/Scripts/Sections/PlacesAndEventsSection/SubSections/EventsSubSection/EventsSubSectionMenu/EventsAPIController.cs.meta
+guid: 9865b5a916cc3154fab43f761eadafbf
+=======
+guid: 5c41ef05cae9bcb4a9bd2e618cac7233
+>>>>>>> master:unity-renderer/Assets/Scripts/MainScripts/DCL/Controllers/ExploreV2/Scripts/Sections/PlacesAndEventsSection/SubSections/EventsSubSection/EventsSubSectionMenu/EventsSubSectionComponentController.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,8 +1,7 @@
 using System;
 
-public interface IExploreV2MenuComponentController
+public interface IExploreV2MenuComponentController : IDisposable
 {
     void Initialize();
-    void Dispose();
     void SetVisibility(bool visible);
 }

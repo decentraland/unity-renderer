@@ -57,6 +57,20 @@ namespace DCL.Helpers
             return pbTranf;
         }
 
+        public static FeatureFlag CreateFeatureFlag(List<string> enabledFlags = null)
+        {
+            FeatureFlag featureFlag = new FeatureFlag();
+            if (enabledFlags == null)
+                return featureFlag;
+
+            foreach (var flag in enabledFlags)
+            {
+                featureFlag.flags.Add(flag, true);
+            }
+
+            return featureFlag;
+        }
+
         public static PB_Transform GetPBTransformFromModelJson(string json)
         {
             DCLTransform.Model transfModel = JsonUtility.FromJson<DCLTransform.Model>(json);

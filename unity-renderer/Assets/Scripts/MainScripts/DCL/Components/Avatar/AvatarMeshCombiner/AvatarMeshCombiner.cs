@@ -42,9 +42,9 @@ namespace DCL
     public class FlattenedMaterialsData
     {
         public List<Material> materials = new List<Material>();
-        public List<Vector3> texturePointers = new List<Vector3>();
-        public List<Vector4> colors = new List<Vector4>();
-        public List<Vector4> emissionColors = new List<Vector4>();
+        public Vector3[] texturePointers;
+        public Vector4[] colors;
+        public Vector4[] emissionColors;
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ namespace DCL
             //
             // Layers are divided accounting for the 12 textures limit and transparency/opaque limit.
             //
-            var layers = CombineLayerUtils.Slice( renderers );
+            List<CombineLayer> layers = CombineLayerUtils.Slice( renderers );
 
             if ( layers == null )
             {
@@ -131,7 +131,7 @@ namespace DCL
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);
             finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, flattenedMaterialsData.texturePointers);
 
-            var tempArray = new NativeArray<Vector4>(flattenedMaterialsData.colors.Count, Allocator.Temp);
+            var tempArray = new NativeArray<Vector4>(flattenedMaterialsData.colors.Length, Allocator.Temp);
             tempArray.CopyFrom(flattenedMaterialsData.colors.ToArray());
             finalMesh.SetColors(tempArray);
             tempArray.Dispose();

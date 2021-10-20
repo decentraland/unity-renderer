@@ -1,6 +1,7 @@
 using DCL;
-using System;
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using Variables.RealmsInfo;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
@@ -10,34 +11,51 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
     internal IExploreV2MenuComponentView view;
+    internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
 
     public void Initialize()
     {
         view = CreateView();
         SetVisibility(false);
 
-        if (string.IsNullOrEmpty(ownUserProfile.userId))
-            ownUserProfile.OnUpdate += OnProfileUpdated;
-        else
-            OnProfileUpdated(ownUserProfile);
+        DataStore.i.playerRealm.OnChange += UpdateRealmInfo;
+        UpdateRealmInfo(DataStore.i.playerRealm.Get(), null);
+
+        ownUserProfile.OnUpdate += UpdateProfileInfo;
+        UpdateProfileInfo(ownUserProfile);
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         DataStore.i.taskbar.isExploreV2Enabled.OnChange += OnActivateFromTaskbar;
         DataStore.i.exploreV2.isInitialized.Set(true);
+
+        view.OnInitialized += CreateControllers;
+    }
+
+    internal void CreateControllers()
+    {
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection);
+        placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
 
     public void Dispose()
     {
-        if (view == null)
-            return;
+        DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
+        ownUserProfile.OnUpdate -= UpdateProfileInfo;
 
-        if (view.go != null)
+        if (view != null)
         {
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
-            GameObject.Destroy(view.go);
+            view.OnInitialized -= CreateControllers;
+            view.Dispose();
         }
 
         DataStore.i.taskbar.isExploreV2Enabled.OnChange -= OnActivateFromTaskbar;
+
+        if (placesAndEventsSectionController != null)
+        {
+            placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
+            placesAndEventsSectionController.Dispose();
+        }
     }
 
     public void SetVisibility(bool visible)
@@ -53,19 +71,34 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.SetActive(visible);
     }
 
-    internal void OnProfileUpdated(UserProfile profile)
+    internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
+    {
+        // Get the name of the current realm
+        string currentRealmServer = currentRealm?.serverName;
+        string currentRealmLayer = currentRealm?.layer;
+        string formattedRealmName = currentRealmServer;
+        if (!string.IsNullOrEmpty(currentRealmLayer))
+        {
+            formattedRealmName = $"{formattedRealmName}-{currentRealmLayer}";
+        }
+
+        view.currentRealmViewer.SetRealm(formattedRealmName);
+
+        // Calculate number of users in the current realm
+        List<RealmModel> realmList = DataStore.i.realmsInfo.Get()?.ToList();
+        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealmServer && (r.layer == null || r.layer == currentRealmLayer));
+        int realmUsers = 0;
+        if (currentRealmModel != null)
+            realmUsers = currentRealmModel.usersCount;
+
+        view.currentRealmViewer.SetNumberOfUsers(realmUsers);
+    }
+
+    internal void UpdateProfileInfo(UserProfile profile)
     {
         view.currentProfileCard.SetProfileName(profile.userName);
         view.currentProfileCard.SetProfileAddress(profile.ethAddress);
-        view.currentProfileCard.SetLoadingIndicatorVisible(true);
-        profile.snapshotObserver.AddListener(SetProfileImage);
-    }
-
-    internal void SetProfileImage(Texture2D texture)
-    {
-        ownUserProfile.snapshotObserver.RemoveListener(SetProfileImage);
-        view.currentProfileCard.SetLoadingIndicatorVisible(false);
-        view.currentProfileCard.SetProfilePicture(texture);
+        view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
     }
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }

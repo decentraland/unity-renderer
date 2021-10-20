@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using DCL;
-using DCL.SettingsData;
+using DCL.SettingsCommon;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -46,13 +45,13 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         listElementView.OnPoolRelease();
         availableElements.Enqueue(listElementView);
 
-        Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
+        Settings.i.generalSettings.OnChanged += OnSettingsChanged;
     }
 
     void OnDestroy()
     {
         isGameObjectDestroyed = true;
-        Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
+        Settings.i.generalSettings.OnChanged -= OnSettingsChanged;
     }
 
     void IUsersAroundListHUDListView.AddOrUpdatePlayer(Player player)
@@ -188,9 +187,9 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
 
     void OnVoiceChatSettingChanged(int index)
     {
-        var newSettings = Settings.i.generalSettings;
+        var newSettings = Settings.i.generalSettings.Data;
         newSettings.voiceChatAllow = (GeneralSettings.VoiceChatAllow)index;
-        Settings.i.ApplyGeneralSettings(newSettings);
+        Settings.i.generalSettings.Apply(newSettings);
     }
 
     void OnSettingsChanged(GeneralSettings settings) { voiceChatSpinBox.SetValue((int)settings.voiceChatAllow, false); }

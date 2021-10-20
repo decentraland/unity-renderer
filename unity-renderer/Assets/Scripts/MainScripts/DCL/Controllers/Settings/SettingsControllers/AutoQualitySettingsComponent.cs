@@ -1,101 +1,101 @@
 ﻿using System.Collections;
-using DCL;
 using DCL.Helpers;
-using DCL.SettingsData;
 using UnityEngine;
-using QualitySettings = DCL.SettingsData.QualitySettings;
 
-/// <summary>
-/// Controller to change the quality settings automatically based on performance
-/// </summary>
-public class AutoQualitySettingsComponent : MonoBehaviour
+namespace DCL.SettingsCommon.SettingsControllers
 {
-    private const float LOOP_TIME_SECONDS = 1f;
-    private const string LAST_QUALITY_INDEX = "LAST_QUALITY_INDEX";
-    private const int TARGET_FPS = 30;
-
-    [SerializeField] internal BooleanVariable autoQualityEnabled;
-    [SerializeField] internal PerformanceMetricsDataVariable performanceMetricsData;
-    internal QualitySettingsData qualitySettings => Settings.i.autoqualitySettings;
-
-    internal int currentQualityIndex;
-    private Coroutine settingsCheckerCoroutine;
-    internal IAutoQualityController controller;
-    internal bool fpsCapped;
-
-    void Start()
+    /// <summary>
+    /// Controller to change the quality settings automatically based on performance
+    /// </summary>
+    public class AutoQualitySettingsComponent : MonoBehaviour
     {
-        if (autoQualityEnabled == null || qualitySettings == null || qualitySettings.Length == 0)
-            return;
+        private const float LOOP_TIME_SECONDS = 1f;
+        private const string LAST_QUALITY_INDEX = "LAST_QUALITY_INDEX";
+        private const int TARGET_FPS = 30;
 
-        currentQualityIndex = PlayerPrefsUtils.GetInt(LAST_QUALITY_INDEX, (qualitySettings.Length - 1) / 2);
+        [SerializeField] internal BooleanVariable autoQualityEnabled;
+        [SerializeField] internal PerformanceMetricsDataVariable performanceMetricsData;
+        internal QualitySettingsData qualitySettings => Settings.i.autoqualitySettings;
 
-        controller = new AutoQualityUncappedFPSController(currentQualityIndex, qualitySettings);
+        internal int currentQualityIndex;
+        private Coroutine settingsCheckerCoroutine;
+        internal IAutoQualityController controller;
+        internal bool fpsCapped;
 
-        Settings.i.OnQualitySettingsChanged += OnQualitySettingsChanged;
-        autoQualityEnabled.OnChange += SetAutoSettings;
+        void Start()
+        {
+            if (autoQualityEnabled == null || qualitySettings == null || qualitySettings.Length == 0)
+                return;
 
-        fpsCapped = !Settings.i.currentQualitySettings.fpsCap;
-        OnQualitySettingsChanged(Settings.i.qualitySettings);
-        SetAutoSettings(autoQualityEnabled.Get(), !autoQualityEnabled.Get());
-    }
+            currentQualityIndex = PlayerPrefsUtils.GetInt(LAST_QUALITY_INDEX, (qualitySettings.Length - 1) / 2);
 
-    private void OnDestroy()
-    {
-        if (autoQualityEnabled != null)
-            autoQualityEnabled.OnChange -= SetAutoSettings;
-        Settings.i.OnQualitySettingsChanged -= OnQualitySettingsChanged;
-    }
-
-    internal void OnQualitySettingsChanged(QualitySettings settings)
-    {
-        if (fpsCapped == settings.fpsCap)
-            return;
-
-        fpsCapped = settings.fpsCap;
-        if (settings.fpsCap)
-            controller = new AutoQualityCappedFPSController(TARGET_FPS, currentQualityIndex, qualitySettings);
-        else
             controller = new AutoQualityUncappedFPSController(currentQualityIndex, qualitySettings);
-    }
 
-    private void SetAutoSettings(bool newValue, bool oldValue)
-    {
-        if (settingsCheckerCoroutine != null)
-        {
-            StopCoroutine(settingsCheckerCoroutine);
-            settingsCheckerCoroutine = null;
+            Settings.i.qualitySettings.OnChanged += OnQualitySettingsChanged;
+            autoQualityEnabled.OnChange += SetAutoSettings;
+
+            fpsCapped = !Settings.i.qualitySettings.Data.fpsCap;
+            OnQualitySettingsChanged(Settings.i.qualitySettings.Data);
+            SetAutoSettings(autoQualityEnabled.Get(), !autoQualityEnabled.Get());
         }
 
-        if (newValue)
+        private void OnDestroy()
         {
-            settingsCheckerCoroutine = StartCoroutine(AutoSettingsLoop());
+            if (autoQualityEnabled != null)
+                autoQualityEnabled.OnChange -= SetAutoSettings;
+            Settings.i.qualitySettings.OnChanged -= OnQualitySettingsChanged;
         }
-        else
+
+        internal void OnQualitySettingsChanged(QualitySettings settings)
         {
-            controller.ResetEvaluation();
-        }
-    }
+            if (fpsCapped == settings.fpsCap)
+                return;
 
-    private IEnumerator AutoSettingsLoop()
-    {
-        while (true)
+            fpsCapped = settings.fpsCap;
+            if (settings.fpsCap)
+                controller = new AutoQualityCappedFPSController(TARGET_FPS, currentQualityIndex, qualitySettings);
+            else
+                controller = new AutoQualityUncappedFPSController(currentQualityIndex, qualitySettings);
+        }
+
+        private void SetAutoSettings(bool newValue, bool oldValue)
         {
-            UpdateQuality(controller.EvaluateQuality(performanceMetricsData?.Get()));
-            yield return new WaitForSeconds(LOOP_TIME_SECONDS);
+            if (settingsCheckerCoroutine != null)
+            {
+                StopCoroutine(settingsCheckerCoroutine);
+                settingsCheckerCoroutine = null;
+            }
+
+            if (newValue)
+            {
+                settingsCheckerCoroutine = StartCoroutine(AutoSettingsLoop());
+            }
+            else
+            {
+                controller.ResetEvaluation();
+            }
         }
-    }
 
-    private void UpdateQuality(int newQualityIndex)
-    {
-        if (newQualityIndex == currentQualityIndex)
-            return;
+        private IEnumerator AutoSettingsLoop()
+        {
+            while (true)
+            {
+                UpdateQuality(controller.EvaluateQuality(performanceMetricsData?.Get()));
+                yield return new WaitForSeconds(LOOP_TIME_SECONDS);
+            }
+        }
 
-        if (newQualityIndex <= 0 || newQualityIndex >= qualitySettings.Length)
-            return;
+        private void UpdateQuality(int newQualityIndex)
+        {
+            if (newQualityIndex == currentQualityIndex)
+                return;
 
-        PlayerPrefsUtils.SetInt(LAST_QUALITY_INDEX, currentQualityIndex);
-        currentQualityIndex = newQualityIndex;
-        Settings.i.ApplyAutoQualitySettings(currentQualityIndex);
+            if (newQualityIndex <= 0 || newQualityIndex >= qualitySettings.Length)
+                return;
+
+            PlayerPrefsUtils.SetInt(LAST_QUALITY_INDEX, currentQualityIndex);
+            currentQualityIndex = newQualityIndex;
+            Settings.i.ApplyAutoQualitySettings(currentQualityIndex);
+        }
     }
 }

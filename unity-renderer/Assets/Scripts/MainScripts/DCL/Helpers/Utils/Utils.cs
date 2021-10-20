@@ -210,19 +210,21 @@ namespace DCL.Helpers
             return component;
         }
 
-        public static WebRequestAsyncOperation FetchTexture(string textureURL, Action<Texture2D> OnSuccess, Action<UnityWebRequest> OnFail = null)
+        public static WebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<UnityWebRequest> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
             void SuccessInternal(UnityWebRequest request)
             {
-                var texture = DownloadHandlerTexture.GetContent(request);
-                OnSuccess?.Invoke(texture);
+                OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request));
             }
 
-            return DCL.Environment.i.platform.webRequest.GetTexture(
+            var asyncOp = DCL.Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
                 OnSuccess: SuccessInternal,
-                OnFail: OnFail);
+                OnFail: OnFail,
+                isReadable: isReadable);
+
+            return asyncOp;
         }
 
         public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)

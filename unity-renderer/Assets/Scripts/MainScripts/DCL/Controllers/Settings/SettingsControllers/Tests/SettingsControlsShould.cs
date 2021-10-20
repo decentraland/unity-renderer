@@ -1,10 +1,9 @@
-using Cinemachine;
-using DCL.SettingsCommon;
-using DCL.SettingsController;
-using DCL.SettingsControls;
-using NUnit.Framework;
 using System.Collections;
 using System.Reflection;
+using Cinemachine;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
+using DCL.SettingsCommon.SettingsControllers.SpecificControllers;
+using NUnit.Framework;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -12,7 +11,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace DCL.SettingsCommon.SettingsControllers.Tests
 {
     public class SettingsControlsShould
     {
@@ -42,6 +41,8 @@ namespace Tests
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            Settings.i.LoadDefaultSettings();
+
             ScriptableObject.Destroy(settingController);
 
             yield return EditorSceneManager.UnloadSceneAsync(TEST_SCENE_NAME);
@@ -94,7 +95,7 @@ namespace Tests
             settingController.Initialize();
 
             // Act
-            int newValue = (int)DCL.SettingsData.GeneralSettings.VoiceChatAllow.FRIENDS_ONLY;
+            int newValue = (int)GeneralSettings.VoiceChatAllow.FRIENDS_ONLY;
             settingController.UpdateSetting(newValue);
 
             // Assert
@@ -126,7 +127,7 @@ namespace Tests
             settingController.Initialize();
 
             // Act
-            DCL.SettingsData.QualitySettings.BaseResolution newValue = DCL.SettingsData.QualitySettings.BaseResolution.BaseRes_1080;
+            QualitySettings.BaseResolution newValue = QualitySettings.BaseResolution.BaseRes_1080;
             settingController.UpdateSetting(newValue);
 
             // Assert
@@ -364,7 +365,8 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeAvatarSFXVolumeCorrectly() {
+        public void ChangeAvatarSFXVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<AvatarSFXVolumeControlController>();
             settingController.Initialize();
@@ -378,7 +380,8 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeChatSFXToggleCorrectly() {
+        public void ChangeChatSFXToggleCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<ChatSFXToggleControlController>();
             settingController.Initialize();
@@ -392,7 +395,8 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeMasterVolumeCorrectly() {
+        public void ChangeMasterVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<MasterVolumeControlController>();
             settingController.Initialize();
@@ -406,7 +410,8 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeMusicVolumeCorrectly() {
+        public void ChangeMusicVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<MusicVolumeControlController>();
             settingController.Initialize();
@@ -420,7 +425,8 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeSceneSFXVolumeCorrectly() {
+        public void ChangeSceneSFXVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<SceneSFXVolumeControlController>();
             settingController.Initialize();
@@ -434,7 +440,8 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeUISFXVolumeCorrectly() {
+        public void ChangeUISFXVolumeCorrectly()
+        {
             // Arrange
             settingController = ScriptableObject.CreateInstance<UISFXVolumeControlController>();
             settingController.Initialize();

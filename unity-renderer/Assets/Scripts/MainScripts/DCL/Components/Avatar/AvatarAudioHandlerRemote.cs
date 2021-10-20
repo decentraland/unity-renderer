@@ -24,6 +24,10 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     bool globalRendererIsReady;
 
     private Camera mainCamera;
+    private StickersController stickersController;
+
+    Transform footL;
+    Transform footR;
 
     private void Start()
     {
@@ -50,7 +54,16 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
 
     void OnGlobalRendererStateChange(bool current, bool previous) { globalRendererIsReady = current; }
 
-    public void Init(GameObject rendererContainer) { this.rendererContainer = rendererContainer; }
+    public void Init(GameObject rendererContainer)
+    {
+        this.rendererContainer = rendererContainer;
+        stickersController = rendererContainer.GetComponentInParent<StickersController>();
+
+        // Get references to body parts
+        Transform[] children = rendererContainer.GetComponentsInChildren<Transform>();
+        footL = AvatarBodyPartReferenceUtility.GetLeftToe(children);
+        footR = AvatarBodyPartReferenceUtility.GetRightToe(children);
+    }
 
     private void Update()
     {
@@ -62,6 +75,8 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         {
             if (footstepJump != null)
                 footstepJump.Play(true);
+            if (stickersController != null && footR != null)
+                stickersController.PlaySticker("footstepJump", footR.position, Vector3.up, false);
         }
 
         // Landed
@@ -69,6 +84,11 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         {
             if (footstepLand != null)
                 footstepLand.Play(true);
+            if (stickersController != null && footL != null && footR != null)
+                    stickersController.PlaySticker("footstepLand",
+                        Vector3.Lerp(footL.position, footR.position, 0.5f),
+                        Vector3.up,
+                        false);
         }
 
         // Simulate footsteps when avatar is not visible
