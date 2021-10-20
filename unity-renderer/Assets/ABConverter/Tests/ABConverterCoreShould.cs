@@ -202,6 +202,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DumpGLTFSucceedsCorrectly()
         {
             List<AssetPath> texturePaths = new List<AssetPath>();
@@ -229,6 +231,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DumpImportableAssetsCorrectly()
         {
             List<AssetPath> paths = new List<AssetPath>();
@@ -270,6 +274,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DumpRawAssetsCorrectly()
         {
             List<AssetPath> paths = new List<AssetPath>();
@@ -302,6 +308,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DownloadAssetCorrectly()
         {
             AssetPath path = new AssetPath(
