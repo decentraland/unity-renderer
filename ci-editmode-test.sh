@@ -2,7 +2,7 @@
 
 source ci-setup.sh
 
-echo "Running playmode tests for $PROJECT_PATH"
+echo "Running editmode tests for $PROJECT_PATH"
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -batchmode \
@@ -20,9 +20,9 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
 UNITY_EXIT_CODE=$?
 
 # Print unity log output
-cat "$PROJECT_PATH/editmode-results.xml"
 ls -la
 tree .
+cat "$PROJECT_PATH/editmode-results.xml"
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
