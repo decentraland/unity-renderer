@@ -20,8 +20,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
 UNITY_EXIT_CODE=$?
 
 # Print unity log output
-ls -la
-tree .
+ls -la $PROJECT_PATH
 cat "$PROJECT_PATH/editmode-results.xml"
 
 # Display results
