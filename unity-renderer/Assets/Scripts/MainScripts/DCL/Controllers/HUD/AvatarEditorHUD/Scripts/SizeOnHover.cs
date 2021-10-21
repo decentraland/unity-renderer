@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class SizeOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -16,6 +17,12 @@ public class SizeOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     }
 
     public void OnPointerExit(PointerEventData eventData)
+    {
+        if (targetRectTransform != null)
+            targetRectTransform.localScale = Vector3.one * normalScale;
+    }
+
+    private void OnDisable()
     {
         if (targetRectTransform != null)
             targetRectTransform.localScale = Vector3.one * normalScale;
