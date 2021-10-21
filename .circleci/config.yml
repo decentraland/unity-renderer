@@ -117,12 +117,14 @@ jobs:
           name: Run editmode tests
           command: |
             if [[ -e ./unity-renderer/editmode-logs.txt ]]; then
+                echo "Skipping editmode tests"
                 exit 0
             else
                 bash ci-editmode-test.sh
                 exit $?
             fi;
           no_output_timeout: 30m
+      - run: &NUNIT_TO_JUNIT
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/editmode-logs.txt
@@ -162,7 +164,7 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
-      - run:
+      - run: *NUNIT_TO_JUNIT
           name: nunit-to-junit
           when: always
           command: |

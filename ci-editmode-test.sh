@@ -13,15 +13,14 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -testResults "$PROJECT_PATH/editmode-results.xml" \
   -enableCodeCoverage \
   -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
-  -debugCodeOptimization
+  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
 # Print unity log output
 ls -la $PROJECT_PATH
-find . -name editmode-results.xml
+find / -name editmode-results.xml
 find $PROJECT_PATH -name editmode-results.xml
 cat "$PROJECT_PATH/editmode-results.xml"
 
