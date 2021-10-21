@@ -124,7 +124,7 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
-      - run: &NUNIT_TO_JUNIT
+      - run:
           name: nunit-to-junit
           when: always
           command: |
@@ -170,7 +170,13 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
-      - run: *NUNIT_TO_JUNIT
+      - run:
+          name: nunit-to-junit
+          when: always
+          command: |
+            apt-get update
+            apt-get install -y xsltproc
+            xsltproc --output unity-renderer/test-results/editmode-results-junit.xml nunit-to-junit.xsl unity-renderer/editmode-results.xml
       - run: apt-get -y -qq install awscli
       - run:
           name: upload code coverage

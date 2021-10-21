@@ -9,7 +9,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -projectPath "$PROJECT_PATH" \
   -logFile "$PROJECT_PATH/editmode-logs.txt" \
   -runTests \
-  -testPlatform PlayMode \
+  -testPlatform EditMode \
   -testResults "$PROJECT_PATH/editmode-results.xml" \
   -enableCodeCoverage \
   -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
