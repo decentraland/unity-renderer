@@ -124,7 +124,13 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
-      - run: *NUNIT_TO_JUNIT
+      - run: &NUNIT_TO_JUNIT
+          name: nunit-to-junit
+          when: always
+          command: |
+            apt-get update
+            apt-get install -y xsltproc
+            xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/editmode-logs.txt
@@ -164,13 +170,7 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
-      - run: &NUNIT_TO_JUNIT
-          name: nunit-to-junit
-          when: always
-          command: |
-            apt-get update
-            apt-get install -y xsltproc
-            xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
+      - run: *NUNIT_TO_JUNIT
       - run: apt-get -y -qq install awscli
       - run:
           name: upload code coverage
