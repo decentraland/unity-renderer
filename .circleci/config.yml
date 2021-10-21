@@ -130,7 +130,7 @@ jobs:
           command: |
             apt-get update
             apt-get install -y xsltproc
-            xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
+            xsltproc --output unity-renderer/test-results/editmode-results-junit.xml nunit-to-junit.xsl unity-renderer/editmode-results.xml
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/editmode-logs.txt
@@ -176,7 +176,7 @@ jobs:
           command: |
             apt-get update
             apt-get install -y xsltproc
-            xsltproc --output unity-renderer/test-results/editmode-results-junit.xml nunit-to-junit.xsl unity-renderer/editmode-results.xml
+            xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
       - run: apt-get -y -qq install awscli
       - run:
           name: upload code coverage
