@@ -158,7 +158,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     private void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
 
-    public override void PostInitialization()
+    public override void OnStart()
     {
         ConfigureEventCardModal();
         ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, 10);

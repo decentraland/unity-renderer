@@ -74,6 +74,7 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
     {
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
+        closeAction.OnTriggered -= OnCloseActionTriggered;
     }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
@@ -89,9 +90,13 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
     internal void ConfigureCloseButton()
     {
-        closeMenuButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke());
-        closeAction.OnTriggered += (action) => OnCloseButtonPressed?.Invoke();
+        closeMenuButton.onClick.AddListener(CloseMenu);
+        closeAction.OnTriggered += OnCloseActionTriggered;
     }
+
+    internal void CloseMenu() { OnCloseButtonPressed?.Invoke(); }
+
+    internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseMenu(); }
 
     internal void ShowDefaultSection() { placesAndEventsSection.gameObject.SetActive(true); }
 

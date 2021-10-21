@@ -7,14 +7,14 @@ using UnityEngine.EventSystems;
 public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
     /// <summary>
-    /// It is called at the beggining of the UI component lyfe-cicle.
+    /// It is called at the beginning of the UI component lifecycle.
     /// </summary>
-    void Initialization();
+    void OnAwake();
 
     /// <summary>
     /// It is called just after the UI component has been initialized.
     /// </summary>
-    void PostInitialization();
+    void OnStart();
 
     /// <summary>
     /// Updates the UI component with the current model configuration.
@@ -46,7 +46,7 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     /// <summary>
     /// It is called just after the screen size has changed.
     /// </summary>
-    void PostScreenSizeChanged();
+    void OnScreenSizeChanged();
 }
 
 public interface IComponentModelConfig
@@ -63,13 +63,13 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
-    public virtual void Initialization()
+    public virtual void OnAwake()
     {
         showHideAnimator = GetComponent<ShowHideAnimator>();
-        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
+        DataStore.i.screen.size.OnChange += OnScreenSizeModified;
     }
 
-    public virtual void PostInitialization() { }
+    public virtual void OnStart() { }
 
     public abstract void RefreshControl();
 
@@ -93,15 +93,15 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void OnLoseFocus() { }
 
-    public virtual void PostScreenSizeChanged() { }
+    public virtual void OnScreenSizeChanged() { }
 
-    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
+    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeModified; }
 
-    private void Awake() { Initialization(); }
+    private void Awake() { OnAwake(); }
 
-    private void OnEnable() { PostScreenSizeChanged(); }
+    private void OnEnable() { OnScreenSizeChanged(); }
 
-    private void Start() { PostInitialization(); }
+    private void Start() { OnStart(); }
 
     public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 
@@ -109,18 +109,18 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     private void OnDestroy() { Dispose(); }
 
-    internal void OnScreenSizeChange(Vector2Int current, Vector2Int previous)
+    internal void OnScreenSizeModified(Vector2Int current, Vector2Int previous)
     {
         if (!gameObject.activeInHierarchy)
             return;
 
-        StartCoroutine(RaisePostScreenSizeChangedAfterDelay());
+        StartCoroutine(RaiseOnScreenSizeChangedAfterDelay());
     }
 
-    internal IEnumerator RaisePostScreenSizeChangedAfterDelay()
+    internal IEnumerator RaiseOnScreenSizeChangedAfterDelay()
     {
         yield return null;
-        PostScreenSizeChanged();
+        OnScreenSizeChanged();
     }
 
     internal static T Create<T>(string resourceName) where T : BaseComponentView

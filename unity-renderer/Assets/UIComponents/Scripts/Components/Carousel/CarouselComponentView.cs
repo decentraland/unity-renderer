@@ -129,15 +129,15 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal float currentFinalNormalizedPos;
     internal bool isInTransition = false;
 
-    public override void Initialization()
+    public override void OnAwake()
     {
-        base.Initialization();
+        base.OnAwake();
 
         StartCoroutine(RegisterCurrentInstantiatedItems());
         ConfigureManualButtonsEvents();
     }
 
-    public override void PostInitialization() { StartCarousel(); }
+    public override void OnStart() { StartCarousel(); }
 
     public void Configure(BaseComponentModel newModel)
     {
@@ -160,9 +160,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         GenerateDotsSelector();
     }
 
-    public override void PostScreenSizeChanged()
+    public override void OnScreenSizeChanged()
     {
-        base.PostScreenSizeChanged();
+        base.OnScreenSizeChanged();
 
         ResizeAllItems();
     }

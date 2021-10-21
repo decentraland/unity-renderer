@@ -108,7 +108,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     private void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
 
-    public override void PostInitialization()
+    public override void OnStart()
     {
         ConfigurePlaceCardModal();
         ConfigurePlaceCardsPool();

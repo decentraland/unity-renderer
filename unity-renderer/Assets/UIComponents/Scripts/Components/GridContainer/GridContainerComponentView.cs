@@ -76,9 +76,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
 
-    public override void Initialization()
+    public override void OnAwake()
     {
-        base.Initialization();
+        base.OnAwake();
 
         RegisterCurrentInstantiatedItems();
     }
@@ -100,9 +100,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         SetSpaceBetweenItems(model.spaceBetweenItems);
     }
 
-    public override void PostScreenSizeChanged()
+    public override void OnScreenSizeChanged()
     {
-        base.PostScreenSizeChanged();
+        base.OnScreenSizeChanged();
 
         SetItemSize(model.itemSize);
     }
@@ -146,55 +146,16 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         if (model.adaptItemSizeToContainer)
         {
-            float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
-            float height = ((RectTransform)transform).rect.height;
-            float extraSpaceToRemove;
-
             switch (model.constraint)
             {
                 case Constraint.FixedColumnCount:
-                    extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
-                    newSizeToApply = new Vector2(
-                        (width / model.constranitCount) - extraSpaceToRemove,
-                        model.itemSize.y);
-
+                    CalculateSizeForFixedColumnConstraint(out newSizeToApply);
                     break;
                 case Constraint.FixedRowCount:
-                    extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
-                    newSizeToApply = new Vector2(
-                        model.itemSize.x,
-                        (height / model.constranitCount) - extraSpaceToRemove);
-
+                    CalculateSizeForFixedRowConstraint(out newSizeToApply);
                     break;
                 case Constraint.Flexible:
-                    int numberOfPossibleItems = (int)(width / model.minWidthForFlexibleItems);
-
-                    SetConstraint(Constraint.FixedColumnCount);
-
-                    if (numberOfPossibleItems > 0)
-                    {
-                        for (int numColumnsToTry = 1; numColumnsToTry <= numberOfPossibleItems; numColumnsToTry++)
-                        {
-                            SetConstraintCount(numColumnsToTry);
-                            SetItemSize(model.itemSize);
-
-                            if (model.itemSize.x < model.minWidthForFlexibleItems)
-                            {
-                                SetConstraintCount(numColumnsToTry - 1);
-                                SetItemSize(model.itemSize);
-                                break;
-                            }
-
-                            newSizeToApply = model.itemSize;
-                        }
-                    }
-                    else
-                    {
-                        newSizeToApply = new Vector2(model.minWidthForFlexibleItems, newSizeToApply.y);
-                    }
-
-                    SetConstraint(Constraint.Flexible);
-
+                    CalculateSizeForFlexibleConstraint(out newSizeToApply, newItemSize);
                     break;
             }
         }
@@ -207,6 +168,60 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         gridLayoutGroup.cellSize = newSizeToApply;
 
         ResizeGridContainer();
+    }
+
+    internal void CalculateSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
+    {
+        float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+        float extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
+
+        newSizeToApply = new Vector2(
+            (width / model.constranitCount) - extraSpaceToRemove,
+            model.itemSize.y);
+    }
+
+    internal void CalculateSizeForFixedRowConstraint(out Vector2 newSizeToApply)
+    {
+        float height = ((RectTransform)transform).rect.height;
+        float extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
+
+        newSizeToApply = new Vector2(
+            model.itemSize.x,
+            (height / model.constranitCount) - extraSpaceToRemove);
+    }
+
+    internal void CalculateSizeForFlexibleConstraint(out Vector2 newSizeToApply, Vector2 newItemSize)
+    {
+        newSizeToApply = newItemSize;
+
+        float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+        int numberOfPossibleItems = (int)(width / model.minWidthForFlexibleItems);
+
+        SetConstraint(Constraint.FixedColumnCount);
+
+        if (numberOfPossibleItems > 0)
+        {
+            for (int numColumnsToTry = 1; numColumnsToTry <= numberOfPossibleItems; numColumnsToTry++)
+            {
+                SetConstraintCount(numColumnsToTry);
+                SetItemSize(model.itemSize);
+
+                if (model.itemSize.x < model.minWidthForFlexibleItems)
+                {
+                    SetConstraintCount(numColumnsToTry - 1);
+                    SetItemSize(model.itemSize);
+                    break;
+                }
+
+                newSizeToApply = model.itemSize;
+            }
+        }
+        else
+        {
+            newSizeToApply = new Vector2(model.minWidthForFlexibleItems, newSizeToApply.y);
+        }
+
+        SetConstraint(Constraint.Flexible);
     }
 
     public void SetSpaceBetweenItems(Vector2 newSpace)
