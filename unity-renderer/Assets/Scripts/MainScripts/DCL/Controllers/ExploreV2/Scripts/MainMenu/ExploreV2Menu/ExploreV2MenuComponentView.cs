@@ -29,18 +29,13 @@ public interface IExploreV2MenuComponentView : IDisposable
     IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection { get; }
 
     /// <summary>
-    /// Returns true if the game object is activated.
-    /// </summary>
-    bool isActive { get; }
-
-    /// <summary>
     /// Activates/Deactivates the game object of the explore menu.
     /// </summary>
     /// <param name="isActive">True to activate it.</param>
     void SetActive(bool isActive);
 }
 
-public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponentView
+public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
@@ -52,8 +47,6 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
 
-    public bool isActive => gameObject.activeSelf;
-
     public GameObject go => this != null ? gameObject : null;
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
@@ -61,14 +54,15 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
     public event Action OnInitialized;
     public event Action OnCloseButtonPressed;
-
-    private void Start()
+    public override void Start()
     {
         CreateSectionSelectorMappings();
         ConfigureCloseButton();
 
         OnInitialized?.Invoke();
     }
+
+    public override void RefreshControl() { }
 
     private void OnDestroy()
     {
@@ -77,7 +71,19 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
         closeAction.OnTriggered -= OnCloseActionTriggered;
     }
 
-    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
+    public void SetActive(bool isActive)
+    {
+        if (isActive)
+        {
+            Show();
+            ShowDefaultSection();
+        }
+        else
+        {
+            Hide();
+            placesAndEventsSection.gameObject.SetActive(false);
+        }
+    }
 
     internal void CreateSectionSelectorMappings()
     {
@@ -107,6 +113,4 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
         return exploreV2View;
     }
-
-    public void Dispose() { Destroy(gameObject); }
 }

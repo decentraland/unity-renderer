@@ -161,7 +161,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
     public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 
-    public override void OnStart()
+    public override void Start()
     {
         if (eventImage != null)
             eventImage.OnLoaded += OnEventImageLoaded;

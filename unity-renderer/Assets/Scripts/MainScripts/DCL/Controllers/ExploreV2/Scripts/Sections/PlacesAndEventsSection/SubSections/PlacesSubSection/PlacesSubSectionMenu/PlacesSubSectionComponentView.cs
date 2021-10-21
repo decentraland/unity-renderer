@@ -106,9 +106,9 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public Color[] currentFriendColors => friendColors;
 
-    private void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
+    public override void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
 
-    public override void OnStart()
+    public override void Start()
     {
         ConfigurePlaceCardModal();
         ConfigurePlaceCardsPool();

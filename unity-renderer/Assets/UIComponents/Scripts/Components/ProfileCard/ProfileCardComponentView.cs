@@ -59,7 +59,7 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
     public Button.ButtonClickedEvent onClick => button?.onClick;
 
-    public override void OnStart()
+    public override void Start()
     {
         if (profileImage != null)
             profileImage.OnLoaded += OnProfileImageLoaded;

@@ -124,7 +124,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
 
-    public override void OnStart()
+    public override void Start()
     {
         if (placeImage != null)
             placeImage.OnLoaded += OnPlaceImageLoaded;

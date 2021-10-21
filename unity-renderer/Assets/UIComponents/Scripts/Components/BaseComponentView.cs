@@ -9,12 +9,17 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     /// <summary>
     /// It is called at the beginning of the UI component lifecycle.
     /// </summary>
-    void OnAwake();
+    void Awake();
+
+    /// <summary>
+    /// It is called each time the component is enabled.
+    /// </summary>
+    void OnEnable();
 
     /// <summary>
     /// It is called just after the UI component has been initialized.
     /// </summary>
-    void OnStart();
+    void Start();
 
     /// <summary>
     /// Updates the UI component with the current model configuration.
@@ -63,13 +68,15 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
-    public virtual void OnAwake()
+    public virtual void Awake()
     {
         showHideAnimator = GetComponent<ShowHideAnimator>();
         DataStore.i.screen.size.OnChange += OnScreenSizeModified;
     }
 
-    public virtual void OnStart() { }
+    public virtual void OnEnable() { OnScreenSizeChanged(); }
+
+    public virtual void Start() { }
 
     public abstract void RefreshControl();
 
@@ -96,12 +103,6 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void OnScreenSizeChanged() { }
 
     public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeModified; }
-
-    private void Awake() { OnAwake(); }
-
-    private void OnEnable() { OnScreenSizeChanged(); }
-
-    private void Start() { OnStart(); }
 
     public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 

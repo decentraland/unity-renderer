@@ -129,15 +129,15 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal float currentFinalNormalizedPos;
     internal bool isInTransition = false;
 
-    public override void OnAwake()
+    public override void Awake()
     {
-        base.OnAwake();
+        base.Awake();
 
         StartCoroutine(RegisterCurrentInstantiatedItems());
         ConfigureManualButtonsEvents();
     }
 
-    public override void OnStart() { StartCarousel(); }
+    public override void Start() { StartCarousel(); }
 
     public void Configure(BaseComponentModel newModel)
     {

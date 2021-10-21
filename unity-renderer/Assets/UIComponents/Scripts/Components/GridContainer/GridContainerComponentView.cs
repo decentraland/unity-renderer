@@ -76,9 +76,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
 
-    public override void OnAwake()
+    public override void Awake()
     {
-        base.OnAwake();
+        base.Awake();
 
         RegisterCurrentInstantiatedItems();
     }

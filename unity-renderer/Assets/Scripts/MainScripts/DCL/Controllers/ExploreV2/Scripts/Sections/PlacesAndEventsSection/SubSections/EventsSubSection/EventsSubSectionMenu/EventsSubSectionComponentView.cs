@@ -156,9 +156,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     internal Pool upcomingEventCardsPool;
     internal Pool goingEventCardsPool;
 
-    private void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
+    public override void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
 
-    public override void OnStart()
+    public override void Start()
     {
         ConfigureEventCardModal();
         ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, 10);

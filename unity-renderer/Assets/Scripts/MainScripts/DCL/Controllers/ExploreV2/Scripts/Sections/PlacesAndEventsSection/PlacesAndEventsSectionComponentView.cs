@@ -13,7 +13,7 @@ public interface IPlacesAndEventsSectionComponentView
     IEventsSubSectionComponentView currentEventsSubSectionComponentView { get; }
 }
 
-public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEventsSectionComponentView
+public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
 {
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
@@ -25,7 +25,9 @@ public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEven
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
     public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
 
-    private void Start() { CreateSubSectionSelectorMappings(); }
+    public override void Start() { CreateSubSectionSelectorMappings(); }
+
+    public override void RefreshControl() { }
 
     private void OnDestroy() { RemoveSectionSelectorMappings(); }
 
