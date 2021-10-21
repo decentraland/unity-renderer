@@ -124,7 +124,7 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
-      - run: &NUNIT_TO_JUNIT
+      - run: *NUNIT_TO_JUNIT
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/editmode-logs.txt
@@ -164,7 +164,7 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
-      - run: *NUNIT_TO_JUNIT
+      - run: &NUNIT_TO_JUNIT
           name: nunit-to-junit
           when: always
           command: |
