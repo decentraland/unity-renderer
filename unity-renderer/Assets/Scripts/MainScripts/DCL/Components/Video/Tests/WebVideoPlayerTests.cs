@@ -159,8 +159,8 @@ namespace Tests
         {
             Texture texture = new Texture2D(0, 0);
             int timesTextureWasReady = 0;
-            plugin.GetWidth(ID).Returns(32);
-            plugin.GetHeight(ID).Returns(64);
+            plugin.GetWidth(ID).Returns(1);
+            plugin.GetHeight(ID).Returns(1);
             plugin.GetState(ID).Returns((int)VideoState.READY);
             webVideoPlayer.OnTextureReady += t =>
             {
@@ -172,8 +172,8 @@ namespace Tests
             webVideoPlayer.UpdateWebVideoTexture();
 
             Assert.IsTrue(timesTextureWasReady == 1);
-            Assert.AreEqual(32, texture.width);
-            Assert.AreEqual(64, texture.height);
+            Assert.AreEqual(1, texture.width);
+            Assert.AreEqual(1, texture.height);
         }
 
         [Test]
