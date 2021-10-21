@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Components.Video;
 using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        internal WebVideoPlayer texturePlayer;
+        internal IVideoPlayer texturePlayer;
         private Coroutine texturePlayerUpdateRoutine;
         private float baseVolume;
         private float distanceVolumeModifier = 1f;
@@ -96,7 +97,7 @@ namespace DCL.Components
                 }
 
                 string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
+                texturePlayer = CreateTexturePlayer(videoId, dclVideoClip);
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
@@ -166,6 +167,10 @@ namespace DCL.Components
                 texturePlayer.SetPlaybackRate(model.playbackRate);
                 texturePlayer.SetLoop(model.loop);
             }
+        }
+        protected virtual IVideoPlayer CreateTexturePlayer(string videoId, DCLVideoClip dclVideoClip)
+        {
+            return new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
         }
 
         public float GetVolume() { return ((Model) model).volume; }

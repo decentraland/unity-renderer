@@ -1,3 +1,4 @@
+using DCL.Components.Video;
 using DCL.Components.Video.Plugin;
 using NSubstitute;
 using NUnit.Framework;

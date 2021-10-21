@@ -4,6 +4,7 @@ using DCL.Components;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Components.Video;
 using DCL.Components.Video.Plugin;
 using UnityEngine;
 using UnityEngine.TestTools;

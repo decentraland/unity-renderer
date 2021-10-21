@@ -1,4 +1,4 @@
-namespace DCL.Components.Video.Plugin
+namespace DCL.Components.Video
 {
     public enum VideoState
     {

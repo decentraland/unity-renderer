@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
-    public class WebVideoPlayer : IDisposable
+    public class WebVideoPlayer : IVideoPlayer
     {
         public event Action<Texture> OnTextureReady;
         public Texture2D texture { private set; get; }
@@ -164,11 +164,12 @@ namespace DCL.Components.Video.Plugin
             texture = null;
         }
 
-        private Texture2D CreateTexture(int width, int height)
+        public Texture2D CreateTexture(int width, int height)
         {
             Texture2D tex = new Texture2D(width, height, TextureFormat.ARGB32, false);
             tex.wrapMode = TextureWrapMode.Clamp;
             return tex;
         }
     }
+
 }
