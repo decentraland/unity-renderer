@@ -5,12 +5,6 @@ using UnityEngine.UI;
 public interface ITagComponentView
 {
     /// <summary>
-    /// Fill the model and updates the tag with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the tag.</param>
-    void Configure(TagComponentModel model);
-
-    /// <summary>
     /// Set the tag text.
     /// </summary>
     /// <param name="newText">New text.</param>
@@ -23,7 +17,7 @@ public interface ITagComponentView
     void SetIcon(Sprite newIcon);
 }
 
-public class TagComponentView : BaseComponentView, ITagComponentView
+public class TagComponentView : BaseComponentView, ITagComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Image icon;
@@ -32,15 +26,9 @@ public class TagComponentView : BaseComponentView, ITagComponentView
     [Header("Configuration")]
     [SerializeField] internal TagComponentModel model;
 
-    public override void PostInitialization()
+    public void Configure(BaseComponentModel newModel)
     {
-        ;
-        Configure(model);
-    }
-
-    public void Configure(TagComponentModel model)
-    {
-        this.model = model;
+        model = (TagComponentModel)newModel;
         RefreshControl();
     }
 

@@ -10,7 +10,7 @@ public class ButtonComponentViewTests
     [SetUp]
     public void SetUp()
     {
-        buttonComponent = CreateButtonComponent();
+        buttonComponent = BaseComponentView.Create<ButtonComponentView>("Button_Common");
         testTexture = new Texture2D(20, 20);
     }
 
@@ -43,8 +43,7 @@ public class ButtonComponentViewTests
         ButtonComponentModel testModel = new ButtonComponentModel
         {
             icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
-            text = "Test",
-            onClick = new Button.ButtonClickedEvent()
+            text = "Test"
         };
 
         // Act
@@ -64,7 +63,6 @@ public class ButtonComponentViewTests
 
         buttonComponent.model.icon = testSprite;
         buttonComponent.model.text = testText;
-        buttonComponent.model.onClick = testClickedEvent;
 
         // Act
         buttonComponent.RefreshControl();
@@ -72,7 +70,6 @@ public class ButtonComponentViewTests
         // Assert
         Assert.AreEqual(testSprite, buttonComponent.model.icon, "The icon does not match in the model.");
         Assert.AreEqual(testText, buttonComponent.model.text, "The text does not match in the model.");
-        Assert.AreEqual(testClickedEvent, buttonComponent.model.onClick, "The onClick event does not match in the model.");
     }
 
     [Test]
@@ -109,16 +106,4 @@ public class ButtonComponentViewTests
         else
             Assert.IsTrue(buttonComponent.icon.gameObject.activeSelf);
     }
-
-    protected virtual ButtonComponentView CreateButtonComponent() { return BaseComponentView.Create<ButtonComponentView>("Button_Common"); }
-}
-
-public class JumpInButtonComponentViewTests : ButtonComponentViewTests
-{
-    protected override ButtonComponentView CreateButtonComponent() { return BaseComponentView.Create<ButtonComponentView>("Button_JumpIn"); }
-}
-
-public class LinkButtonComponentViewTests : ButtonComponentViewTests
-{
-    protected override ButtonComponentView CreateButtonComponent() { return BaseComponentView.Create<ButtonComponentView>("Button_Link"); }
 }

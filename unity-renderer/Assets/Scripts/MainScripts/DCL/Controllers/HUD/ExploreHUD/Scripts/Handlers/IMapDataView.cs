@@ -1,6 +1,6 @@
 using UnityEngine;
 
-internal interface IMapDataView
+public interface IMapDataView
 {
     Vector2Int baseCoord { get; }
     string name { get; }

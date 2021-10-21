@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using UnityEngine;
 
-internal class MapInfoHandler : IMapDataView
+public class MapInfoHandler : IMapDataView
 {
     public Vector2Int baseCoord { private set; get; }
     public string name { private set; get; }
