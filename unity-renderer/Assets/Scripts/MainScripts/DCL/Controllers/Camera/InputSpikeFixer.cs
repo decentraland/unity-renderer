@@ -5,7 +5,7 @@ namespace DCL.Camera
 {
     public class InputSpikeFixer
     {
-        private const float INPUT_SPIKE_TOLERANCE = 0.5f;
+        private const float INPUT_SPIKE_TOLERANCE = 10f;
         private readonly Func<CursorLockMode> getLockMode;
 
         private CursorLockMode lastLockState;
