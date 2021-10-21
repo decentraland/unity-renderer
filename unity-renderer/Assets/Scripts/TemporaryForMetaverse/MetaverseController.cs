@@ -9,7 +9,6 @@ public class MetaverseController : MonoBehaviour
     [SerializeField] private Button open;
     [SerializeField] private Button close;
     [SerializeField] private GameObject container;
-    [SerializeField] private Button overlay;
     [SerializeField] private TextMeshProUGUI clock;
 
     [Header("Jump Ins")]
@@ -30,7 +29,6 @@ public class MetaverseController : MonoBehaviour
         container.SetActive(false);
         open.onClick.AddListener(OnOpen);
         close.onClick.AddListener(OnClose);
-        overlay.onClick.AddListener(OnClose);
 
         smash.onClick.AddListener(() => OnJumpIn(smashCoords));
         acoustic.onClick.AddListener(() => OnJumpIn(acousticCoords));
