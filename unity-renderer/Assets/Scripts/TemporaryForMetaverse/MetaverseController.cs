@@ -6,20 +6,39 @@ public class MetaverseController : MonoBehaviour
 {
     [SerializeField] private Button open;
     [SerializeField] private Button close;
-    [SerializeField] private Button jumpin;
     [SerializeField] private GameObject container;
-    [SerializeField] private Vector2Int coords;
 
-    // Start is called before the first frame update
+    [Header("Jump Ins")]
+    [SerializeField] private Button smash;
+    [SerializeField] private Button acoustic;
+    [SerializeField] private Button techno;
+    [SerializeField] private Button world;
+    [SerializeField] private Button evolution;
+    [SerializeField] private Button hex;
+
+    private static readonly Vector2Int smashCoords = new Vector2Int(-67, 84);
+    private static readonly Vector2Int acousticCoords = new Vector2Int(-66, 81);
+    private static readonly Vector2Int technoCoords = new Vector2Int(-62, 81);
+    private static readonly Vector2Int worldCoords = new Vector2Int(-61, 85);
+    private static readonly Vector2Int evolutionCoords = new Vector2Int(-64, 92);
+    private static readonly Vector2Int hexCoords = new Vector2Int(-69, 95);
+
     void Start()
     {
         container.SetActive(false);
         open.onClick.AddListener(OnOpen);
         close.onClick.AddListener(OnClose);
-        jumpin.onClick.AddListener(OnJumpIn);
+
+        smash.onClick.AddListener(() => OnJumpIn(smashCoords));
+        acoustic.onClick.AddListener(() => OnJumpIn(acousticCoords));
+        techno.onClick.AddListener(() => OnJumpIn(technoCoords));
+        world.onClick.AddListener(() => OnJumpIn(worldCoords));
+        evolution.onClick.AddListener(() => OnJumpIn(evolutionCoords));
+        hex.onClick.AddListener(() => OnJumpIn(hexCoords));
     }
-    private void OnJumpIn()
+    private void OnJumpIn(Vector2Int coords)
     {
+        OnClose();
         WebInterface.SendChatMessage(new ChatMessage
         {
             messageType = ChatMessage.Type.NONE,
