@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.UI.GridLayoutGroup;
@@ -46,6 +47,18 @@ public interface IGridContainerComponentView
     /// </summary>
     /// <param name="items">List of UI components.</param>
     void SetItems(List<BaseComponentView> items);
+
+    /// <summary>
+    /// Adds a new item in the grid.
+    /// </summary>
+    /// <param name="item">An UI component.</param>
+    void AddItem(BaseComponentView item);
+
+    /// <summary>
+    /// Remove an item from the grid.
+    /// </summary>
+    /// <param name="item">An UI component</param>
+    void RemoveItem(BaseComponentView item);
 
     /// <summary>
     /// Get all the items of the grid.
@@ -247,6 +260,24 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         for (int i = 0; i < items.Count; i++)
         {
             CreateItem(items[i], $"Item{i}");
+        }
+
+        SetItemSize(model.itemSize);
+    }
+
+    public void AddItem(BaseComponentView item)
+    {
+        CreateItem(item, $"Item{instantiatedItems.Count}");
+        SetItemSize(model.itemSize);
+    }
+
+    public void RemoveItem(BaseComponentView item)
+    {
+        BaseComponentView itemToRemove = instantiatedItems.FirstOrDefault(x => x == item);
+        if (itemToRemove != null)
+        {
+            Destroy(itemToRemove.gameObject);
+            instantiatedItems.Remove(item);
         }
 
         SetItemSize(model.itemSize);

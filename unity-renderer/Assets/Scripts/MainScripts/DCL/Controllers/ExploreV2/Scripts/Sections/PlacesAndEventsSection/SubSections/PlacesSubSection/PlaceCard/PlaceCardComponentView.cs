@@ -124,8 +124,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
 
-    public override void Start()
+    public override void Awake()
     {
+        base.Awake();
+
         if (placeImage != null)
             placeImage.OnLoaded += OnPlaceImageLoaded;
 
@@ -358,10 +360,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             },
             friendHeadPrefab);
 
-        currentFriendHeads.Add(profile.userId, newFriend);
-
         if (friendsGrid != null)
-            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList());
+            friendsGrid.AddItem(newFriend);
+
+        currentFriendHeads.Add(profile.userId, newFriend);
     }
 
     internal void OnFriendRemoved(UserProfile profile)
@@ -369,10 +371,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (!currentFriendHeads.ContainsKey(profile.userId))
             return;
 
-        currentFriendHeads.Remove(profile.userId);
-
         if (friendsGrid != null)
-            friendsGrid.SetItems(currentFriendHeads.Select(x => x.Value).ToList());
+            friendsGrid.RemoveItem(currentFriendHeads[profile.userId]);
+
+        currentFriendHeads.Remove(profile.userId);
     }
 
     internal void CleanFriendHeadsItems()
