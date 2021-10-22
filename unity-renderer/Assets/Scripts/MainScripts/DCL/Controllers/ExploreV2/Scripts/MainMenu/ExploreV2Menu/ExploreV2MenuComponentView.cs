@@ -85,12 +85,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         }
     }
 
-    internal void CreateSectionSelectorMappings()
-    {
-        sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn));
-
-        ShowDefaultSection();
-    }
+    internal void CreateSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn)); }
 
     internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.RemoveAllListeners(); }
 

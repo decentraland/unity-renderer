@@ -194,12 +194,12 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         return instantiatedPlaces;
     }
 
-    internal void ConfigurePlaceCard(PlaceCardComponentView eventCard, PlaceCardComponentModel placeInfo)
+    internal void ConfigurePlaceCard(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo)
     {
-        eventCard.Configure(placeInfo);
-        eventCard.onInfoClick?.RemoveAllListeners();
-        eventCard.onInfoClick?.AddListener(() => OnInfoClicked?.Invoke(placeInfo));
-        eventCard.onJumpInClick?.RemoveAllListeners();
-        eventCard.onJumpInClick?.AddListener(() => OnJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
+        placeCard.Configure(placeInfo);
+        placeCard.onInfoClick?.RemoveAllListeners();
+        placeCard.onInfoClick?.AddListener(() => OnInfoClicked?.Invoke(placeInfo));
+        placeCard.onJumpInClick?.RemoveAllListeners();
+        placeCard.onJumpInClick?.AddListener(() => OnJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
     }
 }
