@@ -86,7 +86,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
 
         DataStore.i.exploreV2.isOpen.Set(visible);
-        view.SetActive(visible);
+        view.SetVisible(visible);
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)

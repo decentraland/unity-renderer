@@ -28,7 +28,7 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Assert
         Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
-        exploreV2MenuView.Received().SetActive(false);
+        exploreV2MenuView.Received().SetVisible(false);
         Assert.IsTrue(DataStore.i.exploreV2.isInitialized.Get());
     }
 
@@ -54,7 +54,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.SetVisibility(isVisible);
 
         //Assert
-        exploreV2MenuView.Received().SetActive(isVisible);
+        exploreV2MenuView.Received().SetVisible(isVisible);
     }
 
     [Test]
@@ -109,7 +109,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.OnCloseButtonPressed();
 
         // Assert
-        exploreV2MenuView.Received().SetActive(false);
+        exploreV2MenuView.Received().SetVisible(false);
     }
 
     [Test]
@@ -121,6 +121,6 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.OnActivateFromTaskbar(isActive, !isActive);
 
         // Assert
-        exploreV2MenuView.Received().SetActive(isActive);
+        exploreV2MenuView.Received().SetVisible(isActive);
     }
 }
