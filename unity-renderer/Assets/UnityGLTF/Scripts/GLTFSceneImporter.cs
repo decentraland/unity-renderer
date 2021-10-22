@@ -49,6 +49,7 @@ namespace UnityGLTF
         public TextureWrapMode wrapMode;
         public bool generateMipmaps;
         public bool uploadToGpu;
+        public bool linear;
     }
 
     /// <summary>
@@ -113,7 +114,6 @@ namespace UnityGLTF
         /// Initial state of the meshes
         /// </summary>
         public bool initialVisibility { get; set; }
-
 
         private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
         private static float budgetPerFrameInMillisecondsValue = 2f;
@@ -496,7 +496,7 @@ namespace UnityGLTF
         static List<string> streamingImagesStaticList = new List<string>();
         List<string> streamingImagesLocalList = new List<string>();
 
-        protected IEnumerator ConstructImageBuffer(GLTFTexture texture, int textureIndex)
+        protected IEnumerator ConstructImageBuffer(GLTFTexture texture, int textureIndex, bool linear)
         {
             int sourceId = GetTextureSourceId(texture);
             GLTFImage image = _gltfRoot.Images[sourceId];
@@ -509,7 +509,7 @@ namespace UnityGLTF
                 }
             }
 
-            TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture);
+            TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture, linear);
             string imageId = GenerateImageId(image.Uri, sourceId, settings);
 
             if ((image.Uri == null || !PersistentAssetCache.HasImage(imageId)) && _assetCache.ImageStreamCache[sourceId] == null)
@@ -744,7 +744,7 @@ namespace UnityGLTF
 
         protected virtual IEnumerator ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
         {
-            Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps);
+            Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, false);
@@ -756,7 +756,7 @@ namespace UnityGLTF
                 //NOTE(Brian): This breaks importing in editor mode
                 texture.Compress(false);
             }
-            
+
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
@@ -1011,7 +1011,7 @@ namespace UnityGLTF
                 string relativePath = RelativePathFrom(node.transform, root);
 
                 NumericArray input = samplerCache.Input.AccessorContent,
-                    output = samplerCache.Output.AccessorContent;
+                             output = samplerCache.Output.AccessorContent;
 
                 string[] propertyNames;
                 Vector3 coordinateSpaceConversionScale = new Vector3(-1, 1, 1);
@@ -1885,7 +1885,7 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     var textureId = pbr.BaseColorTexture.Index;
-                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, false);
 
                     if (_asyncCoroutineHelper != null)
                     {
@@ -1900,7 +1900,7 @@ namespace UnityGLTF
                 if (pbr.MetallicRoughnessTexture != null)
                 {
                     var textureId = pbr.MetallicRoughnessTexture.Index;
-                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
                     if (_asyncCoroutineHelper != null)
                     {
@@ -1918,7 +1918,7 @@ namespace UnityGLTF
                 if (def.CommonConstant.LightmapTexture != null)
                 {
                     var textureId = def.CommonConstant.LightmapTexture.Index;
-                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
                     if (_asyncCoroutineHelper != null)
                     {
@@ -1934,7 +1934,7 @@ namespace UnityGLTF
             if (def.NormalTexture != null)
             {
                 var textureId = def.NormalTexture.Index;
-                var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
                 if (_asyncCoroutineHelper != null)
                 {
@@ -1954,7 +1954,7 @@ namespace UnityGLTF
                       && def.PbrMetallicRoughness.MetallicRoughnessTexture != null
                       && def.PbrMetallicRoughness.MetallicRoughnessTexture.Index.Id == textureId.Id))
                 {
-                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
                     if (_asyncCoroutineHelper != null)
                     {
@@ -1970,7 +1970,7 @@ namespace UnityGLTF
             if (def.EmissiveTexture != null)
             {
                 var textureId = def.EmissiveTexture.Index;
-                var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, false);
 
                 if (_asyncCoroutineHelper != null)
                 {
@@ -1992,7 +1992,7 @@ namespace UnityGLTF
                 if (specGlossDef.DiffuseTexture != null)
                 {
                     var textureId = specGlossDef.DiffuseTexture.Index;
-                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
                     if (_asyncCoroutineHelper != null)
                     {
@@ -2007,7 +2007,7 @@ namespace UnityGLTF
                 if (specGlossDef.SpecularGlossinessTexture != null)
                 {
                     var textureId = specGlossDef.SpecularGlossinessTexture.Index;
-                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
                     if (_asyncCoroutineHelper != null)
                     {
@@ -2206,7 +2206,7 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     TextureId textureId = pbr.BaseColorTexture.Index;
-                    yield return ConstructTexture(textureId.Value, textureId.Id);
+                    yield return ConstructTexture(textureId.Value, textureId.Id, false);
                     mrMapper.BaseColorTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
 
                     mrMapper.BaseColorTexCoord = pbr.BaseColorTexture.TexCoord;
@@ -2224,7 +2224,7 @@ namespace UnityGLTF
                 if (pbr.MetallicRoughnessTexture != null)
                 {
                     TextureId textureId = pbr.MetallicRoughnessTexture.Index;
-                    yield return ConstructTexture(textureId.Value, textureId.Id);
+                    yield return ConstructTexture(textureId.Value, textureId.Id, true);
                     mrMapper.MetallicRoughnessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     mrMapper.MetallicRoughnessTexCoord = pbr.MetallicRoughnessTexture.TexCoord;
                     mrMapper.RoughnessFactor = 0;
@@ -2244,7 +2244,7 @@ namespace UnityGLTF
                 if (specGloss.DiffuseTexture != null)
                 {
                     TextureId textureId = specGloss.DiffuseTexture.Index;
-                    yield return ConstructTexture(textureId.Value, textureId.Id);
+                    yield return ConstructTexture(textureId.Value, textureId.Id, true);
                     sgMapper.DiffuseTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     sgMapper.DiffuseTexCoord = specGloss.DiffuseTexture.TexCoord;
                     ExtTextureTransformExtension ext = GetTextureTransform(specGloss.DiffuseTexture);
@@ -2262,7 +2262,7 @@ namespace UnityGLTF
                 if (specGloss.SpecularGlossinessTexture != null)
                 {
                     TextureId textureId = specGloss.SpecularGlossinessTexture.Index;
-                    yield return ConstructTexture(textureId.Value, textureId.Id);
+                    yield return ConstructTexture(textureId.Value, textureId.Id, true);
                     sgMapper.SpecularGlossinessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 }
             }
@@ -2270,7 +2270,7 @@ namespace UnityGLTF
             if (def.NormalTexture != null)
             {
                 TextureId textureId = def.NormalTexture.Index;
-                yield return ConstructTexture(textureId.Value, textureId.Id);
+                yield return ConstructTexture(textureId.Value, textureId.Id, true);
                 mapper.NormalTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 mapper.NormalTexCoord = def.NormalTexture.TexCoord;
                 mapper.NormalTexScale = def.NormalTexture.Scale;
@@ -2280,14 +2280,14 @@ namespace UnityGLTF
             {
                 mapper.OcclusionTexStrength = def.OcclusionTexture.Strength;
                 TextureId textureId = def.OcclusionTexture.Index;
-                yield return ConstructTexture(textureId.Value, textureId.Id);
+                yield return ConstructTexture(textureId.Value, textureId.Id, true);
                 mapper.OcclusionTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
             }
 
             if (def.EmissiveTexture != null)
             {
                 TextureId textureId = def.EmissiveTexture.Index;
-                yield return ConstructTexture(textureId.Value, textureId.Id);
+                yield return ConstructTexture(textureId.Value, textureId.Id, false);
                 mapper.EmissiveTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                 mapper.EmissiveTexCoord = def.EmissiveTexture.TexCoord;
             }
@@ -2319,7 +2319,7 @@ namespace UnityGLTF
 
         protected virtual int GetTextureSourceId(GLTFTexture texture) { return texture.Source.Id; }
 
-        TextureCreationSettings GetTextureCreationSettingsForTexture(GLTFTexture texture)
+        TextureCreationSettings GetTextureCreationSettingsForTexture(GLTFTexture texture, bool linear)
         {
             TextureCreationSettings settings = new TextureCreationSettings();
             var desiredFilterMode = FilterMode.Trilinear;
@@ -2361,17 +2361,18 @@ namespace UnityGLTF
             settings.wrapMode = desiredWrapMode;
             settings.uploadToGpu = true;
             settings.generateMipmaps = true;
+            settings.linear = linear;
             return settings;
         }
 
-        protected virtual IEnumerator ConstructTexture(GLTFTexture texture, int textureIndex)
+        protected virtual IEnumerator ConstructTexture(GLTFTexture texture, int textureIndex, bool linear)
         {
             yield return new WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
 
             if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
                 yield break;
 
-            TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture);
+            TextureCreationSettings settings = GetTextureCreationSettingsForTexture(texture, linear);
 
             int sourceId = GetTextureSourceId(texture);
             GLTFImage image = _gltfRoot.Images[sourceId];
