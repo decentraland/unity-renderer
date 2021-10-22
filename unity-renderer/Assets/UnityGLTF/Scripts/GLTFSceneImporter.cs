@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using DCL;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -16,6 +17,7 @@ using UnityGLTF.Cache;
 using UnityGLTF.Extensions;
 using UnityGLTF.Loader;
 using Object = UnityEngine.Object;
+using WaitUntil = UnityEngine.WaitUntil;
 #if !WINDOWS_UWP
 using ThreadPriority = System.Threading.ThreadPriority;
 #endif
@@ -113,7 +115,6 @@ namespace UnityGLTF
         /// Initial state of the meshes
         /// </summary>
         public bool initialVisibility { get; set; }
-
 
         private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
         private static float budgetPerFrameInMillisecondsValue = 2f;
@@ -756,7 +757,7 @@ namespace UnityGLTF
                 //NOTE(Brian): This breaks importing in editor mode
                 texture.Compress(false);
             }
-            
+
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
@@ -1011,7 +1012,7 @@ namespace UnityGLTF
                 string relativePath = RelativePathFrom(node.transform, root);
 
                 NumericArray input = samplerCache.Input.AccessorContent,
-                    output = samplerCache.Output.AccessorContent;
+                             output = samplerCache.Output.AccessorContent;
 
                 string[] propertyNames;
                 Vector3 coordinateSpaceConversionScale = new Vector3(-1, 1, 1);
@@ -1779,6 +1780,7 @@ namespace UnityGLTF
 
             DCL.Helpers.SRPBatchingHelper.OptimizeMaterial(material);
 
+            material.color = Color.red;
             if (matController != null)
             {
                 matController.OnDidFinishLoading(material);
