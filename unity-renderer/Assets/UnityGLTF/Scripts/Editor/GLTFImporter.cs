@@ -176,7 +176,7 @@ namespace UnityGLTF
                                             mesh.name = ObjectNames.GetUniqueName(meshNames.ToArray(), meshName);
                                             meshNames.Add(mesh.name);
                                         }
-
+                                        
                                         return mesh;
                                     })
                                     .ToArray();
@@ -190,11 +190,7 @@ namespace UnityGLTF
                     Directory.CreateDirectory(animationsRoot);
                     foreach (AnimationClip clip in animationClips)
                     {
-                        string fileName = clip.name;
-                        foreach (char c in System.IO.Path.GetInvalidFileNameChars())
-                        {
-                            fileName = fileName.Replace(c, '_');
-                        }
+                        string fileName = PatchInvalidFileNameChars(clip.name);
 
                         AssetDatabase.CreateAsset(clip, animationsRoot + fileName + ".anim");
                         var importer = AssetImporter.GetAtPath(animationsRoot + fileName + ".anim");
@@ -214,6 +210,8 @@ namespace UnityGLTF
                         {
                             matName = matName.Substring(Mathf.Min(matName.LastIndexOf("/") + 1, matName.Length - 1));
                         }
+                        
+                        matName = PatchInvalidFileNameChars(matName);
 
                         // Ensure name is unique
                         matName = ObjectNames.NicifyVariableName(matName);
@@ -310,7 +308,7 @@ namespace UnityGLTF
 
                                 if (File.Exists(absolutePath) || cachedTextures.Contains(tex))
                                     continue;
-
+                                
                                 File.WriteAllBytes(texPath, _useJpgTextures ? tex.EncodeToJPG() : tex.EncodeToPNG());
                                 AssetDatabase.ImportAsset(texPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
                             }
@@ -510,6 +508,8 @@ namespace UnityGLTF
                 loader.useMaterialTransition = false;
                 loader.maximumLod = _maximumLod;
                 loader.isMultithreaded = true;
+                loader.forceGPUOnlyMesh = false;
+                loader.forceGPUOnlyTex = false;
 
                 OnGLTFWillLoad?.Invoke(loader);
 
@@ -541,6 +541,19 @@ namespace UnityGLTF
 
                 return loader.lastLoadedScene;
             }
+        }
+        
+        private string PatchInvalidFileNameChars(string fileName)
+        {
+            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(c, '_');
+            }
+            
+            fileName = fileName.Replace(":", "_");
+            fileName = fileName.Replace("|", "_");
+
+            return fileName;
         }
 
         private void CopyOrNew<T>(T asset, string assetPath, Action<T> replaceReferences) where T : Object
