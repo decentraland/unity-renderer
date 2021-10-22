@@ -15,14 +15,9 @@ namespace DCL
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
 
-        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
-        {
-        }
+        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash) { }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
-        {
-            loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail));
-        }
+        protected override void OnLoad(Action OnSuccess, Action OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
         protected override bool AddToLibrary()
         {
@@ -52,10 +47,7 @@ namespace DCL
             asset.Show(OnSuccess);
         }
 
-        protected override void OnAfterLoadOrReuse()
-        {
-            settings.ApplyAfterLoad(asset.container.transform);
-        }
+        protected override void OnAfterLoadOrReuse() { settings.ApplyAfterLoad(asset.container.transform); }
 
         protected override void OnBeforeLoadOrReuse()
         {
@@ -78,7 +70,6 @@ namespace DCL
 
             AssetPromiseKeeper_AB.i.Forget(subPromise);
         }
-
 
         public override string ToString()
         {
@@ -116,7 +107,6 @@ namespace DCL
             }
         }
 
-
         public IEnumerator InstantiateABGameObjects()
         {
             var goList = subPromise.asset.GetAssetsByExtensions<GameObject>("glb", "ltf");
@@ -151,6 +141,14 @@ namespace DCL
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
                 yield return MaterialCachingHelper.Process(rendererList, enableRenderers: false, settings.cachingFlags);
+
+                foreach (var renderer in rendererList)
+                {
+                    foreach (var material in renderer.materials)
+                    {
+                        material.color = Color.green;
+                    }
+                }
 
                 var animators = assetBundleModelGO.GetComponentsInChildren<Animation>(true);
 
