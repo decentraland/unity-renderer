@@ -167,8 +167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54c1c7c740c0f0b48b61ab7be9b35187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gtlfMaterial: {fileID: 0}
-  abMaterial: {fileID: 0}
+  gtlfMaterial: {fileID: 2100000, guid: 60ff5e133651a5e488ff7440b0addaf6, type: 2}
+  abMaterial: {fileID: 2100000, guid: 460f541683fa3bb44990aeb7d4125c7e, type: 2}
 --- !u!114 &134299876 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3666597879787490177, guid: b0965b55b892d438da492708ea09799c,
@@ -1090,10 +1090,10 @@ MonoBehaviour:
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 1
-  baseUrlCustom: https://play.decentraland.zone/?
+  baseUrlCustom: https://play.decentraland.org/?
   environment: 4
-  realm: fenrir-amber
-  startInCoords: {x: 0, y: 0}
+  realm: fenrir
+  startInCoords: {x: 100, y: 100}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
