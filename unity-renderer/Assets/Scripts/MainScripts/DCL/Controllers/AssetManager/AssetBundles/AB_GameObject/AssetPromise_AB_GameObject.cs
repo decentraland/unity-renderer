@@ -144,10 +144,8 @@ namespace DCL
 
                 foreach (var renderer in rendererList)
                 {
-                    foreach (var material in renderer.materials)
-                    {
-                        material.color = Color.green;
-                    }
+                    renderer.material =  GameObject.FindObjectOfType<MaterialAsso>().abMaterial;
+
                 }
 
                 var animators = assetBundleModelGO.GetComponentsInChildren<Animation>(true);

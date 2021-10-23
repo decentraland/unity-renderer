@@ -1780,7 +1780,8 @@ namespace UnityGLTF
 
             DCL.Helpers.SRPBatchingHelper.OptimizeMaterial(material);
 
-            material.color = Color.red;
+            material = GameObject.FindObjectOfType<MaterialAsso>().gtlfMaterial;
+
             if (matController != null)
             {
                 matController.OnDidFinishLoading(material);
