@@ -125,6 +125,7 @@ public class BuilderInWorld : PluginFeature
         InitHUD();
 
         BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
+        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         ConfigureLoadingController();
         InitControllers();
@@ -138,10 +139,7 @@ public class BuilderInWorld : PluginFeature
         else
             AskHeadersToKernel();
 
-
         isCatalogLoading = true;
-        BIWNFTController.i.Initialize();
-        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
@@ -230,8 +228,8 @@ public class BuilderInWorld : PluginFeature
             initialLoadingController.Dispose();
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
-
         BIWNFTController.i.Dispose();
+
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
@@ -359,6 +357,8 @@ public class BuilderInWorld : PluginFeature
             var userProfile = UserProfile.GetOwnUserProfile();
             if (userProfile != null)
                 ethAddress = userProfile.ethAddress;
+
+            BIWNFTController.i.StartFetchingNft();
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
         }
@@ -830,7 +830,7 @@ public class BuilderInWorld : PluginFeature
         if (activeFeature)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             TryStartEnterEditMode(targetScene);
         }
     }
@@ -862,23 +862,23 @@ public class BuilderInWorld : PluginFeature
             return;
 
         DeployedScenesFetcher.FetchLandsFromOwner(
-                Environment.i.platform.serviceProviders.catalyst,
-                Environment.i.platform.serviceProviders.theGraph,
-                userProfile.ethAddress,
-                KernelConfig.i.Get().network,
-                BIWSettings.CACHE_TIME_LAND,
-                BIWSettings.CACHE_TIME_SCENES)
-            .Then(lands =>
-            {
-                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                {
-                    CheckSceneToEditByShorcut();
-                }
+                                 Environment.i.platform.serviceProviders.catalyst,
+                                 Environment.i.platform.serviceProviders.theGraph,
+                                 userProfile.ethAddress,
+                                 KernelConfig.i.Get().network,
+                                 BIWSettings.CACHE_TIME_LAND,
+                                 BIWSettings.CACHE_TIME_SCENES)
+                             .Then(lands =>
+                             {
+                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                                 {
+                                     CheckSceneToEditByShorcut();
+                                 }
 
-                isWaitingForPermission = false;
-                alreadyAskedForLandPermissions = true;
-            });
+                                 isWaitingForPermission = false;
+                                 alreadyAskedForLandPermissions = true;
+                             });
     }
 
     private static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
