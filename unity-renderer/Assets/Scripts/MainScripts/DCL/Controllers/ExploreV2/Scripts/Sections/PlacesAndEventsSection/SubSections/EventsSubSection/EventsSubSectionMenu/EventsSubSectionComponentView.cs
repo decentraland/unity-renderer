@@ -44,6 +44,11 @@ public interface IEventsSubSectionComponentView
     event Action OnEventsSubSectionEnable;
 
     /// <summary>
+    /// Number of events per row that fit with the current upcoming events grid configuration.
+    /// </summary>
+    int currentUpcomingEventsPerRow { get; }
+
+    /// <summary>
     /// Set the featured events component with a list of events.
     /// </summary>
     /// <param name="events">List of events (model) to be loaded.</param>
@@ -161,6 +166,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     internal Pool trendingEventCardsPool;
     internal Pool upcomingEventCardsPool;
     internal Pool goingEventCardsPool;
+
+    public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
 
     public override void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
 

@@ -34,14 +34,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnPlacesFromAPIUpdated;
 
-    internal const int INITIAL_NUMBER_OF_PLACES = 10;
-    internal const int SHOW_MORE_PLACES_INCREMENT = 10;
+    internal const int INITIAL_NUMBER_OF_ROWS = 4;
+    internal const int SHOW_MORE_ROWS_INCREMENT = 1;
 
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal FriendTrackerController friendsTrackerController;
     internal List<HotSceneInfo> placesFromAPI = new List<HotSceneInfo>();
-    internal int currentPlacesShowed = INITIAL_NUMBER_OF_PLACES;
+    internal int currentPlacesShowed = 0;
     internal bool reloadPlaces = false;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController)
@@ -81,7 +81,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         if (!reloadPlaces)
             return;
 
-        currentPlacesShowed = INITIAL_NUMBER_OF_PLACES;
+        currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
         view.RestartScrollViewPosition();
         view.SetPlacesAsLoading(true);
         view.SetShowMorePlacesButtonActive(false);
@@ -122,8 +122,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
         List<HotSceneInfo> placesFiltered = new List<HotSceneInfo>();
-        if (currentPlacesShowed + SHOW_MORE_PLACES_INCREMENT <= placesFromAPI.Count)
-            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, SHOW_MORE_PLACES_INCREMENT);
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentPlacesShowed / view.currentPlacesPerRow) * view.currentPlacesPerRow) - currentPlacesShowed;
+        int numberOfItemsToAdd = view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT + numberOfExtraItemsToAdd;
+
+        if (currentPlacesShowed + numberOfItemsToAdd <= placesFromAPI.Count)
+            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, numberOfItemsToAdd);
         else
             placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, placesFromAPI.Count - currentPlacesShowed);
 
@@ -135,7 +138,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         view.AddPlaces(places);
 
-        currentPlacesShowed += SHOW_MORE_PLACES_INCREMENT;
+        currentPlacesShowed += numberOfItemsToAdd;
         if (currentPlacesShowed > placesFromAPI.Count)
             currentPlacesShowed = placesFromAPI.Count;
 

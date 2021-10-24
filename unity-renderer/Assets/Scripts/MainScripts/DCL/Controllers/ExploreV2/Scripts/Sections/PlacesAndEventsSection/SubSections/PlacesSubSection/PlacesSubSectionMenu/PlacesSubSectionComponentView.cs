@@ -43,6 +43,11 @@ public interface IPlacesSubSectionComponentView
     Color[] currentFriendColors { get; }
 
     /// <summary>
+    /// Number of places per row that fit with the current places grid configuration.
+    /// </summary>
+    int currentPlacesPerRow { get; }
+
+    /// <summary>
     /// Set the places component with a list of places.
     /// </summary>
     /// <param name="places">List of places (model) to be loaded.</param>
@@ -111,6 +116,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     internal Pool placeCardsPool;
 
     public Color[] currentFriendColors => friendColors;
+
+    public int currentPlacesPerRow => places.currentItemsPerRow;
 
     public override void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
 

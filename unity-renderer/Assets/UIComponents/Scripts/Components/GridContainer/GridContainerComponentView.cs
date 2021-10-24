@@ -7,6 +7,11 @@ using static UnityEngine.UI.GridLayoutGroup;
 public interface IGridContainerComponentView
 {
     /// <summary>
+    /// Number of items per row that fit with the current grid configuration.
+    /// </summary>
+    int currentItemsPerRow { get; }
+
+    /// <summary>
     /// Set the type of constraint of the grid.
     /// </summary>
     /// <param name="newConstraint">Type of constraint.</param>
@@ -88,6 +93,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     [SerializeField] internal GridContainerComponentModel model;
 
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
+
+    public int currentItemsPerRow { get; internal set; }
 
     public override void Awake()
     {
@@ -191,6 +198,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         newSizeToApply = new Vector2(
             (width / model.constranitCount) - extraSpaceToRemove,
             model.itemSize.y);
+
+        currentItemsPerRow = model.constranitCount;
     }
 
     internal void CalculateSizeForFixedRowConstraint(out Vector2 newSizeToApply)
@@ -201,6 +210,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         newSizeToApply = new Vector2(
             model.itemSize.x,
             (height / model.constranitCount) - extraSpaceToRemove);
+
+        currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constranitCount);
     }
 
     internal void CalculateSizeForFlexibleConstraint(out Vector2 newSizeToApply, Vector2 newItemSize)
@@ -218,11 +229,13 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             {
                 SetConstraintCount(numColumnsToTry);
                 SetItemSize(model.itemSize);
+                currentItemsPerRow = numColumnsToTry;
 
                 if (model.itemSize.x < model.minWidthForFlexibleItems)
                 {
                     SetConstraintCount(numColumnsToTry - 1);
                     SetItemSize(model.itemSize);
+                    currentItemsPerRow = numColumnsToTry - 1;
                     break;
                 }
 

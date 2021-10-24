@@ -50,13 +50,13 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal event Action OnEventsFromAPIUpdated;
 
     internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
-    internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 3;
-    internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 6;
+    internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
+    internal const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 1;
     internal const string LIVE_TAG_TEXT = "LIVE";
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
-    internal int currentUpcomingEventsShowed = INITIAL_NUMBER_OF_UPCOMING_EVENTS;
+    internal int currentUpcomingEventsShowed = 0;
     internal bool reloadEvents = false;
 
     public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI)
@@ -95,7 +95,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (!reloadEvents)
             return;
 
-        currentUpcomingEventsShowed = INITIAL_NUMBER_OF_UPCOMING_EVENTS;
+        currentUpcomingEventsShowed = view.currentUpcomingEventsPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
         view.RestartScrollViewPosition();
         view.SetFeaturedEventsAsLoading(true);
         view.SetTrendingEventsAsLoading(true);
@@ -181,8 +181,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = new List<EventFromAPIModel>();
-        if (currentUpcomingEventsShowed + SHOW_MORE_UPCOMING_EVENTS_INCREMENT <= eventsFromAPI.Count)
-            eventsFiltered = eventsFromAPI.GetRange(currentUpcomingEventsShowed, SHOW_MORE_UPCOMING_EVENTS_INCREMENT);
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentUpcomingEventsShowed / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - currentUpcomingEventsShowed;
+        int numberOfItemsToAdd = view.currentUpcomingEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT + numberOfExtraItemsToAdd;
+
+        if (currentUpcomingEventsShowed + numberOfItemsToAdd <= eventsFromAPI.Count)
+            eventsFiltered = eventsFromAPI.GetRange(currentUpcomingEventsShowed, numberOfItemsToAdd);
         else
             eventsFiltered = eventsFromAPI.GetRange(currentUpcomingEventsShowed, eventsFromAPI.Count - currentUpcomingEventsShowed);
 
@@ -194,7 +197,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.AddUpcomingEvents(upcomingEvents);
 
-        currentUpcomingEventsShowed += SHOW_MORE_UPCOMING_EVENTS_INCREMENT;
+        currentUpcomingEventsShowed += numberOfItemsToAdd;
         if (currentUpcomingEventsShowed > eventsFromAPI.Count)
             currentUpcomingEventsShowed = eventsFromAPI.Count;
 
