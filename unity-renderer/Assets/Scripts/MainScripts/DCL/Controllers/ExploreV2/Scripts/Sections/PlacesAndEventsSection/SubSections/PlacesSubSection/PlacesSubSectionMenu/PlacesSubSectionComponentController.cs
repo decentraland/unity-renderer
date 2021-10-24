@@ -180,16 +180,24 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
+        HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
         placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
 
-        Vector2Int coords = placeFromAPI.baseCoords;
-        string serverName = placeFromAPI.realms.Length == 0 ? "" : placeFromAPI.realms[0].serverName;
-        string layerName = placeFromAPI.realms.Length == 0 ? "" : placeFromAPI.realms[0].layer;
+        for (int i = 0; i < placeFromAPI.realms.Length; i++)
+        {
+            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms[i].layer);
 
-        if (string.IsNullOrEmpty(serverName))
-            WebInterface.GoTo(coords.x, coords.y);
+            if (isArchipelagoRealm || placeFromAPI.realms[i].usersCount < placeFromAPI.realms[i].maxUsers)
+            {
+                realm = placeFromAPI.realms[i];
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(realm.serverName))
+            WebInterface.GoTo(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
         else
-            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
+            WebInterface.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
 
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
