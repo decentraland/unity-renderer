@@ -173,14 +173,32 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
 
         view.SetUpcomingEvents(upcomingEvents);
-        view.SetShowMoreUpcomingEventsButtonActive(eventsFromAPI.Count > currentUpcomingEventsShowed);
+        view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
         view.SetUpcomingEventsAsLoading(false);
     }
 
     public void ShowMoreUpcomingEvents()
     {
+        List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
+        List<EventFromAPIModel> eventsFiltered = new List<EventFromAPIModel>();
+        if (currentUpcomingEventsShowed + SHOW_MORE_UPCOMING_EVENTS_INCREMENT <= eventsFromAPI.Count)
+            eventsFiltered = eventsFromAPI.GetRange(currentUpcomingEventsShowed, SHOW_MORE_UPCOMING_EVENTS_INCREMENT);
+        else
+            eventsFiltered = eventsFromAPI.GetRange(currentUpcomingEventsShowed, eventsFromAPI.Count - currentUpcomingEventsShowed);
+
+        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
+        {
+            EventCardComponentModel placeCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
+            upcomingEvents.Add(placeCardModel);
+        }
+
+        view.AddUpcomingEvents(upcomingEvents);
+
         currentUpcomingEventsShowed += SHOW_MORE_UPCOMING_EVENTS_INCREMENT;
-        LoadUpcomingEvents();
+        if (currentUpcomingEventsShowed > eventsFromAPI.Count)
+            currentUpcomingEventsShowed = eventsFromAPI.Count;
+
+        view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
     }
 
     public void LoadGoingEvents()

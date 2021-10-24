@@ -74,6 +74,12 @@ public interface IEventsSubSectionComponentView
     void SetUpcomingEvents(List<EventCardComponentModel> events);
 
     /// <summary>
+    /// Add a list of events in the events component.
+    /// </summary>
+    /// <param name="places">List of events (model) to be added.</param>
+    void AddUpcomingEvents(List<EventCardComponentModel> events);
+
+    /// <summary>
     /// Set the upcoming events component in loading mode.
     /// </summary>
     /// <param name="isVisible">True for activating the loading mode.</param>
@@ -231,6 +237,15 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, upcomingEventCardsPool);
         upcomingEvents.SetItems(eventComponentsToAdd);
         upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
+    }
+
+    public void AddUpcomingEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, upcomingEventCardsPool);
+        foreach (var eventToAdd in eventComponentsToAdd)
+        {
+            upcomingEvents.AddItem(eventToAdd);
+        }
     }
 
     public void SetUpcomingEventsAsLoading(bool isVisible)

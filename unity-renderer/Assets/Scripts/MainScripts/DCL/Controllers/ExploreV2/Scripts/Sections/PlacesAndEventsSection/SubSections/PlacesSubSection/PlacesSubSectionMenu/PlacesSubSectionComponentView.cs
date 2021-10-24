@@ -49,6 +49,12 @@ public interface IPlacesSubSectionComponentView
     void SetPlaces(List<PlaceCardComponentModel> places);
 
     /// <summary>
+    /// Add a list of places in the places component.
+    /// </summary>
+    /// <param name="places">List of places (model) to be added.</param>
+    void AddPlaces(List<PlaceCardComponentModel> places);
+
+    /// <summary>
     /// Set the places component in loading mode.
     /// </summary>
     /// <param name="isVisible">True for activating the loading mode.</param>
@@ -137,6 +143,15 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
         this.places.SetItems(placeComponentsToAdd);
         placesNoDataText.gameObject.SetActive(places.Count == 0);
+    }
+
+    public void AddPlaces(List<PlaceCardComponentModel> places)
+    {
+        List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
+        foreach (var place in placeComponentsToAdd)
+        {
+            this.places.AddItem(place);
+        }
     }
 
     public void SetPlacesAsLoading(bool isVisible)

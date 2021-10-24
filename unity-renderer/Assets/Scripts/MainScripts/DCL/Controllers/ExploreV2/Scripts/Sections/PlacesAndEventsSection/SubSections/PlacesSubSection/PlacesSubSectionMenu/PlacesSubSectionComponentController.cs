@@ -34,8 +34,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnPlacesFromAPIUpdated;
 
-    internal const int INITIAL_NUMBER_OF_PLACES = 30;
-    internal const int SHOW_MORE_PLACES_INCREMENT = 20;
+    internal const int INITIAL_NUMBER_OF_PLACES = 10;
+    internal const int SHOW_MORE_PLACES_INCREMENT = 10;
 
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
@@ -114,14 +114,32 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
 
         view.SetPlaces(places);
-        view.SetShowMorePlacesButtonActive(placesFromAPI.Count > currentPlacesShowed);
+        view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
         view.SetPlacesAsLoading(false);
     }
 
     public void ShowMorePlaces()
     {
+        List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
+        List<HotSceneInfo> placesFiltered = new List<HotSceneInfo>();
+        if (currentPlacesShowed + SHOW_MORE_PLACES_INCREMENT <= placesFromAPI.Count)
+            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, SHOW_MORE_PLACES_INCREMENT);
+        else
+            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, placesFromAPI.Count - currentPlacesShowed);
+
+        foreach (HotSceneInfo receivedPlace in placesFiltered)
+        {
+            PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            places.Add(placeCardModel);
+        }
+
+        view.AddPlaces(places);
+
         currentPlacesShowed += SHOW_MORE_PLACES_INCREMENT;
-        LoadPlaces();
+        if (currentPlacesShowed > placesFromAPI.Count)
+            currentPlacesShowed = placesFromAPI.Count;
+
+        view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
     }
 
     public void Dispose()
