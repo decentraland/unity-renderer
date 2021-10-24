@@ -59,7 +59,6 @@ public class ButtonComponentViewTests
         // Arrange
         Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
         string testText = "Test";
-        Button.ButtonClickedEvent testClickedEvent = new Button.ButtonClickedEvent();
 
         buttonComponent.model.icon = testSprite;
         buttonComponent.model.text = testText;
