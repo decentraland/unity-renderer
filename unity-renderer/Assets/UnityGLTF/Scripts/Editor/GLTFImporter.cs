@@ -224,8 +224,8 @@ namespace UnityGLTF
                     List<Texture2D> textures = new List<Texture2D>();
                     var texMaterialMap = new Dictionary<Texture2D, List<TexMaterialMap>>();
 
-                    HashSet<string> normals = new HashSet<string>();
-                    HashSet<string> metallics = new HashSet<string>();
+                    HashSet<Texture2D> normals = new HashSet<Texture2D>();
+                    HashSet<Texture2D> metallics = new HashSet<Texture2D>();
 
                     if (_importTextures)
                     {
@@ -249,7 +249,7 @@ namespace UnityGLTF
                                                     {
                                                         var propertyName = ShaderUtil.GetPropertyName(shader, i);
                                                         var tex = mat.GetTexture(propertyName) as Texture2D;
-
+                                                        
                                                         if (!tex)
                                                             continue;
 
@@ -285,11 +285,11 @@ namespace UnityGLTF
                                                         materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
                                                         if (propertyName == "_BumpMap")
                                                         {
-                                                            normals.Add(tex.name);
+                                                            normals.Add(tex);
                                                         }
                                                         else if (propertyName == "_MetallicGlossMap")
                                                         {
-                                                            metallics.Add(tex.name);
+                                                            metallics.Add(tex);
                                                         }
                                                     }
                                                 }
@@ -413,7 +413,7 @@ namespace UnityGLTF
 
                                         if (isExternal)
                                         {
-                                            isNormalMap = normals.Contains(tex.name);
+                                            isNormalMap = normals.Contains(tex);
                                         }
 
                                         if (isNormalMap)
@@ -428,7 +428,7 @@ namespace UnityGLTF
                                         }
                                         
                                         importer.crunchedCompression = true;
-                                        importer.sRGBTexture = !metallics.Contains(tex.name);
+                                        importer.sRGBTexture = !metallics.Contains(tex);
                                         importer.compressionQuality = 100;
                                         importer.textureCompression = TextureImporterCompression.CompressedHQ;
                                         importer.SaveAndReimport();
