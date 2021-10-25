@@ -7,13 +7,7 @@ public interface IProfileCardComponentView
     /// <summary>
     /// Event that will be triggered when the profile card is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onClick { get; set; }
-
-    /// <summary>
-    /// Fill the model and updates the profile card with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the profile card.</param>
-    void Configure(ProfileCardComponentModel model);
+    Button.ButtonClickedEvent onClick { get; }
 
     /// <summary>
     /// Set the profile picture directly from a sprite.
@@ -52,7 +46,7 @@ public interface IProfileCardComponentView
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class ProfileCardComponentView : BaseComponentView, IProfileCardComponentView
+public class ProfileCardComponentView : BaseComponentView, IProfileCardComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
@@ -63,41 +57,17 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
     [Header("Configuration")]
     [SerializeField] internal ProfileCardComponentModel model;
 
-    public Button.ButtonClickedEvent onClick
-    {
-        get
-        {
-            if (button == null)
-                return null;
+    public Button.ButtonClickedEvent onClick => button?.onClick;
 
-            return button.onClick;
-        }
-        set
-        {
-            model.onClick = value;
-
-            if (button != null)
-            {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() =>
-                {
-                    value?.Invoke();
-                });
-            }
-        }
-    }
-
-    public override void PostInitialization()
+    public override void Start()
     {
         if (profileImage != null)
             profileImage.OnLoaded += OnProfileImageLoaded;
-
-        Configure(model);
     }
 
-    public void Configure(ProfileCardComponentModel model)
+    public void Configure(BaseComponentModel newModel)
     {
-        this.model = model;
+        model = (ProfileCardComponentModel)newModel;
         RefreshControl();
     }
 
@@ -117,7 +87,6 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
         SetProfileName(model.profileName);
         SetProfileAddress(model.profileAddress);
-        onClick = model.onClick;
     }
 
     public override void Dispose()
@@ -126,11 +95,6 @@ public class ProfileCardComponentView : BaseComponentView, IProfileCardComponent
 
         if (profileImage != null)
             profileImage.OnLoaded += OnProfileImageLoaded;
-
-        if (button == null)
-            return;
-
-        button.onClick.RemoveAllListeners();
     }
 
     public void SetProfilePicture(Sprite sprite)

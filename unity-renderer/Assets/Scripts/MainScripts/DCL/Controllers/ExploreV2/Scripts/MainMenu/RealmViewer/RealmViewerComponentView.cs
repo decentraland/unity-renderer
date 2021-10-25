@@ -4,12 +4,6 @@ using UnityEngine;
 public interface IRealmViewerComponentView
 {
     /// <summary>
-    /// Fill the model and updates the realm viewer with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the real viewer.</param>
-    void Configure(RealmViewerComponentModel model);
-
-    /// <summary>
     /// Set the realm label.
     /// </summary>
     /// <param name="newRealm">New realm.</param>
@@ -22,7 +16,7 @@ public interface IRealmViewerComponentView
     void SetNumberOfUsers(int newNumberOfUsers);
 }
 
-public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView
+public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal TMP_Text realm;
@@ -31,11 +25,9 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
     [Header("Configuration")]
     [SerializeField] internal RealmViewerComponentModel model;
 
-    public override void PostInitialization() { Configure(model); }
-
-    public virtual void Configure(RealmViewerComponentModel model)
+    public void Configure(BaseComponentModel newModel)
     {
-        this.model = model;
+        model = (RealmViewerComponentModel)newModel;
         RefreshControl();
     }
 
