@@ -137,7 +137,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_0:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 54745b55af2f79e4297e9183c10654c0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
@@ -193,9 +193,9 @@ Material:
     - _RenderDistance_2: 3.4
     - _RenderDistance_3: 3.4
     - _RenderDistance_4: 3.4
-    - _dayTime: 0.01
+    - _dayTime: 20.2
     - _distance_0: 20
-    - _fadeTime_0: 0
+    - _fadeTime_0: 1
     - _fadeTime_1: 0
     - _fadeTime_2: 0
     - _fadeTime_3: 0
@@ -217,7 +217,7 @@ Material:
     - _isRadial_0: 0
     - _isRadial_1: 0
     - _isRadial_2: 0
-    - _layerType_0: 0
+    - _layerType_0: 2
     - _layerType_1: 0
     - _layerType_2: 0
     - _layerType_3: 0
@@ -276,7 +276,7 @@ Material:
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
-    - _color_0: {r: 1, g: 1, b: 1, a: 0}
+    - _color_0: {r: 1, g: 1, b: 1, a: 1}
     - _color_1: {r: 1, g: 1, b: 1, a: 0}
     - _color_2: {r: 1, g: 1, b: 1, a: 0}
     - _color_3: {r: 1, g: 1, b: 1, a: 0}
@@ -294,20 +294,20 @@ Material:
     - _groundColor: {r: 0, g: 0, b: 0, a: 1}
     - _horizonColor: {r: 0, g: 0, b: 0, a: 1}
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 89.86438, g: 180, b: 180, a: 0}
-    - _lightTint: {r: 0, g: 0.620379, b: 1, a: 1}
+    - _lightDirection: {r: 90, g: 0, b: 0, a: 0}
+    - _lightTint: {r: 1, g: 1, b: 1, a: 0.970911}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
-    - _particlesMainParameters_1: {r: 1, g: 500, b: 5.91, a: 50}
+    - _particlesMainParameters_1: {r: 5, g: 100, b: 5.76, a: 31.83}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_4: {r: 0, g: 0, b: 0, a: 0}
-    - _particlesSecondaryParameters_0: {r: 12.4, g: 5.16, b: 0.5, a: 1}
-    - _particlesSecondaryParameters_1: {r: 9.06, g: 12.51, b: 1, a: 1}
+    - _particlesSecondaryParameters_0: {r: 0, g: 0, b: 0, a: 0}
+    - _particlesSecondaryParameters_1: {r: 2.94, g: 2.14, b: 0, a: 1}
     - _particlesSecondaryParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_4: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_0: {r: 0, g: 0, b: 0, a: 0}
-    - _rowAndCollumns_1: {r: 1, g: 1, b: 0, a: 0}
+    - _rowAndCollumns_1: {r: 3, g: 3, b: 0, a: 0}
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
@@ -331,7 +331,7 @@ Material:
     - _timeFrame00: {r: 0, g: 10, b: 0, a: 0}
     - _timeFrame01: {r: 9, g: 16, b: 0, a: 0}
     - _timeFrame02: {r: 16, g: 24, b: 0, a: 0}
-    - _timeFrame_0: {r: 0, g: 0, b: 0, a: 0}
+    - _timeFrame_0: {r: 20, g: 24, b: 0, a: 0}
     - _timeFrame_1: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame_2: {r: 0, g: 0, b: 0, a: 0}
     - _timeFrame_3: {r: 0, g: 0, b: 0, a: 0}
