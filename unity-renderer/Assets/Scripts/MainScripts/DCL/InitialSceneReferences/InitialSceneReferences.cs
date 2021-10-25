@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class InitialSceneReferences : MonoBehaviour
+    public class InitialSceneReferences : MonoBehaviour, IInititalSceneReference
     {
         public class Data
         {

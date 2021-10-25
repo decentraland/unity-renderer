@@ -6,17 +6,6 @@ using DCL.Builder;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public interface IBIWOutlinerController : IBIWController
-{
-    void OutlineEntity(BIWEntity entity);
-    void CancelEntityOutline(BIWEntity entityToQuitOutline);
-    void OutlineEntities(List<BIWEntity> entitiesToEdit);
-    void CheckOutline();
-    void CancelUnselectedOutlines();
-    void CancelAllOutlines();
-    void SetOutlineCheckActive(bool isActive);
-}
-
 public class BIWOutlinerController : BIWController, IBIWOutlinerController
 {
     internal const int OUTLINER_OPTIMIZATION_TIMES = 10;

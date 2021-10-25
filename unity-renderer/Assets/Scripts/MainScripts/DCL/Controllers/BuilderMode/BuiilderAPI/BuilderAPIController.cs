@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using DCL.Builder.Manifest;
 using UnityEngine;
 
-public interface IBuilderAPIController
-{
-    void Initialize();
-    void Dispose();
-}
-
 public class BuilderAPIController : IBuilderAPIController
 {
     private BuilderInWorldBridge builderInWorldBridge;

@@ -7,21 +7,8 @@ using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 
-namespace DCL
+namespace DCL.Builder
 {
-    public interface IBIWCreatorController : IBIWController
-    {
-        event Action OnCatalogItemPlaced;
-        event Action OnInputDone;
-        void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false);
-        BIWEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null);
-        void CreateErrorOnEntity(BIWEntity entity);
-        void RemoveLoadingObjectInmediate(string entityId);
-        bool IsAnyErrorOnEntities();
-        void CreateLoadingObject(BIWEntity entity);
-        void CleanUp();
-    }
-
     public class BIWCreatorController : BIWController, IBIWCreatorController
     {
         private const float SECONDS_TO_SEND_ANALYTICS = 5f;

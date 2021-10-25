@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
-public class BIWCompleteAction
+public class BIWCompleteAction : IBIWCompleteAction
 {
     public enum ActionType
     {

@@ -4,26 +4,13 @@ using System.Collections.Generic;
 using DCL.Builder;
 using UnityEngine;
 
-public interface IBIWController
-{
-    void Initialize(Context context);
-    void EnterEditMode(IParcelScene scene);
-    void ExitEditMode();
-    void OnGUI();
-
-    void LateUpdate();
-
-    void Update();
-    void Dispose();
-}
-
 public abstract class BIWController : IBIWController
 {
     internal ParcelScene sceneToEdit;
 
     protected bool isEditModeActive = false;
-    protected Context context;
-    public virtual void Initialize(Context context)
+    protected IContext context;
+    public virtual void Initialize(IContext context)
     {
         this.context = context;
         isEditModeActive = false;

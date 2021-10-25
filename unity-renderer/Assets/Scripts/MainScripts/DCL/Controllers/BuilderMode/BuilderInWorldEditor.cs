@@ -10,15 +10,6 @@ using DCL.Builder;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public interface IBIWEditor
-{
-    void Initialize(Context context);
-    void Dispose();
-    void OnGUI();
-    void Update();
-    void LateUpdate();
-}
-
 public class BuilderInWorldEditor : IBIWEditor
 {
     internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
@@ -86,7 +77,7 @@ public class BuilderInWorldEditor : IBIWEditor
     private bool alreadyAskedForLandPermissions = false;
     private Vector3 askPermissionLastPosition;
 
-    public void Initialize(Context context)
+    public void Initialize(IContext context)
     {
         if (isInit)
             return;

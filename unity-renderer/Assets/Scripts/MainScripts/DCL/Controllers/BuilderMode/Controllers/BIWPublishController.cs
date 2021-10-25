@@ -3,8 +3,6 @@ using DCL;
 using DCL.Builder;
 using UnityEngine;
 
-public interface IBIWPublishController : IBIWController { }
-
 public class BIWPublishController : BIWController, IBIWPublishController
 {
     private IBIWEntityHandler entityHandler;

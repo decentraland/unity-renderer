@@ -6,8 +6,6 @@ using UnityEngine;
 using System;
 using DCL.Builder;
 
-public interface IBIWInputHandler : IBIWController { }
-
 public class BIWInputHandler : BIWController, IBIWInputHandler
 {
     private const float MS_BETWEEN_INPUT_INTERACTION = 200;

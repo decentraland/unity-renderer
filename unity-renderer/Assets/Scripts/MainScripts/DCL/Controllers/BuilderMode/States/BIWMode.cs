@@ -1,12 +1,8 @@
-using DCL.Controllers;
-using DCL.Models;
 using System;
 using System.Collections.Generic;
-using DCL.Builder;
-using DCL.Configuration;
 using UnityEngine;
 
-public class BIWMode
+public class BIWMode : IBIWMode
 {
     public event Action OnInputDone;
     public event Action<BIWCompleteAction> OnActionGenerated;

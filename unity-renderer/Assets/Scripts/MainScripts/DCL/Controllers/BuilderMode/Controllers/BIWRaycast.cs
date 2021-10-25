@@ -29,7 +29,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
     public LayerMask gizmoMask { get; private set; }
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 

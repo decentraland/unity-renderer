@@ -11,13 +11,6 @@ using Variables.RealmsInfo;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
-public interface IBuilderMainPanelController
-{
-    event Action OnJumpInOrEdit;
-    void Initialize();
-    void Dispose();
-}
-
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";

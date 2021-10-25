@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace DCL.Builder
 {
-    public class Context
+    public class Context : IContext
     {
         private const string PROJECT_REFERENCES_PATH = "ScriptableObjects/ProjectReferences";
         private const string INPUTS_PATH = "ScriptableObjects/InputReferences";
 
         //Scriptable Objects
-        public BIWProjectReferences projectReferencesAsset { get; private set; }
-        public BIWInputsReferences inputsReferencesAsset { get; private set; }
+        public BIWProjectReferences projectReferencesAsset { get;  set; }
+        public BIWInputsReferences inputsReferencesAsset { get;  set; }
 
         //Builder Parts
         public IBuilderMainPanelController panelHUD { get; private set; }

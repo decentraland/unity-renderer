@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Helpers;
 using UnityEditor;
 using UnityEngine;
 
-public class BIWGizmosAxis : MonoBehaviour
+public class BIWGizmosAxis : MonoBehaviour, IBIWGizmosAxis
 {
     public Color defaultColor;
     public Color highLightColor;
@@ -17,6 +18,7 @@ public class BIWGizmosAxis : MonoBehaviour
     public void SetGizmo(IBIWGizmos parentGizmo) { gizmo = parentGizmo; }
 
     public IBIWGizmos GetGizmo() { return gizmo; }
+    public Transform transform  => transform;
 
     public void SetColorHighlight()
     {
