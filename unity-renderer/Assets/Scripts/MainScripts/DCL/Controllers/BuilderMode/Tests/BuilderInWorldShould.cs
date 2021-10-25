@@ -25,6 +25,7 @@ public class BuilderInWorldShould
         BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContext());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
         builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
+        builderInWorld.builderAPIController = Substitute.For<IBuilderAPIController>();
 
         //Act
         builderInWorld.Initialize();
