@@ -17,6 +17,7 @@ public static class BIWTestUtils
         Context context = new Context(
             Substitute.For<IBIWEditor>(),
             Substitute.For<IBuilderMainPanelController>(),
+            Substitute.For<IBuilderAPIController>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -38,6 +39,7 @@ public static class BIWTestUtils
     public static Context CreateContextWithGenericMocks(params object[] mocks)
     {
         IBIWEditor editor = Substitute.For<IBIWEditor>();
+        IBuilderAPIController apiController = Substitute.For<IBuilderAPIController>();
         IBuilderMainPanelController panelHUD = Substitute.For<IBuilderMainPanelController>();
         IBuilderEditorHUDController editorHUD = Substitute.For<IBuilderEditorHUDController>();
 
@@ -64,6 +66,9 @@ public static class BIWTestUtils
                     break;
                 case IBuilderMainPanelController ppc:
                     panelHUD = ppc;
+                    break;
+                case IBuilderAPIController ibapc:
+                    apiController = ibapc;
                     break;
                 case IBuilderEditorHUDController ehc:
                     editorHUD = ehc;
@@ -112,6 +117,7 @@ public static class BIWTestUtils
 
         Context context = new Context(editor,
             panelHUD,
+            apiController,
             editorHUD,
             outliner,
             inputHandler,

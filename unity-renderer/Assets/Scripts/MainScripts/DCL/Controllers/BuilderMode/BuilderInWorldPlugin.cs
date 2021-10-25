@@ -9,6 +9,7 @@ public class BuilderInWorldPlugin : PluginFeature
     private const string DEV_FLAG_NAME = "builder-dev";
     internal IBIWEditor editor;
     internal IBuilderMainPanelController panelController;
+    internal IBuilderAPIController builderAPIController;
 
     internal Context context;
 
@@ -19,8 +20,11 @@ public class BuilderInWorldPlugin : PluginFeature
 
         panelController = new BuilderMainPanelController();
         editor = new BuilderInWorldEditor();
+        builderAPIController = new BuilderAPIController();
+
         context = new Context(editor,
             panelController,
+            builderAPIController,
             new BuilderEditorHUDController(),
             new BIWOutlinerController(),
             new BIWInputHandler(),
@@ -50,6 +54,8 @@ public class BuilderInWorldPlugin : PluginFeature
 
         panelController.Initialize();
         editor.Initialize(context);
+        builderAPIController.Initialize();
+
         if (HUDController.i == null)
             return;
 
