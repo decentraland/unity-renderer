@@ -23,7 +23,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
         gizmoMask = BIWSettings.GIZMOS_LAYER;
         BIWInputWrapper.OnMouseDown += OnMouseDown;
 
-        builderCamera = context.sceneReferences.mainCameraReference2;
+        builderCamera = context.sceneReferences.mainCamera;
     }
 
     public override void Dispose()

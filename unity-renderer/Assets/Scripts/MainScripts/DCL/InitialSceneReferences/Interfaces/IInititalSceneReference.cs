@@ -4,14 +4,14 @@ using UnityEngine;
 
 public interface IInitialSceneReferences
 {
-    GameObject mouseCatcherReference2 { get; }
-    GameObject groundVisualReference2 { get; }
-    GameObject cameraParentReference2 { get; }
-    GameObject inputControllerReference2 { get; }
-    GameObject cursorCanvasReference2 { get; }
-    GameObject builderInWorldBridgeReference2 { get; }
-    GameObject playerAvatarControllerReference2 { get; }
-    GameObject cameraControllerReference2 { get; }
-    UnityEngine.Camera mainCameraReference2 { get; }
-    GameObject bridgeGameObjectReference2 { get; }
+    GameObject mouseCatcher { get; }
+    GameObject groundVisual { get; }
+    GameObject cameraParent { get; }
+    GameObject inputController { get; }
+    GameObject cursorCanvas { get; }
+    GameObject builderInWorldBridge { get; }
+    GameObject playerAvatarController { get; }
+    GameObject cameraController { get; }
+    UnityEngine.Camera mainCamera { get; }
+    GameObject bridgeGameObject { get; }
 }

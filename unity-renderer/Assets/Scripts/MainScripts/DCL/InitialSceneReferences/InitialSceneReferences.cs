@@ -52,11 +52,11 @@ namespace DCL
         public GameObject groundVisual => data.groundVisual;
         public GameObject cameraParent => data.cameraParent;
         public GameObject cursorCanvas => data.cursorCanvas;
-        public MouseCatcher mouseCatcher => data.mouseCatcher;
-        public InputController inputController => data.inputController;
-        public BuilderInWorldBridge builderInWorldBridge => data.builderInWorldBridge;
-        public PlayerAvatarController playerAvatarController => data.playerAvatarController;
-        public CameraController cameraController => data.cameraController;
+        public GameObject mouseCatcher => data.mouseCatcher.gameObject;
+        public GameObject inputController => data.inputController.gameObject;
+        public GameObject builderInWorldBridge => data.builderInWorldBridge.gameObject;
+        public GameObject playerAvatarController => data.playerAvatarController.gameObject;
+        public GameObject cameraController => data.cameraController.gameObject;
         public UnityEngine.Camera mainCamera { get { return mainCameraReference; } }
         public GameObject bridgeGameObject { get { return bridgeGameObjectReference; } }
 
@@ -75,15 +75,5 @@ namespace DCL
         }
 
         void OnDestroy() { i = null; }
-        public GameObject mouseCatcherReference2 => mouseCatcher.gameObject;
-        public GameObject groundVisualReference2 => groundVisual.gameObject;
-        public GameObject cameraParentReference2 => cameraParent.gameObject;
-        public GameObject inputControllerReference2 => inputController.gameObject;
-        public GameObject cursorCanvasReference2 => cursorCanvas.gameObject;
-        public GameObject builderInWorldBridgeReference2  => builderInWorldBridge.gameObject;
-        public GameObject playerAvatarControllerReference2 => playerAvatarController.gameObject;
-        public GameObject cameraControllerReference2 => cameraController.gameObject;
-        public UnityEngine.Camera mainCameraReference2 => mainCamera;
-        public GameObject bridgeGameObjectReference2 => bridgeGameObject;
     }
 }

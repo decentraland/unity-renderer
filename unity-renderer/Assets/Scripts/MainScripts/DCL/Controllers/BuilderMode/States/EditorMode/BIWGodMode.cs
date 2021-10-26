@@ -84,11 +84,11 @@ public class BIWGodMode : BIWMode
             context.editorContext.editorHUD.OnPublishAction += TakeSceneScreenshotForPublish;
         }
 
-        if (context.sceneReferences.cameraControllerReference2.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+        if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraController = (FreeCameraMovement) cameraState;
-        mouseCatcher = context.sceneReferences.mouseCatcherReference2.GetComponent<MouseCatcher>();
-        avatarRenderer = context.sceneReferences.playerAvatarControllerReference2.GetComponent<PlayerAvatarController>();
-        cameraController = context.sceneReferences.cameraControllerReference2.GetComponent<CameraController>();
+        mouseCatcher = context.sceneReferences.mouseCatcher.GetComponent<MouseCatcher>();
+        avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
+        cameraController = context.sceneReferences.cameraController.GetComponent<CameraController>();
 
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;

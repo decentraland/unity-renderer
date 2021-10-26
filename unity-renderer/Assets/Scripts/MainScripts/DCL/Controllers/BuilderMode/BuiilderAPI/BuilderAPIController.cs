@@ -11,7 +11,7 @@ public class BuilderAPIController : IBuilderAPIController
     public void Initialize(IContext context)
     {
         //TODO: Implement functionality
-        builderInWorldBridge = context.sceneReferences.bridgeGameObjectReference2.GetComponent<BuilderInWorldBridge>();
+        builderInWorldBridge = context.sceneReferences.bridgeGameObject.GetComponent<BuilderInWorldBridge>();
     }
 
     public void Dispose()

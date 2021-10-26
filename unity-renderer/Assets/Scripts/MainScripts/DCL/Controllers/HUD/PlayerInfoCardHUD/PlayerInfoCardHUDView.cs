@@ -121,7 +121,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
         if (InitialSceneReferences.i != null)
         {
-            var mouseCatcher = DCL.InitialSceneReferences.i.mouseCatcher;
+            var mouseCatcher = DCL.InitialSceneReferences.i.data.mouseCatcher;
 
             if (mouseCatcher != null)
             {

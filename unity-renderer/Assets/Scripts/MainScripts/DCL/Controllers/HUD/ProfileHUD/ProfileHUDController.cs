@@ -37,7 +37,7 @@ public class ProfileHUDController : IHUD
 
     public ProfileHUDController()
     {
-        mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
+        mouseCatcher = InitialSceneReferences.i?.data?.mouseCatcher;
 
 
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ProfileHUD")).GetComponent<ProfileHUDView>();

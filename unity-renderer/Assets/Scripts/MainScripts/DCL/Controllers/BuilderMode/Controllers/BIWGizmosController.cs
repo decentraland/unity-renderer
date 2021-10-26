@@ -42,11 +42,11 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         BIWInputWrapper.OnMouseUp += OnMouseUp;
         BIWInputWrapper.OnMouseDrag += OnMouseDrag;
 
-        if (context.sceneReferences.cameraControllerReference2.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+        if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraMovement = (FreeCameraMovement)cameraState;
 
         // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
-        InitializeGizmos(context.sceneReferences.mainCameraReference2, freeCameraMovement.transform);
+        InitializeGizmos(context.sceneReferences.mainCamera, freeCameraMovement.transform);
         ForceRelativeScaleRatio();
     }
 
