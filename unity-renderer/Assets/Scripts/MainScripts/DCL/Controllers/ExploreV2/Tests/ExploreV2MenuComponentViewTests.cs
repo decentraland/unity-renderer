@@ -12,21 +12,6 @@ public class ExploreV2MenuComponentViewTests
     public void TearDown() { GameObject.Destroy(exploreV2MenuComponent.gameObject); }
 
     [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void SetActiveCorrectly(bool isActive)
-    {
-        // Arrange
-        exploreV2MenuComponent.gameObject.SetActive(!isActive);
-
-        // Act
-        exploreV2MenuComponent.SetActive(isActive);
-
-        // Assert
-        Assert.AreEqual(isActive, exploreV2MenuComponent.gameObject.activeSelf, "The active property of the explore V2 menu does not match.");
-    }
-
-    [Test]
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]

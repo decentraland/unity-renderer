@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 [Serializable]
-public class TagComponentModel
+public class TagComponentModel : BaseComponentModel
 {
     public Sprite icon;
     public string text;

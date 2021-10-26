@@ -2,23 +2,29 @@ using DCL;
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public interface IBaseComponentView : IDisposable
+public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
     /// <summary>
-    /// It will be triggered after the UI component is fully initialized (PostInitialization included).
+    /// It is called at the beginning of the UI component lifecycle.
     /// </summary>
-    event Action OnFullyInitialized;
+    void Awake();
 
     /// <summary>
-    /// Returns true if the UI component is already fully initialized (PostInitialization included).
+    /// It is called each time the component is enabled.
     /// </summary>
-    bool isFullyInitialized { get; }
+    void OnEnable();
 
     /// <summary>
     /// It is called just after the UI component has been initialized.
     /// </summary>
-    void PostInitialization();
+    void Start();
+
+    /// <summary>
+    /// Updates the UI component with the current model configuration.
+    /// </summary>
+    void RefreshControl();
 
     /// <summary>
     /// Shows the UI component.
@@ -33,71 +39,89 @@ public interface IBaseComponentView : IDisposable
     void Hide(bool instant = false);
 
     /// <summary>
-    /// Updates the UI component with the current model.
+    /// It is called when the focus is set into the component.
     /// </summary>
-    void RefreshControl();
+    void OnFocus();
+
+    /// <summary>
+    /// It is called when the focus is lost from the component.
+    /// </summary>
+    void OnLoseFocus();
 
     /// <summary>
     /// It is called just after the screen size has changed.
     /// </summary>
-    void PostScreenSizeChanged();
+    void OnScreenSizeChanged();
 }
 
-[RequireComponent(typeof(ShowHideAnimator))]
-[RequireComponent(typeof(CanvasGroup))]
+public interface IComponentModelConfig
+{
+    /// <summary>
+    /// Fill the model and updates the component with this data.
+    /// </summary>
+    /// <param name="newModel">Data to configure the component.</param>
+    void Configure(BaseComponentModel newModel);
+}
+
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
-    public event Action OnFullyInitialized;
-    public bool isFullyInitialized { get; private set; }
-
+    internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
-    internal void Initialize()
+    public virtual void Awake()
     {
-        isFullyInitialized = false;
         showHideAnimator = GetComponent<ShowHideAnimator>();
-
-        DataStore.i.screen.size.OnChange += OnScreenSizeChange;
+        DataStore.i.screen.size.OnChange += OnScreenSizeModified;
     }
 
-    public abstract void PostInitialization();
+    public virtual void OnEnable() { OnScreenSizeChanged(); }
 
-    public virtual void Show(bool instant = false) { showHideAnimator.Show(instant); }
-
-    public virtual void Hide(bool instant = false) { showHideAnimator.Hide(instant); }
+    public virtual void Start() { }
 
     public abstract void RefreshControl();
 
-    public virtual void PostScreenSizeChanged() { }
-
-    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeChange; }
-
-    private void OnEnable() { OnScreenSizeChange(Vector2Int.zero, Vector2Int.zero); }
-
-    private void Awake() { Initialize(); }
-
-    private void Start()
+    public virtual void Show(bool instant = false)
     {
-        PostInitialization();
+        if (showHideAnimator == null)
+            return;
 
-        isFullyInitialized = true;
-        OnFullyInitialized?.Invoke();
+        showHideAnimator.Show(instant);
     }
+
+    public virtual void Hide(bool instant = false)
+    {
+        if (showHideAnimator == null)
+            return;
+
+        showHideAnimator.Hide(instant);
+    }
+
+    public virtual void OnFocus() { }
+
+    public virtual void OnLoseFocus() { }
+
+    public virtual void OnScreenSizeChanged() { }
+
+    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeModified; }
+
+    public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
+
+    public void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
 
     private void OnDestroy() { Dispose(); }
 
-    internal void OnScreenSizeChange(Vector2Int current, Vector2Int previous)
+    internal void OnScreenSizeModified(Vector2Int current, Vector2Int previous)
     {
         if (!gameObject.activeInHierarchy)
             return;
 
-        StartCoroutine(RefreshControlAfterScreenSize());
+        StartCoroutine(RaiseOnScreenSizeChangedAfterDelay());
     }
 
-    internal IEnumerator RefreshControlAfterScreenSize()
+    internal IEnumerator RaiseOnScreenSizeChangedAfterDelay()
     {
         yield return null;
-        PostScreenSizeChanged();
+        OnScreenSizeChanged();
     }
 
     internal static T Create<T>(string resourceName) where T : BaseComponentView

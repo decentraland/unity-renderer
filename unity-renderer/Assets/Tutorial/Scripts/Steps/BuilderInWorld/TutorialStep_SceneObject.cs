@@ -9,18 +9,22 @@ public class TutorialStep_SceneObject : TutorialStep
     [SerializeField] AudioEvent audioEventSuccess;
     bool catalogItemIsSelected;
 
+    private Context context;
+
+    public void SetContext(Context context) { this.context = context; }
+
     public override void OnStepStart()
     {
         base.OnStepStart();
 
-        HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += SceneObjectSelected;
+        context.editorContext.editorHUD.OnCatalogItemSelected += SceneObjectSelected;
     }
 
     public override void OnStepFinished()
     {
         base.OnStepFinished();
 
-        HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= SceneObjectSelected;
+        context.editorContext.editorHUD.OnCatalogItemSelected -= SceneObjectSelected;
     }
 
     void SceneObjectSelected(CatalogItem sceneObject) { catalogItemIsSelected = true; }
