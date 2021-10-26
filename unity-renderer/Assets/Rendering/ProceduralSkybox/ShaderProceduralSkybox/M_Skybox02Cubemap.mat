@@ -261,7 +261,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_0:
-        m_Texture: {fileID: 2800000, guid: b0984e844db4deb41b7b3dd8e8bf688e, type: 3}
+        m_Texture: {fileID: 2800000, guid: c33c912fc2e2196459e139071267c415, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
@@ -429,18 +429,18 @@ Material:
     - _particleSpeedAndFrequency_2: {r: 1, g: 5, b: 0, a: 0}
     - _particleSpeedAndFrequency_3: {r: 0, g: 0, b: 0, a: 0}
     - _particleSpeedAndFrequency_4: {r: 0, g: 0, b: 0, a: 0}
-    - _particlesMainParameters_0: {r: 2, g: 100, b: 1, a: 10.73}
-    - _particlesMainParameters_1: {r: 1, g: 10, b: 1, a: 1}
+    - _particlesMainParameters_0: {r: 5.21, g: 41.6, b: 6.1, a: 8.86}
+    - _particlesMainParameters_1: {r: 10, g: 10, b: 1, a: 1}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_4: {r: 0, g: 0, b: 0, a: 0}
     - _particlesParameters_0: {r: 5, g: 500, b: 1, a: 0}
-    - _particlesSecondaryParameters_0: {r: 0.96, g: 1.24, b: 0.25, a: 0.5}
+    - _particlesSecondaryParameters_0: {r: 1.6, g: 1.84, b: 4.47, a: 0.5}
     - _particlesSecondaryParameters_1: {r: 1, g: 1, b: 1, a: 1}
     - _particlesSecondaryParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_4: {r: 0, g: 0, b: 0, a: 0}
-    - _rowAndCollumns_0: {r: 1, g: 1, b: 0, a: 0}
+    - _rowAndCollumns_0: {r: 3, g: 3, b: 0, a: 0}
     - _rowAndCollumns_1: {r: 2, g: 2, b: 0, a: 0}
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
