@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 0
   m_FogColor: {r: 0.47403693, g: 0.37349918, b: 0.3699285, a: 1}
   m_FogMode: 1
-  m_FogDensity: 0.01
+  m_FogDensity: 0.04
   m_LinearFogStart: 8.91
   m_LinearFogEnd: 305.06
   m_AmbientSkyColor: {r: 0.3681568, g: 0.36916432, b: 0.36970213, a: 1}
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.022087824, g: 0.0026333993, b: 0.07357272, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -458,7 +458,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &1057681565
 Light:
   m_ObjectHideFlags: 0
@@ -470,7 +470,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 0.99946684}
+  m_Color: {r: 0.29493976, g: 0.87020105, b: 0.96196693, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -534,7 +534,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1092852678
 GameObject:
   m_ObjectHideFlags: 0
