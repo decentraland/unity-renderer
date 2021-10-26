@@ -35,7 +35,7 @@ public class GridContainerComponentViewTests
         gridContainerComponent.Configure(testModel);
 
         // Assert
-        Assert.AreEqual(testModel, gridContainerComponent.model, "The model does not match after configuring the button.");
+        Assert.AreEqual(testModel, gridContainerComponent.model, "The model does not match.");
     }
 
     [Test]
@@ -247,5 +247,23 @@ public class GridContainerComponentViewTests
 
         // Assert
         Assert.AreEqual(0, gridContainerComponent.transform.childCount, "The number of items list does not match.");
+    }
+
+    [Test]
+    public void CreateItemCorrectly()
+    {
+        // Arrange
+        ButtonComponentView testItem = BaseComponentView.Create<ButtonComponentView>("Button_Common");
+        string testName = "TestName";
+
+        // Act
+        gridContainerComponent.CreateItem(testItem, testName);
+
+        // Assert
+        Assert.AreEqual(gridContainerComponent.transform, testItem.transform.parent, "The parent of the item should be the own grid.");
+        Assert.AreEqual(Vector3.zero, testItem.transform.localPosition, "The item position should be 0.");
+        Assert.AreEqual(Vector3.one, testItem.transform.localScale, "The item position should be 1.");
+        Assert.AreEqual(testName, testItem.name, "The item name does not match.");
+        Assert.IsTrue(gridContainerComponent.instantiatedItems.Contains(testItem), "The item does not exist in the instantiatedItems list.");
     }
 }
