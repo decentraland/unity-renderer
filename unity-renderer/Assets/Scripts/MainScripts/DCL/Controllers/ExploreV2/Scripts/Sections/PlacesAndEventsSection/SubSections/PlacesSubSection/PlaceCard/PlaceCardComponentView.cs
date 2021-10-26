@@ -324,7 +324,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         loadingSpinner.SetActive(isVisible);
     }
 
-    private void OnPlaceImageLoaded(Sprite sprite)
+    internal void OnPlaceImageLoaded(Sprite sprite)
     {
         if (sprite != null)
             SetPlacePicture(sprite);
