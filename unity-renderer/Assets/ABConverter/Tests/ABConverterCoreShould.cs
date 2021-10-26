@@ -32,6 +32,8 @@ namespace DCL.ABConverter.Tests
         }
     }
 
+    [Category("Explicit")]
+    [Explicit]
     public class ABConverterCoreShould
     {
         private ABConverter.Core core;
