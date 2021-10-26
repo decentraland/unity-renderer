@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -84,6 +85,28 @@ public class SectionSelectorComponentViewTests
         Assert.AreEqual(testSections[0].title, allExistingItems[0].GetInfo().title, "The section 1 gotten does not match.");
         Assert.AreEqual(testSections[1].title, allExistingItems[1].GetInfo().title, "The section 2 gotten does not match.");
         Assert.AreEqual(testSections.Count, allExistingItems.Count, "The number of sections gotten do not match.");
+    }
+
+    [Test]
+    public void CreateItemCorrectly()
+    {
+        // Arrange
+        SectionToggleModel testSection = new SectionToggleModel
+        {
+            icon = testSprite,
+            title = "Test Title",
+        };
+        string testName = "TestName";
+
+        // Act
+        sectionSelectorComponent.CreateSection(testSection, testName);
+
+        // Assert
+        ISectionToggle newSection = sectionSelectorComponent.instantiatedSections.FirstOrDefault(x => x.GetInfo().title == testSection.title);
+        Assert.IsNotNull(newSection, "The item does not exist in the instantiatedItems list.");
+        Assert.IsTrue(newSection.GetInfo().title == testSection.title, "The item title does not match.");
+        Assert.IsTrue(newSection.GetInfo().icon == testSection.icon, "The item icon does not match.");
+        Assert.AreEqual(testName, ((SectionToggle)newSection).name, "The item game object name does not match.");
     }
 
     [UnityTest]
