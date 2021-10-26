@@ -197,12 +197,16 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     internal bool HasParentSizeChanged()
     {
-        Vector2 currentParentSize = ((RectTransform)transform.parent).rect.size;
-
-        if (lastParentSize != currentParentSize)
+        Transform imageParent = transform.parent;
+        if (imageParent != null)
         {
-            lastParentSize = currentParentSize;
-            return true;
+            Vector2 currentParentSize = ((RectTransform)imageParent).rect.size;
+
+            if (lastParentSize != currentParentSize)
+            {
+                lastParentSize = currentParentSize;
+                return true;
+            }
         }
 
         return false;
