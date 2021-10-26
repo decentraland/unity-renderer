@@ -24,6 +24,7 @@ public class BIWNFTController
 
     private bool desactivateNFT = false;
     private bool isInit = false;
+    private UserProfile userProfile;
 
     public static BIWNFTController i
     {
@@ -42,7 +43,7 @@ public class BIWNFTController
     {
         if (!isInit)
         {
-            UserProfile userProfile = UserProfile.GetOwnUserProfile();
+            userProfile = UserProfile.GetOwnUserProfile();
             userProfile.OnUpdate += UserProfileUpdated;
             FetchNftsFromOwner();
             isInit = true;
@@ -53,7 +54,6 @@ public class BIWNFTController
 
     public void Dispose()
     {
-        UserProfile userProfile = UserProfile.GetOwnUserProfile();
         userProfile.OnUpdate -= UserProfileUpdated;
 
         if (fechNftsCoroutine != null)
@@ -129,8 +129,6 @@ public class BIWNFTController
 
     private IEnumerator FetchNfts()
     {
-        UserProfile userProfile = UserProfile.GetOwnUserProfile();
-
         string userId = userProfile.ethAddress;
         if (!string.IsNullOrEmpty(userId))
         {
