@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ButtonComponentViewTests
 {
@@ -54,24 +53,6 @@ public class ButtonComponentViewTests
     }
 
     [Test]
-    public void RefreshButtonCorrectly()
-    {
-        // Arrange
-        Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
-        string testText = "Test";
-
-        buttonComponent.model.icon = testSprite;
-        buttonComponent.model.text = testText;
-
-        // Act
-        buttonComponent.RefreshControl();
-
-        // Assert
-        Assert.AreEqual(testSprite, buttonComponent.model.icon, "The icon does not match in the model.");
-        Assert.AreEqual(testText, buttonComponent.model.text, "The text does not match in the model.");
-    }
-
-    [Test]
     public void SetButtonTextCorrectly()
     {
         // Arrange
@@ -101,8 +82,8 @@ public class ButtonComponentViewTests
         Assert.AreEqual(testSprite, buttonComponent.icon.sprite, "The button icon does not match.");
 
         if (isNullIcon)
-            Assert.IsFalse(buttonComponent.icon.gameObject.activeSelf);
+            Assert.IsFalse(buttonComponent.icon.gameObject.activeSelf, "The button component should not be actived.");
         else
-            Assert.IsTrue(buttonComponent.icon.gameObject.activeSelf);
+            Assert.IsTrue(buttonComponent.icon.gameObject.activeSelf, "The button component should be actived.");
     }
 }

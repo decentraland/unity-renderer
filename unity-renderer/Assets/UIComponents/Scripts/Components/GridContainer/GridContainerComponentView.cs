@@ -116,7 +116,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         SetConstraint(model.constraint);
         SetItemSize(model.itemSize);
-        SetConstraintCount(model.constranitCount);
+        SetConstraintCount(model.constraintCount);
         SetSpaceBetweenItems(model.spaceBetweenItems);
     }
 
@@ -131,7 +131,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         base.Dispose();
 
-        DestroyInstantiatedItems();
+        RemoveItems();
     }
 
     public void SetConstraint(Constraint newConstraint)
@@ -146,7 +146,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public void SetConstraintCount(int newConstraintCount)
     {
-        model.constranitCount = newConstraintCount;
+        model.constraintCount = newConstraintCount;
 
         if (gridLayoutGroup == null)
             return;
@@ -193,25 +193,25 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     internal void CalculateSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
     {
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
-        float extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
+        float extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constraintCount - 1)) / model.constraintCount;
 
         newSizeToApply = new Vector2(
-            (width / model.constranitCount) - extraSpaceToRemove,
+            (width / model.constraintCount) - extraSpaceToRemove,
             model.itemSize.y);
 
-        currentItemsPerRow = model.constranitCount;
+        currentItemsPerRow = model.constraintCount;
     }
 
     internal void CalculateSizeForFixedRowConstraint(out Vector2 newSizeToApply)
     {
         float height = ((RectTransform)transform).rect.height;
-        float extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
+        float extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constraintCount / 2f));
 
         newSizeToApply = new Vector2(
             model.itemSize.x,
-            (height / model.constranitCount) - extraSpaceToRemove);
+            (height / model.constraintCount) - extraSpaceToRemove);
 
-        currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constranitCount);
+        currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constraintCount);
     }
 
     internal void CalculateSizeForFlexibleConstraint(out Vector2 newSizeToApply, Vector2 newItemSize)
@@ -268,7 +268,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
     public void SetItems(List<BaseComponentView> items)
     {
-        DestroyInstantiatedItems();
+        RemoveItems();
 
         for (int i = 0; i < items.Count; i++)
         {
@@ -312,7 +312,15 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         return extractedItems;
     }
 
-    public void RemoveItems() { DestroyInstantiatedItems(); }
+    public void RemoveItems()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        instantiatedItems.Clear();
+    }
 
     internal void CreateItem(BaseComponentView newItem, string name)
     {
@@ -327,16 +335,6 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         instantiatedItems.Add(newItem);
     }
 
-    internal void DestroyInstantiatedItems()
-    {
-        foreach (Transform child in transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        instantiatedItems.Clear();
-    }
-
     internal void ResizeGridContainer()
     {
         int currentNumberOfItems = transform.childCount;
@@ -349,17 +347,17 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         if (model.constraint == Constraint.FixedColumnCount)
         {
-            int numRows = (int)Mathf.Ceil((float)currentNumberOfItems / model.constranitCount);
+            int numRows = (int)Mathf.Ceil((float)currentNumberOfItems / model.constraintCount);
             ((RectTransform)transform).sizeDelta = new Vector2(
-                model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.x : (model.constranitCount * model.itemSize.x) + (model.spaceBetweenItems.x * (model.constranitCount - 1)),
+                model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.x : (model.constraintCount * model.itemSize.x) + (model.spaceBetweenItems.x * (model.constraintCount - 1)),
                 (numRows * model.itemSize.y) + (model.spaceBetweenItems.y * (numRows - 1)));
         }
         else if (model.constraint == Constraint.FixedRowCount)
         {
-            int numCols = (int)Mathf.Ceil((float)currentNumberOfItems / model.constranitCount);
+            int numCols = (int)Mathf.Ceil((float)currentNumberOfItems / model.constraintCount);
             ((RectTransform)transform).sizeDelta = new Vector2(
                 (numCols * model.itemSize.x) + (model.spaceBetweenItems.x * (numCols - 1)),
-                model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.y : (model.constranitCount * model.itemSize.y) + (model.spaceBetweenItems.y * (model.constranitCount - 1)));
+                model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.y : (model.constraintCount * model.itemSize.y) + (model.spaceBetweenItems.y * (model.constraintCount - 1)));
         }
     }
 
