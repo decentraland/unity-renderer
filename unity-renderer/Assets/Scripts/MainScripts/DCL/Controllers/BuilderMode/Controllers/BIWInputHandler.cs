@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public interface IBIWInputHandler : IBIWController
-{
-}
+public interface IBIWInputHandler : IBIWController { }
 
 public class BIWInputHandler : BIWController, IBIWInputHandler
 {
@@ -33,24 +31,24 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
 
     private float nexTimeToReceiveInput;
 
-    public override void Initialize(BIWContext biwContext)
+    public override void Initialize(Context context)
     {
-        base.Initialize(biwContext);
+        base.Initialize(context);
 
-        actionController = biwContext.actionController;
-        modeController = biwContext.modeController;
-        inputWrapper = biwContext.inputWrapper;
-        outlinerController = biwContext.outlinerController;
-        entityHandler = biwContext.entityHandler;
+        actionController = context.editorContext.actionController;
+        modeController = context.editorContext.modeController;
+        inputWrapper = context.editorContext.inputWrapper;
+        outlinerController = context.editorContext.outlinerController;
+        entityHandler = context.editorContext.entityHandler;
 
-        toggleRedoActionInputAction = biwContext.inputsReferencesAsset.toggleRedoActionInputAction;
-        toggleUndoActionInputAction = biwContext.inputsReferencesAsset.toggleUndoActionInputAction;
-        multiSelectionInputAction = biwContext.inputsReferencesAsset.multiSelectionInputAction;
+        toggleRedoActionInputAction = context.inputsReferencesAsset.toggleRedoActionInputAction;
+        toggleUndoActionInputAction = context.inputsReferencesAsset.toggleUndoActionInputAction;
+        multiSelectionInputAction = context.inputsReferencesAsset.multiSelectionInputAction;
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnStopInput += StopInput;
-            HUDController.i.builderInWorldMainHud.OnResumeInput += ResumeInput;
+            context.editorContext.editorHUD.OnStopInput += StopInput;
+            context.editorContext.editorHUD.OnResumeInput += ResumeInput;
         }
 
         redoDelegate = (action) => RedoAction();
@@ -83,10 +81,10 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         BIWInputWrapper.OnMouseClick -= MouseClick;
         BIWInputWrapper.OnMouseClickOnUI -= MouseClickOnUI;
         modeController.OnInputDone -= InputDone;
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnStopInput -= StopInput;
-            HUDController.i.builderInWorldMainHud.OnResumeInput -= ResumeInput;
+            context.editorContext.editorHUD.OnStopInput -= StopInput;
+            context.editorContext.editorHUD.OnResumeInput -= ResumeInput;
         }
     }
 
@@ -137,7 +135,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
             return;
 
         if (!BIWUtils.IsPointerOverUIElement())
-            HUDController.i.builderInWorldMainHud.HideExtraBtns();
+            context.editorContext.editorHUD.HideExtraBtns();
 
         if (Utils.isCursorLocked || modeController.IsGodModeActive())
         {
@@ -152,7 +150,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         }
     }
 
-    private void MouseClickOnUI(int buttonID, Vector3 position) { HUDController.i.builderInWorldMainHud.HideExtraBtns(); }
+    private void MouseClickOnUI(int buttonID, Vector3 position) {  context.editorContext.editorHUD.HideExtraBtns(); }
 
     public bool IsMultiSelectionActive() => isMultiSelectionActive;
 

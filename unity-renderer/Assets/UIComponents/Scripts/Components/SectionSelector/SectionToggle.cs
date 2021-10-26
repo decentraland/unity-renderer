@@ -8,7 +8,7 @@ public interface ISectionToggle
     /// <summary>
     /// Event that will be triggered when the toggle is selected.
     /// </summary>
-    ToggleEvent onSelect { get; set; }
+    ToggleEvent onSelect { get; }
 
     /// <summary>
     /// Get the toggle info.
@@ -26,35 +26,41 @@ public interface ISectionToggle
     /// Invoke the action of selecting the toggle.
     /// </summary>
     void SelectToggle();
+
+    /// <summary>
+    /// Set the toggle visuals as selected.
+    /// </summary>
+    void SetSelectedVisuals();
+
+    /// <summary>
+    /// Set the toggle visuals as unselected.
+    /// </summary>
+    void SetUnselectedVisuals();
 }
 
 public class SectionToggle : MonoBehaviour, ISectionToggle
 {
     [SerializeField] private Toggle toggle;
+    [SerializeField] private Image toggleBackground;
     [SerializeField] private TMP_Text sectionText;
     [SerializeField] private Image sectionImage;
+    [SerializeField] private Color selectedBackgroundColor;
+    [SerializeField] private Color selectedTextColor;
+    [SerializeField] private Color selectedImageColor;
+    [SerializeField] private Color unselectedBackgroundColor;
+    [SerializeField] private Color unselectedTextColor;
+    [SerializeField] private Color unselectedImageColor;
 
-    public ToggleEvent onSelect
-    {
-        get { return toggle?.onValueChanged; }
-        set
-        {
-            toggle?.onValueChanged.RemoveAllListeners();
-            toggle?.onValueChanged.AddListener((isOn) =>
-            {
-                if (isOn)
-                    value?.Invoke(isOn);
-            });
-        }
-    }
+    public ToggleEvent onSelect => toggle?.onValueChanged;
+
+    private void Awake() { ConfigureDefaultOnSelectAction(); }
 
     public SectionToggleModel GetInfo()
     {
         return new SectionToggleModel
         {
             icon = sectionImage.sprite,
-            title = sectionText.text,
-            onSelect = onSelect
+            title = sectionText.text
         };
     }
 
@@ -72,7 +78,15 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             sectionImage.sprite = model.icon;
         }
 
-        onSelect = model.onSelect;
+        selectedBackgroundColor = model.selectedBackgroundColor;
+        selectedTextColor = model.selectedTextColor;
+        selectedImageColor = model.selectedImageColor;
+        unselectedBackgroundColor = model.unselectedBackgroundColor;
+        unselectedTextColor = model.unselectedTextColor;
+        unselectedImageColor = model.unselectedImageColor;
+
+        onSelect.RemoveAllListeners();
+        ConfigureDefaultOnSelectAction();
     }
 
     public void SelectToggle()
@@ -83,9 +97,28 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         toggle.isOn = true;
     }
 
-    private void OnDestroy()
+    public void SetSelectedVisuals()
     {
-        if (toggle != null)
-            toggle.onValueChanged.RemoveAllListeners();
+        toggleBackground.color = selectedBackgroundColor;
+        sectionText.color = selectedTextColor;
+        sectionImage.color = selectedImageColor;
+    }
+
+    public void SetUnselectedVisuals()
+    {
+        toggleBackground.color = unselectedBackgroundColor;
+        sectionText.color = unselectedTextColor;
+        sectionImage.color = unselectedImageColor;
+    }
+
+    internal void ConfigureDefaultOnSelectAction()
+    {
+        onSelect.AddListener((isOn) =>
+        {
+            if (isOn)
+                SetSelectedVisuals();
+            else
+                SetUnselectedVisuals();
+        });
     }
 }

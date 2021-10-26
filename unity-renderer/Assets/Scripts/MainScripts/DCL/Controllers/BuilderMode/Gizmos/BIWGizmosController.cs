@@ -51,13 +51,13 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private GameObject gizmosGO;
     private FreeCameraMovement freeCameraMovement;
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
         gizmosGO = GameObject.Instantiate(context.projectReferencesAsset.gizmosPrefab, context.projectReferencesAsset.gizmosPrefab.transform.position, context.projectReferencesAsset.gizmosPrefab.transform.rotation);
         gizmos = gizmosGO.GetComponentsInChildren<IBIWGizmos>(true);
 
-        raycastController = context.raycastController;
+        raycastController = context.editorContext.raycastController;
 
         raycastController.OnGizmosAxisPressed += OnGizmosAxisPressed;
         BIWInputWrapper.OnMouseUp += OnMouseUp;

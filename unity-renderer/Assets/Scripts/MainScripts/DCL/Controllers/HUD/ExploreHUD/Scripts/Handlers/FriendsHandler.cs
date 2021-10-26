@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using UnityEngine;
 
-internal class FriendsHandler : IFriendTrackerHandler
+public class FriendsHandler : IFriendTrackerHandler
 {
     public event Action<UserProfile, Color> OnFriendAddedEvent;
     public event Action<UserProfile> OnFriendRemovedEvent;
