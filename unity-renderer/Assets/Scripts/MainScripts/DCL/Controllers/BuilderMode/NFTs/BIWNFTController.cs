@@ -61,7 +61,8 @@ public class BIWNFTController
 
     public void Dispose()
     {
-        userProfile.OnUpdate -= UserProfileUpdated;
+        if (userProfile != null)
+            userProfile.OnUpdate -= UserProfileUpdated;
 
         if (fechNftsCoroutine != null)
             CoroutineStarter.Stop(fechNftsCoroutine);
