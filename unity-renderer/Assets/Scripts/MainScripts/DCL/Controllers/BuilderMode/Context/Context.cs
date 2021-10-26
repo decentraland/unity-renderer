@@ -165,6 +165,8 @@ namespace DCL.Builder
             raycastController.Dispose();
             gizmosController.Dispose();
 
+            sceneReferences.Dispose();
+
             godModeDynamicVariablesAssetReference = null;
             firstPersonDynamicVariablesAssetReference = null;
         }

@@ -68,7 +68,7 @@ public class BIWScaleGizmos : BIWGizmos
 
     private Vector3 GetScaleDirection(Transform entityTransform, IBIWGizmosAxis axis)
     {
-        Vector3 scaleDirection = activeAxis.transform.forward;
+        Vector3 scaleDirection = activeAxis.axisTransform.forward;
         if (axis == axisProportionalScale)
         {
             scaleDirection = Vector3.one;
@@ -81,7 +81,7 @@ public class BIWScaleGizmos : BIWGizmos
         }
         else if (worldOrientedGizmos)
         {
-            scaleDirection = entityTransform.rotation * activeAxis.transform.forward;
+            scaleDirection = entityTransform.rotation * activeAxis.axisTransform.forward;
             scaleDirection.x = Mathf.Abs(scaleDirection.x);
             scaleDirection.y = Mathf.Abs(scaleDirection.y);
             scaleDirection.z = Mathf.Abs(scaleDirection.z);
@@ -139,6 +139,6 @@ public class BIWScaleGizmos : BIWGizmos
             return Vector3.Distance(initialHitPoint, hitPoint);
         }
 
-        return axis.transform.InverseTransformPoint(hitPoint).z;
+        return axis.axisTransform.InverseTransformPoint(hitPoint).z;
     }
 }

@@ -14,4 +14,6 @@ public interface IInitialSceneReferences
     GameObject cameraController { get; }
     UnityEngine.Camera mainCamera { get; }
     GameObject bridgeGameObject { get; }
+
+    void Dispose();
 }

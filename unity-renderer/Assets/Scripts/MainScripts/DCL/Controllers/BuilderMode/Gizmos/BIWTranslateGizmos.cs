@@ -14,7 +14,7 @@ public class BIWTranslateGizmos : BIWGizmos
         if (snapFactor > 0)
             initialEntityPosition = GetPositionRoundedToSnapFactor(entityTransform.position, axisValue);
 
-        Vector3 move = activeAxis.transform.forward * axisValue;
+        Vector3 move = activeAxis.axisTransform.forward * axisValue;
         Vector3 position = initialEntityPosition + move;
 
         entityTransform.position = position;

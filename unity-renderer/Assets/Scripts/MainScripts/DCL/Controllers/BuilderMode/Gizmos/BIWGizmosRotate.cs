@@ -12,7 +12,7 @@ public class BIWGizmosRotate : BIWGizmos
     public override float TransformEntity(Transform entityTransform, IBIWGizmosAxis axis, float axisValue)
     {
         Space space = worldOrientedGizmos ? Space.World : Space.Self;
-        Vector3 rotationVector = activeAxis.transform.forward;
+        Vector3 rotationVector = activeAxis.axisTransform.forward;
 
         float amount = axisValue * Mathf.Rad2Deg;
         entityTransform.Rotate(rotationVector, amount, space);
@@ -22,7 +22,7 @@ public class BIWGizmosRotate : BIWGizmos
     public override void OnBeginDrag(IBIWGizmosAxis axis, Transform entityTransform)
     {
         base.OnBeginDrag(axis, entityTransform);
-        raycastPlane = new Plane(activeAxis.transform.forward, transform.position);
+        raycastPlane = new Plane(activeAxis.axisTransform.forward, transform.position);
     }
 
     public override bool RaycastHit(Ray ray, out Vector3 hitPoint)
@@ -41,7 +41,7 @@ public class BIWGizmosRotate : BIWGizmos
     internal override float GetHitPointToAxisValue(IBIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
     {
         Vector3 hitDir = (hitPoint - transform.position).normalized;
-        return Vector3.SignedAngle(axis.transform.up, hitDir, axis.transform.forward) * Mathf.Deg2Rad;
+        return Vector3.SignedAngle(axis.axisTransform.up, hitDir, axis.axisTransform.forward) * Mathf.Deg2Rad;
     }
 
     internal override void SetPreviousAxisValue(float axisValue, float transformValue) { previousAxisValue = axisValue; }

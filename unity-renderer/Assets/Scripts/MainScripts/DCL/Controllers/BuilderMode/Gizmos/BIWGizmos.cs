@@ -101,17 +101,17 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
 
     public virtual bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {
-        Vector3 hitPos = ray.GetPoint(Vector3.Distance(ray.origin, activeAxis.transform.position));
-        Vector3 hitOffset = (hitPos - activeAxis.transform.position);
-        hitPoint = activeAxis.transform.position + Vector3.Project(hitOffset, activeAxis.transform.forward);
+        Vector3 hitPos = ray.GetPoint(Vector3.Distance(ray.origin, activeAxis.axisTransform.position));
+        Vector3 hitOffset = (hitPos - activeAxis.axisTransform.position);
+        hitPoint = activeAxis.axisTransform.position + Vector3.Project(hitOffset, activeAxis.axisTransform.forward);
         return true;
     }
 
     internal virtual float GetHitPointToAxisValue(IBIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
     {
-        Vector3 dir = (hitPoint - axis.transform.position).normalized;
-        float sign = Vector3.Angle(dir, axis.transform.forward) == 180 ? -1 : 1;
-        return Vector3.Distance(activeAxis.transform.position, hitPoint) * sign;
+        Vector3 dir = (hitPoint - axis.axisTransform.position).normalized;
+        float sign = Vector3.Angle(dir, axis.axisTransform.forward) == 180 ? -1 : 1;
+        return Vector3.Distance(activeAxis.axisTransform.position, hitPoint) * sign;
     }
 
     internal virtual void SetPreviousAxisValue(float axisValue, float transformValue) { previousAxisValue = axisValue - transformValue; }

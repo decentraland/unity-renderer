@@ -9,5 +9,5 @@ public interface IBIWGizmosAxis
     void SetColorDefault();
     IBIWGizmos GetGizmo();
 
-    Transform transform { get; }
+    Transform axisTransform { get; }
 }

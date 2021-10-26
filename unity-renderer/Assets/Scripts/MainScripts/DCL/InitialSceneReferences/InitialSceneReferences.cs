@@ -59,6 +59,7 @@ namespace DCL
         public GameObject cameraController => data.cameraController.gameObject;
         public UnityEngine.Camera mainCamera { get { return mainCameraReference; } }
         public GameObject bridgeGameObject { get { return bridgeGameObjectReference; } }
+        public void Dispose() { }
 
         public static InitialSceneReferences i { get; private set; }
 

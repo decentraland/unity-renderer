@@ -18,7 +18,7 @@ public class BIWGizmosAxis : MonoBehaviour, IBIWGizmosAxis
     public void SetGizmo(IBIWGizmos parentGizmo) { gizmo = parentGizmo; }
 
     public IBIWGizmos GetGizmo() { return gizmo; }
-    public Transform transform  => transform;
+    public Transform axisTransform  => transform;
 
     public void SetColorHighlight()
     {
