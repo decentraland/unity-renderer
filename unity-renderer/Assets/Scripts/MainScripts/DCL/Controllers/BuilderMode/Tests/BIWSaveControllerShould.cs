@@ -9,7 +9,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 {
     public BIWSaveController biwSaveController;
     public BuilderInWorldBridge builderInWorldBridge;
-    public Context context;
+    public IContext context;
 
     private GameObject gameObject;
 

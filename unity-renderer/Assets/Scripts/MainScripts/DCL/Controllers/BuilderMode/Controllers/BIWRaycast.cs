@@ -1,25 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using DCL;
 using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
 
-public interface IBIWRaycastController : IBIWController
-{
-    event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
-    bool RayCastFloor(out Vector3 position);
-    Vector3 GetFloorPointAtMouse(Vector3 mousePosition);
-    bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo);
-    bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer);
-    Ray GetMouseRay(Vector3 mousePosition);
-    BIWEntity GetEntityOnPointer();
-}
-
 public class BIWRaycastController : BIWController, IBIWRaycastController
 {
-    public event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
+    public event System.Action<IBIWGizmosAxis> OnGizmosAxisPressed;
 
     private Camera builderCamera;
     private IBIWEntityHandler entityHandler;
@@ -38,7 +23,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
         gizmoMask = BIWSettings.GIZMOS_LAYER;
         BIWInputWrapper.OnMouseDown += OnMouseDown;
 
-        builderCamera = context.sceneReferences.mainCamera;
+        builderCamera = context.sceneReferences.mainCameraReference2;
     }
 
     public override void Dispose()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Builder.Manifest;
 using UnityEngine;
 
@@ -7,9 +8,10 @@ public class BuilderAPIController : IBuilderAPIController
 {
     private BuilderInWorldBridge builderInWorldBridge;
 
-    public void Initialize()
+    public void Initialize(IContext context)
     {
         //TODO: Implement functionality
+        builderInWorldBridge = context.sceneReferences.bridgeGameObjectReference2.GetComponent<BuilderInWorldBridge>();
     }
 
     public void Dispose()

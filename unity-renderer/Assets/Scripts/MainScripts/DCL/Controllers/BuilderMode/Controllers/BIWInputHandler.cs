@@ -30,7 +30,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
 
     private float nexTimeToReceiveInput;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 

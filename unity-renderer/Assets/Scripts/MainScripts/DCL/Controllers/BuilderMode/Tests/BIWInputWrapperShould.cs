@@ -8,7 +8,7 @@ using UnityEngine;
 public class BIWInputWrapperShould : IntegrationTestSuite
 {
     private BIWInputWrapper inputWrapper;
-    private Context context;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {

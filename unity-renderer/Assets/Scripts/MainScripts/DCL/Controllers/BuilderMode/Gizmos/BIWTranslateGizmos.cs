@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 
 public class BIWTranslateGizmos : BIWGizmos
 {
     // Start is called before the first frame update
-    public override void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo) { snapFactor = snapInfo.position; }
+    public override void SetSnapFactor(SnapInfo snapInfo) { snapFactor = snapInfo.position; }
 
-    public override float TransformEntity(Transform entityTransform, BIWGizmosAxis axis, float axisValue)
+    public override float TransformEntity(Transform entityTransform, IBIWGizmosAxis axis, float axisValue)
     {
         Vector3 initialEntityPosition = entityTransform.position;
         if (snapFactor > 0)

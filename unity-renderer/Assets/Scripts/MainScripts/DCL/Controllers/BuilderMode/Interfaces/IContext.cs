@@ -10,11 +10,20 @@ namespace DCL.Builder
         BIWProjectReferences projectReferencesAsset { get; }
         BIWInputsReferences inputsReferencesAsset { get; }
 
+        IBuilderMainPanelController panelHUD { get; }
+
         IEditorContext editorContext { get; }
+
+        IInitialSceneReferences sceneReferences { get; }
+
+        void Dispose();
     }
 
     public interface IEditorContext
     {
+        public BIWGodModeDynamicVariables godModeDynamicVariablesAsset { get; }
+        public BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAsset { get; }
+
         IBuilderEditorHUDController editorHUD { get;  }
 
         // BIW Controllers
@@ -24,13 +33,15 @@ namespace DCL.Builder
         IBIWPublishController publishController { get;  }
         IBIWCreatorController creatorController { get;  }
         IBIWModeController modeController { get;  }
-        IBIWFloorHandler floorHandler { get; internal set; }
+        IBIWFloorHandler floorHandler { get; }
         IBIWEntityHandler entityHandler { get;  }
         IBIWActionController actionController { get;  }
         IBIWSaveController saveController { get;  }
         IBIWRaycastController raycastController { get;  }
         IBIWGizmosController gizmosController { get;  }
 
-        IInitialSceneReferences.Data sceneReferences { get; }
+        IInitialSceneReferences sceneReferences { get; }
+
+        void Dispose();
     }
 }

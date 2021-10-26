@@ -35,7 +35,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private readonly Dictionary<string, BIWEntity> convertedEntities = new Dictionary<string, BIWEntity>();
     private readonly List<BIWEntity> selectedEntities = new List<BIWEntity>();
 
-    private BIWMode currentActiveMode;
+    private IBIWMode currentActiveMode;
     internal bool isMultiSelectionActive = false;
     internal bool isSecondayClickPressed = false;
 
@@ -56,7 +56,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private BIWEntity lastClickedEntity;
     private float lastTimeEntityClicked;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
         if ( context.editorContext.editorHUD != null)
@@ -78,7 +78,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
 
-        bridge = context.sceneReferences.builderInWorldBridge;
+        bridge = context.sceneReferences.builderInWorldBridgeReference2.GetComponent<BuilderInWorldBridge>();
 
         outlinerController = context.editorContext.outlinerController;
 
@@ -178,8 +178,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     public List<BIWEntity> GetSelectedEntityList() { return selectedEntities; }
 
     public bool IsAnyEntitySelected() { return selectedEntities.Count > 0; }
-
-    public void SetActiveMode(BIWMode buildMode)
+    public void SetActiveMode(IBIWMode buildMode)
     {
         currentActiveMode = buildMode;
         DeselectEntities();
@@ -469,7 +468,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     public void DuplicateSelectedEntities()
     {
         BIWCompleteAction buildAction = new BIWCompleteAction();
-        buildAction.actionType = BIWCompleteAction.ActionType.CREATE;
+        buildAction.actionType = IBIWCompleteAction.ActionType.CREATE;
 
         List<BIWEntityAction> entityActionList = new List<BIWEntityAction>();
         List<BIWEntity> entitiesToDuplicate = new List<BIWEntity>(selectedEntities);
@@ -488,7 +487,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         currentActiveMode?.SetDuplicationOffset(DUPLICATE_OFFSET);
 
-        buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.CREATE);
+        buildAction.CreateActionType(entityActionList, IBIWCompleteAction.ActionType.CREATE);
         actionController.AddAction(buildAction);
     }
 
@@ -558,7 +557,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         return newEntity;
     }
 
-    public BIWEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
+    public BIWEntity CreateEmptyEntity(IParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
         IDCLEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
 

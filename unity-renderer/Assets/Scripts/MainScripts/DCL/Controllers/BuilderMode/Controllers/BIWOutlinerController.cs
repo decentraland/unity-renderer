@@ -19,7 +19,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     private int outlinerOptimizationCounter = 0;
     private bool isOutlineCheckActive = true;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
         cameraOutlinerMaterial = context.projectReferencesAsset.cameraOutlinerMaterial;

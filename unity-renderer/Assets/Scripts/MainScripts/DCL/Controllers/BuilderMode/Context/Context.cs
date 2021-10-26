@@ -19,10 +19,10 @@ namespace DCL.Builder
         public IBIWEditor editor  { get; private set; }
         public IBuilderAPIController builderAPIController { get; private set; }
 
-        public InitialSceneReferences.Data sceneReferences { get; private set; }
+        public IInitialSceneReferences sceneReferences { get; private set; }
 
         //Editor
-        public EditorContext editorContext { get; private set; }
+        public IEditorContext editorContext { get; private set; }
 
         public Context(IBIWEditor editor,
             IBuilderMainPanelController panelHUD,
@@ -40,7 +40,7 @@ namespace DCL.Builder
             IBIWSaveController saveController,
             IBIWRaycastController raycastController,
             IBIWGizmosController gizmosController,
-            InitialSceneReferences.Data sceneReferences)
+            IInitialSceneReferences sceneReferences)
         {
 
             projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
@@ -80,15 +80,18 @@ namespace DCL.Builder
         }
     }
 
-    public class EditorContext
+    public class EditorContext : IEditorContext
     {
 
         private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
         private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
 
         //Scriptable Objects
-        public BIWGodModeDynamicVariables godModeDynamicVariablesAsset { get; private set; }
-        public BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAsset { get; private set; }
+        internal BIWGodModeDynamicVariables godModeDynamicVariablesAssetReference;
+        internal BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAssetReference;
+
+        public BIWGodModeDynamicVariables godModeDynamicVariablesAsset => godModeDynamicVariablesAssetReference;
+        public BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAsset => firstPersonDynamicVariablesAssetReference;
 
         //HUD
         public IBuilderEditorHUDController editorHUD { get; private set; }
@@ -100,13 +103,15 @@ namespace DCL.Builder
         public IBIWPublishController publishController { get; private set; }
         public IBIWCreatorController creatorController { get; private set; }
         public IBIWModeController modeController { get; private set; }
-        public IBIWFloorHandler floorHandler { get; internal set; }
+        public IBIWFloorHandler floorHandler => floorHandlerReference;
+
+        internal IBIWFloorHandler floorHandlerReference;
         public IBIWEntityHandler entityHandler { get; private set; }
         public IBIWActionController actionController { get; private set; }
         public IBIWSaveController saveController { get; private set; }
         public IBIWRaycastController raycastController { get; private set; }
         public IBIWGizmosController gizmosController { get; private set; }
-        public InitialSceneReferences.Data sceneReferences { get; private set; }
+        public IInitialSceneReferences sceneReferences { get; private set; }
 
         public EditorContext(IBuilderEditorHUDController editorHUD,
             IBIWOutlinerController outlinerController,
@@ -121,10 +126,10 @@ namespace DCL.Builder
             IBIWSaveController saveController,
             IBIWRaycastController raycastController,
             IBIWGizmosController gizmosController,
-            InitialSceneReferences.Data sceneReferences)
+            IInitialSceneReferences sceneReferences)
         {
-            godModeDynamicVariablesAsset = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
-            firstPersonDynamicVariablesAsset = Resources.Load<BIWFirstPersonDynamicVariables>(FIRST_PERSON_DYNAMIC_VARIABLE_PATH);
+            godModeDynamicVariablesAssetReference = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
+            firstPersonDynamicVariablesAssetReference = Resources.Load<BIWFirstPersonDynamicVariables>(FIRST_PERSON_DYNAMIC_VARIABLE_PATH);
 
             this.editorHUD = editorHUD;
 
@@ -134,7 +139,7 @@ namespace DCL.Builder
             this.publishController = publishController;
             this.creatorController = creatorController;
             this.modeController = modeController;
-            this.floorHandler = floorHandler;
+            this.floorHandlerReference = floorHandler;
             this.entityHandler = entityHandler;
             this.actionController = actionController;
             this.saveController = saveController;
@@ -160,8 +165,8 @@ namespace DCL.Builder
             raycastController.Dispose();
             gizmosController.Dispose();
 
-            godModeDynamicVariablesAsset = null;
-            firstPersonDynamicVariablesAsset = null;
+            godModeDynamicVariablesAssetReference = null;
+            firstPersonDynamicVariablesAssetReference = null;
         }
     }
 }

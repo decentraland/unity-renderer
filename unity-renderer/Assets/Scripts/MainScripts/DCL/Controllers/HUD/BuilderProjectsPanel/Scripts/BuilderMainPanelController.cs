@@ -89,7 +89,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         view.Dispose();
     }
 
-    public void Initialize()
+    public void Initialize(IContext context)
     {
         Initialize(new SectionsController(view.GetSectionContainer()),
             new ScenesViewController(view.GetCardViewPrefab(), view.GetTransform()),

@@ -1,5 +1,7 @@
+using DCL.Builder;
+
 public interface IBuilderAPIController
 {
-    void Initialize();
+    void Initialize(IContext context);
     void Dispose();
 }

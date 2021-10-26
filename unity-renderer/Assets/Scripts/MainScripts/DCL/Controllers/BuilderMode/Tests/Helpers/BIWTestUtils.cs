@@ -12,9 +12,9 @@ using UnityEngine.UI;
 
 public static class BIWTestUtils
 {
-    public static Context CreateMockedContext()
+    public static IContext CreateMockedContext()
     {
-        Context context = new Context(
+        IContext context = new Context(
             Substitute.For<IBIWEditor>(),
             Substitute.For<IBuilderMainPanelController>(),
             Substitute.For<IBuilderAPIController>(),
@@ -31,12 +31,12 @@ public static class BIWTestUtils
             Substitute.For<IBIWSaveController>(),
             Substitute.For<IBIWRaycastController>(),
             Substitute.For<IBIWGizmosController>(),
-            new InitialSceneReferences.Data()
+            Substitute.For<IInitialSceneReferences>()
         );
         return context;
     }
 
-    public static Context CreateContextWithGenericMocks(params object[] mocks)
+    public static IContext CreateContextWithGenericMocks(params object[] mocks)
     {
         IBIWEditor editor = Substitute.For<IBIWEditor>();
         IBuilderAPIController apiController = Substitute.For<IBuilderAPIController>();
@@ -55,7 +55,7 @@ public static class BIWTestUtils
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
-        InitialSceneReferences.Data sceneReferences = new InitialSceneReferences.Data();
+        IInitialSceneReferences sceneReferences = Substitute.For<IInitialSceneReferences>();
 
         foreach (var mock in mocks)
         {
@@ -109,13 +109,13 @@ public static class BIWTestUtils
                 case IBIWGizmosController gc:
                     gizmosController = gc;
                     break;
-                case InitialSceneReferences.Data isr:
+                case IInitialSceneReferences isr:
                     sceneReferences = isr;
                     break;
             }
         }
 
-        Context context = new Context(editor,
+        IContext context = new Context(editor,
             panelHUD,
             apiController,
             editorHUD,

@@ -11,7 +11,7 @@ public class BuilderInWorldPlugin : PluginFeature
     internal IBuilderMainPanelController panelController;
     internal IBuilderAPIController builderAPIController;
 
-    internal Context context;
+    internal IContext context;
 
     public BuilderInWorldPlugin()
     {
@@ -38,10 +38,10 @@ public class BuilderInWorldPlugin : PluginFeature
             new BIWSaveController(),
             new BIWRaycastController(),
             new BIWGizmosController(),
-            InitialSceneReferences.i.data);
+            InitialSceneReferences.i);
     }
 
-    public BuilderInWorldPlugin(Context context) { this.context = context; }
+    public BuilderInWorldPlugin(IContext context) { this.context = context; }
 
     public override void Initialize()
     {
@@ -52,9 +52,9 @@ public class BuilderInWorldPlugin : PluginFeature
 
         BIWCatalogManager.Init();
 
-        panelController.Initialize();
+        panelController.Initialize(context);
         editor.Initialize(context);
-        builderAPIController.Initialize();
+        builderAPIController.Initialize(context);
 
         if (HUDController.i == null)
             return;

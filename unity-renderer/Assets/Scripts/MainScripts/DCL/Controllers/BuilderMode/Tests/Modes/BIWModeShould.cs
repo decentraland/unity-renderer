@@ -15,7 +15,7 @@ public class BIWModeShould
 {
     private BIWMode mode;
     private GameObject mockedGameObject;
-    private Context context;
+    private IContext context;
     private List<BIWEntity> selectedEntities;
 
     [UnitySetUp]

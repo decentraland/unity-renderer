@@ -233,7 +233,7 @@ public class VoxelController
             }
 
             BIWCompleteAction buildAction = new BIWCompleteAction();
-            buildAction.actionType = BIWCompleteAction.ActionType.CREATE;
+            buildAction.actionType = IBIWCompleteAction.ActionType.CREATE;
 
             List<BIWEntityAction> entityActionList = new List<BIWEntityAction>();
 
@@ -258,7 +258,7 @@ public class VoxelController
             }
             else
             {
-                buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.CREATE);
+                buildAction.CreateActionType(entityActionList, IBIWCompleteAction.ActionType.CREATE);
                 biwActionController.AddAction(buildAction);
             }
 

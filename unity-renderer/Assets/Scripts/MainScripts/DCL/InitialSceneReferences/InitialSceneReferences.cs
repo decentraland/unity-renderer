@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class InitialSceneReferences : MonoBehaviour, IInititalSceneReference
+    public class InitialSceneReferences : MonoBehaviour, IInitialSceneReferences
     {
         public class Data
         {
@@ -75,5 +75,15 @@ namespace DCL
         }
 
         void OnDestroy() { i = null; }
+        public GameObject mouseCatcherReference2 => mouseCatcher.gameObject;
+        public GameObject groundVisualReference2 => groundVisual.gameObject;
+        public GameObject cameraParentReference2 => cameraParent.gameObject;
+        public GameObject inputControllerReference2 => inputController.gameObject;
+        public GameObject cursorCanvasReference2 => cursorCanvas.gameObject;
+        public GameObject builderInWorldBridgeReference2  => builderInWorldBridge.gameObject;
+        public GameObject playerAvatarControllerReference2 => playerAvatarController.gameObject;
+        public GameObject cameraControllerReference2 => cameraController.gameObject;
+        public UnityEngine.Camera mainCameraReference2 => mainCamera;
+        public GameObject bridgeGameObjectReference2 => bridgeGameObject;
     }
 }

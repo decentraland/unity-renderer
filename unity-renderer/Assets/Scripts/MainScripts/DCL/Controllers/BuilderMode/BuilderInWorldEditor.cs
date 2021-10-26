@@ -37,7 +37,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
-    internal Context context;
+    internal IContext context;
 
     private readonly List<IBIWController> controllers = new List<IBIWController>();
 

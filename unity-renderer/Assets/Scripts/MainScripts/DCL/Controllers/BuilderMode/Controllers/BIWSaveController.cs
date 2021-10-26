@@ -16,11 +16,11 @@ public class BIWSaveController : BIWController, IBIWSaveController
     private bool canActivateSave = true;
     public int GetSaveTimes() { return numberOfSaves; }
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
-        bridge = context.sceneReferences.builderInWorldBridge;
+        bridge = context.sceneReferences.builderInWorldBridgeReference2.GetComponent<BuilderInWorldBridge>();
         if (bridge != null)
             bridge.OnKernelUpdated += TryToSave;
 

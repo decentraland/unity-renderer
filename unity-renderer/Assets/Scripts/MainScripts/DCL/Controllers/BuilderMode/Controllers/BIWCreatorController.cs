@@ -32,7 +32,7 @@ namespace DCL.Builder
 
         private float lastAnalyticsSentTimestamp = 0;
 
-        public override void Initialize(Context context)
+        public override void Initialize(IContext context)
         {
             base.Initialize(context);
 

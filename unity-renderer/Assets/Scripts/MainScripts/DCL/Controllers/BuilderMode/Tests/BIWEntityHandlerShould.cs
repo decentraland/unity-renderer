@@ -24,7 +24,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     private const string ENTITY_ID = "1";
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
-    private Context context;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {

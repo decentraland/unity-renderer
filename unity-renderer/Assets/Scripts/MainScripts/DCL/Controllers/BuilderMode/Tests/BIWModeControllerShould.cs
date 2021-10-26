@@ -8,7 +8,7 @@ using UnityEngine;
 public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 {
     private BIWModeController biwModeController;
-    private Context context;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {
@@ -35,13 +35,13 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
     public void SetFirstPersonMode()
     {
         //Arrange
-        biwModeController.SetBuildMode(BIWModeController.EditModeState.Inactive);
+        biwModeController.SetBuildMode(IBIWModeController.EditModeState.Inactive);
 
         //Act
-        biwModeController.SetBuildMode(BIWModeController.EditModeState.FirstPerson);
+        biwModeController.SetBuildMode(IBIWModeController.EditModeState.FirstPerson);
 
         //Assert
-        Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.FirstPerson);
+        Assert.IsTrue(biwModeController.GetCurrentStateMode() == IBIWModeController.EditModeState.FirstPerson);
         Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BIWFirstPersonMode));
     }
 
@@ -49,13 +49,13 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
     public void SetGodMode()
     {
         //Arrange
-        biwModeController.SetBuildMode(BIWModeController.EditModeState.Inactive);
+        biwModeController.SetBuildMode(IBIWModeController.EditModeState.Inactive);
 
         //Act
-        biwModeController.SetBuildMode(BIWModeController.EditModeState.GodMode);
+        biwModeController.SetBuildMode(IBIWModeController.EditModeState.GodMode);
 
         //Assert
-        Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.GodMode);
+        Assert.IsTrue(biwModeController.GetCurrentStateMode() == IBIWModeController.EditModeState.GodMode);
         Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BIWGodMode));
     }
 
@@ -63,13 +63,13 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
     public void InactiveMode()
     {
         //Arrange
-        biwModeController.SetBuildMode(BIWModeController.EditModeState.GodMode);
+        biwModeController.SetBuildMode(IBIWModeController.EditModeState.GodMode);
 
         //Act
-        biwModeController.SetBuildMode(BIWModeController.EditModeState.Inactive);
+        biwModeController.SetBuildMode(IBIWModeController.EditModeState.Inactive);
 
         //Assert
-        Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.Inactive);
+        Assert.IsTrue(biwModeController.GetCurrentStateMode() == IBIWModeController.EditModeState.Inactive);
         Assert.IsTrue(biwModeController.GetCurrentMode() == null);
     }
 

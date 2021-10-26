@@ -1,5 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
+using DCL.Builder;
+using DCL.Configuration;
+using DCL.Controllers;
+using DCL.Models;
 using UnityEngine;
 
 public class BIWMode : IBIWMode
@@ -34,9 +39,9 @@ public class BIWMode : IBIWMode
 
     internal List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
-    internal Context context;
+    internal IContext context;
 
-    public virtual void Init(Context context)
+    public virtual void Init(IContext context)
     {
         this.context = context;
         entityHandler = context.editorContext.entityHandler;
@@ -248,7 +253,7 @@ public class BIWMode : IBIWMode
         }
     }
 
-    protected void ActionFinish(BIWCompleteAction.ActionType type)
+    protected void ActionFinish(IBIWCompleteAction.ActionType type)
     {
         if (actionList.Count > 0 && selectedEntities.Count > 0)
         {

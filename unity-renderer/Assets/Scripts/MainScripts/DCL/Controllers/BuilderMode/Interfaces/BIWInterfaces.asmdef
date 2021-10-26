@@ -1,5 +1,5 @@
 {
-    "name": "BIWControllersInterfaces",
+    "name": "BIWInterfaces",
     "rootNamespace": "",
     "references": [
         "GUID:92d421569a4b2234c837b61c50b146c8",

@@ -6,21 +6,11 @@ using Newtonsoft.Json;
 
 public class BIWCompleteAction : IBIWCompleteAction
 {
-    public enum ActionType
-    {
-        MOVE = 0,
-        ROTATE = 1,
-        SCALE = 2,
-        CREATE = 3,
-        DELETE = 4,
-        CHANGE_FLOOR = 5
-    }
 
-    public ActionType actionType;
+    public IBIWCompleteAction.ActionType actionType;
     public bool isDone = true;
 
-    public delegate void OnApplyValueDelegate(string entityId, object value, ActionType actionType, bool isUndo);
-    public event OnApplyValueDelegate OnApplyValue;
+    public event IBIWCompleteAction.OnApplyValueDelegate OnApplyValue;
 
     List<BIWEntityAction> entityApplied = new List<BIWEntityAction>();
 
@@ -32,6 +22,7 @@ public class BIWCompleteAction : IBIWCompleteAction
         }
         isDone = true;
     }
+    public bool IsDone() => isDone;
 
     public void Undo()
     {
@@ -44,26 +35,26 @@ public class BIWCompleteAction : IBIWCompleteAction
 
     }
 
-    void ApplyValue(string entityToApply, object value, bool isUndo) { OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo); }
+    private void ApplyValue(string entityToApply, object value, bool isUndo) { OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo); }
 
     public void CreateChangeFloorAction(CatalogItem oldFloor, CatalogItem newFloor)
     {
         BIWEntityAction action = new BIWEntityAction(JsonConvert.SerializeObject(oldFloor), JsonConvert.SerializeObject(newFloor));
         List<BIWEntityAction> list = new List<BIWEntityAction>();
         list.Add(action);
-        CreateAction(list, ActionType.CHANGE_FLOOR);
+        CreateAction(list, IBIWCompleteAction.ActionType.CHANGE_FLOOR);
     }
 
-    public void CreateActionType(BIWEntityAction action, ActionType type)
+    public void CreateActionType(BIWEntityAction action, IBIWCompleteAction.ActionType type)
     {
         List<BIWEntityAction> list = new List<BIWEntityAction>();
         list.Add(action);
         CreateAction(list, type);
     }
 
-    public void CreateActionType(List<BIWEntityAction> entitiesActions, ActionType type) { CreateAction(entitiesActions, type); }
+    public void CreateActionType(List<BIWEntityAction> entitiesActions, IBIWCompleteAction.ActionType type) { CreateAction(entitiesActions, type); }
 
-    void CreateAction(List<BIWEntityAction> entitiesActions, ActionType type)
+    void CreateAction(List<BIWEntityAction> entitiesActions, IBIWCompleteAction.ActionType type)
     {
         actionType = type;
         entityApplied = entitiesActions;

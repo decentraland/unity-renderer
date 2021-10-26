@@ -1,5 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface IBIWMode { }
+public interface IBIWMode
+{
+    void EntityDeselected(BIWEntity entityDeselected);
+    void OnDeselectedEntities();
+    void SelectedEntity(BIWEntity selectedEntity);
+    void SetDuplicationOffset(float offset);
+}

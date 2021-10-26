@@ -37,12 +37,12 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject snapGO;
     private GameObject freeMovementGO;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
-        cursorGO = context.sceneReferences.cursorCanvas;
-        cameraParentGO = context.sceneReferences.cameraParent;
+        cursorGO = context.sceneReferences.cursorCanvasReference2;
+        cameraParentGO = context.sceneReferences.cameraParentReference2;
         InitGameObjects();
 
         firstPersonMode = new BIWFirstPersonMode();
@@ -101,7 +101,7 @@ public class BIWModeController : BIWController, IBIWModeController
         GameObject.Destroy(freeMovementGO);
     }
 
-    public void ActivateCamera(ParcelScene sceneToLook) { godMode.ActivateCamera(sceneToLook); }
+    public void ActivateCamera(IParcelScene sceneToLook) { godMode.ActivateCamera(sceneToLook); }
 
     public void TakeSceneScreenshotForExit() { godMode.TakeSceneScreenshotForExit(); }
 
