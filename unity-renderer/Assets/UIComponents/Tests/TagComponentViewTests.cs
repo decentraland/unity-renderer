@@ -42,23 +42,6 @@ public class TagComponentViewTests
     }
 
     [Test]
-    public void RefreshTagCorrectly()
-    {
-        // Arrange
-        string testText = "Test";
-
-        tagComponent.model.icon = testSprite;
-        tagComponent.model.text = testText;
-
-        // Act
-        tagComponent.RefreshControl();
-
-        // Assert
-        Assert.AreEqual(testSprite, tagComponent.model.icon, "The icon does not match in the model.");
-        Assert.AreEqual(testText, tagComponent.model.text, "The text does not match in the model.");
-    }
-
-    [Test]
     public void SetTagTextCorrectly()
     {
         // Arrange
