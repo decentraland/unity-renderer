@@ -441,7 +441,7 @@ namespace DCL.Skybox
             selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(layer.particleTiling.x, layer.particleTiling.y, layer.particlesOffset.x, layer.particlesOffset.y));
             selectedMat.SetVector("_speedAndRotation_" + layerNum, layer.particleRotation);
             selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.particleAnimSpeed, layer.particlesAmount, layer.particleMinSize, layer.particleMaxSize));
-            selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.particlesHorizontalSpread, layer.particlesVerticalSpread, layer.particleMinFade, layer.particleMaxFade));
+            selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, new Vector4(layer.particlesHorizontalSpread, layer.particlesVerticalSpread, layer.particleMinFade, layer.particleMaxFade));
 
 
         }
