@@ -602,7 +602,7 @@ public class BuilderInWorld : PluginFeature
             return;
 
         isEnteringEditMode = false;
-        BIWNFTController.i.ClearNFTs();
+        BIWNFTController.i.StartEditMode();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
@@ -709,7 +709,7 @@ public class BuilderInWorld : PluginFeature
     public void ExitEditMode()
     {
         Environment.i.platform.cullingController.Start();
-
+        BIWNFTController.i.ExitEditMode();
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;

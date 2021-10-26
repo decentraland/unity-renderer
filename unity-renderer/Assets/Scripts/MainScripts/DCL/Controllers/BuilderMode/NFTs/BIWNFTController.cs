@@ -24,6 +24,7 @@ public class BIWNFTController
 
     private bool desactivateNFT = false;
     private bool isInit = false;
+    private bool isActive = false;
     private UserProfile userProfile;
 
     public static BIWNFTController i
@@ -50,7 +51,13 @@ public class BIWNFTController
         }
     }
 
-    private void UserProfileUpdated(UserProfile profile) { FetchNftsFromOwner(); }
+    private void UserProfileUpdated(UserProfile profile)
+    {
+        if (!isActive)
+            return;
+
+        FetchNftsFromOwner();
+    }
 
     public void Dispose()
     {
@@ -59,6 +66,14 @@ public class BIWNFTController
         if (fechNftsCoroutine != null)
             CoroutineStarter.Stop(fechNftsCoroutine);
     }
+
+    public void StartEditMode()
+    {
+        isActive = true;
+        ClearNFTs();
+    }
+
+    public void ExitEditMode() { isActive = false; }
 
     public void ClearNFTs() { nftsAlreadyInUse.Clear(); }
 
