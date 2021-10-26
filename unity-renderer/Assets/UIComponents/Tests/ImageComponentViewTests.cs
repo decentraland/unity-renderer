@@ -9,6 +9,7 @@ public class ImageComponentViewTests
 {
     private ImageComponentView imageComponent;
     private Texture2D testTexture;
+    private Sprite testSprite;
 
     [SetUp]
     public void SetUp()
@@ -16,6 +17,7 @@ public class ImageComponentViewTests
         imageComponent = BaseComponentView.Create<ImageComponentView>("Image");
         imageComponent.imageObserver = Substitute.For<ILazyTextureObserver>();
         testTexture = new Texture2D(20, 20);
+        testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }
 
     [TearDown]
@@ -24,6 +26,7 @@ public class ImageComponentViewTests
         imageComponent.Dispose();
         GameObject.Destroy(imageComponent.gameObject);
         GameObject.Destroy(testTexture);
+        GameObject.Destroy(testSprite);
     }
 
     [Test]
@@ -32,7 +35,7 @@ public class ImageComponentViewTests
         // Arrange
         ImageComponentModel testModel = new ImageComponentModel
         {
-            sprite = Sprite.Create(testTexture, new Rect(), Vector2.zero)
+            sprite = testSprite
         };
 
         // Act
@@ -45,9 +48,6 @@ public class ImageComponentViewTests
     [Test]
     public void SetImageFromSpriteCorrectly()
     {
-        // Arrange
-        Sprite testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
-
         // Act
         imageComponent.SetImage(testSprite);
 

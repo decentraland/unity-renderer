@@ -5,12 +5,14 @@ public class ButtonComponentViewTests
 {
     private ButtonComponentView buttonComponent;
     private Texture2D testTexture;
+    private Sprite testSprite;
 
     [SetUp]
     public void SetUp()
     {
         buttonComponent = BaseComponentView.Create<ButtonComponentView>("Button_Common");
         testTexture = new Texture2D(20, 20);
+        testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }
 
     [TearDown]
@@ -19,6 +21,7 @@ public class ButtonComponentViewTests
         buttonComponent.Dispose();
         GameObject.Destroy(buttonComponent.gameObject);
         GameObject.Destroy(testTexture);
+        GameObject.Destroy(testSprite);
     }
 
     [Test]
@@ -41,7 +44,7 @@ public class ButtonComponentViewTests
         // Arrange
         ButtonComponentModel testModel = new ButtonComponentModel
         {
-            icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
+            icon = testSprite,
             text = "Test"
         };
 
@@ -72,14 +75,14 @@ public class ButtonComponentViewTests
     public void SetButtonIconCorrectly(bool isNullIcon)
     {
         // Arrange
-        Sprite testSprite = isNullIcon ? null : Sprite.Create(testTexture, new Rect(), Vector2.zero);
+        Sprite testingSprite = isNullIcon ? null : testSprite;
 
         // Act
-        buttonComponent.SetIcon(testSprite);
+        buttonComponent.SetIcon(testingSprite);
 
         // Assert
-        Assert.AreEqual(testSprite, buttonComponent.model.icon, "The icon does not match in the model.");
-        Assert.AreEqual(testSprite, buttonComponent.icon.sprite, "The button icon does not match.");
+        Assert.AreEqual(testingSprite, buttonComponent.model.icon, "The icon does not match in the model.");
+        Assert.AreEqual(testingSprite, buttonComponent.icon.sprite, "The button icon does not match.");
 
         if (isNullIcon)
             Assert.IsFalse(buttonComponent.icon.gameObject.activeSelf, "The button component should not be actived.");
