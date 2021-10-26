@@ -640,7 +640,7 @@ namespace DCL.Skybox
             {
                 RenderSatelliteLayer(layer);
             }
-            else
+            else if (layer.LayerType == LayerType.Particles)
             {
                 RenderParticleLayer(layer);
             }
@@ -758,7 +758,7 @@ namespace DCL.Skybox
 
             EditorGUILayout.Space(10);
 
-            RenderParticleLayer(layer);
+            //RenderParticleLayer(layer);
         }
 
         void RenderSatelliteLayer(TextureLayer layer)
@@ -823,58 +823,109 @@ namespace DCL.Skybox
 
             // Size
             RenderTransitioningVector2(layer.satelliteWidthHeight, "Width & Height", "%", "", layer.timeSpan_start, layer.timeSpan_End);
-
-            EditorGUILayout.Space(15);
-
-            // Particle variables
-            RenderParticleLayer(layer);
         }
 
         void RenderParticleLayer(TextureLayer layer)
         {
-            EditorGUILayout.BeginHorizontal(GUILayout.Width(500));
-            layer.particleExpanded = EditorGUILayout.Foldout(layer.particleExpanded, "Particles", true, EditorStyles.foldoutHeader);
-            layer.useParticles = EditorGUILayout.Toggle(layer.useParticles);
-            EditorGUILayout.EndHorizontal();
+            // Texture
+            RenderTexture("Texture", layer);
+            RenderNormalMap("Normal Map", layer);
+            // Gradient
+            RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
 
-            //EditorGUILayout.LabelField("Particles", EditorStyles.boldLabel, GUILayout.Width(100), GUILayout.ExpandWidth(false));
+            // Tiling
+            RenderVector2Field("Tiling", ref layer.particleTiling);
+            // Offset
+            RenderVector2Field("Offset", ref layer.particlesOffset);
 
-            if (!layer.particleExpanded)
-            {
-                return;
-            }
+            // Particle Rotation
+            RenderVector3Field("Rotation", ref layer.particleRotation);
 
-            EditorGUILayout.Space(10);
+            // Row and Coloumns
+            RenderVector2Field("Rows and Columns", ref layer.particlesRowsAndColumns);
 
-            EditorGUI.indentLevel++;
-            // Speed
+            // Anim Speed
+            RenderFloatField("Anim Speed", ref layer.particleAnimSpeed);
+
+            // Amount
+            RenderFloatField("Amount", ref layer.particlesAmount);
+
+            // Size
+            RenderSepratedFloatFields("Size", "Min", ref layer.particleMinSize, "Max", ref layer.particleMaxSize);
+
+            // Spread
+            RenderSepratedFloatFields("Spread", "Horizontal", ref layer.particlesHorizontalSpread, "Vertical", ref layer.particlesVerticalSpread);
+
+            // Fade
+            RenderSepratedFloatFields("Fade", "Min", ref layer.particleMinFade, "Max", ref layer.particleMaxFade);
+        }
+
+        void RenderSepratedFloatFields(string label, string label1, ref float value1, string label2, ref float value2)
+        {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Rows & Coloumns", GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            layer.particlesRowsAndColumns = EditorGUILayout.Vector2Field("", layer.particlesRowsAndColumns, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label1, GUILayout.Width(90), GUILayout.ExpandWidth(false));
+            value1 = EditorGUILayout.FloatField("", value1, GUILayout.Width(90));
+            EditorGUILayout.LabelField(label2, GUILayout.Width(90), GUILayout.ExpandWidth(false));
+            value2 = EditorGUILayout.FloatField("", value2, GUILayout.Width(90));
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+        }
+
+        void RenderFloatField(string label, ref float value)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            value = EditorGUILayout.FloatField(value, GUILayout.Width(90));
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+        }
+
+        void RenderVector3Field(string label, ref Vector3 value)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            value = EditorGUILayout.Vector3Field("", value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
+        }
 
-            // Particles Main Param
+        void RenderVector2Field(string label, ref Vector2 value)
+        {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Main Params", GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            layer.particlesMainParams = EditorGUILayout.Vector4Field("", layer.particlesMainParams, GUILayout.Width(400), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            value = EditorGUILayout.Vector2Field("", value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
+        }
 
-            // Particles Secondary Param
+        void RenderTexture(string label, TextureLayer layer)
+        {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField("Secondary Params", GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            layer.particlesSecondaryParams = EditorGUILayout.Vector4Field("", layer.particlesSecondaryParams, GUILayout.Width(400), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            layer.texture = (Texture2D)EditorGUILayout.ObjectField(layer.texture, typeof(Texture2D), false, GUILayout.Width(200));
             GUILayout.EndHorizontal();
+
             EditorGUILayout.Separator();
+        }
 
-            //// Particle Speed
-            //layer.particlesSpeed = EditorGUILayout.Slider("Speed", layer.particlesSpeed, 0, 10, GUILayout.Width(500));
+        void RenderNormalMap(string label, TextureLayer layer)
+        {
+            // Normal Texture
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            layer.textureNormal = (Texture2D)EditorGUILayout.ObjectField(layer.textureNormal, typeof(Texture2D), false, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
 
-            //// Particle frequency
-            //layer.particlesFrequency = EditorGUILayout.Slider("Frequency", layer.particlesFrequency, 0, 10, GUILayout.Width(500));
+            // Normal Intensity
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField("Normal Intensity", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            layer.normalIntensity = EditorGUILayout.Slider(layer.normalIntensity, 0, 1, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
 
-            EditorGUI.indentLevel--;
+            EditorGUILayout.Separator();
         }
 
         void RenderDistortionVariables(TextureLayer layer)
@@ -1177,20 +1228,21 @@ namespace DCL.Skybox
         void RenderColorGradientField(Gradient color, string label = "color", float startTime = -1, float endTime = -1, bool hdr = false)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
 
             if (startTime != -1)
             {
-                EditorGUILayout.LabelField(startTime + "Hr", GUILayout.Width(45), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(startTime + "Hr", GUILayout.Width(65), GUILayout.ExpandWidth(false));
             }
 
             color = EditorGUILayout.GradientField(new GUIContent(""), color, hdr, GUILayout.Width(250), GUILayout.ExpandWidth(false));
 
             if (endTime != 1)
             {
-                EditorGUILayout.LabelField(endTime + "Hr", GUILayout.Width(45), GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField(endTime + "Hr", GUILayout.Width(65), GUILayout.ExpandWidth(false));
             }
             GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
         }
 
         void RenderTransitioningQuaternionAsVector3(List<TransitioningQuaternion> _list, string label, string percentTxt, string valueText, Func<Quaternion> GetCurrentRotation, float layerStartTime = 0, float layerEndTime = 24)

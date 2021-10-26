@@ -13,7 +13,7 @@ namespace DCL.Skybox
         public bool expandedInEditor;
         public float timeSpan_start;
         public float timeSpan_End;
-        public float fadingIn, fadingOut;
+        public float fadingIn = 1;
         public float tintercentage;
         public List<TransitioningFloat> renderDistance;
 
@@ -40,10 +40,24 @@ namespace DCL.Skybox
 
         // Particles
         public bool particleExpanded;
-        public bool useParticles;
-        public Vector2 particlesRowsAndColumns;
-        public Vector4 particlesMainParams;
-        public Vector4 particlesSecondaryParams;
+        //public bool useParticles;
+        public Vector2 particlesRowsAndColumns = Vector2.one;
+        public Vector2 particleTiling = Vector2.one;
+        public Vector2 particlesOffset = Vector2.zero;
+        public Vector3 particleRotation = Vector3.zero;
+        // Particle Primary Param
+        public float particleAnimSpeed = 1;
+        public float particlesAmount = 1;
+        public float particleMinSize = 1;
+        public float particleMaxSize = 1;
+        // Particle Secondary Param
+        public float particlesHorizontalSpread = 1;
+        public float particlesVerticalSpread = 1;
+        public float particleMinFade = 1;
+        public float particleMaxFade = 1;
+
+        //public Vector4 particlesMainParams;
+        //public Vector4 particlesSecondaryParams;
         //public float particlesSpeed;
         //public float particlesFrequency;
 
@@ -87,7 +101,8 @@ namespace DCL.Skybox
         Planar = 0,
         Radial = 1,
         Satellite = 2,
-        Cubemap = 3,
+        Particles = 3,
+        Cubemap = 4,
     }
 
     public enum MovementType
