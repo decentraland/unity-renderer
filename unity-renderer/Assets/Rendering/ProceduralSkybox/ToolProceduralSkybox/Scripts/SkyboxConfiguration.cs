@@ -226,14 +226,14 @@ namespace DCL.Skybox
 
             selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.LayerType);
 
-            if (layer.useParticles)
-            {
-                selectedMat.SetFloat("_useParticles_" + layerNum, 1);
-            }
-            else
-            {
-                selectedMat.SetFloat("_useParticles_" + layerNum, 0);
-            }
+            //if (layer.useParticles)
+            //{
+            //    selectedMat.SetFloat("_useParticles_" + layerNum, 1);
+            //}
+            //else
+            //{
+            //    selectedMat.SetFloat("_useParticles_" + layerNum, 0);
+            //}
 
             switch (layer.LayerType)
             {
@@ -246,6 +246,9 @@ namespace DCL.Skybox
                     break;
                 case LayerType.Cubemap:
                     ApplyCubemapTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    break;
+                case LayerType.Particles:
+                    ApplyParticleTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
                     break;
                 default:
                     break;
@@ -268,7 +271,6 @@ namespace DCL.Skybox
                 selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
                 // Particles
                 selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
-                selectedMat.SetVector("_particleSpeedAndFrequency_" + layerNum, Vector2.zero);
             }
 
 
@@ -345,19 +347,10 @@ namespace DCL.Skybox
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
 
-            // Particles
-            if (layer.useParticles)
-            {
-                selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
-                selectedMat.SetVector("_particlesMainParameters_" + layerNum, layer.particlesMainParams);
-                selectedMat.SetVector("_particlesMainParameters_" + layerNum, layer.particlesSecondaryParams);
-            }
-            else
-            {
-                selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
-                selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
-                selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
-            }
+            // Reset Particle related Params
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
 
             // Apply Distortion Values
             Vector2 distortIntAndSize = new Vector2(GetTransitionValue(layer.distortIntensity, normalizedLayerTime * 100), GetTransitionValue(layer.distortSize, normalizedLayerTime * 100));
@@ -412,22 +405,12 @@ namespace DCL.Skybox
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
 
-            // Particles
-            if (layer.useParticles)
-            {
-                selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
-                selectedMat.SetVector("_particlesMainParameters_" + layerNum, layer.particlesMainParams);
-                selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, layer.particlesSecondaryParams);
-            }
-            else
-            {
-                selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
-                selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
-                selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, Vector4.zero);
-            }
+            // Reset Particle related Params
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
 
-
-            // Distortion values
+            // Reset Distortion values
             selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
             selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
 
@@ -435,12 +418,12 @@ namespace DCL.Skybox
 
         void ApplyParticleTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
+            // Reset Unused params
             selectedMat.SetFloat("_RenderDistance_" + layerNum, 0);
-            selectedMat.SetTexture("_normals_" + layerNum, null);
             selectedMat.SetTexture("_cubemap_" + layerNum, null);
-            selectedMat.SetVector("_tilingAndOffset_" + layerNum, Vector2.one);
-            selectedMat.SetVector("_speedAndRotation_" + layerNum, Vector4.zero);
-            selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
+            selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
+            selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
+
 
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
@@ -451,11 +434,16 @@ namespace DCL.Skybox
 
             // Particles
             selectedMat.SetTexture("_tex_" + layerNum, layer.texture);
+            selectedMat.SetTexture("_normals_" + layerNum, layer.textureNormal);
+            selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
+            selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(layer.particleTiling.x, layer.particleTiling.y, layer.particlesOffset.x, layer.particlesOffset.y));
+            selectedMat.SetVector("_speedAndRotation_" + layerNum, layer.particleRotation);
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.particleAnimSpeed, layer.particlesAmount, layer.particleMinSize, layer.particleMaxSize));
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.particlesHorizontalSpread, layer.particlesVerticalSpread, layer.particleMinFade, layer.particleMaxFade));
 
-            // Distortion values
-            selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
-            selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
+
         }
 
         #endregion
