@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 internal interface IProjectCardView : IDisposable
 {
-    event Action<Vector2Int> OnEditorPressed;
+    event Action<ProjectData> OnEditorPressed;
     event Action<ProjectData> OnSettingsPressed;
     event Action<ProjectData, IProjectCardView> OnExpandMenuPressed;
     ProjectData projectData { get; }
@@ -26,7 +26,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 {
     static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 12f, 0);
 
-    public event Action<Vector2Int> OnEditorPressed;
+    public event Action<ProjectData> OnEditorPressed;
     public event Action<ProjectData> OnSettingsPressed;
     public event Action<ProjectData, IProjectCardView> OnExpandMenuPressed;
 

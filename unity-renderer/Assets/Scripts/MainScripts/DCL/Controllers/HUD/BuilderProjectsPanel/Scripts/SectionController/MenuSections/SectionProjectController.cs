@@ -36,6 +36,7 @@ namespace DCL.Builder
         public override void Dispose()
         {
             view.OnScrollRectValueChanged -= OnRequestContextMenuHide;
+            sceneSearchHandler.OnResult -= OnSearchResult;
             view.Dispose();
         }
 

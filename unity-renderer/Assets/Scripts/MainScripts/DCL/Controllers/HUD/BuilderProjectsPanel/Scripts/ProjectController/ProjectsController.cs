@@ -4,19 +4,50 @@ using System.Collections.Generic;
 using DCL.Builder;
 using UnityEngine;
 
+/// <summary>
+/// This interface is responsible to handle the projects of builder in world panel.
+/// It will handle the listeners that will add/remove projects to the list   
+/// </summary>
 internal interface IProjectsController
 {
-    event Action<Vector2Int> OnEditorPressed;
+    /// <summary>
+    /// This action will be called when the user want to edit a project
+    /// </summary>
+    event Action<ProjectData> OnEditorPressed;
+
+    /// <summary>
+    /// This action will be called each time that we changes the project list
+    /// </summary>
     event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
+
+    /// <summary>
+    /// This will set the project list
+    /// </summary>
+    /// <param name="projects"></param>
     void SetProjects(ProjectData[] projects);
+
+    /// <summary>
+    /// This will add a listener that will be responsible to add/remove projects
+    /// </summary>
+    /// <param name="listener"></param>
     void AddListener(IProjectsListener listener);
+
+    /// <summary>
+    /// This will remove a listener that will be responsible to add/remove projects 
+    /// </summary>
+    /// <param name="listener"></param>
     void RemoveListener(IProjectsListener listener);
+
+    /// <summary>
+    /// This will get all projects
+    /// </summary>
+    /// <returns>Dictionary of all the projects indexed by their id</returns>
     Dictionary<string, IProjectCardView> GetProjects();
 }
 
 internal class ProjectsController : IProjectsController
 {
-    public event Action<Vector2Int> OnEditorPressed;
+    public event Action<ProjectData> OnEditorPressed;
     public event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
 
     private Dictionary<string, IProjectCardView> projects = new Dictionary<string, IProjectCardView>();
