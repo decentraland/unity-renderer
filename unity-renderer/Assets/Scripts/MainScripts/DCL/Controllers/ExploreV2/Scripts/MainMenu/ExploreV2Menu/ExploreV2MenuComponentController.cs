@@ -121,9 +121,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }
 
+    internal void OnToggleActionTriggered(DCLAction_Trigger action) { SetVisibility(!DataStore.i.exploreV2.isOpen.Get()); }
+
     internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current); }
 
     internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
-
-    internal void OnToggleActionTriggered(DCLAction_Trigger action) { SetVisibility(!DataStore.i.exploreV2.isOpen.Get()); }
 }
