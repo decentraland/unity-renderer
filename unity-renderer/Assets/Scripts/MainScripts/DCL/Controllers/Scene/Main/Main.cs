@@ -116,6 +116,7 @@ namespace DCL
         private void InitializeSceneDependencies()
         {
             Instantiate(Resources.Load<GameObject>("MouseCatcher"));
+            Instantiate(Resources.Load<GameObject>("Environment"));
         }
     }
 }
