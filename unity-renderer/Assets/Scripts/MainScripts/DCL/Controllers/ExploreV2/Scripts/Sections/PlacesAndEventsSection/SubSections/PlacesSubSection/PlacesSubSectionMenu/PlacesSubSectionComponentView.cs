@@ -141,6 +141,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         base.Dispose();
 
         showMorePlacesButton.onClick.RemoveAllListeners();
+
+        places.Dispose();
     }
 
     public void SetPlaces(List<PlaceCardComponentModel> places)

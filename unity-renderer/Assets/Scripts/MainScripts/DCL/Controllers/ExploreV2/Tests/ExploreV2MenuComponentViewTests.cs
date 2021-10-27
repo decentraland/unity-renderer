@@ -6,7 +6,11 @@ public class ExploreV2MenuComponentViewTests
     private ExploreV2MenuComponentView exploreV2MenuComponent;
 
     [SetUp]
-    public void SetUp() { exploreV2MenuComponent = Object.Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>(); }
+    public void SetUp()
+    {
+        exploreV2MenuComponent = Object.Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>();
+        exploreV2MenuComponent.Start();
+    }
 
     [TearDown]
     public void TearDown()

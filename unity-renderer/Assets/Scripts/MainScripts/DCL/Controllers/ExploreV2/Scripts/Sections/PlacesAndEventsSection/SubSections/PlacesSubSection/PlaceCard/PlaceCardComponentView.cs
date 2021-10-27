@@ -210,7 +210,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         base.Dispose();
 
         if (placeImage != null)
+        {
             placeImage.OnLoaded -= OnPlaceImageLoaded;
+            placeImage.Dispose();
+        }
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
@@ -226,6 +229,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             friendsHandler.OnFriendAddedEvent -= OnFriendAdded;
             friendsHandler.OnFriendRemovedEvent -= OnFriendRemoved;
         }
+
+        if (friendsGrid != null)
+            friendsGrid.Dispose();
     }
 
     public void SetPlacePicture(Sprite sprite)

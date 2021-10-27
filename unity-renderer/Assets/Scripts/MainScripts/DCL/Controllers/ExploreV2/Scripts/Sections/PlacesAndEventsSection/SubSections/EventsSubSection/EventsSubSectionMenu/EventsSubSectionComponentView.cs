@@ -203,6 +203,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         base.Dispose();
 
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
+
+        featuredEvents.Dispose();
+        upcomingEvents.Dispose();
+        trendingEvents.Dispose();
+        goingEvents.Dispose();
     }
 
     public void SetFeaturedEvents(List<EventCardComponentModel> events)

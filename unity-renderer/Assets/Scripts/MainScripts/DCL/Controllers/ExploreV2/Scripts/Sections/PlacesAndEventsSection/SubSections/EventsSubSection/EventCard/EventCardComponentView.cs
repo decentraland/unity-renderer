@@ -232,7 +232,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         base.Dispose();
 
         if (eventImage != null)
+        {
             eventImage.OnLoaded -= OnEventImageLoaded;
+            eventImage.Dispose();
+        }
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
