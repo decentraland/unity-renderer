@@ -9,7 +9,11 @@ public class RealmViewerComponentViewTests
     public void SetUp() { realmViewerComponent = BaseComponentView.Create<RealmViewerComponentView>("MainMenu/RealmViewer"); }
 
     [TearDown]
-    public void TearDown() { GameObject.Destroy(realmViewerComponent.gameObject); }
+    public void TearDown()
+    {
+        realmViewerComponent.Dispose();
+        GameObject.Destroy(realmViewerComponent.gameObject);
+    }
 
     [Test]
     public void ConfigureRealmViewerCorrectly()

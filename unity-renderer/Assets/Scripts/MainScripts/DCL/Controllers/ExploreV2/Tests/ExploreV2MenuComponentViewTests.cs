@@ -13,7 +13,11 @@ public class ExploreV2MenuComponentViewTests
     }
 
     [TearDown]
-    public void TearDown() { GameObject.Destroy(exploreV2MenuComponent.gameObject); }
+    public void TearDown()
+    {
+        exploreV2MenuComponent.Dispose();
+        GameObject.Destroy(exploreV2MenuComponent.gameObject);
+    }
 
     [Test]
     [TestCase(true)]

@@ -29,6 +29,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.upcomingEventCardsPool.ReleaseAll();
         eventsSubSectionComponent.goingEvents.ExtractItems();
         eventsSubSectionComponent.goingEventCardsPool.ReleaseAll();
+        eventsSubSectionComponent.Dispose();
         GameObject.Destroy(eventsSubSectionComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);

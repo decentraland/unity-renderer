@@ -13,7 +13,11 @@ public class PlacesAndEventsSectionComponentViewTests
     }
 
     [TearDown]
-    public void TearDown() { GameObject.Destroy(placesAndEventsSectionComponent.gameObject); }
+    public void TearDown()
+    {
+        placesAndEventsSectionComponent.Dispose();
+        GameObject.Destroy(placesAndEventsSectionComponent.gameObject);
+    }
 
     [Test]
     [TestCase(0)]

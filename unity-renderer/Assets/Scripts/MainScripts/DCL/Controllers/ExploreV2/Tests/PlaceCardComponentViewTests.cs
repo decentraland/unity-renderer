@@ -25,6 +25,8 @@ public class PlaceCardComponentViewTests
     [TearDown]
     public void TearDown()
     {
+        placeCardComponent.Dispose();
+        placeCardModalComponent.Dispose();
         GameObject.Destroy(placeCardComponent.gameObject);
         GameObject.Destroy(placeCardModalComponent.gameObject);
         GameObject.Destroy(testTexture);

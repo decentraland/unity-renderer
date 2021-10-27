@@ -161,36 +161,6 @@ public class PlacesSubSectionComponentControllerTests
     }
 
     [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void FormatDescriptionCorrectly(bool emptyDescription)
-    {
-        // Arrange
-        HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
-        if (emptyDescription)
-            testPlaceFromAPI.description = "";
-
-        // Act
-        string result = placesSubSectionComponentController.FormatDescription(testPlaceFromAPI);
-
-        // Assert
-        Assert.AreEqual(emptyDescription ? PlacesSubSectionComponentController.NO_PLACE_DESCRIPTION_WRITTEN : testPlaceFromAPI.description, result);
-    }
-
-    [Test]
-    public void FormatAuthorNameCorrectly()
-    {
-        // Arrange
-        HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
-
-        // Act
-        string result = placesSubSectionComponentController.FormatAuthorName(testPlaceFromAPI);
-
-        // Assert
-        Assert.AreEqual($"Author <b>{testPlaceFromAPI.creator}</b>", result);
-    }
-
-    [Test]
     public void ShowPlaceDetailedInfoCorrectly()
     {
         // Arrange

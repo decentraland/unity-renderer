@@ -2,7 +2,6 @@ using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 
 public class EventsSubSectionComponentControllerTests

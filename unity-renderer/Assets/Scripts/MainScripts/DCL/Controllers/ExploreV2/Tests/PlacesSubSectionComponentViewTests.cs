@@ -23,6 +23,7 @@ public class PlacesSubSectionComponentViewTests
     {
         placesSubSectionComponent.places.ExtractItems();
         placesSubSectionComponent.placeCardsPool.ReleaseAll();
+        placesSubSectionComponent.Dispose();
         GameObject.Destroy(placesSubSectionComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
