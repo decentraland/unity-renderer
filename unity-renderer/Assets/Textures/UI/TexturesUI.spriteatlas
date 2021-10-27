@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7499294
+    totalSpriteSurfaceArea: 7516286
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -294,10 +294,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c5a46d6e8b3d645649baea76db91f811, type: 3}
   - {fileID: 21300000, guid: b01bb67eac45b4ce4b289efdfb7c1847, type: 3}
   - {fileID: 21300000, guid: 6e8b3a7ec6a0949b4a3ba5a6c983c30f, type: 3}
+  - {fileID: 21300000, guid: fb6df28e83ce34e9aa23cdc3683244a7, type: 3}
   - {fileID: 21300000, guid: c45d4d8e8fcf6424b8e469d188bf4db7, type: 3}
   - {fileID: 21300000, guid: a746d1fe363ff4d8cbd468660965f720, type: 3}
+  - {fileID: 21300000, guid: aa5bccfe420b24d5c89f0e8b12b4f537, type: 3}
   - {fileID: 21300000, guid: c22ef80fbf1174314befe1d0347230d2, type: 3}
   - {fileID: 21300000, guid: b529921fedbcd44e4ba4d0ad88690b3e, type: 3}
+  - {fileID: 21300000, guid: 4848194f7bc4d4e509d067d3160eadac, type: 3}
   - {fileID: 21300000, guid: 7566cf5f3986d4c32a672de8279ced32, type: 3}
   - {fileID: 21300000, guid: d40ff76fa8b254a8c9ed7c57ce1c9e21, type: 3}
   - {fileID: 21300000, guid: 60e92aaf3c91f4bc18ec574bed72f832, type: 3}
@@ -541,10 +544,13 @@ SpriteAtlas:
   - PinIconOn
   - Button6
   - EditIcon
+  - GradientPlaces
   - Spinner30
   - LandEmpty
+  - Outline14
   - PatternPC
   - DialogCornerLeft
+  - Outline12
   - LogOutIcon
   - RoundedContainer44
   - ControlsIcon
