@@ -8,17 +8,69 @@ using UnityEngine.UI;
 
 internal interface IProjectCardView : IDisposable
 {
+    /// <summary>
+    /// Edit project button pressed
+    /// </summary>
     event Action<ProjectData> OnEditorPressed;
+
+    /// <summary>
+    ///  Setting button pressed
+    /// </summary>
     event Action<ProjectData> OnSettingsPressed;
+
+    /// <summary>
+    /// Expand button pressed
+    /// </summary>
     event Action<ProjectData, IProjectCardView> OnExpandMenuPressed;
+
+    /// <summary>
+    /// Data of the project card
+    /// </summary>
     ProjectData projectData { get; }
+
+    /// <summary>
+    /// Info for the search result
+    /// </summary>
     ISearchInfo searchInfo { get; }
+
+    /// <summary>
+    /// Position of the context menu button
+    /// </summary>
     Vector3 contextMenuButtonPosition { get; }
-    void Setup(ProjectData sceneData);
+
+    /// <summary>
+    /// This setup the project data of the 
+    /// </summary>
+    /// <param name="projectData"></param>
+    void Setup(ProjectData projectData);
+
+    /// <summary>
+    /// Set Parent of the card
+    /// </summary>
+    /// <param name="parent"></param>
     void SetParent(Transform parent);
+
+    /// <summary>
+    /// Reset to default parent
+    /// </summary>
     void SetToDefaultParent();
+
+    /// <summary>
+    /// Configure the default parent
+    /// </summary>
+    /// <param name="parent">default parent to apply</param>
     void ConfigureDefaultParent(Transform parent);
+
+    /// <summary>
+    /// Active the card
+    /// </summary>
+    /// <param name="active"></param>
     void SetActive(bool active);
+
+    /// <summary>
+    /// This set the order of the card
+    /// </summary>
+    /// <param name="index"></param>
     void SetSiblingIndex(int index);
 }
 
@@ -44,11 +96,12 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     private ISearchInfo searchInfo;
     private Vector3 contextMenuButtonPosition;
 
-    public void Setup(ProjectData sceneData) { this.sceneData = sceneData; }
+    public void Setup(ProjectData projectData) { this.sceneData = projectData; }
+    public void SetParent(Transform parent) { transform.SetParent(parent); }
 
     public void Dispose() { }
 
-    public void SetParent(Transform parent)
+    public void cardSetParent(Transform parent)
     {
         if (transform.parent == parent)
             return;
