@@ -4,9 +4,8 @@ using UnityEngine;
 
 internal enum SectionId
 {
-    SCENES_MAIN,
-    SCENES_DEPLOYED,
-    SCENES_PROJECT,
+    SCENES,
+    PROJECTS,
     LAND,
     SETTINGS_PROJECT_GENERAL,
     SETTINGS_PROJECT_CONTRIBUTORS,

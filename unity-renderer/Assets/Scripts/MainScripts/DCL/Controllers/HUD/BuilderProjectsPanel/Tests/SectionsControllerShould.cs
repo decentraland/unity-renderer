@@ -31,7 +31,7 @@ namespace Tests
             }
 
             controller.OnSectionShow += OnSectionOpen;
-            controller.OpenSection(SectionId.SCENES_MAIN);
+            controller.OpenSection(SectionId.SCENES);
 
             Assert.IsTrue(openCallbackCalled);
             Assert.IsTrue(sectionFactory_Mock.sectionScenesMain.isVisible);
@@ -51,12 +51,12 @@ namespace Tests
             controller.OnSectionShow += OnSectionOpen;
             controller.OnSectionHide += OnSectionHide;
 
-            controller.OpenSection(SectionId.SCENES_MAIN);
+            controller.OpenSection(SectionId.SCENES);
 
             Assert.IsTrue(sectionFactory_Mock.sectionScenesMain.isVisible);
             Assert.AreEqual(sectionFactory_Mock.sectionScenesMain, openSection);
 
-            controller.OpenSection(SectionId.SCENES_PROJECT);
+            controller.OpenSection(SectionId.PROJECTS);
 
             Assert.IsFalse(sectionFactory_Mock.sectionScenesMain.isVisible);
             Assert.IsTrue(sectionFactory_Mock.sectionScenesProjects.isVisible);
@@ -82,12 +82,10 @@ namespace Tests
             SectionBase result = null;
             switch (id)
             {
-                case SectionId.SCENES_MAIN:
+                case SectionId.SCENES:
                     result = sectionScenesMain;
                     break;
-                case SectionId.SCENES_DEPLOYED:
-                    break;
-                case SectionId.SCENES_PROJECT:
+                case SectionId.PROJECTS:
                     result = sectionScenesProjects;
                     break;
                 case SectionId.LAND:
