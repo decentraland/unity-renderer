@@ -39,6 +39,7 @@ namespace DCL
                 SetupEnvironment();
             }
 
+            InitializeSceneDependencies();
             pluginSystem = new PluginSystem();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -112,5 +113,9 @@ namespace DCL
         }
 
         private void OnGUI() { pluginSystem?.OnGUI(); }
+        private void InitializeSceneDependencies()
+        {
+            Instantiate(Resources.Load<GameObject>("MouseCatcher"));
+        }
     }
 }
