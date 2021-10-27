@@ -326,25 +326,25 @@ public class PlaceCardComponentViewTests
     public void CloseModalCorrectly()
     {
         // Arrange
-        placeCardComponent.Show();
+        placeCardModalComponent.Show();
 
         // Act
-        placeCardComponent.CloseModal();
+        placeCardModalComponent.CloseModal();
 
         // Assert
-        Assert.IsFalse(placeCardComponent.isVisible);
+        Assert.IsFalse(placeCardModalComponent.isVisible);
     }
 
     [Test]
     public void RaiseOnCloseActionTriggeredCorrectly()
     {
         // Arrange
-        placeCardComponent.Show();
+        placeCardModalComponent.Show();
 
         // Act
-        placeCardComponent.OnCloseActionTriggered(new DCLAction_Trigger());
+        placeCardModalComponent.OnCloseActionTriggered(new DCLAction_Trigger());
 
         // Assert
-        Assert.IsFalse(placeCardComponent.isVisible);
+        Assert.IsFalse(placeCardModalComponent.isVisible);
     }
 }
