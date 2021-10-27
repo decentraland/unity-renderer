@@ -170,6 +170,9 @@ namespace DCL.Interface
         private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload> { };
 
         [System.Serializable]
+        private class OnTextInputChangeTextEvent : UUIDEvent<OnTextInputChangeTextEventPayload> { };
+
+        [System.Serializable]
         private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload> { };
 
         [System.Serializable]
@@ -251,6 +254,18 @@ namespace DCL.Interface
         public class OnTextInputChangeEventPayload
         {
             public string value;
+        }
+        
+        [System.Serializable]
+        public class OnTextInputChangeTextEventPayload
+        {
+            [System.Serializable]
+            public class Payload
+            {
+                public string value;
+                public bool isSubmit;          
+            }
+            public Payload value = new Payload();
         }
 
         [System.Serializable]
@@ -690,6 +705,7 @@ namespace DCL.Interface
         private static OnPointerUpEvent onPointerUpEvent = new OnPointerUpEvent();
         private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
         private static OnTextInputChangeEvent onTextInputChangeEvent = new OnTextInputChangeEvent();
+        private static OnTextInputChangeTextEvent onTextInputChangeTextEvent = new OnTextInputChangeTextEvent();
         private static OnScrollChangeEvent onScrollChangeEvent = new OnScrollChangeEvent();
         private static OnFocusEvent onFocusEvent = new OnFocusEvent();
         private static OnBlurEvent onBlurEvent = new OnBlurEvent();
@@ -894,6 +910,20 @@ namespace DCL.Interface
             onTextInputChangeEvent.payload.value = text;
 
             SendSceneEvent(sceneId, "uuidEvent", onTextInputChangeEvent);
+        }
+
+        public static void ReportOnTextInputChangedTextEvent(string sceneId, string uuid, string text, bool isSubmit)
+        {
+            if (string.IsNullOrEmpty(uuid))
+            {
+                return;
+            }
+
+            onTextInputChangeTextEvent.uuid = uuid;
+            onTextInputChangeTextEvent.payload.value.value = text;
+            onTextInputChangeTextEvent.payload.value.isSubmit = isSubmit;
+
+            SendSceneEvent(sceneId, "uuidEvent", onTextInputChangeTextEvent);
         }
 
         public static void ReportOnFocusEvent(string sceneId, string uuid)

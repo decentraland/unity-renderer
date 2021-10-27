@@ -52,6 +52,7 @@ namespace DCL.Components
             public string onChanged;
             public string onFocus;
             public string onBlur;
+            public string onTextChanged;
 
             public override BaseModel GetDataFromJSON(string json)
             {
@@ -121,7 +122,19 @@ namespace DCL.Components
             Interface.WebInterface.ReportOnFocusEvent(scene.sceneData.id, model.onFocus);
         }
 
-        public void OnChanged(string changedText) { Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.id, model.onChanged, changedText); }
+        public void OnChanged(string changedText)
+        {
+            // NOTE: OSX is adding the ESC character at the end of the string when ESC is pressed
+            if (changedText.Length > 0 && changedText[changedText.Length - 1] == 27)
+            {
+                changedText = changedText.Substring(0, changedText.Length - 1);
+                inputField.SetTextWithoutNotify(changedText);
+            }
+
+            // NOTE: we keep `ReportOnTextInputChangedEvent` for backward compatibility (it won't be called for scenes using latest sdk)
+            Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.id, model.onChanged, changedText);
+            Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.id, model.onTextChanged, changedText, false);
+        }
 
         public void OnBlur(string call)
         {
@@ -155,9 +168,9 @@ namespace DCL.Components
 
             if (validString)
             {
+                // NOTE: we keep `ReportOnTextSubmitEvent` for backward compatibility (it won't be called for scenes using latest sdk)
                 Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmit, tmpText.text);
-
-                ForceFocus();
+                Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.id, model.onTextChanged, tmpText.text, true);
             }
             else if (scene.isPersistent) // DCL UI Chat text input
             {
@@ -167,14 +180,6 @@ namespace DCL.Components
                 // To avoid focusing the chat in the same frame we unfocused it
                 referencesContainer.inputDetectionPausedFrames = 1;
             }
-        }
-
-        public void ForceFocus()
-        {
-            inputField.text = "";
-            inputField.caretColor = Color.white;
-            inputField.Select();
-            inputField.ActivateInputField();
         }
 
         void UnsuscribeFromEvents()
