@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
-internal class FriendTrackerController : IDisposable
+public class FriendTrackerController : IDisposable
 {
     Dictionary<IFriendTrackerHandler, TrackedSceneInfo> listeners = new Dictionary<IFriendTrackerHandler, TrackedSceneInfo>();
     Dictionary<string, FriendTracker> friends = new Dictionary<string, FriendTracker>();
@@ -24,18 +24,24 @@ internal class FriendTrackerController : IDisposable
             this.friendColors = new Color[] { Color.white };
         }
 
-        if (!friendsController.isInitialized)
+        if (friendsController != null)
         {
-            friendsController.OnInitialized += OnFriendsInitialized;
-        }
+            if (!friendsController.isInitialized)
+            {
+                friendsController.OnInitialized += OnFriendsInitialized;
+            }
 
-        friendsController.OnUpdateUserStatus += OnUpdateUserStatus;
+            friendsController.OnUpdateUserStatus += OnUpdateUserStatus;
+        }
     }
 
     public void Dispose()
     {
-        friendsController.OnInitialized -= OnFriendsInitialized;
-        friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
+        if (friendsController != null)
+        {
+            friendsController.OnInitialized -= OnFriendsInitialized;
+            friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
+        }
         listeners.Clear();
         friends.Clear();
     }
@@ -50,7 +56,7 @@ internal class FriendTrackerController : IDisposable
 
         wrapper = new TrackedSceneInfo(listener);
 
-        if (friendsController.isInitialized)
+        if (friendsController != null && friendsController.isInitialized)
         {
             ProcessNewListener(wrapper);
         }
@@ -66,6 +72,19 @@ internal class FriendTrackerController : IDisposable
             wrapper.Dispose();
             listeners.Remove(listener);
         }
+    }
+
+    public void RemoveAllHandlers()
+    {
+        using (var listenersIterator = listeners.GetEnumerator())
+        {
+            while (listenersIterator.MoveNext())
+            {
+                listenersIterator.Current.Value.Dispose();
+            }
+        }
+
+        listeners.Clear();
     }
 
     void OnUpdateUserStatus(string userId, FriendsController.UserStatus status)

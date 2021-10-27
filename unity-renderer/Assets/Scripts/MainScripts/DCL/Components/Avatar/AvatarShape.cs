@@ -10,6 +10,8 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
+        private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -17,8 +19,8 @@ namespace DCL
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
 
-        [SerializeField]
-        internal AvatarOnPointerDown onPointerDown;
+        [SerializeField] internal AvatarOnPointerDown onPointerDown;
+        internal IPlayerName playerName;
 
         private StringVariable currentPlayerInfoCardId;
 
@@ -31,13 +33,18 @@ namespace DCL
 
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private BaseHashSet<string> visibleNames => DataStore.i.avatarsLOD.visibleNames;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+        }
+
+        private void Start()
+        {
+            playerName = GetComponentInChildren<IPlayerName>();
+            playerName?.Hide(true);
         }
 
         private void PlayerClicked()
@@ -62,13 +69,25 @@ namespace DCL
             DisablePassport();
 
             var model = (AvatarModel) newModel;
-
+#if UNITY_EDITOR
+            gameObject.name = $"Avatar Shape {model.name}";
+#endif
             everythingIsLoaded = false;
 
             bool avatarDone = false;
             bool avatarFailed = false;
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
+
+            // To deal with the cases in which the entity transform was configured before the AvatarShape
+            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
+            {
+                initializedPosition = true;
+
+                avatarMovementController.MoveTo(
+                    entity.gameObject.transform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2,
+                    entity.gameObject.transform.localRotation, true);
+            }
 
             avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
 
@@ -92,16 +111,11 @@ namespace DCL
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;
+            onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
+            onPointerDown.OnPointerEnterReport += PlayerPointerEnter;
+            onPointerDown.OnPointerExitReport -= PlayerPointerExit;
+            onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
-            // To deal with the cases in which the entity transform was configured before the AvatarShape
-            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
-            {
-                initializedPosition = true;
-
-                avatarMovementController.MoveTo(
-                    entity.gameObject.transform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2,
-                    entity.gameObject.transform.localRotation, true);
-            }
 
             UpdatePlayerStatus(model);
 
@@ -115,10 +129,12 @@ namespace DCL
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
-                            if(config.features.enableAvatarLODs)
+                            if (config.features.enableAvatarLODs)
                                 avatarRenderer.InitializeImpostor();
                         });
         }
+        private void PlayerPointerExit() { playerName?.SetForceShow(false); }
+        private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
         private void UpdatePlayerStatus(AvatarModel model)
         {
@@ -135,16 +151,23 @@ namespace DCL
                 player = new Player();
                 isNew = true;
             }
+
             player.id = model.id;
             player.name = model.name;
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
             player.renderer = avatarRenderer;
+            player.onPointerDownCollider = onPointerDown;
+
             if (isNew)
             {
-                visibleNames.Add(player.id);
+                player.playerName = playerName;
+                player.playerName.SetName(player.name);
+                player.playerName.Show();
                 otherPlayers.Add(player.id, player);
             }
+            player.playerName.SetIsTalking(model.talking);
+            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
         }
 
         private void Update()
@@ -161,7 +184,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.collider.enabled = false;
+            onPointerDown.SetColliderEnabled(false);
         }
 
         public void EnablePassport()
@@ -169,7 +192,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.collider.enabled = true;
+            onPointerDown.SetColliderEnabled(true);
         }
 
         private void OnEntityTransformChanged(object newModel)
@@ -196,6 +219,7 @@ namespace DCL
         {
             base.Cleanup();
 
+            playerName?.Hide(true);
             if (player != null)
             {
                 otherPlayers.Remove(player.id);
@@ -210,6 +234,8 @@ namespace DCL
             }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
+            onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;
+            onPointerDown.OnPointerExitReport -= PlayerPointerExit;
 
             if (entity != null)
             {

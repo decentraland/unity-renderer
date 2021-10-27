@@ -7,6 +7,8 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
+// Note: we should make this class a part of BIWController and only fetch the NFTs if the biw is active instead of only 
+// when you enter builder in world
 public class BIWNFTController
 {
     public event System.Action OnNFTUsageChange;
@@ -21,6 +23,9 @@ public class BIWNFTController
     private List<NFTInfo> nftsAlreadyInUse = new List<NFTInfo>();
 
     private bool desactivateNFT = false;
+    private bool isInit = false;
+    private bool isActive = false;
+    private UserProfile userProfile;
 
     public static BIWNFTController i
     {
@@ -35,17 +40,41 @@ public class BIWNFTController
         }
     }
 
-    public void Initialize()
+    public void StartFetchingNft()
     {
-        UserProfile userProfile = UserProfile.GetOwnUserProfile();
-        userProfile.OnUpdate += (x) => FetchNftsFromOwner();
+        if (!isInit)
+        {
+            userProfile = UserProfile.GetOwnUserProfile();
+            userProfile.OnUpdate += UserProfileUpdated;
+            FetchNftsFromOwner();
+            isInit = true;
+        }
+    }
+
+    private void UserProfileUpdated(UserProfile profile)
+    {
+        if (!isActive)
+            return;
+
+        FetchNftsFromOwner();
     }
 
     public void Dispose()
     {
+        if (userProfile != null)
+            userProfile.OnUpdate -= UserProfileUpdated;
+
         if (fechNftsCoroutine != null)
             CoroutineStarter.Stop(fechNftsCoroutine);
     }
+
+    public void StartEditMode()
+    {
+        isActive = true;
+        ClearNFTs();
+    }
+
+    public void ExitEditMode() { isActive = false; }
 
     public void ClearNFTs() { nftsAlreadyInUse.Clear(); }
 
@@ -116,8 +145,6 @@ public class BIWNFTController
 
     private IEnumerator FetchNfts()
     {
-        UserProfile userProfile = UserProfile.GetOwnUserProfile();
-
         string userId = userProfile.ethAddress;
         if (!string.IsNullOrEmpty(userId))
         {

@@ -16,24 +16,20 @@ public class FirstStep : BaseComponentView
     [SerializeField] private ButtonComponentView backButton;
 
     // Start is called before the first frame update
-    public override void PostInitialization()
+    public override void Start()
     {
+        base.Start();
         titleInputField.OnLimitReached += DisableNextButton;
         titleInputField.OnEmptyValue += DisableNextButton;
         titleInputField.OnInputAvailable += EnableNextButton;
 
         descriptionInputField.OnLimitReached += DisableNextButton;
         descriptionInputField.OnInputAvailable += EnableNextButton;
-
-        if (backButton.isFullyInitialized)
-            backButton.onClick.AddListener(BackPressed);
-        else
-            backButton.OnFullyInitialized += () => backButton.onClick.AddListener(BackPressed);
-
-        if (nextButton.isFullyInitialized)
-            nextButton.onClick.AddListener(BackPressed);
-        else
-            nextButton.OnFullyInitialized += () => nextButton.onClick.AddListener(NextPressed);
+        
+        backButton.onClick.AddListener(BackPressed);
+        
+        nextButton.onClick.AddListener(BackPressed);
+        
         DisableNextButton();
     }
 

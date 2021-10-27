@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,28 +8,22 @@ public interface IEventCardComponentView
     /// <summary>
     /// Event that will be triggered when the jumpIn button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onJumpInClick { get; set; }
+    Button.ButtonClickedEvent onJumpInClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the info button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onInfoClick { get; set; }
+    Button.ButtonClickedEvent onInfoClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the subscribe event button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onSubscribeClick { get; set; }
+    Button.ButtonClickedEvent onSubscribeClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the unsubscribe event button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onUnsubscribeClick { get; set; }
-
-    /// <summary>
-    /// Fill the model and updates the event card with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the event card.</param>
-    void Configure(EventCardComponentModel model);
+    Button.ButtonClickedEvent onUnsubscribeClick { get; }
 
     /// <summary>
     /// Set the event picture directly from a sprite.
@@ -109,20 +104,25 @@ public interface IEventCardComponentView
     void SetSubscribersUsers(int newNumberOfUsers);
 
     /// <summary>
+    /// Set the event coords.
+    /// </summary>
+    /// <param name="newCoords">Event coords.</param>
+    void SetCoords(Vector2Int newCoords);
+
+    /// <summary>
     /// Active or deactive the loading indicator.
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
-
-    /// <summary>
-    /// Set the configuration of the JumpIn button.
-    /// </summary>
-    /// <param name="jumpInConfig">JumpIn configuration.</param>
-    void SetJumpInConfiguration(JumpInConfig jumpInConfig);
 }
 
-public class EventCardComponentView : BaseComponentView, IEventCardComponentView
+public class EventCardComponentView : BaseComponentView, IEventCardComponentView, IComponentModelConfig
 {
+    internal const string USERS_CONFIRMED_MESSAGE = "{0} confirmed";
+    internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
+
+    internal static readonly int ON_FOCUS_CARD_COMPONENT_BOOL = Animator.StringToHash("OnFocus");
+
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
     [SerializeField] internal TagComponentView liveTag;
@@ -138,6 +138,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal TMP_Text subscribedUsersTitleForLive;
     [SerializeField] internal TMP_Text subscribedUsersTitleForNotLive;
     [SerializeField] internal TMP_Text subscribedUsersText;
+    [SerializeField] internal Button modalBackgroundButton;
+    [SerializeField] internal ButtonComponentView closeCardButton;
+    [SerializeField] internal InputAction_Trigger closeAction;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
@@ -145,94 +148,37 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject eventInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal Animator cardAnimator;
+    [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
+    [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
 
     [Header("Configuration")]
     [SerializeField] internal bool isEventCardModal = false;
     [SerializeField] internal EventCardComponentModel model;
 
-    public Button.ButtonClickedEvent onJumpInClick
-    {
-        get
-        {
-            if (jumpinButton == null)
-                return null;
+    public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
+    public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
+    public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
+    public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 
-            return jumpinButton.onClick;
-        }
-        set
-        {
-            model.onJumpInClick = value;
-
-            if (jumpinButton != null)
-                jumpinButton.onClick = value;
-        }
-    }
-
-    public Button.ButtonClickedEvent onInfoClick
-    {
-        get
-        {
-            if (infoButton == null)
-                return null;
-
-            return infoButton.onClick;
-        }
-        set
-        {
-            model.onInfoClick = value;
-
-            if (infoButton != null)
-                infoButton.onClick = value;
-        }
-    }
-
-    public Button.ButtonClickedEvent onSubscribeClick
-    {
-        get
-        {
-            if (subscribeEventButton == null)
-                return null;
-
-            return subscribeEventButton.onClick;
-        }
-        set
-        {
-            model.onSubscribeClick = value;
-
-            if (subscribeEventButton != null)
-                subscribeEventButton.onClick = value;
-        }
-    }
-
-    public Button.ButtonClickedEvent onUnsubscribeClick
-    {
-        get
-        {
-            if (unsubscribeEventButton == null)
-                return null;
-
-            return unsubscribeEventButton.onClick;
-        }
-        set
-        {
-            model.onUnsubscribeClick = value;
-
-            if (unsubscribeEventButton != null)
-                unsubscribeEventButton.onClick = value;
-        }
-    }
-
-    public override void PostInitialization()
+    public override void Start()
     {
         if (eventImage != null)
             eventImage.OnLoaded += OnEventImageLoaded;
 
-        Configure(model);
+        if (closeCardButton != null)
+            closeCardButton.onClick.AddListener(CloseModal);
+
+        if (closeAction != null)
+            closeAction.OnTriggered += OnCloseActionTriggered;
+
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.AddListener(CloseModal);
     }
 
-    public void Configure(EventCardComponentModel model)
+    public void Configure(BaseComponentModel newModel)
     {
-        this.model = model;
+        model = (EventCardComponentModel)newModel;
         RefreshControl();
     }
 
@@ -260,11 +206,25 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventOrganizer(model.eventOrganizer);
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
-        SetJumpInConfiguration(model.jumpInConfiguration);
-        onJumpInClick = model.onJumpInClick;
-        onInfoClick = model.onInfoClick;
-        onSubscribeClick = model.onSubscribeClick;
-        onUnsubscribeClick = model.onUnsubscribeClick;
+        SetCoords(model.coords);
+
+        RebuildCardLayouts();
+    }
+
+    public override void OnFocus()
+    {
+        base.OnFocus();
+
+        if (cardAnimator != null)
+            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, true);
+    }
+
+    public override void OnLoseFocus()
+    {
+        base.OnLoseFocus();
+
+        if (cardAnimator != null)
+            cardAnimator.SetBool(ON_FOCUS_CARD_COMPONENT_BOOL, false);
     }
 
     public override void Dispose()
@@ -274,17 +234,14 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (eventImage != null)
             eventImage.OnLoaded -= OnEventImageLoaded;
 
-        if (infoButton != null)
-            infoButton.onClick.RemoveAllListeners();
+        if (closeCardButton != null)
+            closeCardButton.onClick.RemoveAllListeners();
 
-        if (subscribeEventButton != null)
-            subscribeEventButton.onClick.RemoveAllListeners();
+        if (closeAction != null)
+            closeAction.OnTriggered -= OnCloseActionTriggered;
 
-        if (unsubscribeEventButton != null)
-            unsubscribeEventButton.onClick.RemoveAllListeners();
-
-        if (jumpinButton != null)
-            jumpinButton.onClick.RemoveAllListeners();
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.RemoveAllListeners();
     }
 
     public void SetEventPicture(Sprite sprite)
@@ -449,10 +406,20 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         else
         {
             if (newNumberOfUsers > 0)
-                subscribedUsersText.text = $"{newNumberOfUsers} confirmed";
+                subscribedUsersText.text = string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers);
             else
-                subscribedUsersText.text = "Nobody confirmed yet";
+                subscribedUsersText.text = NOBODY_CONFIRMED_MESSAGE;
         }
+    }
+
+    public void SetCoords(Vector2Int newCoords)
+    {
+        model.coords = newCoords;
+
+        if (jumpinButton == null || !isEventCardModal)
+            return;
+
+        jumpinButton.SetText($"{newCoords.x},{newCoords.y}");
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)
@@ -462,15 +429,18 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         loadingSpinner.SetActive(isVisible);
     }
 
-    public void SetJumpInConfiguration(JumpInConfig jumpInConfig)
-    {
-        jumpinButton.GetComponent<JumpInAction>().coords = jumpInConfig.coords;
-        jumpinButton.GetComponent<JumpInAction>().serverName = jumpInConfig.serverName;
-        jumpinButton.GetComponent<JumpInAction>().layerName = jumpInConfig.layerName;
+    internal void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
 
-        if (isEventCardModal)
-            jumpinButton.SetText($"{jumpInConfig.coords[0]},{jumpInConfig.coords[1]}");
+    internal void RebuildCardLayouts()
+    {
+        if (contentVerticalLayout != null)
+            Utils.ForceRebuildLayoutImmediate(contentVerticalLayout.transform as RectTransform);
+
+        if (infoVerticalLayout != null)
+            Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
     }
 
-    private void OnEventImageLoaded(Sprite sprite) { SetEventPicture(sprite); }
+    internal void CloseModal() { Hide(); }
+
+    internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
 }

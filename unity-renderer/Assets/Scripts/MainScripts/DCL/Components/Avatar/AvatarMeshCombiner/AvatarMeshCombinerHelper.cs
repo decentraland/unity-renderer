@@ -22,6 +22,7 @@ namespace DCL
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
+        public bool useCullOpaqueHeuristic = false;
         public bool prepareMeshForGpuSkinning = false;
         public bool uploadMeshToGpu = true;
 
@@ -76,6 +77,8 @@ namespace DCL
             Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
+
+            CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
 
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,

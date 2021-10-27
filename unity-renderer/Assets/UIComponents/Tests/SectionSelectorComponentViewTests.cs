@@ -46,8 +46,7 @@ public class SectionSelectorComponentViewTests
         sectionSelectorComponent.model.sections.Add(new SectionToggleModel
         {
             icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
-            title = "Test4",
-            onSelect = new Toggle.ToggleEvent()
+            title = "Test4"
         });
 
         // Act
@@ -141,8 +140,7 @@ public class SectionSelectorComponentViewTests
             sections.Add(new SectionToggleModel
             {
                 icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
-                title = $"Test{i + 1}",
-                onSelect = new Toggle.ToggleEvent()
+                title = $"Test{i + 1}"
             });
         }
 
