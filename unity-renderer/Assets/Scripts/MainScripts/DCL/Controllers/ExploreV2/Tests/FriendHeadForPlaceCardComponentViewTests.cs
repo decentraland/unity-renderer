@@ -19,7 +19,6 @@ public class FriendHeadForPlaceCardComponentViewTests
     [TearDown]
     public void TearDown()
     {
-        friendHeadForPlaceCardComponent.Dispose();
         GameObject.Destroy(friendHeadForPlaceCardComponent.gameObject);
         GameObject.Destroy(testTexture);
     }

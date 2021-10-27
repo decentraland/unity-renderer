@@ -143,6 +143,9 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         showMorePlacesButton.onClick.RemoveAllListeners();
 
         places.Dispose();
+
+        //placeModal.Dispose();
+        //Destroy(placeModal.gameObject);
     }
 
     public void SetPlaces(List<PlaceCardComponentModel> places)

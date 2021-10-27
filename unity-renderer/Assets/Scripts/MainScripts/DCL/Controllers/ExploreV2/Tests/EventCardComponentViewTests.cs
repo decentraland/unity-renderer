@@ -28,8 +28,6 @@ public class EventCardComponentViewTests
     [TearDown]
     public void TearDown()
     {
-        eventCardComponent.Dispose();
-        eventCardModalComponent.Dispose();
         GameObject.Destroy(eventCardComponent.gameObject);
         GameObject.Destroy(eventCardModalComponent.gameObject);
         GameObject.Destroy(testTexture);

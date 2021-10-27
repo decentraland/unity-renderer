@@ -1,6 +1,5 @@
 using DCL;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -208,6 +207,12 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEvents.Dispose();
         trendingEvents.Dispose();
         goingEvents.Dispose();
+
+        if (eventModal != null)
+        {
+            eventModal.Dispose();
+            Destroy(eventModal.gameObject);
+        }
     }
 
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
