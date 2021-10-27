@@ -47,7 +47,7 @@ namespace DCL.Skybox
         // Texture Layer Properties
         public List<TextureLayer> textureLayers = new List<TextureLayer>();
 
-        public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, Light directionalLightGO = null)
+        public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, Light directionalLightGO = null, float cycleTime = 24)
         {
             float percentage = normalizedDayTime * 100;
 
@@ -116,7 +116,7 @@ namespace DCL.Skybox
                 directionalLightGO.gameObject.SetActive(false);
             }
 
-            ApplyAllSlots(selectedMat, dayTime, normalizedDayTime);
+            ApplyAllSlots(selectedMat, dayTime, normalizedDayTime, cycleTime);
 
             //for (int i = 0; i < textureLayers.Count; i++)
             //{
@@ -124,7 +124,7 @@ namespace DCL.Skybox
             //}
         }
 
-        void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime)
+        void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime, float cycleTime = 24)
         {
             for (int i = 0; i < slots.Count; i++)
             {
@@ -142,7 +142,7 @@ namespace DCL.Skybox
                     continue;
                 }
 
-                ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, layer);
+                ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, layer, cycleTime);
             }
         }
 
@@ -219,36 +219,36 @@ namespace DCL.Skybox
 
         #region Apply texture layers
 
-        void ApplyTextureLayer(Material selectedMat, float dayTime, float normalizedDayTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
+        void ApplyTextureLayer(Material selectedMat, float dayTime, float normalizedDayTime, int slotNum, TextureLayer layer, float cycleTime = 24, bool changeAlllValues = true)
         {
+            float endTimeEdited = layer.timeSpan_End;
+            float dayTimeEdited = dayTime;
+            if (layer.timeSpan_End < layer.timeSpan_start)
+            {
+                endTimeEdited = cycleTime + layer.timeSpan_End;
+                if (dayTime < layer.timeSpan_start)
+                {
+                    dayTimeEdited = cycleTime + dayTime;
+                }
+            }
+            float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, endTimeEdited, dayTimeEdited);
 
-            float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, layer.timeSpan_End, dayTime);
-
-            selectedMat.SetFloat("_layerType_" + layerNum, (int)layer.LayerType);
-
-            //if (layer.useParticles)
-            //{
-            //    selectedMat.SetFloat("_useParticles_" + layerNum, 1);
-            //}
-            //else
-            //{
-            //    selectedMat.SetFloat("_useParticles_" + layerNum, 0);
-            //}
+            selectedMat.SetFloat("_layerType_" + slotNum, (int)layer.LayerType);
 
             switch (layer.LayerType)
             {
                 case LayerType.Planar:
                 case LayerType.Radial:
-                    ApplyPlanarTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    ApplyPlanarTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
                     break;
                 case LayerType.Satellite:
-                    ApplySatelliteTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    ApplySatelliteTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
                     break;
                 case LayerType.Cubemap:
-                    ApplyCubemapTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    ApplyCubemapTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
                     break;
                 case LayerType.Particles:
-                    ApplyParticleTextureLayer(selectedMat, dayTime, normalizedLayerTime, layerNum, layer, true);
+                    ApplyParticleTextureLayer(selectedMat, dayTime, normalizedLayerTime, slotNum, layer, true);
                     break;
                 default:
                     break;
@@ -264,7 +264,7 @@ namespace DCL.Skybox
                 selectedMat.SetTexture("_cubemap_" + layerNum, layer.cubemap);
                 selectedMat.SetTexture("_normals_" + layerNum, null);
                 selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-                selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
+                selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
                 selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
                 selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
                 selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
@@ -341,7 +341,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
+            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
@@ -399,7 +399,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
+            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
@@ -428,7 +428,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
+            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
 

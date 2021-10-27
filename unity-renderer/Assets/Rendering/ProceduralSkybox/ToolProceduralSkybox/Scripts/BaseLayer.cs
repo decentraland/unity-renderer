@@ -7,13 +7,14 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
-        private LayerType layerType;
+        [SerializeField] private LayerType layerType;
         public bool enabled;
         public string nameInEditor;
         public bool expandedInEditor;
         public float timeSpan_start;
         public float timeSpan_End;
-        public float fadingIn = 1;
+        public float fadingInTime = 1;
+        public float fadingOutTime = 1;
         public float tintercentage;
         public List<TransitioningFloat> renderDistance;
 
