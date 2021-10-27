@@ -23,9 +23,9 @@ namespace Tests
             scenesViewController.OnDeployedSceneAdded += ((IDeployedSceneListener)listenerMock).OnSceneAdded;
             scenesViewController.OnDeployedScenesSet += ((IDeployedSceneListener)listenerMock).OnSetScenes;
 
-            scenesViewController.OnProjectSceneRemoved += ((IProjectSceneListener)listenerMock).OnSceneRemoved;
-            scenesViewController.OnProjectSceneAdded += ((IProjectSceneListener)listenerMock).OnSceneAdded;
-            scenesViewController.OnProjectScenesSet += ((IProjectSceneListener)listenerMock).OnSetScenes;
+            scenesViewController.OnProjectSceneRemoved += ((IScenesListener)listenerMock).OnSceneRemoved;
+            scenesViewController.OnProjectSceneAdded += ((IScenesListener)listenerMock).OnSceneAdded;
+            scenesViewController.OnProjectScenesSet += ((IScenesListener)listenerMock).OnSetScenes;
         }
 
         [TearDown]
@@ -100,7 +100,7 @@ namespace Tests
         }
     }
 
-    class Listener_Mock : IDeployedSceneListener, IProjectSceneListener
+    class Listener_Mock : IDeployedSceneListener, IScenesListener
     {
         public List<string> setScenes = new List<string>();
         public List<string> addedScenes = new List<string>();
@@ -137,7 +137,7 @@ namespace Tests
             deployedScenes.Remove(scene.sceneData.id);
         }
 
-        void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
+        void IScenesListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             foreach (var view in scenes.Values)
             {
@@ -146,13 +146,13 @@ namespace Tests
             }
         }
 
-        void IProjectSceneListener.OnSceneAdded(ISceneCardView scene)
+        void IScenesListener.OnSceneAdded(ISceneCardView scene)
         {
             addedScenes.Add(scene.sceneData.id);
             projectScenes.Add(scene.sceneData.id);
         }
 
-        void IProjectSceneListener.OnSceneRemoved(ISceneCardView scene)
+        void IScenesListener.OnSceneRemoved(ISceneCardView scene)
         {
             removedScenes.Add(scene.sceneData.id);
             projectScenes.Remove(scene.sceneData.id);

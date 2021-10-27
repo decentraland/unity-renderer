@@ -4377,8 +4377,6 @@ MonoBehaviour:
   - {fileID: 6418196511135068701}
   - {fileID: 5960866342269140329}
   - {fileID: 6915141403110456507}
-  inWorldScenesToggle: {fileID: 7088103697150664091}
-  projectsToggle: {fileID: 8125136759442447447}
   leftPanelMain: {fileID: 2137895294906056170}
   leftPanelProjectSettings: {fileID: 1310108887434861224}
   createSceneButton: {fileID: 1077736952569047173}
@@ -6109,7 +6107,7 @@ PrefabInstance:
     - target: {fileID: 8667640920267001592, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
       propertyPath: openSection
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7439553869597619404, guid: 2b55442dd63ec4364b72395e33090c22, type: 3}
@@ -8106,7 +8104,7 @@ PrefabInstance:
     - target: {fileID: 8667640920267001592, guid: 2b55442dd63ec4364b72395e33090c22,
         type: 3}
       propertyPath: openSection
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7439553869597619404, guid: 2b55442dd63ec4364b72395e33090c22, type: 3}

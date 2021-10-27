@@ -12,14 +12,11 @@ internal class SectionFactory : ISectionFactory
         SectionBase result = null;
         switch (id)
         {
-            case SectionId.SCENES_MAIN:
-                result = new SectionScenesController();
-                break;
-            case SectionId.SCENES_DEPLOYED:
+            case SectionId.SCENES:
                 result = new SectionDeployedScenesController();
                 break;
-            case SectionId.SCENES_PROJECT:
-                result = new SectionProjectScenesController();
+            case SectionId.PROJECTS:
+                result = new SectionProjectController();
                 break;
             case SectionId.LAND:
                 result = new SectionLandController();

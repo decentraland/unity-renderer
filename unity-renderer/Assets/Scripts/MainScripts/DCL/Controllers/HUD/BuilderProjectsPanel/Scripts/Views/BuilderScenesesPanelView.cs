@@ -21,7 +21,7 @@ internal interface IBuilderProjectsPanelView : IDisposable
     IUnpublishPopupView GetUnpublishPopup();
 }
 
-internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelView, IDeployedSceneListener, IProjectSceneListener
+internal class BuilderScenesesPanelView : MonoBehaviour, IBuilderProjectsPanelView, IDeployedSceneListener, IScenesListener
 {
     [Header("General")]
     [SerializeField] internal Button closeButton;
@@ -33,8 +33,6 @@ internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelVi
 
     [Header("Left-Panel Section Buttons")]
     [SerializeField] internal LeftMenuButtonToggleView[] sectionToggles;
-    [SerializeField] internal LeftMenuButtonToggleView inWorldScenesToggle;
-    [SerializeField] internal LeftMenuButtonToggleView projectsToggle;
 
     [Header("Left-Panel")]
     [SerializeField] internal GameObject leftPanelMain;
@@ -55,7 +53,7 @@ internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelVi
     public event Action OnImportScenePressed;
     public event Action OnBackToMainMenuPressed;
 
-    private int deployedScenesCount = 0;
+    private int scenesCount = 0;
     private int projectScenesCount = 0;
     private bool isDestroyed = false;
 
@@ -142,45 +140,15 @@ internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelVi
 
     private void CloseTriggerOnOnTriggered(DCLAction_Trigger action) { OnClosePressed?.Invoke(); }
 
-    private void SubmenuScenesDirty()
-    {
-        inWorldScenesToggle.gameObject.SetActive(deployedScenesCount > 0);
-        projectsToggle.gameObject.SetActive(projectScenesCount > 0);
-    }
+    void IDeployedSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes) { scenesCount = scenes.Count; }
 
-    void IDeployedSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
-    {
-        deployedScenesCount = scenes.Count;
-        SubmenuScenesDirty();
-    }
+    void IScenesListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes) { projectScenesCount = scenes.Count; }
 
-    void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
-    {
-        projectScenesCount = scenes.Count;
-        SubmenuScenesDirty();
-    }
+    void IDeployedSceneListener.OnSceneAdded(ISceneCardView scene) { scenesCount++; }
 
-    void IDeployedSceneListener.OnSceneAdded(ISceneCardView scene)
-    {
-        deployedScenesCount++;
-        SubmenuScenesDirty();
-    }
+    void IScenesListener.OnSceneAdded(ISceneCardView scene) { projectScenesCount++; }
 
-    void IProjectSceneListener.OnSceneAdded(ISceneCardView scene)
-    {
-        projectScenesCount++;
-        SubmenuScenesDirty();
-    }
+    void IDeployedSceneListener.OnSceneRemoved(ISceneCardView scene) { scenesCount--; }
 
-    void IDeployedSceneListener.OnSceneRemoved(ISceneCardView scene)
-    {
-        deployedScenesCount--;
-        SubmenuScenesDirty();
-    }
-
-    void IProjectSceneListener.OnSceneRemoved(ISceneCardView scene)
-    {
-        projectScenesCount--;
-        SubmenuScenesDirty();
-    }
+    void IScenesListener.OnSceneRemoved(ISceneCardView scene) { projectScenesCount--; }
 }

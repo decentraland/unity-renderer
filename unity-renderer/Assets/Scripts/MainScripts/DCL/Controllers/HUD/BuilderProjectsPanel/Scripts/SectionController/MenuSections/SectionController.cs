@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-internal class SectionScenesController : SectionBase, IDeployedSceneListener, IProjectSceneListener, ISectionOpenSectionRequester
+internal class SectionController : SectionBase, IDeployedSceneListener, IScenesListener, ISectionOpenSectionRequester
 {
     public event Action<SectionId> OnRequestOpenSection;
 
@@ -29,13 +29,13 @@ internal class SectionScenesController : SectionBase, IDeployedSceneListener, IP
     internal Dictionary<string, ISceneCardView> projectViews;
     private List<ISearchInfo> searchList = new List<ISearchInfo>();
 
-    public SectionScenesController()
+    public SectionController()
     {
         var prefab = Resources.Load<SectionScenesView>("BuilderProjectsPanelMenuSections/SectionScenesView");
         view = Object.Instantiate(prefab);
 
-        view.btnProjectsViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionId.SCENES_PROJECT));
-        view.btnInWorldViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionId.SCENES_DEPLOYED));
+        view.btnProjectsViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionId.PROJECTS));
+        view.btnInWorldViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionId.SCENES));
 
         sceneSearchHandler.OnResult += OnSearchResult;
     }
@@ -77,7 +77,7 @@ internal class SectionScenesController : SectionBase, IDeployedSceneListener, IP
         sceneSearchHandler.SetSearchableList(searchList);
     }
 
-    void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
+    void IScenesListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
     {
         UpdateDictionary(ref projectViews, scenes);
         searchList.AddRange(scenes.Values.Select(scene => scene.searchInfo));
@@ -90,7 +90,7 @@ internal class SectionScenesController : SectionBase, IDeployedSceneListener, IP
         sceneSearchHandler.AddItem(scene.searchInfo);
     }
 
-    void IProjectSceneListener.OnSceneAdded(ISceneCardView scene)
+    void IScenesListener.OnSceneAdded(ISceneCardView scene)
     {
         projectViews.Add(scene.sceneData.id, scene);
         sceneSearchHandler.AddItem(scene.searchInfo);
@@ -103,7 +103,7 @@ internal class SectionScenesController : SectionBase, IDeployedSceneListener, IP
         sceneSearchHandler.RemoveItem(scene.searchInfo);
     }
 
-    void IProjectSceneListener.OnSceneRemoved(ISceneCardView scene)
+    void IScenesListener.OnSceneRemoved(ISceneCardView scene)
     {
         scene.SetToDefaultParent();
         projectViews.Remove(scene.sceneData.id);
