@@ -25,11 +25,11 @@ public class FirstStep : BaseComponentView
 
         descriptionInputField.OnLimitReached += DisableNextButton;
         descriptionInputField.OnInputAvailable += EnableNextButton;
-        
+
         backButton.onClick.AddListener(BackPressed);
-        
-        nextButton.onClick.AddListener(BackPressed);
-        
+
+        nextButton.onClick.AddListener(NextPressed);
+
         DisableNextButton();
     }
 

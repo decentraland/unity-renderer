@@ -132,7 +132,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     public override void Awake()
     {
         base.Awake();
-        
+
         StartCoroutine(RegisterCurrentInstantiatedItems());
         ConfigureManualButtonsEvents();
     }
@@ -220,7 +220,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
     public void SetItems(List<BaseComponentView> items)
     {
-        
+
         DestroyInstantiatedItems();
 
         for (int i = 0; i < items.Count; i++)
@@ -231,7 +231,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         SetManualControlsActive(model.showManualControls);
         GenerateDotsSelector();
     }
-    
+
     public List<BaseComponentView> GetItems() { return instantiatedItems; }
 
     public List<BaseComponentView> ExtractItems()
@@ -287,6 +287,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
             direction: CarouselDirection.Left,
             changeDirectionAfterFirstTransition: true,
             numberOfInitialJumps: 1);
+    }
+
+    public void ResetCarousel()
+    {
+        int index = 0;
+        SetSelectedDot(index);
+
     }
 
     public void GoToNextItem()
@@ -358,7 +365,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal void ResizeAllItems()
     {
         itemsScroll.horizontalNormalizedPosition = 0f;
-        StartCarousel();
+        if (model.automaticTransition)
+            StartCarousel();
 
         foreach (Transform child in itemsContainer)
         {
@@ -388,7 +396,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     {
         currentItemIndex = fromIndex;
         SetSelectedDot(currentItemIndex);
-        
+
         bool continueCarrousel = true;
         while (gameObject.activeInHierarchy && itemsContainer.childCount > 1 && continueCarrousel)
         {

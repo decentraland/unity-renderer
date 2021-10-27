@@ -11,5 +11,4 @@ public class CarouselComponentModel : BaseComponentModel
     public Color backgroundColor;
     public bool showManualControls = true;
     public bool automaticTransition = true;
-    public bool staticContent = false;
 }
