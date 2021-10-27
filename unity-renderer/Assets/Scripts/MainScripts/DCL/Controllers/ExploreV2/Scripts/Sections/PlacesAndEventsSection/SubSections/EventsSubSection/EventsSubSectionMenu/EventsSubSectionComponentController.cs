@@ -82,7 +82,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
-    private void OnExploreV2Open(bool current, bool previous)
+    internal void OnExploreV2Open(bool current, bool previous)
     {
         if (current)
             return;
