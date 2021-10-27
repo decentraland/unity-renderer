@@ -7,8 +7,8 @@ namespace DCL
     {
         public static PlatformContext CreateDefault()
         {
-            if (InitialSceneReferences.i != null)
-                return CreateDefault(InitialSceneReferences.i.bridgeGameObject);
+            if (SceneReferences.i != null)
+                return CreateDefault(SceneReferences.i.bridgeGameObject);
 
             return CreateDefault(null);
         }

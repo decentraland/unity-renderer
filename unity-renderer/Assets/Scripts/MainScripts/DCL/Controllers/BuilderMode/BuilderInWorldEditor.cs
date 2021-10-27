@@ -83,9 +83,8 @@ public class BuilderInWorldEditor : IBIWEditor
         isInit = true;
 
         this.context = context;
-
-        if(InitialSceneReferences.i != null)
-            InitReferences(InitialSceneReferences.i.data);
+        
+        InitReferences(SceneReferences.i);
 
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnBuilderProjectInfo += BuilderProjectPanelInfo;
@@ -112,7 +111,14 @@ public class BuilderInWorldEditor : IBIWEditor
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    public void InitReferences(InitialSceneReferences.Data sceneReferences)
+    private void AskHeadersToKernel()
+    {
+        string ethAddress =  string.IsNullOrEmpty(userProfile.ethAddress) ? "default" : userProfile.ethAddress;
+        areCatalogHeadersAsked = true;
+        builderInWorldBridge.AskKernelForCatalogHeadersWithParams("get", "/assetPacks"); 
+    }
+
+    public void InitReferences(ISceneReferences sceneReferences)
     {
         builderInWorldBridge = sceneReferences.builderInWorldBridge;
         cursorGO = sceneReferences.cursorCanvas;

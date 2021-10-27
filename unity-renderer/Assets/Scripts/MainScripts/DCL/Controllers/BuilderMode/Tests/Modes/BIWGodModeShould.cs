@@ -39,7 +39,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
             modeController,
             raycastController,
             gizmosController,
-            InitialSceneReferences.i.data
+            SceneReferences.i
         );
 
         mockedGameObject = new GameObject("MockedGameObject");

@@ -13,7 +13,7 @@ namespace Builder
 
         private void Awake()
         {
-            GameObject groundGameObject = InitialSceneReferences.i?.groundVisual;
+            GameObject groundGameObject = SceneReferences.i?.groundVisual;
             if (groundGameObject)
             {
                 groundRenderers = groundGameObject.GetComponentsInChildren<Renderer>();

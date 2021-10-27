@@ -12,11 +12,11 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             currentQualitySetting.cameraDrawDistance = (float)newValue;
 
-            if (QualitySettingsReferences.i.thirdPersonCamera)
-                QualitySettingsReferences.i.thirdPersonCamera.m_Lens.FarClipPlane = currentQualitySetting.cameraDrawDistance;
+            if (SceneReferences.i.thirdPersonCamera)
+                SceneReferences.i.thirdPersonCamera.m_Lens.FarClipPlane = currentQualitySetting.cameraDrawDistance;
 
-            if (QualitySettingsReferences.i.firstPersonCamera)
-                QualitySettingsReferences.i.firstPersonCamera.m_Lens.FarClipPlane = currentQualitySetting.cameraDrawDistance;
+            if (SceneReferences.i.firstPersonCamera)
+                SceneReferences.i.firstPersonCamera.m_Lens.FarClipPlane = currentQualitySetting.cameraDrawDistance;
 
             RenderSettings.fogEndDistance = currentQualitySetting.cameraDrawDistance;
             RenderSettings.fogStartDistance = currentQualitySetting.cameraDrawDistance * 0.8f;

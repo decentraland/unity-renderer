@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e186c1f350752840a995589a4098192, type: 3}
   m_Name: DetailObjectCullingSizeControlController
   m_EditorClassIdentifier: 
+  cullingControllerSettingsData: {fileID: 11400000, guid: 695d4455361db244ea35bc8bc8646cbd,
+    type: 2}

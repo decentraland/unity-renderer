@@ -62,29 +62,26 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             lwrpaSoftShadowField = urpAsset.GetType().GetField("m_SoftShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.IsNotNull(lwrpaSoftShadowField, "lwrpaSoftShadowField is null!");
 
-            GeneralSettingsReferences generalSettingsReferences = GameObject.FindObjectOfType<GeneralSettingsReferences>();
-            QualitySettingsReferences qualitySettingsReferences = GameObject.FindObjectOfType<QualitySettingsReferences>();
+            SceneReferences sceneReferences = SceneReferences.i;
+            Assert.IsNotNull(sceneReferences, "SceneReferences is invalid");
 
-            Assert.IsNotNull(generalSettingsReferences, "GeneralSettingsReferences not found in scene");
-            Assert.IsNotNull(qualitySettingsReferences, "QualitySettingsReferences not found in scene");
-
-            freeLookCamera = generalSettingsReferences.thirdPersonCamera;
+            freeLookCamera = sceneReferences.thirdPersonCamera;
             Assert.IsNotNull(freeLookCamera, "GeneralSettingsController: thirdPersonCamera reference missing");
 
-            CinemachineVirtualCamera virtualCamera = generalSettingsReferences.firstPersonCamera;
+            CinemachineVirtualCamera virtualCamera = sceneReferences.firstPersonCamera;
             Assert.IsNotNull(virtualCamera, "GeneralSettingsController: firstPersonCamera reference missing");
             povCamera = virtualCamera.GetCinemachineComponent<CinemachinePOV>();
             Assert.IsNotNull(povCamera, "GeneralSettingsController: firstPersonCamera doesn't have CinemachinePOV component");
 
-            environmentLight = qualitySettingsReferences.environmentLight;
+            environmentLight = sceneReferences.environmentLight;
             Assert.IsNotNull(environmentLight, "QualitySettingsController: environmentLight reference missing");
 
-            postProcessVolume = qualitySettingsReferences.postProcessVolume;
+            postProcessVolume = sceneReferences.postProcessVolume;
             Assert.IsNotNull(postProcessVolume, "QualitySettingsController: postProcessVolume reference missing");
 
-            firstPersonCamera = qualitySettingsReferences.firstPersonCamera;
+            firstPersonCamera = sceneReferences.firstPersonCamera;
             Assert.IsNotNull(firstPersonCamera, "QualitySettingsController: firstPersonCamera reference missing");
-            Assert.IsNotNull(qualitySettingsReferences.thirdPersonCamera, "QualitySettingsController: thirdPersonCamera reference missing");
+            Assert.IsNotNull(sceneReferences.thirdPersonCamera, "QualitySettingsController: thirdPersonCamera reference missing");
         }
 
         [Test]
@@ -167,7 +164,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "colorGrading stored value mismatch");
             Tonemapping toneMapping;
-            if (QualitySettingsReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
+            if (SceneReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
             {
                 Assert.AreEqual(newValue, toneMapping.active, "bloom mismatch");
             }
