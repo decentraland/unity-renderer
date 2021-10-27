@@ -36,7 +36,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     internal const int SHOW_MORE_ROWS_INCREMENT = 1;
-
+    internal const string NO_PLACE_DESCRIPTION_WRITTEN = "The author hasn't written a description yet.";
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal FriendTrackerController friendsTrackerController;
@@ -59,7 +59,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
     }
 
-    private void FirstLoading()
+    internal void FirstLoading()
     {
         reloadPlaces = true;
         RequestAllPlaces();
@@ -68,7 +68,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
-    private void OnExploreV2Open(bool current, bool previous)
+    internal void OnExploreV2Open(bool current, bool previous)
     {
         if (current)
             return;
@@ -172,7 +172,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         return placeCardModel;
     }
 
-    internal string FormatDescription(HotSceneInfo placeFromAPI) { return string.IsNullOrEmpty(placeFromAPI.description) ? "The author hasn't written a description yet." : placeFromAPI.description; }
+    internal string FormatDescription(HotSceneInfo placeFromAPI) { return string.IsNullOrEmpty(placeFromAPI.description) ? NO_PLACE_DESCRIPTION_WRITTEN : placeFromAPI.description; }
 
     internal string FormatAuthorName(HotSceneInfo placeFromAPI) { return $"Author <b>{placeFromAPI.creator}</b>"; }
 
