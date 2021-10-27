@@ -334,12 +334,14 @@ MonoBehaviour:
     startTime: 0
     endTime: 0
     layers:
-    - enabled: 1
+    - layerType: 1
+      enabled: 1
       nameInEditor: Stars
       expandedInEditor: 1
       timeSpan_start: 20
       timeSpan_End: 5
-      fadingIn: 1
+      fadingInTime: 0
+      fadingOutTime: 0
       tintercentage: 0
       renderDistance: []
       texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
@@ -411,12 +413,14 @@ MonoBehaviour:
     startTime: 0
     endTime: 0
     layers:
-    - enabled: 1
+    - layerType: 2
+      enabled: 1
       nameInEditor: Moon
       expandedInEditor: 1
       timeSpan_start: 20
-      timeSpan_End: 24
-      fadingIn: 1
+      timeSpan_End: 6
+      fadingInTime: 0
+      fadingOutTime: 0
       tintercentage: 0
       renderDistance: []
       texture: {fileID: 2800000, guid: 54745b55af2f79e4297e9183c10654c0, type: 3}
@@ -424,7 +428,7 @@ MonoBehaviour:
       cubemap: {fileID: 0}
       color:
         serializedVersion: 2
-        key0: {r: 1, g: 0.80915207, b: 0.5896226, a: 0.58431375}
+        key0: {r: 0.8578676, g: 0.9558757, b: 0.9622642, a: 1}
         key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
@@ -454,12 +458,12 @@ MonoBehaviour:
       tiling: {x: 1, y: 1}
       offset:
       - percentage: 0
-        value: {x: 0, y: -12.24}
+        value: {x: 0, y: -12.07}
       - percentage: 100
-        value: {x: 0, y: 90}
+        value: {x: 0, y: 191.07}
       satelliteWidthHeight:
       - percentage: 0
-        value: {x: 2, y: 2}
+        value: {x: 1, y: 1}
       rotation_float:
       - percentage: 0
         value: 96
@@ -489,88 +493,14 @@ MonoBehaviour:
       movementTypeCubemap: 0
       movementTypePlanar_Radial: 0
       movementTypeSatellite: 1
-    - enabled: 1
-      nameInEditor: Moon 02
-      expandedInEditor: 1
-      timeSpan_start: 0
-      timeSpan_End: 5
-      fadingIn: 1
-      tintercentage: 0
-      renderDistance: []
-      texture: {fileID: 2800000, guid: 54745b55af2f79e4297e9183c10654c0, type: 3}
-      textureNormal: {fileID: 0}
-      cubemap: {fileID: 0}
-      color:
-        serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 0.654902}
-        key2: {r: 0, g: 0, b: 0, a: 0}
-        key3: {r: 0, g: 0, b: 0, a: 0}
-        key4: {r: 0, g: 0, b: 0, a: 0}
-        key5: {r: 0, g: 0, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 0
-        ctime1: 65535
-        ctime2: 0
-        ctime3: 0
-        ctime4: 0
-        ctime5: 0
-        ctime6: 0
-        ctime7: 0
-        atime0: 0
-        atime1: 65535
-        atime2: 0
-        atime3: 0
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_NumColorKeys: 2
-        m_NumAlphaKeys: 2
-      tiling: {x: 1, y: 1}
-      offset:
-      - percentage: 0
-        value: {x: 0, y: 90}
-      - percentage: 100
-        value: {x: 0, y: 201.4}
-      satelliteWidthHeight:
-      - percentage: 0
-        value: {x: 2, y: 2}
-      rotation_float: []
-      cubemapRotations: []
-      speed_Vector3: {x: 0, y: 0, z: 0}
-      speed_Vec2: {x: 0, y: 0}
-      speed: 0
-      normalIntensity: 0
-      particleExpanded: 0
-      particlesRowsAndColumns: {x: 1, y: 1}
-      particleTiling: {x: 1, y: 1}
-      particlesOffset: {x: 0, y: 0}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 1
-      particlesAmount: 1
-      particleMinSize: 1
-      particleMaxSize: 1
-      particlesHorizontalSpread: 1
-      particlesVerticalSpread: 1
-      particleMinFade: 1
-      particleMaxFade: 1
-      distortionExpanded: 0
-      distortIntensity: []
-      distortSize: []
-      distortSpeed: []
-      distortSharpness: []
-      movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
-      movementTypeSatellite: 1
-    - enabled: 1
+    - layerType: 2
+      enabled: 1
       nameInEditor: Sun
       expandedInEditor: 1
       timeSpan_start: 5.1
       timeSpan_End: 19.9
-      fadingIn: 1
+      fadingInTime: 0
+      fadingOutTime: 0
       tintercentage: 0
       renderDistance: []
       texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
@@ -578,8 +508,8 @@ MonoBehaviour:
       cubemap: {fileID: 0}
       color:
         serializedVersion: 2
-        key0: {r: 1, g: 0.8125947, b: 0.41037738, a: 1}
-        key1: {r: 1, g: 0.8125947, b: 0.41037738, a: 1}
+        key0: {r: 1, g: 0.93509436, b: 0.7971698, a: 1}
+        key1: {r: 1, g: 0.93509436, b: 0.7971698, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -611,7 +541,9 @@ MonoBehaviour:
         value: {x: 0, y: -16.13}
       - percentage: 100
         value: {x: 0, y: 207.6}
-      satelliteWidthHeight: []
+      satelliteWidthHeight:
+      - percentage: 0
+        value: {x: 3, y: 3}
       rotation_float: []
       cubemapRotations: []
       speed_Vector3: {x: 0, y: 0, z: 0}
@@ -642,16 +574,18 @@ MonoBehaviour:
   - enabled: 1
     slotID: 2
     slotName: 
-    expandedInEditor: 0
+    expandedInEditor: 1
     startTime: 0
     endTime: 0
     layers:
-    - enabled: 1
+    - layerType: 4
+      enabled: 1
       nameInEditor: Clouds Night
       expandedInEditor: 1
       timeSpan_start: 21
       timeSpan_End: 4.5
-      fadingIn: 1
+      fadingInTime: 0
+      fadingOutTime: 0
       tintercentage: 0
       renderDistance: []
       texture: {fileID: 0}
@@ -716,12 +650,14 @@ MonoBehaviour:
       movementTypeCubemap: 0
       movementTypePlanar_Radial: 0
       movementTypeSatellite: 0
-    - enabled: 1
+    - layerType: 4
+      enabled: 1
       nameInEditor: Clouds Day
       expandedInEditor: 1
       timeSpan_start: 4.6
       timeSpan_End: 19.9
-      fadingIn: 1
+      fadingInTime: 0
+      fadingOutTime: 0
       tintercentage: 0
       renderDistance: []
       texture: {fileID: 0}
@@ -789,16 +725,18 @@ MonoBehaviour:
   - enabled: 1
     slotID: 3
     slotName: 
-    expandedInEditor: 0
+    expandedInEditor: 1
     startTime: 0
     endTime: 0
     layers:
-    - enabled: 1
+    - layerType: 0
+      enabled: 1
       nameInEditor: Simple Clouds
       expandedInEditor: 1
       timeSpan_start: 5
       timeSpan_End: 20
-      fadingIn: 1
+      fadingInTime: 0
+      fadingOutTime: 0
       tintercentage: 0
       renderDistance:
       - percentage: 0
@@ -880,12 +818,14 @@ MonoBehaviour:
     startTime: 0
     endTime: 0
     layers:
-    - enabled: 1
+    - layerType: 3
+      enabled: 1
       nameInEditor: Eyes
-      expandedInEditor: 0
+      expandedInEditor: 1
       timeSpan_start: 0
       timeSpan_End: 24
-      fadingIn: 1
+      fadingInTime: 0
+      fadingOutTime: 0
       tintercentage: 0
       renderDistance: []
       texture: {fileID: 2800000, guid: c33c912fc2e2196459e139071267c415, type: 3}
@@ -951,12 +891,14 @@ MonoBehaviour:
       movementTypePlanar_Radial: 0
       movementTypeSatellite: 0
   textureLayers:
-  - enabled: 0
+  - layerType: 0
+    enabled: 0
     nameInEditor: Stars
     expandedInEditor: 1
     timeSpan_start: 12
     timeSpan_End: 24
-    fadingIn: 0.5
+    fadingInTime: 0
+    fadingOutTime: 0
     tintercentage: 48.7
     renderDistance: []
     texture: {fileID: 2800000, guid: 1f19dbb2b85e7a94987d2b6cb4687dde, type: 3}
@@ -1021,12 +963,14 @@ MonoBehaviour:
     movementTypeCubemap: 0
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
-  - enabled: 0
+  - layerType: 0
+    enabled: 0
     nameInEditor: Clouds Day
     expandedInEditor: 1
     timeSpan_start: 13
     timeSpan_End: 24
-    fadingIn: 2
+    fadingInTime: 0
+    fadingOutTime: 0
     tintercentage: 0
     renderDistance: []
     texture: {fileID: 0}
@@ -1091,12 +1035,14 @@ MonoBehaviour:
     movementTypeCubemap: 0
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
-  - enabled: 0
+  - layerType: 0
+    enabled: 0
     nameInEditor: Clouds Night
     expandedInEditor: 1
     timeSpan_start: 12
     timeSpan_End: 22
-    fadingIn: 2
+    fadingInTime: 0
+    fadingOutTime: 0
     tintercentage: 0
     renderDistance: []
     texture: {fileID: 2800000, guid: 10f62b4152000cd40bfef3f3ac6dec74, type: 3}
@@ -1161,12 +1107,14 @@ MonoBehaviour:
     movementTypeCubemap: 0
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
-  - enabled: 0
+  - layerType: 0
+    enabled: 0
     nameInEditor: Clouds Plannar
     expandedInEditor: 0
     timeSpan_start: 0
     timeSpan_End: 24
-    fadingIn: 0
+    fadingInTime: 0
+    fadingOutTime: 0
     tintercentage: 13.8
     renderDistance:
     - percentage: 22.5
