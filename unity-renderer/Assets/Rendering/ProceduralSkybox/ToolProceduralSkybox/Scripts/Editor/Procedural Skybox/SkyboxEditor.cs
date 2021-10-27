@@ -432,12 +432,9 @@ namespace DCL.Skybox
                     case FogMode.Linear:
                         RenderFloatField("Start Distance:", ref selectedConfiguration.fogStartDistance);
                         RenderFloatField("End Distance:", ref selectedConfiguration.fogEndDistance);
-                        //selectedConfiguration.fogStartDistance = EditorGUILayout.FloatField("Start Distance: ", selectedConfiguration.fogStartDistance);
-                        //selectedConfiguration.fogEndDistance = EditorGUILayout.FloatField("End Distance: ", selectedConfiguration.fogEndDistance);
                         break;
                     default:
                         RenderFloatField("Density: ", ref selectedConfiguration.fogDensity);
-                        //selectedConfiguration.fogDensity = EditorGUILayout.FloatField("Density: ", selectedConfiguration.fogDensity);
                         break;
                 }
             }
@@ -600,7 +597,7 @@ namespace DCL.Skybox
             // Layer Type
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField("Layer Type:", GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            layer.LayerType = (LayerType)EditorGUILayout.EnumPopup(layer.LayerType, GUILayout.Width(200));
+            layer.layerType = (LayerType)EditorGUILayout.EnumPopup(layer.layerType, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
 
 
@@ -615,25 +612,25 @@ namespace DCL.Skybox
             // Tint
             RenderFloatFieldAsSlider("Tint", ref layer.tintercentage, 0, 100);
 
-            if (layer.LayerType == LayerType.Cubemap)
+            if (layer.layerType == LayerType.Cubemap)
             {
                 RenderCubemapLayer(layer);
 
             }
-            else if (layer.LayerType == LayerType.Planar)
+            else if (layer.layerType == LayerType.Planar)
             {
                 RenderPlanarLayer(layer);
 
             }
-            else if (layer.LayerType == LayerType.Radial)
+            else if (layer.layerType == LayerType.Radial)
             {
                 RenderPlanarLayer(layer, true);
             }
-            else if (layer.LayerType == LayerType.Satellite)
+            else if (layer.layerType == LayerType.Satellite)
             {
                 RenderSatelliteLayer(layer);
             }
-            else if (layer.LayerType == LayerType.Particles)
+            else if (layer.layerType == LayerType.Particles)
             {
                 RenderParticleLayer(layer);
             }

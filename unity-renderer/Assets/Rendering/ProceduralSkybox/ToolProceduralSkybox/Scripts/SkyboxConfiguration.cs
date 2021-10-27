@@ -233,9 +233,9 @@ namespace DCL.Skybox
             }
             float normalizedLayerTime = Mathf.InverseLerp(layer.timeSpan_start, endTimeEdited, dayTimeEdited);
 
-            selectedMat.SetFloat("_layerType_" + slotNum, (int)layer.LayerType);
+            selectedMat.SetFloat("_layerType_" + slotNum, (int)layer.layerType);
 
-            switch (layer.LayerType)
+            switch (layer.layerType)
             {
                 case LayerType.Planar:
                 case LayerType.Radial:
@@ -264,7 +264,7 @@ namespace DCL.Skybox
                 selectedMat.SetTexture("_cubemap_" + layerNum, layer.cubemap);
                 selectedMat.SetTexture("_normals_" + layerNum, null);
                 selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-                selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
+                selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
                 selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
                 selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
                 selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
@@ -293,7 +293,7 @@ namespace DCL.Skybox
 
         void ApplyPlanarTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
-            if (layer.LayerType == LayerType.Planar)
+            if (layer.layerType == LayerType.Planar)
             {
                 selectedMat.SetFloat("_RenderDistance_" + layerNum, GetTransitionValue(layer.renderDistance, normalizedLayerTime * 100, 3.4f));
             }
@@ -309,7 +309,7 @@ namespace DCL.Skybox
             {
                 // speed and Rotation
                 float rot = 0;
-                if (layer.LayerType == LayerType.Planar)
+                if (layer.layerType == LayerType.Planar)
                 {
                     rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
                 }
@@ -324,7 +324,7 @@ namespace DCL.Skybox
             {
                 // speed and Rotation
                 float rot = 0;
-                if (layer.LayerType == LayerType.Planar)
+                if (layer.layerType == LayerType.Planar)
                 {
                     rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
                 }
@@ -341,7 +341,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
+            selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
@@ -399,7 +399,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
+            selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
@@ -428,7 +428,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingInTime);
+            selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
 
@@ -582,7 +582,7 @@ namespace DCL.Skybox
             selectedMat.SetVector("_tilingAndOffset_" + slotCount, new Vector4(1, 1, 0, 0));
             selectedMat.SetVector("_speedAndRotation_" + slotCount, new Vector4(0, 0, 0));
             selectedMat.SetVector("_timeFrame_" + slotCount, new Vector4(0, 0));
-            selectedMat.SetFloat("_fadeTime_" + slotCount, 0);
+            selectedMat.SetFloat("_fadeTime_" + slotCount, 1);
             selectedMat.SetFloat("_normalIntensity_" + slotCount, 0);
             selectedMat.SetFloat("_lightIntensity_" + slotCount, 0);
             selectedMat.SetVector("_distortIntAndSize_" + slotCount, new Vector2(0, 0));

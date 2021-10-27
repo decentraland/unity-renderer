@@ -7,7 +7,7 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
-        [SerializeField] private LayerType layerType;
+        public LayerType layerType;
         public bool enabled;
         public string nameInEditor;
         public bool expandedInEditor;
@@ -72,8 +72,6 @@ namespace DCL.Skybox
         public MovementType movementTypeCubemap;
         public MovementType movementTypePlanar_Radial;
         public MovementType movementTypeSatellite;
-
-        public LayerType LayerType { get => layerType; set { layerType = value; } }
 
         public TextureLayer(string name = "noname")
         {
