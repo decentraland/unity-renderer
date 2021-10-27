@@ -383,7 +383,17 @@ namespace UnityGLTF
                                     var materialMaps = texMaterialMap[tex];
                                     bool isExternal = cachedTextures.Contains(tex);
 
-                                    var texPath = AssetDatabase.GetAssetPath(tex);
+                                    string texPath;
+                                    if (isExternal)
+                                    {
+                                        texPath = AssetDatabase.GetAssetPath(tex);
+                                    }
+                                    else
+                                    {
+                                        var texturesRoot = string.Concat(folderName, "/", "Textures/");
+                                        var ext = _useJpgTextures ? ".jpg" : ".png";
+                                        texPath = string.Concat(texturesRoot, tex.name, ext);
+                                    }
                                     var importedTex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
                                     var importer = (TextureImporter) TextureImporter.GetAtPath(texPath);
 
