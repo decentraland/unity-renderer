@@ -231,7 +231,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
                && (DateTime.UtcNow - friends[userId].friendshipStartedTime).TotalSeconds < 5;
     }
 
-    private FriendshipStatus ToFriendshipStatus(FriendshipAction action)
+    private static FriendshipStatus ToFriendshipStatus(FriendshipAction action)
     {
         switch (action)
         {
