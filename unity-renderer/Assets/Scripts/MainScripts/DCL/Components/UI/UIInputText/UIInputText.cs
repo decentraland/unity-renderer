@@ -159,9 +159,9 @@ namespace DCL.Components
 
         public void OnSubmit(string call)
         {
-            bool validString = !string.IsNullOrEmpty(tmpText.text);
+            bool validString = !string.IsNullOrEmpty(call);
 
-            if (tmpText.text.Length == 1 && (byte) tmpText.text[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
+            if (call?.Length == 1 && (byte) call[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
             {
                 validString = false;
             }
@@ -169,8 +169,8 @@ namespace DCL.Components
             if (validString)
             {
                 // NOTE: we keep `ReportOnTextSubmitEvent` for backward compatibility (it won't be called for scenes using latest sdk)
-                Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmit, tmpText.text);
-                Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.id, model.onTextChanged, tmpText.text, true);
+                Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmit, call);
+                Interface.WebInterface.ReportOnTextInputChangedTextEvent(scene.sceneData.id, model.onTextChanged, call, true);
             }
             else if (scene.isPersistent) // DCL UI Chat text input
             {
