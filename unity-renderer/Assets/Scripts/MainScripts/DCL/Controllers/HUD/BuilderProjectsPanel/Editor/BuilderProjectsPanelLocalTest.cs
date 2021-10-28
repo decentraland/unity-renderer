@@ -8,13 +8,13 @@ using UnityEngine.EventSystems;
  */
 public class BuilderProjectsPanelLocalTest : MonoBehaviour
 {
-    private BuilderProjectsPanelController controller;
+    private BuilderMainPanelController controller;
 
     void Start()
     {
         WebRequestController.Create();
         DataStore.i.builderInWorld.isDevBuild.Set(true);
-        controller = new BuilderProjectsPanelController();
+        controller = new BuilderMainPanelController();
         if (EventSystem.current == null)
         {
             var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));

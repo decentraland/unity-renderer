@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -469,10 +470,10 @@ public class BuilderInWorldEditor : IBIWEditor
 
     internal bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
     {
-        List<DeployedScene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
-        foreach (DeployedScene scene in allDeployedScenesWithAccess)
+        List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
+        foreach (Scene scene in allDeployedScenesWithAccess)
         {
-            if (scene.source != DeployedScene.Source.SDK)
+            if (scene.source != Scene.Source.SDK)
                 continue;
 
             List<Vector2Int> parcelsDeployedFromSDK = scene.parcels.ToList();

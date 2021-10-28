@@ -6,6 +6,7 @@ using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using UnityEngine;
 
 public interface IBIWFloorHandler : IBIWController

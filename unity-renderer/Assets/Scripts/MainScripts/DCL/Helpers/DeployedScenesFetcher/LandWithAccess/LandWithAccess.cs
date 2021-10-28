@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using UnityEngine;
 
 public class LandWithAccess
@@ -11,7 +12,7 @@ public class LandWithAccess
     public string name => rawData.name;
     public string owner => rawData.owner;
 
-    public List<DeployedScene> scenes;
+    public List<Scene> scenes;
     public Vector2Int[] parcels;
     public Vector2Int baseCoords;
     public Land rawData;

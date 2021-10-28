@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using DCL;
+using DCL.Builder;
 using DCL.Interface;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ internal class UnpublishPopupController : IDisposable
 
     private IUnpublishPopupView view;
     private Vector2Int coordinates;
-    private DeployedScene.Source source;
+    private Scene.Source source;
     private Coroutine fakeProgressRoutine = null;
 
     public UnpublishPopupController(IUnpublishPopupView view)
@@ -37,7 +38,7 @@ internal class UnpublishPopupController : IDisposable
         }
     }
 
-    public void Show(Vector2Int coordinates, DeployedScene.Source source = DeployedScene.Source.BUILDER_IN_WORLD)
+    public void Show(Vector2Int coordinates, Scene.Source source = Scene.Source.BUILDER_IN_WORLD)
     {
         this.coordinates = coordinates;
         this.source = source;

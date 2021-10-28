@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL;
+using DCL.Builder;
 using DCL.Interface;
 using TMPro;
 using UnityEngine;
@@ -107,7 +108,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
         {
             editorLocked.SetShowHideAnimator(editorLockedTooltipEstate);
         }
-        else if (land.scenes != null && land.scenes.Count > 0 && land.scenes[0].source == DeployedScene.Source.SDK)
+        else if (land.scenes != null && land.scenes.Count > 0 && land.scenes[0].source == Scene.Source.SDK)
         {
             editorLocked.SetShowHideAnimator(editorLockedTooltipSdkScene);
             SetEditable(false);

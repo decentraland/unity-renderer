@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Camera;
 using UnityEngine;
 using Environment = DCL.Environment;

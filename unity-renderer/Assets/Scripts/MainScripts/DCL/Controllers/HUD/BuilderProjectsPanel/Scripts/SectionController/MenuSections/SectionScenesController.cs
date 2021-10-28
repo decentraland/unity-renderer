@@ -6,24 +6,24 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Builder
 {
-    internal class SectionProjectController : SectionBase, IProjectsListener, ISectionHideContextMenuRequester
+    internal class SectionScenesController : SectionBase, ISceneListener, ISectionHideContextMenuRequester
     {
-        public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionProjectView";
+        public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionDeployedScenesView";
 
         public event Action OnRequestContextMenuHide;
 
         public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
-        private readonly SectionProjectView view;
+        private readonly SectionPlacesView view;
 
         private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
-        private Dictionary<string, IProjectCardView> projectsViews;
+        private Dictionary<string, ISceneCardView> scenesViews;
 
-        public SectionProjectController() : this(
-            Object.Instantiate(Resources.Load<SectionProjectView>(VIEW_PREFAB_PATH))
+        public SectionScenesController() : this(
+            Object.Instantiate(Resources.Load<SectionPlacesView>(VIEW_PREFAB_PATH))
         ) { }
 
-        public SectionProjectController(SectionProjectView view)
+        public SectionScenesController(SectionPlacesView view)
         {
             this.view = view;
 
@@ -43,49 +43,48 @@ namespace DCL.Builder
 
         protected override void OnHide() { view.SetActive(false); }
 
-        void IProjectsListener.OnSetProjects(Dictionary<string, IProjectCardView> projectsViews)
+        void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
         {
-            this.projectsViews = new Dictionary<string, IProjectCardView>(projectsViews);
-            sceneSearchHandler.SetSearchableList(projectsViews.Values.Select(project => project.searchInfo).ToList());
+            scenesViews = new Dictionary<string, ISceneCardView>(scenes);
+            sceneSearchHandler.SetSearchableList(scenes.Values.Select(scene => scene.searchInfo).ToList());
         }
 
-        void IProjectsListener.OnProjectAdded(IProjectCardView projectView)
+        void ISceneListener.SceneAdded(ISceneCardView scene)
         {
-            projectsViews.Add(projectView.projectData.id, projectView);
-            sceneSearchHandler.AddItem(projectView.searchInfo);
+            scenesViews.Add(scene.SceneData.id, scene);
+            sceneSearchHandler.AddItem(scene.searchInfo);
         }
 
-        void IProjectsListener.OnProjectRemoved(IProjectCardView projectView)
+        void ISceneListener.SceneRemoved(ISceneCardView scene)
         {
-            projectsViews.Remove(projectView.projectData.id);
-            projectView.SetActive(false);
+            scenesViews.Remove(scene.SceneData.id);
+            scene.SetActive(false);
         }
 
         private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
         {
-            if (projectsViews == null)
+            if (scenesViews == null)
                 return;
 
-            using (var iterator = projectsViews.GetEnumerator())
+            using (var iterator = scenesViews.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    iterator.Current.Value.SetParent(view.contentContainer.transform);
+                    iterator.Current.Value.SetParent(view.GetCardsContainer());
                     iterator.Current.Value.SetActive(false);
                 }
             }
 
             for (int i = 0; i < searchInfoScenes.Count; i++)
             {
-                if (!projectsViews.TryGetValue(searchInfoScenes[i].id, out IProjectCardView cardView))
+                if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out ISceneCardView cardView))
                     continue;
 
                 cardView.SetActive(true);
                 cardView.SetSiblingIndex(i);
             }
-            view.ResetScrollRect();
 
-            if (projectsViews.Count == 0)
+            if (scenesViews.Count == 0)
             {
                 if (isLoading)
                 {
