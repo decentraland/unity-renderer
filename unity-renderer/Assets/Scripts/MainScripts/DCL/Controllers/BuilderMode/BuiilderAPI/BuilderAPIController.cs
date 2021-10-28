@@ -6,6 +6,7 @@ using DCL.Builder.Manifest;
 using DCL.Helpers;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class BuilderAPIController : IBuilderAPIController
 {
@@ -38,6 +39,35 @@ public class BuilderAPIController : IBuilderAPIController
             if (request.Key == requestHeader.endpoint)
                 request.Value.Resolve(requestHeader.headers);
         }
+        switch (requestHeader.method)
+        {
+            case "get":
+                BIWUtils.MakeGetCall(BIWConfBIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
+                break;
+        }
+
+    }
+
+    public void GetCompleteCatalog(string ethAddres)
+    {
+        if (catalogAdded)
+            return;
+
+        if (areCatalogHeadersReady)
+        {
+            string ethAddress = "";
+            var userProfile = UserProfile.GetOwnUserProfile();
+            if (userProfile != null)
+                ethAddress = userProfile.ethAddress;
+            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
+            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
+        }
+        else
+        {
+            AskHeadersToKernel();
+        }
+
+        isCatalogRequested = true;
     }
 
     public SceneObject[] GetAssets(List<string> assetsIds)
