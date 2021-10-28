@@ -3,6 +3,7 @@ using DCL.Interface;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Threading;
 using DCL;
 using UnityEditor;
 using UnityEngine;
@@ -43,30 +44,31 @@ public class DCLWebSocketService : WebSocketBehavior
 
         lock (WebSocketCommunication.queuedMessages)
         {
-            Message finalMessage;
-            finalMessage = JsonUtility.FromJson<Message>(e.Data);
+            Message finalMessage = JsonUtility.FromJson<Message>(e.Data);
 
             WebSocketCommunication.queuedMessages.Enqueue(finalMessage);
             WebSocketCommunication.queuedMessagesDirty = true;
         }
     }
 
-    protected override void OnError(ErrorEventArgs e) { base.OnError(e); }
+    protected override void OnError(ErrorEventArgs e)
+    {
+        Debug.LogError(e.Message);
+        base.OnError(e);
+    }
 
     protected override void OnClose(CloseEventArgs e)
     {
         base.OnClose(e);
         WebInterface.OnMessageFromEngine -= SendMessageToWeb;
+        DataStore.i.wsCommunication.communicationEstablished.Set(false);
     }
 
     protected override void OnOpen()
     {
         base.OnOpen();
+
         WebInterface.OnMessageFromEngine += SendMessageToWeb;
-        
         DataStore.i.wsCommunication.communicationEstablished.Set(true);
-        
-        var callFromMainThread = new Action(WebInterface.SendSystemInfoReport); // `WebInterface.SendSystemInfoReport` can only be called from MainThread
-        callFromMainThread.Invoke();
     }
 }

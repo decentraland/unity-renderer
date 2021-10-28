@@ -7,13 +7,7 @@ public interface IButtonComponentView
     /// <summary>
     /// Event that will be triggered when the button is clicked.
     /// </summary>
-    Button.ButtonClickedEvent onClick { get; set; }
-
-    /// <summary>
-    /// Fill the model and updates the button with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the button.</param>
-    void Configure(ButtonComponentModel model);
+    Button.ButtonClickedEvent onClick { get; }
 
     /// <summary>
     /// Set the button text.
@@ -39,7 +33,7 @@ public interface IButtonComponentView
     bool IsInteractable();
 }
 
-public class ButtonComponentView : BaseComponentView, IButtonComponentView
+public class ButtonComponentView : BaseComponentView, IButtonComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
@@ -49,35 +43,11 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
     [Header("Configuration")]
     [SerializeField] internal ButtonComponentModel model;
 
-    public Button.ButtonClickedEvent onClick
+    public Button.ButtonClickedEvent onClick => button?.onClick;
+
+    public void Configure(BaseComponentModel newModel)
     {
-        get
-        {
-            if (button == null)
-                return null;
-
-            return button.onClick;
-        }
-        set
-        {
-            model.onClick = value;
-
-            if (button != null)
-            {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() =>
-                {
-                    value?.Invoke();
-                });
-            }
-        }
-    }
-
-    public override void PostInitialization() { Configure(model); }
-
-    public virtual void Configure(ButtonComponentModel model)
-    {
-        this.model = model;
+        model = (ButtonComponentModel)newModel;
         RefreshControl();
     }
 
@@ -88,18 +58,11 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView
 
         SetText(model.text);
         SetIcon(model.icon);
-        onClick = model.onClick;
     }
 
-    public override void Dispose()
-    {
-        base.Dispose();
+    public bool IsInteractable() { return button.interactable; }
 
-        if (button == null)
-            return;
-
-        button.onClick.RemoveAllListeners();
-    }
+    public void SetInteractable(bool isActive) { button.interactable = isActive; }
 
     public bool IsInteractable() { return button.interactable; }
 

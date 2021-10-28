@@ -14,8 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stickersList:
   - id: clap
-    stickerPrefab: {fileID: 17480524672133614, guid: d6a67b16335e547f7bb76da7e850651e,
+    stickerPrefab: {fileID: 2517955516116662209, guid: a93cbf67f3062ba4fbbaa457e599f52e,
       type: 3}
   - id: heart
-    stickerPrefab: {fileID: 8322741589490567795, guid: a2ac01cf19c5b4d00acf9f777d831fe3,
+    stickerPrefab: {fileID: 5040678410500195010, guid: 47d1f858255ebb44f9b8f7e521da6e29,
+      type: 3}
+  - id: money
+    stickerPrefab: {fileID: 8946916107192316977, guid: e891081092c54e749a2f3519b39faf3e,
+      type: 3}
+  - id: footstep
+    stickerPrefab: {fileID: 5986454237008173496, guid: 35a69766f496be8439e8610e3c47bf35,
+      type: 3}
+  - id: footstepJump
+    stickerPrefab: {fileID: 2396780680650313416, guid: 138786687502169459079172923c888c,
+      type: 3}
+  - id: footstepLand
+    stickerPrefab: {fileID: 7577078904277244474, guid: f9829acce8807ec4eac1e907760ae260,
       type: 3}

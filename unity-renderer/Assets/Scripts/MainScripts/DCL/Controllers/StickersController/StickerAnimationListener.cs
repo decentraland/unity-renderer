@@ -16,6 +16,6 @@ public class StickerAnimationListener : MonoBehaviour
         if (animEvent.animationState.weight < WEIGHT_THRESHOLD)
             return;
 
-        stickersController?.PlayEmote(animEvent.stringParameter);
+        stickersController?.PlaySticker(animEvent.stringParameter);
     }
 }

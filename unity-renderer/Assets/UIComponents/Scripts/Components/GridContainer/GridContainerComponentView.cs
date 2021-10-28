@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,12 +5,6 @@ using static UnityEngine.UI.GridLayoutGroup;
 
 public interface IGridContainerComponentView
 {
-    /// <summary>
-    /// Fill the model and updates the grid with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the grid.</param>
-    void Configure(GridContainerComponentModel model);
-
     /// <summary>
     /// Set the type of constraint of the grid.
     /// </summary>
@@ -49,27 +42,30 @@ public interface IGridContainerComponentView
     void SetMinWidthForFlexibleItems(float minWidthForFlexibleItems);
 
     /// <summary>
-    /// Set the items of the grid.
+    /// Set the items of the grid. All previously existing items will be removed.
     /// </summary>
     /// <param name="items">List of UI components.</param>
-    /// <param name="instantiateNewCopyOfItems">Indicates if the items provided will be instantiated as a new copy or not.</param>
-    void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true);
-
-    /// <summary>
-    /// Get an item of the grid.
-    /// </summary>
-    /// <param name="index">Index of the list of items.</param>
-    /// <returns>A specific UI component.</returns>
-    BaseComponentView GetItem(int index);
+    void SetItems(List<BaseComponentView> items);
 
     /// <summary>
     /// Get all the items of the grid.
     /// </summary>
-    /// <returns>The list of items.</returns>
-    List<BaseComponentView> GetAllItems();
+    /// <returns>List of items.</returns>
+    List<BaseComponentView> GetItems();
+
+    /// <summary>
+    /// Extract all items out of the grid.
+    /// </summary>
+    /// <returns>The list of extracted items.</returns>
+    List<BaseComponentView> ExtractItems();
+
+    /// <summary>
+    /// Remove all existing items from the grid.
+    /// </summary>
+    void RemoveItems();
 }
 
-public class GridContainerComponentView : BaseComponentView, IGridContainerComponentView
+public class GridContainerComponentView : BaseComponentView, IGridContainerComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal GridLayoutGroup gridLayoutGroup;
@@ -79,13 +75,17 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     [SerializeField] internal GridContainerComponentModel model;
 
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
-    internal bool destroyOnlyUnnecesaryItems = false;
 
-    public override void PostInitialization() { Configure(model); }
-
-    public void Configure(GridContainerComponentModel model)
+    public override void Awake()
     {
-        this.model = model;
+        base.Awake();
+
+        RegisterCurrentInstantiatedItems();
+    }
+
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (GridContainerComponentModel)newModel;
         RefreshControl();
     }
 
@@ -95,16 +95,15 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             return;
 
         SetConstraint(model.constraint);
-        SetItems(model.items);
+        SetItemSize(model.itemSize);
         SetConstraintCount(model.constranitCount);
         SetSpaceBetweenItems(model.spaceBetweenItems);
     }
 
-    public override void PostScreenSizeChanged()
+    public override void OnScreenSizeChanged()
     {
-        base.PostScreenSizeChanged();
+        base.OnScreenSizeChanged();
 
-        ResizeGridContainer();
         SetItemSize(model.itemSize);
     }
 
@@ -112,7 +111,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         base.Dispose();
 
-        DestroyInstantiatedItems(true);
+        DestroyInstantiatedItems();
     }
 
     public void SetConstraint(Constraint newConstraint)
@@ -144,54 +143,20 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     public void SetItemSize(Vector2 newItemSize)
     {
         Vector2 newSizeToApply = newItemSize;
+
         if (model.adaptItemSizeToContainer)
         {
-            if (model.constraint == Constraint.FixedColumnCount)
+            switch (model.constraint)
             {
-                float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
-                float extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
-                newSizeToApply = new Vector2(
-                    (width / model.constranitCount) - extraSpaceToRemove,
-                    model.itemSize.y);
-            }
-            else if (model.constraint == Constraint.FixedRowCount)
-            {
-                float height = ((RectTransform)transform).rect.height;
-                float extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
-                newSizeToApply = new Vector2(
-                    model.itemSize.x,
-                    (height / model.constranitCount) - extraSpaceToRemove);
-            }
-            else if (model.constraint == Constraint.Flexible)
-            {
-                float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
-                int numberOfPossibleItems = (int)(width / model.minWidthForFlexibleItems);
-
-                SetConstraint(Constraint.FixedColumnCount);
-
-                if (numberOfPossibleItems > 0)
-                {
-                    for (int numColumnsToTry = 1; numColumnsToTry <= numberOfPossibleItems; numColumnsToTry++)
-                    {
-                        SetConstraintCount(numColumnsToTry);
-                        SetItemSize(model.itemSize);
-
-                        if (model.itemSize.x < model.minWidthForFlexibleItems)
-                        {
-                            SetConstraintCount(numColumnsToTry - 1);
-                            SetItemSize(model.itemSize);
-                            break;
-                        }
-
-                        newSizeToApply = model.itemSize;
-                    }
-                }
-                else
-                {
-                    newSizeToApply = new Vector2(model.minWidthForFlexibleItems, newSizeToApply.y);
-                }
-
-                SetConstraint(Constraint.Flexible);
+                case Constraint.FixedColumnCount:
+                    CalculateSizeForFixedColumnConstraint(out newSizeToApply);
+                    break;
+                case Constraint.FixedRowCount:
+                    CalculateSizeForFixedRowConstraint(out newSizeToApply);
+                    break;
+                case Constraint.Flexible:
+                    CalculateSizeForFlexibleConstraint(out newSizeToApply, newItemSize);
+                    break;
             }
         }
 
@@ -203,6 +168,60 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         gridLayoutGroup.cellSize = newSizeToApply;
 
         ResizeGridContainer();
+    }
+
+    internal void CalculateSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
+    {
+        float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+        float extraSpaceToRemove = (model.spaceBetweenItems.x * (model.constranitCount - 1)) / model.constranitCount;
+
+        newSizeToApply = new Vector2(
+            (width / model.constranitCount) - extraSpaceToRemove,
+            model.itemSize.y);
+    }
+
+    internal void CalculateSizeForFixedRowConstraint(out Vector2 newSizeToApply)
+    {
+        float height = ((RectTransform)transform).rect.height;
+        float extraSpaceToRemove = (model.spaceBetweenItems.y / (model.constranitCount / 2f));
+
+        newSizeToApply = new Vector2(
+            model.itemSize.x,
+            (height / model.constranitCount) - extraSpaceToRemove);
+    }
+
+    internal void CalculateSizeForFlexibleConstraint(out Vector2 newSizeToApply, Vector2 newItemSize)
+    {
+        newSizeToApply = newItemSize;
+
+        float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+        int numberOfPossibleItems = (int)(width / model.minWidthForFlexibleItems);
+
+        SetConstraint(Constraint.FixedColumnCount);
+
+        if (numberOfPossibleItems > 0)
+        {
+            for (int numColumnsToTry = 1; numColumnsToTry <= numberOfPossibleItems; numColumnsToTry++)
+            {
+                SetConstraintCount(numColumnsToTry);
+                SetItemSize(model.itemSize);
+
+                if (model.itemSize.x < model.minWidthForFlexibleItems)
+                {
+                    SetConstraintCount(numColumnsToTry - 1);
+                    SetItemSize(model.itemSize);
+                    break;
+                }
+
+                newSizeToApply = model.itemSize;
+            }
+        }
+        else
+        {
+            newSizeToApply = new Vector2(model.minWidthForFlexibleItems, newSizeToApply.y);
+        }
+
+        SetConstraint(Constraint.Flexible);
     }
 
     public void SetSpaceBetweenItems(Vector2 newSpace)
@@ -221,116 +240,64 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         SetItemSize(model.itemSize);
     }
 
-    public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)
+    public void SetItems(List<BaseComponentView> items)
     {
-        model.items = items;
-
-        DestroyInstantiatedItems(!destroyOnlyUnnecesaryItems);
+        DestroyInstantiatedItems();
 
         for (int i = 0; i < items.Count; i++)
         {
-            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems && !destroyOnlyUnnecesaryItems);
+            CreateItem(items[i], $"Item{i}");
         }
-
-        ResizeGridContainer();
-
-        if (!instantiateNewCopyOfItems)
-            destroyOnlyUnnecesaryItems = true;
 
         SetItemSize(model.itemSize);
     }
 
-    public BaseComponentView GetItem(int index)
-    {
-        if (index >= instantiatedItems.Count)
-            return null;
+    public List<BaseComponentView> GetItems() { return instantiatedItems; }
 
-        return instantiatedItems[index];
+    public List<BaseComponentView> ExtractItems()
+    {
+        List<BaseComponentView> extractedItems = new List<BaseComponentView>();
+        foreach (BaseComponentView item in instantiatedItems)
+        {
+            item.transform.SetParent(null);
+            extractedItems.Add(item);
+        }
+
+        instantiatedItems.Clear();
+
+        return extractedItems;
     }
 
-    public List<BaseComponentView> GetAllItems() { return instantiatedItems; }
+    public void RemoveItems() { DestroyInstantiatedItems(); }
 
-    internal void CreateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
-    {
-        if (Application.isPlaying)
-        {
-            InstantiateItem(newItem, name, instantiateNewCopyOfItem);
-        }
-        else
-        {
-            if (isActiveAndEnabled)
-                StartCoroutine(InstantiateItemOnEditor(newItem, name));
-        }
-    }
-
-    internal void InstantiateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
+    internal void CreateItem(BaseComponentView newItem, string name)
     {
         if (newItem == null)
             return;
 
-        BaseComponentView newGO;
-        if (instantiateNewCopyOfItem)
-        {
-            newGO = Instantiate(newItem, transform);
-        }
-        else
-        {
-            newGO = newItem;
-            newGO.transform.SetParent(transform);
-            newGO.transform.localPosition = Vector3.zero;
-            newGO.transform.localScale = Vector3.one;
-        }
+        newItem.transform.SetParent(transform);
+        newItem.transform.localPosition = Vector3.zero;
+        newItem.transform.localScale = Vector3.one;
+        newItem.name = name;
 
-        newGO.name = name;
-        instantiatedItems.Add(newGO);
+        instantiatedItems.Add(newItem);
     }
 
-    internal IEnumerator InstantiateItemOnEditor(BaseComponentView newItem, string name)
+    internal void DestroyInstantiatedItems()
     {
-        yield return null;
-        InstantiateItem(newItem, name);
-    }
-
-    internal void DestroyInstantiatedItems(bool forzeToDestroyAll)
-    {
-        if (forzeToDestroyAll)
+        foreach (Transform child in transform)
         {
-            foreach (Transform child in transform)
-            {
-                if (Application.isPlaying)
-                {
-                    Destroy(child.gameObject);
-                }
-                else
-                {
-                    if (isActiveAndEnabled)
-                        StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
-                }
-            }
-        }
-        else
-        {
-            foreach (BaseComponentView child in instantiatedItems)
-            {
-                if (!model.items.Contains(child))
-                {
-                    Destroy(child.gameObject);
-                }
-            }
+            Destroy(child.gameObject);
         }
 
         instantiatedItems.Clear();
     }
 
-    internal IEnumerator DestroyGameObjectOnEditor(GameObject go)
-    {
-        yield return null;
-        DestroyImmediate(go);
-    }
-
     internal void ResizeGridContainer()
     {
-        if (model.items.Count == 0)
+        int currentNumberOfItems = transform.childCount;
+
+        if (currentNumberOfItems == 0)
         {
             ((RectTransform)transform).sizeDelta = Vector2.zero;
             return;
@@ -338,17 +305,33 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         if (model.constraint == Constraint.FixedColumnCount)
         {
-            int numRows = (int)Mathf.Ceil((float)model.items.Count / model.constranitCount);
+            int numRows = (int)Mathf.Ceil((float)currentNumberOfItems / model.constranitCount);
             ((RectTransform)transform).sizeDelta = new Vector2(
                 model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.x : (model.constranitCount * model.itemSize.x) + (model.spaceBetweenItems.x * (model.constranitCount - 1)),
                 (numRows * model.itemSize.y) + (model.spaceBetweenItems.y * (numRows - 1)));
         }
         else if (model.constraint == Constraint.FixedRowCount)
         {
-            int numCols = (int)Mathf.Ceil((float)model.items.Count / model.constranitCount);
+            int numCols = (int)Mathf.Ceil((float)currentNumberOfItems / model.constranitCount);
             ((RectTransform)transform).sizeDelta = new Vector2(
                 (numCols * model.itemSize.x) + (model.spaceBetweenItems.x * (numCols - 1)),
                 model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.y : (model.constranitCount * model.itemSize.y) + (model.spaceBetweenItems.y * (model.constranitCount - 1)));
         }
+    }
+
+    internal void RegisterCurrentInstantiatedItems()
+    {
+        instantiatedItems.Clear();
+
+        foreach (Transform child in transform)
+        {
+            BaseComponentView existingItem = child.GetComponent<BaseComponentView>();
+            if (existingItem != null)
+                instantiatedItems.Add(existingItem);
+            else
+                DestroyImmediate(child.gameObject);
+        }
+
+        ResizeGridContainer();
     }
 }

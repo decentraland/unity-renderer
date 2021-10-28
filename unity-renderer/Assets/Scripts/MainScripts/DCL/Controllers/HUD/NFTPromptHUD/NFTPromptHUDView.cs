@@ -365,7 +365,12 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         return ret;
     }
 
-    private void SetSmartBackgroundColor(Texture2D texture) { imageNftBackground.color = texture.GetPixel(0, 0); }
+    private void SetSmartBackgroundColor(Texture2D texture)
+    {
+        //Note: we can't set the color like that because the texture is no readable even if it has been created from script
+        //imageNftBackground.color = texture.GetPixel(0, 0);
+        imageNftBackground.color = Color.white;
+    }
 
     private void SetTokenSymbol(TextMeshProUGUI textToken, string symbol)
     {

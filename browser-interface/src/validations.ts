@@ -6,5 +6,18 @@ export function isWebGLCompatible() {
 }
 
 export function isMobile() {
-  return /Mobi/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)
+  if (/Mobi/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
+    return true  
+  }
+  
+  if (/iPad|iPhone|iPod/.test(navigator.platform)) {
+    return true
+  }
+  
+  if (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1) {
+    // iPad pro
+    return true
+  }
+  
+  return false
 }
