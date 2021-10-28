@@ -1,27 +1,43 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Builder;
 using DCL.Builder.Manifest;
+using DCL.Helpers;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class BuilderAPIController : IBuilderAPIController
 {
     private BuilderInWorldBridge builderInWorldBridge;
 
+    private SceneObject[] builderAssets;
+
+    private Dictionary<string, Promise<Dictionary<string, string>>> headersRequest = new Dictionary<string, Promise<Dictionary<string, string>>>();
+
     public void Initialize(IContext context)
     {
-        //TODO: Implement functionality
         builderInWorldBridge = context.sceneReferences.bridgeGameObject.GetComponent<BuilderInWorldBridge>();
+        builderInWorldBridge.OnHeadersReceived += HeadersReceived;
     }
 
-    public void Dispose()
+    public void Dispose() { builderInWorldBridge.OnHeadersReceived -= HeadersReceived; }
+
+    private Promise<Dictionary<string, string>> AskHeadersToKernel(string method, string endpoint)
     {
-        //TODO: Implement functionality
+        Promise<Dictionary<string, string>> promise = new Promise<Dictionary<string, string>>();
+        headersRequest.Add(endpoint, promise);
+        builderInWorldBridge.AskKernelForCatalogHeadersWithParams(method, endpoint);
+        return promise;
     }
 
-    private void AskHeadersToKernel()
+    internal void HeadersReceived(RequestHeader requestHeader)
     {
-        //TODO: Implement functionality
+        foreach (var request in headersRequest)
+        {
+            if (request.Key == requestHeader.endpoint)
+                request.Value.Resolve(requestHeader.headers);
+        }
     }
 
     public SceneObject[] GetAssets(List<string> assetsIds)

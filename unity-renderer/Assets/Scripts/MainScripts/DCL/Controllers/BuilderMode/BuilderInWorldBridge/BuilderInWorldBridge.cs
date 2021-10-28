@@ -23,7 +23,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     public event Action OnKernelUpdated;
     public event Action<bool, string> OnPublishEnd;
     public event Action<string, string> OnBuilderProjectInfo;
-    public event Action<string> OnCatalogHeadersReceived;
+    public event Action<RequestHeader> OnHeadersReceived;
 
     //This is done for optimization purposes, recreating new objects can increase garbage collection
     private TransformComponent entityTransformComponentModel = new TransformComponent();
@@ -68,7 +68,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         AssetCatalogBridge.i.AddSceneObjectToSceneCatalog(JsonConvert.DeserializeObject<SceneObject[]>(payload));
     }
 
-    public void BuilderInWorldCatalogHeaders(string payload) { OnCatalogHeadersReceived?.Invoke(payload); }
+    public void RequestedHeaders(string payload) { OnHeadersReceived?.Invoke(JsonConvert.DeserializeObject<RequestHeader>(payload)); }
 
     public void BuilderProjectInfo(string payload)
     {

@@ -351,7 +351,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void CatalogHeaderReceived()
     {
         // Act
-        mainController.CatalogHeadersReceived("");
+        mainController.HeadersReceived("");
 
         // Assert
         Assert.IsTrue(mainController.areCatalogHeadersReady);

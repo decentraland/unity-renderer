@@ -38,6 +38,13 @@ public class SecondStep : BaseComponentView
         nextButton.OnFullyInitialized += () => nextButton.onClick.AddListener(NextPressed);
     }
 
+    public override void Dispose()
+    {
+        base.Dispose();
+        rowsInputField.OnInputChange -= RowsChanged;
+        columsInputField.OnInputChange -= ColumnsChanged;
+    }
+
     public override void RefreshControl() {  }
 
     private void RowsChanged(string value)

@@ -90,10 +90,8 @@ public class BuilderInWorldEditor : IBIWEditor
         InitReferences(InitialSceneReferences.i.data);
 
         if (builderInWorldBridge != null)
-        {
-            builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
+
             builderInWorldBridge.OnBuilderProjectInfo += BuilderProjectPanelInfo;
-        }
 
         InitHUD();
 
@@ -190,7 +188,6 @@ public class BuilderInWorldEditor : IBIWEditor
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
 
         BIWNFTController.i.Dispose();
-        builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
@@ -302,7 +299,7 @@ public class BuilderInWorldEditor : IBIWEditor
         StartEditMode();
     }
 
-    internal void CatalogHeadersReceived(string rawHeaders)
+    internal void HeadersReceived(string rawHeaders)
     {
         catalogCallHeaders = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
         areCatalogHeadersReady = true;
