@@ -271,6 +271,8 @@ namespace DCL.Skybox
                 selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
                 // Particles
                 selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
+                selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
+                selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, Vector4.zero);
             }
 
 
@@ -348,9 +350,9 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
 
             // Reset Particle related Params
-            selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
-            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
-            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipBookRowsAndColumns);
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.flipbookAnimSpeed, 0, 0, 0));
+            selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, Vector4.zero);
 
             // Apply Distortion Values
             Vector2 distortIntAndSize = new Vector2(GetTransitionValue(layer.distortIntensity, normalizedLayerTime * 100), GetTransitionValue(layer.distortSize, normalizedLayerTime * 100));
@@ -406,9 +408,9 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
 
             // Reset Particle related Params
-            selectedMat.SetVector("_rowAndCollumns_" + layerNum, Vector2.zero);
-            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
-            selectedMat.SetVector("_particlesMainParameters_" + layerNum, Vector4.zero);
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipBookRowsAndColumns);
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.flipbookAnimSpeed, 0, 0, 0));
+            selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, Vector4.zero);
 
             // Reset Distortion values
             selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
@@ -436,11 +438,11 @@ namespace DCL.Skybox
             selectedMat.SetTexture("_tex_" + layerNum, layer.texture);
             selectedMat.SetTexture("_normals_" + layerNum, layer.textureNormal);
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
-            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.particlesRowsAndColumns);
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipBookRowsAndColumns);
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
             selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(layer.particleTiling.x, layer.particleTiling.y, layer.particlesOffset.x, layer.particlesOffset.y));
-            selectedMat.SetVector("_speedAndRotation_" + layerNum, layer.particleRotation);
-            selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.particleAnimSpeed, layer.particlesAmount, layer.particleMinSize, layer.particleMaxSize));
+            selectedMat.SetVector("_speedAndRotation_" + layerNum, GetTransitionValue(layer.particleRotation, normalizedLayerTime * 100));
+            selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.flipbookAnimSpeed, layer.particlesAmount, layer.particleMinSize, layer.particleMaxSize));
             selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, new Vector4(layer.particlesHorizontalSpread, layer.particlesVerticalSpread, layer.particleMinFade, layer.particleMaxFade));
 
 

@@ -671,6 +671,12 @@ namespace DCL.Skybox
             // Texture
             RenderTexture("Texture", ref layer.texture);
 
+            // Row and Coloumns
+            RenderVector2Field("Rows and Columns", ref layer.flipBookRowsAndColumns);
+
+            // Anim Speed
+            RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
+
             // Normal Texture
             RenderTexture("Normal Map", ref layer.textureNormal);
 
@@ -731,6 +737,12 @@ namespace DCL.Skybox
             // Texture
             RenderTexture("Texture", ref layer.texture);
 
+            // Row and Coloumns
+            RenderVector2Field("Rows and Columns", ref layer.flipBookRowsAndColumns);
+
+            // Anim Speed
+            RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
+
             // Normal Texture
             RenderTexture("Normal Map", ref layer.textureNormal);
 
@@ -784,6 +796,12 @@ namespace DCL.Skybox
             // Texture
             RenderTexture("Texture", ref layer.texture);
 
+            // Row and Coloumns
+            RenderVector2Field("Rows and Columns", ref layer.flipBookRowsAndColumns);
+
+            // Anim Speed
+            RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
+
             // Normal Map
             RenderTexture("Normal Map", ref layer.textureNormal);
 
@@ -799,14 +817,6 @@ namespace DCL.Skybox
             // Offset
             RenderVector2Field("Offset", ref layer.particlesOffset);
 
-            // Particle Rotation
-            RenderVector3Field("Rotation", ref layer.particleRotation);
-
-            // Row and Coloumns
-            RenderVector2Field("Rows and Columns", ref layer.particlesRowsAndColumns);
-
-            // Anim Speed
-            RenderFloatField("Anim Speed", ref layer.particleAnimSpeed);
 
             // Amount
             RenderFloatField("Amount", ref layer.particlesAmount);
@@ -819,6 +829,9 @@ namespace DCL.Skybox
 
             // Fade
             RenderSepratedFloatFields("Fade", "Min", ref layer.particleMinFade, "Max", ref layer.particleMaxFade);
+
+            // Particle Rotation
+            RenderTransitioningVector3(layer.particleRotation, "Rotation", "%", "value", layer.timeSpan_start, layer.timeSpan_End);
         }
 
         void RenderDistortionVariables(TextureLayer layer)
