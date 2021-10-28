@@ -40,7 +40,9 @@ namespace DCL.Components.Video.Plugin
             switch (plugin.GetState(videoPlayerId))
             {
                 case (int)VideoState.ERROR:
+                    Debug.unityLogger.logEnabled = true;
                     Debug.LogError(plugin.GetError(videoPlayerId));
+                    Debug.unityLogger.logEnabled = false;
                     isError = true;
                     break;
                 case (int)VideoState.READY:

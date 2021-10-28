@@ -59,14 +59,26 @@ namespace DCL.Components
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
+        void Log(string s)
+        {
+            Debug.unityLogger.logEnabled = true;
+            Debug.Log("Alex: " + s);
+            Debug.unityLogger.logEnabled = false;
+        }
+        
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
+            Log($"Waiting for renderer enabled");
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
             if (isDisposed)
+            {
+                var toDebug = this.model as Model;
+                Log($"{(toDebug?.videoClipId)} isDisposed");
                 yield break;
+            }
 
             var model = (Model) newModel;
 
@@ -84,8 +96,10 @@ namespace DCL.Components
                     unityWrap = TextureWrapMode.Mirror;
                     break;
             }
+
             lastVideoClipID = model.videoClipId;
 
+            
             if (texturePlayer == null)
             {
                 DCLVideoClip dclVideoClip = scene.GetSharedComponent(lastVideoClipID) as DCLVideoClip;
@@ -106,15 +120,17 @@ namespace DCL.Components
                     texture = new Texture2D(1, 1);
             }
 
+            Log($"{model?.videoClipId} Checking if texture is null: {texture == null}");
             if (texture == null)
             {
                 while (texturePlayer.texture == null && !texturePlayer.isError)
                 {
                     yield return null;
                 }
-
+                Log($"{model?.videoClipId} texturePlayer ready");
                 if (texturePlayer.isError)
                 {
+                    Log($"{model?.videoClipId} texturePlayer has error");
                     if (texturePlayerUpdateRoutine != null)
                     {
                         CoroutineStarter.Stop(texturePlayerUpdateRoutine);
@@ -128,6 +144,7 @@ namespace DCL.Components
                 isPlayStateDirty = true;
             }
 
+            Log($"{model?.videoClipId} checking texturePlayer null: {texturePlayer==null}");
             if (texturePlayer != null)
             {
                 if (model.seek >= 0)
@@ -139,6 +156,7 @@ namespace DCL.Components
                     yield return null;
                 }
 
+                Log($"{model?.videoClipId} isplaying {model.playing}");
                 if (model.playing)
                 {
                     texturePlayer.Play();
