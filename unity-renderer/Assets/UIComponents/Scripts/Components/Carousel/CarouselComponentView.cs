@@ -232,19 +232,6 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         GenerateDotsSelector();
     }
 
-    private void AssociatedCurrentItems()
-    {
-        instantiatedItems = model.items;
-
-        foreach (BaseComponentView item in instantiatedItems)
-        {
-            item.transform.SetParent(itemsContainer);
-            item.transform.localPosition = Vector3.zero;
-            item.transform.localScale = Vector3.one;
-            ResizeItem(item);
-        }
-    }
-
     public List<BaseComponentView> GetItems() { return instantiatedItems; }
 
     public List<BaseComponentView> ExtractItems()
