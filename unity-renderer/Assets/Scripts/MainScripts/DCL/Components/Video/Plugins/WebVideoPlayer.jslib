@@ -139,20 +139,25 @@ var WebVideoPlayer = {
 
     WebVideoPlayerPlay: function (videoId, startTime) {
         try {
+            console.log("Plugin received Play " + videoId);
             const videoData = videos[Pointer_stringify(videoId)];
             if (videoData.hlsInstance !== undefined) {
                 videoData.hlsInstance.attachMedia(videoData.video);
             }
 
             const playPromise = videoData.video.play();
+            console.log("Checking playPromise " + videoId);
             if (playPromise !== undefined) {
+                console.log("promise is defined" + videoId);
                 playPromise.then(function () {
+                    console.log("setting currentTime to " + startTime);
                     // Playback starts with no problem
                     if (startTime !== -1) {
                         videoData.video.currentTime = startTime
                     }
                 })
                     .catch(function (error) {
+                        console.log("Found error: " + error);
                         // Playback cancelled before the video finished loading (e.g. when teleporting)
                         // we mustn't report this error as it's harmless and affects our metrics
                     });
