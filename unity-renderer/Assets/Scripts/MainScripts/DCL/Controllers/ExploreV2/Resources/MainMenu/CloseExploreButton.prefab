@@ -250,6 +250,12 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7887689455078732951, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: extraClickEvent
+      value: 
+      objectReference: {fileID: 11400000, guid: 71d95c991cfe14a43b69f63de00cc73e,
+        type: 2}
     - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Enabled

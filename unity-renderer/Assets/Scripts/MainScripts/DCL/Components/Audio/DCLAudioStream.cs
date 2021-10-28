@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
+using UnityEngine;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Components
 {
@@ -119,7 +122,7 @@ namespace DCL.Components
         private void OnSettingsChanged(AudioSettings settings)
         {
             float newSettingsVolume = GetCalculatedSettingsVolume(settings);
-            if (settingsVolume != newSettingsVolume)
+            if (Math.Abs(settingsVolume - newSettingsVolume) > Mathf.Epsilon)
             {
                 settingsVolume = newSettingsVolume;
                 UpdatePlayingState(true);

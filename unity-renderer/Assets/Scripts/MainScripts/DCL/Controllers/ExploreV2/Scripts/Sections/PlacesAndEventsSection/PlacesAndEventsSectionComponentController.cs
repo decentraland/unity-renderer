@@ -13,11 +13,19 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     public event Action OnCloseExploreV2;
 
     internal IPlacesAndEventsSectionComponentView view;
+    internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
 
     public PlacesAndEventsSectionComponentController(IPlacesAndEventsSectionComponentView view)
     {
         this.view = view;
+
+        placesSubSectionComponentController = new PlacesSubSectionComponentController(
+            view.currentPlacesSubSectionComponentView,
+            new PlacesAPIController(),
+            FriendsController.i);
+
+        placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
             view.currentEventsSubSectionComponentView,
@@ -30,6 +38,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
     public void Dispose()
     {
+        placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
+        placesSubSectionComponentController.Dispose();
+
         eventsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         eventsSubSectionComponentController.Dispose();
     }

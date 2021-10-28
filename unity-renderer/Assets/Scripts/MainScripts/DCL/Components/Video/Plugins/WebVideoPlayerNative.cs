@@ -7,7 +7,13 @@ namespace DCL.Components.Video.Plugin
     {
         public void Create(string id, string url, bool useHls) { WebGLVideoPlugin.WebVideoPlayerCreate(id, url, useHls); }
         public void Remove(string id) { WebGLVideoPlugin.WebVideoPlayerRemove(id); }
-        public void TextureUpdate(string id, IntPtr texturePtr, bool isWebGL1) { WebGLVideoPlugin.WebVideoPlayerTextureUpdate(id, texturePtr, isWebGL1); }
+        public void TextureUpdate(string id) { WebGLVideoPlugin.WebVideoPlayerTextureUpdate(id); }
+
+        public int GetTexture(string id)
+        {
+            return WebGLVideoPlugin.WebVideoPlayerTextureGet(id);
+        }
+
         public void Play(string id, float startTime) { WebGLVideoPlugin.WebVideoPlayerPlay(id, startTime); }
         public void Pause(string id) { WebGLVideoPlugin.WebVideoPlayerPause(id); }
         public void SetVolume(string id, float volume) { WebGLVideoPlugin.WebVideoPlayerVolume(id, volume); }

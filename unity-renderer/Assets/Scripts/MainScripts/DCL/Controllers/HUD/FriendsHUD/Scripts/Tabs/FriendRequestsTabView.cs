@@ -165,12 +165,6 @@ public class FriendRequestsTabView : FriendsTabViewBase
             action = FriendshipAction.APPROVED
         });
 
-        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus()
-        {
-            userId = requestEntry.userId,
-            presence = PresenceStatus.OFFLINE
-        });
-
         acceptedFriendNotification.model.message = $"You and {requestEntry.model.userName} are now friends!";
         NotificationsController.i.ShowNotification(acceptedFriendNotification);
 
