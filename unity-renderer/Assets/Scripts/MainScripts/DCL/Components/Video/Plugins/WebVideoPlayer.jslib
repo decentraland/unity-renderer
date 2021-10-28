@@ -164,6 +164,7 @@ var WebVideoPlayer = {
             }
         } catch (err) {
             // Exception!
+            console.log("Found exception: " + err);
         }
     },
 
