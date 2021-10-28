@@ -24,6 +24,9 @@ namespace DCL.Skybox
         public Gradient color;
         public Vector2 tiling;
 
+        public Vector2 flipBookRowsAndColumns = Vector2.one;
+        public float flipbookAnimSpeed = 1;
+
         // Offset
         public List<TransitioningVector2> offset;
 
@@ -42,12 +45,10 @@ namespace DCL.Skybox
         // Particles
         public bool particleExpanded;
         //public bool useParticles;
-        public Vector2 particlesRowsAndColumns = Vector2.one;
         public Vector2 particleTiling = Vector2.one;
         public Vector2 particlesOffset = Vector2.zero;
-        public Vector3 particleRotation = Vector3.zero;
+        public List<TransitioningVector3> particleRotation = new List<TransitioningVector3>();
         // Particle Primary Param
-        public float particleAnimSpeed = 1;
         public float particlesAmount = 1;
         public float particleMinSize = 1;
         public float particleMaxSize = 1;
@@ -56,11 +57,6 @@ namespace DCL.Skybox
         public float particlesVerticalSpread = 1;
         public float particleMinFade = 1;
         public float particleMaxFade = 1;
-
-        //public Vector4 particlesMainParams;
-        //public Vector4 particlesSecondaryParams;
-        //public float particlesSpeed;
-        //public float particlesFrequency;
 
         // Distortion Values
         public bool distortionExpanded;
@@ -92,6 +88,8 @@ namespace DCL.Skybox
             distortSize = new List<TransitioningFloat>();
             distortSpeed = new List<TransitioningVector2>();
             distortSharpness = new List<TransitioningVector2>();
+
+            particleRotation = new List<TransitioningVector3>();
         }
     }
 
