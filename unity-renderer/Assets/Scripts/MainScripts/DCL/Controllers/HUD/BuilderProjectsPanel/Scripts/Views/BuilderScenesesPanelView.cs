@@ -7,6 +7,7 @@ internal interface IBuilderProjectsPanelView : IDisposable
 {
     event Action OnBackToMainMenuPressed;
     event Action OnClosePressed;
+    event Action OnCreateProjectPressed;
     void SetVisible(bool visible);
     bool IsVisible();
     void SetTogglOnWithoutNotify(SectionId sectionId);
@@ -49,7 +50,7 @@ internal class BuilderScenesesPanelView : MonoBehaviour, IBuilderProjectsPanelVi
     [SerializeField] internal UnpublishPopupView unpublishPopupView;
 
     public event Action OnClosePressed;
-    public event Action OnCreateScenePressed;
+    public event Action OnCreateProjectPressed;
     public event Action OnImportScenePressed;
     public event Action OnBackToMainMenuPressed;
 
@@ -122,7 +123,7 @@ internal class BuilderScenesesPanelView : MonoBehaviour, IBuilderProjectsPanelVi
         name = "_BuilderProjectsPanel";
 
         closeButton.onClick.AddListener(() => OnClosePressed?.Invoke());
-        createSceneButton.onClick.AddListener(() => OnCreateScenePressed?.Invoke());
+        createSceneButton.onClick.AddListener(() => OnCreateProjectPressed?.Invoke());
         importSceneButton.onClick.AddListener(() => OnImportScenePressed?.Invoke());
         backToMainPanelButton.onClick.AddListener(() => OnBackToMainMenuPressed?.Invoke());
         closeTrigger.OnTriggered += CloseTriggerOnOnTriggered;

@@ -325,11 +325,6 @@ public class HUDController : IHUDController
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 CreateHudElement(configuration, hudElementId);
                 break;
-            //Deprecated
-            case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                //This HUD has been migrated to the Plugin system - BuilderInWorld
-                //The plugin has the responsibility to create and manage it
-                break;
             case HUDElementID.QUESTS_PANEL:
                 CreateHudElement(configuration, hudElementId);
                 if (configuration.active)
@@ -350,11 +345,6 @@ public class HUDController : IHUDController
                     //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
                     signupHUD.Initialize(avatarEditorHud);
                 }
-                break;
-            //Deprecated
-            case HUDElementID.BUILDER_PROJECTS_PANEL:
-                //This HUD has been migrated to the Plugin system - BuilderInWorld
-                //The plugin has the responsibility to create and manage it
                 break;
             case HUDElementID.LOADING:
                 CreateHudElement(configuration, hudElementId);
