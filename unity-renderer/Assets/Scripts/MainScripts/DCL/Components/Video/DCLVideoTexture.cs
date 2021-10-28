@@ -106,7 +106,9 @@ namespace DCL.Components
 
                 if (dclVideoClip == null)
                 {
+                    Debug.unityLogger.logEnabled = true;
                     Debug.LogError("Wrong video clip type when playing VideoTexture!!");
+                    Debug.unityLogger.logEnabled = false;
                     yield break;
                 }
 
