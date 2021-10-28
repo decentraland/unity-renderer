@@ -16,6 +16,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Builder.Manifest;
 using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
@@ -382,22 +383,20 @@ public static partial class BIWUtils
         original.pivot = rectTransformToCopy.pivot;
     }
 
-    public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall, Dictionary<string, string> headers)
+    public static WebRequestAsyncOperation MakeGetCall(string url, Promise<string> callPromise, Dictionary<string, string> headers)
     {
         return Environment.i.platform.webRequest.Get(
             url: url,
             OnSuccess: (webRequestResult) =>
             {
-                if (functionToCall != null)
-                {
-                    byte[] byteArray = webRequestResult.downloadHandler.data;
+                byte[] byteArray = webRequestResult.downloadHandler.data;
                     string result = System.Text.Encoding.UTF8.GetString(byteArray);
-                    functionToCall?.Invoke(result);
-                }
+                    callPromise?.Resolve(result);
             },
             OnFail: (webRequestResult) =>
             {
                 Debug.Log(webRequestResult.error);
+                callPromise.Reject(webRequestResult.error);
             },
             headers: headers);
     }

@@ -8,6 +8,11 @@ public static class BIWUrlUtils
 {
     public static string GetUrlSceneObjectContent() { return BIWSettings.BASE_URL_SCENE_OBJECT_CONTENT.Replace("{ENV}", GetEnvBase()); }
 
+    public static string GetBuilderAPIBaseUrl()
+    {
+        return BIWSettings.BASE_URL_BUILDER_API.Replace("{ENV}", GetEnvBase());
+    }
+    
     public static string GetUrlCatalog(string ethAddress)
     {
         string paramToAdd = "default";

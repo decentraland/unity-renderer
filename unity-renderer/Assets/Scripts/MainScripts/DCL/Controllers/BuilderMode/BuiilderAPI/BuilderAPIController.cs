@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Builder;
 using DCL.Builder.Manifest;
 using DCL.Helpers;
@@ -14,7 +15,7 @@ public class BuilderAPIController : IBuilderAPIController
 
     private SceneObject[] builderAssets;
 
-    private Dictionary<string, Promise<Dictionary<string, string>>> headersRequest = new Dictionary<string, Promise<Dictionary<string, string>>>();
+    private Dictionary<string, Promise<RequestHeader>> headersRequests = new Dictionary<string, Promise<RequestHeader>>();
 
     public void Initialize(IContext context)
     {
@@ -24,28 +25,45 @@ public class BuilderAPIController : IBuilderAPIController
 
     public void Dispose() { builderInWorldBridge.OnHeadersReceived -= HeadersReceived; }
 
-    private Promise<Dictionary<string, string>> AskHeadersToKernel(string method, string endpoint)
+    internal Promise<RequestHeader> AskHeadersToKernel(string method, string endpoint)
     {
-        Promise<Dictionary<string, string>> promise = new Promise<Dictionary<string, string>>();
-        headersRequest.Add(endpoint, promise);
+        Promise<RequestHeader> promise = new Promise<RequestHeader>();
+        headersRequests.Add(endpoint, promise);
         builderInWorldBridge.AskKernelForCatalogHeadersWithParams(method, endpoint);
         return promise;
     }
 
     internal void HeadersReceived(RequestHeader requestHeader)
     {
-        foreach (var request in headersRequest)
+        string keyToRemove = "";
+        foreach (var request in headersRequests)
         {
             if (request.Key == requestHeader.endpoint)
-                request.Value.Resolve(requestHeader.headers);
+            {
+                keyToRemove = request.Key;
+                request.Value.Resolve(requestHeader);
+            }
         }
-        switch (requestHeader.method)
-        {
-            case "get":
-                BIWUtils.MakeGetCall(BIWConfBIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
-                break;
-        }
+        
+        if(headersRequests.ContainsKey(keyToRemove))
+            headersRequests.Remove(keyToRemove);
+    }
 
+    internal Promise<string> CallUrl(string method, string endpoint)
+    {
+        Promise<RequestHeader> headersPromise =AskHeadersToKernel(method, endpoint);
+        headersPromise.Then(request =>
+        {
+            switch (method)
+            {
+                case "get":
+                    Promise<string> resultPromise = new Promise<string>();
+                    BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint, resultPromise, request.headers);
+                    return resultPromise;
+            }
+        });
+     
+        return null;
     }
 
     public void GetCompleteCatalog(string ethAddres)
@@ -59,6 +77,7 @@ public class BuilderAPIController : IBuilderAPIController
             var userProfile = UserProfile.GetOwnUserProfile();
             if (userProfile != null)
                 ethAddress = userProfile.ethAddress;
+        
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
         }
