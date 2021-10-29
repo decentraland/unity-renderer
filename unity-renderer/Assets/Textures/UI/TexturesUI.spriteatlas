@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7620146
+    totalSpriteSurfaceArea: 7636882
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -265,6 +265,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b1fdbdeb128d64657bb427b7c93fbab4, type: 3}
   - {fileID: 21300000, guid: f2ec09fb4873a47c88fb58023134399a, type: 3}
   - {fileID: 21300000, guid: a3a66afb0cf6d49da8b0b2b18f7b20d0, type: 3}
+  - {fileID: 21300000, guid: cea1ac0c0c969478ea2054b9a06f7c86, type: 3}
   - {fileID: 21300000, guid: 90be4f1cf715b4378954ea0510aeb9ba, type: 3}
   - {fileID: 21300000, guid: 9879272c733ec44189c11c901f5b3500, type: 3}
   - {fileID: 21300000, guid: c3d9892cce6f14e3b89f8f30ababd5b2, type: 3}
@@ -282,6 +283,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2f88b1fc7390f42f881f72ccfcde00db, type: 3}
   - {fileID: 21300000, guid: 1867831d4dbb1354a9769cb39efca036, type: 3}
   - {fileID: 21300000, guid: 1678382d6a9a24c6c91f307577f29b85, type: 3}
+  - {fileID: 21300000, guid: 3402f92d870a74b2ba2d6446400ba3c6, type: 3}
   - {fileID: 21300000, guid: 017eca2d81e3343959735e87d3b06c02, type: 3}
   - {fileID: 21300000, guid: ccff713df52bf45b5b10c8fcfb44fee7, type: 3}
   - {fileID: 21300000, guid: 8191374d830c647edb5ed715100f2b48, type: 3}
@@ -317,6 +319,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   - {fileID: 21300000, guid: 394362cf579a347f0b72a304db178ccb, type: 3}
   - {fileID: 21300000, guid: 851b72df6e5bd4b91a42eb20ae6323f0, type: 3}
+  - {fileID: 21300000, guid: 780ed9eff07384ade9aaa318dbbe63b7, type: 3}
   - {fileID: 21300000, guid: a05be3ffa5d9545aaaad00f3a425b338, type: 3}
   m_PackedSpriteNamesToIndex:
   - VoiceChatMutePlayer
@@ -522,6 +525,7 @@ SpriteAtlas:
   - RectRadiusStroke16
   - PlayerIconStroke
   - ContainerRadius8
+  - OutlineRedButton
   - ManaContainer
   - ArrowDown
   - AssetsIcon
@@ -539,6 +543,7 @@ SpriteAtlas:
   - ContainerOutline100
   - MicrophoneVoiceChat
   - ContributorIcon
+  - BottomRect24
   - ContainerStroke10
   - LeftClickWhite
   - EventsIcon
@@ -574,6 +579,7 @@ SpriteAtlas:
   - Container24
   - Checkmark
   - CloseButton
+  - OutlineGreyButton
   - MOTDHeader
   m_RenderDataMap: {}
   m_Tag: TexturesUI
