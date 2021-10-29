@@ -11,7 +11,7 @@ namespace DCL.Components
     {
         public const string COLLIDER_NAME = "OnPointerEventCollider";
 
-        internal Collider[] colliders;
+        internal MeshCollider[] colliders;
         Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
 
         public string GetMeshName(Collider collider)
@@ -51,7 +51,7 @@ namespace DCL.Components
             if (shape == null)
                 return;
 
-            colliders = new Collider[rendererList.Length];
+            colliders = new MeshCollider[rendererList.Length];
 
             for (int i = 0; i < colliders.Length; i++)
             {
@@ -61,16 +61,14 @@ namespace DCL.Components
 
         void UpdateCollidersWithRenderersMesh(Renderer[] rendererList)
         {
-            MeshCollider col;
             for (int i = 0; i < colliders.Length; i++)
             {
-                col = colliders[i] as MeshCollider;
-                if(col?.sharedMaterial == null)
-                    col.sharedMesh = rendererList[i].GetComponent<MeshFilter>().sharedMesh;
+                if(colliders[i].sharedMaterial == null)
+                    colliders[i].sharedMesh = rendererList[i].GetComponent<MeshFilter>().sharedMesh;
             }
         }
 
-        Collider CreateCollider(Renderer renderer)
+        MeshCollider CreateCollider(Renderer renderer)
         {
             GameObject go = new GameObject(COLLIDER_NAME);
 
