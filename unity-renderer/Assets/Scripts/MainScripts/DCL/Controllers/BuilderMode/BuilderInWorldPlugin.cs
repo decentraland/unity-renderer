@@ -38,7 +38,7 @@ public class BuilderInWorldPlugin : PluginFeature
             new BIWSaveController(),
             new BIWRaycastController(),
             new BIWGizmosController(),
-            InitialSceneReferences.i.data);
+            InitialSceneReferences.i);
     }
 
     public BuilderInWorldPlugin(Context context) { this.context = context; }
@@ -52,9 +52,9 @@ public class BuilderInWorldPlugin : PluginFeature
 
         BIWCatalogManager.Init();
 
-        panelController.Initialize();
+        panelController.Initialize(context);
         editor.Initialize(context);
-        builderAPIController.Initialize();
+        builderAPIController.Initialize(context);
 
         if (HUDController.i == null)
             return;
