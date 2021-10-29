@@ -17,11 +17,19 @@ var WebVideoPlayer = {
         const vid = document.createElement("video");
         vid.autoplay = false;
 
+        var textureObject = GLctx.createTexture();
+        const texId = GL.getNewId(textureObject);
+        textureObject.name = texId
+        GL.textures[texId] = textureObject
+
         var videoData = {
             video: vid,
             state: videoState.NONE,
             error: "",
+            textureId: texId
         };
+
+        videos[Pointer_stringify(videoId)] = videoData;
 
         if (useHls) {
             var hlsConfig = {
@@ -39,11 +47,11 @@ var WebVideoPlayer = {
                 if (data.fatal) {
                     switch (data.type) {
                         case Hls.ErrorTypes.NETWORK_ERROR:
-                            console.log("fatal network error encountered, try to recover");
+                            console.log("Video Stream: fatal network error encountered, try to recover");
                             hls.startLoad();
                             break;
                         case Hls.ErrorTypes.MEDIA_ERROR:
-                            console.log("fatal media error encountered, try to recover");
+                            console.log("Video Stream: fatal media error encountered, try to recover");
                             hls.recoverMediaError();
                             break;
                         default:
@@ -87,34 +95,48 @@ var WebVideoPlayer = {
         vid.onerror = function () {
             videoData.state = videoState.ERROR;
             videoData.error = vid.error.message;
-            console.log("video: ERROR " + videoData.error);
+            console.log("Video Stream: ERROR " + videoData.error);
         };
 
         vid.crossOrigin = "anonymous";
-        videos[Pointer_stringify(videoId)] = videoData;
     },
 
     WebVideoPlayerRemove: function (videoId) {
         const id = Pointer_stringify(videoId);
         if (!videos.hasOwnProperty(id)) {
-            console.warn("video: trying to remove undefined video of id " + id);
+            console.warn("Video Stream: error trying to remove undefined video of id " + id);
             return;
         }
         videos[id].video.src = "";
         videos[id].video.load();
         videos[id].video = null;
+
         if (videos[id].hlsInstance !== undefined) {
             delete videos[id].hlsInstance;
         }
+
+        const textureId = videos[id].textureId;
+        var texture = GL.textures[textureId];
+        texture.name = 0;
+        GLctx.deleteTexture(texture);
+        GL.textures[textureId] = null;
         delete videos[id];
     },
 
-    WebVideoPlayerTextureUpdate: function (videoId, texturePtr, isWebGL1) {
+    WebVideoPlayerTextureGet: function (videoId) {
+        const id = Pointer_stringify(videoId);
+        return videos[id].textureId;
+    },
+
+    WebVideoPlayerTextureUpdate: function (videoId, isWebGL) {
         const id = Pointer_stringify(videoId);
 
         if (videos[id].state !== 4) return; //PLAYING
 
-        GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texturePtr]);
+        const textureId = videos[id].textureId;
+
+        GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
+
         if (isWebGL1) {
             GLctx.texImage2D(
                 GLctx.TEXTURE_2D,
