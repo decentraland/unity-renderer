@@ -128,7 +128,7 @@ var WebVideoPlayer = {
         return videos[id].textureId;
     },
 
-    WebVideoPlayerTextureUpdate: function (videoId, isWebGL) {
+    WebVideoPlayerTextureUpdate: function (videoId, isWebGL1) {
         const id = Pointer_stringify(videoId);
 
         if (videos[id].state !== 4) return; //PLAYING
