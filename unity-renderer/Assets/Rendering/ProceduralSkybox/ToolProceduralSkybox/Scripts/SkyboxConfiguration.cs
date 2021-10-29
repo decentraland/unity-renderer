@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -235,6 +236,15 @@ namespace DCL.Skybox
 
             selectedMat.SetFloat("_layerType_" + slotNum, (int)layer.layerType);
 
+            bool fadeInChange = CheckFadingIn(selectedMat, dayTime, normalizedDayTime, slotNum, layer, cycleTime);
+
+            bool fadeOutChange = CheckFadingOut(selectedMat, dayTime, normalizedDayTime, slotNum, layer, cycleTime);
+
+            if (!fadeInChange && !fadeOutChange)
+            {
+                selectedMat.SetFloat("_fadeTime_" + slotNum, 1);
+            }
+
             switch (layer.layerType)
             {
                 case LayerType.Planar:
@@ -255,6 +265,84 @@ namespace DCL.Skybox
             }
         }
 
+        private bool CheckFadingIn(Material selectedMat, float dayTime, float normalizedDayTime, int slotNum, TextureLayer layer, float cycleTime = 24, bool changeAlllValues = true)
+        {
+            bool fadeChanged = false;
+            float fadeInCompletionTime = layer.timeSpan_start + layer.fadingInTime;
+            float dayTimeEdited = dayTime;
+            if (dayTime < layer.timeSpan_start)
+            {
+                dayTimeEdited = 24 + dayTime;
+            }
+
+            if (dayTimeEdited <= fadeInCompletionTime)
+            {
+                float percentage = Mathf.InverseLerp(layer.timeSpan_start, fadeInCompletionTime, dayTimeEdited);
+                fadeChanged = true;
+                selectedMat.SetFloat("_fadeTime_" + slotNum, percentage);
+            }
+
+            return fadeChanged;
+        }
+
+        private bool CheckFadingOut(Material selectedMat, float dayTime, float normalizedDayTime, int slotNum, TextureLayer layer, float cycleTime = 24, bool changeAlllValues = true)
+        {
+            bool fadeChanged = false;
+            float endTimeEdited = layer.timeSpan_End;
+            float dayTimeEdited = dayTime;
+
+            if (layer.timeSpan_End < layer.timeSpan_start)
+            {
+                endTimeEdited = cycleTime + layer.timeSpan_End;
+            }
+
+            if (dayTime < layer.timeSpan_start)
+            {
+                dayTimeEdited = cycleTime + dayTime;
+            }
+
+
+            float fadeOutStartTime = endTimeEdited - layer.fadingOutTime;
+
+            if (dayTimeEdited >= fadeOutStartTime)
+            {
+                float percentage = Mathf.InverseLerp(endTimeEdited, fadeOutStartTime, dayTimeEdited);
+                fadeChanged = true;
+                selectedMat.SetFloat("_fadeTime_" + slotNum, percentage);
+            }
+
+
+            //if (layer.timeSpan_End >= layer.timeSpan_start)
+            //{
+            //    if (dayTime >= fadeOutStartTime)
+            //    {
+            //        float percentage = Mathf.InverseLerp(layer.timeSpan_End, fadeOutStartTime, dayTime);
+            //        fadeChanged = true;
+            //        selectedMat.SetFloat("_fadeTime_" + slotNum, percentage);
+            //    }
+            //}
+            //else
+            //{
+            //    float endTimeEdited = cycleTime + layer.timeSpan_End;
+            //    float dayTimeEdited = dayTime;
+            //    if (dayTime < layer.timeSpan_start)
+            //    {
+            //        dayTimeEdited = cycleTime + dayTime;
+            //    }
+
+            //    fadeOutStartTime = endTimeEdited - layer.fadingOutTime;
+
+            //    if (dayTimeEdited >= fadeOutStartTime)
+            //    {
+            //        float percentage = Mathf.InverseLerp(endTimeEdited, fadeOutStartTime, dayTimeEdited);
+            //        fadeChanged = true;
+            //        selectedMat.SetFloat("_fadeTime_" + slotNum, percentage);
+            //    }
+            //}
+
+            return fadeChanged;
+        }
+
         void ApplyCubemapTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
             if (changeAlllValues)
@@ -264,7 +352,7 @@ namespace DCL.Skybox
                 selectedMat.SetTexture("_cubemap_" + layerNum, layer.cubemap);
                 selectedMat.SetTexture("_normals_" + layerNum, null);
                 selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-                selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
+                //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
                 selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
                 selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
                 selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
@@ -343,7 +431,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
+            //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
@@ -401,7 +489,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
+            //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
@@ -430,7 +518,7 @@ namespace DCL.Skybox
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             //Fade time
-            selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
+            //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // Tint
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
 
