@@ -202,5 +202,69 @@ namespace Tests
 
             Assert.IsNull(onPointerDownComponent.pointerEventHandler.eventColliders.colliders);
         }
+        
+        [UnityTest]
+        public IEnumerator UpdateParametShapeOnPointerDownCollidersMeshOnShapeUpdate()
+        {
+            // 1. Instantiate entity and add an OnPointerDown component
+            string entityId = "1";
+            var entity1 = TestHelpers.CreateSceneEntity(scene, entityId);
+
+            string onPointerId = "pointerevent-1";
+            var onPointerEventModel = new OnPointerDown.Model()
+            {
+                type = OnPointerDown.NAME,
+                uuid = onPointerId
+            };
+            var onPointerDownComponent = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity1,
+                onPointerEventModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            // 2. Attach a shape
+            var planeShapeModel = new PlaneShape.Model { };
+            var shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE,
+                JsonConvert.SerializeObject(planeShapeModel)
+            );
+            
+            yield return null;
+
+            // 3. Check onPointerEvent collider mesh is not null
+            var pointerEventColliders = onPointerDownComponent.pointerEventHandler.eventColliders.colliders;
+            Assert.IsTrue(pointerEventColliders != null || pointerEventColliders.Length > 0);
+            foreach (MeshCollider pointerEventCollider in pointerEventColliders)
+            {
+                Assert.IsNotNull(pointerEventCollider.sharedMesh); 
+            }
+            
+            yield return null;
+
+            // 4. Update shape uvs (to trigger entity's onShapeUpdate)
+            planeShapeModel.uvs = new [] {
+                0,
+                0.75f,
+                0.25f,
+                0.75f,
+                0,
+                0.75f,
+                0.25f,
+                0.75f,
+                0,
+                0.75f,
+                0.25f,
+                0.75f,
+                0,
+                0.75f,
+                0.25f,
+                0.75f
+            };
+            TestHelpers.UpdateShape(scene, shapeId, JsonConvert.SerializeObject(planeShapeModel));
+            yield return null;
+
+            // 5. Check that the onPointerEvent collider mesh is still not null
+            Assert.IsTrue(pointerEventColliders != null || pointerEventColliders.Length > 0);
+            foreach (MeshCollider pointerEventCollider in pointerEventColliders)
+            {
+                Assert.IsNotNull(pointerEventCollider.sharedMesh);
+            }
+        }
     }
 }
