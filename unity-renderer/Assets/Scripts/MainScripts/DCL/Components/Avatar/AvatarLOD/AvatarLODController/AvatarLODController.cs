@@ -14,6 +14,7 @@ namespace DCL
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
         void SetThrottling(int framesBetweenUpdates);
+        void SetNameVisible(bool visible);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -60,6 +61,8 @@ namespace DCL
             lastRequestedState = State.FullAvatar;
             if (player?.renderer == null)
                 return;
+            
+            player.onPointerDownCollider.SetColliderEnabled(true);
 
             SetAvatarFeatures(true, true);
             StartTransition(1, 0);
@@ -73,6 +76,8 @@ namespace DCL
             lastRequestedState = State.SimpleAvatar;
             if (player?.renderer == null)
                 return;
+            
+            player.onPointerDownCollider.SetColliderEnabled(true);
 
             SetAvatarFeatures(false, false);
             StartTransition(1, 0);
@@ -86,6 +91,8 @@ namespace DCL
             lastRequestedState = State.Impostor;
             if (player?.renderer == null)
                 return;
+            
+            player.onPointerDownCollider.SetColliderEnabled(false);
 
             SetAvatarFeatures(false, false);
             StartTransition(0, 1);
@@ -100,16 +107,25 @@ namespace DCL
             if (player?.renderer == null)
                 return;
 
+            player.onPointerDownCollider.SetColliderEnabled(false);
+            
             SetAvatarFeatures(false, false);
-            StartTransition(0, 0);
+            StartTransition(0, 0, TRANSITION_DURATION * 1.5f);
         }
 
         public void SetThrottling(int framesBetweenUpdates) { player?.renderer?.SetThrottling(framesBetweenUpdates); }
+        public void SetNameVisible(bool visible)
+        {
+            if (visible)
+                player?.playerName.Show();
+            else
+                player?.playerName.Hide();
+        }
 
-        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
+        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade, float transitionDuration = TRANSITION_DURATION)
         {
             CoroutineStarter.Stop(currentTransition);
-            currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
+            currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade, transitionDuration));
         }
 
         internal IEnumerator Transition(float targetAvatarFade, float targetImpostorFade, float transitionDuration = TRANSITION_DURATION)
@@ -158,10 +174,7 @@ namespace DCL
             }
         }
 
-        public void UpdateImpostorTint(float distanceToMainPlayer)
-        {
-            player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
-        }
+        public void UpdateImpostorTint(float distanceToMainPlayer) { player.renderer.SetImpostorColor(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
 
         public void Dispose()
         {

@@ -22,12 +22,6 @@ namespace DCL
                     {
                         asset.frames = frames;
 
-                        foreach ( var frame in asset.frames )
-                        {
-                            frame.texture.Compress(false);
-                            frame.texture.Apply(true, true);
-                        }
-
                         OnSuccess?.Invoke();
                     }, OnFail));
         }

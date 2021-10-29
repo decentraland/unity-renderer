@@ -1,0 +1,19 @@
+{
+    "name": "PlayerName",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:896ac1ef7dceedf49b9a9b0f3c8e798d",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

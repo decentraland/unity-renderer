@@ -133,7 +133,17 @@ namespace DCL.Interface
             POINTER,
             PRIMARY,
             SECONDARY,
-            ANY
+            ANY,
+            FORWARD,
+            BACKWARD,
+            RIGHT,
+            LEFT,
+            JUMP,
+            WALK,
+            ACTION_1,
+            ACTION_2,
+            ACTION_3,
+            ACTION_4
         }
 
         [System.Serializable]
@@ -829,7 +839,7 @@ namespace DCL.Interface
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
-            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
+            SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
         public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
@@ -839,7 +849,7 @@ namespace DCL.Interface
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
-            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
+            SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
         public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
@@ -1020,6 +1030,17 @@ namespace DCL.Interface
         {
             public string newUnverifiedName;
         }
+        
+        [System.Serializable]
+        public class SendSaveUserDescriptionPayload
+        {
+            public string description;
+
+            public SendSaveUserDescriptionPayload(string description)
+            {
+                this.description = description;
+            }
+        }
 
         [Serializable]
         public class SendVideoProgressEvent
@@ -1060,6 +1081,11 @@ namespace DCL.Interface
             };
 
             SendMessage("SaveUserUnverifiedName", payload);
+        }
+        
+        public static void SendSaveUserDescription(string about)
+        {
+            SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about));
         }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }

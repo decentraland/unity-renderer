@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -48,9 +49,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnEventsFromAPIUpdated;
 
-    internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 6;
+    internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
+    internal const int INITIAL_NUMBER_OF_UPCOMING_EVENTS = 3;
     internal const int SHOW_MORE_UPCOMING_EVENTS_INCREMENT = 6;
-
+    internal const string LIVE_TAG_TEXT = "LIVE";
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
@@ -61,6 +63,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
+        this.view.OnInfoClicked += ShowEventDetailedInfo;
+        this.view.OnJumpInClicked += JumpInToEvent;
+        this.view.OnSubscribeEventClicked += SubscribeToEvent;
+        this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
 
         eventsAPIApiController = eventsAPI;
@@ -89,13 +95,14 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (!reloadEvents)
             return;
 
+        currentUpcomingEventsShowed = INITIAL_NUMBER_OF_UPCOMING_EVENTS;
+        view.RestartScrollViewPosition();
         view.SetFeaturedEventsAsLoading(true);
         view.SetTrendingEventsAsLoading(true);
         view.SetUpcomingEventsAsLoading(true);
+        view.SetShowMoreUpcomingEventsButtonActive(false);
         view.SetGoingEventsAsLoading(true);
-
         RequestAllEventsFromAPI();
-
         reloadEvents = false;
     }
 
@@ -123,51 +130,51 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void LoadFeaturedEvents()
     {
-        view.SetFeaturedEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> featuredEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+
+        if (eventsFiltered.Count == 0)
+            eventsFiltered = eventsFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_EVENTS).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             featuredEvents.Add(eventCardModel);
         }
 
-        view.SetFeaturedEventsAsLoading(false);
         view.SetFeaturedEvents(featuredEvents);
+        view.SetFeaturedEventsAsLoading(false);
     }
 
     public void LoadTrendingEvents()
     {
-        view.SetTrendingEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> trendingEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.trending).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             trendingEvents.Add(eventCardModel);
         }
 
-        view.SetTrendingEventsAsLoading(false);
         view.SetTrendingEvents(trendingEvents);
+        view.SetTrendingEventsAsLoading(false);
     }
 
     public void LoadUpcomingEvents()
     {
-        view.SetUpcomingEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> upcomingEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(currentUpcomingEventsShowed).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             upcomingEvents.Add(eventCardModel);
         }
 
-        view.SetUpcomingEventsAsLoading(false);
         view.SetUpcomingEvents(upcomingEvents);
         view.SetShowMoreUpcomingEventsButtonActive(eventsFromAPI.Count > currentUpcomingEventsShowed);
+        view.SetUpcomingEventsAsLoading(false);
     }
 
     public void ShowMoreUpcomingEvents()
@@ -178,23 +185,26 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void LoadGoingEvents()
     {
-        view.SetGoingEvents(new List<EventCardComponentModel>());
-
         List<EventCardComponentModel> goingEvents = new List<EventCardComponentModel>();
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.attending).ToList();
+
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
             goingEvents.Add(eventCardModel);
         }
 
-        view.SetGoingEventsAsLoading(false);
         view.SetGoingEvents(goingEvents);
+        view.SetGoingEventsAsLoading(false);
     }
 
     public void Dispose()
     {
         view.OnReady -= FirstLoading;
+        view.OnInfoClicked -= ShowEventDetailedInfo;
+        view.OnJumpInClicked -= JumpInToEvent;
+        view.OnSubscribeEventClicked -= SubscribeToEvent;
+        view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
         OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
@@ -204,12 +214,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal EventCardComponentModel CreateEventCardModelFromAPIEvent(EventFromAPIModel eventFromAPI)
     {
         EventCardComponentModel eventCardModel = new EventCardComponentModel();
-
-        // Card data
         eventCardModel.eventId = eventFromAPI.id;
         eventCardModel.eventPictureUri = eventFromAPI.image;
         eventCardModel.isLive = eventFromAPI.live;
-        eventCardModel.liveTagText = "LIVE";
+        eventCardModel.liveTagText = LIVE_TAG_TEXT;
         eventCardModel.eventDateText = FormatEventDate(eventFromAPI);
         eventCardModel.eventName = eventFromAPI.name;
         eventCardModel.eventDescription = eventFromAPI.description;
@@ -219,14 +227,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventCardModel.eventPlace = FormatEventPlace(eventFromAPI);
         eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
         eventCardModel.isSubscribed = false;
-        eventCardModel.jumpInConfiguration = GetJumpInConfigFromAPIEvent(eventFromAPI);
+        eventCardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
+        eventCardModel.eventFromAPIInfo = eventFromAPI;
 
         // Card events
-        ConfigureOnJumpInActions(eventCardModel);
-        ConfigureOnInfoActions(eventCardModel);
-        ConfigureOnSubscribeActions(eventCardModel);
-        ConfigureOnUnsubscribeActions(eventCardModel);
-
         return eventCardModel;
     }
 
@@ -279,72 +283,51 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal string FormatEventPlace(EventFromAPIModel eventFromAPI) { return string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name; }
 
-    internal JumpInConfig GetJumpInConfigFromAPIEvent(EventFromAPIModel eventFromAPI)
+    internal void ShowEventDetailedInfo(EventCardComponentModel eventModel) { view.ShowEventModal(eventModel); }
+
+    internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        JumpInConfig result = new JumpInConfig();
-
-        result.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
-
+        Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new string[] { "", "" } : eventFromAPI.realm.Split('-');
-        result.serverName = realmFromAPI[0];
-        result.layerName = realmFromAPI[1];
+        string serverName = realmFromAPI[0];
+        string layerName = realmFromAPI[1];
 
-        return result;
-    }
+        if (string.IsNullOrEmpty(serverName))
+            WebInterface.GoTo(coords.x, coords.y);
+        else
+            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
 
-    internal void ConfigureOnJumpInActions(EventCardComponentModel eventModel)
-    {
-        eventModel.onJumpInClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onJumpInClick.AddListener(RequestExploreV2Closing);
-    }
-
-    internal void ConfigureOnInfoActions(EventCardComponentModel eventModel)
-    {
-        eventModel.onInfoClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onInfoClick.AddListener(() => view.ShowEventModal(eventModel));
-    }
-
-    internal void ConfigureOnSubscribeActions(EventCardComponentModel eventModel)
-    {
-        eventModel.onSubscribeClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onSubscribeClick.AddListener(() =>
-        {
-            eventsAPIApiController.RegisterAttendEvent(
-                eventModel.eventId,
-                true,
-                () =>
-                {
-                    // Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-                },
-                (error) =>
-                {
-                    Debug.LogError($"Error posting 'attend' message to the API: {error}");
-                });
-        });
-    }
-
-    internal void ConfigureOnUnsubscribeActions(EventCardComponentModel eventModel)
-    {
-        eventModel.onUnsubscribeClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        eventModel.onUnsubscribeClick.AddListener(() =>
-        {
-            eventsAPIApiController.RegisterAttendEvent(
-                eventModel.eventId,
-                false,
-                () =>
-                {
-                    // Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
-                },
-                (error) =>
-                {
-                    Debug.LogError($"Error posting 'attend' message to the API: {error}");
-                });
-        });
-    }
-
-    internal void RequestExploreV2Closing()
-    {
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
+    }
+
+    internal void SubscribeToEvent(string eventId)
+    {
+        eventsAPIApiController.RegisterAttendEvent(
+            eventId,
+            true,
+            () =>
+            {
+                // Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
+            },
+            (error) =>
+            {
+                Debug.LogError($"Error posting 'attend' message to the API: {error}");
+            });
+    }
+
+    internal void UnsubscribeToEvent(string eventId)
+    {
+        eventsAPIApiController.RegisterAttendEvent(
+            eventId,
+            false,
+            () =>
+            {
+                // Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
+            },
+            (error) =>
+            {
+                Debug.LogError($"Error posting 'attend' message to the API: {error}");
+            });
     }
 }

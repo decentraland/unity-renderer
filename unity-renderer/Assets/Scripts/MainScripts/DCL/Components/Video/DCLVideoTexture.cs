@@ -7,6 +7,7 @@ using DCL.Components.Video.Plugin;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Components
 {
@@ -83,6 +84,7 @@ namespace DCL.Components
                     unityWrap = TextureWrapMode.Mirror;
                     break;
             }
+
             lastVideoClipID = model.videoClipId;
 
             if (texturePlayer == null)
@@ -95,15 +97,7 @@ namespace DCL.Components
                     yield break;
                 }
 
-                string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
-                texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
-                CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
-                CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
-                scene.OnEntityRemoved += OnEntityRemoved;
-                Settings.i.generalSettings.OnChanged += OnSettingsChanged;
-
-                OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
+                Initialize(dclVideoClip);
             }
 
             // NOTE: create texture for testing cause real texture will only be created on web platform
@@ -168,6 +162,20 @@ namespace DCL.Components
             }
         }
 
+        private void Initialize(DCLVideoClip dclVideoClip)
+        {
+            string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
+            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
+            texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
+            CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
+            CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
+            scene.OnEntityRemoved += OnEntityRemoved;
+
+            Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
+
+            OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
+        }
+
         public float GetVolume() { return ((Model) model).volume; }
 
         private bool HasTexturePropertiesChanged() { return texture.wrapMode != unityWrap || texture.filterMode != unitySamplingMode; }
@@ -190,6 +198,7 @@ namespace DCL.Components
                 yield return null;
             }
         }
+
         private void UpdateDirtyState()
         {
             if (isPlayStateDirty)
@@ -198,6 +207,7 @@ namespace DCL.Components
                 isPlayStateDirty = false;
             }
         }
+
         private void UpdateVideoTexture()
         {
             if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
@@ -208,18 +218,21 @@ namespace DCL.Components
             {
                 currUpdateIntervalTime = 0;
                 texturePlayer.UpdateWebVideoTexture();
+                texture = texturePlayer.texture;
             }
         }
+
         private void UpdateProgressReport()
         {
             var currentState = texturePlayer.GetState();
-            if ( currentState == VideoState.PLAYING 
+            if ( currentState == VideoState.PLAYING
                  && IsTimeToReportVideoProgress()
                  || previousVideoState != currentState)
             {
                 ReportVideoProgress();
             }
         }
+
         private void ReportVideoProgress()
         {
             lastVideoProgressReportTime = Time.unscaledTime;
@@ -230,6 +243,7 @@ namespace DCL.Components
             var length = texturePlayer.GetDuration();
             WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
         }
+
         private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS; }
 
         private void CalculateVideoVolumeAndPlayStatus()
@@ -261,7 +275,7 @@ namespace DCL.Components
 
             if (isVisible)
             {
-                const float maxDistanceBlockForSound = 6;
+                const float maxDistanceBlockForSound = 12;
                 float sqrParcelDistance = DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 2.25f;
                 distanceVolumeModifier = 1 - Mathf.Clamp01(Mathf.FloorToInt(minDistance / sqrParcelDistance) / maxDistanceBlockForSound);
             }
@@ -283,7 +297,7 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get())))
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID.Get()))
             {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
@@ -389,14 +403,15 @@ namespace DCL.Components
 
         void OnEntityRemoved(IDCLEntity entity) { isPlayStateDirty = true; }
 
-        void OnSettingsChanged(GeneralSettings settings) { UpdateVolume(); }
+        void OnAudioSettingsChanged(AudioSettings settings) { UpdateVolume(); }
 
         public override void Dispose()
         {
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            Settings.i.generalSettings.OnChanged -= OnSettingsChanged;
+            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
+
             if (scene != null)
                 scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)

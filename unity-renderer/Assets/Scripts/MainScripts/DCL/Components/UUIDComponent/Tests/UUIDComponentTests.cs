@@ -550,10 +550,8 @@ namespace Tests
                 sceneEvent,
                 () =>
                 {
-                    InputController_Legacy.i.RaiseEvent(
-                        WebInterface.ACTION_BUTTON.POINTER,
-                        DCL.InputController_Legacy.EVENT.BUTTON_DOWN,
-                        true);
+                    InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                        DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
                 },
                 (eventObj) =>
                 {
@@ -611,7 +609,10 @@ namespace Tests
             bool eventTriggered = false;
 
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
+                () => { 
+                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER,
+                        DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true); 
+                },
                 (pointerEvent) =>
                 {
                     if (eventTriggered)
@@ -672,10 +673,15 @@ namespace Tests
             sceneEvent.eventType = "uuidEvent";
             bool eventTriggered = false;
 
-            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
+            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
 
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
+                () =>
+                {
+                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                        DCL.InputController_Legacy.EVENT.BUTTON_UP, true, true);
+                },
                 (pointerEvent) =>
                 {
                     if (eventTriggered)
@@ -734,10 +740,12 @@ namespace Tests
             sceneEvent.eventType = "uuidEvent";
 
             bool eventTriggered1 = false;
-            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
+            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
 
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                    DCL.InputController_Legacy.EVENT.BUTTON_UP, true, true); },
                 (pointerEvent) =>
                 {
                     if (eventTriggered1)
@@ -758,7 +766,8 @@ namespace Tests
 
             // turn shape invisible
             TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new { visible = false }));
-            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
+            DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true);
 
             var pointerUpReceived = false;
 
@@ -778,7 +787,8 @@ namespace Tests
 
             // Hook up to web interface engine message reporting
             WebInterface.OnMessageFromEngine += MsgFromEngineCallback;
-            InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, InputController_Legacy.EVENT.BUTTON_UP, true);
+            InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                InputController_Legacy.EVENT.BUTTON_UP, true, true);
             WebInterface.OnMessageFromEngine -= MsgFromEngineCallback;
 
             Assert.IsFalse(pointerUpReceived);
@@ -837,7 +847,8 @@ namespace Tests
             // Check if target entity is hit behind other entity
             bool targetEntityHit = false;
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                    DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -862,7 +873,8 @@ namespace Tests
             // Check if target entity is hit in front of the camera without being blocked
             targetEntityHit = false;
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                    DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -939,7 +951,8 @@ namespace Tests
             // Check the target entity is not hit behind the 'isPointerBlocker' shape
             bool targetEntityHit = false;
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                    DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -963,7 +976,8 @@ namespace Tests
             // Check the target entity is hit behind the 'isPointerBlocker' shape now
             targetEntityHit = false;
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                    DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1032,7 +1046,8 @@ namespace Tests
             // Check if target entity is triggered by hitting the parent entity
             bool targetEntityHit = false;
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                    DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1056,7 +1071,8 @@ namespace Tests
             // Check if target entity is triggered when hit directly
             targetEntityHit = false;
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, 
+                    DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&

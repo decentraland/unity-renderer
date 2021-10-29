@@ -63,11 +63,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (view == null)
             return;
 
-        if (visible && !view.isActive)
-            DataStore.i.exploreV2.isOpen.Set(true);
-        else if (!visible && view.isActive)
-            DataStore.i.exploreV2.isOpen.Set(false);
-
+        DataStore.i.exploreV2.isOpen.Set(visible);
         view.SetActive(visible);
     }
 

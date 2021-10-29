@@ -4,11 +4,14 @@ using DCL.Interface;
 using System.Collections;
 using System;
 using DCL.Helpers;
+using UnityEngine.Events;
 using Environment = DCL.Environment;
 using WaitUntil = UnityEngine.WaitUntil;
 
 public class ProfileHUDController : IHUD
 {
+    private readonly IUserProfileBridge userProfileBridge;
+
     [Serializable]
     public struct Configuration
     {
@@ -35,8 +38,9 @@ public class ProfileHUDController : IHUD
     public event Action OnOpen;
     public event Action OnClose;
 
-    public ProfileHUDController()
+    public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
+        this.userProfileBridge = userProfileBridge;
         mouseCatcher = InitialSceneReferences.i?.data?.mouseCatcher;
 
 
@@ -48,6 +52,7 @@ public class ProfileHUDController : IHUD
         SetBackpackButtonVisibility(false);
         view.connectedWalletSection.SetActive(false);
         view.nonConnectedWalletSection.SetActive(false);
+        view.ActivateDescriptionEditionMode(false);
 
         view.buttonBackpack.onClick.AddListener(OpenBackpackWindow);
         view.buttonLogOut.onClick.AddListener(WebInterface.LogOut);
@@ -58,6 +63,7 @@ public class ProfileHUDController : IHUD
         view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
         view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
         view.inputName.onSubmit.AddListener(UpdateProfileName);
+        view.descriptionEditionInput.onSubmit.AddListener(UpdateProfileDescription);
         view.OnOpen += () =>
         {
             WebInterface.RequestOwnProfileUpdate();
@@ -136,6 +142,8 @@ public class ProfileHUDController : IHUD
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
+        
+        view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
     }
 
     void OnProfileUpdated(UserProfile profile) { view?.SetProfile(profile); }
@@ -225,8 +233,23 @@ public class ProfileHUDController : IHUD
             view.ActivateProfileNameEditionMode(false);
         }
 
-        WebInterface.SendSaveUserUnverifiedName(newName);
+        userProfileBridge.SaveUnverifiedName(newName);
     }
 
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { view?.SetNameRegex(current.profiles.nameValidRegex); }
+
+    private void UpdateProfileDescription(string description)
+    {
+        if (view.descriptionEditionInput.wasCanceled
+            || !ownUserProfile.hasConnectedWeb3
+            || description.Length > view.descriptionEditionInput.characterLimit)
+        {
+            view.ActivateDescriptionEditionMode(false);
+            return;
+        }
+
+        view.SetDescription(description);
+        view.ActivateDescriptionEditionMode(false);
+        userProfileBridge.SaveDescription(description);
+    }
 }

@@ -44,8 +44,7 @@ public class ProfileCardComponentViewTests
         {
             profilePictureSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero),
             profileName = "Test name",
-            profileAddress = "Test address",
-            onClick = new Button.ButtonClickedEvent()
+            profileAddress = "Test address"
         };
 
         // Act
@@ -67,7 +66,6 @@ public class ProfileCardComponentViewTests
         profileCardComponent.model.profilePictureSprite = testPicture;
         profileCardComponent.model.profileName = testName;
         profileCardComponent.model.profileAddress = testAddress;
-        profileCardComponent.model.onClick = testClickedEvent;
 
         // Act
         profileCardComponent.RefreshControl();
@@ -76,7 +74,6 @@ public class ProfileCardComponentViewTests
         Assert.AreEqual(testPicture, profileCardComponent.model.profilePictureSprite, "The profile picture does not match in the model.");
         Assert.AreEqual(testName, profileCardComponent.model.profileName, "The profile name does not match in the model.");
         Assert.AreEqual(testAddress, profileCardComponent.model.profileAddress, "The profile address does not match in the model.");
-        Assert.AreEqual(testClickedEvent, profileCardComponent.model.onClick, "The onClick event does not match in the model.");
     }
 
     [Test]
