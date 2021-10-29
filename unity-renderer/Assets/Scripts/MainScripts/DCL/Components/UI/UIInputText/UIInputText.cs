@@ -125,11 +125,13 @@ namespace DCL.Components
         public void OnChanged(string changedText)
         {
             // NOTE: OSX is adding the ESC character at the end of the string when ESC is pressed
+            #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             if (changedText.Length > 0 && changedText[changedText.Length - 1] == 27)
             {
                 changedText = changedText.Substring(0, changedText.Length - 1);
                 inputField.SetTextWithoutNotify(changedText);
             }
+            #endif
 
             // NOTE: we keep `ReportOnTextInputChangedEvent` for backward compatibility (it won't be called for scenes using latest sdk)
             Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.id, model.onChanged, changedText);
