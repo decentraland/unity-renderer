@@ -607,7 +607,7 @@ namespace DCL.Skybox
             RenderSepratedFloatFields("Time Span", "Starts", ref layer.timeSpan_start, "Ends", ref layer.timeSpan_End);
 
             // Fading
-            //RenderSepratedFloatFields("Fading", "In", ref layer.fadingInTime, "Out", ref layer.fadingOutTime);
+            RenderSepratedFloatFields("Fading", "In", ref layer.fadingInTime, "Out", ref layer.fadingOutTime);
 
             // Tint
             RenderFloatFieldAsSlider("Tint", ref layer.tintercentage, 0, 100);

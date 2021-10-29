@@ -15,6 +15,7 @@ namespace DCL.Skybox
         public float timeSpan_End;
         public float fadingInTime = 1;
         public float fadingOutTime = 1;
+
         public float tintercentage;
         public List<TransitioningFloat> renderDistance;
 
