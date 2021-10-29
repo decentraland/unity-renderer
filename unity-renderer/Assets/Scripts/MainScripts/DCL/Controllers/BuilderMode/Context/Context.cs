@@ -15,14 +15,14 @@ namespace DCL.Builder
         public BIWInputsReferences inputsReferencesAsset { get;  set; }
 
         //Builder Parts
-        public IBuilderMainPanelController panelHUD { get; private set; }
-        public IBIWEditor editor  { get; private set; }
-        public IBuilderAPIController builderAPIController { get; private set; }
+        public IBuilderMainPanelController panelHUD { get; internal set; }
+        public IBIWEditor editor  { get; internal set; }
+        public IBuilderAPIController builderAPIController { get; internal set; }
 
-        public IInitialSceneReferences sceneReferences { get; private set; }
+        public IInitialSceneReferences sceneReferences { get; internal set; }
 
         //Editor
-        public IEditorContext editorContext { get; private set; }
+        public IEditorContext editorContext { get; internal set; }
 
         public Context(IBIWEditor editor,
             IBuilderMainPanelController panelHUD,

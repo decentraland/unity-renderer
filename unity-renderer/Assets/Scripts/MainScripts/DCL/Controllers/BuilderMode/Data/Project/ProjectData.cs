@@ -10,7 +10,12 @@ namespace DCL.Builder
         public string title;
         public string description;
 
+        public string thumbnail;
+
         public int rows;
         public int colums;
+
+        public DateTime created_at;
+        public DateTime updated_at;
     }
 }

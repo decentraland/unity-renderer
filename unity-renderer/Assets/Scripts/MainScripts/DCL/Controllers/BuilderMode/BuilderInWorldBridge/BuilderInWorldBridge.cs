@@ -65,7 +65,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         }
         DataStore.i.builderInWorld.currentSceneCatalogItemDict.Clear();
 
-        AssetCatalogBridge.i.AddSceneObjectToSceneCatalog(JsonConvert.DeserializeObject<SceneObject[]>(payload));
+        AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(payload);
     }
 
     public void RequestedHeaders(string payload) { OnHeadersReceived?.Invoke(JsonConvert.DeserializeObject<RequestHeader>(payload)); }

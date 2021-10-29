@@ -49,6 +49,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public event Action OnJumpInOrEdit;
 
+    internal IContext context;
+
     public BuilderMainPanelController()
     {
         if (DataStore.i.builderInWorld.isDevBuild.Get())
@@ -91,6 +93,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public void Initialize(IContext context)
     {
+        this.context = context;
         Initialize(new SectionsController(view.GetSectionContainer()),
             new ScenesViewController(view.GetCardViewPrefab(), view.GetTransform()),
             new LandsController(),
@@ -253,7 +256,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         if (!DataStore.i.builderInWorld.isDevBuild.Get())
             return;
-        fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData();
+        fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData(context.builderAPIController);
         fetchProjectsPromise
             .Then(ProjectsFetched)
             .Catch(ProjectsFetchedError);

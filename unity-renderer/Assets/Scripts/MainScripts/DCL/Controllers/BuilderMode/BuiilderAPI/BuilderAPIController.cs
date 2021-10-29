@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using DCL;
 using DCL.Builder;
 using DCL.Builder.Manifest;
 using DCL.Helpers;
@@ -11,15 +13,19 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class BuilderAPIController : IBuilderAPIController
 {
+    private const string CATALOG_ENDPOINT = "/assetPacks?owner=";
+    private const string ASSETS_ENDPOINT = "/assets?";
+    private const string PROJECTS_ENDPOINT = "/projects";
+    public event Action<WebRequestAsyncOperation> OnWebRequestCreated;
+    
+    internal const string GET = "get";
     private BuilderInWorldBridge builderInWorldBridge;
-
-    private SceneObject[] builderAssets;
-
+    
     private Dictionary<string, Promise<RequestHeader>> headersRequests = new Dictionary<string, Promise<RequestHeader>>();
 
     public void Initialize(IContext context)
     {
-        builderInWorldBridge = context.sceneReferences.bridgeGameObject.GetComponent<BuilderInWorldBridge>();
+        builderInWorldBridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
         builderInWorldBridge.OnHeadersReceived += HeadersReceived;
     }
 
@@ -51,54 +57,101 @@ public class BuilderAPIController : IBuilderAPIController
 
     internal Promise<string> CallUrl(string method, string endpoint)
     {
+        Promise<string> resultPromise = new Promise<string>();
         Promise<RequestHeader> headersPromise =AskHeadersToKernel(method, endpoint);
         headersPromise.Then(request =>
         {
             switch (method)
             {
-                case "get":
-                    Promise<string> resultPromise = new Promise<string>();
-                    BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint, resultPromise, request.headers);
-                    return resultPromise;
+                case GET:
+                    WebRequestAsyncOperation webRequest = BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint, resultPromise, request.headers);
+                    OnWebRequestCreated?.Invoke(webRequest);
+                    break;
             }
         });
      
-        return null;
+        return resultPromise;
     }
 
-    public void GetCompleteCatalog(string ethAddres)
+    public Promise<bool> GetCompleteCatalog(string ethAddres)
     {
-        if (catalogAdded)
-            return;
+        string ethAddress = "";
+        var userProfile = UserProfile.GetOwnUserProfile();
+        if (userProfile != null)
+            ethAddress = userProfile.ethAddress;
 
-        if (areCatalogHeadersReady)
+        Promise<bool> fullCatalogPromise = new Promise<bool>();
+
+        var promiseDefaultCatalog =  CallUrl(GET, CATALOG_ENDPOINT + "default");
+        var promiseOwnedCatalog = CallUrl(GET, CATALOG_ENDPOINT + ethAddress);
+        int amountOfCatalogReceived = 0;
+
+        // Note: In order to get the full catalog we need to do 2 calls, the default one and the specific one
+        // This is done in order to cache the response in the server 
+        promiseDefaultCatalog.Then(catalogJson =>
         {
-            string ethAddress = "";
-            var userProfile = UserProfile.GetOwnUserProfile();
-            if (userProfile != null)
-                ethAddress = userProfile.ethAddress;
+            AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
         
-            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
-            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
-        }
-        else
+            amountOfCatalogReceived++;
+            if (amountOfCatalogReceived >= 2)
+                fullCatalogPromise.Resolve(true);
+        });
+
+        promiseOwnedCatalog.Then(catalogJson =>
         {
-            AskHeadersToKernel();
+            AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
+
+            amountOfCatalogReceived++;
+            if (amountOfCatalogReceived >= 2)
+                fullCatalogPromise.Resolve(true);
+        });
+        
+        return fullCatalogPromise;
+    }
+
+    public Promise<bool> GetAssets(List<string> assetsIds)
+    {
+        List<string> assetsToAsk = new List<string>();
+        foreach (string assetsId in assetsIds)
+        {
+            if(!AssetCatalogBridge.i.sceneObjectCatalog.ContainsKey(assetsId))
+                assetsToAsk.Add(assetsId);
+        }
+        
+        string query = "";
+        foreach (string assetsId in assetsToAsk)
+        {
+            if (string.IsNullOrEmpty(query))
+                query += "id=" + assetsId;
+            else
+                query += "&id=" + assetsId;
         }
 
-        isCatalogRequested = true;
+        Promise<bool> fullCatalogPromise = new Promise<bool>();
+
+        var promise =  CallUrl(GET, ASSETS_ENDPOINT +query);
+
+        promise.Then(result =>
+        {
+            AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(result);
+            fullCatalogPromise.Resolve(true);
+        });
+        
+        return fullCatalogPromise;
     }
 
-    public SceneObject[] GetAssets(List<string> assetsIds)
+    public Promise<List<ProjectData>> GetAllManifests()
     {
-        //TODO: Implement functionality
-        return null;
-    }
+        Promise<List<ProjectData>> fullCatalogPromise = new Promise< List<ProjectData>>();
 
-    public List<Manifest> GetAllManifests()
-    {
-        //TODO: Implement functionality
-        return new List<Manifest>();
+        var promise =  CallUrl(GET, PROJECTS_ENDPOINT);
+
+        promise.Then(result =>
+        {
+            List<ProjectData> allManifest = JsonConvert.DeserializeObject<List<ProjectData>>(result);
+            fullCatalogPromise.Resolve(allManifest);
+        });
+        return fullCatalogPromise;
     }
 
     public Manifest GetManifestFromProjectId(string projectId)

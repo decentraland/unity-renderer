@@ -11,6 +11,8 @@ namespace DCL.Builder
         BIWInputsReferences inputsReferencesAsset { get; }
 
         IBuilderMainPanelController panelHUD { get; }
+        IBIWEditor editor  { get; }
+        IBuilderAPIController builderAPIController { get; }
 
         IEditorContext editorContext { get; }
 
