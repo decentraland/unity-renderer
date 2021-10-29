@@ -37,7 +37,10 @@ namespace DCL.Components
             }
 
             if (AreCollidersCreated(rendererList))
+            {
+                UpdateCollidersWithRenderersMesh(rendererList);
                 return;
+            }
 
             IShape shape = entity.meshesInfo.currentShape;
 
@@ -53,6 +56,17 @@ namespace DCL.Components
             for (int i = 0; i < colliders.Length; i++)
             {
                 colliders[i] = CreateCollider(rendererList[i]);
+            }
+        }
+
+        void UpdateCollidersWithRenderersMesh(Renderer[] rendererList)
+        {
+            MeshCollider col;
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                col = colliders[i] as MeshCollider;
+                if(col?.sharedMaterial == null)
+                    col.sharedMesh = rendererList[i].GetComponent<MeshFilter>().sharedMesh;
             }
         }
 
