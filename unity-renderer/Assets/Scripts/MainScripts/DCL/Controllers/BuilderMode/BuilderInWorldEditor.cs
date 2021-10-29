@@ -109,11 +109,8 @@ public class BuilderInWorldEditor : IBIWEditor
             userProfile.OnUpdate += OnUserProfileUpdate;
         else
             AskHeadersToKernel();
-
-
+        
         isCatalogLoading = true;
-        BIWNFTController.i.Initialize();
-        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
@@ -188,7 +185,6 @@ public class BuilderInWorldEditor : IBIWEditor
 
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
-
         BIWNFTController.i.Dispose();
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
@@ -321,6 +317,8 @@ public class BuilderInWorldEditor : IBIWEditor
             var userProfile = UserProfile.GetOwnUserProfile();
             if (userProfile != null)
                 ethAddress = userProfile.ethAddress;
+            
+            BIWNFTController.i.StartFetchingNft();
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
         }
@@ -523,7 +521,7 @@ public class BuilderInWorldEditor : IBIWEditor
         BIWAnalytics.StartEditorFlow(source);
         beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
-        if (biwAudioHandler?.gameObject != null)
+        if (biwAudioHandler != null && biwAudioHandler.gameObject != null)
             biwAudioHandler.gameObject.SetActive(true);
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
@@ -559,8 +557,8 @@ public class BuilderInWorldEditor : IBIWEditor
             return;
 
         isEnteringEditMode = false;
-        BIWNFTController.i.ClearNFTs();
-
+        BIWNFTController.i.StartEditMode();
+        
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
         sceneToEdit.SetEditMode(true);
@@ -666,7 +664,8 @@ public class BuilderInWorldEditor : IBIWEditor
     public void ExitEditMode()
     {
         Environment.i.platform.cullingController.Start();
-
+        BIWNFTController.i.ExitEditMode();
+        
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;
