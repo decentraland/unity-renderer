@@ -6,8 +6,7 @@ namespace DCL.Components.Video.Plugin
     {
         void Create(string id, string url, bool useHls);
         void Remove(string id);
-        void TextureUpdate(string id);
-        int GetTexture(string id);
+        void TextureUpdate(string id, IntPtr texturePtr, bool isWebGL1);
         void Play(string id, float startTime);
         void Pause(string id);
         void SetVolume(string id, float volume);
