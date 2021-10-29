@@ -377,6 +377,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 3
       tiling: {x: 4, y: 2}
+      flipBookRowsAndColumns: {x: 0, y: 0}
+      flipbookAnimSpeed: 0
       offset: []
       satelliteWidthHeight: []
       rotation_float: []
@@ -386,11 +388,15 @@ MonoBehaviour:
       speed: 0
       normalIntensity: 0
       particleExpanded: 0
-      particlesRowsAndColumns: {x: 1, y: 1}
       particleTiling: {x: 1, y: 1}
       particlesOffset: {x: 0, y: 0}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 1
+      particleRotation:
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
       particlesAmount: 1
       particleMinSize: 1
       particleMaxSize: 1
@@ -424,11 +430,11 @@ MonoBehaviour:
       tintercentage: 0
       renderDistance: []
       texture: {fileID: 2800000, guid: 54745b55af2f79e4297e9183c10654c0, type: 3}
-      textureNormal: {fileID: 0}
+      textureNormal: {fileID: 2800000, guid: 42cc058140f798e46bde1006aab6fa8b, type: 3}
       cubemap: {fileID: 0}
       color:
         serializedVersion: 2
-        key0: {r: 0.8578676, g: 0.9558757, b: 0.9622642, a: 1}
+        key0: {r: 0.85882354, g: 0.95686275, b: 0.9607843, a: 1}
         key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
@@ -456,6 +462,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       tiling: {x: 1, y: 1}
+      flipBookRowsAndColumns: {x: 0, y: 0}
+      flipbookAnimSpeed: 0
       offset:
       - percentage: 0
         value: {x: 0, y: -12.07}
@@ -463,7 +471,7 @@ MonoBehaviour:
         value: {x: 0, y: 191.07}
       satelliteWidthHeight:
       - percentage: 0
-        value: {x: 1, y: 1}
+        value: {x: 2, y: 2}
       rotation_float:
       - percentage: 0
         value: 96
@@ -471,13 +479,17 @@ MonoBehaviour:
       speed_Vector3: {x: 0, y: 0, z: 0}
       speed_Vec2: {x: 0, y: 0}
       speed: 0
-      normalIntensity: 0
+      normalIntensity: 0.04
       particleExpanded: 0
-      particlesRowsAndColumns: {x: 1, y: 1}
       particleTiling: {x: 1, y: 1}
       particlesOffset: {x: 0, y: 0}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 1
+      particleRotation:
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
       particlesAmount: 1
       particleMinSize: 1
       particleMaxSize: 1
@@ -536,6 +548,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       tiling: {x: 1, y: 1}
+      flipBookRowsAndColumns: {x: 0, y: 0}
+      flipbookAnimSpeed: 0
       offset:
       - percentage: 0
         value: {x: 0, y: -16.13}
@@ -551,11 +565,15 @@ MonoBehaviour:
       speed: 0
       normalIntensity: 0
       particleExpanded: 0
-      particlesRowsAndColumns: {x: 1, y: 1}
       particleTiling: {x: 1, y: 1}
       particlesOffset: {x: 0, y: 0}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 1
+      particleRotation:
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
       particlesAmount: 1
       particleMinSize: 1
       particleMaxSize: 1
@@ -621,6 +639,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       tiling: {x: 1, y: 1}
+      flipBookRowsAndColumns: {x: 0, y: 0}
+      flipbookAnimSpeed: 0
       offset: []
       satelliteWidthHeight: []
       rotation_float: []
@@ -630,11 +650,15 @@ MonoBehaviour:
       speed: 0
       normalIntensity: 0
       particleExpanded: 0
-      particlesRowsAndColumns: {x: 1, y: 1}
       particleTiling: {x: 1, y: 1}
       particlesOffset: {x: 0, y: 0}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 1
+      particleRotation:
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
       particlesAmount: 1
       particleMinSize: 1
       particleMaxSize: 1
@@ -693,6 +717,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 4
       tiling: {x: 1, y: 1}
+      flipBookRowsAndColumns: {x: 0, y: 0}
+      flipbookAnimSpeed: 0
       offset: []
       satelliteWidthHeight: []
       rotation_float: []
@@ -702,11 +728,15 @@ MonoBehaviour:
       speed: 0
       normalIntensity: 0
       particleExpanded: 0
-      particlesRowsAndColumns: {x: 1, y: 1}
       particleTiling: {x: 1, y: 1}
       particlesOffset: {x: 0, y: 0}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 1
+      particleRotation:
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
       particlesAmount: 1
       particleMinSize: 1
       particleMaxSize: 1
@@ -774,6 +804,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 4
       tiling: {x: 1, y: 1}
+      flipBookRowsAndColumns: {x: 0, y: 0}
+      flipbookAnimSpeed: 0
       offset: []
       satelliteWidthHeight: []
       rotation_float: []
@@ -783,11 +815,15 @@ MonoBehaviour:
       speed: 0
       normalIntensity: 0
       particleExpanded: 0
-      particlesRowsAndColumns: {x: 1, y: 1}
       particleTiling: {x: 1, y: 1}
       particlesOffset: {x: 0, y: 0}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 1
+      particleRotation:
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
       particlesAmount: 1
       particleMinSize: 1
       particleMaxSize: 1
@@ -861,6 +897,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       tiling: {x: 1, y: 1}
+      flipBookRowsAndColumns: {x: 0, y: 0}
+      flipbookAnimSpeed: 0
       offset: []
       satelliteWidthHeight: []
       rotation_float: []
@@ -870,11 +908,15 @@ MonoBehaviour:
       speed: 0
       normalIntensity: 0
       particleExpanded: 0
-      particlesRowsAndColumns: {x: 3, y: 3}
       particleTiling: {x: 1, y: 1}
       particlesOffset: {x: -0.42, y: -0.42}
-      particleRotation: {x: 0, y: 0, z: 0}
-      particleAnimSpeed: 5
+      particleRotation:
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
+      - percentage: 0
+        value: {x: 0, y: 0, z: 0}
       particlesAmount: 10
       particleMinSize: 10
       particleMaxSize: 20
@@ -934,6 +976,8 @@ MonoBehaviour:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     tiling: {x: 4, y: 2}
+    flipBookRowsAndColumns: {x: 0, y: 0}
+    flipbookAnimSpeed: 0
     offset: []
     satelliteWidthHeight: []
     rotation_float: []
@@ -943,11 +987,15 @@ MonoBehaviour:
     speed: 0.1
     normalIntensity: 0
     particleExpanded: 0
-    particlesRowsAndColumns: {x: 0, y: 0}
     particleTiling: {x: 0, y: 0}
     particlesOffset: {x: 0, y: 0}
-    particleRotation: {x: 0, y: 0, z: 0}
-    particleAnimSpeed: 0
+    particleRotation:
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
     particlesAmount: 0
     particleMinSize: 0
     particleMaxSize: 0
@@ -1006,6 +1054,8 @@ MonoBehaviour:
       m_NumColorKeys: 4
       m_NumAlphaKeys: 2
     tiling: {x: 1, y: 1}
+    flipBookRowsAndColumns: {x: 0, y: 0}
+    flipbookAnimSpeed: 0
     offset: []
     satelliteWidthHeight: []
     rotation_float: []
@@ -1015,11 +1065,15 @@ MonoBehaviour:
     speed: 0.02
     normalIntensity: 0
     particleExpanded: 0
-    particlesRowsAndColumns: {x: 0, y: 0}
     particleTiling: {x: 0, y: 0}
     particlesOffset: {x: 0, y: 0}
-    particleRotation: {x: 0, y: 0, z: 0}
-    particleAnimSpeed: 0
+    particleRotation:
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
     particlesAmount: 0
     particleMinSize: 0
     particleMaxSize: 0
@@ -1078,6 +1132,8 @@ MonoBehaviour:
       m_NumColorKeys: 3
       m_NumAlphaKeys: 2
     tiling: {x: 0.1, y: 0.1}
+    flipBookRowsAndColumns: {x: 0, y: 0}
+    flipbookAnimSpeed: 0
     offset: []
     satelliteWidthHeight: []
     rotation_float: []
@@ -1087,11 +1143,15 @@ MonoBehaviour:
     speed: 0.02
     normalIntensity: 0
     particleExpanded: 0
-    particlesRowsAndColumns: {x: 0, y: 0}
     particleTiling: {x: 0, y: 0}
     particlesOffset: {x: 0, y: 0}
-    particleRotation: {x: 0, y: 0, z: 0}
-    particleAnimSpeed: 0
+    particleRotation:
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
     particlesAmount: 0
     particleMinSize: 0
     particleMaxSize: 0
@@ -1152,6 +1212,8 @@ MonoBehaviour:
       m_NumColorKeys: 5
       m_NumAlphaKeys: 2
     tiling: {x: 0.5, y: 0.5}
+    flipBookRowsAndColumns: {x: 0, y: 0}
+    flipbookAnimSpeed: 0
     offset: []
     satelliteWidthHeight: []
     rotation_float: []
@@ -1161,11 +1223,15 @@ MonoBehaviour:
     speed: 0.1
     normalIntensity: 0
     particleExpanded: 0
-    particlesRowsAndColumns: {x: 0, y: 0}
     particleTiling: {x: 0, y: 0}
     particlesOffset: {x: 0, y: 0}
-    particleRotation: {x: 0, y: 0, z: 0}
-    particleAnimSpeed: 0
+    particleRotation:
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
+    - percentage: 0
+      value: {x: 0, y: 0, z: 0}
     particlesAmount: 0
     particleMinSize: 0
     particleMaxSize: 0
