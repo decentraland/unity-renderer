@@ -532,7 +532,8 @@ public class BuilderInWorldEditor : IBIWEditor
         BIWAnalytics.StartEditorFlow(source);
         beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
-        biwAudioHandler.gameObject.SetActive(true);
+        if (biwAudioHandler != null && biwAudioHandler.gameObject != null)
+            biwAudioHandler.gameObject.SetActive(true);
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
             modeController.ActivateCamera(sceneToEdit);

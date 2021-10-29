@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace DCL.Builder
 {
-
     public class Context
     {
         private const string PROJECT_REFERENCES_PATH = "ScriptableObjects/ProjectReferences";
@@ -15,9 +14,10 @@ namespace DCL.Builder
         public BIWProjectReferences projectReferencesAsset { get; private set; }
         public BIWInputsReferences inputsReferencesAsset { get; private set; }
 
-        //Panel HUD
+        //Builder Parts
         public IBuilderMainPanelController panelHUD { get; private set; }
-        public IBIWEditor editor;
+        public IBIWEditor editor  { get; private set; }
+        public IBuilderAPIController builderAPIController { get; private set; }
 
         public InitialSceneReferences.Data sceneReferences { get; private set; }
 
@@ -26,6 +26,7 @@ namespace DCL.Builder
 
         public Context(IBIWEditor editor,
             IBuilderMainPanelController panelHUD,
+            IBuilderAPIController builderAPIController,
             IBuilderEditorHUDController editorHUD,
             IBIWOutlinerController outlinerController,
             IBIWInputHandler inputHandler,
@@ -50,6 +51,7 @@ namespace DCL.Builder
             //Builder parts
             this.panelHUD = panelHUD;
             this.editor = editor;
+            this.builderAPIController = builderAPIController;
 
             editorContext = new EditorContext(editorHUD,
                 outlinerController,
@@ -162,5 +164,4 @@ namespace DCL.Builder
             firstPersonDynamicVariablesAsset = null;
         }
     }
-
 }

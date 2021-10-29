@@ -16,7 +16,7 @@ namespace DCL.Builder
             switch (id)
             {
                 case SectionId.SCENES:
-                    result = new SectionController();
+                    result = new SectionScenesController();
                     break;
                 case SectionId.PROJECTS:
                     result = new SectionProjectController();
