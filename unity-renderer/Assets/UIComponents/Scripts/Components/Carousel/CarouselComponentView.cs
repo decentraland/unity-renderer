@@ -150,7 +150,11 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         ConfigureManualButtonsEvents();
     }
 
-    public override void Start() { StartCarousel(); }
+    public override void Start()
+    {
+        if (model.automaticTransition)
+            StartCarousel();
+    }
 
     public void Configure(BaseComponentModel newModel)
     {
@@ -229,6 +233,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
     public void SetItems(List<BaseComponentView> items)
     {
+
         DestroyInstantiatedItems();
 
         for (int i = 0; i < items.Count; i++)
@@ -317,6 +322,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
             numberOfInitialJumps: 1);
     }
 
+    public void ResetCarousel()
+    {
+        int index = 0;
+        SetSelectedDot(index);
+
+    }
+
     public void GoToNextItem()
     {
         if (isInTransition)
@@ -386,7 +398,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
     internal void ResizeAllItems()
     {
         itemsScroll.horizontalNormalizedPosition = 0f;
-        StartCarousel();
+        if (model.automaticTransition)
+            StartCarousel();
 
         foreach (Transform child in itemsContainer)
         {
@@ -417,7 +430,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         currentItemIndex = fromIndex;
         SetSelectedDot(currentItemIndex);
 
-        while (gameObject.activeInHierarchy && itemsContainer.childCount > 1)
+        bool continueCarrousel = true;
+        while (gameObject.activeInHierarchy && itemsContainer.childCount > 1 && continueCarrousel)
         {
             if (!startInmediately)
                 yield return new WaitForSeconds(model.timeBetweenItems);
@@ -434,6 +448,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
                         direction = CarouselDirection.Left;
                         changeDirectionAfterFirstTransition = false;
                     }
+                    continueCarrousel = model.automaticTransition;
                 }
                 else
                 {
@@ -445,6 +460,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
                         direction = CarouselDirection.Right;
                         changeDirectionAfterFirstTransition = false;
                     }
+                    continueCarrousel = model.automaticTransition;
                 }
             }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -33,7 +34,7 @@ namespace Tests
             for (int i = 0; i < cardsCount; i++)
             {
                 var card = (IProjectCardView)Object.Instantiate(prefab);
-                card.Setup(new ProjectData());
+                card.Setup(new DCL.Builder.ProjectData());
                 cardViews.Add(i.ToString(), card);
             }
 
@@ -48,7 +49,7 @@ namespace Tests
             for (int i = 1; i < cardsCount; i++)
             {
                 var current = (ISceneCardView)view.contentContainer.transform.GetChild(i).GetComponent<SceneCardView>();
-                Assert.LessOrEqual(current.sceneData.size.x * current.sceneData.size.y, prev.sceneData.size.x * prev.sceneData.size.y);
+                Assert.LessOrEqual(current.SceneData.size.x * current.SceneData.size.y, prev.SceneData.size.x * prev.SceneData.size.y);
                 prev = current;
             }
 

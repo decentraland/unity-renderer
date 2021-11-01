@@ -11,9 +11,7 @@ namespace DCL.Components.Video.Plugin
         [DllImport("__Internal")]
         public static extern void WebVideoPlayerRemove(string id);
         [DllImport("__Internal")]
-        public static extern void WebVideoPlayerTextureUpdate(string id);
-        [DllImport("__Internal")]
-        public static extern int WebVideoPlayerTextureGet(string id);
+        public static extern void WebVideoPlayerTextureUpdate(string id, IntPtr texturePtr, bool isWebGL1);
         [DllImport("__Internal")]
         public static extern void WebVideoPlayerPlay(string id, float startTime);
         [DllImport("__Internal")]
@@ -41,8 +39,7 @@ namespace DCL.Components.Video.Plugin
 #else
         public static void WebVideoPlayerCreate(string id, string url, bool useHls) { }
         public static void WebVideoPlayerRemove(string id) { }
-        public static void WebVideoPlayerTextureUpdate(string id) { }
-        public static int WebVideoPlayerTextureGet(string id) { return -1; }
+        public static void WebVideoPlayerTextureUpdate(string id, IntPtr texturePtr, bool isWebGL1) { }
         public static void WebVideoPlayerPlay(string id, float startTime) { }
         public static void WebVideoPlayerPause(string id) { }
         public static void WebVideoPlayerVolume(string id, float volume) { }

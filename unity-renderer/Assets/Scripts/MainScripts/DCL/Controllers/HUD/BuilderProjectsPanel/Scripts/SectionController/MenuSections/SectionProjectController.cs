@@ -4,103 +4,106 @@ using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-internal class SectionProjectController : SectionBase, IProjectsListener, ISectionHideContextMenuRequester
+namespace DCL.Builder
 {
-    public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionProjectView";
-
-    public event Action OnRequestContextMenuHide;
-
-    public override ISectionSearchHandler searchHandler => sceneSearchHandler;
-
-    private readonly SectionProjectView view;
-
-    private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
-    private Dictionary<string, IProjectCardView> projectsViews;
-
-    public SectionProjectController() : this(
-        Object.Instantiate(Resources.Load<SectionProjectView>(VIEW_PREFAB_PATH))
-    ) { }
-
-    public SectionProjectController(SectionProjectView view)
+    internal class SectionProjectController : SectionBase, IProjectsListener, ISectionHideContextMenuRequester
     {
-        this.view = view;
+        public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionProjectView";
 
-        view.OnScrollRectValueChanged += OnRequestContextMenuHide;
-        sceneSearchHandler.OnResult += OnSearchResult;
-    }
+        public event Action OnRequestContextMenuHide;
 
-    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
+        public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
-    public override void Dispose()
-    {
-        view.OnScrollRectValueChanged -= OnRequestContextMenuHide;
-        view.Dispose();
-    }
+        private readonly SectionProjectView view;
 
-    protected override void OnShow() { view.SetActive(true); }
+        private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
+        private Dictionary<string, IProjectCardView> projectsViews;
 
-    protected override void OnHide() { view.SetActive(false); }
+        public SectionProjectController() : this(
+            Object.Instantiate(Resources.Load<SectionProjectView>(VIEW_PREFAB_PATH))
+        ) { }
 
-    void IProjectsListener.OnSetProjects(Dictionary<string, IProjectCardView> projectsViews)
-    {
-        this.projectsViews = new Dictionary<string, IProjectCardView>(projectsViews);
-        sceneSearchHandler.SetSearchableList(projectsViews.Values.Select(project => project.searchInfo).ToList());
-    }
-
-    void IProjectsListener.OnProjectAdded(IProjectCardView projectView)
-    {
-        projectsViews.Add(projectView.projectData.id, projectView);
-        sceneSearchHandler.AddItem(projectView.searchInfo);
-    }
-
-    void IProjectsListener.OnProjectRemoved(IProjectCardView projectView)
-    {
-        projectsViews.Remove(projectView.projectData.id);
-        projectView.SetActive(false);
-    }
-
-    private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
-    {
-        if (projectsViews == null)
-            return;
-
-        using (var iterator = projectsViews.GetEnumerator())
+        public SectionProjectController(SectionProjectView view)
         {
-            while (iterator.MoveNext())
+            this.view = view;
+
+            view.OnScrollRectValueChanged += OnRequestContextMenuHide;
+            sceneSearchHandler.OnResult += OnSearchResult;
+        }
+
+        public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
+
+        public override void Dispose()
+        {
+            view.OnScrollRectValueChanged -= OnRequestContextMenuHide;
+            view.Dispose();
+        }
+
+        protected override void OnShow() { view.SetActive(true); }
+
+        protected override void OnHide() { view.SetActive(false); }
+
+        void IProjectsListener.OnSetProjects(Dictionary<string, IProjectCardView> projectsViews)
+        {
+            this.projectsViews = new Dictionary<string, IProjectCardView>(projectsViews);
+            sceneSearchHandler.SetSearchableList(projectsViews.Values.Select(project => project.searchInfo).ToList());
+        }
+
+        void IProjectsListener.OnProjectAdded(IProjectCardView projectView)
+        {
+            projectsViews.Add(projectView.projectData.id, projectView);
+            sceneSearchHandler.AddItem(projectView.searchInfo);
+        }
+
+        void IProjectsListener.OnProjectRemoved(IProjectCardView projectView)
+        {
+            projectsViews.Remove(projectView.projectData.id);
+            projectView.SetActive(false);
+        }
+
+        private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
+        {
+            if (projectsViews == null)
+                return;
+
+            using (var iterator = projectsViews.GetEnumerator())
             {
-                iterator.Current.Value.SetParent(view.contentContainer.transform);
-                iterator.Current.Value.SetActive(false);
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.SetParent(view.contentContainer.transform);
+                    iterator.Current.Value.SetActive(false);
+                }
             }
-        }
 
-        for (int i = 0; i < searchInfoScenes.Count; i++)
-        {
-            if (!projectsViews.TryGetValue(searchInfoScenes[i].id, out IProjectCardView cardView))
-                continue;
-
-            cardView.SetActive(true);
-            cardView.SetSiblingIndex(i);
-        }
-        view.ResetScrollRect();
-
-        if (projectsViews.Count == 0)
-        {
-            if (isLoading)
+            for (int i = 0; i < searchInfoScenes.Count; i++)
             {
-                view.SetLoading();
+                if (!projectsViews.TryGetValue(searchInfoScenes[i].id, out IProjectCardView cardView))
+                    continue;
+
+                cardView.SetActive(true);
+                cardView.SetSiblingIndex(i);
+            }
+            view.ResetScrollRect();
+
+            if (projectsViews.Count == 0)
+            {
+                if (isLoading)
+                {
+                    view.SetLoading();
+                }
+                else
+                {
+                    view.SetEmpty();
+                }
+            }
+            else if (searchInfoScenes.Count == 0)
+            {
+                view.SetNoSearchResult();
             }
             else
             {
-                view.SetEmpty();
+                view.SetFilled();
             }
-        }
-        else if (searchInfoScenes.Count == 0)
-        {
-            view.SetNoSearchResult();
-        }
-        else
-        {
-            view.SetFilled();
         }
     }
 }

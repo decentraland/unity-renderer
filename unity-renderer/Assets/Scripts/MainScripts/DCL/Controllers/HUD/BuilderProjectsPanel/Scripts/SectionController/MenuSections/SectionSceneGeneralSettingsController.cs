@@ -3,82 +3,85 @@ using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-internal class SectionSceneGeneralSettingsController : SectionBase, ISelectSceneListener, ISectionUpdateSceneDataRequester
+namespace DCL.Builder
 {
-    public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneGeneralSettingsView";
-
-    internal const string PERMISSION_MOVE_PLAYER = "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE";
-    internal const string PERMISSION_TRIGGER_EMOTES = "ALLOW_TO_TRIGGER_AVATAR_EMOTE";
-
-    private ISceneData sceneData;
-
-    private readonly SceneDataUpdatePayload sceneDataUpdatePayload = new SceneDataUpdatePayload();
-    private readonly SectionSceneGeneralSettingsView view;
-
-    public event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
-
-    public SectionSceneGeneralSettingsController() : this(
-        Object.Instantiate(Resources.Load<SectionSceneGeneralSettingsView>(VIEW_PREFAB_PATH))
-    ) { }
-
-    public SectionSceneGeneralSettingsController(SectionSceneGeneralSettingsView view)
+    internal class SectionSceneGeneralSettingsController : SectionBase, ISelectSceneListener, ISectionUpdateSceneDataRequester
     {
-        this.view = view;
-        view.OnApplyChanges += OnApplyChanges;
-    }
+        public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneGeneralSettingsView";
 
-    public override void Dispose()
-    {
-        view.OnApplyChanges -= OnApplyChanges;
-        Object.Destroy(view.gameObject);
-    }
+        internal const string PERMISSION_MOVE_PLAYER = "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE";
+        internal const string PERMISSION_TRIGGER_EMOTES = "ALLOW_TO_TRIGGER_AVATAR_EMOTE";
 
-    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
+        private ISceneData sceneData;
 
-    public void SetSceneData(ISceneData sceneData)
-    {
-        this.sceneData = sceneData;
+        private readonly SceneDataUpdatePayload sceneDataUpdatePayload = new SceneDataUpdatePayload();
+        private readonly SectionSceneGeneralSettingsView view;
 
-        view.SetName(sceneData.name);
-        view.SetDescription(sceneData.description);
-        view.SetConfigurationActive(sceneData.isDeployed);
-        view.SetPermissionsActive(sceneData.isDeployed);
+        public event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
 
-        if (sceneData.isDeployed)
+        public SectionSceneGeneralSettingsController() : this(
+            Object.Instantiate(Resources.Load<SectionSceneGeneralSettingsView>(VIEW_PREFAB_PATH))
+        ) { }
+
+        public SectionSceneGeneralSettingsController(SectionSceneGeneralSettingsView view)
         {
-            view.SetAllowMovePlayer(sceneData.requiredPermissions != null && sceneData.requiredPermissions.Contains(PERMISSION_MOVE_PLAYER));
-            view.SetAllowTriggerEmotes(sceneData.requiredPermissions != null && sceneData.requiredPermissions.Contains(PERMISSION_TRIGGER_EMOTES));
-            view.SetAllowVoiceChat(sceneData.allowVoiceChat);
-            view.SetMatureContent(sceneData.isMatureContent);
+            this.view = view;
+            view.OnApplyChanges += OnApplyChanges;
         }
-    }
 
-    protected override void OnShow() { view.SetActive(true); }
-
-    protected override void OnHide() { view.SetActive(false); }
-    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView) { SetSceneData(sceneCardView.sceneData); }
-
-    void OnApplyChanges()
-    {
-        sceneDataUpdatePayload.name = view.GetName();
-        sceneDataUpdatePayload.description = view.GetDescription();
-        sceneDataUpdatePayload.allowVoiceChat = view.GetAllowVoiceChat();
-        sceneDataUpdatePayload.isMatureContent = view.GetMatureContent();
-
-        string[] permissions = null;
-        if (view.GetAllowMovePlayer() && view.GetAllowTriggerEmotes())
+        public override void Dispose()
         {
-            permissions = new [] { PERMISSION_MOVE_PLAYER, PERMISSION_TRIGGER_EMOTES };
+            view.OnApplyChanges -= OnApplyChanges;
+            Object.Destroy(view.gameObject);
         }
-        else if (view.GetAllowMovePlayer())
+
+        public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
+
+        public void SetSceneData(ISceneData sceneData)
         {
-            permissions = new [] { PERMISSION_MOVE_PLAYER };
+            this.sceneData = sceneData;
+
+            view.SetName(sceneData.name);
+            view.SetDescription(sceneData.description);
+            view.SetConfigurationActive(sceneData.isDeployed);
+            view.SetPermissionsActive(sceneData.isDeployed);
+
+            if (sceneData.isDeployed)
+            {
+                view.SetAllowMovePlayer(sceneData.requiredPermissions != null && sceneData.requiredPermissions.Contains(PERMISSION_MOVE_PLAYER));
+                view.SetAllowTriggerEmotes(sceneData.requiredPermissions != null && sceneData.requiredPermissions.Contains(PERMISSION_TRIGGER_EMOTES));
+                view.SetAllowVoiceChat(sceneData.allowVoiceChat);
+                view.SetMatureContent(sceneData.isMatureContent);
+            }
         }
-        else if (view.GetAllowTriggerEmotes())
+
+        protected override void OnShow() { view.SetActive(true); }
+
+        protected override void OnHide() { view.SetActive(false); }
+        void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView) { SetSceneData(sceneCardView.SceneData); }
+
+        void OnApplyChanges()
         {
-            permissions = new [] { PERMISSION_TRIGGER_EMOTES };
+            sceneDataUpdatePayload.name = view.GetName();
+            sceneDataUpdatePayload.description = view.GetDescription();
+            sceneDataUpdatePayload.allowVoiceChat = view.GetAllowVoiceChat();
+            sceneDataUpdatePayload.isMatureContent = view.GetMatureContent();
+
+            string[] permissions = null;
+            if (view.GetAllowMovePlayer() && view.GetAllowTriggerEmotes())
+            {
+                permissions = new [] { PERMISSION_MOVE_PLAYER, PERMISSION_TRIGGER_EMOTES };
+            }
+            else if (view.GetAllowMovePlayer())
+            {
+                permissions = new [] { PERMISSION_MOVE_PLAYER };
+            }
+            else if (view.GetAllowTriggerEmotes())
+            {
+                permissions = new [] { PERMISSION_TRIGGER_EMOTES };
+            }
+            sceneDataUpdatePayload.requiredPermissions = permissions;
+            OnRequestUpdateSceneData?.Invoke(sceneData.id, sceneDataUpdatePayload);
         }
-        sceneDataUpdatePayload.requiredPermissions = permissions;
-        OnRequestUpdateSceneData?.Invoke(sceneData.id, sceneDataUpdatePayload);
     }
 }

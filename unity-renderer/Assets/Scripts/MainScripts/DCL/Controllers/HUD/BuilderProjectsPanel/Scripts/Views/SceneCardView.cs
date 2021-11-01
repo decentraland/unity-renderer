@@ -11,7 +11,7 @@ internal interface ISceneCardView : IDisposable
     event Action<Vector2Int> OnEditorPressed;
     event Action<ISceneData> OnSettingsPressed;
     event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
-    ISceneData sceneData { get; }
+    ISceneData SceneData { get; }
     ISearchInfo searchInfo { get; }
     Vector3 contextMenuButtonPosition { get; }
     void Setup(ISceneData sceneData);
@@ -83,7 +83,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     private static readonly int isLoadingAnimation = Animator.StringToHash("isLoading");
 
     ISearchInfo ISceneCardView.searchInfo { get; } = new SearchInfo();
-    ISceneData ISceneCardView.sceneData => sceneData;
+    ISceneData ISceneCardView.SceneData => sceneData;
     Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position + CONTEXT_MENU_OFFSET;
 
     private ISceneData sceneData;

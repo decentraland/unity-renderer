@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,8 +22,8 @@ namespace Tests
             sectionController = new SectionController();
             scenesController = new ScenesViewController(sceneCardPrefab);
 
-            scenesController.AddListener((IDeployedSceneListener)sectionController);
-            scenesController.AddListener((IScenesListener)sectionController);
+            scenesController.AddListener((ISceneListener)sectionController);
+            scenesController.AddListener((IProjectListener)sectionController);
         }
 
         [TearDown]

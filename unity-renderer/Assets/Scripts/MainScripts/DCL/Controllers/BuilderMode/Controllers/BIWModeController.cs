@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using UnityEngine;
 
 public interface IBIWModeController : IBIWController

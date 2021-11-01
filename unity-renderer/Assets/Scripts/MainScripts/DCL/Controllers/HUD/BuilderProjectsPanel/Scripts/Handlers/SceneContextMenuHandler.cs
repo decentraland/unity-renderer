@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Builder;
 using DCL.Interface;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ internal class SceneContextMenuHandler : IDisposable
     private readonly UnpublishPopupController unpublishPopupController;
 
     private Vector2Int sceneCoords;
-    private DeployedScene.Source sceneSource;
+    private Scene.Source sceneSource;
 
     public SceneContextMenuHandler(SceneCardViewContextMenu contextMenu, ISectionsController sectionsController,
         IScenesViewController scenesViewController, UnpublishPopupController unpublishPopupController)

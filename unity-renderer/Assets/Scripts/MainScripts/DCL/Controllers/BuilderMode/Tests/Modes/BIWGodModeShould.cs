@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Configuration;
