@@ -197,7 +197,7 @@ namespace Tests
             plugin.GetState(ID).Returns((int)VideoState.PLAYING);
 
             webVideoPlayer.UpdateWebVideoTexture();
-            plugin.Received(1).TextureUpdate(ID, Arg.Any<bool>());
+            plugin.Received(1).TextureUpdate(ID);
         }
 
         [Test]

@@ -14,6 +14,7 @@ var WebVideoPlayer = {
         };
 
         const videoUrl = Pointer_stringify(url);
+        console.log("VIDEO URL: " + videoUrl);
         const vid = document.createElement("video");
         vid.autoplay = false;
 
@@ -128,7 +129,7 @@ var WebVideoPlayer = {
         return videos[id].textureId;
     },
 
-    WebVideoPlayerTextureUpdate: function (videoId, isWebGL1) {
+    WebVideoPlayerTextureUpdate: function (videoId) {
         const id = Pointer_stringify(videoId);
 
         if (videos[id].state !== 4) return; //PLAYING
@@ -137,26 +138,15 @@ var WebVideoPlayer = {
 
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
 
-        if (isWebGL1) {
-            GLctx.texImage2D(
-                GLctx.TEXTURE_2D,
-                0,
-                GLctx.RGBA,
-                GLctx.RGBA,
-                GLctx.UNSIGNED_BYTE,
-                videos[id].video
-            );
-        } else {
-            GLctx.texSubImage2D(
-                GLctx.TEXTURE_2D,
-                0,
-                0,
-                0,
-                GLctx.RGBA,
-                GLctx.UNSIGNED_BYTE,
-                videos[id].video
-            );
-        }
+        GLctx.texImage2D(GLctx.TEXTURE_2D,
+            0,
+            GLctx.SRGB8_ALPHA8,
+            videos[id].video.videoWidth,
+            videos[id].video.videoHeight,
+            0,
+            GLctx.RGBA,
+            GLctx.UNSIGNED_BYTE,
+            videos[id].video);
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {
