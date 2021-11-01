@@ -37,9 +37,18 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
                          $"&ram={ram}" +
                          $"&gpu={gpu}" +
                          $"&nametag={nametag}" +
-                         $"&realm={realm}";
+                         $"&realm={realm}" + 
+                         $"&labels={GetLabels()}";
 
             WebInterface.OpenURL(url);
+        }
+        private string GetLabels()
+        {
+#if UNITY_WEBGL
+            return "explorer,new";
+#else
+            return "explorer-desktop,new";
+#endif
         }
         private string GetOSInfo()
         {
