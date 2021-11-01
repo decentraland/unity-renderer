@@ -108,7 +108,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void RequestAllEventsFromAPI()
     {
-        eventsAPIApiController.GetAllEvents(
+        // First try with signed request
+        eventsAPIApiController.GetAllEventsSigned(
             (eventList) =>
             {
                 eventsFromAPI = eventList;
@@ -116,7 +117,19 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             },
             (error) =>
             {
-                Debug.LogError($"Error receiving events from the API: {error}");
+                Debug.LogError($"Error receiving events from the API (with signed request): {error}");
+
+                // If the signed request fails, tries with non-signed one (this is temporal)
+                eventsAPIApiController.GetAllEvents(
+                    (eventList) =>
+                    {
+                        eventsFromAPI = eventList;
+                        OnEventsFromAPIUpdated?.Invoke();
+                    },
+                    (error) =>
+                    {
+                        Debug.LogError($"Error receiving events from the API (with non-signed request): {error}");
+                    });
             });
     }
 

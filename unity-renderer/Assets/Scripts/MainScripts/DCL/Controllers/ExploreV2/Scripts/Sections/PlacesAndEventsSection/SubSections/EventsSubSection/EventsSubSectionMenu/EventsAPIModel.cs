@@ -8,6 +8,12 @@ public class EventListFromAPIModel
     public List<EventFromAPIModel> data;
 }
 
+public class EventListFromAPISignedModel
+{
+    public bool ok;
+    public string data;
+}
+
 [Serializable]
 public class EventFromAPIModel
 {

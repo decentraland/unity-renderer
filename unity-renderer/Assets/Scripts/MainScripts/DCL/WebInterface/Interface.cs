@@ -1030,16 +1030,13 @@ namespace DCL.Interface
         {
             public string newUnverifiedName;
         }
-        
+
         [System.Serializable]
         public class SendSaveUserDescriptionPayload
         {
             public string description;
 
-            public SendSaveUserDescriptionPayload(string description)
-            {
-                this.description = description;
-            }
+            public SendSaveUserDescriptionPayload(string description) { this.description = description; }
         }
 
         [Serializable]
@@ -1082,11 +1079,8 @@ namespace DCL.Interface
 
             SendMessage("SaveUserUnverifiedName", payload);
         }
-        
-        public static void SendSaveUserDescription(string about)
-        {
-            SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about));
-        }
+
+        public static void SendSaveUserDescription(string about) { SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about)); }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 
@@ -1338,6 +1332,12 @@ namespace DCL.Interface
             };
 
             SendMessage("VideoProgressEvent", progressEvent);
+        }
+
+        public static void RequestDCLEvents(string url)
+        {
+            stringPayload.value = url;
+            SendMessage("RequestDCLEvents", stringPayload);
         }
     }
 }
