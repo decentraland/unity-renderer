@@ -34,6 +34,7 @@ public class SkyboxController : PluginFeature
             directionalLight = temp.AddComponent<Light>();
             directionalLight.type = LightType.Directional;
         }
+        DCL.DataStore.i.isProceduralSkyboxInUse.Set(true);
     }
 
     private void SelectSkyboxConfiguration()
@@ -56,7 +57,14 @@ public class SkyboxController : PluginFeature
 
         // Apply material as per number of Layers.
         //TODO: Change shader on same materialinstead of having multiple material.
-        selectedMat = MaterialReferenceContainer.i.GetMaterialForLayers(configuration.textureLayers.Count);
+        MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(configuration.textureLayers.Count);
+        if (matLayer == null)
+        {
+            matLayer = MaterialReferenceContainer.i.materials[0];
+        }
+
+        configuration.ResetMaterial(matLayer.material, matLayer.maxLayer);
+        selectedMat = matLayer.material;
         RenderSettings.skybox = selectedMat;
     }
 
@@ -78,6 +86,12 @@ public class SkyboxController : PluginFeature
         {
             timeOfTheDay = 0.01f;
         }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        DCL.DataStore.i.isProceduralSkyboxInUse.Set(false);
     }
 
     private float GetNormalizedDayTime()

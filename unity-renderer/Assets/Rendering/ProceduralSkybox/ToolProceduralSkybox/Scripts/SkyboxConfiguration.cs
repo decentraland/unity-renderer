@@ -54,10 +54,10 @@ public class SkyboxConfiguration : ScriptableObject
 
         // Apply Horizon Values
         selectedMat.SetColor("_horizonColor", horizonColor.Evaluate(normalizedDayTime));
-        selectedMat.SetFloat("_horizonHeight", GetTansitionValue(horizonHeight, percentage, 0.96f));
-        selectedMat.SetFloat("_horizonWidth", GetTansitionValue(horizonHeight, percentage, 0.3f));
+        selectedMat.SetFloat("_horizonHeight", GetTansitionValue(horizonHeight, percentage, 0f));
+        selectedMat.SetFloat("_horizonWidth", GetTansitionValue(horizonWidth, percentage, 0f));
 
-        
+
 
         // Apply Ambient colors to the rendering settings
         if (ambientTrilight)
@@ -133,10 +133,10 @@ public class SkyboxConfiguration : ScriptableObject
             return;
         }
 
-        
+
         lightGO.intensity = GetTansitionValue(directionalLightLayer.intensity, normalizedDayTime * 100);
     }
-    
+
     void ApplyDLDirection(float normalizedDayTime, Light lightGO)
     {
         if (lightGO == null)
@@ -166,7 +166,7 @@ public class SkyboxConfiguration : ScriptableObject
             if (percentage <= directionalLightLayer.lightDirection[i].percentage)
             {
                 max = directionalLightLayer.lightDirection[i];
-                
+
                 if ((i - 1) > 0)
                 {
                     min = directionalLightLayer.lightDirection[i - 1];
@@ -179,7 +179,7 @@ public class SkyboxConfiguration : ScriptableObject
         float t = Mathf.InverseLerp(min.percentage, max.percentage, percentage);
         Quaternion lightDirection = Quaternion.Lerp(Vector4ToQuaternion(min.value), Vector4ToQuaternion(max.value), t);
 
-        
+
 
         lightGO.transform.rotation = lightDirection;
     }
@@ -199,21 +199,21 @@ public class SkyboxConfiguration : ScriptableObject
 
             selectedMat.SetTexture("_tex_" + layerNum, layer.texture);
             selectedMat.SetTexture("_normals_" + layerNum, layer.textureNormal);
-
-            
-
+            selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             selectedMat.SetFloat("_speed_" + layerNum, layer.speed);
+            //selectedMat.SetFloat("_speed_" + layerNum, layer.speed);
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
             selectedMat.SetFloat("_fadeTime_" + layerNum, layer.fadingIn);
-            selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
+
             selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
         }
+
 
         Vector2 currentOffset = GetTransitionValue(layer.position, normalizedDayTime * 100);
         Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, currentOffset.x, currentOffset.y);
         selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
 
-        selectedMat.SetColor("_colorLayer_" + layerNum, layer.color.Evaluate(normalizedDayTime));
+        selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedDayTime));
     }
 
 
@@ -271,9 +271,9 @@ public class SkyboxConfiguration : ScriptableObject
             return offset;
         }
 
-        
+
         TransitioningVector2 min = _list[0], max = _list[0];
-        
+
         for (int i = 0; i < _list.Count; i++)
         {
             if (percentage <= _list[i].percentage)
@@ -294,11 +294,20 @@ public class SkyboxConfiguration : ScriptableObject
         return offset;
     }
 
-    void ResetMaterial(Material mat, int layerCount)
+    public void ResetMaterial(Material selectedMat, int layerNum)
     {
-        for (int i = 0; i < layerCount; i++)
+        for (int i = 0; i < layerNum; i++)
         {
-
+            selectedMat.SetFloat("_isRadial_" + i, 0);
+            selectedMat.SetTexture("_tex_" + i, null);
+            selectedMat.SetTexture("_normals_" + i, null);
+            selectedMat.SetFloat("_normalIntensity_" + i, 0);
+            selectedMat.SetFloat("_speed_" + i, 0);
+            selectedMat.SetVector("_timeFrame_" + i, new Vector4(0, 0));
+            selectedMat.SetFloat("_fadeTime_" + i, 0);
+            selectedMat.SetFloat("_lightIntensity_" + i, 0);
+            selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(1, 1, 0, 0));
+            selectedMat.SetColor("_color_" + i, new Color(1, 1, 1, 0));
         }
     }
 }

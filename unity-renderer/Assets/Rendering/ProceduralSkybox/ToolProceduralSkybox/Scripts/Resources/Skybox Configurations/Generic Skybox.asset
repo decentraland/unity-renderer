@@ -310,10 +310,10 @@ MonoBehaviour:
   - nameInEditor: Tex Layer 1
     expandedInEditor: 1
     timeSpan_start: 0
-    timeSpan_End: 24
+    timeSpan_End: 0
     fadingIn: 0
     fadingOut: 0
-    tintercentage: 20
+    tintercentage: 0
     isRadial: 0
     texture: {fileID: 0}
     textureNormal: {fileID: 0}
