@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -31,22 +31,7 @@ namespace DCL
         public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
         public readonly DataStore_Screen screen = new DataStore_Screen();
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
-        public readonly DataStore_WorldObjects sceneWorldObjects = new DataStore_WorldObjects();
-        public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
-        public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
-        public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
-        public readonly DataStore_Camera camera = new DataStore_Camera();
-
-        public class DataStore_WorldObjects
-        {
-            public class SceneData
-            {
-                public readonly BaseDictionary<Mesh, int> refCountedMeshes = new BaseDictionary<Mesh, int>();
-                public readonly BaseHashSet<Rendereable> renderedObjects = new BaseHashSet<Rendereable>();
-            }
-
-            public readonly BaseDictionary<string, SceneData> sceneData = new BaseDictionary<string, SceneData>();
-        }
+        public readonly DataStore_SkyboxConfig skyboxConfig = new DataStore_SkyboxConfig();
 
         public class DataStore_BuilderInWorld
         {
@@ -55,7 +40,6 @@ namespace DCL
             public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();
             public readonly BaseVariable<PublishSceneResultPayload> unpublishSceneResult = new BaseVariable<PublishSceneResultPayload>();
             public readonly BaseVariable<bool> showTaskBar = new BaseVariable<bool>();
-            public readonly BaseVariable<bool> isDevBuild = new BaseVariable<bool>();
             public readonly BaseVariable<LandWithAccess[]> landsWithAccess = new BaseVariable<LandWithAccess[]>();
         }
 
@@ -70,8 +54,6 @@ namespace DCL
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
-            public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
-            public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
             public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
             public class LoadingHUD
@@ -100,6 +82,7 @@ namespace DCL
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(30f);
             public readonly BaseVariable<int> maxAvatars = new BaseVariable<int>(DEFAULT_MAX_AVATAR);
             public readonly BaseVariable<int> maxImpostors = new BaseVariable<int>(DEFAULT_MAX_IMPOSTORS);
+            public readonly BaseHashSet<string> visibleNames = new BaseHashSet<string>();
         }
 
         /// <summary>
@@ -128,25 +111,15 @@ namespace DCL
             public readonly BaseVariable<bool> communicationReady = new BaseVariable<bool>();
         }
 
-        public class DataStore_ExploreV2
+        public class DataStore_SkyboxConfig
         {
-            public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
-            public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
-        }
-
-        public class DataStore_Taskbar
-        {
-            public readonly BaseVariable<bool> isExploreV2Enabled = new BaseVariable<bool>(false);
-        }
-
-        public class DataStore_FeatureFlag
-        {
-            public readonly BaseVariable<FeatureFlag> flags = new BaseVariable<FeatureFlag>(new FeatureFlag());
-        }
-
-        public class DataStore_Camera
-        {
-            public readonly BaseVariable<Quaternion> rotation =  new BaseVariable<Quaternion>();
+            public BaseVariable<bool> objectUpdated = new BaseVariable<bool>(false);
+            public BaseVariable<bool> useProceduralSkybox = new BaseVariable<bool>(false);
+            public BaseVariable<string> configToLoad = new BaseVariable<string>("Generic Skybox");
+            public BaseVariable<float> minutesPerSecond = new BaseVariable<float>(60);
+            public BaseVariable<bool> pauseTime = new BaseVariable<bool>(false);
+            public bool jumpTime = false;
+            public BaseVariable<float> jumpToTime = new BaseVariable<float>(0);
         }
     }
 }
