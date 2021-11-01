@@ -144,8 +144,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
         places.Dispose();
 
-        //placeModal.Dispose();
-        //Destroy(placeModal.gameObject);
+        if (placeModal != null)
+        {
+            placeModal.Dispose();
+            Destroy(placeModal.gameObject);
+        }
     }
 
     public void SetPlaces(List<PlaceCardComponentModel> places)
