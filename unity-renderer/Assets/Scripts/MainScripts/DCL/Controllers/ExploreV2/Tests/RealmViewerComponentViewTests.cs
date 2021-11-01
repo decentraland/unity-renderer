@@ -33,24 +33,6 @@ public class RealmViewerComponentViewTests
     }
 
     [Test]
-    public void RefreshExploreV2MenuCorrectly()
-    {
-        // Arrange
-        string testRealmName = "Test Realm Name";
-        int testNumberOfUsers = 50000;
-
-        realmViewerComponent.model.realmName = testRealmName;
-        realmViewerComponent.model.numberOfUsers = testNumberOfUsers;
-
-        // Act
-        realmViewerComponent.RefreshControl();
-
-        // Assert
-        Assert.AreEqual(testRealmName, realmViewerComponent.model.realmName, "The realm name does not match in the model.");
-        Assert.AreEqual(testNumberOfUsers, realmViewerComponent.model.numberOfUsers, "The number of users does not match in the model.");
-    }
-
-    [Test]
     public void SetRealmCorrectly()
     {
         // Arrange

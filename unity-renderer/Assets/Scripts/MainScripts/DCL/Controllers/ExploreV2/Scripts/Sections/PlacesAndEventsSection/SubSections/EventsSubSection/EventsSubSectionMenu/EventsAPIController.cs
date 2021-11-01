@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -25,6 +26,7 @@ public interface IEventsAPIController
     UnityWebRequestAsyncOperation RegisterAttendEvent(string eventId, bool isRegistered, Action OnSuccess, Action<string> OnFail);
 }
 
+[ExcludeFromCodeCoverage]
 public class EventsAPIController : IEventsAPIController
 {
     internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";

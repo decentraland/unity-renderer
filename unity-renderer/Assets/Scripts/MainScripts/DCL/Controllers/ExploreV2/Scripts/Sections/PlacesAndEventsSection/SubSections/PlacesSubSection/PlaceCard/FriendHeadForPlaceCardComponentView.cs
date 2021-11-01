@@ -71,6 +71,9 @@ public class FriendHeadForPlaceCardComponentView : BaseComponentView, IFriendHea
 
         if (model.userProfile != null)
             model.userProfile.snapshotObserver.RemoveListener(OnFaceSnapshotLoaded);
+
+        if (friendPortrait != null)
+            friendPortrait.Dispose();
     }
 
     public void SetBackgroundColor(Color newColor)
@@ -88,6 +91,7 @@ public class FriendHeadForPlaceCardComponentView : BaseComponentView, IFriendHea
         if (model.userProfile != null)
         {
             friendName.text = model.userProfile.userName;
+            model.userProfile.snapshotObserver.RemoveListener(OnFaceSnapshotLoaded);
             model.userProfile.snapshotObserver.AddListener(OnFaceSnapshotLoaded);
         }
         else

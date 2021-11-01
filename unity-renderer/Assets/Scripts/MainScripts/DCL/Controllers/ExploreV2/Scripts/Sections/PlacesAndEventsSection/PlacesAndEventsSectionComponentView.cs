@@ -29,7 +29,14 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     public override void RefreshControl() { }
 
-    private void OnDestroy() { RemoveSectionSelectorMappings(); }
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        RemoveSectionSelectorMappings();
+        placesSubSection.Dispose();
+        eventsSubSection.Dispose();
+    }
 
     internal void CreateSubSectionSelectorMappings()
     {

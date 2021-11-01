@@ -29,10 +29,10 @@ public interface IExploreV2MenuComponentView : IDisposable
     IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection { get; }
 
     /// <summary>
-    /// Activates/Deactivates the game object of the explore menu.
+    /// Shows/Hides the game object of the explore menu.
     /// </summary>
-    /// <param name="isActive">True to activate it.</param>
-    void SetActive(bool isActive);
+    /// <param name="isActive">True to show it.</param>
+    void SetVisible(bool isActive);
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -71,7 +71,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         closeAction.OnTriggered -= OnCloseActionTriggered;
     }
 
-    public void SetActive(bool isActive)
+    public void SetVisible(bool isActive)
     {
         if (isActive)
         {
@@ -85,12 +85,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         }
     }
 
-    internal void CreateSectionSelectorMappings()
-    {
-        sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn));
-
-        ShowDefaultSection();
-    }
+    internal void CreateSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn)); }
 
     internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.RemoveAllListeners(); }
 
