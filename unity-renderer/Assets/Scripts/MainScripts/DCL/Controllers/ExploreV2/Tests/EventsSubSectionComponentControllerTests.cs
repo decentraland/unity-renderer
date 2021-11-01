@@ -84,7 +84,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView.Received().SetUpcomingEventsAsLoading(true);
         eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(false);
         eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(true);
-        eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
+        eventsAPIController.Received().GetAllEventsSigned(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
         Assert.IsFalse(eventsSubSectionComponentController.reloadEvents);
     }
 
@@ -95,7 +95,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.RequestAllEventsFromAPI();
 
         // Assert
-        eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
+        eventsAPIController.Received().GetAllEventsSigned(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
     }
 
     [Test]
