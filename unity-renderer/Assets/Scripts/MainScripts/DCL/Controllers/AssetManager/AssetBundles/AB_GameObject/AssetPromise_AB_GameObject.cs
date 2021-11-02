@@ -178,7 +178,7 @@ namespace DCL
                 Physics.BakeMesh(mesh.GetInstanceID(), false);
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
-                mesh.UploadMeshData(true);
+                //mesh.UploadMeshData(true);
             }
         }
 
