@@ -147,9 +147,7 @@ namespace DCL
         /// </summary>
         public byte[] GetResultData()
         {
-            if (isDone && isSucceded)
-                return webRequest.downloadHandler.data;
-            return new byte[0];
+            return webRequest.downloadHandler.data;
         }
 
         internal void SetNewWebRequest(UnityWebRequest newRequest) { webRequest = newRequest; }

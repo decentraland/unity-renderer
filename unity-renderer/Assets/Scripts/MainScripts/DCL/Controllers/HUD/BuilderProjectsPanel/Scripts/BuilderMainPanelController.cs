@@ -95,9 +95,9 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         this.context = context;
         Initialize(new SectionsController(view.GetSectionContainer()),
-            new ScenesViewController(view.GetCardViewPrefab(), view.GetTransform()),
+            new ScenesViewController(view.GetSceneCardViewPrefab(), view.GetTransform()),
             new LandsController(),
-            new ProjectsController(view.GetCardViewPrefab(), view.GetTransform()),
+            new ProjectsController(view.GetProjectCardView(), view.GetTransform()),
             new NewProjectFlowController(),
             Environment.i.platform.serviceProviders.theGraph,
             Environment.i.platform.serviceProviders.catalyst);

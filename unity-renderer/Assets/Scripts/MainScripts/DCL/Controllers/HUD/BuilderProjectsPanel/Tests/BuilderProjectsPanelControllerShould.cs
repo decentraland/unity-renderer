@@ -198,7 +198,7 @@ namespace Tests
         [Test]
         public void CallOpenSectionWhenSceneSelected()
         {
-            var cardView = UnityEngine.Object.Instantiate(controller.view.GetCardViewPrefab());
+            var cardView = UnityEngine.Object.Instantiate(controller.view.GetSceneCardViewPrefab());
             ((ISceneCardView)cardView).Setup(new SceneData());
             scenesViewController.OnProjectSelected += Raise.Event<Action<ISceneCardView>>(cardView);
             sectionsController.Received(1).OpenSection(Arg.Any<SectionId>());
@@ -228,7 +228,7 @@ namespace Tests
             Vector2Int coords = new Vector2Int(0, 1);
             const string author = "Temptation Creator";
 
-            var cardView = UnityEngine.Object.Instantiate(controller.view.GetCardViewPrefab());
+            var cardView = UnityEngine.Object.Instantiate(controller.view.GetSceneCardViewPrefab());
             ((ISceneCardView)cardView).Setup(new SceneData()
             {
                 isDeployed = true,

@@ -25,7 +25,7 @@ public class BuilderAPIController : IBuilderAPIController
 
     private BuilderInWorldBridge builderInWorldBridge;
     
-    private Dictionary<string, Promise<RequestHeader>> headersRequests = new Dictionary<string, Promise<RequestHeader>>();
+    private Dictionary<string, List<Promise<RequestHeader>>> headersRequests = new Dictionary<string, List<Promise<RequestHeader>>>();
 
     public void Initialize(IContext context)
     {
@@ -43,7 +43,11 @@ public class BuilderAPIController : IBuilderAPIController
     internal Promise<RequestHeader> AskHeadersToKernel(string method, string endpoint)
     {
         Promise<RequestHeader> promise = new Promise<RequestHeader>();
-        headersRequests.Add(endpoint, promise);
+        if(headersRequests.ContainsKey(endpoint))
+            headersRequests[endpoint].Add(promise);
+        else 
+            headersRequests.Add(endpoint, new List<Promise<RequestHeader>>(){ promise });
+        
         if(builderInWorldBridge != null)
             builderInWorldBridge.AskKernelForCatalogHeadersWithParams(method, endpoint);
         return promise;
@@ -57,7 +61,10 @@ public class BuilderAPIController : IBuilderAPIController
             if (request.Key == requestHeader.endpoint)
             {
                 keyToRemove = request.Key;
-                request.Value.Resolve(requestHeader);
+                foreach (Promise<RequestHeader> promise in request.Value)
+                {
+                    promise.Resolve(requestHeader);
+                }
             }
         }
         
