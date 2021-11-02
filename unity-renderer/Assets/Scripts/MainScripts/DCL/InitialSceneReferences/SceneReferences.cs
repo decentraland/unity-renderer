@@ -10,7 +10,7 @@ namespace DCL
     public class SceneReferences : ISceneReferences
     {
         public static SceneReferences i { get; private set; }
-        private readonly SceneReferencesData data;
+        public readonly SceneReferencesData data;
 
         public GameObject groundVisual => data.groundVisual;
         public GameObject biwCameraParent => data.biwCameraParent;
