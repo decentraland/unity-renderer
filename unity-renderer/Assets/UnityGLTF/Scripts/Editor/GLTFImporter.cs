@@ -162,6 +162,7 @@ namespace UnityGLTF
                                             mesh.RecalculateNormals();
                                         }
 
+                                        Physics.BakeMesh(mesh.GetInstanceID(), false);
                                         mesh.UploadMeshData(!_readWriteEnabled);
 
                                         if (_generateColliders)
