@@ -60,7 +60,7 @@ namespace DCL
             }
             else
             {
-                Debug.unityLogger.logEnabled = false;
+                //Debug.unityLogger.logEnabled = false;
                 HideFPSPanel();
             }
             
