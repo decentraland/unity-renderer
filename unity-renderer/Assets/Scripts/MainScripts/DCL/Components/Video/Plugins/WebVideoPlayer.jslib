@@ -14,7 +14,6 @@ var WebVideoPlayer = {
         };
 
         const videoUrl = Pointer_stringify(url);
-        console.log("VIDEO URL: " + videoUrl);
         const vid = document.createElement("video");
         vid.autoplay = false;
 
@@ -48,16 +47,17 @@ var WebVideoPlayer = {
                 if (data.fatal) {
                     switch (data.type) {
                         case Hls.ErrorTypes.NETWORK_ERROR:
-                            console.log("Video Stream: fatal network error encountered, try to recover");
+                            console.log("VIDEO PLAYER: fatal network error encountered, try to recover");
                             hls.startLoad();
                             break;
                         case Hls.ErrorTypes.MEDIA_ERROR:
-                            console.log("Video Stream: fatal media error encountered, try to recover");
+                            console.log("VIDEO PLAYER: fatal media error encountered, try to recover");
                             hls.recoverMediaError();
                             break;
                         default:
                             videoData.state = videoState.ERROR;
                             videoData.error = "Hls error";
+                            hls.destroy();
                             break;
                     }
                 }
@@ -96,7 +96,7 @@ var WebVideoPlayer = {
         vid.onerror = function () {
             videoData.state = videoState.ERROR;
             videoData.error = vid.error.message;
-            console.log("Video Stream: ERROR " + videoData.error);
+            console.log("video: ERROR " + videoData.error);
         };
 
         vid.crossOrigin = "anonymous";
@@ -105,7 +105,7 @@ var WebVideoPlayer = {
     WebVideoPlayerRemove: function (videoId) {
         const id = Pointer_stringify(videoId);
         if (!videos.hasOwnProperty(id)) {
-            console.warn("Video Stream: error trying to remove undefined video of id " + id);
+            console.warn("video: trying to remove undefined video of id " + id);
             return;
         }
         videos[id].video.src = "";
@@ -113,6 +113,7 @@ var WebVideoPlayer = {
         videos[id].video = null;
 
         if (videos[id].hlsInstance !== undefined) {
+            videos[id].hlsInstance.destroy();
             delete videos[id].hlsInstance;
         }
 
@@ -138,7 +139,8 @@ var WebVideoPlayer = {
 
         GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[textureId]);
 
-        GLctx.texImage2D(GLctx.TEXTURE_2D,
+        GLctx.texImage2D(
+            GLctx.TEXTURE_2D,
             0,
             GLctx.SRGB8_ALPHA8,
             videos[id].video.videoWidth,
@@ -146,37 +148,32 @@ var WebVideoPlayer = {
             0,
             GLctx.RGBA,
             GLctx.UNSIGNED_BYTE,
-            videos[id].video);
+            videos[id].video
+        );
     },
 
     WebVideoPlayerPlay: function (videoId, startTime) {
         try {
-            console.log("Plugin received Play " + videoId);
             const videoData = videos[Pointer_stringify(videoId)];
             if (videoData.hlsInstance !== undefined) {
                 videoData.hlsInstance.attachMedia(videoData.video);
             }
 
             const playPromise = videoData.video.play();
-            console.log("Checking playPromise " + videoId);
             if (playPromise !== undefined) {
-                console.log("promise is defined" + videoId);
                 playPromise.then(function () {
-                    console.log("setting currentTime to " + startTime);
                     // Playback starts with no problem
                     if (startTime !== -1) {
                         videoData.video.currentTime = startTime
                     }
                 })
                     .catch(function (error) {
-                        console.log("Found error: " + error);
                         // Playback cancelled before the video finished loading (e.g. when teleporting)
                         // we mustn't report this error as it's harmless and affects our metrics
                     });
             }
         } catch (err) {
             // Exception!
-            console.log("Found exception: " + err);
         }
     },
 

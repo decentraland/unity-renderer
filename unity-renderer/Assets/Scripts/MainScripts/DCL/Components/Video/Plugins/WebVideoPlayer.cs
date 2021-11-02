@@ -10,7 +10,7 @@ namespace DCL.Components.Video.Plugin
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
         public bool playing { get { return shouldBePlaying; } }
-        public bool visible { get; set; }
+        public bool visible { get; set; } = true;
         public bool isError { get; private set; }
 
         private string videoPlayerId;
@@ -25,7 +25,6 @@ namespace DCL.Components.Video.Plugin
         {
             videoPlayerId = id;
             this.plugin = plugin;
-
             texture = new Texture2D(1, 1);
             plugin.Create(id, url, useHls);
         }
@@ -40,9 +39,7 @@ namespace DCL.Components.Video.Plugin
             switch (plugin.GetState(videoPlayerId))
             {
                 case (int)VideoState.ERROR:
-                    Debug.unityLogger.logEnabled = true;
                     Debug.LogError(plugin.GetError(videoPlayerId));
-                    Debug.unityLogger.logEnabled = false;
                     isError = true;
                     break;
                 case (int)VideoState.READY:
@@ -54,41 +51,30 @@ namespace DCL.Components.Video.Plugin
                         OnTextureReady?.Invoke(texture);
                     }
 
-                    break;
-                case (int)VideoState.PLAYING:
-                    if (shouldBePlaying && visible)
+                    if (shouldBePlaying)
                     {
-                        int width = plugin.GetWidth(videoPlayerId);
-                        int height = plugin.GetHeight(videoPlayerId);
-
-                        if (width > 0 && height > 0)
-                        {
-                            plugin.TextureUpdate(videoPlayerId);
-                        }
+                        plugin.Play(videoPlayerId, pausedAtTime);
+                        pausedAtTime = -1;
                     }
 
                     break;
+                case (int)VideoState.PLAYING:
+                    if (shouldBePlaying && visible)
+                        plugin.TextureUpdate(videoPlayerId);
+                    break;
             }
-        }
-
-        void Log(string s)
-        {
-            Debug.unityLogger.logEnabled = true;
-            Debug.Log("Alex: " + s);
-            Debug.unityLogger.logEnabled = false;
         }
 
         public void Play()
         {
             if (isError)
-            {
-                Log("Tried to play but has error");
                 return;
-            }
 
-            Log("Playing normally");
-            plugin.Play(videoPlayerId, pausedAtTime);
-            pausedAtTime = -1;
+            if (initialized)
+            {
+                plugin.Play(videoPlayerId, pausedAtTime);
+                pausedAtTime = -1;
+            }
 
             shouldBePlaying = true;
         }
@@ -96,12 +82,8 @@ namespace DCL.Components.Video.Plugin
         public void Pause()
         {
             if (isError)
-            {
-                Log($"Tried to pause but has error");
                 return;
-            }
 
-            Log("Pausing normally");
             pausedAtTime = plugin.GetTime(videoPlayerId);
             plugin.Pause(videoPlayerId);
             shouldBePlaying = false;
