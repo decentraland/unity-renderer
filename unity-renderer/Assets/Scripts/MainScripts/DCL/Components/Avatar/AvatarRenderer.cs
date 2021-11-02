@@ -243,109 +243,44 @@ namespace DCL
             //              without being afraid of the gameObject active state.
             yield return new WaitUntil(() => gameObject.activeSelf);
 
-            bool loadSoftFailed = false;
-
+            var loadSoftFailed = false;
             WearableItem resolvedBody = null;
+            Exception bodyShapeError = null;
 
-            // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
-            Helpers.Promise<WearableItem> avatarBodyPromise = null;
-            if (!string.IsNullOrEmpty(model.bodyShape))
+            yield return LoadBodyShape(item => resolvedBody = item, err => bodyShapeError = err);
+
+            if (bodyShapeError != null)
             {
-                avatarBodyPromise = CatalogController.RequestWearable(model.bodyShape);
-            }
-            else
-            {
-                OnFailEvent?.Invoke(true);
-                yield break;
-            }
-
-            List<WearableItem> resolvedWearables = new List<WearableItem>();
-
-            // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
-            List<Helpers.Promise<WearableItem>> avatarWearablePromises = new List<Helpers.Promise<WearableItem>>();
-            if (model.wearables != null)
-            {
-                for (int i = 0; i < model.wearables.Count; i++)
-                {
-                    avatarWearablePromises.Add(CatalogController.RequestWearable(model.wearables[i]));
-                }
-            }
-
-            // In this point, all the requests related to the avatar's wearables have been collected and sent to the CatalogController to be sent to kernel as a unique request.
-            // From here we wait for the response of the requested wearables and process them.
-            if (avatarBodyPromise != null)
-            {
-                yield return avatarBodyPromise;
-
-                if (!string.IsNullOrEmpty(avatarBodyPromise.error))
-                {
-                    Debug.LogError(avatarBodyPromise.error);
-                    loadSoftFailed = true;
-                }
-                else
-                {
-                    resolvedBody = avatarBodyPromise.value;
-                    wearablesInUse.Add(avatarBodyPromise.value.id);
-                }
-            }
-
-            if (resolvedBody == null)
-            {
+                Debug.LogError(bodyShapeError);
                 isLoading = false;
                 OnFailEvent?.Invoke(true);
                 yield break;
             }
-
+            
+            // In this point, all the requests related to the avatar's wearables have been collected and sent to the CatalogController to be sent to kernel as a unique request.
+            // From here we wait for the response of the requested wearables and process them.
+            
+            var resolvedWearables = new List<WearableItem>();
             // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
-            List<Helpers.Promise<WearableItem>> replacementPromises = new List<Helpers.Promise<WearableItem>>();
+            var replacementWearables = new List<Promise<WearableItem>>();
 
-            foreach (var avatarWearablePromise in avatarWearablePromises)
-            {
-                yield return avatarWearablePromise;
-
-                if (!string.IsNullOrEmpty(avatarWearablePromise.error))
+            yield return LoadWearables(RequestAllModelWearables(),
+                err =>
                 {
-                    Debug.LogError(avatarWearablePromise.error);
+                    Debug.LogException(err);
                     loadSoftFailed = true;
-                }
-                else
+
+                    // TODO: make some kind of strategy pattern to avoid type checking here
+                    if (err is WearableMissingRepresentationException wearableMissingRepresentation)
+                        replacementWearables.Add(RequestWearableReplacement(wearableMissingRepresentation.wearable));
+                }, loadedWearables => resolvedWearables.AddRange(loadedWearables));
+
+            yield return LoadWearables(replacementWearables,
+                err =>
                 {
-                    WearableItem wearableItem = avatarWearablePromise.value;
-                    wearablesInUse.Add(wearableItem.id);
-
-                    if (wearableItem.GetRepresentation(model.bodyShape) != null)
-                    {
-                        resolvedWearables.Add(wearableItem);
-                    }
-                    else
-                    {
-                        model.wearables.Remove(wearableItem.id);
-                        string defaultReplacement = DefaultWearables.GetDefaultWearable(model.bodyShape, wearableItem.data.category);
-                        if (!string.IsNullOrEmpty(defaultReplacement))
-                        {
-                            model.wearables.Add(defaultReplacement);
-                            replacementPromises.Add(CatalogController.RequestWearable(defaultReplacement));
-                        }
-                    }
-                }
-            }
-
-            foreach (var wearablePromise in replacementPromises)
-            {
-                yield return wearablePromise;
-
-                if (!string.IsNullOrEmpty(wearablePromise.error))
-                {
-                    Debug.LogError(wearablePromise.error);
+                    Debug.LogException(err);
                     loadSoftFailed = true;
-                }
-                else
-                {
-                    WearableItem wearableItem = wearablePromise.value;
-                    wearablesInUse.Add(wearableItem.id);
-                    resolvedWearables.Add(wearableItem);
-                }
-            }
+                }, loadedWearables => resolvedWearables.AddRange(loadedWearables));
 
             bool bodyIsDirty = false;
             if (bodyShapeController != null && bodyShapeController.id != model?.bodyShape)
@@ -493,6 +428,89 @@ namespace DCL
             {
                 OnSuccessEvent?.Invoke();
             }
+        }
+
+        private IEnumerator LoadWearables(IEnumerable<Promise<WearableItem>> wearablesToLoad,
+            Action<Exception> error,
+            Action<List<WearableItem>> completed)
+        {
+            var resolvedWearables = new List<WearableItem>();
+            
+            foreach (var wearablePromise in wearablesToLoad)
+            {
+                yield return wearablePromise;
+
+                if (!string.IsNullOrEmpty(wearablePromise.error))
+                    error.Invoke(new Exception(wearablePromise.error));
+                else
+                {
+                    var wearableItem = wearablePromise.value;
+                    
+                    if (wearableItem.GetRepresentation(model.bodyShape) != null)
+                    {
+                        resolvedWearables.Add(wearableItem);
+                        wearablesInUse.Add(wearableItem.id);
+                        model.wearables.Add(wearableItem.id);
+                    }
+                    else
+                        error.Invoke(new WearableMissingRepresentationException(wearableItem, model.bodyShape));
+                }
+            }
+            
+            completed.Invoke(resolvedWearables);
+        }
+
+        private IEnumerator LoadBodyShape(Action<WearableItem> success, Action<Exception> fail)
+        {
+            Promise<WearableItem> avatarBodyPromise = null;
+            WearableItem resolvedBody = null;
+            
+            if (!string.IsNullOrEmpty(model.bodyShape))
+                avatarBodyPromise = CatalogController.RequestWearable(model.bodyShape);
+            else
+                fail.Invoke(new Exception($"model.bodyShape is null or empty. Id: {model.id}, name: {model.name}, bodyShape: {model.bodyShape}"));
+
+            if (avatarBodyPromise != null)
+            {
+                yield return avatarBodyPromise;
+
+                if (!string.IsNullOrEmpty(avatarBodyPromise.error))
+                {
+                    fail.Invoke(new Exception(avatarBodyPromise.error));
+                }
+                else
+                {
+                    resolvedBody = avatarBodyPromise.value;
+                    wearablesInUse.Add(avatarBodyPromise.value.id);
+                }
+            }
+
+            if (resolvedBody == null)
+                fail.Invoke(new Exception($"resolved body shape is null. Id: {model.id}, name: {model.name}"));
+            
+            success.Invoke(resolvedBody);
+        }
+
+        private IEnumerable<Promise<WearableItem>> RequestAllModelWearables()
+        {
+            // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
+            var avatarWearablePromises = new List<Promise<WearableItem>>();
+            if (model.wearables == null) return avatarWearablePromises;
+            for (var i = 0; i < model.wearables.Count; i++)
+                avatarWearablePromises.Add(CatalogController.RequestWearable(model.wearables[i]));
+            return avatarWearablePromises;
+        }
+
+        private Promise<WearableItem> RequestWearableReplacement(WearableItem wearableItem)
+        {
+            var defaultReplacement = DefaultWearables.GetDefaultWearable(model.bodyShape, wearableItem.data.category);
+            
+            if (!string.IsNullOrEmpty(defaultReplacement))
+                return CatalogController.RequestWearable(defaultReplacement);
+
+            var defaultWearableNotFoundPromise = new Promise<WearableItem>();
+            defaultWearableNotFoundPromise.Reject($"Replacement wearable not found! id: {wearableItem.id}, shape: {model.bodyShape}, category {wearableItem.data.category}");
+            return defaultWearableNotFoundPromise;
         }
 
         private void PrepareGpuSkinning()
@@ -758,6 +776,17 @@ namespace DCL
         {
             isDestroyed = true;
             CleanupAvatar();
+        }
+        
+        private class WearableMissingRepresentationException : Exception
+        {
+            public WearableItem wearable { get; }
+
+            public WearableMissingRepresentationException(WearableItem wearable, string bodyShape)
+                : base($"Wearable {wearable.id} representation not found for {bodyShape}")
+            {
+                this.wearable = wearable;
+            }
         }
     }
 }
