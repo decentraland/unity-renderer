@@ -43,8 +43,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         subSectionSelector.RefreshControl();
         subSectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
         subSectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
-
-        ShowDefaultSubSection();
+        subSectionSelector.GetSection(1)?.SelectToggle();
     }
 
     internal void RemoveSectionSelectorMappings()
@@ -52,6 +51,4 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         subSectionSelector.GetSection(0)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(1)?.onSelect.RemoveAllListeners();
     }
-
-    internal void ShowDefaultSubSection() { placesSubSection.gameObject.SetActive(true); }
 }

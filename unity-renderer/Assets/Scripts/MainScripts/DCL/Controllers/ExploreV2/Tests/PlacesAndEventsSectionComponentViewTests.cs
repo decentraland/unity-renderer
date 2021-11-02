@@ -71,17 +71,4 @@ public class PlacesAndEventsSectionComponentViewTests
                 break;
         }
     }
-
-    [Test]
-    public void ShowDefaultSubSectionCorrectly()
-    {
-        // Arrange
-        placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
-
-        // Act
-        placesAndEventsSectionComponent.ShowDefaultSubSection();
-
-        // Assert
-        Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf, "The places sub-section should be actived.");
-    }
 }
