@@ -60,7 +60,7 @@ namespace Tests
         {
             //Arrange
             controller.isFetching = true;
-            var error =  "TestError";
+            var error =  "This error is intended";
 
             //Act
             controller.LandsFetchedError(error);

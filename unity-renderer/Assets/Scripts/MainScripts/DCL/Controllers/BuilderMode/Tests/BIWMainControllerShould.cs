@@ -257,9 +257,14 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         mainController.isCatalogRequested = false;
+        
+        ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
+        Promise<bool> resultOkPromise = new Promise<bool>();
+        mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
 
         // Act
         mainController.GetCatalog();
+        resultOkPromise.Resolve(true);
 
         // Assert
         Assert.IsTrue(mainController.isCatalogRequested);
@@ -340,7 +345,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
-        mainController.context.builderAPIController.Configure().GetCompleteCatalog("").Returns(resultOkPromise);
+        mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
         
         // Act
         mainController.GetCatalog();
@@ -356,9 +361,13 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         mainController.sceneToEdit = scene;
         AddSceneToPermissions();
+        ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
+        Promise<bool> resultOkPromise = new Promise<bool>();
+        mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
 
         // Act
         mainController.CheckSceneToEditByShorcut();
+        resultOkPromise.Resolve(true);
 
         // Assert
         Assert.IsTrue(mainController.isEnteringEditMode);
