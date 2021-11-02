@@ -701,6 +701,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     backgroundColor: {r: 0.08627451, g: 0.08235294, b: 0.09411766, a: 0}
     showManualControls: 1
+    automaticTransition: 1
 --- !u!1 &5047241252951751559
 GameObject:
   m_ObjectHideFlags: 0
@@ -1101,7 +1102,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -10}
+  m_AnchoredPosition: {x: 0, y: -4}
   m_SizeDelta: {x: 0, y: 15}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &3510914701236851198

@@ -1262,7 +1262,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &4749200364848842892
 MonoBehaviour:
@@ -3083,8 +3083,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1024, y: 780}
+  m_AnchoredPosition: {x: 0, y: 21.610893}
+  m_SizeDelta: {x: 1090, y: 820}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &432704907593103731
 CanvasRenderer:
@@ -5475,12 +5475,12 @@ PrefabInstance:
     - target: {fileID: 871385723683471156, guid: 01095a78852393446834e68bf8628274,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 27.198
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 871385723683471156, guid: 01095a78852393446834e68bf8628274,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -13.599
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 939012377627474843, guid: 01095a78852393446834e68bf8628274,
         type: 3}
@@ -8507,18 +8507,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
         type: 3}
+      propertyPath: gridLayoutGroup
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
+        type: 3}
+      propertyPath: model.constraint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
+        type: 3}
       propertyPath: model.itemSize.x
-      value: 218.04498
+      value: 230
       objectReference: {fileID: 0}
     - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
         type: 3}
       propertyPath: model.itemSize.y
-      value: 160
+      value: 155
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
+        type: 3}
+      propertyPath: model.constraintCount
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
+        type: 3}
+      propertyPath: externalParentToAdaptSize
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
+        type: 3}
+      propertyPath: model.spaceBetweenItems.x
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 6426439060824752827, guid: 01095a78852393446834e68bf8628274,
         type: 3}
       propertyPath: model.adaptItemSizeToContainer
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6442398818968268967, guid: 01095a78852393446834e68bf8628274,
         type: 3}

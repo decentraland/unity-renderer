@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7618898
+    totalSpriteSurfaceArea: 7756361
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -96,6 +96,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2f8d6212d390e424ba86746c7be53eba, type: 3}
   - {fileID: 21300000, guid: 400fa122300374d5c9492754b211336f, type: 3}
   - {fileID: 21300000, guid: 39177232480c9442b9c785ef3c94a093, type: 3}
+  - {fileID: 21300000, guid: 6d6f6142025570c4c8c8705c19f66da4, type: 3}
   - {fileID: 21300000, guid: e0b16592248644670b24222cef732ed0, type: 3}
   - {fileID: 21300000, guid: b3a558a257e4f4f988f0f1b57a559485, type: 3}
   - {fileID: 21300000, guid: aa3440b27b8b9423f9821f663863c0c0, type: 3}
@@ -249,6 +250,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b0472b5b1a0a24bc2a913887dad2e9aa, type: 3}
   - {fileID: 21300000, guid: 183e966b1d9c74a449af218cb0eb9e8e, type: 3}
   - {fileID: 21300000, guid: 911a877bf7e9744ca83cbffbf9a38267, type: 3}
+  - {fileID: 21300000, guid: d9a7687b1aa87bd4bb70e1ded762a687, type: 3}
   - {fileID: 21300000, guid: 1271588be6ba2490198ab2f9e23b291b, type: 3}
   - {fileID: 21300000, guid: 0829529b4cd624727a16edcc165c4a97, type: 3}
   - {fileID: 21300000, guid: 01894c9b0e4cc4d15a7f0fe26505e2c9, type: 3}
@@ -288,6 +290,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ccff713df52bf45b5b10c8fcfb44fee7, type: 3}
   - {fileID: 21300000, guid: 8191374d830c647edb5ed715100f2b48, type: 3}
   - {fileID: 21300000, guid: a0422c4d3e4fd483f98f3bbd16e5ae2e, type: 3}
+  - {fileID: 21300000, guid: a260d5adf75b41c4cbddd7a6dd28706f, type: 3}
   - {fileID: 21300000, guid: afc72abd3262c43798a1167db98081d9, type: 3}
   - {fileID: 21300000, guid: 463541cd13ac34ce992618e04bc5dc9f, type: 3}
   - {fileID: 21300000, guid: 3c2f4bed18ef84d5baeb2774df7d08df, type: 3}
@@ -312,6 +315,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4848194f7bc4d4e509d067d3160eadac, type: 3}
   - {fileID: 21300000, guid: 7566cf5f3986d4c32a672de8279ced32, type: 3}
   - {fileID: 21300000, guid: d40ff76fa8b254a8c9ed7c57ce1c9e21, type: 3}
+  - {fileID: 21300000, guid: 4c6087aff340cef47b3f706424261aaf, type: 3}
   - {fileID: 21300000, guid: 60e92aaf3c91f4bc18ec574bed72f832, type: 3}
   - {fileID: 21300000, guid: 774f1dafe0ff34d158a77a6aafef1a49, type: 3}
   - {fileID: 21300000, guid: 8fc782bf29b80d446a6d58b11d54e48b, type: 3}
@@ -356,6 +360,7 @@ SpriteAtlas:
   - Ellipse64
   - ContainerRadius4
   - HideBarIcon
+  - InputFieldBuilderFocus
   - NFTUniqueContainer
   - RoundedSquare20x20
   - ExpandIcon
@@ -509,6 +514,7 @@ SpriteAtlas:
   - ContainerTabsPassport
   - SettingsStrokeIcon
   - AddFriendIcon
+  - InputFieldBuilderError
   - InteractiveIcon
   - Button8
   - RectRadius12
@@ -548,6 +554,7 @@ SpriteAtlas:
   - LeftClickWhite
   - EventsIcon
   - Div
+  - EmptyProjects
   - OutlineRightRect12
   - Cursor
   - ToggleCheckOn
@@ -572,6 +579,7 @@ SpriteAtlas:
   - Outline3Radius12
   - LogOutIcon
   - RoundedContainer44
+  - InputFieldBuilder
   - ControlsIcon
   - WarningIcon
   - CameraIcon
