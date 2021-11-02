@@ -14,7 +14,7 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class BuilderAPIController : IBuilderAPIController
 {
-    internal const string CATALOG_ENDPOINT = "/assetPacks?owner=";
+    internal const string CATALOG_ENDPOINT = "/assetPacks";
     internal const string ASSETS_ENDPOINT = "/assets?";
     internal const string PROJECTS_ENDPOINT = "/projects";
         
@@ -65,7 +65,7 @@ public class BuilderAPIController : IBuilderAPIController
             headersRequests.Remove(keyToRemove);
     }
 
-    internal Promise<string> CallUrl(string method, string endpoint)
+    internal Promise<string> CallUrl(string method, string endpoint, string callParams = "")
     {
         Promise<string> resultPromise = new Promise<string>();
         Promise<RequestHeader> headersPromise =AskHeadersToKernel(method, endpoint);
@@ -74,7 +74,7 @@ public class BuilderAPIController : IBuilderAPIController
             switch (method)
             {
                 case GET:
-                    IWebRequestAsyncOperation webRequest = BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint, resultPromise, request.headers);
+                    IWebRequestAsyncOperation webRequest = BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint+callParams, resultPromise, request.headers);
                     OnWebRequestCreated?.Invoke(webRequest);
                     break;
             }
@@ -87,8 +87,8 @@ public class BuilderAPIController : IBuilderAPIController
     {
         Promise<bool> fullCatalogPromise = new Promise<bool>();
 
-        var promiseDefaultCatalog =  CallUrl(GET, CATALOG_ENDPOINT + "default");
-        var promiseOwnedCatalog = CallUrl(GET, CATALOG_ENDPOINT + ethAddres);
+        var promiseDefaultCatalog =  CallUrl(GET, CATALOG_ENDPOINT, "?owner=default");
+        var promiseOwnedCatalog = CallUrl(GET, CATALOG_ENDPOINT, "?owner="+ethAddres);
         int amountOfCatalogReceived = 0;
 
         // Note: In order to get the full catalog we need to do 2 calls, the default one and the specific one
@@ -134,7 +134,7 @@ public class BuilderAPIController : IBuilderAPIController
 
         Promise<bool> fullCatalogPromise = new Promise<bool>();
 
-        var promise =  CallUrl(GET, ASSETS_ENDPOINT +query);
+        var promise =  CallUrl(GET, ASSETS_ENDPOINT ,query);
 
         promise.Then(apiResult =>
         {
