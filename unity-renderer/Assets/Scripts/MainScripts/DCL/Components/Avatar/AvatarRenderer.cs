@@ -264,23 +264,25 @@ namespace DCL
             // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
             var replacementWearables = new List<Promise<WearableItem>>();
 
+            void AddLoadedWearable(List<WearableItem> loadedWearables) => resolvedWearables.AddRange(loadedWearables);
+
+            void LogWearableLoadError(Exception err)
+            {
+                Debug.LogException(err);
+                loadSoftFailed = true;
+            }
+
             yield return LoadWearables(RequestAllModelWearables(),
                 err =>
                 {
-                    Debug.LogException(err);
-                    loadSoftFailed = true;
-
+                    LogWearableLoadError(err);
                     // TODO: make some kind of strategy pattern to avoid type checking here
                     if (err is WearableMissingRepresentationException wearableMissingRepresentation)
-                        replacementWearables.Add(RequestWearableReplacement(wearableMissingRepresentation.wearable));
-                }, loadedWearables => resolvedWearables.AddRange(loadedWearables));
+                        replacementWearables.Add(RequestWearableReplacement(wearableMissingRepresentation.wearable.data.category));
+                }, AddLoadedWearable);
 
-            yield return LoadWearables(replacementWearables,
-                err =>
-                {
-                    Debug.LogException(err);
-                    loadSoftFailed = true;
-                }, loadedWearables => resolvedWearables.AddRange(loadedWearables));
+            yield return LoadWearables(replacementWearables, LogWearableLoadError, AddLoadedWearable);
+            yield return WearAnyMissingClothes(resolvedWearables, LogWearableLoadError, AddLoadedWearable);
 
             bool bodyIsDirty = false;
             if (bodyShapeController != null && bodyShapeController.id != model?.bodyShape)
@@ -430,6 +432,17 @@ namespace DCL
             }
         }
 
+        private IEnumerator WearAnyMissingClothes(IEnumerable<WearableItem> wearables,
+            Action<Exception> error,
+            Action<List<WearableItem>> completed)
+        {
+            var missingClothesReplacements = new [] {Categories.LOWER_BODY, Categories.UPPER_BODY, Categories.FEET}
+                .Except(wearables.Select(wearable => wearable.data.category))
+                .Select(RequestWearableReplacement);
+
+            yield return LoadWearables(missingClothesReplacements, error, completed);
+        }
+
         private IEnumerator LoadWearables(IEnumerable<Promise<WearableItem>> wearablesToLoad,
             Action<Exception> error,
             Action<List<WearableItem>> completed)
@@ -446,7 +459,7 @@ namespace DCL
                 {
                     var wearableItem = wearablePromise.value;
                     
-                    if (wearableItem.GetRepresentation(model.bodyShape) != null)
+                    if (wearableItem.SupportsBodyShape(model.bodyShape))
                     {
                         resolvedWearables.Add(wearableItem);
                         wearablesInUse.Add(wearableItem.id);
@@ -501,15 +514,15 @@ namespace DCL
             return avatarWearablePromises;
         }
 
-        private Promise<WearableItem> RequestWearableReplacement(WearableItem wearableItem)
+        private Promise<WearableItem> RequestWearableReplacement(string category)
         {
-            var defaultReplacement = DefaultWearables.GetDefaultWearable(model.bodyShape, wearableItem.data.category);
+            var defaultReplacement = DefaultWearables.GetDefaultWearable(model.bodyShape, category);
             
             if (!string.IsNullOrEmpty(defaultReplacement))
                 return CatalogController.RequestWearable(defaultReplacement);
 
             var defaultWearableNotFoundPromise = new Promise<WearableItem>();
-            defaultWearableNotFoundPromise.Reject($"Replacement wearable not found! id: {wearableItem.id}, shape: {model.bodyShape}, category {wearableItem.data.category}");
+            defaultWearableNotFoundPromise.Reject($"Replacement wearable not found! shape: {model.bodyShape}, category {category}");
             return defaultWearableNotFoundPromise;
         }
 
