@@ -180,6 +180,21 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
                     break;
             }
         }
+        else
+        {
+            switch (model.constraint)
+            {
+                case Constraint.FixedColumnCount:
+                    currentItemsPerRow = model.constraintCount;
+                    break;
+                case Constraint.FixedRowCount:
+                    currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constraintCount);
+                    break;
+                case Constraint.Flexible:
+                    currentItemsPerRow = model.constraintCount;
+                    break;
+            }
+        }
 
         model.itemSize = newSizeToApply;
 
