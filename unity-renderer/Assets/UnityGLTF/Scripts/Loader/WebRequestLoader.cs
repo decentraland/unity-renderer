@@ -77,7 +77,7 @@ namespace UnityGLTF.Loader
                 finalUrl = Path.Combine(rootUri, httpRequestPath);
             }
 
-            WebRequestAsyncOperation asyncOp = webRequestController.Get(
+            WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
                 timeout: 5000,

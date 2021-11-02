@@ -8,17 +8,21 @@ using DCL.Builder;
 using DCL.Builder.Manifest;
 using DCL.Helpers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
 public class BuilderAPIController : IBuilderAPIController
 {
-    private const string CATALOG_ENDPOINT = "/assetPacks?owner=";
-    private const string ASSETS_ENDPOINT = "/assets?";
-    private const string PROJECTS_ENDPOINT = "/projects";
-    public event Action<WebRequestAsyncOperation> OnWebRequestCreated;
-    
+    internal const string CATALOG_ENDPOINT = "/assetPacks?owner=";
+    internal const string ASSETS_ENDPOINT = "/assets?";
+    internal const string PROJECTS_ENDPOINT = "/projects";
+        
     internal const string GET = "get";
+    
+    public event Action<IWebRequestAsyncOperation> OnWebRequestCreated;
+    
+
     private BuilderInWorldBridge builderInWorldBridge;
     
     private Dictionary<string, Promise<RequestHeader>> headersRequests = new Dictionary<string, Promise<RequestHeader>>();
@@ -26,16 +30,22 @@ public class BuilderAPIController : IBuilderAPIController
     public void Initialize(IContext context)
     {
         builderInWorldBridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
-        builderInWorldBridge.OnHeadersReceived += HeadersReceived;
+        if(builderInWorldBridge != null)
+            builderInWorldBridge.OnHeadersReceived += HeadersReceived;
     }
 
-    public void Dispose() { builderInWorldBridge.OnHeadersReceived -= HeadersReceived; }
+    public void Dispose()
+    {
+        if(builderInWorldBridge != null)
+            builderInWorldBridge.OnHeadersReceived -= HeadersReceived;
+    }
 
     internal Promise<RequestHeader> AskHeadersToKernel(string method, string endpoint)
     {
         Promise<RequestHeader> promise = new Promise<RequestHeader>();
         headersRequests.Add(endpoint, promise);
-        builderInWorldBridge.AskKernelForCatalogHeadersWithParams(method, endpoint);
+        if(builderInWorldBridge != null)
+            builderInWorldBridge.AskKernelForCatalogHeadersWithParams(method, endpoint);
         return promise;
     }
 
@@ -64,7 +74,7 @@ public class BuilderAPIController : IBuilderAPIController
             switch (method)
             {
                 case GET:
-                    WebRequestAsyncOperation webRequest = BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint, resultPromise, request.headers);
+                    IWebRequestAsyncOperation webRequest = BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint, resultPromise, request.headers);
                     OnWebRequestCreated?.Invoke(webRequest);
                     break;
             }
@@ -75,15 +85,10 @@ public class BuilderAPIController : IBuilderAPIController
 
     public Promise<bool> GetCompleteCatalog(string ethAddres)
     {
-        string ethAddress = "";
-        var userProfile = UserProfile.GetOwnUserProfile();
-        if (userProfile != null)
-            ethAddress = userProfile.ethAddress;
-
         Promise<bool> fullCatalogPromise = new Promise<bool>();
 
         var promiseDefaultCatalog =  CallUrl(GET, CATALOG_ENDPOINT + "default");
-        var promiseOwnedCatalog = CallUrl(GET, CATALOG_ENDPOINT + ethAddress);
+        var promiseOwnedCatalog = CallUrl(GET, CATALOG_ENDPOINT + ethAddres);
         int amountOfCatalogReceived = 0;
 
         // Note: In order to get the full catalog we need to do 2 calls, the default one and the specific one
@@ -131,10 +136,18 @@ public class BuilderAPIController : IBuilderAPIController
 
         var promise =  CallUrl(GET, ASSETS_ENDPOINT +query);
 
-        promise.Then(result =>
+        promise.Then(apiResult =>
         {
-            AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(result);
-            fullCatalogPromise.Resolve(true);
+            var result = GetDataFromCall(apiResult);
+            if (!string.IsNullOrEmpty(result))
+            {
+                AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(result);
+                fullCatalogPromise.Resolve(true);
+            }
+            else
+            {
+                fullCatalogPromise.Reject("API response is not OK");
+            }
         });
         
         return fullCatalogPromise;
@@ -175,5 +188,16 @@ public class BuilderAPIController : IBuilderAPIController
     {
         Manifest manifest = BIWUtils.CreateEmptyDefaultBuilderManifest(coords);
         //TODO: Implement functionality
+    }
+
+
+    private string GetDataFromCall(string result)
+    {
+        JObject jObject = (JObject)JsonConvert.DeserializeObject(result);
+        if (jObject["ok"].ToObject<bool>())
+        {
+            return jObject["data"].ToString();
+        }
+        return "";
     }
 }

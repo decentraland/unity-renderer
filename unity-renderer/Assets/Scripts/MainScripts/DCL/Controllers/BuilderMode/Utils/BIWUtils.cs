@@ -383,22 +383,24 @@ public static partial class BIWUtils
         original.pivot = rectTransformToCopy.pivot;
     }
 
-    public static WebRequestAsyncOperation MakeGetCall(string url, Promise<string> callPromise, Dictionary<string, string> headers)
+    public static IWebRequestAsyncOperation MakeGetCall(string url, Promise<string> callPromise, Dictionary<string, string> headers)
     {
-        return Environment.i.platform.webRequest.Get(
+        var asyncOperation = Environment.i.platform.webRequest.Get(
             url: url,
             OnSuccess: (webRequestResult) =>
             {
-                byte[] byteArray = webRequestResult.downloadHandler.data;
+                    byte[] byteArray = webRequestResult.GetResultData();
                     string result = System.Text.Encoding.UTF8.GetString(byteArray);
                     callPromise?.Resolve(result);
             },
             OnFail: (webRequestResult) =>
             {
-                Debug.Log(webRequestResult.error);
-                callPromise.Reject(webRequestResult.error);
+                Debug.Log(webRequestResult.webRequest.error);
+                callPromise.Reject(webRequestResult.webRequest.error);
             },
             headers: headers);
+
+        return asyncOperation;
     }
 
     public static void ConfigureEventTrigger(EventTrigger eventTrigger, EventTriggerType eventType, UnityAction<BaseEventData> call)

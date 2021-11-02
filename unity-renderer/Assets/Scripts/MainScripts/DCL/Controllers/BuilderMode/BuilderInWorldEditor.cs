@@ -65,7 +65,7 @@ public class BuilderInWorldEditor : IBIWEditor
     internal bool isEnteringEditMode = false;
     private bool activeFeature = false;
     
-    private WebRequestAsyncOperation catalogAsyncOp;
+    private IWebRequestAsyncOperation catalogAsyncOp;
 
     private UserProfile userProfile;
     internal Coroutine updateLandsWithAcessCoroutine;
@@ -200,7 +200,7 @@ public class BuilderInWorldEditor : IBIWEditor
         }
     }
     
-    public void WebRequestCreated(WebRequestAsyncOperation webRequest)
+    public void WebRequestCreated(IWebRequestAsyncOperation webRequest)
     {
         if (isCatalogLoading)
             catalogAsyncOp = webRequest;

@@ -10,7 +10,7 @@ public interface IBuilderAPIController
     /// <summary>
     /// When a WebRequest is created it will call this action
     /// </summary>
-    event Action<WebRequestAsyncOperation> OnWebRequestCreated;
+    event Action<IWebRequestAsyncOperation> OnWebRequestCreated;
     
     /// <summary>
     /// Init the builderAPi

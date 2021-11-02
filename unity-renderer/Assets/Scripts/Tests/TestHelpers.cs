@@ -10,9 +10,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using NSubstitute;
+using NSubstitute.Extensions;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
 using Object = System.Object;
@@ -57,6 +61,44 @@ namespace DCL.Helpers
             return pbTranf;
         }
 
+        /// <summary>
+        /// This will mock the request to invoke the success param when called,
+        /// Note: Take into account that if you call the "Get" Method with different amounts of parameters (defaults one doesn't count),
+        ///       you should indicate the parameter index where you pass the OnSuccess call
+        /// </summary>
+        /// <param name="jsonData">The json that you want to be returned</param>
+        /// <param name="mockedRequestController">Mocked request controller</param>
+        /// <param name="successParamIndex"> The index of the "OnSucess" action when you call the Get method</param>
+        /// <returns></returns>
+        public static IWebRequestAsyncOperation ConfigureMockedRequestController(string jsonData,IWebRequestController mockedRequestController, int successParamIndex = 3)
+        {
+            IWebRequestAsyncOperation operation = Substitute.For<IWebRequestAsyncOperation>();
+            operation.Configure().GetResultData().Returns(Encoding.ASCII.GetBytes(jsonData));
+            
+            mockedRequestController.Configure()
+                                   .Get(Arg.Any<string>(),
+                                       Arg.Any<DownloadHandler>(),
+                                       Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                                       Arg.Any<int>(),
+                                       Arg.Any<int>(),
+                                       Arg.Any<bool>(),
+                                       Arg.Any<Dictionary<string, string>>())
+                                   .Returns(operation);
+        
+            mockedRequestController.When(x => x.Get(Arg.Any<string>(),
+                Arg.Any<DownloadHandler>(),
+                Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
+                Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                Arg.Any<int>(),
+                Arg.Any<int>(),
+                Arg.Any<bool>(),
+                Arg.Any<Dictionary<string, string>>())).Do(x => x.ArgAt<Action<IWebRequestAsyncOperation>>(successParamIndex).Invoke(operation));
+
+        
+            return operation;
+        }
+        
         public static FeatureFlag CreateFeatureFlag(List<string> enabledFlags = null)
         {
             FeatureFlag featureFlag = new FeatureFlag();

@@ -34,7 +34,7 @@ namespace DCL
             webRequestAsyncOperation = webRequestController.GetAudioClip(url, audioType,
                 request =>
                 {
-                    asset.audioClip = DownloadHandlerAudioClip.GetContent(request);
+                    asset.audioClip = DownloadHandlerAudioClip.GetContent(request.webRequest);
                     OnSuccess?.Invoke();
                 },
                 request =>

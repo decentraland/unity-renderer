@@ -17,7 +17,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
-        entityHandler.Initialize(BIWTestUtils.CreateMockedContext());
+        entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
 
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
         entityHandler.EnterEditMode(scene);
