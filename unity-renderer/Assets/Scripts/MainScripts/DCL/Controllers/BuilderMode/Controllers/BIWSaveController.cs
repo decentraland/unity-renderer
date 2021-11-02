@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 

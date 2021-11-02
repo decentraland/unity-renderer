@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -22,7 +23,8 @@ namespace Tests
         public void TearDown()
         {
             Object.Destroy(view.gameObject);
-            DCL.Environment.i.platform.webRequest.Dispose();
+            if (DCL.Environment.i.platform != null)
+                DCL.Environment.i.platform.webRequest.Dispose();
         }
 
         [Test]

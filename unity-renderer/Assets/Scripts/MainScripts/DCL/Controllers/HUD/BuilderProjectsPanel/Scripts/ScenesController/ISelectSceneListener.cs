@@ -1,4 +1,7 @@
-internal interface ISelectSceneListener
+namespace DCL.Builder
 {
-    void OnSelectScene(ISceneCardView sceneCardView);
+    internal interface ISelectSceneListener
+    {
+        void OnSelectScene(ISceneCardView sceneCardView);
+    }
 }

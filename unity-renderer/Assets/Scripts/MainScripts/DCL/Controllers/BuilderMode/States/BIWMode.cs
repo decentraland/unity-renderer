@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
 

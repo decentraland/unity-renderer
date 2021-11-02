@@ -34,14 +34,14 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnPlacesFromAPIUpdated;
 
-    internal const int INITIAL_NUMBER_OF_PLACES = 30;
-    internal const int SHOW_MORE_PLACES_INCREMENT = 20;
-
+    internal const int INITIAL_NUMBER_OF_ROWS = 4;
+    internal const int SHOW_MORE_ROWS_INCREMENT = 1;
+    internal const string NO_PLACE_DESCRIPTION_WRITTEN = "The author hasn't written a description yet.";
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal FriendTrackerController friendsTrackerController;
     internal List<HotSceneInfo> placesFromAPI = new List<HotSceneInfo>();
-    internal int currentPlacesShowed = INITIAL_NUMBER_OF_PLACES;
+    internal int currentPlacesShowed = 0;
     internal bool reloadPlaces = false;
 
     public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController)
@@ -59,7 +59,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
     }
 
-    private void FirstLoading()
+    internal void FirstLoading()
     {
         reloadPlaces = true;
         RequestAllPlaces();
@@ -68,7 +68,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
     }
 
-    private void OnExploreV2Open(bool current, bool previous)
+    internal void OnExploreV2Open(bool current, bool previous)
     {
         if (current)
             return;
@@ -81,7 +81,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         if (!reloadPlaces)
             return;
 
-        currentPlacesShowed = INITIAL_NUMBER_OF_PLACES;
+        currentPlacesShowed = view.currentPlacesPerRow * INITIAL_NUMBER_OF_ROWS;
         view.RestartScrollViewPosition();
         view.SetPlacesAsLoading(true);
         view.SetShowMorePlacesButtonActive(false);
@@ -114,14 +114,35 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
 
         view.SetPlaces(places);
-        view.SetShowMorePlacesButtonActive(placesFromAPI.Count > currentPlacesShowed);
+        view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
         view.SetPlacesAsLoading(false);
     }
 
     public void ShowMorePlaces()
     {
-        currentPlacesShowed += SHOW_MORE_PLACES_INCREMENT;
-        LoadPlaces();
+        List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
+        List<HotSceneInfo> placesFiltered = new List<HotSceneInfo>();
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)currentPlacesShowed / view.currentPlacesPerRow) * view.currentPlacesPerRow) - currentPlacesShowed;
+        int numberOfItemsToAdd = view.currentPlacesPerRow * SHOW_MORE_ROWS_INCREMENT + numberOfExtraItemsToAdd;
+
+        if (currentPlacesShowed + numberOfItemsToAdd <= placesFromAPI.Count)
+            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, numberOfItemsToAdd);
+        else
+            placesFiltered = placesFromAPI.GetRange(currentPlacesShowed, placesFromAPI.Count - currentPlacesShowed);
+
+        foreach (HotSceneInfo receivedPlace in placesFiltered)
+        {
+            PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            places.Add(placeCardModel);
+        }
+
+        view.AddPlaces(places);
+
+        currentPlacesShowed += numberOfItemsToAdd;
+        if (currentPlacesShowed > placesFromAPI.Count)
+            currentPlacesShowed = placesFromAPI.Count;
+
+        view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
     }
 
     public void Dispose()
@@ -151,7 +172,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         return placeCardModel;
     }
 
-    internal string FormatDescription(HotSceneInfo placeFromAPI) { return string.IsNullOrEmpty(placeFromAPI.description) ? "The author hasn't written a description yet." : placeFromAPI.description; }
+    internal string FormatDescription(HotSceneInfo placeFromAPI) { return string.IsNullOrEmpty(placeFromAPI.description) ? NO_PLACE_DESCRIPTION_WRITTEN : placeFromAPI.description; }
 
     internal string FormatAuthorName(HotSceneInfo placeFromAPI) { return $"Author <b>{placeFromAPI.creator}</b>"; }
 
@@ -159,16 +180,24 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
+        HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
         placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
 
-        Vector2Int coords = placeFromAPI.baseCoords;
-        string serverName = placeFromAPI.realms.Length == 0 ? "" : placeFromAPI.realms[0].serverName;
-        string layerName = placeFromAPI.realms.Length == 0 ? "" : placeFromAPI.realms[0].layer;
+        for (int i = 0; i < placeFromAPI.realms.Length; i++)
+        {
+            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms[i].layer);
 
-        if (string.IsNullOrEmpty(serverName))
-            WebInterface.GoTo(coords.x, coords.y);
+            if (isArchipelagoRealm || placeFromAPI.realms[i].usersCount < placeFromAPI.realms[i].maxUsers)
+            {
+                realm = placeFromAPI.realms[i];
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(realm.serverName))
+            WebInterface.GoTo(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
         else
-            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
+            WebInterface.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
 
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();

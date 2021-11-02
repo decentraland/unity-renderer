@@ -32,7 +32,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
     [Header("Configuration")]
     [SerializeField] internal SectionSelectorComponentModel model;
 
-    private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
+    internal List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
     public void Configure(BaseComponentModel newModel)
     {

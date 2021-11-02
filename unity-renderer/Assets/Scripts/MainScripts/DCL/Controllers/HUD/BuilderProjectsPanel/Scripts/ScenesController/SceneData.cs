@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Builder;
 using UnityEngine;
 
 internal interface ISceneData
@@ -26,7 +27,7 @@ internal interface ISceneData
     Vector2Int[] parcels { get; }
     string projectId { get; }
     bool isEmpty { get; }
-    DeployedScene.Source source { get; }
+    Scene.Source source { get; }
 }
 
 [Serializable]
@@ -58,7 +59,7 @@ internal class SceneData : ISceneData
     public Vector2Int[] parcels;
     public string projectId;
     public bool isEmpty;
-    public DeployedScene.Source source;
+    public Scene.Source source;
 
     Vector2Int ISceneData.coords => coords;
     Vector2Int ISceneData.size => size;
@@ -83,54 +84,54 @@ internal class SceneData : ISceneData
     Vector2Int[] ISceneData.parcels => parcels;
     string ISceneData.projectId => projectId;
     bool ISceneData.isEmpty => isEmpty;
-    DeployedScene.Source ISceneData.source => source;
+    Scene.Source ISceneData.source => source;
 
     public SceneData() { }
 
-    public SceneData(DeployedScene deployedScene)
+    public SceneData(Scene scene)
     {
-        coords = deployedScene.@base;
-        id = deployedScene.id;
-        name = deployedScene.title;
-        description = deployedScene.description;
-        thumbnailUrl = deployedScene.navmapThumbnail;
-        isOwner = deployedScene?.land?.role == LandRole.OWNER;
+        coords = scene.@base;
+        id = scene.id;
+        name = scene.title;
+        description = scene.description;
+        thumbnailUrl = scene.navmapThumbnail;
+        isOwner = scene?.land?.role == LandRole.OWNER;
         isOperator = !isOwner;
         isContributor = false;
         isDeployed = true;
-        authorName = deployedScene.author;
-        requiredPermissions = deployedScene.requiredPermissions;
-        bannedUsers = deployedScene.bannedUsers;
-        isEditable = deployedScene.source != DeployedScene.Source.SDK;
-        parcels = deployedScene.parcels;
-        projectId = deployedScene.projectId;
-        isEmpty = deployedScene.isEmpty;
-        source = deployedScene.source;
+        authorName = scene.author;
+        requiredPermissions = scene.requiredPermissions;
+        bannedUsers = scene.bannedUsers;
+        isEditable = scene.source != Scene.Source.SDK;
+        parcels = scene.parcels;
+        projectId = scene.projectId;
+        isEmpty = scene.isEmpty;
+        source = scene.source;
 
         isMatureContent = false;
-        if (!string.IsNullOrEmpty(deployedScene.contentRating))
+        if (!string.IsNullOrEmpty(scene.contentRating))
         {
-            isMatureContent = deployedScene.contentRating.Equals(CONTENT_MATURE_SYMBOL, StringComparison.OrdinalIgnoreCase)
-                              || deployedScene.contentRating.Equals(CONTENT_ADULTS_ONLY_SYMBOL, StringComparison.OrdinalIgnoreCase);
+            isMatureContent = scene.contentRating.Equals(CONTENT_MATURE_SYMBOL, StringComparison.OrdinalIgnoreCase)
+                              || scene.contentRating.Equals(CONTENT_ADULTS_ONLY_SYMBOL, StringComparison.OrdinalIgnoreCase);
         }
 
-        if (deployedScene.parcels.Length < 2)
+        if (scene.parcels.Length < 2)
         {
             size = new Vector2Int(1, 1);
         }
         else
         {
-            int minX = deployedScene.parcels[0].x;
-            int maxX = deployedScene.parcels[0].x;
-            int minY = deployedScene.parcels[0].y;
-            int maxY = deployedScene.parcels[0].y;
+            int minX = scene.parcels[0].x;
+            int maxX = scene.parcels[0].x;
+            int minY = scene.parcels[0].y;
+            int maxY = scene.parcels[0].y;
 
-            for (int i = 1; i < deployedScene.parcels.Length; i++)
+            for (int i = 1; i < scene.parcels.Length; i++)
             {
-                minX = Mathf.Min(minX, deployedScene.parcels[i].x);
-                minY = Mathf.Min(minY, deployedScene.parcels[i].y);
-                maxX = Mathf.Max(maxX, deployedScene.parcels[i].x);
-                maxY = Mathf.Max(maxY, deployedScene.parcels[i].y);
+                minX = Mathf.Min(minX, scene.parcels[i].x);
+                minY = Mathf.Min(minY, scene.parcels[i].y);
+                maxX = Mathf.Max(maxX, scene.parcels[i].x);
+                maxY = Mathf.Max(maxY, scene.parcels[i].y);
             }
 
             size = new Vector2Int(Mathf.Abs(maxX - minX), Mathf.Abs(maxY - minY));

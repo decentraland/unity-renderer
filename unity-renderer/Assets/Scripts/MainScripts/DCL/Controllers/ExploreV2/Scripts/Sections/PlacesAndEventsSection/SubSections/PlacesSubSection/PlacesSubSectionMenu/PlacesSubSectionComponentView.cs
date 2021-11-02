@@ -43,10 +43,21 @@ public interface IPlacesSubSectionComponentView
     Color[] currentFriendColors { get; }
 
     /// <summary>
+    /// Number of places per row that fit with the current places grid configuration.
+    /// </summary>
+    int currentPlacesPerRow { get; }
+
+    /// <summary>
     /// Set the places component with a list of places.
     /// </summary>
     /// <param name="places">List of places (model) to be loaded.</param>
     void SetPlaces(List<PlaceCardComponentModel> places);
+
+    /// <summary>
+    /// Add a list of places in the places component.
+    /// </summary>
+    /// <param name="places">List of places (model) to be added.</param>
+    void AddPlaces(List<PlaceCardComponentModel> places);
 
     /// <summary>
     /// Set the places component in loading mode.
@@ -106,6 +117,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public Color[] currentFriendColors => friendColors;
 
+    public int currentPlacesPerRow => places.currentItemsPerRow;
+
     public override void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
 
     public override void Start()
@@ -128,6 +141,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         base.Dispose();
 
         showMorePlacesButton.onClick.RemoveAllListeners();
+
+        places.Dispose();
+
+        if (placeModal != null)
+        {
+            placeModal.Dispose();
+            Destroy(placeModal.gameObject);
+        }
     }
 
     public void SetPlaces(List<PlaceCardComponentModel> places)
@@ -137,6 +158,15 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
         this.places.SetItems(placeComponentsToAdd);
         placesNoDataText.gameObject.SetActive(places.Count == 0);
+    }
+
+    public void AddPlaces(List<PlaceCardComponentModel> places)
+    {
+        List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
+        foreach (var place in placeComponentsToAdd)
+        {
+            this.places.AddItem(place);
+        }
     }
 
     public void SetPlacesAsLoading(bool isVisible)
@@ -194,12 +224,12 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         return instantiatedPlaces;
     }
 
-    internal void ConfigurePlaceCard(PlaceCardComponentView eventCard, PlaceCardComponentModel placeInfo)
+    internal void ConfigurePlaceCard(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo)
     {
-        eventCard.Configure(placeInfo);
-        eventCard.onInfoClick?.RemoveAllListeners();
-        eventCard.onInfoClick?.AddListener(() => OnInfoClicked?.Invoke(placeInfo));
-        eventCard.onJumpInClick?.RemoveAllListeners();
-        eventCard.onJumpInClick?.AddListener(() => OnJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
+        placeCard.Configure(placeInfo);
+        placeCard.onInfoClick?.RemoveAllListeners();
+        placeCard.onInfoClick?.AddListener(() => OnInfoClicked?.Invoke(placeInfo));
+        placeCard.onJumpInClick?.RemoveAllListeners();
+        placeCard.onJumpInClick?.AddListener(() => OnJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
     }
 }

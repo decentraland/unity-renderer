@@ -1,20 +1,22 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 public class SectionSelectorComponentViewTests
 {
     private SectionSelectorComponentView sectionSelectorComponent;
     private Texture2D testTexture;
+    private Sprite testSprite;
 
     [SetUp]
     public void SetUp()
     {
         sectionSelectorComponent = BaseComponentView.Create<SectionSelectorComponentView>("SectionSelector");
         testTexture = new Texture2D(20, 20);
+        testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }
 
     [TearDown]
@@ -23,6 +25,7 @@ public class SectionSelectorComponentViewTests
         sectionSelectorComponent.Dispose();
         GameObject.Destroy(sectionSelectorComponent.gameObject);
         GameObject.Destroy(testTexture);
+        GameObject.Destroy(testSprite);
     }
 
     [Test]
@@ -36,28 +39,6 @@ public class SectionSelectorComponentViewTests
 
         // Assert
         Assert.AreEqual(testModel, sectionSelectorComponent.model, "The model does not match after configuring the button.");
-    }
-
-    [Test]
-    public void RefreshSectionSelectorCorrectly()
-    {
-        // Arrange
-        sectionSelectorComponent.model = CreateTestModel(3);
-        sectionSelectorComponent.model.sections.Add(new SectionToggleModel
-        {
-            icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
-            title = "Test4"
-        });
-
-        // Act
-        sectionSelectorComponent.RefreshControl();
-
-        // Assert
-        Assert.AreEqual(4, sectionSelectorComponent.model.sections.Count, "The number of sections do not match.");
-        Assert.AreEqual($"Test1", sectionSelectorComponent.model.sections[0].title, "The section name 1 does not match.");
-        Assert.AreEqual($"Test2", sectionSelectorComponent.model.sections[1].title, "The section name 2 does not match.");
-        Assert.AreEqual($"Test3", sectionSelectorComponent.model.sections[2].title, "The section name 3 does not match.");
-        Assert.AreEqual($"Test4", sectionSelectorComponent.model.sections[3].title, "The section name 4 does not match.");
     }
 
     [Test]
@@ -106,6 +87,28 @@ public class SectionSelectorComponentViewTests
         Assert.AreEqual(testSections.Count, allExistingItems.Count, "The number of sections gotten do not match.");
     }
 
+    [Test]
+    public void CreateItemCorrectly()
+    {
+        // Arrange
+        SectionToggleModel testSection = new SectionToggleModel
+        {
+            icon = testSprite,
+            title = "Test Title",
+        };
+        string testName = "TestName";
+
+        // Act
+        sectionSelectorComponent.CreateSection(testSection, testName);
+
+        // Assert
+        ISectionToggle newSection = sectionSelectorComponent.instantiatedSections.FirstOrDefault(x => x.GetInfo().title == testSection.title);
+        Assert.IsNotNull(newSection, "The item does not exist in the instantiatedItems list.");
+        Assert.IsTrue(newSection.GetInfo().title == testSection.title, "The item title does not match.");
+        Assert.IsTrue(newSection.GetInfo().icon == testSection.icon, "The item icon does not match.");
+        Assert.AreEqual(testName, ((SectionToggle)newSection).name, "The item game object name does not match.");
+    }
+
     [UnityTest]
     public IEnumerator RemoveAllInstantiatedSectionsCorrectly()
     {
@@ -139,7 +142,7 @@ public class SectionSelectorComponentViewTests
         {
             sections.Add(new SectionToggleModel
             {
-                icon = Sprite.Create(testTexture, new Rect(), Vector2.zero),
+                icon = testSprite,
                 title = $"Test{i + 1}"
             });
         }

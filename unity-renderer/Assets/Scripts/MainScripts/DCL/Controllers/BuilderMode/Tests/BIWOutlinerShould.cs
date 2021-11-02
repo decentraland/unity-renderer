@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using Tests;
 using UnityEngine;
 

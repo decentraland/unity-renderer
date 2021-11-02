@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Tests
 {
     public class SectionScenesShould
     {
-        private SectionScenesController sectionController;
+        private SectionController sectionController;
         private IScenesViewController scenesController;
 
         [SetUp]
@@ -18,11 +19,11 @@ namespace Tests
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
             var sceneCardPrefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(sceneCardPrefabPath);
 
-            sectionController = new SectionScenesController();
+            sectionController = new SectionController();
             scenesController = new ScenesViewController(sceneCardPrefab);
 
-            scenesController.AddListener((IDeployedSceneListener)sectionController);
-            scenesController.AddListener((IProjectSceneListener)sectionController);
+            scenesController.AddListener((ISceneListener)sectionController);
+            scenesController.AddListener((IProjectListener)sectionController);
         }
 
         [TearDown]

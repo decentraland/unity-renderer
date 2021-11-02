@@ -1,6 +1,7 @@
 using DCL.Interface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using static HotScenesController;
 
 public interface IPlacesAPIController
@@ -12,6 +13,7 @@ public interface IPlacesAPIController
     void GetAllPlaces(Action<List<HotSceneInfo>> OnCompleted);
 }
 
+[ExcludeFromCodeCoverage]
 public class PlacesAPIController : IPlacesAPIController
 {
     internal Action<List<HotSceneInfo>> OnGetOperationCompleted;

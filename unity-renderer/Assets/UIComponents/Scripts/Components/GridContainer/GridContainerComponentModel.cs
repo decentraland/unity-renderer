@@ -6,7 +6,7 @@ using static UnityEngine.UI.GridLayoutGroup;
 public class GridContainerComponentModel : BaseComponentModel
 {
     public Constraint constraint = Constraint.FixedColumnCount;
-    public int constranitCount = 3;
+    public int constraintCount = 3;
     public bool adaptItemSizeToContainer = false;
     public Vector2 itemSize;
     public Vector2 spaceBetweenItems;

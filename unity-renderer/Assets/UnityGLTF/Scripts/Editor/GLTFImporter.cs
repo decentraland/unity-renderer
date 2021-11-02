@@ -224,6 +224,7 @@ namespace UnityGLTF
                     List<Texture2D> textures = new List<Texture2D>();
                     var texMaterialMap = new Dictionary<Texture2D, List<TexMaterialMap>>();
 
+                    HashSet<Texture2D> baseColor = new HashSet<Texture2D>();
                     HashSet<Texture2D> normals = new HashSet<Texture2D>();
                     HashSet<Texture2D> metallics = new HashSet<Texture2D>();
 
@@ -283,6 +284,10 @@ namespace UnityGLTF
                                                         }
 
                                                         materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
+                                                        if (propertyName == "_BaseMap")
+                                                        {
+                                                            baseColor.Add(tex);
+                                                        }
                                                         if (propertyName == "_BumpMap")
                                                         {
                                                             normals.Add(tex);
@@ -383,7 +388,17 @@ namespace UnityGLTF
                                     var materialMaps = texMaterialMap[tex];
                                     bool isExternal = cachedTextures.Contains(tex);
 
-                                    var texPath = AssetDatabase.GetAssetPath(tex);
+                                    string texPath;
+                                    if (isExternal)
+                                    {
+                                        texPath = AssetDatabase.GetAssetPath(tex);
+                                    }
+                                    else
+                                    {
+                                        var texturesRoot = string.Concat(folderName, "/", "Textures/");
+                                        var ext = _useJpgTextures ? ".jpg" : ".png";
+                                        texPath = string.Concat(texturesRoot, tex.name, ext);
+                                    }
                                     var importedTex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
                                     var importer = (TextureImporter) TextureImporter.GetAtPath(texPath);
 
@@ -413,7 +428,7 @@ namespace UnityGLTF
 
                                         if (isExternal)
                                         {
-                                            isNormalMap = normals.Contains(tex);
+                                            isNormalMap = !baseColor.Contains(tex) && normals.Contains(tex);
                                         }
 
                                         if (isNormalMap)

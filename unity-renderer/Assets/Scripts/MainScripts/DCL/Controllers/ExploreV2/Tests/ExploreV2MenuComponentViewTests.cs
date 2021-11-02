@@ -6,10 +6,33 @@ public class ExploreV2MenuComponentViewTests
     private ExploreV2MenuComponentView exploreV2MenuComponent;
 
     [SetUp]
-    public void SetUp() { exploreV2MenuComponent = Object.Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>(); }
+    public void SetUp()
+    {
+        exploreV2MenuComponent = Object.Instantiate(Resources.Load<GameObject>("MainMenu/ExploreV2Menu")).GetComponent<ExploreV2MenuComponentView>();
+        exploreV2MenuComponent.Start();
+    }
 
     [TearDown]
-    public void TearDown() { GameObject.Destroy(exploreV2MenuComponent.gameObject); }
+    public void TearDown()
+    {
+        exploreV2MenuComponent.Dispose();
+        GameObject.Destroy(exploreV2MenuComponent.gameObject);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetVisibleCorrectly(bool isVisible)
+    {
+        // Arrange
+        exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(!isVisible);
+
+        // Act
+        exploreV2MenuComponent.SetVisible(isVisible);
+
+        // Assert
+        Assert.AreEqual(isVisible, exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf, "placesAndEventsSection active property does not match.");
+    }
 
     [Test]
     [TestCase(0)]
@@ -67,7 +90,9 @@ public class ExploreV2MenuComponentViewTests
     }
 
     [Test]
-    public void ConfigureCloseButtonCorrectly()
+    [TestCase("TestFromCloseButton")]
+    [TestCase("TestFromCloseAction")]
+    public void ConfigureCloseButtonCorrectly(string fromAction)
     {
         // Arrange
         bool closeButtonClicked = false;
@@ -75,7 +100,10 @@ public class ExploreV2MenuComponentViewTests
 
         // Act
         exploreV2MenuComponent.ConfigureCloseButton();
-        exploreV2MenuComponent.closeMenuButton.onClick.Invoke();
+        if (fromAction == "TestFromCloseButton")
+            exploreV2MenuComponent.closeMenuButton.onClick.Invoke();
+        else
+            exploreV2MenuComponent.closeAction.RaiseOnTriggered();
 
         // Assert
         Assert.IsTrue(closeButtonClicked, "The close button was not clicked.");

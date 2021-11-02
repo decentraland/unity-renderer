@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Builder;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -106,6 +107,7 @@ public class BuilderInWorldEditor : IBIWEditor
         InitHUD();
 
         BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
+        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         InitControllers();
 
@@ -118,10 +120,7 @@ public class BuilderInWorldEditor : IBIWEditor
         else
             AskHeadersToKernel();
 
-
         isCatalogLoading = true;
-        BIWNFTController.i.Initialize();
-        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
@@ -196,8 +195,8 @@ public class BuilderInWorldEditor : IBIWEditor
 
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
-
         BIWNFTController.i.Dispose();
+
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
@@ -329,6 +328,8 @@ public class BuilderInWorldEditor : IBIWEditor
             var userProfile = UserProfile.GetOwnUserProfile();
             if (userProfile != null)
                 ethAddress = userProfile.ethAddress;
+
+            BIWNFTController.i.StartFetchingNft();
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
         }
@@ -469,10 +470,10 @@ public class BuilderInWorldEditor : IBIWEditor
 
     internal bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
     {
-        List<DeployedScene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
-        foreach (DeployedScene scene in allDeployedScenesWithAccess)
+        List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
+        foreach (Scene scene in allDeployedScenesWithAccess)
         {
-            if (scene.source != DeployedScene.Source.SDK)
+            if (scene.source != Scene.Source.SDK)
                 continue;
 
             List<Vector2Int> parcelsDeployedFromSDK = scene.parcels.ToList();
@@ -531,7 +532,8 @@ public class BuilderInWorldEditor : IBIWEditor
         BIWAnalytics.StartEditorFlow(source);
         beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
-        biwAudioHandler.gameObject.SetActive(true);
+        if (biwAudioHandler != null && biwAudioHandler.gameObject != null)
+            biwAudioHandler.gameObject.SetActive(true);
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
             modeController.ActivateCamera(sceneToEdit);
@@ -566,7 +568,7 @@ public class BuilderInWorldEditor : IBIWEditor
             return;
 
         isEnteringEditMode = false;
-        BIWNFTController.i.ClearNFTs();
+        BIWNFTController.i.StartEditMode();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
@@ -673,7 +675,7 @@ public class BuilderInWorldEditor : IBIWEditor
     public void ExitEditMode()
     {
         Environment.i.platform.cullingController.Start();
-
+        BIWNFTController.i.ExitEditMode();
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;

@@ -2,6 +2,7 @@ using DCL.Helpers;
 using DCL.Helpers.NFT;
 using System.IO;
 using DCL;
+using DCL.Builder;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
@@ -15,7 +16,8 @@ public static class BIWTestUtils
     {
         Context context = new Context(
             Substitute.For<IBIWEditor>(),
-            Substitute.For<IBuilderProjectsPanelController>(),
+            Substitute.For<IBuilderMainPanelController>(),
+            Substitute.For<IBuilderAPIController>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -37,7 +39,8 @@ public static class BIWTestUtils
     public static Context CreateContextWithGenericMocks(params object[] mocks)
     {
         IBIWEditor editor = Substitute.For<IBIWEditor>();
-        IBuilderProjectsPanelController panelHUD = Substitute.For<IBuilderProjectsPanelController>();
+        IBuilderAPIController apiController = Substitute.For<IBuilderAPIController>();
+        IBuilderMainPanelController panelHUD = Substitute.For<IBuilderMainPanelController>();
         IBuilderEditorHUDController editorHUD = Substitute.For<IBuilderEditorHUDController>();
 
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
@@ -61,8 +64,11 @@ public static class BIWTestUtils
                 case IBIWEditor e:
                     editor = e;
                     break;
-                case IBuilderProjectsPanelController ppc:
+                case IBuilderMainPanelController ppc:
                     panelHUD = ppc;
+                    break;
+                case IBuilderAPIController ibapc:
+                    apiController = ibapc;
                     break;
                 case IBuilderEditorHUDController ehc:
                     editorHUD = ehc;
@@ -111,6 +117,7 @@ public static class BIWTestUtils
 
         Context context = new Context(editor,
             panelHUD,
+            apiController,
             editorHUD,
             outliner,
             inputHandler,

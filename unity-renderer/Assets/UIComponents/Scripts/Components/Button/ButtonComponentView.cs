@@ -20,6 +20,17 @@ public interface IButtonComponentView
     /// </summary>
     /// <param name="newIcon">New Icon. Null for hide the icon.</param>
     void SetIcon(Sprite newIcon);
+
+    /// <summary>
+    /// Set the button clickable or not.
+    /// </summary>
+    /// <param name="isInteractable">Clickable or not</param>
+    void SetInteractable(bool isInteractable);
+
+    /// <summary>
+    /// Return if the button is Interactable or not
+    /// </summary>
+    bool IsInteractable();
 }
 
 public class ButtonComponentView : BaseComponentView, IButtonComponentView, IComponentModelConfig
@@ -48,6 +59,10 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView, ICom
         SetText(model.text);
         SetIcon(model.icon);
     }
+
+    public bool IsInteractable() { return button.interactable; }
+
+    public void SetInteractable(bool isActive) { button.interactable = isActive; }
 
     public void SetText(string newText)
     {

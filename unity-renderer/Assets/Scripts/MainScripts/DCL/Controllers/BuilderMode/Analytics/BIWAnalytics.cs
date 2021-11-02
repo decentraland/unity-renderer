@@ -258,5 +258,9 @@ public static class BIWAnalytics
         SendEvent(eventName, events);
     }
 
-    private static void SendEvent(string eventName, Dictionary<string, string> events) { Analytics.i.SendAnalytic(eventName, events); }
+    private static void SendEvent(string eventName, Dictionary<string, string> events)
+    {
+        if (Analytics.i != null)
+            Analytics.i.SendAnalytic(eventName, events);
+    }
 }

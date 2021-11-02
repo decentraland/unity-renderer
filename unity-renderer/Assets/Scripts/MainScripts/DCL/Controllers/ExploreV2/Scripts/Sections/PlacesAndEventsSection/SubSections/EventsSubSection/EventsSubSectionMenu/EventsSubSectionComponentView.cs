@@ -1,6 +1,5 @@
 using DCL;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -44,6 +43,11 @@ public interface IEventsSubSectionComponentView
     event Action OnEventsSubSectionEnable;
 
     /// <summary>
+    /// Number of events per row that fit with the current upcoming events grid configuration.
+    /// </summary>
+    int currentUpcomingEventsPerRow { get; }
+
+    /// <summary>
     /// Set the featured events component with a list of events.
     /// </summary>
     /// <param name="events">List of events (model) to be loaded.</param>
@@ -72,6 +76,12 @@ public interface IEventsSubSectionComponentView
     /// </summary>
     /// <param name="events">List of events (model) to be loaded.</param>
     void SetUpcomingEvents(List<EventCardComponentModel> events);
+
+    /// <summary>
+    /// Add a list of events in the events component.
+    /// </summary>
+    /// <param name="places">List of events (model) to be added.</param>
+    void AddUpcomingEvents(List<EventCardComponentModel> events);
 
     /// <summary>
     /// Set the upcoming events component in loading mode.
@@ -156,6 +166,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     internal Pool upcomingEventCardsPool;
     internal Pool goingEventCardsPool;
 
+    public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
+
     public override void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
 
     public override void Start()
@@ -190,6 +202,17 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         base.Dispose();
 
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
+
+        featuredEvents.Dispose();
+        upcomingEvents.Dispose();
+        trendingEvents.Dispose();
+        goingEvents.Dispose();
+
+        if (eventModal != null)
+        {
+            eventModal.Dispose();
+            Destroy(eventModal.gameObject);
+        }
     }
 
     public void SetFeaturedEvents(List<EventCardComponentModel> events)
@@ -231,6 +254,15 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, upcomingEventCardsPool);
         upcomingEvents.SetItems(eventComponentsToAdd);
         upcomingEventsNoDataText.gameObject.SetActive(events.Count == 0);
+    }
+
+    public void AddUpcomingEvents(List<EventCardComponentModel> events)
+    {
+        List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, upcomingEventCardsPool);
+        foreach (var eventToAdd in eventComponentsToAdd)
+        {
+            upcomingEvents.AddItem(eventToAdd);
+        }
     }
 
     public void SetUpcomingEventsAsLoading(bool isVisible)

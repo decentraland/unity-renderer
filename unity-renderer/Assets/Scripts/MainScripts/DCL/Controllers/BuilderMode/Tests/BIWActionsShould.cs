@@ -4,6 +4,7 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;

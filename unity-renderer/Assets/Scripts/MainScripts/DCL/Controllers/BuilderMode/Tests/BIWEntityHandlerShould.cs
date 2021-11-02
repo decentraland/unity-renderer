@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using System.Linq;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Models;

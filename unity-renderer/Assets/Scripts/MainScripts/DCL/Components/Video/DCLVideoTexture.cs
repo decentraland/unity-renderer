@@ -84,7 +84,6 @@ namespace DCL.Components
                     unityWrap = TextureWrapMode.Mirror;
                     break;
             }
-
             lastVideoClipID = model.videoClipId;
 
             if (texturePlayer == null)
@@ -161,7 +160,6 @@ namespace DCL.Components
                 texturePlayer.SetLoop(model.loop);
             }
         }
-
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
@@ -170,7 +168,7 @@ namespace DCL.Components
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
             scene.OnEntityRemoved += OnEntityRemoved;
-
+            
             Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
 
             OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
@@ -198,7 +196,6 @@ namespace DCL.Components
                 yield return null;
             }
         }
-
         private void UpdateDirtyState()
         {
             if (isPlayStateDirty)
@@ -207,7 +204,6 @@ namespace DCL.Components
                 isPlayStateDirty = false;
             }
         }
-
         private void UpdateVideoTexture()
         {
             if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
@@ -218,21 +214,18 @@ namespace DCL.Components
             {
                 currUpdateIntervalTime = 0;
                 texturePlayer.UpdateWebVideoTexture();
-                texture = texturePlayer.texture;
             }
         }
-
         private void UpdateProgressReport()
         {
             var currentState = texturePlayer.GetState();
-            if ( currentState == VideoState.PLAYING
+            if ( currentState == VideoState.PLAYING 
                  && IsTimeToReportVideoProgress()
                  || previousVideoState != currentState)
             {
                 ReportVideoProgress();
             }
         }
-
         private void ReportVideoProgress()
         {
             lastVideoProgressReportTime = Time.unscaledTime;
@@ -243,7 +236,6 @@ namespace DCL.Components
             var length = texturePlayer.GetDuration();
             WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
         }
-
         private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS; }
 
         private void CalculateVideoVolumeAndPlayStatus()
@@ -411,7 +403,7 @@ namespace DCL.Components
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
-
+            
             if (scene != null)
                 scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)
