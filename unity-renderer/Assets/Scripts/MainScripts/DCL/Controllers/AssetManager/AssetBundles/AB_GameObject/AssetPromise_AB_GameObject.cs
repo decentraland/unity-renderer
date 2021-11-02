@@ -15,14 +15,9 @@ namespace DCL
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
 
-        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
-        {
-        }
+        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash) { }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
-        {
-            loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail));
-        }
+        protected override void OnLoad(Action OnSuccess, Action OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
 
         protected override bool AddToLibrary()
         {
@@ -52,10 +47,7 @@ namespace DCL
             asset.Show(OnSuccess);
         }
 
-        protected override void OnAfterLoadOrReuse()
-        {
-            settings.ApplyAfterLoad(asset.container.transform);
-        }
+        protected override void OnAfterLoadOrReuse() { settings.ApplyAfterLoad(asset.container.transform); }
 
         protected override void OnBeforeLoadOrReuse()
         {
@@ -78,7 +70,6 @@ namespace DCL
 
             AssetPromiseKeeper_AB.i.Forget(subPromise);
         }
-
 
         public override string ToString()
         {
@@ -115,7 +106,6 @@ namespace DCL
                 OnFail?.Invoke();
             }
         }
-
 
         public IEnumerator InstantiateABGameObjects()
         {
@@ -170,15 +160,19 @@ namespace DCL
 
         private void UploadMeshesToGPU(List<Mesh> meshesList)
         {
+            var uploadToGPU = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
             foreach ( Mesh mesh in meshesList )
             {
                 if ( !mesh.isReadable )
                     continue;
 
-                Physics.BakeMesh(mesh.GetInstanceID(), false);
                 asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
                 asset.meshes.Add(mesh);
-                mesh.UploadMeshData(true);
+                if (uploadToGPU)
+                {
+                    Physics.BakeMesh(mesh.GetInstanceID(), false);
+                    mesh.UploadMeshData(true);
+                }
             }
         }
 
