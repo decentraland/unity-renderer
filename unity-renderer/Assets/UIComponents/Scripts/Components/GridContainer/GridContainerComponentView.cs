@@ -125,6 +125,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         base.OnScreenSizeChanged();
 
         SetItemSize(model.itemSize);
+        SetConstraintCount(model.constraintCount);
     }
 
     public override void Dispose()
