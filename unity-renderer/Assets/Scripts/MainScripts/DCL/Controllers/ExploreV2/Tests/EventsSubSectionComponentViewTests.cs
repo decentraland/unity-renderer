@@ -69,6 +69,21 @@ public class EventsSubSectionComponentViewTests
     }
 
     [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetFeaturedEventsActiveCorrectly(bool isActive)
+    {
+        // Arrange
+        eventsSubSectionComponent.featuredEvents.gameObject.SetActive(!isActive);
+
+        // Act
+        eventsSubSectionComponent.SetFeaturedEventsActive(isActive);
+
+        // Assert
+        Assert.AreEqual(isActive, eventsSubSectionComponent.featuredEvents.gameObject.activeSelf);
+    }
+
+    [Test]
     public void SetTrendingEventsCorrectly()
     {
         // Arrange

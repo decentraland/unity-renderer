@@ -133,6 +133,7 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
         eventsSubSectionComponentView.Received().SetFeaturedEventsAsLoading(false);
+        eventsSubSectionComponentView.Received().SetFeaturedEventsActive(Arg.Any<bool>());
     }
 
     [Test]

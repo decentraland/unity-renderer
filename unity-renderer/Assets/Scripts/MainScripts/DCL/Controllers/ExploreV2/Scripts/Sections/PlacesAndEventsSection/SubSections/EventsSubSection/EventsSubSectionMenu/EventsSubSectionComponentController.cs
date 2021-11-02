@@ -144,6 +144,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.SetFeaturedEvents(featuredEvents);
         view.SetFeaturedEventsAsLoading(false);
+        view.SetFeaturedEventsActive(featuredEvents.Count > 0);
     }
 
     public void LoadTrendingEvents()
