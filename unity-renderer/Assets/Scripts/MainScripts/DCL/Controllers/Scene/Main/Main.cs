@@ -117,7 +117,7 @@ namespace DCL
         }
 
         private void OnGUI() { pluginSystem?.OnGUI(); }
-        public static void InitializeSceneDependencies()
+        protected virtual void InitializeSceneDependencies()
         {
             var bridges = Init("Bridges");
             var mouseCatcher = Init("MouseCatcher").GetComponent<MouseCatcher>();
