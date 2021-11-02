@@ -34,6 +34,13 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     internal List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
+    public override void Awake()
+    {
+        base.Awake();
+
+        RegisterCurrentInstantiatedSections();
+    }
+
     public void Configure(BaseComponentModel newModel)
     {
         model = (SectionSelectorComponentModel)newModel;
@@ -120,5 +127,22 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
     {
         yield return null;
         DestroyImmediate(go);
+    }
+
+    internal void RegisterCurrentInstantiatedSections()
+    {
+        instantiatedSections.Clear();
+
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject == sectionToggleTemplate.gameObject)
+                continue;
+
+            SectionToggle existingSection = child.GetComponent<SectionToggle>();
+            if (existingSection != null)
+                instantiatedSections.Add(existingSection);
+            else
+                Destroy(child.gameObject);
+        }
     }
 }

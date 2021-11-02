@@ -25,7 +25,6 @@ public class PlacesAndEventsSectionComponentViewTests
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
-        placesAndEventsSectionComponent.subSectionSelector.RefreshControl();
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
 

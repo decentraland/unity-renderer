@@ -40,7 +40,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal void CreateSubSectionSelectorMappings()
     {
-        subSectionSelector.RefreshControl();
         subSectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
         subSectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
         subSectionSelector.GetSection(1)?.SelectToggle();
