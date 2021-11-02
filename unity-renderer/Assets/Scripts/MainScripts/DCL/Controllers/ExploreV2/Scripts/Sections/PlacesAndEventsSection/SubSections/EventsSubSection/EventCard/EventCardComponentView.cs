@@ -151,6 +151,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal Animator cardAnimator;
     [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
+    [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
 
     [Header("Configuration")]
     [SerializeField] internal bool isEventCardModal = false;
@@ -438,6 +439,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (infoVerticalLayout != null)
             Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
+
+        if (timeAndPlayersHorizontalLayout != null)
+            Utils.ForceRebuildLayoutImmediate(timeAndPlayersHorizontalLayout.transform as RectTransform);
     }
 
     internal void CloseModal() { Hide(); }
