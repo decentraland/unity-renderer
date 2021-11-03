@@ -15,5 +15,6 @@ namespace DCL.SettingsCommon
         public float avatarsLODDistance;
         public float maxNonLODAvatars;
         public float namesOpacity;
+        public bool profanityChatFiltering;
     }
 }

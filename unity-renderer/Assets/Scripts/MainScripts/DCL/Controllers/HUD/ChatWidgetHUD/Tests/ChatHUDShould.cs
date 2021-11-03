@@ -6,17 +6,18 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
 {
     ChatHUDController controller;
     ChatHUDView view;
+    ChatMessage lastMsgSent;
+    private MemoryChatProfanityFeatureFlag chatProfanityFeatureFlag;
 
     protected override IEnumerator SetUp()
     {
-        controller = new ChatHUDController(new RegexProfanityFiltering());
+        chatProfanityFeatureFlag = new MemoryChatProfanityFeatureFlag(true);
+        controller = new ChatHUDController(new RegexProfanityFilter(), chatProfanityFeatureFlag);
         controller.Initialize(null, OnSendMessage);
-        this.view = controller.view;
-        Assert.IsTrue(this.view != null);
+        view = controller.view;
+        Assert.IsTrue(view != null);
         yield break;
     }
-
-    ChatMessage lastMsgSent;
 
     void OnSendMessage(ChatMessage msg) { lastMsgSent = msg; }
 
@@ -105,5 +106,22 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         controller.AddChatMessage(msg);
 
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
+    }
+
+    [Test]
+    public void DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
+    {
+        chatProfanityFeatureFlag.Set(false);
+        
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "test",
+            bodyText = "shit"
+        };
+        
+        controller.AddChatMessage(msg);
+        
+        Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
     }
 }

@@ -2,11 +2,11 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-public class RegexProfanityFiltering : IChatProfanityFiltering
+public class RegexProfanityFilter
 {
     private Regex regex;
 
-    public RegexProfanityFiltering()
+    public RegexProfanityFilter()
     {
         var words = new[]
         {

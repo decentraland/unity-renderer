@@ -36,6 +36,12 @@ namespace DCL
         public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
         public readonly DataStore_Camera camera = new DataStore_Camera();
+        public readonly DataStore_Settings settings = new DataStore_Settings();
+        
+        public class DataStore_Settings
+        {
+            public readonly BaseVariable<bool> profanityChatFilteringEnabled = new BaseVariable<bool>();
+        }
 
         public class DataStore_WorldObjects
         {

@@ -1,5 +1,6 @@
 {
     "name": "ChatHUDTests",
+    "rootNamespace": "",
     "references": [
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
         "GUID:6c83ec3e64bad1743a40f7646cd964a4",

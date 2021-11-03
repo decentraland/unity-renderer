@@ -1,5 +1,4 @@
 using System;
-using System.Text.RegularExpressions;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,12 +12,15 @@ public class ChatHUDController : IDisposable
 
     public event UnityAction<string> OnPressPrivateMessage;
 
-    private readonly IChatProfanityFiltering profanityFiltering;
+    private readonly RegexProfanityFilter profanityFilter;
+    private readonly IChatProfanityFeatureFlag chatProfanityFeatureFlag;
     private InputAction_Trigger closeWindowTrigger;
 
-    public ChatHUDController(IChatProfanityFiltering profanityFiltering)
+    public ChatHUDController(RegexProfanityFilter profanityFilter,
+        IChatProfanityFeatureFlag chatProfanityFeatureFlag)
     {
-        this.profanityFiltering = profanityFiltering;
+        this.profanityFilter = profanityFilter;
+        this.chatProfanityFeatureFlag = chatProfanityFeatureFlag;
     }
 
     public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
@@ -56,7 +58,8 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
-        chatEntryModel.bodyText = profanityFiltering.Filter(chatEntryModel.bodyText);
+        if (chatProfanityFeatureFlag.IsEnabled())
+            chatEntryModel.bodyText = profanityFilter.Filter(chatEntryModel.bodyText);
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.entries.Count > MAX_CHAT_ENTRIES)

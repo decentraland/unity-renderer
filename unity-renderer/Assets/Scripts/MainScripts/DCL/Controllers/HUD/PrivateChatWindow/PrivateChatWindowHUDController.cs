@@ -30,7 +30,7 @@ public class PrivateChatWindowHUDController : IHUD
         view.chatHudView.inputField.onSelect.RemoveListener(ChatHUDViewInputField_OnSelect);
         view.chatHudView.inputField.onSelect.AddListener(ChatHUDViewInputField_OnSelect);
 
-        chatHudController = new ChatHUDController(new ImmutableProfanityFiltering());
+        chatHudController = new ChatHUDController(new RegexProfanityFilter(), new MemoryChatProfanityFeatureFlag(false));
         chatHudController.Initialize(view.chatHudView);
         LoadLatestReadChatMessagesStatus();
 
