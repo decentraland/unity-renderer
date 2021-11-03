@@ -43,7 +43,7 @@ namespace DCL
         public Transform overlayContainer;
         public Transform globalUserMarkerContainer;
 
-        public Image playerPositionIcon;
+        public RectTransform playerPositionIcon;
 
         // Used as a reference of the coordinates origin in-map and as a parcel width/height reference
         public RectTransform centeredReferenceParcel;
@@ -377,9 +377,9 @@ namespace DCL
             Vector3 f = CommonScriptableObjects.cameraForward.Get();
             Quaternion playerAngle = Quaternion.Euler(0, 0, Mathf.Atan2(-f.x, f.z) * Mathf.Rad2Deg);
 
-            var gridPosition = this.playerGridPosition;
-            playerPositionIcon.transform.localPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
-            playerPositionIcon.transform.rotation = playerAngle;
+            var gridPosition = playerGridPosition;
+            playerPositionIcon.anchoredPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
+            playerPositionIcon.rotation = playerAngle;
         }
 
         public Vector3 GetViewportCenter() { return atlas.viewport.TransformPoint(atlas.viewport.rect.center); }
