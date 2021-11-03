@@ -436,7 +436,7 @@ namespace DCL
             Action<Exception> error,
             Action<List<WearableItem>> completed)
         {
-            var missingClothesReplacements = new [] {Categories.LOWER_BODY, Categories.UPPER_BODY, Categories.FEET}
+            var missingClothesReplacements = new [] {Categories.LOWER_BODY, Categories.UPPER_BODY}
                 .Except(wearables.Select(wearable => wearable.data.category))
                 .Select(RequestWearableReplacement);
 
