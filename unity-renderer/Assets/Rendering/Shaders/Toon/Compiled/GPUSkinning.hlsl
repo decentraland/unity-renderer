@@ -1,6 +1,5 @@
 #ifndef DCL_GPU_SKINNING_INCLUDED
 #define DCL_GPU_SKINNING_INCLUDED
-#include <HLSLSupport.cginc>
 
 CBUFFER_START(UnityPerMaterial)
 float4x4 _WorldInverse;
