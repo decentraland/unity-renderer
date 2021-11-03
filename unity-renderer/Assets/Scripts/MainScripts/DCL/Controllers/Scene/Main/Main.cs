@@ -13,6 +13,7 @@ namespace DCL
     /// </summary>
     public class Main : MonoBehaviour
     {
+        [SerializeField] private bool disableSceneDependencies;
         public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
@@ -32,8 +33,9 @@ namespace DCL
 
             i = this;
 
-            InitializeSceneDependencies();
-            
+            if (!disableSceneDependencies)
+                InitializeSceneDependencies();
+
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
                 performanceMetricsController = new PerformanceMetricsController();
@@ -90,7 +92,7 @@ namespace DCL
 
             // We trigger the Decentraland logic once everything is initialized.
             DCL.Interface.WebInterface.StartDecentraland();
-            
+
             Environment.i.world.sceneController.Start();
         }
 
@@ -123,27 +125,27 @@ namespace DCL
             var mouseCatcher = Init("MouseCatcher").GetComponent<MouseCatcher>();
             var environment = Init("Environment").GetComponent<EnvironmentReferences>();
             var playerReferences = Init("Player").GetComponent<PlayerReferences>();
-            
+
             Init("HUDController");
             Init("HUDAudioHandler");
             Init("NavMap");
             Init("SettingsController");
-            
+
             var sceneReferences = new SceneReferences(
-                new SceneReferencesData(mouseCatcher,
-                    environment.ground,
-                    playerReferences.biwCameraRoot,
-                    playerReferences.inputController, 
-                    playerReferences.cursorCanvas, 
-                    bridges.GetComponent<BuilderInWorldBridge>(), 
-                    playerReferences.avatarController, 
-                    playerReferences.cameraController, 
-                    playerReferences.mainCamera,
-                    bridges,
-                    environment.environmentLight,
-                    environment.postProcessVolume,
-                    playerReferences.thirdPersonCamera,
-                    playerReferences.firstPersonCamera));
+                mouseCatcher,
+                environment.ground,
+                playerReferences.biwCameraRoot,
+                playerReferences.inputController,
+                playerReferences.cursorCanvas,
+                bridges.GetComponent<BuilderInWorldBridge>(),
+                playerReferences.avatarController,
+                playerReferences.cameraController,
+                playerReferences.mainCamera,
+                bridges,
+                environment.environmentLight,
+                environment.postProcessVolume,
+                playerReferences.thirdPersonCamera,
+                playerReferences.firstPersonCamera);
         }
 
         private static GameObject Init(string name)

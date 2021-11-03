@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using Cinemachine;
+using DCL.Rendering;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsCommon.SettingsControllers.SpecificControllers;
 using NUnit.Framework;
@@ -34,7 +35,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         public IEnumerator SetUp()
         {
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode($"{TEST_SCENE_PATH}/{TEST_SCENE_NAME}.unity", new LoadSceneParameters(LoadSceneMode.Additive));
-
+            yield return null;
             SetupReferences();
         }
 
@@ -190,7 +191,9 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         public void ChangeDetailObjectCullingSizeCorrectly()
         {
             // Arrange
-            settingController = ScriptableObject.CreateInstance<DetailObjectCullingSizeControlController>();
+            var scriptableObject = ScriptableObject.CreateInstance<DetailObjectCullingSizeControlController>();
+            scriptableObject.cullingControllerSettingsData = ScriptableObject.CreateInstance<CullingControllerSettingsData>();
+            settingController = scriptableObject;
             settingController.Initialize();
 
             // Act

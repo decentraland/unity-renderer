@@ -118,7 +118,7 @@ public class BuilderInWorldEditor : IBIWEditor
         builderInWorldBridge.AskKernelForCatalogHeadersWithParams("get", "/assetPacks"); 
     }
 
-    public void InitReferences(ISceneReferences sceneReferences)
+    public void InitReferences(SceneReferences sceneReferences)
     {
         builderInWorldBridge = sceneReferences.builderInWorldBridge;
         cursorGO = sceneReferences.cursorCanvas;

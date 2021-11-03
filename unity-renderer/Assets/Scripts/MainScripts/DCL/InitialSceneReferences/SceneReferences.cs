@@ -7,30 +7,56 @@ using UnityEngine.Rendering;
 
 namespace DCL
 {
-    public class SceneReferences : ISceneReferences
+    public class SceneReferences
     {
         public static SceneReferences i { get; private set; }
-        public readonly SceneReferencesData data;
+        
+        public readonly MouseCatcher mouseCatcher;
+        public readonly GameObject groundVisual;
+        public readonly GameObject biwCameraParent;
+        public readonly InputController inputController;
+        public readonly GameObject cursorCanvas;
+        public readonly BuilderInWorldBridge builderInWorldBridge;
+        public readonly PlayerAvatarController playerAvatarController;
+        public readonly CameraController cameraController;
+        public readonly UnityEngine.Camera mainCamera;
+        public readonly GameObject bridgeGameObject;
+        public readonly Light environmentLight;
+        public readonly Volume postProcessVolume;
+        public readonly CinemachineFreeLook thirdPersonCamera;
+        public readonly CinemachineVirtualCamera firstPersonCamera;
 
-        public GameObject groundVisual => data.groundVisual;
-        public GameObject biwCameraParent => data.biwCameraParent;
-        public GameObject cursorCanvas => data.cursorCanvas;
-        public MouseCatcher mouseCatcher => data.mouseCatcher;
-        public InputController inputController => data.inputController;
-        public BuilderInWorldBridge builderInWorldBridge => data.builderInWorldBridge;
-        public PlayerAvatarController playerAvatarController => data.playerAvatarController;
-        public CameraController cameraController => data.cameraController;
-        public UnityEngine.Camera mainCamera => data.mainCamera;
-        public GameObject bridgeGameObject => data.bridgeGameObject;
-        public Light environmentLight => data.environmentLight;
-        public Volume postProcessVolume => data.postProcessVolume;
-        public CinemachineFreeLook thirdPersonCamera => data.thirdPersonCamera;
-        public CinemachineVirtualCamera firstPersonCamera => data.firstPersonCamera;
-
-        public SceneReferences(SceneReferencesData referencesData)
+        public SceneReferences(MouseCatcher mouseCatcher,
+            GameObject groundVisual,
+            GameObject biwCameraParent,
+            InputController inputController,
+            GameObject cursorCanvas,
+            BuilderInWorldBridge builderInWorldBridge,
+            PlayerAvatarController playerAvatarController,
+            CameraController cameraController,
+            UnityEngine.Camera mainCamera,
+            GameObject bridgeGameObject,
+            Light environmentLight,
+            Volume postProcessVolume, 
+            CinemachineFreeLook thirdPersonCamera,
+            CinemachineVirtualCamera firstPersonCamera)
         {
-            i ??= this;
-            data = referencesData;
+            this.mouseCatcher = mouseCatcher;
+            this.groundVisual = groundVisual;
+            this.biwCameraParent = biwCameraParent;
+            this.inputController = inputController;
+            this.cursorCanvas = cursorCanvas;
+            this.builderInWorldBridge = builderInWorldBridge;
+            this.playerAvatarController = playerAvatarController;
+            this.cameraController = cameraController;
+            this.mainCamera = mainCamera;
+            this.bridgeGameObject = bridgeGameObject;
+            this.environmentLight = environmentLight;
+            this.postProcessVolume = postProcessVolume;
+            this.thirdPersonCamera = thirdPersonCamera;
+            this.firstPersonCamera = firstPersonCamera;
+            
+            i = this;
         }
     }
 

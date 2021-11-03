@@ -74,7 +74,8 @@ public class TestSceneIntegrityChecker
 
         if (newObjects.Count > 0)
         {
-            Debug.LogError("Dangling components detected!. Look your TearDown code, you missed to destroy objects after the tests?.");
+            //downgraded this to a warning for better editor test readability
+            Debug.LogWarning("Dangling components detected!. Look your TearDown code, you missed to destroy objects after the tests?.");
 
             //NOTE(Brian): Can't use asserts here because Unity Editor hangs for some reason.
             foreach (var o in newObjects)
