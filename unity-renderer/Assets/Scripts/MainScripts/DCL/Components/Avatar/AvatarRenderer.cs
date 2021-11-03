@@ -251,7 +251,6 @@ namespace DCL
 
             if (bodyShapeError != null)
             {
-                Debug.LogError(bodyShapeError);
                 isLoading = false;
                 OnFailEvent?.Invoke(true);
                 yield break;
