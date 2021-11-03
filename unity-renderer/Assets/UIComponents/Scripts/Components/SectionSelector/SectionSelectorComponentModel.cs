@@ -14,10 +14,14 @@ public class SectionToggleModel
 {
     public Sprite icon;
     public string title;
-    public Color selectedBackgroundColor;
+
+    [Header("Visual Configuration When Selected")]
     public Color selectedTextColor;
     public Color selectedImageColor;
-    public Color unselectedBackgroundColor;
+    public ColorBlock backgroundTransitionColorsForSelected;
+
+    [Header("Visual Configuration When Unselected")]
     public Color unselectedTextColor;
     public Color unselectedImageColor;
+    public ColorBlock backgroundTransitionColorsForUnselected;
 }

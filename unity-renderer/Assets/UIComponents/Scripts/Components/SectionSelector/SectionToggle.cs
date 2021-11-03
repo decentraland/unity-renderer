@@ -41,13 +41,16 @@ public interface ISectionToggle
 public class SectionToggle : MonoBehaviour, ISectionToggle
 {
     [SerializeField] private Toggle toggle;
-    [SerializeField] private Image toggleBackground;
     [SerializeField] private TMP_Text sectionText;
     [SerializeField] private Image sectionImage;
-    [SerializeField] private Color selectedBackgroundColor;
+
+    [Header("Visual Configuration When Selected")]
+    [SerializeField] private ColorBlock backgroundTransitionColorsForSelected;
     [SerializeField] private Color selectedTextColor;
     [SerializeField] private Color selectedImageColor;
-    [SerializeField] private Color unselectedBackgroundColor;
+
+    [Header("Visual Configuration When Unselected")]
+    [SerializeField] private ColorBlock backgroundTransitionColorsForUnselected;
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
@@ -78,15 +81,16 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             sectionImage.sprite = model.icon;
         }
 
-        selectedBackgroundColor = model.selectedBackgroundColor;
+        backgroundTransitionColorsForSelected = model.backgroundTransitionColorsForSelected;
+        backgroundTransitionColorsForUnselected = model.backgroundTransitionColorsForUnselected;
         selectedTextColor = model.selectedTextColor;
         selectedImageColor = model.selectedImageColor;
-        unselectedBackgroundColor = model.unselectedBackgroundColor;
         unselectedTextColor = model.unselectedTextColor;
         unselectedImageColor = model.unselectedImageColor;
 
         onSelect.RemoveAllListeners();
         ConfigureDefaultOnSelectAction();
+        toggle.colors = model.backgroundTransitionColorsForSelected;
     }
 
     public void SelectToggle()
@@ -99,14 +103,14 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
     public void SetSelectedVisuals()
     {
-        toggleBackground.color = selectedBackgroundColor;
+        toggle.colors = backgroundTransitionColorsForSelected;
         sectionText.color = selectedTextColor;
         sectionImage.color = selectedImageColor;
     }
 
     public void SetUnselectedVisuals()
     {
-        toggleBackground.color = unselectedBackgroundColor;
+        toggle.colors = backgroundTransitionColorsForUnselected;
         sectionText.color = unselectedTextColor;
         sectionImage.color = unselectedImageColor;
     }
