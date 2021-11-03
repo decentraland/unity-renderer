@@ -327,7 +327,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void SubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        Application.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
+        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
 
         // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
         //eventsAPIApiController.RegisterAttendEvent(
@@ -346,7 +346,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void UnsubscribeToEvent(string eventId)
     {
         // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        Application.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
+        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
 
         // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
         //eventsAPIApiController.RegisterAttendEvent(
