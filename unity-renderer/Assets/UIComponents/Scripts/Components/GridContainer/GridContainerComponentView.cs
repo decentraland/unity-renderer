@@ -375,6 +375,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
                 (numCols * model.itemSize.x) + (model.spaceBetweenItems.x * (numCols - 1)),
                 model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.y : (model.constraintCount * model.itemSize.y) + (model.spaceBetweenItems.y * (model.constraintCount - 1)));
         }
+
+        SetSpaceBetweenItems(model.spaceBetweenItems);
     }
 
     internal void RegisterCurrentInstantiatedItems()
