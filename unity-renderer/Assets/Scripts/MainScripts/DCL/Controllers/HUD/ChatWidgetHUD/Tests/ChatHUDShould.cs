@@ -9,7 +9,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator SetUp()
     {
-        controller = new ChatHUDController();
+        controller = new ChatHUDController(new RegexProfanityFiltering());
         controller.Initialize(null, OnSendMessage);
         this.view = controller.view;
         Assert.IsTrue(this.view != null);
@@ -89,5 +89,21 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
 
         Assert.AreEqual("", lastMsgSent.body);
         Assert.AreEqual(testMessage, controller.view.inputField.text);
+    }
+
+    [TestCase("ShiT hello", "**** hello")]
+    [TestCase("ass hi bitch", "*** hi *****")]
+    public void FilterProfanityMessage(string body, string expected)
+    {
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "test",
+            bodyText = body
+        };
+
+        controller.AddChatMessage(msg);
+
+        Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
     }
 }

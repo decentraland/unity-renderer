@@ -1,7 +1,9 @@
-using DCL.Interface;
 using System;
+using System.Text.RegularExpressions;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 public class ChatHUDController : IDisposable
 {
@@ -11,7 +13,13 @@ public class ChatHUDController : IDisposable
 
     public event UnityAction<string> OnPressPrivateMessage;
 
+    private readonly IChatProfanityFiltering profanityFiltering;
     private InputAction_Trigger closeWindowTrigger;
+
+    public ChatHUDController(IChatProfanityFiltering profanityFiltering)
+    {
+        this.profanityFiltering = profanityFiltering;
+    }
 
     public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
     {
@@ -48,11 +56,12 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
+        chatEntryModel.bodyText = profanityFiltering.Filter(chatEntryModel.bodyText);
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.entries.Count > MAX_CHAT_ENTRIES)
         {
-            UnityEngine.Object.Destroy(view.entries[0].gameObject);
+            Object.Destroy(view.entries[0].gameObject);
             view.entries.Remove(view.entries[0]);
         }
     }
@@ -65,7 +74,7 @@ public class ChatHUDController : IDisposable
             view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
         }
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        UnityEngine.Object.Destroy(view.gameObject);
+        Object.Destroy(view.gameObject);
     }
 
     public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)

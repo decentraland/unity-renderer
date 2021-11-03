@@ -28,7 +28,7 @@ public class WorldChatWindowHUDController : IHUD
         view = WorldChatWindowHUDView.Create();
         view.controller = this;
 
-        chatHudController = new ChatHUDController();
+        chatHudController = new ChatHUDController(new RegexProfanityFiltering());
         chatHudController.Initialize(view.chatHudView);
         chatHudController.OnPressPrivateMessage -= ChatHUDController_OnPressPrivateMessage;
         chatHudController.OnPressPrivateMessage += ChatHUDController_OnPressPrivateMessage;
