@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +26,8 @@ public interface ISectionToggle
     /// <summary>
     /// Invoke the action of selecting the toggle.
     /// </summary>
-    void SelectToggle();
+    /// <param name="reselectIfAlreadyOn">True for apply the selection even if the toggle was already off.</param>
+    void SelectToggle(bool reselectIfAlreadyOn = false);
 
     /// <summary>
     /// Set the toggle visuals as selected.
@@ -57,6 +59,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     public ToggleEvent onSelect => toggle?.onValueChanged;
 
     private void Awake() { ConfigureDefaultOnSelectAction(); }
+
+    private void OnEnable() { StartCoroutine(ForceToRefreshToggleState()); }
 
     public SectionToggleModel GetInfo()
     {
@@ -90,13 +94,15 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
         onSelect.RemoveAllListeners();
         ConfigureDefaultOnSelectAction();
-        toggle.colors = model.backgroundTransitionColorsForSelected;
     }
 
-    public void SelectToggle()
+    public void SelectToggle(bool reselectIfAlreadyOn = false)
     {
         if (toggle == null)
             return;
+
+        if (reselectIfAlreadyOn)
+            toggle.isOn = false;
 
         toggle.isOn = true;
     }
@@ -124,5 +130,12 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             else
                 SetUnselectedVisuals();
         });
+    }
+
+    internal IEnumerator ForceToRefreshToggleState()
+    {
+        toggle.interactable = false;
+        yield return null;
+        toggle.interactable = true;
     }
 }

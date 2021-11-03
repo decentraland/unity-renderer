@@ -76,7 +76,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         if (isActive)
         {
             Show();
-            ShowDefaultSection();
+            sectionSelector.GetSection(0)?.SelectToggle(true);
         }
         else
         {
@@ -98,8 +98,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     internal void CloseMenu() { OnCloseButtonPressed?.Invoke(); }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseMenu(); }
-
-    internal void ShowDefaultSection() { placesAndEventsSection.gameObject.SetActive(true); }
 
     internal static ExploreV2MenuComponentView Create()
     {
