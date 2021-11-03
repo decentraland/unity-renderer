@@ -1,6 +1,10 @@
 #ifndef DCL_GPU_SKINNING_INCLUDED
 #define DCL_GPU_SKINNING_INCLUDED
+
+#if defined(SHADER_API_METAL)
 #define UNITY_ENABLE_CBUFFER
+#endif
+
 #include <HLSLSupport.cginc>
 
 CBUFFER_START(UnityPerMaterial)
@@ -8,7 +12,6 @@ float4x4 _WorldInverse;
 float4x4 _Matrices[100];
 float4x4 _BindPoses[100];
 CBUFFER_END
-
 
 float4x4 inverse(float4x4 input)
 {
