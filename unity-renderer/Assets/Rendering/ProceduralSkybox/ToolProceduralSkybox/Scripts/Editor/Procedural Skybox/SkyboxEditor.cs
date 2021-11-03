@@ -144,7 +144,12 @@ namespace DCL.Skybox
 
         private void Update()
         {
-            if (selectedConfiguration == null || isPaused)
+            if (selectedConfiguration == null)
+            {
+                return;
+            }
+
+            if (isPaused)
             {
                 return;
             }
@@ -158,6 +163,8 @@ namespace DCL.Skybox
             {
                 timeOfTheDay = 0.01f;
             }
+
+            Repaint();
         }
 
         private void EnsureDependencies()

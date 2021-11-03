@@ -663,7 +663,6 @@ namespace DCL.Skybox
 
         public void ResetSlot(Material selectedMat, int slotCount)
         {
-            selectedMat.SetFloat("_RenderDistance_" + slotCount, 3.4f);
             selectedMat.SetFloat("_layerType_" + slotCount, 0);
             selectedMat.SetTexture("_tex_" + slotCount, null);
             selectedMat.SetTexture("_cubemap_" + slotCount, null);
@@ -675,8 +674,12 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_fadeTime_" + slotCount, 1);
             selectedMat.SetFloat("_normalIntensity_" + slotCount, 0);
             selectedMat.SetFloat("_lightIntensity_" + slotCount, 0);
+            selectedMat.SetFloat("_RenderDistance_" + slotCount, 3.4f);
             selectedMat.SetVector("_distortIntAndSize_" + slotCount, new Vector2(0, 0));
             selectedMat.SetVector("_distortSpeedAndSharp_" + slotCount, new Vector4(0, 0, 0, 0));
+            selectedMat.SetVector("_rowAndCollumns_" + slotCount, new Vector4(1, 1));
+            selectedMat.SetVector("_particlesMainParameters_" + slotCount, new Vector4(0, 0, 0, 0));
+            selectedMat.SetVector("_particlesSecondaryParameters_" + slotCount, new Vector4(0, 0, 0, 0));
         }
 
         Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }

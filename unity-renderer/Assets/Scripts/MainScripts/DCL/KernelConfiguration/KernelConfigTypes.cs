@@ -9,7 +9,7 @@ namespace KernelConfigurationTypes
         public bool enableAvatarLODs = false;
         public bool enableTutorial = true;
         public bool enablePeopleCounter = false;
-        public bool enableProceduralSkybox = true;
+        public bool enableExploreV2 = false;
 
         public override bool Equals(object obj) { return obj is Features other && Equals(other); }
         protected bool Equals(Features other)
@@ -18,11 +18,11 @@ namespace KernelConfigurationTypes
                    && enableAvatarLODs == other.enableAvatarLODs
                    && enableTutorial == other.enableTutorial
                    && enablePeopleCounter == other.enablePeopleCounter
-                   && enableProceduralSkybox == other.enableProceduralSkybox;
+                   && enableExploreV2 == other.enableExploreV2;
         }
         public Features Clone()
         {
-            Features clone = (Features)this.MemberwiseClone();
+            Features clone = (Features) this.MemberwiseClone();
             return clone;
         }
     }
@@ -41,7 +41,7 @@ namespace KernelConfigurationTypes
 
         public Comms Clone()
         {
-            Comms clone = (Comms)this.MemberwiseClone();
+            Comms clone = (Comms) this.MemberwiseClone();
             return clone;
         }
     }
@@ -60,7 +60,7 @@ namespace KernelConfigurationTypes
 
         public Profiles Clone()
         {
-            Profiles clone = (Profiles)this.MemberwiseClone();
+            Profiles clone = (Profiles) this.MemberwiseClone();
             return clone;
         }
     }
@@ -83,7 +83,7 @@ namespace KernelConfigurationTypes
 
         public WorldRange Clone()
         {
-            WorldRange clone = (WorldRange)this.MemberwiseClone();
+            WorldRange clone = (WorldRange) this.MemberwiseClone();
             return clone;
         }
         public WorldRange(int xMin, int yMin, int xMax, int yMax)
@@ -98,6 +98,27 @@ namespace KernelConfigurationTypes
         {
             return x >= xMin && x <= xMax &&
                    y >= yMin && y <= yMax;
+        }
+    }
+
+    [Serializable]
+    public class Debugging
+    {
+        public bool sceneDebugPanelEnabled = false;
+        public string sceneDebugPanelTargetSceneId = string.Empty;
+        public string sceneLimitsWarningSceneId = string.Empty;
+        
+        public bool Equals(Debugging other)
+        {
+            return sceneDebugPanelEnabled == other?.sceneDebugPanelEnabled &&
+                   sceneDebugPanelTargetSceneId == other?.sceneDebugPanelTargetSceneId &&
+                   sceneLimitsWarningSceneId == other?.sceneLimitsWarningSceneId;
+        }
+
+        public Debugging Clone()
+        {
+            Debugging clone = (Debugging) this.MemberwiseClone();
+            return clone;
         }
     }
 }
