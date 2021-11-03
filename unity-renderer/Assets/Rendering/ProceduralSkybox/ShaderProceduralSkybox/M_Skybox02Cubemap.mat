@@ -261,7 +261,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_0:
-        m_Texture: {fileID: 2800000, guid: 54745b55af2f79e4297e9183c10654c0, type: 3}
+        m_Texture: {fileID: 2800000, guid: c33c912fc2e2196459e139071267c415, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
@@ -343,7 +343,7 @@ Material:
     - _isRadial_0: 1
     - _isRadial_1: 2
     - _isRadial_2: 1
-    - _layerType_0: 2
+    - _layerType_0: 3
     - _layerType_1: 0
     - _layerType_2: 0
     - _layerType_3: 2
@@ -359,7 +359,7 @@ Material:
     - _normalIntensity00: 0.45
     - _normalIntensity01: 0.357
     - _normalIntensity02: 0
-    - _normalIntensity_0: 0.356
+    - _normalIntensity_0: 0
     - _normalIntensity_1: 0
     - _normalIntensity_2: 0.368
     - _normalIntensity_3: 0
@@ -429,18 +429,18 @@ Material:
     - _particleSpeedAndFrequency_2: {r: 1, g: 5, b: 0, a: 0}
     - _particleSpeedAndFrequency_3: {r: 0, g: 0, b: 0, a: 0}
     - _particleSpeedAndFrequency_4: {r: 0, g: 0, b: 0, a: 0}
-    - _particlesMainParameters_0: {r: 0, g: 100, b: 5, a: 10}
+    - _particlesMainParameters_0: {r: 5, g: 5, b: 4, a: 4}
     - _particlesMainParameters_1: {r: 10, g: 10, b: 1, a: 1}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_4: {r: 0, g: 0, b: 0, a: 0}
     - _particlesParameters_0: {r: 5, g: 500, b: 1, a: 0}
-    - _particlesSecondaryParameters_0: {r: 7.39, g: 6.95, b: 0.25, a: 0.5}
+    - _particlesSecondaryParameters_0: {r: 0, g: 0, b: 0.25, a: 0.5}
     - _particlesSecondaryParameters_1: {r: 1, g: 1, b: 1, a: 1}
     - _particlesSecondaryParameters_2: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_3: {r: 0, g: 0, b: 0, a: 0}
     - _particlesSecondaryParameters_4: {r: 0, g: 0, b: 0, a: 0}
-    - _rowAndCollumns_0: {r: 1, g: 1, b: 0, a: 0}
+    - _rowAndCollumns_0: {r: 3, g: 3, b: 0, a: 0}
     - _rowAndCollumns_1: {r: 2, g: 2, b: 0, a: 0}
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
@@ -457,7 +457,7 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 2, g: 2, b: -1.75, a: -1.36}
+    - _tilingAndOffset_0: {r: 1, g: 1, b: -0.34, a: 0}
     - _tilingAndOffset_1: {r: 0.5, g: 0.5, b: 0.1, a: 0}
     - _tilingAndOffset_2: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset_3: {r: 1, g: 1, b: 0, a: -27.21}
