@@ -44,7 +44,7 @@ namespace DCL.SettingsCommon
             if (dataValue.Equals(newSettings))
                 return;
 
-            dataValue = newSettings;
+            dataValue = (T) newSettings.Clone();
             OnChanged?.Invoke(dataValue);
         }
 
