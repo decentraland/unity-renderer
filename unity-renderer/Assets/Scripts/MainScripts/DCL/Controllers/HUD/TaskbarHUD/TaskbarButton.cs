@@ -13,6 +13,7 @@ public class TaskbarButton : MonoBehaviour
     public Image iconImage;
     public Color notInteractableColor;
     public List<AppMode> compatibleModes;
+    public GameObject firstTimeLabelIndicator;
 
     public event System.Action<TaskbarButton> OnToggleOn;
     public event System.Action<TaskbarButton> OnToggleOff;
@@ -52,6 +53,9 @@ public class TaskbarButton : MonoBehaviour
     {
         if (toggledOn == on)
             return;
+
+        if (on && firstTimeLabelIndicator != null)
+            firstTimeLabelIndicator.SetActive(false);
 
         SetLineIndicator(on);
 
