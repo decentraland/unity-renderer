@@ -309,7 +309,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
             }
             else if (!backgroundColorSet)
             {
-                SetSmartBackgroundColor(texture);
+                SetTransparentBackground();
             }
 
             SetNFTImageSize(texture);
@@ -365,11 +365,13 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         return ret;
     }
 
-    private void SetSmartBackgroundColor(Texture2D texture)
+    private void SetTransparentBackground()
     {
-        //Note: we can't set the color like that because the texture is no readable even if it has been created from script
-        //imageNftBackground.color = texture.GetPixel(0, 0);
-        imageNftBackground.color = Color.white;
+        imageNftBackground.color = new Color(
+            imageNftBackground.color.r,
+            imageNftBackground.color.g,
+            imageNftBackground.color.b,
+            0f);
     }
 
     private void SetTokenSymbol(TextMeshProUGUI textToken, string symbol)
