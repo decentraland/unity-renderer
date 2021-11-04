@@ -20,7 +20,7 @@ public class BIWSaveController : BIWController, IBIWSaveController
     {
         base.Initialize(context);
 
-        bridge = context.sceneReferences.bridges.GetComponent<BuilderInWorldBridge>();
+        bridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
         if (bridge != null)
             bridge.OnKernelUpdated += TryToSave;
 

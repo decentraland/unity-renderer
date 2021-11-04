@@ -10,7 +10,7 @@ namespace DCL
             if (SceneReferences.i != null)
                 return CreateDefault(SceneReferences.i.bridgeGameObject);
 
-            return CreateDefault(null);
+            return CreateDefault(new GameObject("Bridges"));
         }
 
         public static PlatformContext CreateDefault(GameObject bridgesGameObject)

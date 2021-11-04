@@ -12,7 +12,7 @@ namespace DCL
         GameObject biwCameraParent { get ;  }
         InputController inputController { get ;  }
         GameObject cursorCanvas { get ;  }
-        GameObject bridges { get ;  }
+        GameObject biwBridgeGameObject { get ;  }
         PlayerAvatarController playerAvatarController { get ;  }
         CameraController cameraController { get ;  }
         UnityEngine.Camera mainCamera { get ;  }

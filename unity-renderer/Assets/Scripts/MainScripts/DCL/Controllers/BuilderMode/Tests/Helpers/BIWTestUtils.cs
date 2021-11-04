@@ -35,7 +35,7 @@ public static class BIWTestUtils
             sceneReferences.Configure().cursorCanvas.Returns(gameObjectToDestroy);
             sceneReferences.Configure().mouseCatcher.Returns(mouseCatcher);
             sceneReferences.Configure().bridgeGameObject.Returns(gameObjectToDestroy);
-            sceneReferences.Configure().bridges.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
             sceneReferences.Configure().playerAvatarController.Returns(avatarController);
             sceneReferences.Configure().cameraController.Returns(cameraController);
             sceneReferences.Configure().mainCamera.Returns(Camera.main);

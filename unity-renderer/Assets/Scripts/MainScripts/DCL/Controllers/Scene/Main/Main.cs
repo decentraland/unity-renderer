@@ -137,7 +137,7 @@ namespace DCL
                 playerReferences.biwCameraRoot,
                 playerReferences.inputController,
                 playerReferences.cursorCanvas,
-                bridges,
+                gameObject,
                 playerReferences.avatarController,
                 playerReferences.cameraController,
                 playerReferences.mainCamera,

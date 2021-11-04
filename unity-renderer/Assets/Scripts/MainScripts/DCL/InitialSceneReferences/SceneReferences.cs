@@ -16,7 +16,7 @@ namespace DCL
         public GameObject biwCameraParent { get; private set; }
         public InputController inputController { get; private set; }
         public GameObject cursorCanvas { get; private set; }
-        public GameObject bridges { get; private set; }
+        public GameObject biwBridgeGameObject { get; private set; }
         public PlayerAvatarController playerAvatarController { get; private set; }
         public CameraController cameraController { get; private set; }
         public UnityEngine.Camera mainCamera { get; private set; }
@@ -32,7 +32,7 @@ namespace DCL
             GameObject biwCameraParent,
             InputController inputController,
             GameObject cursorCanvas,
-            GameObject bridges,
+            GameObject BIWBridgeGameObject,
             PlayerAvatarController playerAvatarController,
             CameraController cameraController,
             UnityEngine.Camera mainCamera,
@@ -47,7 +47,7 @@ namespace DCL
             this.biwCameraParent = biwCameraParent;
             this.inputController = inputController;
             this.cursorCanvas = cursorCanvas;
-            this.bridges = bridges;
+            this.biwBridgeGameObject = BIWBridgeGameObject;
             this.playerAvatarController = playerAvatarController;
             this.cameraController = cameraController;
             this.mainCamera = mainCamera;
