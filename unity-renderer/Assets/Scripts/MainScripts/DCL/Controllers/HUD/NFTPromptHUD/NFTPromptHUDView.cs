@@ -147,7 +147,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         if (fetchNFTImageRoutine != null)
             StopCoroutine(fetchNFTImageRoutine);
 
-        imageNftBackground.color = Color.white;
+        SetTransparentBackground();
 
         imageNft.gameObject.SetActive(false);
         textNftName.gameObject.SetActive(false);
@@ -178,7 +178,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         nftContent.SetActive(true);
 
         nftTokenId = info.tokenId;
-        imageNftBackground.color = Color.white;
+        SetTransparentBackground();
         backgroundColorSet = info.backgroundColor != null;
         if (backgroundColorSet)
         {
