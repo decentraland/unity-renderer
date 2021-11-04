@@ -278,6 +278,7 @@ MonoBehaviour:
   iconImage: {fileID: 7207673188343091275}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 00000000
+  firstTimeLabelIndicator: {fileID: 340022000765245022}
 --- !u!114 &874000570051469289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -982,6 +983,7 @@ MonoBehaviour:
   iconImage: {fileID: 8002379926953698459}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 00000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &4558583283900186539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2373,6 +2375,7 @@ MonoBehaviour:
   iconImage: {fileID: 4984223206757442300}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 0000000001000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &5173558686886444464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3097,6 +3100,7 @@ MonoBehaviour:
   iconImage: {fileID: 494223209092887929}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 00000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &5137945526149666104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3835,6 +3839,7 @@ MonoBehaviour:
   iconImage: {fileID: 1318800973797180785}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 00000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &5292177451088930375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4708,7 +4713,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 203.03333, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1163524797233769629
@@ -7671,6 +7676,7 @@ MonoBehaviour:
   iconImage: {fileID: 3343024848651752155}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 0000000001000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &1634509361992002614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8171,6 +8177,7 @@ MonoBehaviour:
   iconImage: {fileID: 7061163220679428443}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 0000000001000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &7425461968562306836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8509,6 +8516,7 @@ MonoBehaviour:
   iconImage: {fileID: 1413073526740766789}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
   compatibleModes: 0000000001000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &6765384184983891056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10414,6 +10422,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e437fc79ac984296a7b8c4339b3e0a4, type: 3}
+--- !u!95 &6744237674050173955 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7650068128631371758, guid: 5e437fc79ac984296a7b8c4339b3e0a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 4013507716613737453}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5994006763854786955 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7249710612070496870, guid: 5e437fc79ac984296a7b8c4339b3e0a4,
@@ -10423,12 +10437,6 @@ RectTransform:
 --- !u!1 &2906287734792479230 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2299067041567238675, guid: 5e437fc79ac984296a7b8c4339b3e0a4,
-    type: 3}
-  m_PrefabInstance: {fileID: 4013507716613737453}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &6744237674050173955 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 7650068128631371758, guid: 5e437fc79ac984296a7b8c4339b3e0a4,
     type: 3}
   m_PrefabInstance: {fileID: 4013507716613737453}
   m_PrefabAsset: {fileID: 0}
