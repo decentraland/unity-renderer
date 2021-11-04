@@ -5,13 +5,6 @@ using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public interface IBIWInputWrapper : IBIWController
-{
-    public void StopInput();
-
-    public void ResumeInput();
-}
-
 public class BIWInputWrapper : BIWController, IBIWInputWrapper
 {
     private const float MS_CLICK_THRESHOLD = 500;

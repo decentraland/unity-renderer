@@ -34,7 +34,7 @@ namespace Tests
             for (int i = 0; i < cardsCount; i++)
             {
                 var card = (IProjectCardView)Object.Instantiate(prefab);
-                card.Setup(new DCL.Builder.ProjectData());
+                card.Setup(new ProjectData());
                 cardViews.Add(i.ToString(), card);
             }
 

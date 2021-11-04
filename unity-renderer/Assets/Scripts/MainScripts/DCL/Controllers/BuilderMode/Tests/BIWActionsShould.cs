@@ -14,7 +14,7 @@ using WaitUntil = UnityEngine.WaitUntil;
 public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    private Context context;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {
@@ -57,7 +57,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityAction.oldValue = oldPosition;
         entityAction.newValue = newPosition;
 
-        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.MOVE);
+        buildModeAction.CreateActionType(entityAction, IBIWCompleteAction.ActionType.MOVE);
 
         scene.entities[ENTITY_ID].gameObject.transform.position = newPosition;
         context.editorContext.actionController.AddAction(buildModeAction);
@@ -81,7 +81,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityAction.oldValue = oldRotation;
         entityAction.newValue = newRotation;
 
-        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.ROTATE);
+        buildModeAction.CreateActionType(entityAction, IBIWCompleteAction.ActionType.ROTATE);
 
         scene.entities[ENTITY_ID].gameObject.transform.rotation = Quaternion.Euler(newRotation);
         context.editorContext.actionController.AddAction(buildModeAction);
@@ -105,7 +105,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityAction.oldValue = oldScale;
         entityAction.newValue = newScale;
 
-        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.SCALE);
+        buildModeAction.CreateActionType(entityAction, IBIWCompleteAction.ActionType.SCALE);
 
         scene.entities[ENTITY_ID].gameObject.transform.localScale = newScale;
         context.editorContext.actionController.AddAction(buildModeAction);

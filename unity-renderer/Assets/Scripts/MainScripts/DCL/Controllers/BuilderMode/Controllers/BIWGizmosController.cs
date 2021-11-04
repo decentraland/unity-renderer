@@ -6,28 +6,6 @@ using DCL.Builder;
 using DCL.Camera;
 using UnityEngine;
 
-public interface IBIWGizmosController : IBIWController
-{
-    delegate void GizmoTransformDelegate(string gizmoType);
-
-    event GizmoTransformDelegate OnGizmoTransformObjectStart;
-    event GizmoTransformDelegate OnGizmoTransformObject;
-    event GizmoTransformDelegate OnGizmoTransformObjectEnd;
-    event Action<Vector3> OnChangeTransformValue;
-
-    IBIWGizmos activeGizmo { get;  set; }
-
-    string GetSelectedGizmo();
-    void SetSnapFactor(float position, float rotation, float scale);
-    void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities);
-    void ShowGizmo();
-    void HideGizmo(bool setInactiveGizmos = false);
-    bool IsGizmoActive();
-    void ForceRelativeScaleRatio();
-    bool HasAxisHover();
-    void SetGizmoType(string gizmoType);
-}
-
 public class BIWGizmosController : BIWController, IBIWGizmosController
 {
     public event IBIWGizmosController.GizmoTransformDelegate OnGizmoTransformObjectStart;
@@ -52,7 +30,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private GameObject gizmosGO;
     private FreeCameraMovement freeCameraMovement;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
         gizmosGO = GameObject.Instantiate(context.projectReferencesAsset.gizmosPrefab, context.projectReferencesAsset.gizmosPrefab.transform.position, context.projectReferencesAsset.gizmosPrefab.transform.rotation);
@@ -64,7 +42,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         BIWInputWrapper.OnMouseUp += OnMouseUp;
         BIWInputWrapper.OnMouseDrag += OnMouseDrag;
 
-        if (context.sceneReferences.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+        if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraMovement = (FreeCameraMovement)cameraState;
 
         // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
@@ -99,7 +77,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
             activeGizmo.SetSnapFactor(snapInfo);
     }
 
-    internal void OnBeginDrag(BIWGizmosAxis hittedAxis)
+    internal void OnBeginDrag(IBIWGizmosAxis hittedAxis)
     {
         isTransformingObject = true;
         activeGizmo = hittedAxis.GetGizmo();
@@ -229,7 +207,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         GizmoStatusUpdate();
     }
 
-    private void OnGizmosAxisPressed(BIWGizmosAxis pressedAxis) { OnBeginDrag(pressedAxis); }
+    private void OnGizmosAxisPressed(IBIWGizmosAxis pressedAxis) { OnBeginDrag(pressedAxis); }
 
     internal void OnMouseUp(int buttonId, Vector3 mousePosition)
     {
@@ -277,12 +255,5 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
             HideGizmo();
         else
             ShowGizmo();
-    }
-
-    public class SnapInfo
-    {
-        public float position = 0;
-        public float rotation = 0;
-        public float scale = 0;
     }
 }

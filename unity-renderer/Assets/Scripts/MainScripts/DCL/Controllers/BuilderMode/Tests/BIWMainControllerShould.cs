@@ -418,7 +418,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         BIWCatalogManager.Init();
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
-        mainController.context.editorContext.floorHandler = Substitute.For<IBIWFloorHandler>();
+        ((EditorContext) mainController.context.editorContext).floorHandlerReference = Substitute.For<IBIWFloorHandler>();
         mainController.sceneToEdit = scene;
         mainController.EnterBiwControllers();
 

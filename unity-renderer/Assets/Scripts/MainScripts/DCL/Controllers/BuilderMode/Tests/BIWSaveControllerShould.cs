@@ -9,7 +9,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 {
     public BIWSaveController biwSaveController;
     public BuilderInWorldBridge builderInWorldBridge;
-    public Context context;
+    public IContext context;
 
     private GameObject gameObject;
 
@@ -17,7 +17,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         gameObject = new GameObject();
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
+        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
         context = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
 
         biwSaveController = new BIWSaveController();

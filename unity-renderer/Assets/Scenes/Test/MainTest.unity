@@ -193,12 +193,18 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 81384062}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 81384064}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c96c5543d89960749bdf3025e5fc122b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &81384064 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1387384965948666, guid: b387035aa46399445bdc7951a41d5213,
+    type: 3}
+  m_PrefabInstance: {fileID: 81384062}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &238443341
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,6 +243,7 @@ MonoBehaviour:
   playerAvatarControllerReference: {fileID: 689415105}
   cameraControllerReference: {fileID: 689415109}
   mainCameraReference: {fileID: 689415111}
+  bridgeGameObjectReference: {fileID: 81384064}
 --- !u!4 &238443343
 Transform:
   m_ObjectHideFlags: 0

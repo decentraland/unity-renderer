@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Builder.Gizmos;
 using DCL;
+using DCL.Builder;
 using DCL.Configuration;
 using DCL.Helpers;
 using NSubstitute;

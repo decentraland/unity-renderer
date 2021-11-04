@@ -9,17 +9,6 @@ using System.Linq;
 using DCL.Builder;
 using UnityEngine;
 
-public interface IBIWFloorHandler : IBIWController
-{
-    void CreateDefaultFloor();
-    void CreateFloor(CatalogItem floorSceneObject);
-    bool IsCatalogItemFloor(CatalogItem floorSceneObject);
-    void ChangeFloor(CatalogItem newFloorObject);
-    event Action OnAllParcelsFloorLoaded;
-    Dictionary<string, GameObject> floorPlaceHolderDict { get; set; }
-    void CleanUp();
-}
-
 public class BIWFloorHandler : BIWController, IBIWFloorHandler
 {
     public event Action OnAllParcelsFloorLoaded;
@@ -39,7 +28,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private readonly List<string> loadedFloorEntities = new List<string>();
     private Camera mainCamera;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 

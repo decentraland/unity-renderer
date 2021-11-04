@@ -23,7 +23,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     private BIWRaycastController raycastController;
     private BIWGizmosController gizmosController;
     private BIWGodMode godMode;
-    private Context context;
+    private IContext context;
     private GameObject mockedGameObject, entityGameObject;
     private List<BIWEntity> selectedEntities;
 

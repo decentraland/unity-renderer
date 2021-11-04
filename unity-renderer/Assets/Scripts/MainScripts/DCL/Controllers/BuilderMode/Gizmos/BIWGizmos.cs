@@ -1,22 +1,6 @@
+using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
-
-public interface IBIWGizmos
-{
-    abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
-
-    bool initialized { get; }
-    GameObject currentGameObject { get; }
-    void Initialize(Camera camera, Transform cameraHolderTransform);
-    Vector3 GetActiveAxisVector();
-    void OnEndDrag();
-    void ForceRelativeScaleRatio();
-    string GetGizmoType();
-    void SetTargetTransform(Transform entityTransform);
-    void OnBeginDrag(BIWGizmosAxis axis, Transform entityTransform);
-    float OnDrag(Vector3 hitPoint, Vector2 mousePosition);
-    bool RaycastHit(Ray ray, out Vector3 hitPoint);
-}
 
 public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
 {
@@ -41,10 +25,10 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
     protected bool startDragging = false;
     internal float previousAxisValue;
 
-    public BIWGizmosAxis activeAxis { internal set; get; }
+    public IBIWGizmosAxis activeAxis { internal set; get; }
 
-    public abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
-    public abstract float TransformEntity(Transform targetTransform, BIWGizmosAxis axis, float axisValue);
+    public abstract void SetSnapFactor(SnapInfo snapInfo);
+    public abstract float TransformEntity(Transform targetTransform, IBIWGizmosAxis axis, float axisValue);
 
     public virtual void Initialize(Camera camera, Transform cameraHolderTransform)
     {
@@ -80,7 +64,7 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
         SetPositionToTarget();
     }
 
-    public virtual void OnBeginDrag(BIWGizmosAxis axis, Transform entityTransform)
+    public virtual void OnBeginDrag(IBIWGizmosAxis axis, Transform entityTransform)
     {
         startDragging = true;
         targetTransform = entityTransform;
@@ -117,17 +101,17 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
 
     public virtual bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {
-        Vector3 hitPos = ray.GetPoint(Vector3.Distance(ray.origin, activeAxis.transform.position));
-        Vector3 hitOffset = (hitPos - activeAxis.transform.position);
-        hitPoint = activeAxis.transform.position + Vector3.Project(hitOffset, activeAxis.transform.forward);
+        Vector3 hitPos = ray.GetPoint(Vector3.Distance(ray.origin, activeAxis.axisTransform.position));
+        Vector3 hitOffset = (hitPos - activeAxis.axisTransform.position);
+        hitPoint = activeAxis.axisTransform.position + Vector3.Project(hitOffset, activeAxis.axisTransform.forward);
         return true;
     }
 
-    internal virtual float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
+    internal virtual float GetHitPointToAxisValue(IBIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
     {
-        Vector3 dir = (hitPoint - axis.transform.position).normalized;
-        float sign = Vector3.Angle(dir, axis.transform.forward) == 180 ? -1 : 1;
-        return Vector3.Distance(activeAxis.transform.position, hitPoint) * sign;
+        Vector3 dir = (hitPoint - axis.axisTransform.position).normalized;
+        float sign = Vector3.Angle(dir, axis.axisTransform.forward) == 180 ? -1 : 1;
+        return Vector3.Distance(activeAxis.axisTransform.position, hitPoint) * sign;
     }
 
     internal virtual void SetPreviousAxisValue(float axisValue, float transformValue) { previousAxisValue = axisValue - transformValue; }
