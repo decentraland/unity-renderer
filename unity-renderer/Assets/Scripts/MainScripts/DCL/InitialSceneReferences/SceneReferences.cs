@@ -7,37 +7,38 @@ using UnityEngine.Rendering;
 
 namespace DCL
 {
-    public class SceneReferences
+    public class SceneReferences : ISceneReferences
     {
         public static SceneReferences i { get; private set; }
-        
-        public readonly MouseCatcher mouseCatcher;
-        public readonly GameObject groundVisual;
-        public readonly GameObject biwCameraParent;
-        public readonly InputController inputController;
-        public readonly GameObject cursorCanvas;
-        public readonly BuilderInWorldBridge builderInWorldBridge;
-        public readonly PlayerAvatarController playerAvatarController;
-        public readonly CameraController cameraController;
-        public readonly UnityEngine.Camera mainCamera;
-        public readonly GameObject bridgeGameObject;
-        public readonly Light environmentLight;
-        public readonly Volume postProcessVolume;
-        public readonly CinemachineFreeLook thirdPersonCamera;
-        public readonly CinemachineVirtualCamera firstPersonCamera;
+
+        public MouseCatcher mouseCatcher { get; private set; }
+        public GameObject groundVisual { get; private set; }
+        public GameObject biwCameraParent { get; private set; }
+        public InputController inputController { get; private set; }
+        public GameObject cursorCanvas { get; private set; }
+        public GameObject bridges { get; private set; }
+        public PlayerAvatarController playerAvatarController { get; private set; }
+        public CameraController cameraController { get; private set; }
+        public UnityEngine.Camera mainCamera { get; private set; }
+        public GameObject bridgeGameObject { get; private set; }
+        public Light environmentLight { get; private set; }
+        public Volume postProcessVolume { get; private set; }
+        public CinemachineFreeLook thirdPersonCamera { get; private set; }
+        public CinemachineVirtualCamera firstPersonCamera { get; private set; }
+        public void Dispose() {  }
 
         public SceneReferences(MouseCatcher mouseCatcher,
             GameObject groundVisual,
             GameObject biwCameraParent,
             InputController inputController,
             GameObject cursorCanvas,
-            BuilderInWorldBridge builderInWorldBridge,
+            GameObject bridges,
             PlayerAvatarController playerAvatarController,
             CameraController cameraController,
             UnityEngine.Camera mainCamera,
             GameObject bridgeGameObject,
             Light environmentLight,
-            Volume postProcessVolume, 
+            Volume postProcessVolume,
             CinemachineFreeLook thirdPersonCamera,
             CinemachineVirtualCamera firstPersonCamera)
         {
@@ -46,7 +47,7 @@ namespace DCL
             this.biwCameraParent = biwCameraParent;
             this.inputController = inputController;
             this.cursorCanvas = cursorCanvas;
-            this.builderInWorldBridge = builderInWorldBridge;
+            this.bridges = bridges;
             this.playerAvatarController = playerAvatarController;
             this.cameraController = cameraController;
             this.mainCamera = mainCamera;
@@ -55,7 +56,7 @@ namespace DCL
             this.postProcessVolume = postProcessVolume;
             this.thirdPersonCamera = thirdPersonCamera;
             this.firstPersonCamera = firstPersonCamera;
-            
+
             i = this;
         }
     }

@@ -120,7 +120,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
     public void InitReferences(SceneReferences sceneReferences)
     {
-        builderInWorldBridge = sceneReferences.builderInWorldBridge;
+        builderInWorldBridge = sceneReferences.bridges.GetComponent<BuilderInWorldBridge>();
         cursorGO = sceneReferences.cursorCanvas;
         inputController = sceneReferences.inputController;
 
