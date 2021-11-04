@@ -10,12 +10,12 @@ namespace Tests
         private const string ID = "id";
         private const string ERROR_MESSAGE = "Error Message";
         private WebVideoPlayer webVideoPlayer;
-        private IWebVideoPlayerPlugin plugin;
+        private IVideoPluginWrapper plugin;
 
         [SetUp]
         public void Setup()
         {
-            plugin = Substitute.For<IWebVideoPlayerPlugin>();
+            plugin = Substitute.For<IVideoPluginWrapper>();
             webVideoPlayer = new WebVideoPlayer(ID, "url", true, plugin);
             plugin.GetError(ID).Returns(ERROR_MESSAGE);
         }
@@ -56,7 +56,7 @@ namespace Tests
             webVideoPlayer.Pause();
 
             plugin.Received(1).Pause(ID);
-            Assert.IsTrue(webVideoPlayer.IsPaused());
+            Assert.IsFalse(webVideoPlayer.playing);
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns((int)VideoState.ERROR);
 
-            webVideoPlayer.UpdateWebVideoTexture();
+            webVideoPlayer.Update();
 
             plugin.Received(1).GetError(ID);
             Assert.IsTrue(webVideoPlayer.isError);
@@ -133,7 +133,7 @@ namespace Tests
         {
             plugin.GetState(ID).Returns((int)VideoState.ERROR);
 
-            webVideoPlayer.UpdateWebVideoTexture();
+            webVideoPlayer.Update();
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
             webVideoPlayer.SetVolume(10);
@@ -152,52 +152,6 @@ namespace Tests
             plugin.Received(0).GetTime(ID);
             plugin.Received(0).GetDuration(ID);
             UnityEngine.TestTools.LogAssert.Expect(LogType.Error, ERROR_MESSAGE);
-        }
-
-        [Test]
-        public void OnVideoReadyCreateTextureOnce()
-        {
-            Texture texture = new Texture2D(0, 0);
-            int timesTextureWasReady = 0;
-            plugin.GetWidth(ID).Returns(1);
-            plugin.GetHeight(ID).Returns(1);
-            plugin.GetState(ID).Returns((int)VideoState.READY);
-            webVideoPlayer.OnTextureReady += t =>
-            {
-                timesTextureWasReady++;
-                texture = t;
-            };
-
-            webVideoPlayer.UpdateWebVideoTexture();
-            webVideoPlayer.UpdateWebVideoTexture();
-
-            Assert.IsTrue(timesTextureWasReady == 1);
-            Assert.AreEqual(1, texture.width);
-            Assert.AreEqual(1, texture.height);
-        }
-
-        [Test]
-        public void OnVideoPlayingResizeTextureAndUpdate()
-        {
-            Texture texture = new Texture2D(0, 0);
-            plugin.GetWidth(ID).Returns(5);
-            plugin.GetHeight(ID).Returns(5);
-            plugin.GetState(ID).Returns((int)VideoState.READY);
-
-            webVideoPlayer.OnTextureReady += t =>
-            {
-                texture = t;
-            };
-            webVideoPlayer.Play();
-            webVideoPlayer.visible = true;
-            webVideoPlayer.UpdateWebVideoTexture();
-
-            plugin.GetWidth(ID).Returns(64);
-            plugin.GetHeight(ID).Returns(64);
-            plugin.GetState(ID).Returns((int)VideoState.PLAYING);
-
-            webVideoPlayer.UpdateWebVideoTexture();
-            plugin.Received(1).TextureUpdate(ID);
         }
 
         [Test]

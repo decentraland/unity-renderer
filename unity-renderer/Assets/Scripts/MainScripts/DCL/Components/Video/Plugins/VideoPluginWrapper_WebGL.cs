@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace DCL.Components.Video.Plugin
 {
-    public class WebVideoPlayerNative : IWebVideoPlayerPlugin
+    public class VideoPluginWrapper_WebGL : IVideoPluginWrapper
     {
         public void Create(string id, string url, bool useHls) { WebGLVideoPlugin.WebVideoPlayerCreate(id, url, useHls); }
         public void Remove(string id) { WebGLVideoPlugin.WebVideoPlayerRemove(id); }

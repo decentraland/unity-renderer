@@ -2,7 +2,7 @@ using System;
 
 namespace DCL.Components.Video.Plugin
 {
-    public interface IWebVideoPlayerPlugin
+    public interface IVideoPluginWrapper
     {
         void Create(string id, string url, bool useHls);
         void Remove(string id);

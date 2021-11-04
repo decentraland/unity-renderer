@@ -5,62 +5,57 @@ namespace DCL.Components.Video.Plugin
 {
     public class WebVideoPlayer : IDisposable
     {
-        public event Action<Texture2D> OnTextureReady;
-
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
-        public bool playing { get { return shouldBePlaying; } }
+        public bool playing => GetState() == VideoState.PLAYING;
+        public bool isError => GetState() == VideoState.ERROR;
         public bool visible { get; set; } = true;
-        public bool isError { get; private set; }
+
+        public readonly string url;
 
         private string videoPlayerId;
 
-        private readonly IWebVideoPlayerPlugin plugin;
+        private readonly IVideoPluginWrapper plugin;
 
-        private bool initialized = false;
-        private bool shouldBePlaying = false;
-        private float pausedAtTime = -1;
+        private bool isReady = false;
+        private bool playWhenReady = false;
+        private float playStartTime = -1;
 
-        public WebVideoPlayer(string id, string url, bool useHls, IWebVideoPlayerPlugin plugin)
+        public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
             this.plugin = plugin;
+            this.url = url;
             texture = new Texture2D(1, 1);
             plugin.Create(id, url, useHls);
         }
 
-        public void UpdateWebVideoTexture()
+        public void Update()
         {
-            if (isError)
-            {
-                return;
-            }
-
             switch (plugin.GetState(videoPlayerId))
             {
                 case (int)VideoState.ERROR:
                     Debug.LogError(plugin.GetError(videoPlayerId));
-                    isError = true;
                     break;
                 case (int)VideoState.READY:
-                    if (!initialized)
+                    if (!isReady)
                     {
-                        initialized = true;
+                        isReady = true;
                         texture.UpdateExternalTexture((IntPtr)plugin.GetTexture(videoPlayerId));
                         texture.Apply();
-                        OnTextureReady?.Invoke(texture);
                     }
 
-                    if (shouldBePlaying)
+                    if (playWhenReady)
                     {
-                        plugin.Play(videoPlayerId, pausedAtTime);
-                        pausedAtTime = -1;
+                        PlayInternal();
+                        playWhenReady = false;
                     }
 
                     break;
                 case (int)VideoState.PLAYING:
-                    if (shouldBePlaying && visible)
+                    if (visible)
                         plugin.TextureUpdate(videoPlayerId);
+
                     break;
             }
         }
@@ -70,13 +65,19 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            if (initialized)
+            if (!isReady)
             {
-                plugin.Play(videoPlayerId, pausedAtTime);
-                pausedAtTime = -1;
+                playWhenReady = true;
+                return;
             }
 
-            shouldBePlaying = true;
+            PlayInternal();
+        }
+
+        private void PlayInternal()
+        {
+            plugin.Play(videoPlayerId, playStartTime);
+            playStartTime = -1;
         }
 
         public void Pause()
@@ -84,12 +85,10 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            pausedAtTime = plugin.GetTime(videoPlayerId);
+            playStartTime = plugin.GetTime(videoPlayerId);
             plugin.Pause(videoPlayerId);
-            shouldBePlaying = false;
+            playWhenReady = false;
         }
-
-        public bool IsPaused() { return !shouldBePlaying; }
 
         public void SetVolume(float volume)
         {
@@ -105,7 +104,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            pausedAtTime = timeSecs;
+            playStartTime = timeSecs;
             plugin.SetTime(videoPlayerId, timeSecs);
         }
 

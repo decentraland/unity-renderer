@@ -183,7 +183,7 @@ namespace DCL.Components
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
+            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new VideoPluginWrapper_WebGL());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
@@ -235,7 +235,7 @@ namespace DCL.Components
             else if (texturePlayer != null && !isTest)
             {
                 currUpdateIntervalTime = 0;
-                texturePlayer.UpdateWebVideoTexture();
+                texturePlayer.Update();
                 texture = texturePlayer.texture;
             }
         }
