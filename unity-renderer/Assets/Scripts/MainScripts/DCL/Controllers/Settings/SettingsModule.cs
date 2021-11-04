@@ -11,7 +11,7 @@ namespace DCL.SettingsCommon
         private readonly string playerPrefsKey;
         private readonly T defaultPreset;
 
-        public T Data => dataValue;
+        public T Data => (T) dataValue?.Clone();
         private T dataValue;
 
         public SettingsModule(string playerPrefsKey, T defaultPreset)
