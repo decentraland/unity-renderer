@@ -193,6 +193,10 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             // Arrange
             var scriptableObject = ScriptableObject.CreateInstance<DetailObjectCullingSizeControlController>();
             scriptableObject.cullingControllerSettingsData = ScriptableObject.CreateInstance<CullingControllerSettingsData>();
+            scriptableObject.cullingControllerSettingsData.rendererProfileMax = new CullingControllerProfile();
+            scriptableObject.cullingControllerSettingsData.rendererProfileMin = new CullingControllerProfile();
+            scriptableObject.cullingControllerSettingsData.skinnedRendererProfileMax = new CullingControllerProfile();
+            scriptableObject.cullingControllerSettingsData.skinnedRendererProfileMin = new CullingControllerProfile();
             settingController = scriptableObject;
             settingController.Initialize();
 
