@@ -15,6 +15,9 @@ public interface IPlacesAndEventsSectionComponentView
 
 public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
 {
+    internal const int PLACES_SUB_SECTION_INDEX = 0;
+    internal const int EVENTS_SUB_SECTION_INDEX = 1;
+
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
 
@@ -40,14 +43,14 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal void CreateSubSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
-        subSectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
-        subSectionSelector.GetSection(1)?.SelectToggle(true);
+        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.SelectToggle(true);
     }
 
     internal void RemoveSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(0)?.onSelect.RemoveAllListeners();
-        subSectionSelector.GetSection(1)?.onSelect.RemoveAllListeners();
+        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
     }
 }
