@@ -34,6 +34,13 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     internal List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
+    public override void Awake()
+    {
+        base.Awake();
+
+        RegisterCurrentInstantiatedSections();
+    }
+
     public void Configure(BaseComponentModel newModel)
     {
         model = (SectionSelectorComponentModel)newModel;
@@ -59,18 +66,8 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
             CreateSection(sections[i], $"Section_{i}");
         }
 
-        for (int i = 0; i < instantiatedSections.Count; i++)
-        {
-            if (i == 0)
-            {
-                instantiatedSections[i].SelectToggle();
-                instantiatedSections[i].SetSelectedVisuals();
-            }
-            else
-            {
-                instantiatedSections[i].SetUnselectedVisuals();
-            }
-        }
+        if (instantiatedSections.Count > 0)
+            instantiatedSections[0].SelectToggle();
     }
 
     public ISectionToggle GetSection(int index)
@@ -90,8 +87,8 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
         SectionToggle newGO = Instantiate(sectionToggleTemplate, transform);
         newGO.name = name;
-        newGO.SetInfo(newSectionModel);
         newGO.gameObject.SetActive(true);
+        newGO.SetInfo(newSectionModel);
         instantiatedSections.Add(newGO);
     }
 
@@ -120,5 +117,22 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
     {
         yield return null;
         DestroyImmediate(go);
+    }
+
+    internal void RegisterCurrentInstantiatedSections()
+    {
+        instantiatedSections.Clear();
+
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject == sectionToggleTemplate.gameObject)
+                continue;
+
+            SectionToggle existingSection = child.GetComponent<SectionToggle>();
+            if (existingSection != null)
+                instantiatedSections.Add(existingSection);
+            else
+                Destroy(child.gameObject);
+        }
     }
 }

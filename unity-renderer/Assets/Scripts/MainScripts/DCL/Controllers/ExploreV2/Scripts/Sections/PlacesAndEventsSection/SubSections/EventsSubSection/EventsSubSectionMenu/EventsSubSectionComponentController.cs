@@ -53,6 +53,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
     internal const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 1;
     internal const string LIVE_TAG_TEXT = "LIVE";
+    internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
@@ -144,6 +145,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.SetFeaturedEvents(featuredEvents);
         view.SetFeaturedEventsAsLoading(false);
+        view.SetFeaturedEventsActive(featuredEvents.Count > 0);
     }
 
     public void LoadTrendingEvents()
@@ -324,31 +326,39 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void SubscribeToEvent(string eventId)
     {
-        eventsAPIApiController.RegisterAttendEvent(
-            eventId,
-            true,
-            () =>
-            {
-                // Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-            },
-            (error) =>
-            {
-                Debug.LogError($"Error posting 'attend' message to the API: {error}");
-            });
+        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
+        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
+
+        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
+        //eventsAPIApiController.RegisterAttendEvent(
+        //    eventId,
+        //    true,
+        //    () =>
+        //    {
+        //        // ...
+        //    },
+        //    (error) =>
+        //    {
+        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
+        //    });
     }
 
     internal void UnsubscribeToEvent(string eventId)
     {
-        eventsAPIApiController.RegisterAttendEvent(
-            eventId,
-            false,
-            () =>
-            {
-                // Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
-            },
-            (error) =>
-            {
-                Debug.LogError($"Error posting 'attend' message to the API: {error}");
-            });
+        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
+        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
+
+        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
+        //eventsAPIApiController.RegisterAttendEvent(
+        //    eventId,
+        //    false,
+        //    () =>
+        //    {
+        //        // ...
+        //    },
+        //    (error) =>
+        //    {
+        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
+        //    });
     }
 }

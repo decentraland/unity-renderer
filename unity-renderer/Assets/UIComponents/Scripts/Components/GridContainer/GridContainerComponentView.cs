@@ -125,6 +125,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         base.OnScreenSizeChanged();
 
         SetItemSize(model.itemSize);
+        SetConstraintCount(model.constraintCount);
     }
 
     public override void Dispose()
@@ -176,6 +177,19 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
                     break;
                 case Constraint.Flexible:
                     CalculateSizeForFlexibleConstraint(out newSizeToApply, newItemSize);
+                    break;
+            }
+        }
+        else
+        {
+            switch (model.constraint)
+            {
+                case Constraint.FixedColumnCount:
+                case Constraint.Flexible:
+                    currentItemsPerRow = model.constraintCount;
+                    break;
+                case Constraint.FixedRowCount:
+                    currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constraintCount);
                     break;
             }
         }
@@ -359,6 +373,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
                 (numCols * model.itemSize.x) + (model.spaceBetweenItems.x * (numCols - 1)),
                 model.adaptItemSizeToContainer ? ((RectTransform)transform).sizeDelta.y : (model.constraintCount * model.itemSize.y) + (model.spaceBetweenItems.y * (model.constraintCount - 1)));
         }
+
+        SetSpaceBetweenItems(model.spaceBetweenItems);
     }
 
     internal void RegisterCurrentInstantiatedItems()

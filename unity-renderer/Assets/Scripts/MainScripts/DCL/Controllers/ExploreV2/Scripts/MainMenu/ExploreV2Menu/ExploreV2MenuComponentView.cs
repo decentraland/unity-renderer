@@ -37,6 +37,8 @@ public interface IExploreV2MenuComponentView : IDisposable
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
+    internal const int EXPLORE_SECTION_INDEX = 0;
+
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
     [SerializeField] internal ProfileCardComponentView profileCard;
@@ -76,7 +78,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         if (isActive)
         {
             Show();
-            ShowDefaultSection();
+            sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.SelectToggle(true);
         }
         else
         {
@@ -85,9 +87,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         }
     }
 
-    internal void CreateSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn)); }
+    internal void CreateSectionSelectorMappings() { sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn)); }
 
-    internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.RemoveAllListeners(); }
+    internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.onSelect.RemoveAllListeners(); }
 
     internal void ConfigureCloseButton()
     {
@@ -98,8 +100,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     internal void CloseMenu() { OnCloseButtonPressed?.Invoke(); }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseMenu(); }
-
-    internal void ShowDefaultSection() { placesAndEventsSection.gameObject.SetActive(true); }
 
     internal static ExploreV2MenuComponentView Create()
     {

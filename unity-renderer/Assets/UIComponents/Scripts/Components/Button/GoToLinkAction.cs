@@ -1,3 +1,4 @@
+using DCL.Interface;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ public class GoToLinkAction : MonoBehaviour
         if (string.IsNullOrEmpty(urlToGo))
             return;
 
-        Application.OpenURL(urlToGo);
+        WebInterface.OpenURL(urlToGo);
     }
 
     private void OnDestroy()

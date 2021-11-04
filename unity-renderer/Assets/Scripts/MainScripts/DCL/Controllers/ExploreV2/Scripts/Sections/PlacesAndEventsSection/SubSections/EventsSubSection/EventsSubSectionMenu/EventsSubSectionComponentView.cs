@@ -60,6 +60,12 @@ public interface IEventsSubSectionComponentView
     void SetFeaturedEventsAsLoading(bool isVisible);
 
     /// <summary>
+    /// Activates/deactivates the featured events component.
+    /// </summary>
+    /// <param name="isActive"></param>
+    void SetFeaturedEventsActive(bool isActive);
+
+    /// <summary>
     /// Set the trending events component with a list of events.
     /// </summary>
     /// <param name="events">List of events (model) to be loaded.</param>
@@ -221,13 +227,15 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         featuredEventCardsPool.ReleaseAll();
         List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events, featuredEventCardsPool);
         featuredEvents.SetItems(eventComponentsToAdd);
-        featuredEvents.gameObject.SetActive(events.Count > 0);
+        SetFeaturedEventsActive(events.Count > 0);
     }
     public void SetFeaturedEventsAsLoading(bool isVisible)
     {
-        featuredEvents.gameObject.SetActive(!isVisible);
+        SetFeaturedEventsActive(!isVisible);
         featuredEventsLoading.SetActive(isVisible);
     }
+
+    public void SetFeaturedEventsActive(bool isActive) { featuredEvents.gameObject.SetActive(isActive); }
 
     public void SetTrendingEvents(List<EventCardComponentModel> events)
     {

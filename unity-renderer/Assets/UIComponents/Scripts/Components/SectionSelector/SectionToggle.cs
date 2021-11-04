@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +26,8 @@ public interface ISectionToggle
     /// <summary>
     /// Invoke the action of selecting the toggle.
     /// </summary>
-    void SelectToggle();
+    /// <param name="reselectIfAlreadyOn">True for apply the selection even if the toggle was already off.</param>
+    void SelectToggle(bool reselectIfAlreadyOn = false);
 
     /// <summary>
     /// Set the toggle visuals as selected.
@@ -41,19 +43,24 @@ public interface ISectionToggle
 public class SectionToggle : MonoBehaviour, ISectionToggle
 {
     [SerializeField] private Toggle toggle;
-    [SerializeField] private Image toggleBackground;
     [SerializeField] private TMP_Text sectionText;
     [SerializeField] private Image sectionImage;
-    [SerializeField] private Color selectedBackgroundColor;
+
+    [Header("Visual Configuration When Selected")]
+    [SerializeField] private ColorBlock backgroundTransitionColorsForSelected;
     [SerializeField] private Color selectedTextColor;
     [SerializeField] private Color selectedImageColor;
-    [SerializeField] private Color unselectedBackgroundColor;
+
+    [Header("Visual Configuration When Unselected")]
+    [SerializeField] private ColorBlock backgroundTransitionColorsForUnselected;
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
     public ToggleEvent onSelect => toggle?.onValueChanged;
 
     private void Awake() { ConfigureDefaultOnSelectAction(); }
+
+    private void OnEnable() { StartCoroutine(ForceToRefreshToggleState()); }
 
     public SectionToggleModel GetInfo()
     {
@@ -78,10 +85,10 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             sectionImage.sprite = model.icon;
         }
 
-        selectedBackgroundColor = model.selectedBackgroundColor;
+        backgroundTransitionColorsForSelected = model.backgroundTransitionColorsForSelected;
+        backgroundTransitionColorsForUnselected = model.backgroundTransitionColorsForUnselected;
         selectedTextColor = model.selectedTextColor;
         selectedImageColor = model.selectedImageColor;
-        unselectedBackgroundColor = model.unselectedBackgroundColor;
         unselectedTextColor = model.unselectedTextColor;
         unselectedImageColor = model.unselectedImageColor;
 
@@ -89,24 +96,27 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         ConfigureDefaultOnSelectAction();
     }
 
-    public void SelectToggle()
+    public void SelectToggle(bool reselectIfAlreadyOn = false)
     {
         if (toggle == null)
             return;
+
+        if (reselectIfAlreadyOn)
+            toggle.isOn = false;
 
         toggle.isOn = true;
     }
 
     public void SetSelectedVisuals()
     {
-        toggleBackground.color = selectedBackgroundColor;
+        toggle.colors = backgroundTransitionColorsForSelected;
         sectionText.color = selectedTextColor;
         sectionImage.color = selectedImageColor;
     }
 
     public void SetUnselectedVisuals()
     {
-        toggleBackground.color = unselectedBackgroundColor;
+        toggle.colors = backgroundTransitionColorsForUnselected;
         sectionText.color = unselectedTextColor;
         sectionImage.color = unselectedImageColor;
     }
@@ -120,5 +130,14 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
             else
                 SetUnselectedVisuals();
         });
+    }
+
+    internal IEnumerator ForceToRefreshToggleState()
+    {
+        // After each activation, in order to update the toggle's transition colors correctly, we need to force to change some property
+        // of the component so that Unity notices it is in "dirty" state and it is refreshed.
+        toggle.interactable = false;
+        yield return null;
+        toggle.interactable = true;
     }
 }

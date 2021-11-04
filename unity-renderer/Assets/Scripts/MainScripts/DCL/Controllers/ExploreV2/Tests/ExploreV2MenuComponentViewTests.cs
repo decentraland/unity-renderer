@@ -108,17 +108,4 @@ public class ExploreV2MenuComponentViewTests
         // Assert
         Assert.IsTrue(closeButtonClicked, "The close button was not clicked.");
     }
-
-    [Test]
-    public void ShowDefaultSectionCorrectly()
-    {
-        // Arrange
-        exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
-
-        // Act
-        exploreV2MenuComponent.ShowDefaultSection();
-
-        // Assert
-        Assert.IsTrue(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf, "The explore section should be actived.");
-    }
 }

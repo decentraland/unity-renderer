@@ -25,7 +25,6 @@ public class PlacesAndEventsSectionComponentViewTests
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
-        placesAndEventsSectionComponent.subSectionSelector.RefreshControl();
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
 
@@ -70,18 +69,5 @@ public class PlacesAndEventsSectionComponentViewTests
                 Assert.IsFalse(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
                 break;
         }
-    }
-
-    [Test]
-    public void ShowDefaultSubSectionCorrectly()
-    {
-        // Arrange
-        placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
-
-        // Act
-        placesAndEventsSectionComponent.ShowDefaultSubSection();
-
-        // Assert
-        Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf, "The places sub-section should be actived.");
     }
 }

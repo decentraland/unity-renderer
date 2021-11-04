@@ -136,9 +136,8 @@ MonoBehaviour:
   externalParentToAdaptSize: {fileID: 0}
   model:
     constraint: 1
-    constranitCount: 3
+    constraintCount: 3
     adaptItemSizeToContainer: 0
     itemSize: {x: 200, y: 200}
     spaceBetweenItems: {x: 10, y: 10}
-    minWidthForFlexibleItems: 0
-    items: []
+    minWidthForFlexibleItems: 200
