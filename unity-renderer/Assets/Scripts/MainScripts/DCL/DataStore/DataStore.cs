@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DCL.Builder;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -56,6 +57,7 @@ namespace DCL
             public readonly BaseVariable<bool> showTaskBar = new BaseVariable<bool>();
             public readonly BaseVariable<bool> isDevBuild = new BaseVariable<bool>();
             public readonly BaseVariable<LandWithAccess[]> landsWithAccess = new BaseVariable<LandWithAccess[]>();
+            public readonly BaseVariable<ProjectData[]> projectData = new BaseVariable<ProjectData[]>();
         }
 
         public class DataStore_Quests

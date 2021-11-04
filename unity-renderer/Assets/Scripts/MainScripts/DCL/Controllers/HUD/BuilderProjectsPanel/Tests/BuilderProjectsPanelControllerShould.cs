@@ -59,14 +59,14 @@ namespace Tests
         public void GiveErrorOnFailLandsFetched()
         {
             //Arrange
-            controller.isFetching = true;
+            controller.isFetchingLands = true;
             var error =  "This error is intended";
 
             //Act
             controller.LandsFetchedError(error);
 
             //Assert
-            Assert.IsFalse(controller.isFetching);
+            Assert.IsFalse(controller.isFetchingLands);
             LogAssert.Expect(LogType.Error, error);
         }
 

@@ -85,13 +85,9 @@ namespace DCL.Builder
 
         private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
         private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
-
-        //Scriptable Objects
-        internal BIWGodModeDynamicVariables godModeDynamicVariablesAssetReference;
-        internal BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAssetReference;
-
-        public BIWGodModeDynamicVariables godModeDynamicVariablesAsset => godModeDynamicVariablesAssetReference;
-        public BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAsset => firstPersonDynamicVariablesAssetReference;
+        
+        BIWGodModeDynamicVariables IEditorContext.godModeDynamicVariablesAsset => godModeDynamicVariablesAssetReference;
+        BIWFirstPersonDynamicVariables IEditorContext.firstPersonDynamicVariablesAsset => firstPersonDynamicVariablesAssetReference;
 
         //HUD
         public IBuilderEditorHUDController editorHUD { get; private set; }
@@ -112,6 +108,10 @@ namespace DCL.Builder
         public IBIWRaycastController raycastController { get; private set; }
         public IBIWGizmosController gizmosController { get; private set; }
         public IInitialSceneReferences sceneReferences { get; private set; }
+
+        //Scriptable Objects
+        internal BIWGodModeDynamicVariables godModeDynamicVariablesAssetReference;
+        internal BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAssetReference;
 
         public EditorContext(IBuilderEditorHUDController editorHUD,
             IBIWOutlinerController outlinerController,

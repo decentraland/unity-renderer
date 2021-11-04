@@ -90,6 +90,11 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     public event Action<ProjectData> OnSettingsPressed;
     public event Action<ProjectData, IProjectCardView> OnExpandMenuPressed;
 
+    [SerializeField] private Color syncColor;
+    [SerializeField] private Color desyncColor;
+    
+    [SerializeField] private Image syncImage;
+    
     [SerializeField] internal Button contextMenuButton;
     [SerializeField] internal Button editorButton;
     [SerializeField] private Texture2D defaultThumbnail;
@@ -97,6 +102,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     [SerializeField] private GameObject loadingImgGameObject;
     [SerializeField] internal TextMeshProUGUI projectNameTxt;
     [SerializeField] internal TextMeshProUGUI projectSizeTxt;
+    [SerializeField] internal TextMeshProUGUI projectSyncTxt;
 
     [Space]
     [SerializeField] private RawImageFillParent thumbnail;
@@ -154,7 +160,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         string projectThumbnailUrl = "";
         if (!string.IsNullOrEmpty(thumbnailId))
         {
-            projectThumbnailUrl = BIWSettings.BASE_URL_BUILDER_PROJECT_THUMBNAIL.Replace("{url}", thumbnailId);
+            projectThumbnailUrl = BIWUrlUtils.GetBuilderProjecThumbnailUrl().Replace("{id}", thumbnailId);
         }
 
         this.thumbnailId = thumbnailId;
@@ -176,6 +182,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         thumbnailPromise.OnFailEvent += texture => SetThumbnail((Texture2D) null);
 
         loadingImgGameObject.SetActive(true);
+        thumbnail.enabled = false;
         AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
     }
 
@@ -183,6 +190,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     {
         loadingImgGameObject.SetActive(false);
         thumbnail.texture = thumbnailTexture ?? defaultThumbnail;
+        thumbnail.enabled = true;
     }
 
     public void SetParent(Transform parent)
