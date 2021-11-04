@@ -115,7 +115,7 @@ public class BuilderInWorldEditor : IBIWEditor
         editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
-        biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
+        biwAudioHandler = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
