@@ -125,6 +125,21 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
     }
+
+    [Test]
+    public void DoNotFilterProfanityMessageWhenIsPrivate()
+    {
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            senderName = "test",
+            bodyText = "shit"
+        };
+        
+        controller.AddChatMessage(msg);
+        
+        Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
+    }
     
     private RegexProfanityFilter GivenProfanityFilter()
     {

@@ -58,7 +58,7 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
-        if (chatProfanityFeatureFlag.IsEnabled())
+        if (chatProfanityFeatureFlag.IsEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
             chatEntryModel.bodyText = profanityFilter.Filter(chatEntryModel.bodyText);
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
