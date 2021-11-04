@@ -10,15 +10,6 @@ using DCL.Builder;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public interface IBIWEditor
-{
-    void Initialize(Context context);
-    void Dispose();
-    void OnGUI();
-    void Update();
-    void LateUpdate();
-}
-
 public class BuilderInWorldEditor : IBIWEditor
 {
     internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
@@ -46,7 +37,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
-    internal Context context;
+    internal IContext context;
 
     private readonly List<IBIWController> controllers = new List<IBIWController>();
 
@@ -86,7 +77,7 @@ public class BuilderInWorldEditor : IBIWEditor
     private bool alreadyAskedForLandPermissions = false;
     private Vector3 askPermissionLastPosition;
 
-    public void Initialize(Context context)
+    public void Initialize(IContext context)
     {
         if (isInit)
             return;
@@ -107,7 +98,6 @@ public class BuilderInWorldEditor : IBIWEditor
         InitHUD();
 
         BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
-        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         InitControllers();
 
@@ -119,13 +109,13 @@ public class BuilderInWorldEditor : IBIWEditor
             userProfile.OnUpdate += OnUserProfileUpdate;
         else
             AskHeadersToKernel();
-
+        
         isCatalogLoading = true;
 
         editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
-        biwAudioHandler = UnityEngine.Object.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
+        biwAudioHandler = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Initialize(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
@@ -196,7 +186,6 @@ public class BuilderInWorldEditor : IBIWEditor
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         BIWNFTController.i.Dispose();
-
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
@@ -328,7 +317,7 @@ public class BuilderInWorldEditor : IBIWEditor
             var userProfile = UserProfile.GetOwnUserProfile();
             if (userProfile != null)
                 ethAddress = userProfile.ethAddress;
-
+            
             BIWNFTController.i.StartFetchingNft();
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(ethAddress), CatalogReceived, catalogCallHeaders);
             catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(""), CatalogReceived, catalogCallHeaders);
@@ -569,7 +558,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
         isEnteringEditMode = false;
         BIWNFTController.i.StartEditMode();
-
+        
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
         sceneToEdit.SetEditMode(true);
@@ -676,6 +665,7 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         Environment.i.platform.cullingController.Start();
         BIWNFTController.i.ExitEditMode();
+        
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;

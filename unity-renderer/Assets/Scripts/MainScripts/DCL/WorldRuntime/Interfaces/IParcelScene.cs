@@ -7,6 +7,7 @@ namespace DCL.Controllers
 {
     public interface IParcelScene
     {
+        IDCLEntity CreateEntity(string id);
         Transform GetSceneTransform();
         Dictionary<string, IDCLEntity> entities { get; }
         Dictionary<string, ISharedComponent> disposableComponents { get; }
@@ -25,5 +26,6 @@ namespace DCL.Controllers
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
+        IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data);
     }
 }

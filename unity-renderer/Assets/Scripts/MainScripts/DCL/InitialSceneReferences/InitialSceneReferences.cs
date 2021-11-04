@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class InitialSceneReferences : MonoBehaviour
+    public class InitialSceneReferences : MonoBehaviour, IInitialSceneReferences
     {
         public class Data
         {
@@ -52,13 +52,14 @@ namespace DCL
         public GameObject groundVisual => data.groundVisual;
         public GameObject cameraParent => data.cameraParent;
         public GameObject cursorCanvas => data.cursorCanvas;
-        public MouseCatcher mouseCatcher => data.mouseCatcher;
-        public InputController inputController => data.inputController;
-        public BuilderInWorldBridge builderInWorldBridge => data.builderInWorldBridge;
-        public PlayerAvatarController playerAvatarController => data.playerAvatarController;
-        public CameraController cameraController => data.cameraController;
+        public GameObject mouseCatcher => data.mouseCatcher.gameObject;
+        public GameObject inputController => data.inputController.gameObject;
+        public GameObject builderInWorldBridge => data.builderInWorldBridge.gameObject;
+        public GameObject playerAvatarController => data.playerAvatarController.gameObject;
+        public GameObject cameraController => data.cameraController.gameObject;
         public UnityEngine.Camera mainCamera { get { return mainCameraReference; } }
         public GameObject bridgeGameObject { get { return bridgeGameObjectReference; } }
+        public void Dispose() { }
 
         public static InitialSceneReferences i { get; private set; }
 

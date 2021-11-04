@@ -50,7 +50,7 @@ public class BIWGodMode : BIWMode
 
     public const float RAYCAST_MAX_DISTANCE = 10000f;
 
-    public override void Init(Context context)
+    public override void Init(IContext context)
     {
         base.Init(context);
 
@@ -84,11 +84,11 @@ public class BIWGodMode : BIWMode
             context.editorContext.editorHUD.OnPublishAction += TakeSceneScreenshotForPublish;
         }
 
-        if (context.sceneReferences.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+        if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraController = (FreeCameraMovement) cameraState;
-        mouseCatcher = context.sceneReferences.mouseCatcher;
-        avatarRenderer = context.sceneReferences.playerAvatarController;
-        cameraController = context.sceneReferences.cameraController;
+        mouseCatcher = context.sceneReferences.mouseCatcher.GetComponent<MouseCatcher>();
+        avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
+        cameraController = context.sceneReferences.cameraController.GetComponent<CameraController>();
 
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;
@@ -220,7 +220,7 @@ public class BIWGodMode : BIWMode
         editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
         gizmoManager.SetSelectedEntities(editionGO.transform, selectedEntities);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.TRANSLATE_GIZMO_NAME);
-        ActionFinish(BIWCompleteAction.ActionType.MOVE);
+        ActionFinish(IBIWCompleteAction.ActionType.MOVE);
         entityHandler.ReportTransform(true);
         saveController.TryToSave();
     }
@@ -233,7 +233,7 @@ public class BIWGodMode : BIWMode
         TransformActionStarted(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
         selectedEntities[0].rootEntity.gameObject.transform.rotation = Quaternion.Euler(rotation);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
-        ActionFinish(BIWCompleteAction.ActionType.ROTATE);
+        ActionFinish(IBIWCompleteAction.ActionType.ROTATE);
         entityHandler.ReportTransform(true);
         saveController.TryToSave();
     }
@@ -253,7 +253,7 @@ public class BIWGodMode : BIWMode
         entityToUpdate.rootEntity.gameObject.transform.SetParent(editionGO.transform);
 
         TransformActionEnd(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
-        ActionFinish(BIWCompleteAction.ActionType.SCALE);
+        ActionFinish(IBIWCompleteAction.ActionType.SCALE);
         entityHandler.ReportTransform(true);
         saveController.TryToSave();
     }
@@ -741,13 +741,13 @@ public class BIWGodMode : BIWMode
         {
             case BIWSettings.TRANSLATE_GIZMO_NAME:
 
-                ActionFinish(BIWCompleteAction.ActionType.MOVE);
+                ActionFinish(IBIWCompleteAction.ActionType.MOVE);
                 break;
             case BIWSettings.ROTATE_GIZMO_NAME:
-                ActionFinish(BIWCompleteAction.ActionType.ROTATE);
+                ActionFinish(IBIWCompleteAction.ActionType.ROTATE);
                 break;
             case BIWSettings.SCALE_GIZMO_NAME:
-                ActionFinish(BIWCompleteAction.ActionType.SCALE);
+                ActionFinish(IBIWCompleteAction.ActionType.SCALE);
                 break;
         }
 

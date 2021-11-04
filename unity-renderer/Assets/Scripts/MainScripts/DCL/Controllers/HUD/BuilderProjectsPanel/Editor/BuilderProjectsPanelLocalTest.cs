@@ -19,7 +19,6 @@ public class BuilderProjectsPanelLocalTest : MonoBehaviour
         {
             var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
         }
-        controller.Initialize();
         controller.SetVisibility(true);
     }
 }

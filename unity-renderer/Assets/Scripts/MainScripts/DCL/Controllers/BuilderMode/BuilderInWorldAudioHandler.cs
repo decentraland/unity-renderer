@@ -48,17 +48,17 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private List<string> entitiesOutOfBounds = new List<string>();
     private int entityCount;
     bool playPlacementSoundOnDeselect;
-    private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
+    private IBIWModeController.EditModeState state = IBIWModeController.EditModeState.Inactive;
 
     private Coroutine fadeInCoroutine;
     private Coroutine fadeOutCoroutine;
     private Coroutine startBuilderMusicCoroutine;
 
-    private Context context;
+    private IContext context;
 
     private void Start() { playPlacementSoundOnDeselect = false; }
 
-    public void Initialize(Context context)
+    public void Initialize(IContext context)
     {
         this.context = context;
         creatorController = context.editorContext.creatorController;
@@ -166,17 +166,17 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
             eventBuilderMusic.Play();
     }
 
-    private void OnChangedEditModeState(BIWModeController.EditModeState previous, BIWModeController.EditModeState current)
+    private void OnChangedEditModeState(IBIWModeController.EditModeState previous, IBIWModeController.EditModeState current)
     {
         state = current;
-        if (previous != BIWModeController.EditModeState.Inactive)
+        if (previous != IBIWModeController.EditModeState.Inactive)
         {
             switch (current)
             {
-                case BIWModeController.EditModeState.FirstPerson:
+                case IBIWModeController.EditModeState.FirstPerson:
                     AudioScriptableObjects.cameraFadeIn.Play();
                     break;
-                case BIWModeController.EditModeState.GodMode:
+                case IBIWModeController.EditModeState.GodMode:
                     AudioScriptableObjects.cameraFadeOut.Play();
                     break;
                 default:
@@ -187,7 +187,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void OnEntityBoundsCheckerStatusChanged(DCL.Models.IDCLEntity entity, bool isInsideBoundaries)
     {
-        if (state == BIWModeController.EditModeState.Inactive)
+        if (state == IBIWModeController.EditModeState.Inactive)
             return;
 
         if (!isInsideBoundaries)

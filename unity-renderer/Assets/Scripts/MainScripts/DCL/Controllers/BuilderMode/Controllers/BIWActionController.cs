@@ -9,19 +9,6 @@ using DCL.Controllers;
 using UnityEngine;
 using static BIWCompleteAction;
 
-public interface IBIWActionController : IBIWController
-{
-    event System.Action OnRedo;
-    event System.Action OnUndo;
-    void AddAction(BIWCompleteAction action);
-    void TryToRedoAction();
-    void TryToUndoAction();
-    void CreateActionEntityDeleted(List<BIWEntity> entityList);
-    void CreateActionEntityDeleted(BIWEntity entity);
-    void CreateActionEntityCreated(IDCLEntity entity);
-    void Clear();
-}
-
 public class BIWActionController : BIWController, IBIWActionController
 {
     private static bool VERBOSE = false;
@@ -32,12 +19,12 @@ public class BIWActionController : BIWController, IBIWActionController
     private IBIWEntityHandler entityHandler;
     private IBIWFloorHandler floorHandler;
 
-    private readonly List<BIWCompleteAction> actionsMade = new List<BIWCompleteAction>();
+    private readonly List<IBIWCompleteAction> actionsMade = new List<IBIWCompleteAction>();
 
     private int currentUndoStepIndex = 0;
     private int currentRedoStepIndex = 0;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
@@ -120,7 +107,7 @@ public class BIWActionController : BIWController, IBIWActionController
     {
         if (currentUndoStepIndex < 0 ||
             actionsMade.Count <= 0 ||
-            !actionsMade[0].isDone)
+            !actionsMade[0].IsDone())
             return;
 
         UndoCurrentAction();
@@ -131,7 +118,7 @@ public class BIWActionController : BIWController, IBIWActionController
             if (currentRedoStepIndex < actionsMade.Count - 1 || currentRedoStepIndex - currentUndoStepIndex > 1)
                 currentRedoStepIndex--;
         }
-        else if (!actionsMade[currentUndoStepIndex].isDone && currentRedoStepIndex > 0)
+        else if (!actionsMade[currentUndoStepIndex].IsDone() && currentRedoStepIndex > 0)
         {
             currentRedoStepIndex--;
         }
@@ -153,7 +140,7 @@ public class BIWActionController : BIWController, IBIWActionController
             entityActionList.Add(biwEntityAction);
         }
 
-        buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.DELETE);
+        buildAction.CreateActionType(entityActionList, IBIWCompleteAction.ActionType.DELETE);
 
         AddAction(buildAction);
     }
@@ -163,16 +150,16 @@ public class BIWActionController : BIWController, IBIWActionController
         BIWEntityAction biwEntityAction = new BIWEntityAction(entity, entity.entityId, BIWUtils.ConvertEntityToJSON(entity));
 
         BIWCompleteAction buildAction = new BIWCompleteAction();
-        buildAction.CreateActionType(biwEntityAction, ActionType.CREATE);
+        buildAction.CreateActionType(biwEntityAction, IBIWCompleteAction.ActionType.CREATE);
 
         AddAction(buildAction);
     }
 
-    public void AddAction(BIWCompleteAction action)
+    public void AddAction(IBIWCompleteAction action)
     {
         if (currentRedoStepIndex < actionsMade.Count - 1)
             actionsMade.RemoveRange(currentRedoStepIndex, actionsMade.Count - currentRedoStepIndex);
-        else if (actionsMade.Count > 0 && !actionsMade[currentRedoStepIndex].isDone)
+        else if (actionsMade.Count > 0 && !actionsMade[currentRedoStepIndex].IsDone())
             actionsMade.RemoveAt(actionsMade.Count - 1);
 
         actionsMade.Add(action);
@@ -187,21 +174,21 @@ public class BIWActionController : BIWController, IBIWActionController
         CheckButtonsInteractability();
     }
 
-    void ApplyAction(string entityIdToApply, object value, ActionType actionType, bool isUndo)
+    void ApplyAction(string entityIdToApply, object value, IBIWCompleteAction.ActionType actionType, bool isUndo)
     {
         switch (actionType)
         {
-            case ActionType.MOVE:
+            case IBIWCompleteAction.ActionType.MOVE:
                 Vector3 convertedPosition = (Vector3) value;
                 entityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.position = convertedPosition;
                 break;
 
-            case ActionType.ROTATE:
+            case IBIWCompleteAction.ActionType.ROTATE:
                 Vector3 convertedAngles = (Vector3) value;
                 entityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.eulerAngles = convertedAngles;
                 break;
 
-            case ActionType.SCALE:
+            case IBIWCompleteAction.ActionType.SCALE:
                 Vector3 convertedScale = (Vector3) value;
                 IDCLEntity entityToApply = entityHandler.GetConvertedEntity(entityIdToApply).rootEntity;
                 Transform parent = entityToApply.gameObject.transform.parent;
@@ -209,7 +196,7 @@ public class BIWActionController : BIWController, IBIWActionController
                 entityToApply.gameObject.transform.localScale = new Vector3(convertedScale.x / parent.localScale.x, convertedScale.y / parent.localScale.y, convertedScale.z / parent.localScale.z);
                 break;
 
-            case ActionType.CREATE:
+            case IBIWCompleteAction.ActionType.CREATE:
                 string entityString = (string) value;
                 if (isUndo)
                     entityHandler.DeleteEntity(entityString);
@@ -218,7 +205,7 @@ public class BIWActionController : BIWController, IBIWActionController
 
                 break;
 
-            case ActionType.DELETE:
+            case IBIWCompleteAction.ActionType.DELETE:
                 string deletedEntityString = (string) value;
 
                 if (isUndo)
@@ -227,7 +214,7 @@ public class BIWActionController : BIWController, IBIWActionController
                     entityHandler.DeleteEntity(deletedEntityString);
 
                 break;
-            case ActionType.CHANGE_FLOOR:
+            case IBIWCompleteAction.ActionType.CHANGE_FLOOR:
                 string catalogItemToApply = (string) value;
 
                 CatalogItem floorObject = JsonConvert.DeserializeObject<CatalogItem>(catalogItemToApply);
@@ -239,7 +226,7 @@ public class BIWActionController : BIWController, IBIWActionController
 
     void RedoCurrentAction()
     {
-        if (!actionsMade[currentRedoStepIndex].isDone)
+        if (!actionsMade[currentRedoStepIndex].IsDone())
         {
             actionsMade[currentRedoStepIndex].Redo();
             OnRedo?.Invoke();
@@ -250,7 +237,7 @@ public class BIWActionController : BIWController, IBIWActionController
 
     void UndoCurrentAction()
     {
-        if (actionsMade[currentUndoStepIndex].isDone)
+        if (actionsMade[currentUndoStepIndex].IsDone())
         {
             actionsMade[currentUndoStepIndex].Undo();
             OnUndo?.Invoke();
@@ -264,8 +251,8 @@ public class BIWActionController : BIWController, IBIWActionController
         if ( context.editorContext.editorHUD == null)
             return;
 
-        bool canRedoAction = actionsMade.Count > 0 && !(currentRedoStepIndex == actionsMade.Count - 1 && actionsMade[actionsMade.Count - 1].isDone);
-        bool canUndoAction = actionsMade.Count > 0 && !(currentUndoStepIndex == 0 && !actionsMade[0].isDone);
+        bool canRedoAction = actionsMade.Count > 0 && !(currentRedoStepIndex == actionsMade.Count - 1 && actionsMade[actionsMade.Count - 1].IsDone());
+        bool canUndoAction = actionsMade.Count > 0 && !(currentUndoStepIndex == 0 && !actionsMade[0].IsDone());
 
         context.editorContext.editorHUD.SetRedoButtonInteractable(canRedoAction);
         context.editorContext.editorHUD.SetUndoButtonInteractable(canUndoAction);

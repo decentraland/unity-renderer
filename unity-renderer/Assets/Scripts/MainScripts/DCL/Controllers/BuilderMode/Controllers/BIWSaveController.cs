@@ -4,14 +4,6 @@ using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 
-public interface IBIWSaveController : IBIWController
-{
-    int GetSaveTimes();
-    void SetSaveActivation(bool isActive, bool tryToSave = false);
-    void TryToSave();
-    void ForceSave();
-}
-
 public class BIWSaveController : BIWController, IBIWSaveController
 {
     private const float MS_BETWEEN_SAVES = 5000f;
@@ -24,11 +16,11 @@ public class BIWSaveController : BIWController, IBIWSaveController
     private bool canActivateSave = true;
     public int GetSaveTimes() { return numberOfSaves; }
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
-        bridge = context.sceneReferences.builderInWorldBridge;
+        bridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
         if (bridge != null)
             bridge.OnKernelUpdated += TryToSave;
 

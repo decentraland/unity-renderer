@@ -195,7 +195,7 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.mouseCatcher);
+                        worldChatWindowHud.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.data?.mouseCatcher);
                         worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
                         worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
@@ -255,7 +255,7 @@ public class HUDController : IHUDController
                     if (taskbarHud != null)
                     {
                         taskbarHud.Initialize(
-                            InitialSceneReferences.i?.mouseCatcher,
+                            InitialSceneReferences.i?.data?.mouseCatcher,
                             ChatController.i,
                             FriendsController.i,
                             DCL.Environment.i.world.sceneController,
