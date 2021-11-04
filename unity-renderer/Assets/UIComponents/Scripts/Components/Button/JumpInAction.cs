@@ -1,6 +1,8 @@
 using DCL.Interface;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 [RequireComponent(typeof(ButtonComponentView))]
 public class JumpInAction : MonoBehaviour
 {
@@ -8,18 +10,14 @@ public class JumpInAction : MonoBehaviour
     public string serverName;
     public string layerName;
 
-    private ButtonComponentView button;
+    internal ButtonComponentView button;
 
-    private void Start()
+    private void Awake()
     {
         button = GetComponent<ButtonComponentView>();
-        button.onClick.AddListener(JumpIn);
-    }
 
-    private void OnDestroy()
-    {
         if (button != null)
-            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(JumpIn);
     }
 
     internal void JumpIn()
@@ -28,5 +26,11 @@ public class JumpInAction : MonoBehaviour
             WebInterface.GoTo(coords.x, coords.y);
         else
             WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
+    }
+
+    private void OnDestroy()
+    {
+        if (button != null)
+            button.onClick.RemoveListener(JumpIn);
     }
 }

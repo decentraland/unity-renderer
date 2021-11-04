@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine;
 public class BIWInputWrapperShould : IntegrationTestSuite
 {
     private BIWInputWrapper inputWrapper;
-    private BIWContext context;
+    private Context context;
 
     protected override IEnumerator SetUp()
     {

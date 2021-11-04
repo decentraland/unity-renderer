@@ -3,12 +3,17 @@ using UnityEngine;
 public interface IPlacesAndEventsSectionComponentView
 {
     /// <summary>
+    /// Places sub-section component.
+    /// </summary>
+    IPlacesSubSectionComponentView currentPlacesSubSectionComponentView { get; }
+
+    /// <summary>
     /// Events sub-section component.
     /// </summary>
     IEventsSubSectionComponentView currentEventsSubSectionComponentView { get; }
 }
 
-public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEventsSectionComponentView
+public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
 {
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
@@ -18,23 +23,24 @@ public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEven
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
 
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
+    public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
 
-    private void Start()
-    {
-        if (subSectionSelector.isFullyInitialized)
-            CreateSubSectionSelectorMappings();
-        else
-            subSectionSelector.OnFullyInitialized += CreateSubSectionSelectorMappings;
-    }
+    public override void Start() { CreateSubSectionSelectorMappings(); }
 
-    private void OnDestroy()
+    public override void RefreshControl() { }
+
+    public override void Dispose()
     {
-        subSectionSelector.OnFullyInitialized -= CreateSubSectionSelectorMappings;
+        base.Dispose();
+
         RemoveSectionSelectorMappings();
+        placesSubSection.Dispose();
+        eventsSubSection.Dispose();
     }
 
     internal void CreateSubSectionSelectorMappings()
     {
+        subSectionSelector.RefreshControl();
         subSectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
         subSectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
 

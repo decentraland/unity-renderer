@@ -13,6 +13,8 @@ public class KernelConfigModel
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
     public string kernelVersion = string.Empty;
     public string rendererVersion = string.Empty;
+    public Debugging debugConfig = new Debugging();
+    
     public override bool Equals(object obj)
     {
         return obj is KernelConfigModel other && Equals(other);
@@ -31,14 +33,15 @@ public class KernelConfigModel
             if (!validWorldRanges[i].Equals(other.validWorldRanges[i]))
                 return false;
         }
-        
-        return comms.Equals(other.comms) 
-               && profiles.Equals(other.profiles) 
-               && features.Equals(other.features) 
-               && gifSupported == other.gifSupported 
+
+        return comms.Equals(other.comms)
+               && profiles.Equals(other.profiles)
+               && features.Equals(other.features)
+               && gifSupported == other.gifSupported
                && network == other.network
                && kernelVersion == other.kernelVersion
-               && rendererVersion == other.rendererVersion;
+               && rendererVersion == other.rendererVersion
+               && debugConfig.Equals(other.debugConfig);
     }
 
     public KernelConfigModel Clone()
@@ -53,6 +56,7 @@ public class KernelConfigModel
         clone.validWorldRanges = new List<WorldRange>(validWorldRanges);
         clone.kernelVersion = kernelVersion;
         clone.rendererVersion = rendererVersion;
+        clone.debugConfig = debugConfig.Clone();
         return clone;
     }
 }

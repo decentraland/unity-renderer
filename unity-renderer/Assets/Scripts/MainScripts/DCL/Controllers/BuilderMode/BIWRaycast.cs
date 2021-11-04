@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
 
@@ -28,12 +29,12 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
     public LayerMask gizmoMask { get; private set; }
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
 
-        entityHandler = context.entityHandler;
-        modeController = context.modeController;
+        entityHandler = context.editorContext.entityHandler;
+        modeController = context.editorContext.modeController;
         gizmoMask = BIWSettings.GIZMOS_LAYER;
         BIWInputWrapper.OnMouseDown += OnMouseDown;
 
@@ -187,4 +188,5 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
     private bool IsGizmoHit(RaycastHit hit) { return hit.collider.gameObject.GetComponent<BIWGizmosAxis>() != null; }
 
     #endregion
+
 }

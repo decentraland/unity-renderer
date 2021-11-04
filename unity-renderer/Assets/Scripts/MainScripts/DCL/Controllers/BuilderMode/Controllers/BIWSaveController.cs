@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ public class BIWSaveController : BIWController, IBIWSaveController
     private bool canActivateSave = true;
     public int GetSaveTimes() { return numberOfSaves; }
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
 
@@ -31,10 +32,10 @@ public class BIWSaveController : BIWController, IBIWSaveController
         if (bridge != null)
             bridge.OnKernelUpdated += TryToSave;
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnSaveSceneInfoAction += SaveSceneInfo;
-            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += ConfirmPublishScene;
+            context.editorContext.editorHUD.OnSaveSceneInfoAction += SaveSceneInfo;
+            context.editorContext.editorHUD.OnConfirmPublishAction += ConfirmPublishScene;
         }
     }
 
@@ -45,10 +46,10 @@ public class BIWSaveController : BIWController, IBIWSaveController
         if (bridge != null)
             bridge.OnKernelUpdated -= TryToSave;
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnSaveSceneInfoAction -= SaveSceneInfo;
-            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= ConfirmPublishScene;
+            context.editorContext.editorHUD.OnSaveSceneInfoAction -= SaveSceneInfo;
+            context.editorContext.editorHUD.OnConfirmPublishAction -= ConfirmPublishScene;
         }
     }
 
@@ -69,7 +70,7 @@ public class BIWSaveController : BIWController, IBIWSaveController
         {
             ForceSave();
 
-            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
+            context.editorContext.editorHUD?.SaveSceneInfo();
             ResetNumberOfSaves();
         }
 
@@ -98,7 +99,7 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
         bridge.SaveSceneState(sceneToEdit);
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
-        HUDController.i.builderInWorldMainHud?.SceneSaved();
+        context.editorContext.editorHUD?.SceneSaved();
         numberOfSaves++;
     }
 

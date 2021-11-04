@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 using static BIWCompleteAction;
@@ -36,25 +37,25 @@ public class BIWActionController : BIWController, IBIWActionController
     private int currentUndoStepIndex = 0;
     private int currentRedoStepIndex = 0;
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
 
-        entityHandler  = context.entityHandler;
-        floorHandler = context.floorHandler;
+        entityHandler  = context.editorContext.entityHandler;
+        floorHandler = context.editorContext.floorHandler;
 
-        if (HUDController.i.builderInWorldMainHud == null)
+        if ( context.editorContext.editorHUD == null)
             return;
-        HUDController.i.builderInWorldMainHud.OnUndoAction += TryToUndoAction;
-        HUDController.i.builderInWorldMainHud.OnRedoAction += TryToRedoAction;
+        context.editorContext.editorHUD.OnUndoAction += TryToUndoAction;
+        context.editorContext.editorHUD.OnRedoAction += TryToRedoAction;
     }
 
     public override void Dispose()
     {
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnUndoAction -= TryToUndoAction;
-            HUDController.i.builderInWorldMainHud.OnRedoAction -= TryToRedoAction;
+            context.editorContext.editorHUD.OnUndoAction -= TryToUndoAction;
+            context.editorContext.editorHUD.OnRedoAction -= TryToRedoAction;
         }
 
         Clear();
@@ -260,13 +261,13 @@ public class BIWActionController : BIWController, IBIWActionController
 
     void CheckButtonsInteractability()
     {
-        if (HUDController.i.builderInWorldMainHud == null)
+        if ( context.editorContext.editorHUD == null)
             return;
 
         bool canRedoAction = actionsMade.Count > 0 && !(currentRedoStepIndex == actionsMade.Count - 1 && actionsMade[actionsMade.Count - 1].isDone);
         bool canUndoAction = actionsMade.Count > 0 && !(currentUndoStepIndex == 0 && !actionsMade[0].isDone);
 
-        HUDController.i.builderInWorldMainHud.SetRedoButtonInteractable(canRedoAction);
-        HUDController.i.builderInWorldMainHud.SetUndoButtonInteractable(canUndoAction);
+        context.editorContext.editorHUD.SetRedoButtonInteractable(canRedoAction);
+        context.editorContext.editorHUD.SetUndoButtonInteractable(canUndoAction);
     }
 }

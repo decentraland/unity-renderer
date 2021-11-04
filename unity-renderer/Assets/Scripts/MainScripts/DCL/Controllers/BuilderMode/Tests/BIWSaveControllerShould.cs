@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 {
     public BIWSaveController biwSaveController;
     public BuilderInWorldBridge builderInWorldBridge;
-    public BIWContext context;
+    public Context context;
 
     private GameObject gameObject;
 

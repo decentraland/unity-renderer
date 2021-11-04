@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
@@ -143,13 +142,7 @@ namespace DCL
         {
             while (true)
             {
-                var currentPos = Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
-
-                IWorldState worldState = Environment.i.world.state;
-
-                ParcelScene activeScene = worldState.loadedScenes.Values.FirstOrDefault(
-                    x => x.sceneData.parcels != null
-                         && x.sceneData.parcels.Any(y => y == currentPos)) as ParcelScene;
+                IParcelScene activeScene = GetActiveScene();
 
                 if (activeScene != null && activeScene.metricsCounter != null)
                 {
@@ -167,6 +160,23 @@ namespace DCL
 
                 yield return WaitForSecondsCache.Get(0.2f);
             }
+        }
+
+        private IParcelScene GetActiveScene()
+        {
+            IWorldState worldState = Environment.i.world.state;
+            string debugSceneId = KernelConfig.i.Get().debugConfig.sceneDebugPanelTargetSceneId;
+            
+            if (!string.IsNullOrEmpty(debugSceneId))
+            {
+                if (worldState.loadedScenes.TryGetValue(debugSceneId, out IParcelScene scene))
+                    return scene;
+            }
+            
+            var currentPos = Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
+            return worldState.loadedScenes.Values.FirstOrDefault(
+                x => x.sceneData.parcels != null
+                     && x.sceneData.parcels.Any(y => y == currentPos));
         }
     }
 }

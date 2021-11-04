@@ -106,6 +106,20 @@ namespace DCL.Configuration
     {
         public static KeyCode PrimaryButtonKeyCode = KeyCode.E;
         public static KeyCode SecondaryButtonKeyCode = KeyCode.F;
+        public static KeyCode ForwardButtonKeyCode = KeyCode.W;
+        public static KeyCode BackwardButtonKeyCode = KeyCode.S;
+        public static KeyCode LeftButtonKeyCode = KeyCode.A;
+        public static KeyCode RightButtonKeyCode = KeyCode.D;
+        public static KeyCode ForwardButtonKeyCodeAlt = KeyCode.UpArrow;
+        public static KeyCode BackwardButtonKeyCodeAlt = KeyCode.DownArrow;
+        public static KeyCode LeftButtonKeyCodeAlt = KeyCode.LeftArrow;
+        public static KeyCode RightButtonKeyCodeAlt = KeyCode.RightArrow;
+        public static KeyCode JumpButtonKeyCode = KeyCode.Space;
+        public static KeyCode WalkButtonKeyCode = KeyCode.LeftShift;
+        public static KeyCode OneButtonKeyCode = KeyCode.Alpha1;
+        public static KeyCode TwoButtonKeyCode = KeyCode.Alpha2;
+        public static KeyCode ThreeButtonKeyCode = KeyCode.Alpha3;
+        public static KeyCode FourButtonKeyCode = KeyCode.Alpha4;
     }
 
     public static class PlayerSettings

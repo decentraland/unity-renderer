@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Configuration;
 using UnityEngine;
 
@@ -37,12 +38,15 @@ public class BIWMode
 
     internal List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
-    public virtual void Init(BIWContext context)
+    internal Context context;
+
+    public virtual void Init(Context context)
     {
-        entityHandler = context.entityHandler;
-        saveController = context.saveController;
-        actionController = context.actionController;
-        raycastController = context.raycastController;
+        this.context = context;
+        entityHandler = context.editorContext.entityHandler;
+        saveController = context.editorContext.saveController;
+        actionController = context.editorContext.actionController;
+        raycastController = context.editorContext.raycastController;
         entityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
@@ -75,7 +79,7 @@ public class BIWMode
             AudioScriptableObjects.disable.Play();
 
         isSnapActiveValue = isActive;
-        HUDController.i.builderInWorldMainHud?.SetSnapModeActive(isSnapActiveValue);
+        context.editorContext.editorHUD?.SetSnapModeActive(isSnapActiveValue);
     }
 
     public virtual void StartMultiSelection() { isMultiSelectionActive = true; }

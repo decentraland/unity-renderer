@@ -2,6 +2,7 @@ using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using UnityEngine;
 
 public class BuilderInWorldAudioHandler : MonoBehaviour
@@ -53,13 +54,16 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private Coroutine fadeOutCoroutine;
     private Coroutine startBuilderMusicCoroutine;
 
+    private Context context;
+
     private void Start() { playPlacementSoundOnDeselect = false; }
 
-    public void Initialize(BIWContext context)
+    public void Initialize(Context context)
     {
-        creatorController = context.creatorController;
-        entityHandler = context.entityHandler;
-        modeController = context.modeController;
+        this.context = context;
+        creatorController = context.editorContext.creatorController;
+        entityHandler = context.editorContext.entityHandler;
+        modeController = context.editorContext.modeController;
 
         AddListeners();
     }
@@ -88,8 +92,8 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         if (eventBuilderMusic.source.gameObject.activeSelf)
             startBuilderMusicCoroutine = StartCoroutine(StartBuilderMusic());
 
-        if (HUDController.i.builderInWorldMainHud != null)
-            HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
+        if ( context.editorContext.editorHUD != null)
+            context.editorContext.editorHUD.OnCatalogItemSelected += OnCatalogItemSelected;
 
         gameObject.SetActive(true);
     }
@@ -99,8 +103,8 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         eventBuilderExit.Play();
         if (eventBuilderMusic.source.gameObject.activeSelf)
             fadeOutCoroutine =  StartCoroutine(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
-        if (HUDController.i.builderInWorldMainHud != null)
-            HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
+        if ( context.editorContext.editorHUD != null)
+            context.editorContext.editorHUD.OnCatalogItemSelected -= OnCatalogItemSelected;
 
         gameObject.SetActive(false);
     }

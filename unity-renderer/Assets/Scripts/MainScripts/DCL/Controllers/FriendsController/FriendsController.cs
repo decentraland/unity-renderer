@@ -70,6 +70,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         public string userId;
         public FriendshipStatus friendshipStatus;
         public PresenceStatus presence;
+        [NonSerialized] public DateTime friendshipStartedTime;
     }
 
     [System.Serializable]
@@ -191,49 +192,65 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void UpdateFriendshipStatus(FriendshipUpdateStatusMessage msg)
     {
-        if (!friends.ContainsKey(msg.userId))
-        {
-            friends.Add(msg.userId, new UserStatus() { });
-        }
+        var friendshipStatus = ToFriendshipStatus(msg.action);
+        var userId = msg.userId;
+        
+        if (friends.ContainsKey(userId) && friends[userId].friendshipStatus == friendshipStatus)
+            return;
+        
+        if (!friends.ContainsKey(userId))
+            friends.Add(userId, new UserStatus());
+        
+        if (ItsAnOutdatedUpdate(userId, friendshipStatus))
+            return;
 
-        switch (msg.action)
-        {
-            case FriendshipAction.NONE:
-                break;
-            case FriendshipAction.APPROVED:
-                friends[msg.userId].friendshipStatus = FriendshipStatus.FRIEND;
-                break;
-            case FriendshipAction.REJECTED:
-                friends[msg.userId].friendshipStatus = FriendshipStatus.NONE;
-                break;
-            case FriendshipAction.CANCELLED:
-                friends[msg.userId].friendshipStatus = FriendshipStatus.NONE;
-                break;
-            case FriendshipAction.REQUESTED_FROM:
-                friends[msg.userId].friendshipStatus = FriendshipStatus.REQUESTED_FROM;
-                break;
-            case FriendshipAction.REQUESTED_TO:
-                friends[msg.userId].friendshipStatus = FriendshipStatus.REQUESTED_TO;
-                break;
-            case FriendshipAction.DELETED:
-                friends[msg.userId].friendshipStatus = FriendshipStatus.NONE;
-                break;
-        }
+        friends[userId].friendshipStatus = friendshipStatus;
+        
+        if (friendshipStatus == FriendshipStatus.FRIEND)
+            friends[userId].friendshipStartedTime = DateTime.UtcNow;
 
         if (VERBOSE)
-            Debug.Log($"Change friend status of {msg.userId} to {friends[msg.userId].friendshipStatus}");
+            Debug.Log($"Change friend status of {userId} to {friends[userId].friendshipStatus}");
 
-        if (friends[msg.userId].friendshipStatus == FriendshipStatus.NONE)
-        {
-            friends.Remove(msg.userId);
-        }
+        if (friendshipStatus == FriendshipStatus.NONE)
+            friends.Remove(userId);
 
-        OnUpdateFriendship?.Invoke(msg.userId, msg.action);
+        OnUpdateFriendship?.Invoke(userId, msg.action);
     }
 
     public void UpdateFriendshipStatus(string json)
     {
         FriendshipUpdateStatusMessage msg = JsonUtility.FromJson<FriendshipUpdateStatusMessage>(json);
         UpdateFriendshipStatus(msg);
+    }
+
+    private bool ItsAnOutdatedUpdate(string userId, FriendshipStatus friendshipStatus)
+    {
+        return friendshipStatus == FriendshipStatus.REQUESTED_FROM
+               && friends[userId].friendshipStatus == FriendshipStatus.FRIEND
+               && (DateTime.UtcNow - friends[userId].friendshipStartedTime).TotalSeconds < 5;
+    }
+
+    private static FriendshipStatus ToFriendshipStatus(FriendshipAction action)
+    {
+        switch (action)
+        {
+            case FriendshipAction.NONE:
+                break;
+            case FriendshipAction.APPROVED:
+                return FriendshipStatus.FRIEND;
+            case FriendshipAction.REJECTED:
+                return FriendshipStatus.NONE;
+            case FriendshipAction.CANCELLED:
+                return FriendshipStatus.NONE;
+            case FriendshipAction.REQUESTED_FROM:
+                return FriendshipStatus.REQUESTED_FROM;
+            case FriendshipAction.REQUESTED_TO:
+                return FriendshipStatus.REQUESTED_TO;
+            case FriendshipAction.DELETED:
+                return FriendshipStatus.NONE;
+        }
+
+        return FriendshipStatus.NONE;
     }
 }

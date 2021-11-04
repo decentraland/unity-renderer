@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 
 public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 {
     private BIWModeController biwModeController;
-    private BIWContext context;
+    private Context context;
 
     protected override IEnumerator SetUp()
     {

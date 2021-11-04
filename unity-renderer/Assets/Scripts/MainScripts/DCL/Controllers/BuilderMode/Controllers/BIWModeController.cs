@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using UnityEngine;
 
 public interface IBIWModeController : IBIWController
@@ -71,7 +72,7 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject snapGO;
     private GameObject freeMovementGO;
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
 
@@ -88,15 +89,15 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode.OnInputDone += InputDone;
         godMode.OnInputDone += InputDone;
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnChangeModeAction += ChangeAdvanceMode;
-            HUDController.i.builderInWorldMainHud.OnResetAction += ResetScaleAndRotation;
-            HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
+            context.editorContext.editorHUD.OnChangeModeAction += ChangeAdvanceMode;
+            context.editorContext.editorHUD.OnResetAction += ResetScaleAndRotation;
+            context.editorContext.editorHUD.OnChangeSnapModeAction += ChangeSnapMode;
         }
 
-        actionController = context.actionController;
-        entityHandler = context.entityHandler;
+        actionController = context.editorContext.actionController;
+        entityHandler = context.editorContext.entityHandler;
         toggleSnapModeInputAction = context.inputsReferencesAsset.toggleSnapModeInputAction;
 
         snapModeDelegate = (action) => ChangeSnapMode();
@@ -123,10 +124,10 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode.Dispose();
         godMode.Dispose();
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            HUDController.i.builderInWorldMainHud.OnChangeModeAction -= ChangeAdvanceMode;
-            HUDController.i.builderInWorldMainHud.OnResetAction -= ResetScaleAndRotation;
+            context.editorContext.editorHUD.OnChangeModeAction -= ChangeAdvanceMode;
+            context.editorContext.editorHUD.OnResetAction -= ResetScaleAndRotation;
         }
 
         GameObject.Destroy(undoGO);

@@ -14,12 +14,21 @@ using Environment = DCL.Environment;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using DCL.Builder.Manifest;
 using DCL.Controllers;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
 public static partial class BIWUtils
 {
+    public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
+    {
+        UserProfile profile = UserProfile.GetOwnUserProfile();
+
+        Manifest manifest = new Manifest();
+        return manifest;
+    }
+
     public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, ParcelScene scene)
     {
         LandWithAccess filteredLand = lands.FirstOrDefault(land => scene.sceneData.basePosition == land.baseCoords);

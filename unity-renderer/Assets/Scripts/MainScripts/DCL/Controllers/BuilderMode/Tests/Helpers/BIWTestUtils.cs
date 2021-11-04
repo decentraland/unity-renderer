@@ -2,6 +2,7 @@ using DCL.Helpers;
 using DCL.Helpers.NFT;
 using System.IO;
 using DCL;
+using DCL.Builder;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
@@ -11,10 +12,13 @@ using UnityEngine.UI;
 
 public static class BIWTestUtils
 {
-    public static BIWContext CreateMockedContext()
+    public static Context CreateMockedContext()
     {
-        BIWContext context = new BIWContext();
-        context.Initialize(
+        Context context = new Context(
+            Substitute.For<IBIWEditor>(),
+            Substitute.For<IBuilderMainPanelController>(),
+            Substitute.For<IBuilderAPIController>(),
+            Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
             Substitute.For<IBIWInputWrapper>(),
@@ -32,8 +36,13 @@ public static class BIWTestUtils
         return context;
     }
 
-    public static BIWContext CreateContextWithGenericMocks(params object[] mocks)
+    public static Context CreateContextWithGenericMocks(params object[] mocks)
     {
+        IBIWEditor editor = Substitute.For<IBIWEditor>();
+        IBuilderAPIController apiController = Substitute.For<IBuilderAPIController>();
+        IBuilderMainPanelController panelHUD = Substitute.For<IBuilderMainPanelController>();
+        IBuilderEditorHUDController editorHUD = Substitute.For<IBuilderEditorHUDController>();
+
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
         IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
         IBIWInputWrapper inputWrapper = Substitute.For<IBIWInputWrapper>();
@@ -52,6 +61,18 @@ public static class BIWTestUtils
         {
             switch ( mock )
             {
+                case IBIWEditor e:
+                    editor = e;
+                    break;
+                case IBuilderMainPanelController ppc:
+                    panelHUD = ppc;
+                    break;
+                case IBuilderAPIController ibapc:
+                    apiController = ibapc;
+                    break;
+                case IBuilderEditorHUDController ehc:
+                    editorHUD = ehc;
+                    break;
                 case IBIWOutlinerController oc:
                     outliner = oc;
                     break;
@@ -94,8 +115,10 @@ public static class BIWTestUtils
             }
         }
 
-        BIWContext context = new BIWContext();
-        context.Initialize(
+        Context context = new Context(editor,
+            panelHUD,
+            apiController,
+            editorHUD,
             outliner,
             inputHandler,
             inputWrapper,

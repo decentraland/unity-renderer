@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using DCL.Builder;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -82,7 +83,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private InputAction_Trigger.Triggered hideSelectedEntitiesDelegate;
     private InputAction_Trigger.Triggered showAllEntitiesDelegate;
 
-    private BuildModeHUDController hudController;
+    private IBuilderEditorHUDController hudController;
 
     public event Action<BIWEntity> OnEntityDeselected;
     public event Action OnEntitySelected;
@@ -92,12 +93,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private BIWEntity lastClickedEntity;
     private float lastTimeEntityClicked;
 
-    public override void Initialize(BIWContext context)
+    public override void Initialize(Context context)
     {
         base.Initialize(context);
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
-            hudController = HUDController.i.builderInWorldMainHud;
+            hudController = context.editorContext.editorHUD;
             hudController.OnEntityDelete += DeleteSingleEntity;
             hudController.OnDuplicateSelectedAction += DuplicateSelectedEntitiesInput;
             hudController.OnDeleteSelectedAction += DeleteSelectedEntitiesInput;
@@ -116,12 +117,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         bridge = context.sceneReferences.builderInWorldBridge;
 
-        outlinerController = context.outlinerController;
+        outlinerController = context.editorContext.outlinerController;
 
-        modeController = context.modeController;
-        actionController = context.actionController;
-        creatorController = context.creatorController;
-        raycastController = context.raycastController;
+        modeController = context.editorContext.modeController;
+        actionController = context.editorContext.actionController;
+        creatorController = context.editorContext.creatorController;
+        raycastController = context.editorContext.raycastController;
 
         editMaterial = context.projectReferencesAsset.editMaterial;
 
@@ -448,7 +449,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         currentActiveMode?.SelectedEntity(entityEditable);
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
             hudController.UpdateEntitiesSelection(selectedEntities.Count);
             hudController.ShowEntityInformation(selectedFromCatalog);
@@ -649,7 +650,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void EntityListChanged()
     {
-        if (HUDController.i.builderInWorldMainHud == null)
+        if ( context.editorContext.editorHUD == null)
             return;
         hudController.SetEntityList(GetEntitiesInCurrentScene());
     }

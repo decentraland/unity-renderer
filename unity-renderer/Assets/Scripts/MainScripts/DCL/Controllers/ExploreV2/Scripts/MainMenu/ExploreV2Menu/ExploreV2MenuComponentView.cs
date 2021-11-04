@@ -29,18 +29,13 @@ public interface IExploreV2MenuComponentView : IDisposable
     IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection { get; }
 
     /// <summary>
-    /// Returns true if the game object is activated.
+    /// Shows/Hides the game object of the explore menu.
     /// </summary>
-    bool isActive { get; }
-
-    /// <summary>
-    /// Activates/Deactivates the game object of the explore menu.
-    /// </summary>
-    /// <param name="isActive">True to activate it.</param>
-    void SetActive(bool isActive);
+    /// <param name="isActive">True to show it.</param>
+    void SetVisible(bool isActive);
 }
 
-public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponentView
+public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
@@ -52,8 +47,6 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
 
-    public bool isActive => gameObject.activeSelf;
-
     public GameObject go => this != null ? gameObject : null;
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
@@ -61,45 +54,50 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
     public event Action OnInitialized;
     public event Action OnCloseButtonPressed;
-
-    private void Start()
+    public override void Start()
     {
-        if (sectionSelector.isFullyInitialized)
-            CreateSectionSelectorMappings();
-        else
-            sectionSelector.OnFullyInitialized += CreateSectionSelectorMappings;
-
-        if (closeMenuButton.isFullyInitialized)
-            ConfigureCloseButton();
-        else
-            closeMenuButton.OnFullyInitialized += ConfigureCloseButton;
+        CreateSectionSelectorMappings();
+        ConfigureCloseButton();
 
         OnInitialized?.Invoke();
     }
 
+    public override void RefreshControl() { }
+
     private void OnDestroy()
     {
-        sectionSelector.OnFullyInitialized -= CreateSectionSelectorMappings;
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
+        closeAction.OnTriggered -= OnCloseActionTriggered;
     }
 
-    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
-
-    internal void CreateSectionSelectorMappings()
+    public void SetVisible(bool isActive)
     {
-        sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn));
-
-        ShowDefaultSection();
+        if (isActive)
+        {
+            Show();
+            ShowDefaultSection();
+        }
+        else
+        {
+            Hide();
+            placesAndEventsSection.gameObject.SetActive(false);
+        }
     }
+
+    internal void CreateSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn)); }
 
     internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(0)?.onSelect.RemoveAllListeners(); }
 
     internal void ConfigureCloseButton()
     {
-        closeMenuButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke());
-        closeAction.OnTriggered += (action) => OnCloseButtonPressed?.Invoke();
+        closeMenuButton.onClick.AddListener(CloseMenu);
+        closeAction.OnTriggered += OnCloseActionTriggered;
     }
+
+    internal void CloseMenu() { OnCloseButtonPressed?.Invoke(); }
+
+    internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseMenu(); }
 
     internal void ShowDefaultSection() { placesAndEventsSection.gameObject.SetActive(true); }
 
@@ -110,6 +108,4 @@ public class ExploreV2MenuComponentView : MonoBehaviour, IExploreV2MenuComponent
 
         return exploreV2View;
     }
-
-    public void Dispose() { Destroy(gameObject); }
 }

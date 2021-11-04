@@ -5,12 +5,6 @@ using UnityEngine;
 public interface ISectionSelectorComponentView
 {
     /// <summary>
-    /// Fill the model and updates the section selector with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the section selector.</param>
-    void Configure(SectionSelectorComponentModel model);
-
-    /// <summary>
     /// Set the sections of the selector.
     /// </summary>
     /// <param name="sections">List of UI components.</param>
@@ -30,7 +24,7 @@ public interface ISectionSelectorComponentView
     List<ISectionToggle> GetAllSections();
 }
 
-public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView
+public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal SectionToggle sectionToggleTemplate;
@@ -38,13 +32,11 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
     [Header("Configuration")]
     [SerializeField] internal SectionSelectorComponentModel model;
 
-    private List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
+    internal List<ISectionToggle> instantiatedSections = new List<ISectionToggle>();
 
-    public override void PostInitialization() { Configure(model); }
-
-    public void Configure(SectionSelectorComponentModel model)
+    public void Configure(BaseComponentModel newModel)
     {
-        this.model = model;
+        model = (SectionSelectorComponentModel)newModel;
         RefreshControl();
     }
 
@@ -66,6 +58,19 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         {
             CreateSection(sections[i], $"Section_{i}");
         }
+
+        for (int i = 0; i < instantiatedSections.Count; i++)
+        {
+            if (i == 0)
+            {
+                instantiatedSections[i].SelectToggle();
+                instantiatedSections[i].SetSelectedVisuals();
+            }
+            else
+            {
+                instantiatedSections[i].SetUnselectedVisuals();
+            }
+        }
     }
 
     public ISectionToggle GetSection(int index)
@@ -80,19 +85,6 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
     internal void CreateSection(SectionToggleModel newSectionModel, string name)
     {
-        if (Application.isPlaying)
-        {
-            IntantiateSectionToggle(newSectionModel, name);
-        }
-        else
-        {
-            if (isActiveAndEnabled)
-                StartCoroutine(InstantiateSectionToggleOnEditor(newSectionModel, name));
-        }
-    }
-
-    internal void IntantiateSectionToggle(SectionToggleModel newSectionModel, string name)
-    {
         if (sectionToggleTemplate == null)
             return;
 
@@ -101,12 +93,6 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         newGO.SetInfo(newSectionModel);
         newGO.gameObject.SetActive(true);
         instantiatedSections.Add(newGO);
-    }
-
-    internal IEnumerator InstantiateSectionToggleOnEditor(SectionToggleModel sectionModel, string name)
-    {
-        yield return null;
-        IntantiateSectionToggle(sectionModel, name);
     }
 
     internal void RemoveAllInstantiatedSections()

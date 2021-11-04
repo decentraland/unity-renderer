@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using System.Linq;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Models;
@@ -23,7 +24,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     private const string ENTITY_ID = "1";
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
-    private BIWContext context;
+    private Context context;
 
     protected override IEnumerator SetUp()
     {
@@ -144,7 +145,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         entityHandler.EntityClicked(entity);
 
         //Assert
-        context.modeController.Received(1).EntityDoubleClick(entity);
+        context.editorContext.modeController.Received(1).EntityDoubleClick(entity);
     }
 
     [Test]
@@ -334,7 +335,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         entityHandler.SelectEntity(entity);
-        context.raycastController.Configure().GetEntityOnPointer().Returns(entity);
+        context.editorContext.raycastController.Configure().GetEntityOnPointer().Returns(entity);
 
         //Act
         var result = entityHandler.IsPointerInSelectedEntity();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Builder;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -14,7 +15,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
 {
     private BIWEntityHandler entityHandler;
     private BIWCreatorController biwCreatorController;
-    private BIWContext context;
+    private Context context;
 
     protected override IEnumerator SetUp()
     {

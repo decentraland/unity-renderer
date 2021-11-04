@@ -29,6 +29,8 @@ namespace DCL.ABConverter
         [TestCase("C:/MyProject/Assets/Blah/MyAsset.glb", "/Assets/Blah/MyAsset.glb")]
         [TestCase("C:/MyProject/Assets/Blah/My Asset With Spaces.long", "/Assets/Blah/My Asset With Spaces.long")]
         [TestCase("C:/MyProject", "")]
+        [Category("Explicit")]
+        [Explicit]
         public void AssetPathToFullPathTest(string expected, string input)
         {
             expected = ABConverter.PathUtils.FixDirectorySeparator(expected);
@@ -41,6 +43,8 @@ namespace DCL.ABConverter
         [TestCase("C:/MyProjects/Assets/Blah/MyAsset.glb", "/Assets/Blah/MyAsset.glb")]
         [TestCase("C:/MyProjects/Assets/Blah/My Asset With Spaces.long", "/Assets/Blah/My Asset With Spaces.long")]
         [TestCase("", "")]
+        [Category("Explicit")]
+        [Explicit]
         public void FullPathToAssetPath(string input, string expected)
         {
             expected = ABConverter.PathUtils.FixDirectorySeparator(expected);

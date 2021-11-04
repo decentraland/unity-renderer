@@ -133,7 +133,17 @@ namespace DCL.Interface
             POINTER,
             PRIMARY,
             SECONDARY,
-            ANY
+            ANY,
+            FORWARD,
+            BACKWARD,
+            RIGHT,
+            LEFT,
+            JUMP,
+            WALK,
+            ACTION_1,
+            ACTION_2,
+            ACTION_3,
+            ACTION_4
         }
 
         [System.Serializable]
@@ -829,7 +839,7 @@ namespace DCL.Interface
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
-            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
+            SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
         public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
@@ -839,7 +849,7 @@ namespace DCL.Interface
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
-            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
+            SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
         public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
