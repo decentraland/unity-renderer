@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Builder;
+using DCL.Configuration;
 using UnityEngine;
 using DCL.Helpers;
+using TMPro;
 using UnityEngine.UI;
 
 internal interface IProjectCardView : IDisposable
@@ -72,6 +75,11 @@ internal interface IProjectCardView : IDisposable
     /// </summary>
     /// <param name="index"></param>
     void SetSiblingIndex(int index);
+    
+    void SetName(string name);
+    void SetSize(int rows, int columns);
+    void SetThumbnail(string thumbnailUrl);
+    void SetThumbnail(Texture2D thumbnailTexture);
 }
 
 internal class ProjectCardView : MonoBehaviour, IProjectCardView
@@ -83,25 +91,101 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     public event Action<ProjectData, IProjectCardView> OnExpandMenuPressed;
 
     [SerializeField] internal Button contextMenuButton;
+    [SerializeField] internal Button editorButton;
     [SerializeField] private Texture2D defaultThumbnail;
+
+    [SerializeField] private GameObject loadingImgGameObject;
+    [SerializeField] internal TextMeshProUGUI projectNameTxt;
+    [SerializeField] internal TextMeshProUGUI projectSizeTxt;
 
     [Space]
     [SerializeField] private RawImageFillParent thumbnail;
 
-    ProjectData IProjectCardView.projectData => sceneData;
+    ProjectData IProjectCardView.projectData => projectData;
     ISearchInfo IProjectCardView.searchInfo { get; } = new SearchInfo();
     Vector3 IProjectCardView.contextMenuButtonPosition => contextMenuButton.transform.position + CONTEXT_MENU_OFFSET;
 
-    private ProjectData sceneData;
+    private ProjectData projectData;
     private ISearchInfo searchInfo;
     private Vector3 contextMenuButtonPosition;
 
-    public void Setup(ProjectData projectData) { this.sceneData = projectData; }
-    public void SetParent(Transform parent) { transform.SetParent(parent); }
+    private string thumbnailId = null;
+    private Transform defaultParent;
+    private AssetPromise_Texture thumbnailPromise;
 
-    public void Dispose() { }
+    private void Awake()
+    {
+        editorButton.onClick.AddListener(EditorButtonClicked);    
+        contextMenuButton.onClick.AddListener(EditorButtonClicked);    
+    }
 
-    public void cardSetParent(Transform parent)
+    private void OnDestroy()
+    {
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
+        editorButton.onClick.RemoveAllListeners();
+    }
+    
+    public void Setup(ProjectData projectData)
+    {
+        this.projectData = projectData;
+        SetName(projectData.title);
+        SetSize(projectData.rows,projectData.colums);
+        
+        SetThumbnail(projectData.id);
+        
+        ((IProjectCardView)this).searchInfo.SetId(projectData.id);
+    }
+
+    private void EditorButtonClicked()
+    {
+        OnEditorPressed?.Invoke(projectData);
+    }
+
+    public void SetThumbnail(string thumbnailId)
+    {
+        if (this.thumbnailId == thumbnailId)
+            return;
+        
+        string projectThumbnailUrl = "";
+        if (!string.IsNullOrEmpty(thumbnailId))
+        {
+            projectThumbnailUrl = BIWSettings.BASE_URL_BUILDER_PROJECT_THUMBNAIL.Replace("{url}", thumbnailId);
+        }
+
+        this.thumbnailId = thumbnailId;
+
+        if (thumbnailPromise != null)
+        {
+            AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
+            thumbnailPromise = null;
+        }
+        
+        if (string.IsNullOrEmpty(projectThumbnailUrl))
+        {
+            SetThumbnail((Texture2D) null);
+            return;
+        }
+
+        thumbnailPromise = new AssetPromise_Texture(projectThumbnailUrl);
+        thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
+        thumbnailPromise.OnFailEvent += texture => SetThumbnail((Texture2D) null);
+
+        loadingImgGameObject.SetActive(true);
+        AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
+    }
+
+    public void SetThumbnail(Texture2D thumbnailTexture)
+    {
+        loadingImgGameObject.SetActive(false);
+        thumbnail.texture = thumbnailTexture ?? defaultThumbnail;
+    }
+
+    public void SetParent(Transform parent)
     {
         if (transform.parent == parent)
             return;
@@ -109,9 +193,24 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         transform.SetParent(parent);
         transform.ResetLocalTRS();
     }
-    public void SetToDefaultParent() { throw new NotImplementedException(); }
-    public void ConfigureDefaultParent(Transform parent) { throw new NotImplementedException(); }
+    
+    public void SetToDefaultParent() { transform.SetParent(defaultParent); }
+    
+    public void ConfigureDefaultParent(Transform parent) { defaultParent = parent; }
 
-    public void SetActive(bool active) { throw new NotImplementedException(); }
-    public void SetSiblingIndex(int index) { throw new NotImplementedException(); }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
+    
+    public void SetSiblingIndex(int index) { transform.SetSiblingIndex(index); }
+    
+    public void SetName(string name)
+    {
+        projectNameTxt.text = name;
+        ((IProjectCardView)this).searchInfo.SetName(name);
+    }
+    
+    public void SetSize(int rows, int columns)
+    {
+        projectSizeTxt.text = rows + "x" + columns;
+        ((IProjectCardView)this).searchInfo.SetSize(rows * columns);
+    }
 }

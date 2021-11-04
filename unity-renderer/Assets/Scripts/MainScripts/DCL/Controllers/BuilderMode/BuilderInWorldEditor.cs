@@ -84,7 +84,8 @@ public class BuilderInWorldEditor : IBIWEditor
 
         this.context = context;
 
-        InitReferences(InitialSceneReferences.i.data);
+        if(InitialSceneReferences.i != null)
+            InitReferences(InitialSceneReferences.i.data);
 
         if (builderInWorldBridge != null)
 

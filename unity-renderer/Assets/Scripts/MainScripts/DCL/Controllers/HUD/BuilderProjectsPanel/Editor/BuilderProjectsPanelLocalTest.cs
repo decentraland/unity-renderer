@@ -15,10 +15,8 @@ public class BuilderProjectsPanelLocalTest : MonoBehaviour
         WebRequestController.Create();
         DataStore.i.builderInWorld.isDevBuild.Set(true);
         controller = new BuilderMainPanelController();
-        if (EventSystem.current == null)
-        {
-            var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-        }
+    
         controller.SetVisibility(true);
+        
     }
 }

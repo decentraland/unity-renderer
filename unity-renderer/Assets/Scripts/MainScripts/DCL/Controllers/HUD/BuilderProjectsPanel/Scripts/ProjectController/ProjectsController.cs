@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Builder;
 using UnityEngine;
 
@@ -50,6 +51,8 @@ internal class ProjectsController : IProjectsController
     public event Action<ProjectData> OnEditorPressed;
     public event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
 
+    private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
+    
     private Dictionary<string, IProjectCardView> projects = new Dictionary<string, IProjectCardView>();
     private readonly ProjectCardView projectCardViewPrefab;
     private readonly Transform defaultParent;
@@ -70,8 +73,9 @@ internal class ProjectsController : IProjectsController
         this.projects = new Dictionary<string, IProjectCardView>();
         foreach (var project in projects)
         {
-            this.projects.Add(project.id, CreateCardView());
+            this.projects.Add(project.id, CreateCardView(project));
         }
+        sceneSearchHandler.SetSearchableList(this.projects.Values.Select(scene => scene.searchInfo).ToList());
         OnProjectsSet?.Invoke(this.projects);
     }
 
@@ -85,6 +89,13 @@ internal class ProjectsController : IProjectsController
 
     public Dictionary<string, IProjectCardView> GetProjects() { return projects; }
 
+    private IProjectCardView CreateCardView(ProjectData data)
+    {
+        var card = CreateCardView();
+        card.Setup(data);
+        return card;
+    }
+    
     private IProjectCardView CreateCardView()
     {
         ProjectCardView projectCardView = GameObject.Instantiate(projectCardViewPrefab).GetComponent<ProjectCardView>();

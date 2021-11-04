@@ -48,6 +48,7 @@ namespace DCL.Builder
 
         [Header("Assets")]
         [SerializeField] internal SceneCardView sceneCardViewPrefab;
+        [SerializeField] internal ProjectCardView projectCardView;
 
         [Header("Popups")]
         [SerializeField] internal UnpublishPopupView unpublishPopupView;
@@ -99,6 +100,8 @@ namespace DCL.Builder
             leftPanelProjectSettings.SetActive(true);
         }
 
+        ProjectCardView IBuilderMainPanelView.GetProjectCardView() { return projectCardView; }
+        
         SceneCardView IBuilderMainPanelView.GetSceneCardViewPrefab() { return sceneCardViewPrefab; }
 
         Transform IBuilderMainPanelView.GetSectionContainer() { return sectionsContainer; }

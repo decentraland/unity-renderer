@@ -3658,6 +3658,8 @@ MonoBehaviour:
     adminsMenuToggle: {fileID: 5161656191955093869}
   sceneCardViewPrefab: {fileID: 6743010040785150304, guid: 0384d382f4cd14fd5b14515c7eb2d514,
     type: 3}
+  projectCardView: {fileID: 1330318716352662649, guid: e658c22bdb8a0a74cad9542f9c2aeecb,
+    type: 3}
   unpublishPopupView: {fileID: 932652777484891990}
 --- !u!114 &1312666534328254819
 MonoBehaviour:

@@ -168,7 +168,8 @@ public class BuilderAPIController : IBuilderAPIController
 
         promise.Then(result =>
         {
-            List<ProjectData> allManifest = JsonConvert.DeserializeObject<List<ProjectData>>(result);
+            string projectsJson = GetDataFromCallArray(result);
+            List<ProjectData> allManifest = JsonConvert.DeserializeObject<List<ProjectData>>(projectsJson);
             fullCatalogPromise.Resolve(allManifest);
         });
         return fullCatalogPromise;
@@ -204,6 +205,16 @@ public class BuilderAPIController : IBuilderAPIController
         if (jObject["ok"].ToObject<bool>())
         {
             return jObject["data"].ToString();
+        }
+        return "";
+    }
+    
+    private string GetDataFromCallArray(string result)
+    {
+        JObject jObject = (JObject)JsonConvert.DeserializeObject(result);
+        if (jObject["ok"].ToObject<bool>())
+        {
+            return jObject["data"]["items"].ToString();
         }
         return "";
     }

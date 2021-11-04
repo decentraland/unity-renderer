@@ -9,6 +9,8 @@ namespace DCL.Configuration
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks?owner=";
         public const string BASE_URL_BUILDER_API = "https://builder-api.decentraland.{ENV}/v1";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
+        
+        public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-assetpacks-prd-bf9fae6.s3.amazonaws.com/projects/{url}/preview.png";
 
         public static readonly LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
         public static readonly LayerMask DEFAULT_LAYER_INDEX = LayerMask.NameToLayer("Default");

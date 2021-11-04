@@ -18,4 +18,10 @@ public interface IBuilderMainPanelController
     /// Dispose the main panel
     /// </summary>
     void Dispose();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="isVisible"></param>
+    void SetVisibility(bool isVisible);
 }
