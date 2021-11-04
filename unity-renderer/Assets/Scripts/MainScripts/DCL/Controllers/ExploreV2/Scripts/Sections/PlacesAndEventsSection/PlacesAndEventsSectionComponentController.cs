@@ -34,7 +34,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
     }
 
-    private void RequestExploreV2Closing() { OnCloseExploreV2?.Invoke(); }
+    internal void RequestExploreV2Closing() { OnCloseExploreV2?.Invoke(); }
 
     public void Dispose()
     {

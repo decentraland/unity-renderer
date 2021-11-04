@@ -9,7 +9,9 @@ public class ExploreV2Feature : PluginFeature
     {
         base.Initialize();
 
-        exploreV2MenuComponentController = new ExploreV2MenuComponentController();
+        exploreV2MenuComponentController = CreateController();
         exploreV2MenuComponentController.Initialize();
     }
+
+    internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController();
 }

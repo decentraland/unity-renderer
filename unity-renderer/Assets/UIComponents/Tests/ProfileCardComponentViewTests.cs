@@ -1,17 +1,21 @@
+using DCL.Helpers;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ProfileCardComponentViewTests
 {
     private ProfileCardComponentView profileCardComponent;
     private Texture2D testTexture;
+    private Sprite testSprite;
 
     [SetUp]
     public void SetUp()
     {
         profileCardComponent = BaseComponentView.Create<ProfileCardComponentView>("ProfileCard");
+        profileCardComponent.profileImage.imageObserver = Substitute.For<ILazyTextureObserver>();
         testTexture = new Texture2D(20, 20);
+        testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }
 
     [TearDown]
@@ -20,6 +24,7 @@ public class ProfileCardComponentViewTests
         profileCardComponent.Dispose();
         GameObject.Destroy(profileCardComponent.gameObject);
         GameObject.Destroy(testTexture);
+        GameObject.Destroy(testSprite);
     }
 
     [Test]
@@ -42,7 +47,7 @@ public class ProfileCardComponentViewTests
         // Arrange
         ProfileCardComponentModel testModel = new ProfileCardComponentModel
         {
-            profilePictureSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero),
+            profilePictureSprite = testSprite,
             profileName = "Test name",
             profileAddress = "Test address"
         };
@@ -55,39 +60,43 @@ public class ProfileCardComponentViewTests
     }
 
     [Test]
-    public void RefreshButtonCorrectly()
+    public void SetProfilePictureFromSpriteCorrectly()
     {
-        // Arrange
-        Sprite testPicture = Sprite.Create(testTexture, new Rect(), Vector2.zero);
-        string testName = "Test name";
-        string testAddress = "Test address";
-        Button.ButtonClickedEvent testClickedEvent = new Button.ButtonClickedEvent();
-
-        profileCardComponent.model.profilePictureSprite = testPicture;
-        profileCardComponent.model.profileName = testName;
-        profileCardComponent.model.profileAddress = testAddress;
-
         // Act
-        profileCardComponent.RefreshControl();
+        profileCardComponent.SetProfilePicture(testSprite);
 
         // Assert
-        Assert.AreEqual(testPicture, profileCardComponent.model.profilePictureSprite, "The profile picture does not match in the model.");
-        Assert.AreEqual(testName, profileCardComponent.model.profileName, "The profile name does not match in the model.");
-        Assert.AreEqual(testAddress, profileCardComponent.model.profileAddress, "The profile address does not match in the model.");
+        Assert.AreEqual(testSprite, profileCardComponent.model.profilePictureSprite, "The profile picture sprite does not match in the model.");
+        Assert.AreEqual(testSprite, profileCardComponent.profileImage.image.sprite, "The profile image does not match.");
     }
 
     [Test]
-    public void SetProfilePictureFromSpriteCorrectly()
+    public void SetProfilePictureFromTextureCorrectly()
     {
         // Arrange
-        Sprite testPicture = Sprite.Create(testTexture, new Rect(), Vector2.zero);
+        profileCardComponent.model.profilePictureTexture = null;
 
         // Act
-        profileCardComponent.SetProfilePicture(testPicture);
+        profileCardComponent.SetProfilePicture(testTexture);
 
         // Assert
-        Assert.AreEqual(testPicture, profileCardComponent.model.profilePictureSprite, "The profile picture does not match in the model.");
-        Assert.AreEqual(testPicture, profileCardComponent.profileImage.image.sprite, "The profile image does not match.");
+        Assert.AreEqual(testTexture, profileCardComponent.model.profilePictureTexture, "The profile picture texture does not match in the model.");
+        profileCardComponent.profileImage.imageObserver.Received().RefreshWithTexture(testTexture);
+    }
+
+    [Test]
+    public void SetProfilePictureFromUriCorrectly()
+    {
+        // Arrange
+        string testUri = "testUri";
+        profileCardComponent.model.profilePictureUri = null;
+
+        // Act
+        profileCardComponent.SetProfilePicture(testUri);
+
+        // Assert
+        Assert.AreEqual(testUri, profileCardComponent.model.profilePictureUri, "The profile picture uri does not match in the model.");
+        profileCardComponent.profileImage.imageObserver.Received().RefreshWithUri(testUri);
     }
 
     [Test]
@@ -143,5 +152,16 @@ public class ProfileCardComponentViewTests
 
         // Assert
         Assert.AreEqual(isVisible, profileCardComponent.profileImage.loadingIndicator.activeSelf);
+    }
+
+    [Test]
+    public void CallOnProfileImageLoadedCorrectly()
+    {
+        // Act
+        profileCardComponent.OnProfileImageLoaded(testSprite);
+
+        // Assert
+        Assert.AreEqual(testSprite, profileCardComponent.model.profilePictureSprite, "The profile picture sprite does not match in the model.");
+        Assert.AreEqual(testSprite, profileCardComponent.profileImage.image.sprite, "The profile image does not match.");
     }
 }

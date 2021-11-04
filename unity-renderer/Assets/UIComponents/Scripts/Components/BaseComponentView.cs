@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 
 public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
+    bool isVisible { get; }
+
     /// <summary>
     /// It is called at the beginning of the UI component lifecycle.
     /// </summary>
@@ -68,6 +70,8 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal BaseComponentModel baseModel;
     internal ShowHideAnimator showHideAnimator;
 
+    public bool isVisible { get; private set; }
+
     public virtual void Awake()
     {
         showHideAnimator = GetComponent<ShowHideAnimator>();
@@ -86,6 +90,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
             return;
 
         showHideAnimator.Show(instant);
+        isVisible = true;
     }
 
     public virtual void Hide(bool instant = false)
@@ -94,6 +99,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
             return;
 
         showHideAnimator.Hide(instant);
+        isVisible = false;
     }
 
     public virtual void OnFocus() { }

@@ -1,5 +1,7 @@
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 [RequireComponent(typeof(ButtonComponentView))]
 public class GoToLinkAction : MonoBehaviour
 {

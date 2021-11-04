@@ -3,7 +3,6 @@ using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Collections.Generic;
-using UnityEngine;
 using Variables.RealmsInfo;
 
 public class ExploreV2MenuComponentControllerTests
@@ -28,8 +27,9 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Assert
         Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
-        exploreV2MenuView.Received().SetActive(false);
+        exploreV2MenuView.Received().SetVisible(false);
         Assert.IsTrue(DataStore.i.exploreV2.isInitialized.Get());
+        Assert.IsNotNull(exploreV2MenuController.toggleExploreTrigger);
     }
 
     [Test]
@@ -50,11 +50,15 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(false)]
     public void SetVisibilityCorrectly(bool isVisible)
     {
+        // Arrange
+        DataStore.i.exploreV2.isOpen.Set(!isVisible);
+
         // Act
         exploreV2MenuController.SetVisibility(isVisible);
 
         //Assert
-        exploreV2MenuView.Received().SetActive(isVisible);
+        Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
+        exploreV2MenuView.Received().SetVisible(isVisible);
     }
 
     [Test]
@@ -109,7 +113,18 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.OnCloseButtonPressed();
 
         // Assert
-        exploreV2MenuView.Received().SetActive(false);
+        Assert.IsFalse(DataStore.i.exploreV2.isOpen.Get());
+        exploreV2MenuView.Received().SetVisible(false);
+    }
+
+    [Test]
+    public void RaiseOnToggleActionTriggeredCorrectly()
+    {
+        // Act
+        exploreV2MenuController.OnToggleActionTriggered(new DCLAction_Trigger());
+
+        // Assert
+        exploreV2MenuView.Received().SetVisible(!DataStore.i.exploreV2.isOpen.Get());
     }
 
     [Test]
@@ -121,6 +136,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.OnActivateFromTaskbar(isActive, !isActive);
 
         // Assert
-        exploreV2MenuView.Received().SetActive(isActive);
+        Assert.AreEqual(isActive, DataStore.i.exploreV2.isOpen.Get());
+        exploreV2MenuView.Received().SetVisible(isActive);
     }
 }

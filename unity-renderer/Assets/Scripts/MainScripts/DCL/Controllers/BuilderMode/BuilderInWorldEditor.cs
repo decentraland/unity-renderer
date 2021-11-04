@@ -124,7 +124,7 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         string ethAddress =  string.IsNullOrEmpty(userProfile.ethAddress) ? "default" : userProfile.ethAddress;
         areCatalogHeadersAsked = true;
-        builderInWorldBridge.AskKernelForCatalogHeadersWithParams("get", "/assetPacks?owner=" + ethAddress);
+        builderInWorldBridge.AskKernelForCatalogHeadersWithParams("get", "/assetPacks"); 
     }
 
     public void InitReferences(InitialSceneReferences.Data sceneReferences)
