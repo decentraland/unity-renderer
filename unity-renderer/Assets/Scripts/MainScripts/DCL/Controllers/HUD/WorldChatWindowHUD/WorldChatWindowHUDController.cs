@@ -28,7 +28,7 @@ public class WorldChatWindowHUDController : IHUD
         view = WorldChatWindowHUDView.Create();
         view.controller = this;
 
-        chatHudController = new ChatHUDController(new RegexProfanityFilter(), new ChatProfanityFeatureFlagFromDataStore());
+        chatHudController = new ChatHUDController(new RegexProfanityFilter(new ProfanityWordProviderFromCsv("Profanity/badwords")), new ChatProfanityFeatureFlagFromDataStore());
         chatHudController.Initialize(view.chatHudView);
         chatHudController.OnPressPrivateMessage -= ChatHUDController_OnPressPrivateMessage;
         chatHudController.OnPressPrivateMessage += ChatHUDController_OnPressPrivateMessage;

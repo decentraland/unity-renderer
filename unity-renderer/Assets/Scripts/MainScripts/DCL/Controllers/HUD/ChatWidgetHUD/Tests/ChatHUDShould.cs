@@ -12,7 +12,8 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         chatProfanityFeatureFlag = new MemoryChatProfanityFeatureFlag(true);
-        controller = new ChatHUDController(new RegexProfanityFilter(), chatProfanityFeatureFlag);
+        var profanityFilter = GivenProfanityFilter();
+        controller = new ChatHUDController(profanityFilter, chatProfanityFeatureFlag);
         controller.Initialize(null, OnSendMessage);
         view = controller.view;
         Assert.IsTrue(view != null);
@@ -123,5 +124,14 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         controller.AddChatMessage(msg);
         
         Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
+    }
+    
+    private RegexProfanityFilter GivenProfanityFilter()
+    {
+        var profanityWordProvider = new ProfanityWordProviderInMemory();
+        profanityWordProvider.Add("shit");
+        profanityWordProvider.Add("ass");
+        profanityWordProvider.Add("bitch");
+        return new RegexProfanityFilter(profanityWordProvider);
     }
 }

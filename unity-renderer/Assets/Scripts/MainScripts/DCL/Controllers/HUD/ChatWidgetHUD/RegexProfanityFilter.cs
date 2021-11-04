@@ -4,16 +4,13 @@ using System.Text.RegularExpressions;
 
 public class RegexProfanityFilter
 {
-    private Regex regex;
+    private readonly Regex regex;
 
-    public RegexProfanityFilter()
+    public RegexProfanityFilter(IProfanityWordProvider wordProvider)
     {
-        var words = new[]
-        {
-            "shit", "ass", "bitch"
-        };
-        var join = string.Join("|", words.Select(word => $"({word}*)"));
-        regex = new Regex(join, RegexOptions.IgnoreCase);
+        var words = wordProvider.GetAll();
+        var join = string.Join("|", words);
+        regex = new Regex(@$"\b({join})\b", RegexOptions.IgnoreCase);
     }
 
     public string Filter(string message)
