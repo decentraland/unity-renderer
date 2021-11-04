@@ -29,7 +29,7 @@ namespace DCL.SettingsCommon
 
             try
             {
-                dataValue = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
+                JsonUtility.FromJsonOverwrite(PlayerPrefsUtils.GetString(playerPrefsKey), dataValue);
             }
             catch (Exception e)
             {
