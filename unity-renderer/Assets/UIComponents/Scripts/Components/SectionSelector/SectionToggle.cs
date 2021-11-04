@@ -134,6 +134,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
     internal IEnumerator ForceToRefreshToggleState()
     {
+        // After each activation, in order to update the toggle's transition colors correctly, we need to force to change some property
+        // of the component so that Unity notices it is in "dirty" state and it is refreshed.
         toggle.interactable = false;
         yield return null;
         toggle.interactable = true;
