@@ -3,7 +3,7 @@ using System;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public struct GeneralSettings
+    public class GeneralSettings : ICloneable
     {
         public enum VoiceChatAllow { ALL_USERS, VERIFIED_ONLY, FRIENDS_ONLY }
 
@@ -16,5 +16,7 @@ namespace DCL.SettingsCommon
         public float maxNonLODAvatars;
         public float namesOpacity;
         public bool profanityChatFiltering;
+        
+        public object Clone() => MemberwiseClone();
     }
 }

@@ -71,7 +71,7 @@ namespace DCL.SettingsCommon
 
         private GeneralSettings GetDefaultGeneralSettings()
         {
-            return new GeneralSettings()
+            return new GeneralSettings
             {
                 mouseSensitivity = 0.6f,
                 scenesLoadRadius = 4,

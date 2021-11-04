@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public struct QualitySettings
+    public class QualitySettings : ICloneable
     {
         public enum BaseResolution
         {
@@ -68,5 +68,7 @@ namespace DCL.SettingsCommon
 
         [Tooltip("Amount of HQ Avatars visible at any time")]
         public int maxHQAvatars;
+
+        public object Clone() => MemberwiseClone();
     }
 }

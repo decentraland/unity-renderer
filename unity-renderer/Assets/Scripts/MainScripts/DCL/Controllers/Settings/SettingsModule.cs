@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.SettingsCommon
 {
-    public class SettingsModule<T> where T : struct
+    public class SettingsModule<T> where T : ICloneable
     {
         public event Action<T> OnChanged;
 
@@ -23,7 +23,7 @@ namespace DCL.SettingsCommon
 
         private void Preload()
         {
-            dataValue = defaultPreset;
+            dataValue = (T) defaultPreset.Clone();
             if (!PlayerPrefsUtils.HasKey(playerPrefsKey))
                 return;
 
