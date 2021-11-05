@@ -197,8 +197,7 @@ public class BuilderAPIController : IBuilderAPIController
         Manifest manifest = BIWUtils.CreateEmptyDefaultBuilderManifest(coords);
         //TODO: Implement functionality
     }
-
-
+    
     private string GetDataFromCall(string result)
     {
         JObject jObject = (JObject)JsonConvert.DeserializeObject(result);

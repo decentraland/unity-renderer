@@ -100,9 +100,6 @@ public class BuilderInWorldEditor : IBIWEditor
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
         userProfile = UserProfile.GetOwnUserProfile();
-        
-        BIWNFTController.i.Initialize();
-        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         context.builderAPIController.OnWebRequestCreated += WebRequestCreated;
         
@@ -283,6 +280,7 @@ public class BuilderInWorldEditor : IBIWEditor
             return;
 
         isCatalogLoading = true;
+        BIWNFTController.i.StartFetchingNft();
         var catalogPromise = context.builderAPIController.GetCompleteCatalog(userProfile.ethAddress);
         catalogPromise.Then(x =>
         {
@@ -483,8 +481,9 @@ public class BuilderInWorldEditor : IBIWEditor
         BIWAnalytics.StartEditorFlow(source);
         beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
-        if (biwAudioHandler?.gameObject != null)
+        if (biwAudioHandler != null && biwAudioHandler.gameObject != null)
             biwAudioHandler.gameObject.SetActive(true);
+        
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
             modeController.ActivateCamera(sceneToEdit);
@@ -519,7 +518,7 @@ public class BuilderInWorldEditor : IBIWEditor
             return;
 
         isEnteringEditMode = false;
-        BIWNFTController.i.ClearNFTs();
+        BIWNFTController.i.StartEditMode();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
@@ -626,7 +625,8 @@ public class BuilderInWorldEditor : IBIWEditor
     public void ExitEditMode()
     {
         Environment.i.platform.cullingController.Start();
-
+        BIWNFTController.i.ExitEditMode();
+        
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;
