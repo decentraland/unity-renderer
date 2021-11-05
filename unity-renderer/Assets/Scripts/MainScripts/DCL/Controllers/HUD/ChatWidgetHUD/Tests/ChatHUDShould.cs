@@ -1,22 +1,27 @@
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
+using NSubstitute;
 
 public class ChatHUDShould : IntegrationTestSuite_Legacy
 {
     ChatHUDController controller;
     ChatHUDView view;
+    ChatMessage lastMsgSent;
+    private DataStore dataStore;
 
     protected override IEnumerator SetUp()
     {
-        controller = new ChatHUDController();
+        var profanityFilter = GivenProfanityFilter();
+        dataStore = new DataStore();
+        dataStore.settings.profanityChatFilteringEnabled.Set(true);
+        controller = new ChatHUDController(dataStore, profanityFilter);
         controller.Initialize(null, OnSendMessage);
-        this.view = controller.view;
-        Assert.IsTrue(this.view != null);
+        view = controller.view;
+        Assert.IsTrue(view != null);
         yield break;
     }
-
-    ChatMessage lastMsgSent;
 
     void OnSendMessage(ChatMessage msg) { lastMsgSent = msg; }
 
@@ -89,5 +94,60 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
 
         Assert.AreEqual("", lastMsgSent.body);
         Assert.AreEqual(testMessage, controller.view.inputField.text);
+    }
+
+    [TestCase("ShiT hello", "**** hello")]
+    [TestCase("ass hi bitch", "*** hi *****")]
+    public void FilterProfanityMessage(string body, string expected)
+    {
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "test",
+            bodyText = body
+        };
+
+        controller.AddChatMessage(msg);
+
+        Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
+    }
+
+    [Test]
+    public void DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
+    {
+        dataStore.settings.profanityChatFilteringEnabled.Set(false);
+        
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "test",
+            bodyText = "shit"
+        };
+        
+        controller.AddChatMessage(msg);
+        
+        Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
+    }
+
+    [Test]
+    public void DoNotFilterProfanityMessageWhenIsPrivate()
+    {
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PRIVATE,
+            senderName = "test",
+            bodyText = "shit"
+        };
+        
+        controller.AddChatMessage(msg);
+        
+        Assert.AreEqual(msg.bodyText, controller.view.entries[0].model.bodyText);
+    }
+    
+    private RegexProfanityFilter GivenProfanityFilter()
+    {
+        var wordProvider = Substitute.For<IProfanityWordProvider>();
+        wordProvider.GetAll().Returns(new[] {"shit", "ass", "bitch"});
+        return new RegexProfanityFilter(wordProvider);
     }
 }

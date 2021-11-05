@@ -1,5 +1,6 @@
 {
     "name": "ChatHUDTests",
+    "rootNamespace": "",
     "references": [
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
         "GUID:6c83ec3e64bad1743a40f7646cd964a4",
@@ -9,14 +10,17 @@
         "GUID:6afcac5154f98e846bbd9f27e454b57a",
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0acc523941302664db1f4e527237feb3",
-        "GUID:8bf30e5f113c544d88fc302761d180c0"
+        "GUID:8bf30e5f113c544d88fc302761d180c0",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
