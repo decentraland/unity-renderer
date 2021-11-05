@@ -236,12 +236,11 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnExploreV2ToggleOn()
     {
-        DataStore.i.taskbar.isExploreV2Enabled.Set(false);
-        DataStore.i.taskbar.isExploreV2Enabled.Set(true);
+        DataStore.i.exploreV2.isOpen.Set(true, true);
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
-    private void View_OnExploreV2ToggleOff() { DataStore.i.taskbar.isExploreV2Enabled.Set(false); }
+    private void View_OnExploreV2ToggleOff() { DataStore.i.exploreV2.isOpen.Set(false); }
 
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
 

@@ -29,7 +29,6 @@ public class ExploreV2MenuComponentControllerTests
         Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
         exploreV2MenuView.Received().SetVisible(false);
         Assert.IsTrue(DataStore.i.exploreV2.isInitialized.Get());
-        Assert.IsNotNull(exploreV2MenuController.toggleExploreTrigger);
     }
 
     [Test]
@@ -115,16 +114,6 @@ public class ExploreV2MenuComponentControllerTests
         // Assert
         Assert.IsFalse(DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(false);
-    }
-
-    [Test]
-    public void RaiseOnToggleActionTriggeredCorrectly()
-    {
-        // Act
-        exploreV2MenuController.OnToggleActionTriggered(new DCLAction_Trigger());
-
-        // Assert
-        exploreV2MenuView.Received().SetVisible(!DataStore.i.exploreV2.isOpen.Get());
     }
 
     [Test]

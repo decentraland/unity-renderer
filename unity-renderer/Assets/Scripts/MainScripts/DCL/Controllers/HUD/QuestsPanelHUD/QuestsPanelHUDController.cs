@@ -12,16 +12,11 @@ namespace DCL.Huds.QuestsPanel
         internal IQuestsController questsController;
         private static BaseDictionary<string, QuestModel> quests => DataStore.i.Quests.quests;
 
-        internal InputAction_Trigger toggleQuestsPanel;
-
         public void Initialize(IQuestsController newQuestsController)
         {
             questsController = newQuestsController;
             view = CreateView();
             SetViewActive(false);
-
-            toggleQuestsPanel = Resources.Load<InputAction_Trigger>("ToggleQuestsPanelHud");
-            toggleQuestsPanel.OnTriggered += OnToggleActionTriggered;
 
             questsController.OnQuestUpdated += OnQuestUpdated;
             quests.OnAdded += OnQuestAdded;
@@ -92,7 +87,6 @@ namespace DCL.Huds.QuestsPanel
         public void Dispose()
         {
             view.Dispose();
-            toggleQuestsPanel.OnTriggered -= OnToggleActionTriggered;
             if (questsController != null)
                 questsController.OnQuestUpdated -= OnQuestUpdated;
             quests.OnAdded -= OnQuestAdded;

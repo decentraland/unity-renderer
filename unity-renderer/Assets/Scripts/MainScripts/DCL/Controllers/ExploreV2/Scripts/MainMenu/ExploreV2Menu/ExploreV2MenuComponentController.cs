@@ -14,7 +14,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal IExploreV2MenuComponentView view;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
-    internal InputAction_Trigger toggleExploreTrigger;
+    internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
 
     public void Initialize()
     {
@@ -28,13 +28,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         UpdateProfileInfo(ownUserProfile);
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
-        DataStore.i.taskbar.isExploreV2Enabled.OnChange += OnActivateFromTaskbar;
         DataStore.i.exploreV2.isInitialized.Set(true);
 
         view.OnInitialized += CreateControllers;
 
-        toggleExploreTrigger = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
-        toggleExploreTrigger.OnTriggered += OnToggleActionTriggered;
+        isOpen.OnChange += IsOpenChanged;
+        IsOpenChanged(isOpen.Get(), false);
     }
 
     internal void CreateControllers()
@@ -47,6 +46,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
+        isOpen.OnChange -= IsOpenChanged;
 
         if (view != null)
         {
@@ -55,37 +55,33 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.Dispose();
         }
 
-        DataStore.i.taskbar.isExploreV2Enabled.OnChange -= OnActivateFromTaskbar;
-
         if (placesAndEventsSectionController != null)
         {
             placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
             placesAndEventsSectionController.Dispose();
         }
-
-        toggleExploreTrigger.OnTriggered -= OnToggleActionTriggered;
     }
 
-    public void SetVisibility(bool visible)
+    public void SetVisibility(bool visible) { DataStore.i.exploreV2.isOpen.Set(visible); }
+
+    private void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+
+    internal void SetVisibility_Internal(bool visible)
     {
         if (view == null)
             return;
 
-        if (visible != DataStore.i.exploreV2.isOpen.Get())
+        if (visible)
         {
-            if (visible)
-            {
-                Utils.UnlockCursor();
-                AudioScriptableObjects.dialogOpen.Play(true);
-                AudioScriptableObjects.listItemAppear.ResetPitch();
-            }
-            else
-            {
-                AudioScriptableObjects.dialogClose.Play(true);
-            }
+            Utils.UnlockCursor();
+            AudioScriptableObjects.dialogOpen.Play(true);
+            AudioScriptableObjects.listItemAppear.ResetPitch();
+        }
+        else
+        {
+            AudioScriptableObjects.dialogClose.Play(true);
         }
 
-        DataStore.i.exploreV2.isOpen.Set(visible);
         view.SetVisible(visible);
     }
 
@@ -120,8 +116,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     }
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }
-
-    internal void OnToggleActionTriggered(DCLAction_Trigger action) { SetVisibility(!DataStore.i.exploreV2.isOpen.Get()); }
 
     internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current); }
 
