@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Helpers;
 using System;
+using DCL.Builder;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

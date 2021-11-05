@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using DCL.Builder;
 using UnityEngine;
 
@@ -20,6 +21,16 @@ internal interface IProjectsController
     /// This action will be called each time that we changes the project list
     /// </summary>
     event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
+    
+    /// <summary>
+    /// When the user click on expand or collapse the project
+    /// </summary>
+    event Action OnExpandMenuPressed;
+
+    /// <summary>
+    /// This will updated the deployments of the projects looking at the lands deployments
+    /// </summary>
+    void UpdateDeploymentStatus();
 
     /// <summary>
     /// This will set the project list
@@ -50,6 +61,8 @@ internal class ProjectsController : IProjectsController
 {
     public event Action<ProjectData> OnEditorPressed;
     public event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
+    
+    public event Action OnExpandMenuPressed;
 
     private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
     
@@ -79,6 +92,24 @@ internal class ProjectsController : IProjectsController
         OnProjectsSet?.Invoke(this.projects);
     }
 
+    public void UpdateDeploymentStatus()
+    {
+        foreach (var project in projects)
+        {
+            List<Scene> scenesList = new List<Scene>();
+            foreach (LandWithAccess landWithAccess in DataStore.i.builderInWorld.landsWithAccess.Get())
+            {
+                foreach (var scene in landWithAccess.scenes)
+                {
+                    if (scene.projectId == project.Key)
+                        scenesList.Add(scene);
+                }
+            }
+            
+            project.Value.SetScenes(scenesList);
+        }
+    }
+
     public void AddListener(IProjectsListener listener)
     {
         OnProjectsSet += listener.OnSetProjects;
@@ -89,6 +120,11 @@ internal class ProjectsController : IProjectsController
 
     public Dictionary<string, IProjectCardView> GetProjects() { return projects; }
 
+    private void ExpandMenuPressed()
+    {
+        OnExpandMenuPressed?.Invoke();
+    }
+    
     private IProjectCardView CreateCardView(ProjectData data)
     {
         var card = CreateCardView();
@@ -107,6 +143,7 @@ internal class ProjectsController : IProjectsController
 
         view.OnEditorPressed += OnEditorPressed;
         view.OnSettingsPressed += OnSceneSettingsPressed;
+        view.OnExpandMenuPressed += ExpandMenuPressed;
 
         return view;
     }
@@ -116,6 +153,7 @@ internal class ProjectsController : IProjectsController
         // NOTE: there is actually no need to unsubscribe here, but, just in case...
         projectCardView.OnEditorPressed -= OnEditorPressed;
         projectCardView.OnSettingsPressed -= OnSceneSettingsPressed;
+        projectCardView.OnExpandMenuPressed -= ExpandMenuPressed;
 
         projectCardView.Dispose();
     }

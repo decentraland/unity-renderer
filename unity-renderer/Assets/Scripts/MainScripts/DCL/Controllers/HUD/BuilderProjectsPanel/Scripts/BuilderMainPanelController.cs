@@ -266,8 +266,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal void ProjectsFetched(ProjectData[] data)
     {
+        DataStore.i.builderInWorld.projectData.Set(data);
         isFetchingProjects = false;
         projectsController.SetProjects(data);
+        UpdateProjectsDeploymentStatus();
     }
 
     internal void ProjectsFetchedError(string error)
@@ -279,9 +281,12 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         Debug.LogError(error);
     }
 
-    private void CompleteProjectData()
+    private void UpdateProjectsDeploymentStatus()
     {
+        if(isFetchingLands || isFetchingProjects)
+            return;
         
+        projectsController.UpdateDeploymentStatus();
     }
 
     internal void LandsFetchedError(string error)
@@ -298,13 +303,14 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
         sectionsController.SetFetchingDataEnd();
         isFetchingLands = false;
-
+        UpdateProjectsDeploymentStatus();
+        
         try
         {
-            var places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                              .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                              .Aggregate((i, j) => i.Concat(j))
-                              .ToArray();
+            ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
+                                     .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                                     .Aggregate((i, j) => i.Concat(j))
+                                     .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);

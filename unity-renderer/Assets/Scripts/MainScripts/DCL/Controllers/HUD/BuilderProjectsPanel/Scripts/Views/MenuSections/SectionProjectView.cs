@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,8 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
 
     private bool isDestroyed = false;
 
+    private Coroutine waitAFrameCoroutine;
+    
     public void SetParent(Transform parent)
     {
         transform.SetParent(parent);
@@ -43,6 +46,9 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
 
     private void OnDestroy()
     {
+        if(waitAFrameCoroutine != null)
+            CoroutineStarter.Stop(waitAFrameCoroutine);
+        
         isDestroyed = true;
         scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
     }

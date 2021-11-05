@@ -11,11 +11,13 @@ namespace DCL.Builder
         public string description;
 
         public string thumbnail;
+        public string scene_id;
 
         public int rows;
         public int colums;
 
         public DateTime created_at;
         public DateTime updated_at;
+        
     }
 }

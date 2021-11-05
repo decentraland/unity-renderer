@@ -22,6 +22,14 @@ using UnityEngine.Events;
 
 public static partial class BIWUtils
 {
+    private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    
+    public static long ConvertToMilisecondsTimestamp(DateTime value)
+    {
+        TimeSpan elapsedTime = value - Epoch;
+        return (long) elapsedTime.TotalMilliseconds;
+    }
+    
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
     {
         UserProfile profile = UserProfile.GetOwnUserProfile();

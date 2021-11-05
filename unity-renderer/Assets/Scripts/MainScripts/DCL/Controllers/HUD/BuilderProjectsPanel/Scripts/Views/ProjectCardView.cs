@@ -24,7 +24,7 @@ internal interface IProjectCardView : IDisposable
     /// <summary>
     /// Expand button pressed
     /// </summary>
-    event Action<ProjectData, IProjectCardView> OnExpandMenuPressed;
+    event Action OnExpandMenuPressed;
 
     /// <summary>
     /// Data of the project card
@@ -42,7 +42,13 @@ internal interface IProjectCardView : IDisposable
     Vector3 contextMenuButtonPosition { get; }
 
     /// <summary>
-    /// This setup the project data of the 
+    /// Set the scenes of the project
+    /// </summary>
+    /// <param name="scenes"></param>
+    void SetScenes(List<Scene> scenes);
+    
+    /// <summary>
+    /// This setup the project data 
     /// </summary>
     /// <param name="projectData"></param>
     void Setup(ProjectData projectData);
@@ -78,7 +84,7 @@ internal interface IProjectCardView : IDisposable
     
     void SetName(string name);
     void SetSize(int rows, int columns);
-    void SetThumbnail(string thumbnailUrl);
+    void SetThumbnail(string thumbnailUrl, string filename);
     void SetThumbnail(Texture2D thumbnailTexture);
 }
 
@@ -88,18 +94,32 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     public event Action<ProjectData> OnEditorPressed;
     public event Action<ProjectData> OnSettingsPressed;
-    public event Action<ProjectData, IProjectCardView> OnExpandMenuPressed;
+    public event Action OnExpandMenuPressed;
 
+    [Header("Design Variables")]
+
+    [SerializeField] private  float animationSpeed = 6f;
+
+    [Header("Project References")]
     [SerializeField] private Color syncColor;
     [SerializeField] private Color desyncColor;
+    [SerializeField] private Texture2D defaultThumbnail;
+    [SerializeField] private GameObject projectSceneCardViewPrefab;
     
+    
+    [Header("Prefab references")]
     [SerializeField] private Image syncImage;
     
     [SerializeField] internal Button contextMenuButton;
+    [SerializeField] internal Button expandButton;
     [SerializeField] internal Button editorButton;
-    [SerializeField] private Texture2D defaultThumbnail;
+    
+    [SerializeField] internal RectTransform scenesContainer;
+    [SerializeField] internal VerticalLayoutGroup layoutGroup;
 
     [SerializeField] private GameObject loadingImgGameObject;
+    [SerializeField] private GameObject publishedGameObject;
+    [SerializeField] private RectTransform downButtonTransform;
     [SerializeField] internal TextMeshProUGUI projectNameTxt;
     [SerializeField] internal TextMeshProUGUI projectSizeTxt;
     [SerializeField] internal TextMeshProUGUI projectSyncTxt;
@@ -118,11 +138,19 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     private string thumbnailId = null;
     private Transform defaultParent;
     private AssetPromise_Texture thumbnailPromise;
+    private bool scenesAreVisible = false;
+    private RectTransform rectTransform;
+
+    private List<Scene> scenesDeployedFromProject = new List<Scene>();
+    private List<IProjectSceneCardView> sceneCardViews = new List<IProjectSceneCardView>();
 
     private void Awake()
     {
         editorButton.onClick.AddListener(EditorButtonClicked);    
-        contextMenuButton.onClick.AddListener(EditorButtonClicked);    
+        expandButton.onClick.AddListener(ExpandButtonPressed);    
+        contextMenuButton.onClick.AddListener(EditorButtonClicked);
+
+        rectTransform = GetComponent<RectTransform>();
     }
 
     private void OnDestroy()
@@ -142,9 +170,98 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         SetName(projectData.title);
         SetSize(projectData.rows,projectData.colums);
         
-        SetThumbnail(projectData.id);
+        SetThumbnail(projectData.id,projectData.thumbnail);
         
         ((IProjectCardView)this).searchInfo.SetId(projectData.id);
+    }
+
+    public void SetScenes(List<Scene> scenes)
+    {
+        scenesDeployedFromProject = scenes;
+        publishedGameObject.gameObject.SetActive(true);
+        if (scenes.Count == 0)
+        {
+            syncImage.enabled = false;
+            projectSyncTxt.text = "NOT PUBLISHED";
+            downButtonTransform.gameObject.SetActive(false);
+        }
+        else
+        {
+            downButtonTransform.gameObject.SetActive(true);
+            bool isSync = true;
+            long projectTimestamp = BIWUtils.ConvertToMilisecondsTimestamp(projectData.updated_at);
+            foreach (Scene scene in scenes)
+            {
+                if (scene.deployTimestamp < projectTimestamp)
+                {
+                    isSync = false;
+                    break;
+                }
+            }
+            if (isSync)
+                syncImage.color = syncColor;
+            else
+                syncImage.color = desyncColor;
+            
+            projectSyncTxt.text = "PUBLISHED IN";
+        }
+    }
+
+    private void ExpandButtonPressed()
+    {
+        if(scenesDeployedFromProject.Count == 0 )
+            return;
+        
+        downButtonTransform.Rotate(Vector3.forward,180);
+        
+        scenesAreVisible = !scenesAreVisible;
+        ScenesVisiblitityChange(scenesAreVisible);
+        
+        float amountToIncrease = sceneCardViews.Count * 84+36 + 15*(sceneCardViews.Count-1);
+        
+        if (scenesAreVisible)
+        {
+            layoutGroup.padding.bottom = 18;
+            AddRectTransformHeight(rectTransform,amountToIncrease);
+            AddRectTransformHeight(scenesContainer,amountToIncrease);
+        }
+        else
+        {
+            layoutGroup.padding.bottom = 0;
+            AddRectTransformHeight(rectTransform, -amountToIncrease);
+            AddRectTransformHeight(scenesContainer, -amountToIncrease);
+        }
+
+        OnExpandMenuPressed?.Invoke();
+    }
+
+    private void AddRectTransformHeight(RectTransform rectTransform, float height)
+    {
+        CoroutineStarter.Start(ChangeHeightAnimation(rectTransform, height));
+    }
+    
+    private void ScenesVisiblitityChange(bool isVisible)
+    {
+        if(sceneCardViews.Count == 0)
+            InstantiateScenes();
+
+        foreach (IProjectSceneCardView scene in sceneCardViews)
+        {
+            scene.SetActive(isVisible);
+        }
+    }
+
+    private void InstantiateScenes()
+    {
+        long projectTimestamp = BIWUtils.ConvertToMilisecondsTimestamp(projectData.updated_at);
+        foreach (Scene scene in scenesDeployedFromProject)
+        {
+            bool isSync = scene.deployTimestamp < projectTimestamp;
+
+            IProjectSceneCardView cardView = Instantiate(projectSceneCardViewPrefab, scenesContainer).GetComponent<ProjectSceneCardView>();
+            cardView.Setup(scene,isSync);
+            sceneCardViews.Add(cardView);
+        }
     }
 
     private void EditorButtonClicked()
@@ -152,7 +269,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         OnEditorPressed?.Invoke(projectData);
     }
 
-    public void SetThumbnail(string thumbnailId)
+    public void SetThumbnail(string thumbnailId,string thumbnailEndpoint)
     {
         if (this.thumbnailId == thumbnailId)
             return;
@@ -160,7 +277,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         string projectThumbnailUrl = "";
         if (!string.IsNullOrEmpty(thumbnailId))
         {
-            projectThumbnailUrl = BIWUrlUtils.GetBuilderProjecThumbnailUrl().Replace("{id}", thumbnailId);
+            projectThumbnailUrl = BIWUrlUtils.GetBuilderProjecThumbnailUrl(thumbnailId,thumbnailEndpoint);
         }
 
         this.thumbnailId = thumbnailId;
@@ -220,5 +337,21 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     {
         projectSizeTxt.text = rows + "x" + columns;
         ((IProjectCardView)this).searchInfo.SetSize(rows * columns);
+    }
+
+    IEnumerator ChangeHeightAnimation(RectTransform rectTransform, float height)
+    {
+        float time = 0;
+
+        Vector2 rect2 = rectTransform.sizeDelta;
+        float objective  = rect2.y + height;
+
+        while (time < 1)
+        {
+            time += Time.deltaTime * animationSpeed/scenesDeployedFromProject.Count;
+            rect2.y = Mathf.Lerp(rect2.y,objective,time);
+            rectTransform.sizeDelta = rect2;
+            yield return null;
+        }
     }
 }

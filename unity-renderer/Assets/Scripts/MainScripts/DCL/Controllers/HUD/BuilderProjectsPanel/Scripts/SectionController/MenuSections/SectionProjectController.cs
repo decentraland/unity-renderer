@@ -55,7 +55,7 @@ namespace DCL.Builder
             projectsViews.Add(projectView.projectData.id, projectView);
             sceneSearchHandler.AddItem(projectView.searchInfo);
         }
-
+        
         void IProjectsListener.OnProjectRemoved(IProjectCardView projectView)
         {
             projectsViews.Remove(projectView.projectData.id);
