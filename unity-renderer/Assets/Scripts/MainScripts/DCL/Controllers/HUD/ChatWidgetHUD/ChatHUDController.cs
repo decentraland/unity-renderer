@@ -1,4 +1,5 @@
 using System;
+using DCL;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,15 +13,14 @@ public class ChatHUDController : IDisposable
 
     public event UnityAction<string> OnPressPrivateMessage;
 
+    private readonly DataStore dataStore;
     private readonly RegexProfanityFilter profanityFilter;
-    private readonly IChatProfanityFeatureFlag chatProfanityFeatureFlag;
     private InputAction_Trigger closeWindowTrigger;
 
-    public ChatHUDController(RegexProfanityFilter profanityFilter,
-        IChatProfanityFeatureFlag chatProfanityFeatureFlag)
+    public ChatHUDController(DataStore dataStore, RegexProfanityFilter profanityFilter = null)
     {
+        this.dataStore = dataStore;
         this.profanityFilter = profanityFilter;
-        this.chatProfanityFeatureFlag = chatProfanityFeatureFlag;
     }
 
     public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
@@ -58,7 +58,7 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
-        if (chatProfanityFeatureFlag.IsEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
+        if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
             chatEntryModel.bodyText = profanityFilter.Filter(chatEntryModel.bodyText);
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
@@ -122,5 +122,11 @@ public class ChatHUDController : IDisposable
         }
 
         return model;
+    }
+    
+    private bool IsProfanityFilteringEnabled()
+    {
+        return dataStore.settings.profanityChatFilteringEnabled.Get()
+            && profanityFilter != null;
     }
 }

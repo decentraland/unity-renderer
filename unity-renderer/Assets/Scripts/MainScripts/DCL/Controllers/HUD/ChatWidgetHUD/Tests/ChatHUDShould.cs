@@ -1,19 +1,22 @@
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
+using NSubstitute;
 
 public class ChatHUDShould : IntegrationTestSuite_Legacy
 {
     ChatHUDController controller;
     ChatHUDView view;
     ChatMessage lastMsgSent;
-    private MemoryChatProfanityFeatureFlag chatProfanityFeatureFlag;
+    private DataStore dataStore;
 
     protected override IEnumerator SetUp()
     {
-        chatProfanityFeatureFlag = new MemoryChatProfanityFeatureFlag(true);
         var profanityFilter = GivenProfanityFilter();
-        controller = new ChatHUDController(profanityFilter, chatProfanityFeatureFlag);
+        dataStore = new DataStore();
+        dataStore.settings.profanityChatFilteringEnabled.Set(true);
+        controller = new ChatHUDController(dataStore, profanityFilter);
         controller.Initialize(null, OnSendMessage);
         view = controller.view;
         Assert.IsTrue(view != null);
@@ -112,7 +115,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
     {
-        chatProfanityFeatureFlag.Set(false);
+        dataStore.settings.profanityChatFilteringEnabled.Set(false);
         
         var msg = new ChatEntry.Model
         {
@@ -143,10 +146,8 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
     
     private RegexProfanityFilter GivenProfanityFilter()
     {
-        var profanityWordProvider = new ProfanityWordProviderInMemory();
-        profanityWordProvider.Add("shit");
-        profanityWordProvider.Add("ass");
-        profanityWordProvider.Add("bitch");
-        return new RegexProfanityFilter(profanityWordProvider);
+        var wordProvider = Substitute.For<IProfanityWordProvider>();
+        wordProvider.GetAll().Returns(new[] {"shit", "ass", "bitch"});
+        return new RegexProfanityFilter(wordProvider);
     }
 }
