@@ -2,6 +2,8 @@
 
 source ci-setup.sh
 
+echo "Running editmode tests for $PROJECT_PATH"
+
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -batchmode \
   -projectPath "$PROJECT_PATH" \
@@ -11,18 +13,16 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -testResults "$PROJECT_PATH/editmode-results.xml" \
   -enableCodeCoverage \
   -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
-  -debugCodeOptimization
+  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-mkdir -p "$PROJECT_PATH/test-results/editormode"
-cp "$PROJECT_PATH/editmode-results.xml" "$PROJECT_PATH/test-results/editormode/results.xml" || true
-
 # Print unity log output
+ls -la $PROJECT_PATH
+find /tmp/workspace/unity-renderer -name editmode-results.xml
+find $PROJECT_PATH -name editmode-results.xml
 cat "$PROJECT_PATH/editmode-results.xml"
-cat "$PROJECT_PATH/editmode-results.xml" | grep test-run | grep Passed
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then

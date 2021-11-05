@@ -85,7 +85,7 @@ PrefabInstance:
     - target: {fileID: 3429754838372700524, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_Spacing
-      value: 2.8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3429754838372700524, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
@@ -105,7 +105,7 @@ PrefabInstance:
     - target: {fileID: 3429754838372700524, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_Padding.m_Bottom
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5736161931655279129, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
@@ -240,8 +240,14 @@ PrefabInstance:
     - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_fontSize
-      value: 16
+      value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a,
+        type: 2}
     - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_fontColor.b
@@ -257,6 +263,16 @@ PrefabInstance:
       propertyPath: m_fontColor.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
     - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_fontColor32.rgba

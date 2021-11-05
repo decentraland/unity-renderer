@@ -32,9 +32,11 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
 
     private GameObject content;
 
-    public override void PostInitialization()
+    public override void Start()
     {
-        closeButton.OnFullyInitialized += () => closeButton.onClick.AddListener(CloseButtonClicked);
+        base.Start();
+        
+        closeButton.onClick.AddListener(CloseButtonClicked);
         alphaBackground.onClick.AddListener(CloseButtonClicked);
         RefreshControl();
     }

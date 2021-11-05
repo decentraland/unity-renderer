@@ -29,20 +29,15 @@ public class SecondStep : BaseComponentView
     private int rows = 2;
     private int colums = 2;
 
-    public override void PostInitialization()
+    public override void Start()
     {
+        base.Start();
+        
         rowsInputField.OnInputChange += RowsChanged;
         columsInputField.OnInputChange += ColumnsChanged;
 
-        backButton.OnFullyInitialized += () => backButton.onClick.AddListener(BackPressed);
-        nextButton.OnFullyInitialized += () => nextButton.onClick.AddListener(NextPressed);
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        rowsInputField.OnInputChange -= RowsChanged;
-        columsInputField.OnInputChange -= ColumnsChanged;
+        backButton.onClick.AddListener(BackPressed);
+        nextButton.onClick.AddListener(NextPressed);
     }
 
     public override void RefreshControl() {  }
@@ -62,13 +57,9 @@ public class SecondStep : BaseComponentView
     private void ValueChanged()
     {
         if (rows * colums > MAX_PARCELS)
-        {
             ShowError();
-        }
         else
-        {
             ShowGrid();
-        }
     }
 
     private void ShowError()
@@ -96,10 +87,7 @@ public class SecondStep : BaseComponentView
         if (!nextButton.IsInteractable())
             return;
 
-        // string title= titleInputField.GetValue();
-        // string description = descriptionInputField.GetValue();
-        //
-        // OnNextPressed?.Invoke(title,description);
+        //TODO: This needs to be implemented
     }
 
     private void BackPressed() { OnBackPressed?.Invoke(); }

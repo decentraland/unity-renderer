@@ -38,16 +38,16 @@ namespace DCL
 
         public Data data;
 
-        [SerializeField] private MouseCatcher mouseCatcherReference;
-        [SerializeField] private GameObject groundVisualReference;
-        [SerializeField] private GameObject cameraParentReference;
-        [SerializeField] private InputController inputControllerReference;
-        [SerializeField] private GameObject cursorCanvasReference;
-        [SerializeField] private BuilderInWorldBridge builderInWorldBridgeReference;
-        [SerializeField] private PlayerAvatarController playerAvatarControllerReference;
-        [SerializeField] private CameraController cameraControllerReference;
-        [SerializeField] private UnityEngine.Camera mainCameraReference;
-        [SerializeField] private GameObject bridgeGameObjectReference;
+        [SerializeField] internal MouseCatcher mouseCatcherReference;
+        [SerializeField] internal GameObject groundVisualReference;
+        [SerializeField] internal GameObject cameraParentReference;
+        [SerializeField] internal InputController inputControllerReference;
+        [SerializeField] internal GameObject cursorCanvasReference;
+        [SerializeField] internal BuilderInWorldBridge builderInWorldBridgeReference;
+        [SerializeField] internal PlayerAvatarController playerAvatarControllerReference;
+        [SerializeField] internal CameraController cameraControllerReference;
+        [SerializeField] internal UnityEngine.Camera mainCameraReference;
+        [SerializeField] internal GameObject bridgeGameObjectReference;
 
         public GameObject groundVisual => data.groundVisual;
         public GameObject cameraParent => data.cameraParent;

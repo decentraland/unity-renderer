@@ -235,7 +235,7 @@ MonoBehaviour:
   highlightedParcelText: {fileID: 7940259258301411768}
   overlayContainer: {fileID: 90597117798403300}
   globalUserMarkerContainer: {fileID: 3332934504654532118}
-  playerPositionIcon: {fileID: 7800080416519839540}
+  playerPositionIcon: {fileID: 1340394175305253205}
   centeredReferenceParcel: {fileID: 1025416073224921776}
   scenesOfInterestIconPrefab: {fileID: 4461918297282884638, guid: f7b91bf31609c8a43b5dbc0ae70e47ab,
     type: 3}
@@ -727,8 +727,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -510, y: -510}
-  m_SizeDelta: {x: 7130, y: 7130}
+  m_AnchoredPosition: {x: -500, y: -500}
+  m_SizeDelta: {x: 7140, y: 7140}
   m_Pivot: {x: 0, y: 0}
 --- !u!1001 &6431149015225084135
 PrefabInstance:

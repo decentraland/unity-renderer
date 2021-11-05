@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
-public class SectionSelectorComponentModel
+public class SectionSelectorComponentModel : BaseComponentModel
 {
     public List<SectionToggleModel> sections;
 }
@@ -14,5 +14,14 @@ public class SectionToggleModel
 {
     public Sprite icon;
     public string title;
-    public Toggle.ToggleEvent onSelect;
+
+    [Header("Visual Configuration When Selected")]
+    public Color selectedTextColor;
+    public Color selectedImageColor;
+    public ColorBlock backgroundTransitionColorsForSelected;
+
+    [Header("Visual Configuration When Unselected")]
+    public Color unselectedTextColor;
+    public Color unselectedImageColor;
+    public ColorBlock backgroundTransitionColorsForUnselected;
 }

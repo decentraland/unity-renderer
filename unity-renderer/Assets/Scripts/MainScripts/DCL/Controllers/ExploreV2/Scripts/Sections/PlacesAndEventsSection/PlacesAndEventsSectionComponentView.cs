@@ -3,13 +3,21 @@ using UnityEngine;
 public interface IPlacesAndEventsSectionComponentView
 {
     /// <summary>
+    /// Places sub-section component.
+    /// </summary>
+    IPlacesSubSectionComponentView currentPlacesSubSectionComponentView { get; }
+
+    /// <summary>
     /// Events sub-section component.
     /// </summary>
     IEventsSubSectionComponentView currentEventsSubSectionComponentView { get; }
 }
 
-public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEventsSectionComponentView
+public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
 {
+    internal const int PLACES_SUB_SECTION_INDEX = 0;
+    internal const int EVENTS_SUB_SECTION_INDEX = 1;
+
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
 
@@ -18,34 +26,31 @@ public class PlacesAndEventsSectionComponentView : MonoBehaviour, IPlacesAndEven
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
 
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
+    public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
 
-    private void Start()
-    {
-        if (subSectionSelector.isFullyInitialized)
-            CreateSubSectionSelectorMappings();
-        else
-            subSectionSelector.OnFullyInitialized += CreateSubSectionSelectorMappings;
-    }
+    public override void Start() { CreateSubSectionSelectorMappings(); }
 
-    private void OnDestroy()
+    public override void RefreshControl() { }
+
+    public override void Dispose()
     {
-        subSectionSelector.OnFullyInitialized -= CreateSubSectionSelectorMappings;
+        base.Dispose();
+
         RemoveSectionSelectorMappings();
+        placesSubSection.Dispose();
+        eventsSubSection.Dispose();
     }
 
     internal void CreateSubSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(0)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
-        subSectionSelector.GetSection(1)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
-
-        ShowDefaultSubSection();
+        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.SelectToggle(true);
     }
 
     internal void RemoveSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(0)?.onSelect.RemoveAllListeners();
-        subSectionSelector.GetSection(1)?.onSelect.RemoveAllListeners();
+        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
+        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
     }
-
-    internal void ShowDefaultSubSection() { placesSubSection.gameObject.SetActive(true); }
 }

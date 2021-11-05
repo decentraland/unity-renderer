@@ -83,7 +83,7 @@ Animator:
   m_GameObject: {fileID: 8413359027062790288}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: d5f6cd638da0f1b4388c7a3679abe0b0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -116,7 +116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hideOnEnable: 1
+  hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
   visibleParam: visible
@@ -132,12 +132,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49a3b742109ef0499aa2a13d3e0bedf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  refreshOnScreenSizeChange: 1
   gridLayoutGroup: {fileID: 7829080691771640198}
-  externalScrollViewContainer: {fileID: 0}
+  externalParentToAdaptSize: {fileID: 0}
   model:
-    numColumns: 3
-    autoAdaptItemSizeToContainerWidth: 0
+    constraint: 1
+    constraintCount: 3
+    adaptItemSizeToContainer: 0
     itemSize: {x: 200, y: 200}
     spaceBetweenItems: {x: 10, y: 10}
-    items: []
+    minWidthForFlexibleItems: 200

@@ -1,24 +1,32 @@
 using NUnit.Framework;
 using System;
 using System.Collections;
+using NSubstitute;
 using UnityEngine.TestTools;
 
 public class ProfileHUDTests : IntegrationTestSuite_Legacy
 {
     protected override bool justSceneSetUp => true;
-    ProfileHUDController controller;
+    
+    private ProfileHUDController controller;
+    private IUserProfileBridge userProfileBridge;
+    private bool allUIHiddenOriginalValue;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        controller = new ProfileHUDController();
+        userProfileBridge = Substitute.For<IUserProfileBridge>();
+        allUIHiddenOriginalValue = CommonScriptableObjects.allUIHidden.Get();
+        CommonScriptableObjects.allUIHidden.Set(false);
+        controller = new ProfileHUDController(userProfileBridge);
     }
 
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
         controller.Dispose();
+        CommonScriptableObjects.allUIHidden.Set(allUIHiddenOriginalValue);
         yield return base.TearDown();
     }
 
@@ -141,13 +149,11 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         controller.view.textName.text = "test name";
 
         controller.view.ActivateProfileNameEditionMode(true);
-        Assert.IsFalse(controller.view.editNameTooltipGO.activeSelf);
         Assert.IsFalse(controller.view.textName.gameObject.activeSelf);
         Assert.IsTrue(controller.view.inputName.gameObject.activeSelf);
         Assert.IsTrue(controller.view.inputName.text == controller.view.textName.text);
 
         controller.view.ActivateProfileNameEditionMode(false);
-        Assert.IsTrue(controller.view.editNameTooltipGO.activeSelf);
         Assert.IsTrue(controller.view.textName.gameObject.activeSelf);
         Assert.IsFalse(controller.view.inputName.gameObject.activeSelf);
     }
@@ -172,5 +178,71 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         controller.view.textName.text = "test name";
         controller.view.SetProfileName(newName);
         Assert.IsTrue(controller.view.textName.text == newName);
+    }
+
+    [Test]
+    public void UpdateProfileDescriptionTextComponent()
+    {
+        const string aboutMe = "i make pancakes";
+        controller.view.SetDescription(aboutMe);
+        Assert.IsTrue(controller.view.descriptionPreviewInput.text == aboutMe);
+        Assert.IsTrue(controller.view.descriptionEditionInput.text == aboutMe);
+    }
+
+    [Test]
+    public void UpdateProfileDescriptionIntoGatewayWhenSubmitInputField()
+    {
+        const string aboutMe = "i make pancakes";
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
+        userProfileBridge.Received(1).SaveDescription(aboutMe);
+    }
+
+    [Test]
+    public void DoNotUpdateProfileDescriptionWhenIsTooLong()
+    {
+        const string aboutMe = "i make pancakes";
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.characterLimit = 5;
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
+        userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
+    }
+
+    [Test]
+    public void DoNotUpdateProfileDescriptionWhenHasNotConnectedWallet()
+    {
+        var profileModel = new UserProfileModel
+        {
+            hasConnectedWeb3 = false,
+            name = "user123",
+            userId = "0x1234"
+        };
+        var profile = UserProfile.GetOwnUserProfile();
+        profile.UpdateData(profileModel);
+        
+        const string aboutMe = "i make pancakes";
+        controller.view.ActivateDescriptionEditionMode(true);
+        controller.view.descriptionEditionInput.text = aboutMe;
+        controller.view.descriptionEditionInput.OnSubmit(null);
+        
+        userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void DescriptionInputChangesActiveDependingOfConnectedWallet(bool isWalletConnected)
+    {
+        var profileModel = new UserProfileModel
+        {
+            hasConnectedWeb3 = isWalletConnected,
+            name = "user123",
+            userId = "0x1234"
+        };
+        var profile = UserProfile.GetOwnUserProfile();
+        profile.UpdateData(profileModel);
+
+        Assert.AreEqual(controller.view.descriptionContainer.activeSelf, isWalletConnected);
     }
 }

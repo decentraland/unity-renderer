@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
@@ -83,6 +84,26 @@ namespace DCL
             var result = new FlattenedMaterialsData();
             int layersCount = layers.Count;
 
+            int finalVertexCount = 0;
+            int currentVertexCount = 0;
+
+            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
+            {
+                CombineLayer layer = layers[layerIndex];
+                var layerRenderers = layer.renderers;
+                int layerRenderersCount = layerRenderers.Count;
+
+                for (int i = 0; i < layerRenderersCount; i++)
+                {
+                    var renderer = layerRenderers[i];
+                    finalVertexCount += renderer.sharedMesh.vertexCount;
+                }
+            }
+
+            result.colors = new Vector4[finalVertexCount];
+            result.emissionColors = new Vector4[finalVertexCount];
+            result.texturePointers = new Vector3[finalVertexCount];
+
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
                 CombineLayer layer = layers[layerIndex];
@@ -125,8 +146,6 @@ namespace DCL
                     int baseMapId = baseMapIdIsValid ? layer.textureToId[baseMap] : -1;
                     int emissionMapId = emissionMapIdIsValid ? layer.textureToId[emissionMap] : -1;
 
-                    result.texturePointers.AddRange(Enumerable.Repeat(new Vector3(baseMapId, emissionMapId, cutoff), vertexCount));
-
                     if ( baseMapId != -1 )
                     {
                         if ( baseMapId < AVATAR_MAP_ID_PROPERTIES.Length )
@@ -153,15 +172,20 @@ namespace DCL
                         }
                     }
 
-                    // Base Colors
                     Vector4 baseColor = mat.GetVector(ShaderUtils.BaseColor);
-                    result.colors.AddRange(Enumerable.Repeat(baseColor, vertexCount));
-
-                    // Emission Colors
                     Vector4 emissionColor = mat.GetVector(ShaderUtils.EmissionColor);
-                    result.emissionColors.AddRange(Enumerable.Repeat(emissionColor, vertexCount));
+                    Vector3 texturePointerData = new Vector3(baseMapId, emissionMapId, cutoff);
 
-                    logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
+                    for ( int ai = 0; ai < vertexCount; ai++ )
+                    {
+                        result.texturePointers[currentVertexCount] = texturePointerData;
+                        result.colors[currentVertexCount] = baseColor;
+                        result.emissionColors[currentVertexCount] = emissionColor;
+                        currentVertexCount++;
+                    }
+
+                    if (VERBOSE)
+                        logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
                 }
 
                 SRPBatchingHelper.OptimizeMaterial(newMaterial);

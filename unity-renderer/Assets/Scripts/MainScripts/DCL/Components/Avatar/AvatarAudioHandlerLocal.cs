@@ -8,6 +8,11 @@ public class AvatarAudioHandlerLocal : MonoBehaviour
     const float WALK_INTERVAL_SEC = 0.4f;
     const float RUN_INTERVAL_SEC = 0.27f;
 
+    [SerializeField]
+    Vector3 jumpLandParticlesOffset;
+    [SerializeField]
+    StickersController stickersController;
+
     float intervalTimer = 0f;
 
     AudioEvent footstepJump;
@@ -39,12 +44,16 @@ public class AvatarAudioHandlerLocal : MonoBehaviour
     {
         if (footstepJump != null)
             footstepJump.Play(true);
+        if (stickersController != null)
+            stickersController.PlaySticker("footstepJump", transform.position + jumpLandParticlesOffset, Vector3.up, false);
     }
 
     void OnLand()
     {
         if (footstepLand != null)
             footstepLand.Play(true);
+        if (stickersController != null)
+            stickersController.PlaySticker("footstepLand", transform.position + jumpLandParticlesOffset, Vector3.up, false);
     }
 
     // Faking footsteps when in first-person mode, since animations won't play
