@@ -139,6 +139,8 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     private Transform defaultParent;
     private AssetPromise_Texture thumbnailPromise;
     private bool scenesAreVisible = false;
+    private bool isDestroyed = false;
+    
     private RectTransform rectTransform;
 
     private List<Scene> scenesDeployedFromProject = new List<Scene>();
@@ -155,6 +157,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     private void OnDestroy()
     {
+        isDestroyed = true;
         Dispose();
     }
 
@@ -162,6 +165,8 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     {
         AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
         editorButton.onClick.RemoveAllListeners();
+        if(!isDestroyed)
+            Destroy(gameObject);
     }
     
     public void Setup(ProjectData projectData)

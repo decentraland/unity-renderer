@@ -83,6 +83,11 @@ internal class ProjectsController : IProjectsController
 
     public void SetProjects(ProjectData[] projects)
     {
+        foreach (var projectCard in this.projects.Values)
+        {
+            DestroyCardView(projectCard);
+        }
+        
         this.projects = new Dictionary<string, IProjectCardView>();
         foreach (var project in projects)
         {

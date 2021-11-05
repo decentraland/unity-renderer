@@ -88,9 +88,10 @@ public class BuilderInWorldEditor : IBIWEditor
             InitReferences(InitialSceneReferences.i.data);
 
         if (builderInWorldBridge != null)
-
             builderInWorldBridge.OnBuilderProjectInfo += BuilderProjectPanelInfo;
 
+        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
+        
         InitHUD();
 
         BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
