@@ -62,7 +62,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    public void SetVisibility(bool visible) { DataStore.i.exploreV2.isOpen.Set(visible); }
+    public void SetVisibility(bool visible) { isOpen.Set(visible); }
 
     private void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
 
