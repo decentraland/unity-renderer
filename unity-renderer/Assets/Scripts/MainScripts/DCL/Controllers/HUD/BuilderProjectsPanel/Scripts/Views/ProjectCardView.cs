@@ -91,6 +91,9 @@ internal interface IProjectCardView : IDisposable
 internal class ProjectCardView : MonoBehaviour, IProjectCardView
 {
     static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 12f, 0);
+    private float SCENE_CARD_SIZE = 84;
+    private float SCENE_CARD_ITEM_PADDING = 18;
+    private float SCENE_CARD_TOTAL_PADDING = 36;
 
     public event Action<ProjectData> OnEditorPressed;
     public event Action<ProjectData> OnSettingsPressed;
@@ -222,7 +225,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         scenesAreVisible = !scenesAreVisible;
         ScenesVisiblitityChange(scenesAreVisible);
         
-        float amountToIncrease = sceneCardViews.Count * 84+36 + 15*(sceneCardViews.Count-1);
+        float amountToIncrease = sceneCardViews.Count * SCENE_CARD_SIZE + SCENE_CARD_TOTAL_PADDING + SCENE_CARD_ITEM_PADDING * (sceneCardViews.Count-1);
         
         if (scenesAreVisible)
         {
