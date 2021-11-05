@@ -126,7 +126,6 @@ namespace Tests
         public float GetTime(string id)
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
-            Debug.Log("Getting time... " + time);
             return time;
         }
 

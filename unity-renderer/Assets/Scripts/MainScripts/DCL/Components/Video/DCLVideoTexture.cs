@@ -220,21 +220,17 @@ namespace DCL.Components
         private void UpdateProgressReport()
         {
             var currentState = texturePlayer.GetState();
+
             if ( currentState == VideoState.PLAYING
                  && IsTimeToReportVideoProgress()
                  || previousVideoState != currentState)
             {
                 ReportVideoProgress();
             }
-            else
-            {
-                // Debug.Log($"Fail...? 1: {currentState} 2: {IsTimeToReportVideoProgress()}");
-            }
         }
 
         private void ReportVideoProgress()
         {
-            Debug.Log("Updating progress...");
             lastVideoProgressReportTime = Time.unscaledTime;
             VideoState videoState = texturePlayer.GetState();
             previousVideoState = videoState;
@@ -246,7 +242,6 @@ namespace DCL.Components
 
         private bool IsTimeToReportVideoProgress()
         {
-//            Debug.Log("What " + (Time.unscaledTime - lastVideoProgressReportTime));
             return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS;
         }
 

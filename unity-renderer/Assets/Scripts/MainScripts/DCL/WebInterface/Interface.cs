@@ -1398,8 +1398,6 @@ namespace DCL.Interface
                 videoLength = length
             };
 
-            Debug.Log("Sending event!!!!");
-
             SendMessage("VideoProgressEvent", progressEvent);
         }
     }
