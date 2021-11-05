@@ -21,7 +21,7 @@ namespace DCL.Components.Video.Plugin
         public int GetWidth(string id) { return WebGLVideoPlugin.WebVideoPlayerGetWidth(id); }
         public float GetTime(string id) { return WebGLVideoPlugin.WebVideoPlayerGetTime(id); }
         public float GetDuration(string id) { return WebGLVideoPlugin.WebVideoPlayerGetDuration(id); }
-        public int GetState(string id) { return WebGLVideoPlugin.WebVideoPlayerGetState(id); }
+        public VideoState GetState(string id) { return (VideoState)WebGLVideoPlugin.WebVideoPlayerGetState(id); }
         public string GetError(string id) { return WebGLVideoPlugin.WebVideoPlayerGetError(id); }
         public void SetTime(string id, float second) { WebGLVideoPlugin.WebVideoPlayerSetTime(id, second); }
         public void SetPlaybackRate(string id, float playbackRate) { WebGLVideoPlugin.WebVideoPlayerSetPlaybackRate(id, playbackRate); }

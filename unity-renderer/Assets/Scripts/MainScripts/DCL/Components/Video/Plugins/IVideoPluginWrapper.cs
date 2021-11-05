@@ -15,7 +15,7 @@ namespace DCL.Components.Video.Plugin
         int GetWidth(string id);
         float GetTime(string id);
         float GetDuration(string id);
-        int GetState(string id);
+        VideoState GetState(string id);
         string GetError(string id);
         void SetTime(string id, float second);
         void SetPlaybackRate(string id, float playbackRate);

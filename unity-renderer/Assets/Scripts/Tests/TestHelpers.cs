@@ -26,7 +26,9 @@ namespace DCL.Helpers
 
     // NOTE(Brian): Attribute used to determine if tests are visual. Those tests will be run to generate the baseline images.
     [AttributeUsage(AttributeTargets.Method)]
-    public class VisualTestAttribute : Attribute { }
+    public class VisualTestAttribute : Attribute
+    {
+    }
 
     public static class TestHelpers
     {

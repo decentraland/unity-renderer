@@ -34,10 +34,10 @@ namespace DCL.Components.Video.Plugin
         {
             switch (plugin.GetState(videoPlayerId))
             {
-                case (int)VideoState.ERROR:
+                case VideoState.ERROR:
                     Debug.LogError(plugin.GetError(videoPlayerId));
                     break;
-                case (int)VideoState.READY:
+                case VideoState.READY:
                     if (!isReady)
                     {
                         isReady = true;
@@ -52,7 +52,7 @@ namespace DCL.Components.Video.Plugin
                     }
 
                     break;
-                case (int)VideoState.PLAYING:
+                case VideoState.PLAYING:
                     if (visible)
                         plugin.TextureUpdate(videoPlayerId);
 

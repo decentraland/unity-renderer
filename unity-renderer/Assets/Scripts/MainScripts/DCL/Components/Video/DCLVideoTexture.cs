@@ -13,14 +13,13 @@ namespace DCL.Components
 {
     public class DCLVideoTexture : DCLTexture
     {
-#if UNITY_EDITOR
-        internal static bool isTest = true;
-#else
-        internal static bool isTest = false;
-#endif
+        public static bool VERBOSE = false;
+        public static ILogger logger = new Logger(Debug.unityLogger) { filterLogType = VERBOSE ? LogType.Log : LogType.Error };
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
+
+        public static System.Func<IVideoPluginWrapper> videoPluginWrapperBuilder = () => new VideoPluginWrapper_WebGL();
 
         [System.Serializable]
         new public class Model : BaseModel
@@ -59,16 +58,8 @@ namespace DCL.Components
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
-        void Log(string s)
-        {
-            Debug.unityLogger.logEnabled = true;
-            Debug.Log("Alex: " + s);
-            Debug.unityLogger.logEnabled = false;
-        }
-
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            Log($"Waiting for renderer enabled");
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
@@ -76,7 +67,6 @@ namespace DCL.Components
             if (isDisposed)
             {
                 var toDebug = this.model as Model;
-                Log($"{(toDebug?.videoClipId)} isDisposed");
                 yield break;
             }
 
@@ -97,7 +87,6 @@ namespace DCL.Components
                     break;
             }
 
-            Log($"VideoClipId:{model.videoClipId}, lastVideoClipId:{lastVideoClipID}, TexturePlayer is null:{texturePlayer == null}");
             lastVideoClipID = model.videoClipId;
 
             if (texturePlayer == null)
@@ -106,21 +95,13 @@ namespace DCL.Components
 
                 if (dclVideoClip == null)
                 {
-                    Log("Wrong video clip type when playing VideoTexture!!");
+                    logger.LogError("DCLVideoTexture", "Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
 
                 Initialize(dclVideoClip);
             }
 
-            // NOTE: create texture for testing cause real texture will only be created on web platform
-            if (isTest)
-            {
-                if (texture == null)
-                    texture = new Texture2D(1, 1);
-            }
-
-            Log($"{model?.videoClipId} Checking if texture is null: {texture == null}");
             if (texture == null)
             {
                 while (texturePlayer.texture == null && !texturePlayer.isError)
@@ -128,10 +109,8 @@ namespace DCL.Components
                     yield return null;
                 }
 
-                Log($"{model?.videoClipId} texturePlayer ready");
                 if (texturePlayer.isError)
                 {
-                    Log($"{model?.videoClipId} texturePlayer has error");
                     if (texturePlayerUpdateRoutine != null)
                     {
                         CoroutineStarter.Stop(texturePlayerUpdateRoutine);
@@ -145,7 +124,6 @@ namespace DCL.Components
                 isPlayStateDirty = true;
             }
 
-            Log($"{model?.videoClipId} checking texturePlayer null: {texturePlayer == null}");
             if (texturePlayer != null)
             {
                 if (model.seek >= 0)
@@ -157,7 +135,6 @@ namespace DCL.Components
                     yield return null;
                 }
 
-                Log($"{model?.videoClipId} isPlaying {model.playing}");
                 if (model.playing)
                 {
                     texturePlayer.Play();
@@ -183,7 +160,7 @@ namespace DCL.Components
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new VideoPluginWrapper_WebGL());
+            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
@@ -232,7 +209,7 @@ namespace DCL.Components
             {
                 currUpdateIntervalTime += Time.unscaledDeltaTime;
             }
-            else if (texturePlayer != null && !isTest)
+            else if (texturePlayer != null)
             {
                 currUpdateIntervalTime = 0;
                 texturePlayer.Update();
@@ -249,10 +226,15 @@ namespace DCL.Components
             {
                 ReportVideoProgress();
             }
+            else
+            {
+                // Debug.Log($"Fail...? 1: {currentState} 2: {IsTimeToReportVideoProgress()}");
+            }
         }
 
         private void ReportVideoProgress()
         {
+            Debug.Log("Updating progress...");
             lastVideoProgressReportTime = Time.unscaledTime;
             VideoState videoState = texturePlayer.GetState();
             previousVideoState = videoState;
@@ -262,7 +244,11 @@ namespace DCL.Components
             WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
         }
 
-        private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS; }
+        private bool IsTimeToReportVideoProgress()
+        {
+//            Debug.Log("What " + (Time.unscaledTime - lastVideoProgressReportTime));
+            return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS;
+        }
 
         private void CalculateVideoVolumeAndPlayStatus()
         {

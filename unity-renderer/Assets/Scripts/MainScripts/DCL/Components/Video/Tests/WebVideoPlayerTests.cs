@@ -1,7 +1,9 @@
+using System.Collections;
 using DCL.Components.Video.Plugin;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -23,6 +25,9 @@ namespace Tests
         [Test]
         public void VideoPlays()
         {
+            plugin.GetState(ID).Returns(VideoState.READY);
+
+            webVideoPlayer.Update();
             webVideoPlayer.Play();
 
             plugin.Received(1).Play(ID, -1);
@@ -31,8 +36,10 @@ namespace Tests
         [Test]
         public void VideoPlaysAtPausedPosition()
         {
-            webVideoPlayer.SetTime(100);
+            plugin.GetState(ID).Returns(VideoState.READY);
 
+            webVideoPlayer.Update();
+            webVideoPlayer.SetTime(100);
             webVideoPlayer.Play();
 
             plugin.Received(1).Play(ID, 100);
@@ -63,6 +70,9 @@ namespace Tests
         public void VideoIsResumedAtPausedTime()
         {
             plugin.GetTime(ID).Returns(80);
+            plugin.GetState(ID).Returns(VideoState.READY);
+
+            webVideoPlayer.Update();
 
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
@@ -119,7 +129,7 @@ namespace Tests
         [Test]
         public void VideoErrorStateOnUpdate()
         {
-            plugin.GetState(ID).Returns((int)VideoState.ERROR);
+            plugin.GetState(ID).Returns(VideoState.ERROR);
 
             webVideoPlayer.Update();
 
@@ -131,7 +141,7 @@ namespace Tests
         [Test]
         public void OnVideoErrorPlayerWontDoAnything()
         {
-            plugin.GetState(ID).Returns((int)VideoState.ERROR);
+            plugin.GetState(ID).Returns(VideoState.ERROR);
 
             webVideoPlayer.Update();
             webVideoPlayer.Play();
@@ -157,7 +167,7 @@ namespace Tests
         [Test]
         public void VideoStateIsReturned()
         {
-            plugin.GetState(ID).Returns(3);
+            plugin.GetState(ID).Returns(VideoState.READY);
 
             VideoState state = webVideoPlayer.GetState();
 

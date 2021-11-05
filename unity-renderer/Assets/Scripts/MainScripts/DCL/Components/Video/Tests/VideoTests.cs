@@ -1,4 +1,5 @@
-﻿using DCL;
+﻿using System;
+using DCL;
 using DCL.Helpers;
 using DCL.Components;
 using DCL.Models;
@@ -10,20 +11,29 @@ using UnityEngine.TestTools;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.SettingsCommon;
+using NSubstitute;
+using UnityEngine.Assertions;
+using Assert = UnityEngine.Assertions.Assert;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace Tests
 {
     public class VideoTests : IntegrationTestSuite_Legacy
     {
+        private Func<IVideoPluginWrapper> originalVideoPluginBuilder;
+
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            DCLVideoTexture.isTest = true;
+
+            IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
+            originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
+            DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;
         }
 
         protected override IEnumerator TearDown()
         {
+            DCLVideoTexture.videoPluginWrapperBuilder = originalVideoPluginBuilder;
             sceneController.enabled = true;
             return base.TearDown();
         }
@@ -55,7 +65,7 @@ namespace Tests
                 videoLength = 0,
                 videoTextureId = id,
                 currentOffset = 0,
-                status = (int)VideoState.ERROR // status is always error when not on WebGL
+                status = (int)VideoState.LOADING
             };
 
             var json = JsonUtility.ToJson(expectedEvent);
@@ -85,7 +95,7 @@ namespace Tests
                 videoLength = 0,
                 videoTextureId = id,
                 currentOffset = 0,
-                status = (int)VideoState.ERROR
+                status = (int)VideoState.LOADING
             };
 
             var json = JsonUtility.ToJson(expectedEvent);
@@ -96,6 +106,7 @@ namespace Tests
 
             Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
         }
+
         [UnityTest]
         public IEnumerator MessageIsSentWhenVideoIsUpdatedAfterTime()
         {
@@ -114,8 +125,9 @@ namespace Tests
                 videoLength = 0,
                 videoTextureId = id,
                 currentOffset = 0,
-                status = (int)VideoState.ERROR
+                status = (int)VideoState.LOADING
             };
+
             var json = JsonUtility.ToJson(expectedEvent);
             var wasEventSent = false;
             yield return TestHelpers.WaitForMessageFromEngine("VideoProgressEvent", json,
@@ -277,7 +289,7 @@ namespace Tests
             sceneController.enabled = false;
 
             // Set current scene as a different one
-            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+            CommonScriptableObjects.sceneID.Set("non-existent-scene");
 
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -301,6 +313,7 @@ namespace Tests
         public IEnumerator UpdateTexturePlayerVolumeWhenAudioSettingsChange()
         {
             var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
+
             DCLVideoTexture.Model model = new DCLVideoTexture.Model()
             {
                 videoClipId = id,
@@ -311,26 +324,23 @@ namespace Tests
 
             yield return null;
 
-            AreAproximatedlyEqual(1f, component.texturePlayer.volume);
+            Assert.AreApproximatelyEqual(1f, component.texturePlayer.volume, 0.01f);
 
             AudioSettings settings = Settings.i.audioSettings.Data;
             settings.sceneSFXVolume = 0.5f;
             Settings.i.audioSettings.Apply(settings);
-            
+
             var expectedVolume = Utils.ToVolumeCurve(0.5f);
-            AreAproximatedlyEqual(expectedVolume, component.texturePlayer.volume);
-            
+            Assert.AreApproximatelyEqual(expectedVolume, component.texturePlayer.volume, 0.01f);
+
             settings.sceneSFXVolume = 1f;
             Settings.i.audioSettings.Apply(settings);
-            
-            AreAproximatedlyEqual(1f, component.texturePlayer.volume);
 
+            Assert.AreApproximatelyEqual(1, component.texturePlayer.volume, 0.01f);
+
+            DCLVideoTexture.videoPluginWrapperBuilder = originalVideoPluginBuilder;
         }
 
-        private void AreAproximatedlyEqual(float expected, float current)
-        {
-            Assert.IsTrue(Mathf.Abs(current - expected) < Mathf.Epsilon, $"expected {expected} but was {current}");
-        }
 
         [UnityTest]
         public IEnumerator VolumeWhenVideoCreatedWithUserInScene()
@@ -468,6 +478,5 @@ namespace Tests
 
         static DCLVideoTexture CreateDCLVideoTexture(ParcelScene scn, string url) { return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, "http://" + url)); }
         static DCLVideoTexture CreateDCLVideoTextureWithCustomTextureModel(ParcelScene scn, DCLVideoTexture.Model model) { return CreateDCLVideoTextureWithModel(scn, model); }
-
     }
 }
