@@ -23,7 +23,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoPlays()
+        public void PlayVideo()
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
@@ -34,7 +34,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoPlaysAtPausedPosition()
+        public void PlayVideoAtPausedPosition()
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
@@ -46,7 +46,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoGetTimeReturnsNativeTime()
+        public void ReturnProperValueForGetTime()
         {
             plugin.GetTime(ID).Returns(7);
 
@@ -57,7 +57,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoIsPausedCorrectly()
+        public void PauseVideo()
         {
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
@@ -67,7 +67,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoIsResumedAtPausedTime()
+        public void ResumeVideoAtCorrectTimeAfterPaused()
         {
             plugin.GetTime(ID).Returns(80);
             plugin.GetState(ID).Returns(VideoState.READY);
@@ -83,7 +83,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoVolumeIsSet()
+        public void SetVolume()
         {
             webVideoPlayer.SetVolume(77);
 
@@ -91,7 +91,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoLoopIsSet()
+        public void SetVideoLoop()
         {
             webVideoPlayer.SetLoop(true);
             webVideoPlayer.SetLoop(false);
@@ -101,7 +101,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoPlaybackRateIsSet()
+        public void SetPlaybackRate()
         {
             webVideoPlayer.SetPlaybackRate(55);
 
@@ -109,7 +109,7 @@ namespace Tests
         }
 
         [Test]
-        public void ReturnsVideoDuration()
+        public void ReturnVideoDurationWhenGetDurationIsCalled()
         {
             plugin.GetDuration(ID).Returns(200);
 
@@ -119,7 +119,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoIsDisposed()
+        public void DisposeVideo()
         {
             webVideoPlayer.Dispose();
 
@@ -127,7 +127,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoErrorStateOnUpdate()
+        public void SetErrorStateWhenUpdateIsCalled()
         {
             plugin.GetState(ID).Returns(VideoState.ERROR);
 
@@ -139,7 +139,7 @@ namespace Tests
         }
 
         [Test]
-        public void OnVideoErrorPlayerWontDoAnything()
+        public void DontDoAnythingWhenErrorStateIsSet()
         {
             plugin.GetState(ID).Returns(VideoState.ERROR);
 
@@ -165,7 +165,7 @@ namespace Tests
         }
 
         [Test]
-        public void VideoStateIsReturned()
+        public void ReturnVideoStateWhenGetStateIsCalled()
         {
             plugin.GetState(ID).Returns(VideoState.READY);
 
@@ -175,7 +175,7 @@ namespace Tests
         }
 
         [Test]
-        public void WhenVideoDurationIsNaNReturnAValidNumber()
+        public void ReturnValidNumberWhenVideoDurationIsNaN()
         {
             plugin.GetDuration(ID).Returns(float.NaN);
 

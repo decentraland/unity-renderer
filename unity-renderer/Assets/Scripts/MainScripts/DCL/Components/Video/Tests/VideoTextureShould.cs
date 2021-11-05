@@ -18,7 +18,7 @@ using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace Tests
 {
-    public class VideoTests : IntegrationTestSuite_Legacy
+    public class VideoTextureShould : IntegrationTestSuite_Legacy
     {
         private Func<IVideoPluginWrapper> originalVideoPluginBuilder;
 
@@ -39,7 +39,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VideoTextureIsCreatedCorrectly()
+        public IEnumerator BeCreatedCorrectly()
         {
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -47,7 +47,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator MessageIsSentWhenVideoPlays()
+        public IEnumerator SendMessageWhenVideoPlays()
         {
             var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
             DCLVideoTexture.Model model = new DCLVideoTexture.Model()
@@ -78,7 +78,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator MessageIsSentWhenVideoStops()
+        public IEnumerator SendMessageWhenVideoStops()
         {
             var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
             DCLVideoTexture.Model model = new DCLVideoTexture.Model()
@@ -108,7 +108,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator MessageIsSentWhenVideoIsUpdatedAfterTime()
+        public IEnumerator SendMessageWhenVideoIsUpdatedAfterTime()
         {
             var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
             DCLVideoTexture.Model model = new DCLVideoTexture.Model()
@@ -144,11 +144,7 @@ namespace Tests
             yield return videoTexture.routine;
             Assert.IsTrue(videoTexture.attachedMaterials.Count == 0, "DCLVideoTexture started with attachedMaterials != 0");
 
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
-                scene,
-                TestAssetsUtils.GetPath() + "/Images/atlas.png",
-                DCLTexture.BabylonWrapMode.CLAMP,
-                FilterMode.Bilinear);
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
             yield return dclTexture.routine;
 
@@ -161,24 +157,27 @@ namespace Tests
 
             yield return mat.routine;
 
-            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(mat, new BasicMaterial.Model() { texture = videoTexture.id });
+            yield return TestHelpers.SharedComponentUpdate(mat, new BasicMaterial.Model() { texture = videoTexture.id });
 
             Assert.IsTrue(videoTexture.attachedMaterials.Count == 1, $"did DCLVideoTexture attach to material? {videoTexture.attachedMaterials.Count} expected 1");
         }
 
         [UnityTest]
-        public IEnumerator VideoTextureIsAttachedAndDetachedCorrectly()
+        public IEnumerator AttachAndDetachCorrectly()
         {
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
             Assert.IsTrue(videoTexture.attachedMaterials.Count == 0, "DCLVideoTexture started with attachedMaterials != 0");
 
             BasicMaterial mat2 = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>
-            (scene, CLASS_ID.BASIC_MATERIAL,
+            (
+                scene,
+                CLASS_ID.BASIC_MATERIAL,
                 new BasicMaterial.Model
                 {
                     texture = videoTexture.id
-                });
+                }
+            );
 
             yield return mat2.routine;
 
@@ -195,7 +194,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VideoTextureVisibleStateIsSetCorrectlyWhenAddedToAMaterialNotAttachedToShape()
+        public IEnumerator SetVisibleStateCorrectlyWhenAddedToAMaterialNotAttachedToShape()
         {
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -209,7 +208,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VideoTextureVisibleStateIsSetCorrectly()
+        public IEnumerator SetVisibleStateCorrectly()
         {
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -233,7 +232,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VideoTextureVisibleStateIsSetCorrectlyWhenAddedToAlreadyAttachedMaterial()
+        public IEnumerator SetVisibleStateCorrectlyWhenAddedToAlreadyAttachedMaterial()
         {
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -259,7 +258,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VideoTextureVisibleStateIsSetCorrectlyWhenEntityIsRemoved()
+        public IEnumerator SetVisibleStateCorrectlyWhenEntityIsRemoved()
         {
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
@@ -283,7 +282,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VolumeWhenVideoCreatedWithNoUserInScene()
+        public IEnumerator MuteWhenCreatedAndNoUserIsInTheScene()
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
@@ -343,7 +342,7 @@ namespace Tests
 
 
         [UnityTest]
-        public IEnumerator VolumeWhenVideoCreatedWithUserInScene()
+        public IEnumerator UnmuteWhenVideoIsCreatedWithUserInScene()
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
@@ -370,7 +369,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator VolumeIsMutedWhenUserLeavesScene()
+        public IEnumerator MuteWhenUserLeavesScene()
         {
             // We disable SceneController monobehaviour to avoid its current scene id update
             sceneController.enabled = false;
