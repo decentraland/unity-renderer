@@ -142,9 +142,6 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
         string jsonValue = File.ReadAllText(jsonPath);
 
-        apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
-        apiController.apiResponseResolver.Configure().GetDataFromCall(Arg.Any<string>()).Returns(jsonValue);
-        
         TestHelpers.ConfigureMockedRequestController(jsonValue, mockedRequestController,2);
         
         //Act
