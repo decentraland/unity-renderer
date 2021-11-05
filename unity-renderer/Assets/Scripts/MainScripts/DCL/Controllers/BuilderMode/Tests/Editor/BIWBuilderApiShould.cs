@@ -85,7 +85,12 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         projectDatas.Add(data);
 
         List<ProjectData> result = null;
-        TestHelpers.ConfigureMockedRequestController(JsonConvert.SerializeObject(projectDatas), mockedRequestController,2);
+
+        string jsonData = JsonConvert.SerializeObject(projectDatas);
+        apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
+        apiController.apiResponseResolver.Configure().GetDataFromCallArray(Arg.Any<string>()).Returns(jsonData);
+        
+        TestHelpers.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
 
         //Act
         var promise = apiController.GetAllManifests();
@@ -104,8 +109,8 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     public void GetCompleteCatalogCorrectly()
     {
         //Arrange
-        RequestHeader defaultCallheader = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.CATALOG_ENDPOINT+"default");
-        RequestHeader addreesCallheader = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.CATALOG_ENDPOINT+"Test");
+        RequestHeader defaultCallheader = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.CATALOG_ENDPOINT);
+        RequestHeader addreesCallheader = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.CATALOG_ENDPOINT);
         bool result = false;
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
         string jsonValue = File.ReadAllText(jsonPath);
@@ -136,6 +141,9 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         bool result = false;
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
         string jsonValue = File.ReadAllText(jsonPath);
+
+        apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
+        apiController.apiResponseResolver.Configure().GetDataFromCall(Arg.Any<string>()).Returns(jsonValue);
         
         TestHelpers.ConfigureMockedRequestController(jsonValue, mockedRequestController,2);
         

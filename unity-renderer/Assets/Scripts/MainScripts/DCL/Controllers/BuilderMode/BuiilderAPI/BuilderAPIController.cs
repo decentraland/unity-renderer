@@ -21,14 +21,16 @@ public class BuilderAPIController : IBuilderAPIController
     internal const string GET = "get";
     
     public event Action<IWebRequestAsyncOperation> OnWebRequestCreated;
-    
 
+    internal IBuilderAPIResponseResolver apiResponseResolver;
+    
     private BuilderInWorldBridge builderInWorldBridge;
     
     private Dictionary<string, List<Promise<RequestHeader>>> headersRequests = new Dictionary<string, List<Promise<RequestHeader>>>();
 
     public void Initialize(IContext context)
     {
+        apiResponseResolver = new BuilderAPIResponseResolver();
         builderInWorldBridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
         if(builderInWorldBridge != null)
             builderInWorldBridge.OnHeadersReceived += HeadersReceived;
@@ -145,7 +147,7 @@ public class BuilderAPIController : IBuilderAPIController
 
         promise.Then(apiResult =>
         {
-            var result = GetDataFromCall(apiResult);
+            var result = apiResponseResolver.GetDataFromCall(apiResult);
             if (!string.IsNullOrEmpty(result))
             {
                 AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(result);
@@ -168,7 +170,7 @@ public class BuilderAPIController : IBuilderAPIController
 
         promise.Then(result =>
         {
-            string projectsJson = GetDataFromCallArray(result);
+            string projectsJson = apiResponseResolver.GetDataFromCallArray(result);
             List<ProjectData> allManifest = JsonConvert.DeserializeObject<List<ProjectData>>(projectsJson);
             fullCatalogPromise.Resolve(allManifest);
         });
@@ -196,25 +198,5 @@ public class BuilderAPIController : IBuilderAPIController
     {
         Manifest manifest = BIWUtils.CreateEmptyDefaultBuilderManifest(coords);
         //TODO: Implement functionality
-    }
-    
-    private string GetDataFromCall(string result)
-    {
-        JObject jObject = (JObject)JsonConvert.DeserializeObject(result);
-        if (jObject["ok"].ToObject<bool>())
-        {
-            return jObject["data"].ToString();
-        }
-        return "";
-    }
-    
-    private string GetDataFromCallArray(string result)
-    {
-        JObject jObject = (JObject)JsonConvert.DeserializeObject(result);
-        if (jObject["ok"].ToObject<bool>())
-        {
-            return jObject["data"]["items"].ToString();
-        }
-        return "";
     }
 }
