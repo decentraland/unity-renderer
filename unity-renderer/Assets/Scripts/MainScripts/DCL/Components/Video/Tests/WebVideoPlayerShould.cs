@@ -23,6 +23,32 @@ namespace Tests
         }
 
         [Test]
+        public void NotPlayVideoIfVideoIsNotReady()
+        {
+            plugin.GetState(ID).Returns(VideoState.LOADING);
+
+            webVideoPlayer.Play();
+
+            plugin.DidNotReceive().Play(ID, -1);
+        }
+
+        [Test]
+        public void PlayVideoIfSetBeforeIsReadyWhenIsReady()
+        {
+            plugin.GetState(ID).Returns(VideoState.LOADING);
+
+            webVideoPlayer.Play();
+
+            plugin.DidNotReceive().Play(ID, -1);
+
+            plugin.GetState(ID).Returns(VideoState.READY);
+
+            webVideoPlayer.Update();
+
+            plugin.Received(1).Play(ID, -1);
+        }
+
+        [Test]
         public void PlayVideo()
         {
             plugin.GetState(ID).Returns(VideoState.READY);
