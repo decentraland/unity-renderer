@@ -51,13 +51,21 @@ public class SecondStep : BaseComponentView
 
     private void RowsChanged(string value)
     {
-        rows = Int32.Parse(value);
+        //We ensure that the minimum size of the row is 1
+        if (string.IsNullOrEmpty(value) || value == "0")
+            rows = 1;
+        else
+            rows = Mathf.Abs(Int32.Parse(value));
         ValueChanged();
     }
 
     private void ColumnsChanged(string value)
     {
-        colums = Int32.Parse(value);
+        //We ensure that the minimum size of the column is 1
+        if (string.IsNullOrEmpty(value) || value == "0")
+            colums = 1;
+        else
+            colums = Mathf.Abs(Int32.Parse(value));
         ValueChanged();
     }
 

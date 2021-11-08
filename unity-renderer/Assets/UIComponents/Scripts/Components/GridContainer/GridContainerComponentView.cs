@@ -234,15 +234,15 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         float height = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.height : ((RectTransform)transform).rect.height;
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
 
-        int amountsOfHorizontalItemsPerRow =  instantiatedItems.Count / model.constraintCount;
-        int amountsOfVerticalItemsPerColumn =  instantiatedItems.Count / amountsOfHorizontalItemsPerRow;
+        int amountsOfVerticalItems =  instantiatedItems.Count / model.constraintCount;
+        int amountsOfHorizontalItems =  instantiatedItems.Count / amountsOfVerticalItems;
 
-        float extraSpaceToRemoveX = model.spaceBetweenItems.x * (amountsOfVerticalItemsPerColumn - 1);
-        float extraSpaceToRemoveY = model.spaceBetweenItems.y * (amountsOfHorizontalItemsPerRow - 1);
+        float extraSpaceToRemoveX = model.spaceBetweenItems.x * (amountsOfHorizontalItems - 1);
+        float extraSpaceToRemoveY = model.spaceBetweenItems.y * (amountsOfVerticalItems - 1);
 
         newSizeToApply = new Vector2(
-            width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX,
-            height / amountsOfVerticalItemsPerColumn - extraSpaceToRemoveY);
+            width / amountsOfHorizontalItems - extraSpaceToRemoveX,
+            height / amountsOfVerticalItems - extraSpaceToRemoveY);
 
         currentItemsPerRow = model.constraintCount;
     }
