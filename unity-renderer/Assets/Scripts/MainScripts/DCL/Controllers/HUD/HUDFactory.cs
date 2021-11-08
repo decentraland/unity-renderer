@@ -32,6 +32,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new SettingsPanelHUDController();
                 break;
             case HUDElementID.EXPRESSIONS:
+            case HUDElementID.EMOTES:
                 hudElement = new ExpressionsHUDController();
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
