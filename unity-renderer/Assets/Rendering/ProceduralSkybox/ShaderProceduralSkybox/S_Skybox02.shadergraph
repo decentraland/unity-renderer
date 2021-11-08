@@ -5327,7 +5327,7 @@
     },
     "m_Name": "HorizonMask",
     "m_DefaultReferenceName": "Texture2D_3d1a9a0fc5854955ad9841f8f7bcfed1",
-    "m_OverrideReferenceName": "_horizonMask_",
+    "m_OverrideReferenceName": "_horizonMask",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,

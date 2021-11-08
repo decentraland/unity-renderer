@@ -330,7 +330,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 0
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
@@ -415,7 +415,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 1
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
@@ -592,7 +592,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 2
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
@@ -755,7 +755,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 3
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
@@ -850,7 +850,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 4
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
