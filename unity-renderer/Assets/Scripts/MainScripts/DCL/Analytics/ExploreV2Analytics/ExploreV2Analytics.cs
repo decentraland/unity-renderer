@@ -4,8 +4,8 @@ namespace ExploreV2Analytics
 {
     public interface IExploreV2Analytics
     {
-        void SendExploreVisibility(bool isVisible, ExploreUIVisibilityMethod method);
-        void SendExploreElapsedTime(float time);
+        void SendExploreMainMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method);
+        void SendExploreMainMenuElapsedTime(float time);
 
     }
 
@@ -14,7 +14,7 @@ namespace ExploreV2Analytics
         private const string EXPLORE_VIBILILITY_CHANGED = "explore_visibility_changed";
         private const string EXPLORE_ELAPSED_TIME = "explore_elapsed_time";
 
-        public void SendExploreVisibility(bool isVisible, ExploreUIVisibilityMethod method)
+        public void SendExploreMainMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("visible", isVisible.ToString());
@@ -22,7 +22,7 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(EXPLORE_VIBILILITY_CHANGED, data);
         }
 
-        public void SendExploreElapsedTime(float time)
+        public void SendExploreMainMenuElapsedTime(float time)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("elapsed_time", time.ToString());

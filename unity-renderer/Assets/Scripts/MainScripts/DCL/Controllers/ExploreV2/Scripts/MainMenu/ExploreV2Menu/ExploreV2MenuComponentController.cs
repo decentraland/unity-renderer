@@ -17,7 +17,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal InputAction_Trigger toggleExploreTrigger;
     internal IExploreV2Analytics exploreV2Analytics;
-    internal float lastTimeWasOpen = 0f;
+    internal float lastTimeMainMenuWasOpen = 0f;
 
     public void Initialize()
     {
@@ -82,24 +82,24 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 Utils.UnlockCursor();
                 AudioScriptableObjects.dialogOpen.Play(true);
                 AudioScriptableObjects.listItemAppear.ResetPitch();
-                lastTimeWasOpen = Time.realtimeSinceStartup;
+                lastTimeMainMenuWasOpen = Time.realtimeSinceStartup;
             }
             else
             {
                 AudioScriptableObjects.dialogClose.Play(true);
-                exploreV2Analytics.SendExploreElapsedTime(Time.realtimeSinceStartup - lastTimeWasOpen);
+                exploreV2Analytics.SendExploreMainMenuElapsedTime(Time.realtimeSinceStartup - lastTimeMainMenuWasOpen);
             }
 
-            exploreV2Analytics.SendExploreVisibility(visible, fromShortcout ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+            exploreV2Analytics.SendExploreMainMenuVisibility(visible, fromShortcout ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
         }
 
         DataStore.i.exploreV2.isOpen.Set(visible);
         view.SetVisible(visible);
 
         if (visible)
-            lastTimeWasOpen = Time.realtimeSinceStartup;
+            lastTimeMainMenuWasOpen = Time.realtimeSinceStartup;
         else
-            lastTimeWasOpen = Time.realtimeSinceStartup - lastTimeWasOpen;
+            lastTimeMainMenuWasOpen = Time.realtimeSinceStartup - lastTimeMainMenuWasOpen;
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)

@@ -30,6 +30,7 @@ public class ExploreV2MenuComponentControllerTests
     public void InitializeCorrectly()
     {
         // Assert
+        Assert.AreEqual(exploreV2Analytics, exploreV2MenuController.exploreV2Analytics);
         Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
         exploreV2MenuView.Received().SetVisible(false);
         Assert.IsTrue(DataStore.i.exploreV2.isInitialized.Get());
@@ -63,10 +64,10 @@ public class ExploreV2MenuComponentControllerTests
         //Assert
         Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(isVisible);
-        exploreV2Analytics.Received().SendExploreVisibility(isVisible, ExploreUIVisibilityMethod.FromClick);
+        exploreV2Analytics.Received().SendExploreMainMenuVisibility(isVisible, ExploreUIVisibilityMethod.FromClick);
 
         if (!isVisible)
-            exploreV2Analytics.Received().SendExploreElapsedTime(Arg.Any<float>());
+            exploreV2Analytics.Received().SendExploreMainMenuElapsedTime(Arg.Any<float>());
     }
 
     [Test]
