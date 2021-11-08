@@ -119,7 +119,7 @@ namespace DCL
 
         public GameObject InstantiateAsOriginal()
         {
-            Assert.IsTrue(original != null, "Original should never be null here");
+            Assert.IsTrue(original != null, $"Original should never be null here ({id})");
 
             GameObject gameObject = null;
 

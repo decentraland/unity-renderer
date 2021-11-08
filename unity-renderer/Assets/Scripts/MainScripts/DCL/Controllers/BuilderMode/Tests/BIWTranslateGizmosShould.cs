@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -27,7 +28,7 @@ public class BIWTranslateGizmosShould
     public void TransformEntity()
     {
         //Arrange
-        var snapinfo = new BIWGizmosController.SnapInfo();
+        var snapinfo = new SnapInfo();
         snapinfo.position = 1;
         gizmos.SetSnapFactor(snapinfo);
 

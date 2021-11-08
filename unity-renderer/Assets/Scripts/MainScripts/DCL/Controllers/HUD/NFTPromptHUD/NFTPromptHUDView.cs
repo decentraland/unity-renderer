@@ -89,9 +89,11 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     string marketUrl = null;
 
     private bool isDestroyed = false;
+    internal IWrappedTextureHelper wrappedTextureHelper;
 
     private void Awake()
     {
+        wrappedTextureHelper = new WrappedTextureUtils();
         name = "_NFTPromptHUD";
 
         buttonClose.onClick.AddListener(Hide);
@@ -277,18 +279,20 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
         bool imageFound = false;
 
-        yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl,
+        yield return wrappedTextureHelper.Fetch(nftInfo.previewImageUrl,
             promise =>
             {
+                imagePromise?.Forget();
                 imagePromise = promise;
                 imageFound = true;
             });
 
         if (!imageFound)
         {
-            yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
+            yield return wrappedTextureHelper.Fetch(nftInfo.originalImageUrl,
                 promise =>
                 {
+                    imagePromise?.Forget();
                     imagePromise = promise;
                     imageFound = true;
                 });
@@ -361,7 +365,12 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         return ret;
     }
 
-    private void SetSmartBackgroundColor(Texture2D texture) { imageNftBackground.color = texture.GetPixel(0, 0); }
+    private void SetSmartBackgroundColor(Texture2D texture)
+    {
+        //Note: we can't set the color like that because the texture is no readable even if it has been created from script
+        //imageNftBackground.color = texture.GetPixel(0, 0);
+        imageNftBackground.color = Color.white;
+    }
 
     private void SetTokenSymbol(TextMeshProUGUI textToken, string symbol)
     {

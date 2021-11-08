@@ -32,6 +32,8 @@ namespace DCL.ABConverter.Tests
         }
     }
 
+    [Category("Explicit")]
+    [Explicit]
     public class ABConverterCoreShould
     {
         private ABConverter.Core core;
@@ -49,7 +51,7 @@ namespace DCL.ABConverter.Tests
         {
             ResetCacheAndWorkingFolders();
 
-            var settings = new ABConverter.Client.Settings(ContentServerUtils.ApiTLD.ZONE);
+            var settings = new ABConverter.ClientSettings(ContentServerUtils.ApiTLD.ZONE);
             settings.deleteDownloadPathAfterFinished = false;
 
             env = ABConverter.Environment.CreateWithMockImplementations();
@@ -92,13 +94,13 @@ namespace DCL.ABConverter.Tests
         [Test]
         public void InitializeDirectoryPathsCorrectly()
         {
-            var settings = new ABConverter.Client.Settings(ContentServerUtils.ApiTLD.ZONE);
+            var settings = new ABConverter.ClientSettings(ContentServerUtils.ApiTLD.ZONE);
             settings.deleteDownloadPathAfterFinished = false;
 
             env = ABConverter.Environment.CreateWithDefaultImplementations();
             core = new ABConverter.Core(env, settings);
 
-            core.InitializeDirectoryPaths(false);
+            core.InitializeDirectoryPaths(false, false);
 
             Assert.IsFalse(string.IsNullOrEmpty(core.settings.finalAssetBundlePath));
             Assert.IsFalse(string.IsNullOrEmpty(core.finalDownloadedPath));
@@ -112,7 +114,7 @@ namespace DCL.ABConverter.Tests
             env.file.WriteAllText(file1, "test");
             env.file.WriteAllText(file2, "test");
 
-            core.InitializeDirectoryPaths(true);
+            core.InitializeDirectoryPaths(true, true);
 
             Assert.IsFalse(env.file.Exists(file1));
             Assert.IsFalse(env.file.Exists(file2));
@@ -202,6 +204,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DumpGLTFSucceedsCorrectly()
         {
             List<AssetPath> texturePaths = new List<AssetPath>();
@@ -229,6 +233,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DumpImportableAssetsCorrectly()
         {
             List<AssetPath> paths = new List<AssetPath>();
@@ -270,6 +276,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DumpRawAssetsCorrectly()
         {
             List<AssetPath> paths = new List<AssetPath>();
@@ -302,6 +310,8 @@ namespace DCL.ABConverter.Tests
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void DownloadAssetCorrectly()
         {
             AssetPath path = new AssetPath(

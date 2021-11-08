@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
@@ -7,15 +8,16 @@ using UnityEngine;
 public class BIWInputWrapperShould : IntegrationTestSuite
 {
     private BIWInputWrapper inputWrapper;
-    private BIWContext context;
+    private IContext context;
+
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         inputWrapper = new BIWInputWrapper();
-        context = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             inputWrapper);
 
-        inputWrapper.Init(context);
+        inputWrapper.Initialize(context);
     }
 
     [Test]

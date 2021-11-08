@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 {
     public BIWSaveController biwSaveController;
     public BuilderInWorldBridge builderInWorldBridge;
+    public IContext context;
 
     private GameObject gameObject;
 
@@ -15,10 +17,11 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         gameObject = new GameObject();
+        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
+        context = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
 
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
         biwSaveController = new BIWSaveController();
-        biwSaveController.Init( BIWTestHelper.CreateReferencesControllerWithGenericMocks(InitialSceneReferences.i));
+        biwSaveController.Initialize(context);
         biwSaveController.EnterEditMode(scene);
     }
 
@@ -57,8 +60,8 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        if (gameObject != null)
-            Object.Destroy(gameObject);
+        context.Dispose();
+        Object.Destroy(gameObject);
         yield return base.TearDown();
     }
 }

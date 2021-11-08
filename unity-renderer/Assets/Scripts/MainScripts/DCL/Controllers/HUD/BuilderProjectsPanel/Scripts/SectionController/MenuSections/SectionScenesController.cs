@@ -1,169 +1,107 @@
 ﻿using System;
-using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-internal class SectionScenesController : SectionBase, IDeployedSceneListener, IProjectSceneListener, ISectionOpenSectionRequester
+namespace DCL.Builder
 {
-    public event Action<SectionId> OnRequestOpenSection;
-
-    internal const int MAX_CARDS = 3;
-    internal readonly SectionScenesView view;
-
-    private bool hasScenes = false;
-
-    public override ISectionSearchHandler searchHandler => hasScenes ? sceneSearchHandler : null;
-    public override SearchBarConfig searchBarConfig => new SearchBarConfig()
+    internal class SectionScenesController : SectionBase, ISceneListener, ISectionHideContextMenuRequester
     {
-        showFilterContributor = false,
-        showFilterOperator = false,
-        showFilterOwner = false,
-        showResultLabel = false
-    };
+        public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionDeployedScenesView";
 
-    private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
+        public event Action OnRequestContextMenuHide;
 
-    internal Dictionary<string, ISceneCardView> deployedViews;
-    internal Dictionary<string, ISceneCardView> projectViews;
-    private List<ISearchInfo> searchList = new List<ISearchInfo>();
+        public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
-    public SectionScenesController()
-    {
-        var prefab = Resources.Load<SectionScenesView>("BuilderProjectsPanelMenuSections/SectionScenesView");
-        view = Object.Instantiate(prefab);
+        private readonly SectionPlacesView view;
 
-        view.btnProjectsViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionId.SCENES_PROJECT));
-        view.btnInWorldViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionId.SCENES_DEPLOYED));
+        private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
+        private Dictionary<string, ISceneCardView> scenesViews;
 
-        sceneSearchHandler.OnResult += OnSearchResult;
-    }
+        public SectionScenesController() : this(
+            Object.Instantiate(Resources.Load<SectionPlacesView>(VIEW_PREFAB_PATH))
+        ) { }
 
-    public override void SetViewContainer(Transform viewContainer)
-    {
-        view.transform.SetParent(viewContainer);
-        view.transform.ResetLocalTRS();
-    }
-
-    public override void Dispose() { view.Dispose(); }
-
-    protected override void OnShow() { view.gameObject.SetActive(true); }
-
-    protected override void OnHide()
-    {
-        view.gameObject.SetActive(false);
-        searchList.Clear();
-        deployedViews?.Clear();
-        projectViews?.Clear();
-    }
-
-    private void ViewDirty()
-    {
-        bool hasDeployedScenes = view.deployedSceneContainer.childCount > 0;
-        bool hasProjectScenes = view.projectSceneContainer.childCount > 0;
-        hasScenes = hasDeployedScenes || hasProjectScenes;
-
-        view.contentScreen.SetActive(hasScenes);
-        view.emptyScreen.SetActive(!hasScenes);
-        view.inWorldContainer.SetActive(hasDeployedScenes);
-        view.projectsContainer.SetActive(hasProjectScenes);
-    }
-
-    void IDeployedSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
-    {
-        UpdateDictionary(ref deployedViews, scenes);
-        searchList.AddRange(scenes.Values.Select(scene => scene.searchInfo));
-        sceneSearchHandler.SetSearchableList(searchList);
-    }
-
-    void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
-    {
-        UpdateDictionary(ref projectViews, scenes);
-        searchList.AddRange(scenes.Values.Select(scene => scene.searchInfo));
-        sceneSearchHandler.SetSearchableList(searchList);
-    }
-
-    void IDeployedSceneListener.OnSceneAdded(ISceneCardView scene)
-    {
-        deployedViews.Add(scene.sceneData.id, scene);
-        sceneSearchHandler.AddItem(scene.searchInfo);
-    }
-
-    void IProjectSceneListener.OnSceneAdded(ISceneCardView scene)
-    {
-        projectViews.Add(scene.sceneData.id, scene);
-        sceneSearchHandler.AddItem(scene.searchInfo);
-    }
-
-    void IDeployedSceneListener.OnSceneRemoved(ISceneCardView scene)
-    {
-        scene.SetToDefaultParent();
-        deployedViews.Remove(scene.sceneData.id);
-        sceneSearchHandler.RemoveItem(scene.searchInfo);
-    }
-
-    void IProjectSceneListener.OnSceneRemoved(ISceneCardView scene)
-    {
-        scene.SetToDefaultParent();
-        projectViews.Remove(scene.sceneData.id);
-        sceneSearchHandler.RemoveItem(scene.searchInfo);
-    }
-
-    private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
-    {
-        if (deployedViews != null)
-            SetResult(deployedViews, searchInfoScenes, view.deployedSceneContainer);
-
-        if (projectViews != null)
-            SetResult(projectViews, searchInfoScenes, view.projectSceneContainer);
-
-        ViewDirty();
-    }
-
-    private void SetResult(Dictionary<string, ISceneCardView> scenesViews, List<ISearchInfo> searchInfoScenes,
-        Transform parent)
-    {
-        int count = 0;
-
-        for (int i = 0; i < searchInfoScenes.Count; i++)
+        public SectionScenesController(SectionPlacesView view)
         {
-            if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out ISceneCardView sceneView))
+            this.view = view;
+
+            view.OnScrollRectValueChanged += OnRequestContextMenuHide;
+            sceneSearchHandler.OnResult += OnSearchResult;
+        }
+
+        public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
+
+        public override void Dispose()
+        {
+            view.OnScrollRectValueChanged -= OnRequestContextMenuHide;
+            view.Dispose();
+        }
+
+        protected override void OnShow() { view.SetActive(true); }
+
+        protected override void OnHide() { view.SetActive(false); }
+
+        void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
+        {
+            scenesViews = new Dictionary<string, ISceneCardView>(scenes);
+            sceneSearchHandler.SetSearchableList(scenes.Values.Select(scene => scene.searchInfo).ToList());
+        }
+
+        void ISceneListener.SceneAdded(ISceneCardView scene)
+        {
+            scenesViews.Add(scene.SceneData.id, scene);
+            sceneSearchHandler.AddItem(scene.searchInfo);
+        }
+
+        void ISceneListener.SceneRemoved(ISceneCardView scene)
+        {
+            scenesViews.Remove(scene.SceneData.id);
+            scene.SetActive(false);
+        }
+
+        private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
+        {
+            if (scenesViews == null)
+                return;
+
+            using (var iterator = scenesViews.GetEnumerator())
             {
-                continue;
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.SetParent(view.GetCardsContainer());
+                    iterator.Current.Value.SetActive(false);
+                }
             }
 
-            sceneView.SetParent(parent);
-            sceneView.SetSiblingIndex(count);
-            sceneView.SetActive(false);
-            count++;
-        }
-
-        for (int i = 0; i < parent.childCount; i++)
-        {
-            parent.GetChild(i).gameObject.SetActive(i < count && i < MAX_CARDS);
-        }
-    }
-
-    private void UpdateDictionary(ref Dictionary<string, ISceneCardView> target, Dictionary<string, ISceneCardView> newData)
-    {
-        if (newData.Count == 0)
-            return;
-
-        if (target == null)
-        {
-            target = new Dictionary<string, ISceneCardView>(newData);
-            return;
-        }
-
-        using (var iterator = newData.GetEnumerator())
-        {
-            while (iterator.MoveNext())
+            for (int i = 0; i < searchInfoScenes.Count; i++)
             {
-                if (target.ContainsKey(iterator.Current.Key))
+                if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out ISceneCardView cardView))
                     continue;
 
-                target.Add(iterator.Current.Key, iterator.Current.Value);
+                cardView.SetActive(true);
+                cardView.SetSiblingIndex(i);
+            }
+
+            if (scenesViews.Count == 0)
+            {
+                if (isLoading)
+                {
+                    view.SetLoading();
+                }
+                else
+                {
+                    view.SetEmpty();
+                }
+            }
+            else if (searchInfoScenes.Count == 0)
+            {
+                view.SetNoSearchResult();
+            }
+            else
+            {
+                view.SetFilled();
             }
         }
     }

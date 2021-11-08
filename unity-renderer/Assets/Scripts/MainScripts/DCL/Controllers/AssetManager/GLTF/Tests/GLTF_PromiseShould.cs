@@ -46,5 +46,29 @@ namespace AssetPromiseKeeper_GLTF_Tests
             keeper.Cleanup();
         }
 
+        [UnityTest]
+        public IEnumerator NotAddAssetToLibraryMoreThanOnce()
+        {
+            var keeper = new AssetPromiseKeeper_GLTF();
+            IWebRequestController webRequestController = WebRequestController.Create();
+
+            string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
+            var provider = new ContentProvider_Dummy();
+
+            AssetPromise_GLTF promise1 = new AssetPromise_GLTF(provider, url, webRequestController);
+            keeper.Keep(promise1);
+            keeper.Forget(promise1);
+
+            AssetPromise_GLTF promise2 = new AssetPromise_GLTF(provider, url, webRequestController);
+            keeper.Keep(promise2);
+
+            yield return promise2;
+            yield return promise1;
+
+            var pool = PoolManager.i.GetPool(keeper.library.AssetIdToPoolId(promise1.GetId()));
+
+            Assert.AreEqual(1, pool.objectsCount);
+            keeper.Cleanup();
+        }
     }
 }

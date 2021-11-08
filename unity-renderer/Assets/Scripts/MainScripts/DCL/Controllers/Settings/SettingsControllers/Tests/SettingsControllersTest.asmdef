@@ -1,5 +1,6 @@
 {
     "name": "SettingsControllersTest",
+    "rootNamespace": "",
     "references": [
         "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
         "GUID:3a20bd2e61151461ab17e9cf5dc7a24b",
@@ -22,7 +23,8 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "NSubstitute.dll",
-        "System.Threading.Tasks.Extensions.dll"
+        "System.Threading.Tasks.Extensions.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

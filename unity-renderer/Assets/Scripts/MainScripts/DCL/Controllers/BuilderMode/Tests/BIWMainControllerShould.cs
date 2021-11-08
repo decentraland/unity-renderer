@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -12,114 +13,115 @@ using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
+using UnityGLTF;
 using Environment = DCL.Environment;
 
 public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 {
-    private BIWMainController mainController;
-    private BIWContext context;
+    private BuilderInWorldEditor mainController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
+        mainController = new BuilderInWorldEditor();
+        BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
+        mainController.Initialize(BIWTestUtils.CreateMockedContext());
+        mainController.initialLoadingController.Dispose();
+        mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
+        mainController.initialLoadingController.Configure().isActive.Returns(true);
 
-        mainController = new BIWMainController();
-        context = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
-        );
-        BIWMainController.BYPASS_LAND_OWNERSHIP_CHECK = true;
-        mainController.Initialize();
     }
 
     [Test]
-    public void EnterBuilderInWorld()
+    public void SetFlagProperlyWhenBuilderInWorldIsEntered()
     {
-        //Arrange
+        // Arrange
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
-        //Act
+        // Act
         mainController.TryStartEnterEditMode(false, scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
-        //Assert
+        // Assert
         Assert.IsTrue(mainController.isBuilderInWorldActivated);
     }
 
     [Test]
-    public void ExitBuilderInWorld()
+    public void SetFlagProperlyWhenBuilderInWorldIsExited()
     {
-        //Arrange
+        // Arrange
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
-        //Act
+        // Act
         mainController.ExitEditMode();
 
-        //Assert
+        // Assert
         Assert.IsFalse(mainController.isBuilderInWorldActivated);
     }
 
     [Test]
-    public void InitController()
+    public void InitializeController()
     {
-        //Arrange
+        // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
 
-        //act 
+        // Act 
         mainController.InitController(controller);
-        controller.Init(context);
 
-        //Assert
-        controller.Received(1).Init(context);
+        // Assert
+        controller.Received(1).Initialize(mainController.context);
     }
 
     [Test]
     public void FindSceneToEdit()
     {
-        //Arrange
+        // Arrange
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
         CommonScriptableObjects.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
 
-        //Act
+        // Act
         var sceneFound = mainController.FindSceneToEdit();
 
-        //Arrange
+        // Arrange
         Assert.AreEqual(scene, sceneFound);
     }
 
     [Test]
     public void ControllerEnterEditMode()
     {
-        //Arrange
+        // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
 
-        //Act
+        // Act
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
-        //Assert
+        // Assert
         controller.Received(1).EnterEditMode(scene);
     }
 
     [Test]
     public void ControllerExitEditMode()
     {
-        //Arrange
+        // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
 
@@ -128,20 +130,20 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
-        //Act
+        // Act
         mainController.ExitEditMode();
 
-        //Assert
+        // Assert
         controller.Received(1).ExitEditMode();
     }
 
     [Test]
     public void ControllerOnGUI()
     {
-        //Arrange
+        // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
 
@@ -150,20 +152,20 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
-        //Act
+        // Act
         mainController.OnGUI();
 
-        //Assert
+        // Assert
         controller.Received(1).OnGUI();
     }
 
     [Test]
     public void ControllerLateUpdate()
     {
-        //Arrange
+        // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
 
@@ -172,34 +174,34 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
-        //Act
+        // Act
         mainController.LateUpdate();
 
-        //Assert
+        // Assert
         controller.Received(1).LateUpdate();
     }
 
     [Test]
-    public void ControllerNoActiveReceveingUpdate()
+    public void ControllerNoActiveReceivingUpdate()
     {
-        //Arrange
+        // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
 
-        //Act
+        // Act
         mainController.Update();
 
-        //Assert
+        // Assert
         controller.Received(0).Update();
     }
 
     [Test]
     public void ControllerUpdate()
     {
-        //Arrange
+        // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
 
@@ -208,252 +210,251 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntiy");
+        createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
-        //Act
+        // Act
         mainController.Update();
 
-        //Assert
+        // Assert
         controller.Received(1).Update();
-    }
-
-    [Test]
-    public void ControllerDispose()
-    {
-        //Arrange
-        IBIWController controller = Substitute.For<IBIWController>();
-        mainController.InitController(controller);
-
-        //Act
-        mainController.Dispose();
-
-        //Assert
-        controller.Received(1).Dispose();
     }
 
     [Test]
     public void BIWExitWhenCharacterIsFarAway()
     {
-        //Arrange
+        // Arrange
         mainController.sceneToEdit = scene;
         mainController.isBuilderInWorldActivated = true;
         mainController.checkerInsideSceneOptimizationCounter = 60;
         DCLCharacterController.i.characterPosition.unityPosition = Vector3.one * 9999;
 
-        //Act
+        // Act
         mainController.Update();
 
-        //Assert
+        // Assert
         Assert.IsFalse(mainController.isBuilderInWorldActivated);
     }
 
     [Test]
     public void ActivateLandAccessBackground()
     {
-        //Arrange
+        // Arrange
         var profile = UserProfile.GetOwnUserProfile();
         profile.UpdateData(new UserProfileModel() { userId = "testId", ethAddress = "0x00" });
 
-        //Act
+        // Act
         mainController.ActivateLandAccessBackgroundChecker();
 
-        //Assert
+        // Assert
         Assert.IsNotNull(mainController.updateLandsWithAcessCoroutine);
     }
 
     [Test]
     public void RequestCatalog()
     {
-        //Arrange
+        // Arrange
         mainController.isCatalogRequested = false;
 
-        //Act
+        // Act
         mainController.GetCatalog();
 
-        //Assert
+        // Assert
         Assert.IsTrue(mainController.isCatalogRequested);
     }
 
     [Test]
     public void ChangeEditModeByShortcut()
     {
-        //Act
+        // Act
         mainController.ChangeEditModeStatusByShortcut(DCLAction_Trigger.BuildEditModeChange);
 
-        //Assert
+        // Assert
         Assert.IsTrue(mainController.isWaitingForPermission);
     }
 
     [Test]
     public void NewSceneAdded()
     {
-        //Arrange
+        // Arrange
         var mockedScene = Substitute.For<IParcelScene>();
         mockedScene.Configure().sceneData.Returns(scene.sceneData);
         mainController.sceneToEditId = scene.sceneData.id;
 
-        //Act
+        // Act
         mainController.NewSceneAdded(mockedScene);
 
-        //Assert
+        // Assert
         Assert.AreSame(mainController.sceneToEdit, base.scene);
     }
 
     [Test]
     public void UserHasPermission()
     {
-        //Arrange
+        // Arrange
         AddSceneToPermissions();
 
-        //Act
+        // Act
         var result = mainController.UserHasPermissionOnParcelScene(scene);
 
-        //Assert
+        // Assert
         Assert.IsTrue(result);
     }
 
     [Test]
-    public void IsParcelFromSDK()
+    public void ReturnTrueWhenParcelSceneDeployedFromSDKIsCalled()
     {
-        //Arrange
+        // Arrange
         Parcel parcel = new Parcel();
-        parcel.x = scene.sceneData.basePosition.x;
-        parcel.y = scene.sceneData.basePosition.y;
+        parcel.x = base.scene.sceneData.basePosition.x;
+        parcel.y = base.scene.sceneData.basePosition.y;
 
-        Vector2Int parcelCoords = new Vector2Int(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
+        Vector2Int parcelCoords = new Vector2Int(base.scene.sceneData.basePosition.x, base.scene.sceneData.basePosition.y);
         Land land = new Land();
         land.parcels = new List<Parcel>() { parcel };
 
-        LandWithAccess landWithAcces = new LandWithAccess(land);
-        DeployedScene deployedScene = new DeployedScene();
-        deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
-        deployedScene.deploymentSource = DeployedScene.Source.SDK;
+        LandWithAccess landWithAccess = new LandWithAccess(land);
+        Scene scene = new Scene();
+        scene.parcelsCoord = new Vector2Int[] { parcelCoords };
+        scene.deploymentSource = Scene.Source.SDK;
 
-        landWithAcces.scenes = new List<DeployedScene>() { deployedScene };
+        landWithAccess.scenes = new List<Scene>() { scene };
         var lands = new LandWithAccess[]
         {
-            landWithAcces
+            landWithAccess
         };
         DataStore.i.builderInWorld.landsWithAccess.Set(lands);
 
-        //Act
-        var result = mainController.IsParcelSceneDeployedFromSDK(scene);
+        // Act
+        var result = mainController.IsParcelSceneDeployedFromSDK(base.scene);
 
-        //Assert
+        // Assert
         Assert.IsTrue(result);
     }
 
     [Test]
     public void CatalogReceived()
     {
-        //Arrange
-
+        // Arrange
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
         string jsonValue = File.ReadAllText(jsonPath);
 
-        //Act
+        // Act
+        mainController.CatalogReceived(jsonValue);
         mainController.CatalogReceived(jsonValue);
 
-        //Assert
+        // Assert
         Assert.IsTrue(mainController.catalogAdded);
     }
 
     [Test]
     public void CatalogHeaderReceived()
     {
-        //Act
+        // Act
         mainController.CatalogHeadersReceived("");
 
-        //Assert
+        // Assert
         Assert.IsTrue(mainController.areCatalogHeadersReady);
     }
 
     [Test]
-    public void CheckSceneToEditByShorcut()
+    public void CheckSceneToEditByShortcut()
     {
-        //Arrange
+        // Arrange
         mainController.sceneToEdit = scene;
         AddSceneToPermissions();
 
-        //Act
+        // Act
         mainController.CheckSceneToEditByShorcut();
 
-        //Assert
+        // Assert
         Assert.IsTrue(mainController.isEnteringEditMode);
     }
 
     [Test]
     public void InitialLoadingControllerHideOnFloorLoaded()
     {
-        //Arrange
+        // Arrange
         mainController.initialLoadingController.Dispose();
         mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
         mainController.initialLoadingController.Configure().isActive.Returns(true);
 
-        //Act
+        // Act
         mainController.OnAllParcelsFloorLoaded();
 
-        //Assert
+        // Assert
         mainController.initialLoadingController.Received().Hide(Arg.Any<bool>(), Arg.Any<Action>());
     }
 
     [Test]
     public void StartExitModeScreenShot()
     {
-        //Arrange
-        mainController.modeController.godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
-        mainController.saveController.numberOfSaves = 1;
+        // Arrange
+        mainController.Dispose();
+        mainController = new BuilderInWorldEditor();
+        BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
+        mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(new BIWModeController(),
+            new BIWSaveController(), InitialSceneReferences.i.data));
+        mainController.initialLoadingController.Dispose();
+        mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
+        mainController.initialLoadingController.Configure().isActive.Returns(true);
 
-        //Act
+        BIWModeController modeController = (BIWModeController)mainController.modeController;
+        BIWSaveController saveController = (BIWSaveController)mainController.saveController;
+
+        modeController.godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
+        saveController.numberOfSaves = 1;
+
+        // Act
         mainController.StartExitMode();
 
-        //Assert
-        mainController.modeController.godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+        // Assert
+        modeController.godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
 
     [Test]
     public void SetupNewScene()
     {
-        //Arrange
+        // Arrange
         BIWCatalogManager.Init();
-        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
-        mainController.creatorController.sceneToEdit = scene;
-        mainController.floorHandler.sceneToEdit = scene;
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        ((EditorContext) mainController.context.editorContext).floorHandlerReference = Substitute.For<IBIWFloorHandler>();
+        mainController.sceneToEdit = scene;
+        mainController.EnterBiwControllers();
 
-        //Act
+        // Act
         mainController.SetupNewScene();
 
-        //Assert
-        Assert.Greater(mainController.floorHandler.floorPlaceHolderDict.Count, 0);
+        // Assert
+        mainController.context.editorContext.floorHandler.Received(1).CreateDefaultFloor();
     }
 
     [Test]
     public void ExitAfterTeleport()
     {
-        //Arrange
+        // Arrange
         mainController.sceneToEdit = scene;
         mainController.isBuilderInWorldActivated = true;
 
-        //Act
+        // Act
         mainController.ExitAfterCharacterTeleport(new DCLCharacterPosition());
 
-        //Assert
+        // Assert
         Assert.IsFalse(mainController.isBuilderInWorldActivated);
     }
 
     [Test]
-    public void ActiveLandCheckerCoroutineAfterUserPofileIsLoaded()
+    public void ActiveLandCheckerCoroutineAfterUserProfileIsLoaded()
     {
-        //Arrange
+        // Arrange
         var profile = UserProfile.GetOwnUserProfile();
         mainController.ActivateLandAccessBackgroundChecker();
         profile.UpdateData(new UserProfileModel() { userId = "testId", ethAddress = "0x00" });
 
-        //ACt
+        // Act
         mainController.OnUserProfileUpdate(profile);
 
-        //Assert
+        // Assert
         Assert.IsNotNull(mainController.updateLandsWithAcessCoroutine);
     }
 
@@ -462,25 +463,30 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         var parcel = new Parcel();
         parcel.x = scene.sceneData.basePosition.x;
         parcel.y = scene.sceneData.basePosition.y;
+
         var land = new Land();
         land.parcels = new List<Parcel>() { parcel };
 
-        var landWithAcces = new LandWithAccess(land);
-        landWithAcces.scenes = new List<DeployedScene>();
+        var landWithAccess = new LandWithAccess(land);
+        landWithAccess.scenes = new List<Scene>();
+
         var lands = new LandWithAccess[]
         {
-            landWithAcces
+            landWithAccess
         };
+
         DataStore.i.builderInWorld.landsWithAccess.Set(lands);
     }
 
     protected override IEnumerator TearDown()
     {
+        yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
         DataStore.i.builderInWorld.catalogItemDict.Clear();
         AssetCatalogBridge.i.ClearCatalog();
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
+        mainController.context.Dispose();
         mainController.Dispose();
-        BIWMainController.BYPASS_LAND_OWNERSHIP_CHECK = false;
+        BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = false;
         yield return base.TearDown();
     }
 }

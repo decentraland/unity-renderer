@@ -8,7 +8,6 @@ namespace UnityGLTF.Cache
     /// </summary>
     public class RefCountedCacheData : RefCountedBase
     {
-
         /// <summary>
         /// Meshes used by this GLTF node.
         /// </summary>
@@ -23,6 +22,11 @@ namespace UnityGLTF.Cache
         /// Textures used by this GLTF node.
         /// </summary>
         public TextureCacheData[] TextureCache { get; set; }
+
+        /// <summary>
+        /// Animations used by this GLTF node.
+        /// </summary>
+        public AnimationCacheData[] animationCache { get; set; }
 
         protected override void OnDestroyCachedData()
         {
@@ -53,6 +57,15 @@ namespace UnityGLTF.Cache
                 if (MaterialCache[i] != null)
                 {
                     MaterialCache[i].Unload();
+                }
+            }
+
+            // Destroy the cached animations
+            for (int i = 0; i < animationCache.Length; i++)
+            {
+                if (animationCache[i] != null)
+                {
+                    animationCache[i].Unload();
                 }
             }
         }

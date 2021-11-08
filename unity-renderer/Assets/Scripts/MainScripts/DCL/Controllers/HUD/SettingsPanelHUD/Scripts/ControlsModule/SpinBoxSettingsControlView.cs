@@ -1,4 +1,4 @@
-using DCL.SettingsControls;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
 namespace DCL.SettingsPanelHUD.Controls

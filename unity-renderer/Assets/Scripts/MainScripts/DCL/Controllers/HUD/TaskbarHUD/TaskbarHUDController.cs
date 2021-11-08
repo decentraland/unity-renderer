@@ -25,6 +25,7 @@ public class TaskbarHUDController : IHUD
     public FriendsHUDController friendsHud;
     public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
+    public IExploreV2MenuComponentController exploreV2Hud;
     public HelpAndSupportHUDController helpAndSupportHud;
 
     IMouseCatcher mouseCatcher;
@@ -88,6 +89,8 @@ public class TaskbarHUDController : IHUD
         view.OnBuilderInWorldToggleOn += View_OnBuilderInWorldToggleOn;
         view.OnExploreToggleOff += View_OnExploreToggleOff;
         view.OnExploreToggleOn += View_OnExploreToggleOn;
+        view.OnExploreV2ToggleOff += View_OnExploreV2ToggleOff;
+        view.OnExploreV2ToggleOn += View_OnExploreV2ToggleOn;
         view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
         view.OnQuestPanelToggled += View_OnQuestPanelToggled;
 
@@ -128,6 +131,8 @@ public class TaskbarHUDController : IHUD
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
         DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
+
+        ConfigureExploreV2Feature();
     }
 
     private void View_OnQuestPanelToggled(bool value)
@@ -228,6 +233,15 @@ public class TaskbarHUDController : IHUD
     }
 
     private void View_OnExploreToggleOff() { exploreHud.SetVisibility(false); }
+
+    private void View_OnExploreV2ToggleOn()
+    {
+        DataStore.i.taskbar.isExploreV2Enabled.Set(false);
+        DataStore.i.taskbar.isExploreV2Enabled.Set(true);
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnExploreV2ToggleOff() { DataStore.i.taskbar.isExploreV2Enabled.Set(false); }
 
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
 
@@ -372,6 +386,7 @@ public class TaskbarHUDController : IHUD
         {
             view.settingsButton.SetToggleState(true, false);
             view.exploreButton.SetToggleState(false);
+            view.exploreV2Button.SetToggleState(false);
         };
         settingsPanelHud.OnClose += () =>
         {
@@ -400,6 +415,39 @@ public class TaskbarHUDController : IHUD
             view.exploreButton.SetToggleState(false, false);
             MarkWorldChatAsReadIfOtherWindowIsOpen();
         };
+    }
+
+    private void ConfigureExploreV2Feature()
+    {
+        bool isExploreV2AlreadyInitialized = DataStore.i.exploreV2.isInitialized.Get();
+        if (isExploreV2AlreadyInitialized)
+            OnExploreV2ControllerInitialized(true, false);
+        else
+            DataStore.i.exploreV2.isInitialized.OnChange += OnExploreV2ControllerInitialized;
+    }
+
+    private void OnExploreV2ControllerInitialized(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
+        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
+        view.OnAddExploreV2Window();
+    }
+
+    private void OnExploreV2Open(bool current, bool previous)
+    {
+        if (current)
+        {
+            view.exploreV2Button.SetToggleState(true, false);
+            view.settingsButton.SetToggleState(false);
+        }
+        else
+        {
+            view.exploreV2Button.SetToggleState(false, false);
+            MarkWorldChatAsReadIfOtherWindowIsOpen();
+        }
     }
 
     public void AddHelpAndSupportWindow(HelpAndSupportHUDController controller)
@@ -450,6 +498,8 @@ public class TaskbarHUDController : IHUD
             view.OnBuilderInWorldToggleOn -= View_OnBuilderInWorldToggleOn;
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
+            view.OnExploreV2ToggleOff -= View_OnExploreV2ToggleOff;
+            view.OnExploreV2ToggleOn -= View_OnExploreV2ToggleOn;
             view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
 
             CoroutineStarter.Stop(view.moreMenu.moreMenuAnimationsCoroutine);
@@ -483,6 +533,8 @@ public class TaskbarHUDController : IHUD
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
+        DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
+        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }

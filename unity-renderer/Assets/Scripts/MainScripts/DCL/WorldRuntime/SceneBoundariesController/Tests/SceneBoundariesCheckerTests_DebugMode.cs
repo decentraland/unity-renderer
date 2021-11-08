@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections;
 using DCL;
 using DCL.Components;
@@ -18,7 +17,6 @@ namespace SceneBoundariesCheckerTests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
             yield return SetUp_CharacterController();
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
@@ -54,7 +52,7 @@ namespace SceneBoundariesCheckerTests
 
             TestHelpers.RemoveSceneEntity(scene, entity.entityId);
 
-            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+            Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
 
             yield return null;
 

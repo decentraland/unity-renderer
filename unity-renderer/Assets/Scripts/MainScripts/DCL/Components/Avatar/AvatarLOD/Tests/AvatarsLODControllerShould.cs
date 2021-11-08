@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using DCL;
+using DCL.Helpers;
 using KernelConfigurationTypes;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -12,8 +14,13 @@ namespace Tests.AvatarsLODController
     {
         private DCL.AvatarsLODController controller;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+
         [SetUp]
-        public void SetUp() { controller = Substitute.ForPartsOf<DCL.AvatarsLODController>(); }
+        public void SetUp()
+        {
+            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
+            controller = Substitute.ForPartsOf<DCL.AvatarsLODController>();
+        }
 
         [Test]
         public void BeCreatedProperly()
@@ -25,7 +32,8 @@ namespace Tests.AvatarsLODController
         [Test]
         public void BeInitializedProperly()
         {
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            FeatureFlag flag =  TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME });
+            controller.Initialize(flag);
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(0, controller.lodControllers.Count);
@@ -38,7 +46,7 @@ namespace Tests.AvatarsLODController
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
 
             otherPlayers.Add("player0", new Player { name = "player0", id = "player0", renderer = Substitute.For<IAvatarRenderer>() });
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(1, controller.lodControllers.Count);
@@ -50,7 +58,7 @@ namespace Tests.AvatarsLODController
         {
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
 
@@ -64,7 +72,7 @@ namespace Tests.AvatarsLODController
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
-            controller.Initialize(new KernelConfigModel { features =  new Features { enableAvatarLODs = true, enableTutorial = false } });
+            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             otherPlayers.Remove("player0");
 
@@ -235,6 +243,34 @@ namespace Tests.AvatarsLODController
         }
 
         [Test]
+        public void HideCharacterClippingAvatars()
+        {
+            DataStore.i.avatarsLOD.maxAvatars.Set(2);
+            controller.enabled = true;
+
+            Vector3 cameraPosition = Vector3.zero;
+            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
+            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
+            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+            float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
+
+            Player avatar = CreateMockPlayer("avatar");
+            IAvatarLODController avatarPlayerController = Substitute.For<IAvatarLODController>();
+            avatarPlayerController.player.Returns(avatar);
+            controller.lodControllers.Add(avatar.id, avatarPlayerController);
+
+            // Place at normal distance
+            avatar.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f);
+            controller.Update();
+            avatarPlayerController.Received().SetFullAvatar();
+
+            // Place super close to the main player
+            avatar.worldPosition = cameraPosition + Vector3.forward * 0.75f;
+            controller.Update();
+            avatarPlayerController.Received().SetInvisible();
+        }
+
+        [Test]
         public void UpdateImpostorsTintAndInterpolationMovement()
         {
             Vector3 cameraPosition = Vector3.zero;
@@ -295,9 +331,9 @@ namespace Tests.AvatarsLODController
         [Test]
         public void UpdateAllLODsCorrectly_MaxFullAvatar()
         {
-            otherPlayers.Add("player0", CreateMockPlayer("player0", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.01f));
-            otherPlayers.Add("player1", CreateMockPlayer("player1", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.02f));
-            otherPlayers.Add("player2", CreateMockPlayer("player2", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.03f));
+            otherPlayers.Add("player0", CreateMockPlayer("player0", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.91f));
+            otherPlayers.Add("player1", CreateMockPlayer("player1", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.92f));
+            otherPlayers.Add("player2", CreateMockPlayer("player2", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.93f));
             controller.lodControllers.Add("player0", CreateMockLODController(otherPlayers["player0"]));
             controller.lodControllers.Add("player1", CreateMockLODController(otherPlayers["player1"]));
             controller.lodControllers.Add("player2", CreateMockLODController(otherPlayers["player2"]));
@@ -308,7 +344,7 @@ namespace Tests.AvatarsLODController
 
             controller.lodControllers["player0"].Received().SetFullAvatar();
             controller.lodControllers["player1"].Received().SetFullAvatar();
-            controller.lodControllers["player2"].Received().SetInvisible();
+            controller.lodControllers["player2"].Received().SetImpostor();
         }
 
         [Test]
@@ -327,15 +363,15 @@ namespace Tests.AvatarsLODController
 
             controller.lodControllers["player0"].Received().SetSimpleAvatar();
             controller.lodControllers["player1"].Received().SetSimpleAvatar();
-            controller.lodControllers["player2"].Received().SetInvisible();
+            controller.lodControllers["player2"].Received().SetImpostor();
         }
 
         [Test]
         public void UpdateAllLODsCorrectly_FullAvatarPrioritized()
         {
             otherPlayers.Add("player0", CreateMockPlayer("player0", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 1.01f));
-            otherPlayers.Add("player1", CreateMockPlayer("player1", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.02f));
-            otherPlayers.Add("player2", CreateMockPlayer("player2", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.03f));
+            otherPlayers.Add("player1", CreateMockPlayer("player1", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.92f));
+            otherPlayers.Add("player2", CreateMockPlayer("player2", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.93f));
             controller.lodControllers.Add("player0", CreateMockLODController(otherPlayers["player0"]));
             controller.lodControllers.Add("player1", CreateMockLODController(otherPlayers["player1"]));
             controller.lodControllers.Add("player2", CreateMockLODController(otherPlayers["player2"]));
@@ -344,7 +380,7 @@ namespace Tests.AvatarsLODController
             controller.enabled = true;
             controller.Update();
 
-            controller.lodControllers["player0"].Received().SetInvisible();
+            controller.lodControllers["player0"].Received().SetImpostor();
             controller.lodControllers["player1"].Received().SetFullAvatar();
             controller.lodControllers["player2"].Received().SetFullAvatar();
         }
@@ -353,8 +389,8 @@ namespace Tests.AvatarsLODController
         public void UpdateAllLODsCorrectly_MaxImpostors()
         {
             otherPlayers.Add("player0", CreateMockPlayer("player0", Vector3.forward * DataStore.i.avatarsLOD.LODDistance.Get() * 1.01f));
-            otherPlayers.Add("player1", CreateMockPlayer("player1", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.02f));
-            otherPlayers.Add("player2", CreateMockPlayer("player2", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.03f));
+            otherPlayers.Add("player1", CreateMockPlayer("player1", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.92f));
+            otherPlayers.Add("player2", CreateMockPlayer("player2", Vector3.forward * DataStore.i.avatarsLOD.simpleAvatarDistance.Get() * 0.93f));
             otherPlayers.Add("player3", CreateMockPlayer("player3", Vector3.forward * DataStore.i.avatarsLOD.LODDistance.Get() * 1.02f));
             otherPlayers.Add("player4", CreateMockPlayer("player4", Vector3.forward * DataStore.i.avatarsLOD.LODDistance.Get() * 1.04f));
             controller.lodControllers.Add("player0", CreateMockLODController(otherPlayers["player0"]));
@@ -375,6 +411,59 @@ namespace Tests.AvatarsLODController
             controller.lodControllers["player4"].Received().SetInvisible();
         }
 
+        [Test]
+        public void UpdateThrottling()
+        {
+            var gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
+
+            Vector3 cameraPosition = Vector3.zero;
+            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
+            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
+            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+            float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
+            float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
+
+            Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
+            IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
+            controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
+            fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f); //Close player => Full Avatar
+
+            Player simpleAvatarPlayer = CreateMockPlayer("simpleAvatar");
+            IAvatarLODController simpleAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            simpleAvatarPlayerController.player.Returns(simpleAvatarPlayer);
+            controller.lodControllers.Add(simpleAvatarPlayer.id, simpleAvatarPlayerController);
+            simpleAvatarPlayer.worldPosition = Vector3.forward * (simpleAvatarDistance * 1.05f); //Near By player => Simple Avatar
+
+            Player farawaySimpleAvatar = CreateMockPlayer("farawaySimpleAvatar");
+            IAvatarLODController farawaySimpleAvatarController = Substitute.For<IAvatarLODController>();
+            farawaySimpleAvatarController.player.Returns(farawaySimpleAvatar);
+            controller.lodControllers.Add(farawaySimpleAvatar.id, farawaySimpleAvatarController);
+            farawaySimpleAvatar.worldPosition = Vector3.forward * (lodDistance * 1.05f); //Far Away player => Simple avatar (due to maxAvatars)
+
+            Player farAwayImpostor = CreateMockPlayer("farAwayImpostor");
+            IAvatarLODController farAwayImpostorController = Substitute.For<IAvatarLODController>();
+            farAwayImpostorController.player.Returns(farAwayImpostor);
+            controller.lodControllers.Add(farAwayImpostor.id, farAwayImpostorController);
+            farAwayImpostor.worldPosition = Vector3.forward * (lodDistance * 1.10f); //Far Away player => Impostor (due to maxAvatars)
+
+            Player invisibleAvatarPlayer = CreateMockPlayer("invisibleAvatar");
+            IAvatarLODController invisibleAvatarPlayerController = Substitute.For<IAvatarLODController>();
+            invisibleAvatarPlayerController.player.Returns(invisibleAvatarPlayer);
+            controller.lodControllers.Add(invisibleAvatarPlayer.id, invisibleAvatarPlayerController);
+            invisibleAvatarPlayer.worldPosition = -Vector3.forward * 10f; //player behind camera => Invisible
+
+            DataStore.i.avatarsLOD.maxAvatars.Set(3);
+            controller.enabled = true;
+            controller.Update();
+
+            fullAvatarPlayerController.Received().SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(Vector3.Distance(fullAvatarPlayerController.player.worldPosition, Vector3.zero)));
+            simpleAvatarPlayerController.Received().SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(Vector3.Distance(simpleAvatarPlayerController.player.worldPosition, Vector3.zero)));
+            farawaySimpleAvatarController.Received().SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(Vector3.Distance(farawaySimpleAvatarController.player.worldPosition, Vector3.zero)));
+            farAwayImpostorController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<int>());
+            invisibleAvatarPlayerController.DidNotReceiveWithAnyArgs().SetThrottling(Arg.Any<int>());
+        }
+
         private Player CreateMockPlayer(string id) => CreateMockPlayer(id, out IAvatarRenderer renderer);
         private Player CreateMockPlayer(string id, Vector3 position) => CreateMockPlayer(id, position, out IAvatarRenderer renderer);
 
@@ -383,7 +472,7 @@ namespace Tests.AvatarsLODController
         private Player CreateMockPlayer(string id, Vector3 worldPosition, out IAvatarRenderer renderer)
         {
             renderer = Substitute.For<IAvatarRenderer>();
-            return new Player { name = id, id = id, renderer = renderer, worldPosition = worldPosition };
+            return new Player { name = id, id = id, renderer = renderer, worldPosition = worldPosition, playerName = Substitute.For<IPlayerName>() };
         }
         private IAvatarLODController CreateMockLODController(Player player)
         {

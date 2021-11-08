@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DCL.Configuration;
 
 /// <summary>
 /// Mapping for Trigger actions
@@ -24,6 +25,7 @@ public enum DCLAction_Trigger
     ToggleVoiceChatRecording = 127,
     ToggleAvatarEditorHud = 128,
     ToggleQuestsPanelHud = 129,
+    ToggleAvatarNamesHud = 130,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -347,6 +349,9 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleQuestsPanelHud:
                     InputProcessor.FromKey(action, KeyCode.J, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+                case DCLAction_Trigger.ToggleAvatarNamesHud:
+                    InputProcessor.FromKey(action, KeyCode.N, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -364,10 +369,10 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Hold.Sprint:
-                    InputProcessor.FromKey(action, KeyCode.LeftShift, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromKey(action,InputSettings.WalkButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Hold.Jump:
-                    InputProcessor.FromKey(action, KeyCode.Space, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Hold.FreeCameraMode:
                     //Disable until the fine-tuning is ready

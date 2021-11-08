@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GPUSkinning;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
@@ -20,6 +21,12 @@ namespace DCL
 
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
+
+        public bool useCullOpaqueHeuristic = false;
+        public bool prepareMeshForGpuSkinning = false;
+        public bool uploadMeshToGpu = true;
+
+        private AvatarMeshCombiner.Output? lastOutput;
 
         public AvatarMeshCombinerHelper (GameObject container = null) { this.container = container; }
 
@@ -71,6 +78,8 @@ namespace DCL
             Assert.IsTrue(renderers != null, "renderers should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
 
+            CombineLayerUtils.ENABLE_CULL_OPAQUE_HEURISTIC = useCullOpaqueHeuristic;
+
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
                 bonesContainer.bones,
@@ -92,6 +101,7 @@ namespace DCL
                 renderer = container.AddComponent<SkinnedMeshRenderer>();
 
             UnloadAssets();
+            lastOutput = output;
 
             container.layer = bonesContainer.gameObject.layer;
             renderer.sharedMesh = output.mesh;
@@ -103,21 +113,27 @@ namespace DCL
             renderer.skinnedMotionVectors = false;
             renderer.enabled = true;
 
+            if (prepareMeshForGpuSkinning)
+                GPUSkinningUtils.EncodeBindPosesIntoMesh(renderer);
+
+            if (uploadMeshToGpu)
+                output.mesh.UploadMeshData(true);
+
             logger.Log("AvatarMeshCombiner", "Finish combining avatar. Click here to focus on GameObject.", container);
             return true;
         }
 
         private void UnloadAssets()
         {
-            if (renderer == null)
+            if (!lastOutput.HasValue)
                 return;
 
-            if (renderer.sharedMesh != null)
-                Object.Destroy(renderer.sharedMesh);
+            if (lastOutput.Value.mesh != null)
+                Object.Destroy(lastOutput.Value.mesh);
 
-            if ( renderer.sharedMaterials != null)
+            if (lastOutput.Value.materials != null)
             {
-                foreach ( var material in renderer.sharedMaterials )
+                foreach ( var material in lastOutput.Value.materials )
                 {
                     Object.Destroy(material);
                 }

@@ -7,6 +7,7 @@ namespace DCL.Controllers
 {
     public interface IParcelScene
     {
+        IDCLEntity CreateEntity(string id);
         Transform GetSceneTransform();
         Dictionary<string, IDCLEntity> entities { get; }
         Dictionary<string, ISharedComponent> disposableComponents { get; }
@@ -19,11 +20,12 @@ namespace DCL.Controllers
         bool isPersistent { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
-        ISceneMetricsController metricsController { get; }
+        ISceneMetricsCounter metricsCounter { get; }
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
         void CalculateSceneLoadingState();
         void GetWaitingComponentsDebugInfo();
+        IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data);
     }
 }

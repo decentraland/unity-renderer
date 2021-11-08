@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
-using UnityGLTF.Cache;
-using Object = UnityEngine.Object;
 
 public class WearableController
 {
     private const string MATERIAL_FILTER_HAIR = "hair";
     private const string MATERIAL_FILTER_SKIN = "skin";
+    private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
     public readonly WearableItem wearable;
     protected RendereableAssetLoadHelper loader;
@@ -20,27 +19,38 @@ public class WearableController
     public string id => wearable.id;
     public string category => wearable.data.category;
 
-    public GameObject assetContainer => loader?.loadedAsset;
+    public GameObject assetContainer => loader?.loadedAsset.container;
     public bool isReady => loader != null && loader.isFinished && assetContainer != null;
 
     public bool boneRetargetingDirty = false;
     internal string lastMainFileLoaded = null;
+    internal bool useAssetBundles = true;
 
     protected SkinnedMeshRenderer[] assetRenderers;
     Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
 
-    public IReadOnlyList<SkinnedMeshRenderer> GetRenderers()
-    {
-        return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers);
-    }
+    public IReadOnlyList<SkinnedMeshRenderer> GetRenderers() { return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers); }
 
-    public WearableController(WearableItem wearableItem) { this.wearable = wearableItem; }
+    public WearableController(WearableItem wearableItem)
+    {
+        this.wearable = wearableItem;
+        SetupAssetBundlesConfig();
+    }
 
     protected WearableController(WearableController original)
     {
         wearable = original.wearable;
         loader = original.loader;
         assetRenderers = original.assetRenderers;
+
+        SetupAssetBundlesConfig();
+    }
+
+    private void SetupAssetBundlesConfig()
+    {
+        // In preview mode featureFlags.flags.Get() can be null.
+        var featureFlags = DataStore.i.featureFlags.flags.Get();
+        useAssetBundles = featureFlags != null && featureFlags.IsFeatureEnabled(AB_FEATURE_FLAG_NAME); 
     }
 
     public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
@@ -64,23 +74,23 @@ public class WearableController
 
         loader.settings.forceNewInstance = false;
         loader.settings.initialLocalPosition = Vector3.up * 0.75f;
-        loader.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_EVERYTHING;
+        loader.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
         loader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
         loader.settings.parent = parent;
         loader.settings.layer = parent.gameObject.layer;
 
         assetRenderers = null;
 
-        void OnSuccessWrapper(GameObject gameObject)
+        void OnSuccessWrapper(Rendereable rendereable)
         {
             if (loader != null)
             {
                 loader.OnSuccessEvent -= OnSuccessWrapper;
             }
 
-            assetRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            assetRenderers = rendereable.container.GetComponentsInChildren<SkinnedMeshRenderer>();
             StoreOriginalMaterials();
-            PrepareWearable(gameObject);
+            PrepareWearable(rendereable.container);
             onSuccess?.Invoke(this);
         }
 
@@ -102,7 +112,8 @@ public class WearableController
         loader.OnFailEvent += OnFailEventWrapper;
 
         lastMainFileLoaded = representation.mainFile;
-        loader.Load(representation.mainFile);
+
+        loader.Load(representation.mainFile, useAssetBundles ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY );
     }
 
     public void SetupHairAndSkinColors(Color skinColor, Color hairColor)
@@ -153,14 +164,9 @@ public class WearableController
         }
     }
 
-    protected virtual void PrepareWearable(GameObject assetContainer)
-    {
-    }
+    protected virtual void PrepareWearable(GameObject assetContainer) { }
 
-    public virtual void UpdateVisibility(HashSet<string> hiddenList)
-    {
-        SetAssetRenderersEnabled(!hiddenList.Contains(wearable.data.category));
-    }
+    public virtual void UpdateVisibility(HashSet<string> hiddenList) { SetAssetRenderersEnabled(!hiddenList.Contains(wearable.data.category)); }
 
     public bool IsLoadedForBodyShape(string bodyShapeId)
     {
@@ -169,7 +175,6 @@ public class WearableController
 
         return wearable.data.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
     }
-
 
     private void StoreOriginalMaterials()
     {

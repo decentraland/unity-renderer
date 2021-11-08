@@ -5,13 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public enum BuildModeCatalogSection
-{
-    CATEGORIES,
-    ASSET_PACKS,
-    FAVOURITES
-}
-
 public interface ISceneCatalogController
 {
     event Action OnHideCatalogClicked;

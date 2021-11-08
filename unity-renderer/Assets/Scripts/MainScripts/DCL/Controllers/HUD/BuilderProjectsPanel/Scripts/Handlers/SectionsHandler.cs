@@ -1,39 +1,42 @@
 ﻿using System;
+using DCL.Builder;
 
 internal class SectionsHandler : IDisposable
 {
     private readonly ISectionsController sectionsController;
     private readonly IScenesViewController scenesViewController;
     private readonly SearchBarView searchBarView;
-    private readonly ILandController landController;
+    private readonly ILandsController landsController;
+    private readonly IProjectsController projectsController;
 
-    public SectionsHandler(ISectionsController sectionsController, IScenesViewController scenesViewController, ILandController landController, SearchBarView searchBarView)
+    public SectionsHandler(ISectionsController sectionsController, IScenesViewController scenesViewController, ILandsController landsController, IProjectsController projectsController, SearchBarView searchBarView)
     {
         this.sectionsController = sectionsController;
         this.scenesViewController = scenesViewController;
         this.searchBarView = searchBarView;
-        this.landController = landController;
+        this.landsController = landsController;
+        this.projectsController = projectsController;
 
         sectionsController.OnSectionShow += OnSectionShow;
         sectionsController.OnSectionHide += OnSectionHide;
-        scenesViewController.OnSceneSelected += OnSelectScene;
+        scenesViewController.OnProjectSelected += SelectProject;
     }
 
     public void Dispose()
     {
         sectionsController.OnSectionShow -= OnSectionShow;
         sectionsController.OnSectionHide -= OnSectionHide;
-        scenesViewController.OnSceneSelected -= OnSelectScene;
+        scenesViewController.OnProjectSelected -= SelectProject;
     }
 
     void OnSectionShow(SectionBase sectionBase)
     {
-        if (sectionBase is IDeployedSceneListener deployedSceneListener)
+        if (sectionBase is ISceneListener deployedSceneListener)
         {
             scenesViewController.AddListener(deployedSceneListener);
         }
 
-        if (sectionBase is IProjectSceneListener projectSceneListener)
+        if (sectionBase is IProjectListener projectSceneListener)
         {
             scenesViewController.AddListener(projectSceneListener);
         }
@@ -45,7 +48,12 @@ internal class SectionsHandler : IDisposable
 
         if (sectionBase is ILandsListener landsListener)
         {
-            landController.AddListener(landsListener);
+            landsController.AddListener(landsListener);
+        }
+
+        if (sectionBase is IProjectsListener projectsListener)
+        {
+            projectsController.AddListener(projectsListener);
         }
 
         searchBarView.SetSearchBar(sectionBase.searchHandler, sectionBase.searchBarConfig);
@@ -53,12 +61,12 @@ internal class SectionsHandler : IDisposable
 
     void OnSectionHide(SectionBase sectionBase)
     {
-        if (sectionBase is IDeployedSceneListener deployedSceneListener)
+        if (sectionBase is ISceneListener deployedSceneListener)
         {
             scenesViewController.RemoveListener(deployedSceneListener);
         }
 
-        if (sectionBase is IProjectSceneListener projectSceneListener)
+        if (sectionBase is IProjectListener projectSceneListener)
         {
             scenesViewController.RemoveListener(projectSceneListener);
         }
@@ -70,11 +78,11 @@ internal class SectionsHandler : IDisposable
 
         if (sectionBase is ILandsListener landsListener)
         {
-            landController.RemoveListener(landsListener);
+            landsController.RemoveListener(landsListener);
         }
 
         searchBarView.SetSearchBar(null, null);
     }
 
-    void OnSelectScene(ISceneCardView sceneCardView) { sectionsController.OpenSection(SectionId.SETTINGS_PROJECT_GENERAL); }
+    void SelectProject(ISceneCardView sceneCardView) { sectionsController.OpenSection(SectionId.SETTINGS_PROJECT_GENERAL); }
 }

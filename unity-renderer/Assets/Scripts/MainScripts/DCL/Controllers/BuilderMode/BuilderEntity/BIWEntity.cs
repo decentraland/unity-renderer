@@ -22,6 +22,7 @@ public class BIWEntity
     public event Action<BIWEntity> OnErrorStatusChange;
 
     public bool isDeleted { get; private set; }
+
     public bool isLocked
     {
         get { return GetIsLockedValue(); }
@@ -64,8 +65,12 @@ public class BIWEntity
         set
         {
             isVisibleValue = value;
+
             if (rootEntity != null && rootEntity.gameObject != null)
-                rootEntity.gameObject?.SetActive(isVisibleValue);
+            {
+                rootEntity.gameObject.SetActive(isVisibleValue);
+            }
+
             OnStatusUpdate?.Invoke(this);
         }
     }
@@ -103,7 +108,7 @@ public class BIWEntity
 
     #endregion
 
-    public void Init(IDCLEntity entity, Material editMaterial)
+    public void Initialize(IDCLEntity entity, Material editMaterial)
     {
         rootEntity = entity;
         rootEntity.OnShapeUpdated += OnShapeUpdate;
@@ -643,10 +648,10 @@ public class BIWEntity
 
             var meshCollider = entityColliderChildren.AddComponent<MeshCollider>();
 
-            if (meshInfo.renderers[i] is SkinnedMeshRenderer)
+            if (meshInfo.renderers[i] is SkinnedMeshRenderer skr)
             {
                 Mesh meshColliderForSkinnedMesh = new Mesh();
-                (meshInfo.renderers[i] as SkinnedMeshRenderer).BakeMesh(meshColliderForSkinnedMesh);
+                skr.BakeMesh(meshColliderForSkinnedMesh);
                 meshCollider.sharedMesh = meshColliderForSkinnedMesh;
                 t.localScale = new Vector3(1 / meshInfo.renderers[i].gameObject.transform.lossyScale.x, 1 / meshInfo.renderers[i].gameObject.transform.lossyScale.y, 1 / meshInfo.renderers[i].gameObject.transform.lossyScale.z);
             }
@@ -662,7 +667,6 @@ public class BIWEntity
             {
                 if (collidersGameObjectDictionary.ContainsKey(entity.scene.sceneData.id + entity.entityId))
                     collidersGameObjectDictionary.Remove(entity.scene.sceneData.id + entity.entityId);
-
 
                 collidersGameObjectDictionary.Add(entity.scene.sceneData.id + entity.entityId, colliderList);
 

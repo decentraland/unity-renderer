@@ -80,9 +80,9 @@ public class TestSceneIntegrityChecker
             foreach (var o in newObjects)
             {
                 if (DEBUG_PAUSE_ON_INTEGRITY_FAIL)
-                    Debug.LogError($"Component - {o} (id: {o.GetInstanceID()}) (Click to highlight)", o.gameObject);
+                    Debug.LogWarning($"Component - {o} (id: {o.GetInstanceID()}) (Click to highlight)", o.gameObject);
                 else
-                    Debug.LogError($"Component - {o}", o.gameObject);
+                    Debug.LogWarning($"Component - {o}", o.gameObject);
             }
 
             if (DEBUG_PAUSE_ON_INTEGRITY_FAIL)

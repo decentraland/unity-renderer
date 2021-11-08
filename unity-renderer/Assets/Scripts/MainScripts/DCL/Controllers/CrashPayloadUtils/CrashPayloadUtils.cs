@@ -1,13 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
-using DCL.SettingsData;
+using DCL.SettingsCommon;
 using UnityGLTF.Cache;
 using UnityEngine;
+using QualitySettings = DCL.SettingsCommon.QualitySettings;
 
 namespace DCL.Helpers
 {
@@ -21,7 +20,7 @@ namespace DCL.Helpers
 
             ScenesDumper.Dump(allScenes, AssetPromiseKeeper_Texture.i.library, PersistentAssetCache.ImageCacheByUri, result );
             PoolManagerDumper.Dump(PoolManager.i, result );
-            QualitySettingsDumper.Dump(Settings.i.currentQualitySettings, result );
+            QualitySettingsDumper.Dump(Settings.i.qualitySettings.Data, result );
             GltfDumper.Dump( AssetPromiseKeeper_GLTF.i.library, result );
             AssetBundleDumper.Dump( AssetPromiseKeeper_AB.i.library, result );
             TextureDumper.Dump( AssetPromiseKeeper_Texture.i.library, PersistentAssetCache.ImageCacheByUri, result );
@@ -133,7 +132,7 @@ namespace DCL.Helpers
 
     static class QualitySettingsDumper
     {
-        public static void Dump(DCL.SettingsData.QualitySettings settings, CrashPayload payload) { payload.fields.Add( CrashPayload.DumpLiterals.QUALITY_SETTINGS, settings ); }
+        public static void Dump(QualitySettings settings, CrashPayload payload) { payload.fields.Add( CrashPayload.DumpLiterals.QUALITY_SETTINGS, settings ); }
     }
 
     static class PoolManagerDumper
@@ -206,7 +205,7 @@ namespace DCL.Helpers
                 IParcelScene scene = kvp.Value;
 
                 // Sum operator is overloaded
-                totalSceneLimits += scene.metricsController.GetModel().ToMetricsModel();
+                totalSceneLimits += scene.metricsCounter.GetModel().ToMetricsModel();
 
                 loadedScenes.Add( new LoadedScenesDump
                     {

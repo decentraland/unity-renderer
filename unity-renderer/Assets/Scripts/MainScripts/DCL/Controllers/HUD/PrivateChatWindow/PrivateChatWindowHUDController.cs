@@ -2,6 +2,7 @@ using DCL.Interface;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ public class PrivateChatWindowHUDController : IHUD
         view.chatHudView.inputField.onSelect.RemoveListener(ChatHUDViewInputField_OnSelect);
         view.chatHudView.inputField.onSelect.AddListener(ChatHUDViewInputField_OnSelect);
 
-        chatHudController = new ChatHUDController();
+        chatHudController = new ChatHUDController(DataStore.i);
         chatHudController.Initialize(view.chatHudView);
         LoadLatestReadChatMessagesStatus();
 

@@ -4,13 +4,10 @@ using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Generic;
 using DCL;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
-using UnityGLTF.Cache;
 using UnityGLTF.Cache;
 
 public class GLTFImporterTests : IntegrationTestSuite_Legacy
@@ -140,7 +137,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
 
         UnityEngine.Assertions.Assert.AreEqual(1, PersistentAssetCache.ImageCacheByUri.Count);
         scene.RemoveEntity(entity.entityId);
-        PoolManager.i.Cleanup();
+        PoolManager.i.Dispose();
 
         yield return null;
 

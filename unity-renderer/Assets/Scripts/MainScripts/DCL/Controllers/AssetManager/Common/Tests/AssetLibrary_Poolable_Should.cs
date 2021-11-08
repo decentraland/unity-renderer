@@ -35,7 +35,7 @@ namespace AssetPromiseKeeper_Tests
 
             assetGltf.Cleanup();
             assetAbGameObject.Cleanup();
-            PoolManager.i.Cleanup();
+            PoolManager.i.Dispose();
         }
     }
 }

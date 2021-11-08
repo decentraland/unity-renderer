@@ -14,7 +14,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' "$UNITY_PATH/Edit
   -batchmode \
   -projectPath "$PROJECT_PATH" \
   -batchmode \
-  -executeMethod DCL.ABConverter.Client.ExportSceneToAssetBundles \
+  -executeMethod DCL.ABConverter.SceneClient.ExportSceneToAssetBundles \
   -sceneCid "$SCENE_ID" \
   -logFile "$LOCAL_LOG_FILE" \
   -baseUrl "$CONTENT_URL" \

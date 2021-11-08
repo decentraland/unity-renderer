@@ -67,7 +67,7 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
         TestHelpers.CreateSceneEntity(scene, entityId);
 
         BIWEntity biwEntity = new BIWEntity();
-        biwEntity.Init(scene.entities[entityId], null);
+        biwEntity.Initialize(scene.entities[entityId], null);
 
         Assert.IsTrue(biwEntity.entityUniqueId == scene.sceneData.id + scene.entities[entityId].entityId, "Entity id is not created correctly, this can lead to weird behaviour");
 
@@ -127,7 +127,6 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
             new Vector2Int(140, 140),
             new Vector2Int(141, 140),
             new Vector2Int(141, 141)
-
         });
 
         var fiveScene = CreateParcelSceneForSizeTest(new []
@@ -135,7 +134,6 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
             new Vector2Int(140, 140),
             new Vector2Int(139, 140),
             new Vector2Int(138, 140)
-
         });
 
         var sixScene = CreateParcelSceneForSizeTest(new []
@@ -143,7 +141,6 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
             new Vector2Int(140, 140),
             new Vector2Int(140, 139),
             new Vector2Int(140, 138)
-
         });
 
         //Act
@@ -161,7 +158,6 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(fourResult, new Vector2Int(2, 2));
         Assert.AreEqual(fiveResult, new Vector2Int(3, 1));
         Assert.AreEqual(sixResult, new Vector2Int(1, 3));
-
     }
 
     private ParcelScene CreateParcelSceneForSizeTest(Vector2Int[] parcels)
@@ -169,14 +165,15 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
         ParcelScene scene = mockedGameObject.AddComponent<ParcelScene>();
         var data = new LoadParcelScenesMessage.UnityParcelScene();
         data.parcels = parcels;
+        data.id = "scene-for-size-test";
         scene.SetData(data);
         return scene;
     }
 
     protected override IEnumerator TearDown()
     {
-        if (mockedGameObject != null)
-            GameObject.Destroy(mockedGameObject);
+        UnityEngine.Object.Destroy(mockedGameObject);
+
         AssetCatalogBridge.i.ClearCatalog();
         BIWCatalogManager.ClearCatalog();
         yield return base.TearDown();

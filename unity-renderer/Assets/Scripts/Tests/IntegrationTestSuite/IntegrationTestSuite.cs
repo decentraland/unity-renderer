@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using DCL;
+using NSubstitute.ClearExtensions;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -31,7 +32,8 @@ namespace Tests
         protected virtual IEnumerator TearDown()
         {
             Environment.Dispose();
-            PoolManager.i?.Cleanup();
+            PoolManager.i?.Dispose();
+            DataStore.Clear();
             yield break;
         }
     }

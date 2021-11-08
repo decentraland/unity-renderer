@@ -1,5 +1,10 @@
 #ifndef DCL_GPU_SKINNING_INCLUDED
 #define DCL_GPU_SKINNING_INCLUDED
+
+#if defined(SHADER_API_METAL)
+#define UNITY_ENABLE_CBUFFER
+#endif
+
 #include <HLSLSupport.cginc>
 
 CBUFFER_START(UnityPerMaterial)

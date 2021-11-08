@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using Tests;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {
@@ -35,13 +37,13 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         outlinerController = new BIWOutlinerController();
         entityHandler = new BIWEntityHandler();
 
-        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             outlinerController,
             entityHandler
         );
 
-        outlinerController.Init(referencesController);
-        entityHandler.Init(referencesController);
+        outlinerController.Initialize(context);
+        entityHandler.Initialize(context);
 
         entityHandler.EnterEditMode(scene);
         outlinerController.EnterEditMode(scene);
@@ -115,9 +117,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        outlinerController.ExitEditMode();
-        outlinerController.Dispose();
-        entityHandler.Dispose();
+        context.Dispose();
         yield return base.TearDown();
     }
 }

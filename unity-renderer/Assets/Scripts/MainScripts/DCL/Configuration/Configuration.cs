@@ -6,7 +6,7 @@ namespace DCL.Configuration
     {
         //Note: Don't use these URL directly, you need to get them in the BuilderInWorldUtils to take into account the ENV
         public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
-        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks";
+        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks?owner=";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
 
         public static readonly LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
@@ -34,6 +34,7 @@ namespace DCL.Configuration
         public const string STATE_EVENT_NAME = "stateEvent";
         public const string SCENE_EVENT_NAME = "SceneEvent";
         public const string BIW_HEADER_REQUEST_EVENT_NAME = "RequestBIWCatalogHeader";
+        public const string BIW_HEADER_REQUEST_WITH_PARAM_EVENT_NAME = "RequestHeaderForUrl";
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
         public static float ENTITY_POSITION_REPORTING_THRESHOLD = 0.04f; // In meters
         public static float ENTITY_SCALE_REPORTING_THRESHOLD = 0.04f; // In meters
@@ -105,6 +106,20 @@ namespace DCL.Configuration
     {
         public static KeyCode PrimaryButtonKeyCode = KeyCode.E;
         public static KeyCode SecondaryButtonKeyCode = KeyCode.F;
+        public static KeyCode ForwardButtonKeyCode = KeyCode.W;
+        public static KeyCode BackwardButtonKeyCode = KeyCode.S;
+        public static KeyCode LeftButtonKeyCode = KeyCode.A;
+        public static KeyCode RightButtonKeyCode = KeyCode.D;
+        public static KeyCode ForwardButtonKeyCodeAlt = KeyCode.UpArrow;
+        public static KeyCode BackwardButtonKeyCodeAlt = KeyCode.DownArrow;
+        public static KeyCode LeftButtonKeyCodeAlt = KeyCode.LeftArrow;
+        public static KeyCode RightButtonKeyCodeAlt = KeyCode.RightArrow;
+        public static KeyCode JumpButtonKeyCode = KeyCode.Space;
+        public static KeyCode WalkButtonKeyCode = KeyCode.LeftShift;
+        public static KeyCode OneButtonKeyCode = KeyCode.Alpha1;
+        public static KeyCode TwoButtonKeyCode = KeyCode.Alpha2;
+        public static KeyCode ThreeButtonKeyCode = KeyCode.Alpha3;
+        public static KeyCode FourButtonKeyCode = KeyCode.Alpha4;
     }
 
     public static class PlayerSettings

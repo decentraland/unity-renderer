@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.SettingsCommon;
+using UnityEngine;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Components
 {
@@ -39,7 +41,7 @@ namespace DCL.Components
 
             Model model = (Model)newModel;
             bool forceUpdate = prevModel.volume != model.volume;
-            settingsVolume = GetCalculatedSettingsVolume(Settings.i.currentAudioSettings);
+            settingsVolume = GetCalculatedSettingsVolume(Settings.i.audioSettings.Data);
 
             UpdatePlayingState(forceUpdate);
             prevModel = model;
@@ -50,7 +52,7 @@ namespace DCL.Components
         {
             CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
-            Settings.i.OnAudioSettingsChanged += OnSettingsChanged;
+            Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
         }
 
@@ -59,7 +61,7 @@ namespace DCL.Components
             isDestroyed = true;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
-            Settings.i.OnAudioSettingsChanged -= OnSettingsChanged;
+            Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
             StopStreaming();
         }
@@ -117,19 +119,19 @@ namespace DCL.Components
             }
         }
 
-        private void OnSettingsChanged(SettingsData.AudioSettings settings)
+        private void OnSettingsChanged(AudioSettings settings)
         {
             float newSettingsVolume = GetCalculatedSettingsVolume(settings);
-            if (settingsVolume != newSettingsVolume)
+            if (Math.Abs(settingsVolume - newSettingsVolume) > Mathf.Epsilon)
             {
                 settingsVolume = newSettingsVolume;
                 UpdatePlayingState(true);
             }
         }
 
-        private float GetCalculatedSettingsVolume(SettingsData.AudioSettings audioSettings) { return Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettings.sceneSFXVolume * audioSettings.masterVolume); }
+        private float GetCalculatedSettingsVolume(AudioSettings audioSettings) { return Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettings.sceneSFXVolume * audioSettings.masterVolume); }
 
-        private void SceneSFXVolume_OnChange(float current, float previous) { OnSettingsChanged(Settings.i.currentAudioSettings); }
+        private void SceneSFXVolume_OnChange(float current, float previous) { OnSettingsChanged(Settings.i.audioSettings.Data); }
 
         private void StopStreaming()
         {

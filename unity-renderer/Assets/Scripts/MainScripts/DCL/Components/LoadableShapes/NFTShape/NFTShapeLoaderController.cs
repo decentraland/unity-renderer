@@ -56,7 +56,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     private string darURLProtocol;
     private string darURLRegistry;
     private string darURLAsset;
-    private IPromiseLike_TextureAsset assetPromise = null;
+    internal IPromiseLike_TextureAsset assetPromise = null;
 
     public Material frameMaterial { private set; get; } = null;
     public Material imageMaterial { private set; get; } = null;
@@ -71,6 +71,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     bool isDestroyed = false;
 
     private Coroutine fetchNftImageCoroutine;
+    internal IWrappedTextureHelper wrappedTextureHelper;
 
     void Awake()
     {
@@ -93,6 +94,8 @@ public class NFTShapeLoaderController : MonoBehaviour
                     break;
             }
         }
+
+
         meshRenderer.materials = meshMaterials;
 
         // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
@@ -100,6 +103,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         InitializePerlinNoise();
         nftInfoFetcher = new NFTInfoFetcher();
+        wrappedTextureHelper = new WrappedTextureUtils();
     }
 
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
@@ -167,7 +171,10 @@ public class NFTShapeLoaderController : MonoBehaviour
         nftInfoFetcher.FetchNFTImage(darURLRegistry, darURLAsset, NFTInfoFetched, NFTInfoFetchedFail);
     }
 
-    private void NFTInfoFetched(NFTInfo nftInfo) { fetchNftImageCoroutine = StartCoroutine(FetchNFTImageCoroutine(nftInfo)); }
+    private void NFTInfoFetched(NFTInfo nftInfo)
+    {
+        fetchNftImageCoroutine = StartCoroutine(FetchNFTImageCoroutine(nftInfo));
+    }
 
     private void NFTInfoFetchedFail()
     {
@@ -195,7 +202,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         FinishLoading(true);
     }
 
-    IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
+    internal IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
     {
         bool isError = false;
 
@@ -205,9 +212,10 @@ public class NFTShapeLoaderController : MonoBehaviour
         bool foundDCLImage = false;
         if (!string.IsNullOrEmpty(nftInfo.previewImageUrl))
         {
-            yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl, (promise) =>
+            yield return wrappedTextureHelper.Fetch(nftInfo.previewImageUrl, (promise) =>
             {
                 foundDCLImage = true;
+                assetPromise?.Forget();
                 this.assetPromise = promise;
                 FetchNFTInfoSuccess(promise.asset, nftInfo, true);
             });
@@ -216,10 +224,11 @@ public class NFTShapeLoaderController : MonoBehaviour
         //We fall back to the nft original image which can have a really big size
         if (!foundDCLImage && !string.IsNullOrEmpty(nftInfo.originalImageUrl))
         {
-            yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
+            yield return wrappedTextureHelper.Fetch(nftInfo.originalImageUrl,
                 (promise) =>
                 {
                     foundDCLImage = true;
+                    assetPromise?.Forget();
                     this.assetPromise = promise;
                     FetchNFTInfoSuccess(promise.asset, nftInfo, false);
                 }, () => isError = true);
@@ -233,6 +242,8 @@ public class NFTShapeLoaderController : MonoBehaviour
             yield break;
         }
 
+        // TODO(Brian): This code will be called but FetchNFTInfoSuccess call in the promise
+        //              above also triggers it, so the event is invoked twice!. Fix me!.
         FinishLoading(foundDCLImage);
     }
 
@@ -323,6 +334,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         if (fetchNftImageCoroutine != null)
             StopCoroutine(fetchNftImageCoroutine);
+
         if (assetPromise != null)
         {
             assetPromise.Forget();
@@ -345,6 +357,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         {
             Object.Destroy(backgroundMaterial);
         }
+
         if (imageMaterial != null)
         {
             Object.Destroy(imageMaterial);

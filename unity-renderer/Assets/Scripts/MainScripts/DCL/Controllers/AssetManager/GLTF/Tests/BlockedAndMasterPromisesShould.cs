@@ -32,6 +32,8 @@ namespace AssetPromiseKeeper_GLTF_Tests
             keeper.Keep(prom);
             keeper.Keep(prom2);
             keeper.Keep(prom3);
+            
+            var asset = prom.asset;
 
             keeper.Forget(prom);
 
@@ -40,8 +42,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Object.Destroy(parent);
 
             yield return prom;
-
-            var asset = prom.asset;
             
             yield return prom2;
             yield return prom3;
@@ -65,10 +65,10 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator FailCorrectlyWhenGivenWrongURL()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-
+            
             //NOTE(Brian): Expect the 404 error
-            LogAssert.Expect(LogType.Error, new Regex("^*.?404"));
-
+            LogAssert.Expect(LogType.Log, new Regex("^.*?404"));
+            
             string url = TestAssetsUtils.GetPath() + "/non_existing_url.glb";
 
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);

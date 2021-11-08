@@ -28,6 +28,7 @@ var WebVideoPlayer = {
                 maxBufferLength: 60,
             };
             const hls = new Hls(hlsConfig);
+            hls.autoLevelCapping = 3; // 720p hard cap for performance
             hls.on(Hls.Events.MEDIA_ATTACHED, function () {
                 hls.loadSource(videoUrl);
             });

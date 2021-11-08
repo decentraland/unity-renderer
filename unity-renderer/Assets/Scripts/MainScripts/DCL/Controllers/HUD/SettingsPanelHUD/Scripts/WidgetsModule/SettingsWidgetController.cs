@@ -1,6 +1,6 @@
-using DCL.SettingsControls;
 using DCL.SettingsPanelHUD.Controls;
 using System.Collections.Generic;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
 namespace DCL.SettingsPanelHUD.Widgets

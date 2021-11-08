@@ -1273,3 +1273,125 @@ MonoBehaviour:
     rarity: legendary
     description: Fire Warrior Face For Battle.
     issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: steampunk_jacket_male.glb
+        contents:
+        - key: Buckle7.png
+          hash: 
+        - key: Jacket5.png
+          hash: 
+        - key: steampunk_corset_female.glb
+          hash: 
+        - key: steampunk_jacket_male.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: steampunk_corset_female.glb
+        contents:
+        - key: Buckle7.png
+          hash: 
+        - key: Jacket5.png
+          hash: 
+        - key: steampunk_corset_female.glb
+          hash: 
+        - key: steampunk_jacket_male.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      category: upper_body
+      tags:
+      - WonderZone
+      - exclusive
+      - decentraland
+      - mana
+      - upper_body
+      - coat
+      - jacket
+      - corset
+      - community
+      - licensed
+      - steampunk
+      - exclusive
+      replaces: []
+      hides: []
+    id: urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_jacket
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Steampunk Jacket
+    - code: es
+      text: Saco formal del Steampunk
+    thumbnail: https://peer.decentraland.org/content/contents/QmZv8xpUbyQgyLyJNKNGUSmXg8pcysjZdBP7hLQngkSCf7
+    rarity: legendary
+    description: Elegant Steampunk jacket. Gives a bonus in the WonderMine game.
+      Created by Maricela
+    issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: steampunk_hat_male.glb
+        contents:
+        - key: SteampunkHatFlat1.png
+          hash: 
+        - key: SteampunkHatLight.png
+          hash: 
+        - key: pasted__ReflectionMap.png
+          hash: 
+        - key: steampunk_hat_female.glb
+          hash: 
+        - key: steampunk_hat_male.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: steampunk_hat_female.glb
+        contents:
+        - key: SteampunkHatFlat1.png
+          hash: 
+        - key: SteampunkHatLight.png
+          hash: 
+        - key: pasted__ReflectionMap.png
+          hash: 
+        - key: steampunk_hat_female.glb
+          hash: 
+        - key: steampunk_hat_male.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      category: hat
+      tags:
+      - WonderZone
+      - exclusive
+      - decentraland
+      - mana
+      - hat
+      - steampunk
+      - licensed
+      - exclusive
+      replaces:
+      - helmet
+      hides:
+      - hair
+    id: urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_hat
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Steampunk Top Hat
+    - code: es
+      text: Sombrero de Steampunk
+    - code: fr
+      text: Chapeau haut-de-forme Steampunk
+    thumbnail: https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC
+    rarity: legendary
+    description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
+      by Maricela.
+    issuedId: 0

@@ -1,7 +1,7 @@
-using DCL.SettingsPanelHUD.Common;
 using DCL.SettingsPanelHUD.Sections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.SettingsCommon;
 
 namespace DCL.SettingsPanelHUD
 {
@@ -72,7 +72,15 @@ namespace DCL.SettingsPanelHUD
 
         private List<SettingsButtonEntry> menuButtons = new List<SettingsButtonEntry>();
 
-        public SettingsPanelHUDController() { view = SettingsPanelHUDView.Create(); }
+        public void Initialize()
+        {
+            view = CreateView();
+            view.Initialize(this, this);
+        }
+        protected virtual SettingsPanelHUDView CreateView()
+        {
+            return SettingsPanelHUDView.Create();
+        }
 
         public void Dispose()
         {
@@ -93,8 +101,6 @@ namespace DCL.SettingsPanelHUD
 
             view.SetVisibility(visible);
         }
-
-        public void Initialize() { view.Initialize(this, this); }
 
         public void AddSection(
             SettingsButtonEntry newMenuButton,
@@ -126,39 +132,29 @@ namespace DCL.SettingsPanelHUD
         {
             foreach (var section in sections)
             {
-                if (section == sectionToOpen)
-                    continue;
-
-                section.SetActive(false);
+                section.SetActive(section == sectionToOpen);
             }
-
-            sectionToOpen.SetActive(true);
         }
 
         public void OpenSection(int sectionIndex)
         {
-            foreach (var section in sections)
+            for (int i = 0; i < sections.Count; i++)
             {
-                if (section == sections[sectionIndex])
-                    continue;
-
-                section.SetActive(false);
+                var section = sections[i];
+                section.SetActive(i == sectionIndex);
             }
-
-            sections[sectionIndex].SetActive(true);
         }
 
         public void MarkMenuButtonAsSelected(int buttonIndex)
         {
-            foreach (var button in menuButtons)
+            for (int i = 0; i < menuButtons.Count; i++)
             {
-                button.MarkAsSelected(false);
+                var button = menuButtons[i];
+                button.MarkAsSelected(i == buttonIndex);
             }
-
-            menuButtons[buttonIndex].MarkAsSelected(true);
         }
 
-        public void SaveSettings() { Settings.i.SaveSettings(); }
+        public virtual void SaveSettings() { Settings.i.SaveSettings(); }
 
         public void ResetAllSettings() { Settings.i.ResetAllSettings(); }
     }

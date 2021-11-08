@@ -1,19 +1,10 @@
+using System;
 using DCL.Configuration;
 using DCL.Controllers;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-
-public interface IBIWOutlinerController
-{
-    void OutlineEntity(BIWEntity entity);
-    void CancelEntityOutline(BIWEntity entityToQuitOutline);
-    void OutlineEntities(List<BIWEntity> entitiesToEdit);
-    void CheckOutline();
-    void CancelUnselectedOutlines();
-    void CancelAllOutlines();
-    void SetOutlineCheckActive(bool isActive);
-}
 
 public class BIWOutlinerController : BIWController, IBIWOutlinerController
 {
@@ -28,15 +19,15 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     private int outlinerOptimizationCounter = 0;
     private bool isOutlineCheckActive = true;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(IContext context)
     {
-        base.Init(context);
+        base.Initialize(context);
         cameraOutlinerMaterial = context.projectReferencesAsset.cameraOutlinerMaterial;
 
-        raycastController = context.raycastController;
+        raycastController = context.editorContext.raycastController;
     }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public override void EnterEditMode(IParcelScene scene)
     {
         base.EnterEditMode(scene);
         ActivateBuilderInWorldCamera();

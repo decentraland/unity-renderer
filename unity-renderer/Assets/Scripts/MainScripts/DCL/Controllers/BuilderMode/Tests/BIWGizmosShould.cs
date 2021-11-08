@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Builder.Gizmos;
 using DCL;
+using DCL.Builder;
 using DCL.Configuration;
 using DCL.Helpers;
 using NSubstitute;
@@ -27,9 +28,9 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
         gizmosAxis = mockedGameObject.AddComponent<BIWGizmosAxis>();
         gizmosAxis.SetGizmo(gizmo);
 
-        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(InitialSceneReferences.i);
+        var referencesController = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
         gizmosController = new BIWGizmosController();
-        gizmosController.Init(referencesController);
+        gizmosController.Initialize(referencesController);
         gizmosController.EnterEditMode(scene);
     }
 
@@ -52,7 +53,6 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
 
         //Act
         gizmosController.OnDrag(Vector3.one, Vector2.one);
-
     }
 
     private void AssertValue(Vector3 value) { Assert.AreEqual(value, Vector3.zero); }

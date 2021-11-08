@@ -164,7 +164,10 @@ public class FriendsTabView : FriendsTabViewBase
     protected override void UpdateLayout()
     {
         if (creationQueue.Count == 0)
+        {
+            base.UpdateLayout();
             return;
+        }
 
         for (int i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count != 0; i++)
         {

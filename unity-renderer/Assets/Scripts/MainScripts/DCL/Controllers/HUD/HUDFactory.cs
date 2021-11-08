@@ -1,5 +1,4 @@
 using System;
-using AvatarNamesHUD;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
@@ -21,7 +20,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new MinimapHUDController();
                 break;
             case HUDElementID.PROFILE_HUD:
-                hudElement = new ProfileHUDController();
+                hudElement = new ProfileHUDController(new UserProfileWebInterfaceBridge());
                 break;
             case HUDElementID.NOTIFICATION:
                 hudElement = new NotificationHUDController();
@@ -84,7 +83,6 @@ public class HUDFactory : IHUDFactory
                 hudElement = new GraphicCardWarningHUDController();
                 break;
             case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                hudElement = new BuildModeHUDController();
                 break;
             case HUDElementID.QUESTS_PANEL:
                 hudElement = new QuestsPanelHUDController();
@@ -96,13 +94,9 @@ public class HUDFactory : IHUDFactory
                 hudElement = new SignupHUDController();
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
-                hudElement = new BuilderProjectsPanelController();
                 break;
             case HUDElementID.LOADING:
                 hudElement = new LoadingHUDController();
-                break;
-            case HUDElementID.AVATAR_NAMES:
-                hudElement = new AvatarNamesHUDController();
                 break;
         }
 

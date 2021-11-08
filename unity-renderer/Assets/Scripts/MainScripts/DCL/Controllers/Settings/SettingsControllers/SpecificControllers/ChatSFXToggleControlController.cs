@@ -1,6 +1,7 @@
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Chat SFX Toggle", fileName = "ChatSFXToggleControlController")]
     public class ChatSFXToggleControlController : ToggleSettingsControlController

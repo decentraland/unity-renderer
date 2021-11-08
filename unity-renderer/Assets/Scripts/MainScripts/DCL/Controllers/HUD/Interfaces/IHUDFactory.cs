@@ -29,6 +29,7 @@ public enum HUDElementID
 
     USERS_AROUND_LIST_HUD = 22,
     GRAPHIC_CARD_WARNING = 23,
+    [Obsolete("Deprecated HUD Element")]
     BUILDER_IN_WORLD_MAIN = 24,
 
     [Obsolete("Deprecated HUD Element")]
@@ -36,10 +37,14 @@ public enum HUDElementID
 
     QUESTS_PANEL = 26,
     QUESTS_TRACKER = 27,
+    [Obsolete("Deprecated HUD Element")]
     BUILDER_PROJECTS_PANEL = 28,
     SIGNUP = 29,
     LOADING = 30,
+
+    [Obsolete("Deprecated HUD Element")]
     AVATAR_NAMES = 31,
+
     COUNT = 32
 }
 

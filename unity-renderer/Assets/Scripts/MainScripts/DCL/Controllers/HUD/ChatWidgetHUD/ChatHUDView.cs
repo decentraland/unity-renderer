@@ -13,6 +13,9 @@ public class ChatHUDView : MonoBehaviour
 {
     static string VIEW_PATH = "Chat Widget";
     string ENTRY_PATH = "Chat Entry";
+    private const int MAX_CONTINUOUS_MESSAGES = 6;
+    private const int MIN_MILLISECONDS_BETWEEN_MESSAGES = 1500;
+    private const int TEMPORARILY_MUTE_MINUTES = 10;
 
     public bool detectWhisper = true;
     public TMP_InputField inputField;
@@ -31,6 +34,8 @@ public class ChatHUDView : MonoBehaviour
     ChatMessage currentMessage = new ChatMessage();
     Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
     Match whisperRegexMatch;
+    private List<ChatEntry.Model> lastMessages = new List<ChatEntry.Model>();
+    private Dictionary<string, ulong> temporarilyMutedSenders = new Dictionary<string, ulong>();
 
     public event UnityAction<string> OnPressPrivateMessage;
     public event UnityAction<ChatMessage> OnSendMessage;
@@ -129,6 +134,9 @@ public class ChatHUDView : MonoBehaviour
 
     public virtual void AddEntry(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
+        if (IsSpamming(chatEntryModel.senderName))
+            return;
+
         var chatEntryGO = Instantiate(Resources.Load(ENTRY_PATH) as GameObject, chatEntriesContainer);
         ChatEntry chatEntry = chatEntryGO.GetComponent<ChatEntry>();
 
@@ -156,6 +164,67 @@ public class ChatHUDView : MonoBehaviour
 
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
+
+        if (string.IsNullOrEmpty(chatEntryModel.senderId))
+            return;
+            
+        if (lastMessages.Count == 0)
+        {
+            lastMessages.Add(chatEntryModel);
+        }
+        else if(lastMessages[lastMessages.Count-1].senderName == chatEntryModel.senderName)
+        {
+            if (MessagesSentTooFast(lastMessages[lastMessages.Count - 1].timestamp, chatEntryModel.timestamp))
+            {
+                lastMessages.Add(chatEntryModel);
+                    
+                if (lastMessages.Count == MAX_CONTINUOUS_MESSAGES)
+                {
+                    temporarilyMutedSenders.Add(chatEntryModel.senderName, chatEntryModel.timestamp);
+                    lastMessages.Clear();
+                }
+            }
+            else
+            {
+                lastMessages.Clear();
+            }
+        }
+        else
+        {
+            lastMessages.Clear();
+        }
+    }
+    
+    bool MessagesSentTooFast(ulong oldMessageTimeStamp, ulong newMessageTimeStamp)
+    {
+        System.DateTime oldDateTime = CreateBaseDateTime().AddMilliseconds(oldMessageTimeStamp).ToLocalTime();
+        System.DateTime newDateTime = CreateBaseDateTime().AddMilliseconds(newMessageTimeStamp).ToLocalTime();
+
+        return (newDateTime - oldDateTime).TotalMilliseconds < MIN_MILLISECONDS_BETWEEN_MESSAGES;
+    }
+
+    private bool IsSpamming(string senderName)
+    {
+        if (string.IsNullOrEmpty(senderName))
+            return false;
+        
+        bool isSpamming = false;
+
+        if (temporarilyMutedSenders.ContainsKey(senderName))
+        {
+            System.DateTime muteTimestamp = CreateBaseDateTime().AddMilliseconds(temporarilyMutedSenders[senderName]).ToLocalTime();
+            if ((System.DateTime.Now - muteTimestamp).Minutes < TEMPORARILY_MUTE_MINUTES)
+                isSpamming = true;
+            else
+                temporarilyMutedSenders.Remove(senderName);
+        }
+
+        return isSpamming;
+    }
+
+    private System.DateTime CreateBaseDateTime()
+    {
+        return new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
     }
 
     private void OnOpenContextMenu(ChatEntry chatEntry)

@@ -1,11 +1,13 @@
-using DCL.Controllers;
-using DCL.Models;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
+using DCL.Builder;
 using DCL.Configuration;
+using DCL.Controllers;
+using DCL.Models;
 using UnityEngine;
 
-public class BIWMode
+public class BIWMode : IBIWMode
 {
     public event Action OnInputDone;
     public event Action<BIWCompleteAction> OnActionGenerated;
@@ -37,12 +39,15 @@ public class BIWMode
 
     internal List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
-    public virtual void Init(BIWContext context)
+    internal IContext context;
+
+    public virtual void Init(IContext context)
     {
-        entityHandler = context.entityHandler;
-        saveController = context.saveController;
-        actionController = context.actionController;
-        raycastController = context.raycastController;
+        this.context = context;
+        entityHandler = context.editorContext.entityHandler;
+        saveController = context.editorContext.saveController;
+        actionController = context.editorContext.actionController;
+        raycastController = context.editorContext.raycastController;
         entityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
@@ -75,7 +80,7 @@ public class BIWMode
             AudioScriptableObjects.disable.Play();
 
         isSnapActiveValue = isActive;
-        HUDController.i.builderInWorldMainHud?.SetSnapModeActive(isSnapActiveValue);
+        context.editorContext.editorHUD?.SetSnapModeActive(isSnapActiveValue);
     }
 
     public virtual void StartMultiSelection() { isMultiSelectionActive = true; }
@@ -248,7 +253,7 @@ public class BIWMode
         }
     }
 
-    protected void ActionFinish(BIWCompleteAction.ActionType type)
+    protected void ActionFinish(IBIWCompleteAction.ActionType type)
     {
         if (actionList.Count > 0 && selectedEntities.Count > 0)
         {

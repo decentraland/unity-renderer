@@ -2,24 +2,32 @@
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace DCL.Components
 {
-    public abstract class ParametrizedShape<T> : BaseShape where T : BaseShape.Model, new()
+    public abstract class ParametrizedShape<T> : BaseShape
+        where T : BaseShape.Model, new()
     {
+        public Dictionary<IDCLEntity, Rendereable> attachedRendereables = new Dictionary<IDCLEntity, Rendereable>();
         bool visibilityDirty = false;
         bool collisionsDirty = false;
 
-        public abstract Mesh GenerateGeometry();
+        public virtual Mesh GenerateGeometry()
+        {
+            return null;
+        }
 
         protected virtual void DestroyGeometry()
         {
-            if (currentMesh != null)
-            {
-                GameObject.Destroy(currentMesh);
-                currentMesh = null;
-            }
+            if (currentMesh == null)
+                return;
+
+            Object.Destroy(currentMesh);
+            currentMesh = null;
         }
 
         public Mesh currentMesh { get; protected set; }
@@ -59,6 +67,10 @@ namespace DCL.Components
             {
                 entity.meshesInfo.UpdateExistingMeshAtIndex(currentMesh, 0);
             }
+
+            // First we remove the old rendereable, then we compute and add the new one.
+            RemoveRendereableFromDataStore(entity);
+            AddRendereableToDataStore(entity);
         }
 
         void OnShapeAttached(IDCLEntity entity)
@@ -69,10 +81,13 @@ namespace DCL.Components
             entity.EnsureMeshGameObject(componentName + " mesh");
 
             if (currentMesh == null)
+            {
                 currentMesh = GenerateGeometry();
+            }
 
             MeshFilter meshFilter = entity.meshRootGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshRootGameObject.AddComponent<MeshRenderer>();
+
             entity.meshesInfo.renderers = new Renderer[] { meshRenderer };
             entity.meshesInfo.currentShape = this;
 
@@ -87,7 +102,7 @@ namespace DCL.Components
                 transition.fadeThickness = 20;
                 transition.OnDidFinishLoading(finalMaterial);
 
-                transition.onFinishedLoading += () => { entity.OnShapeUpdated?.Invoke(entity); };
+                transition.onFinishedLoading += () => { OnShapeFinishedLoading(entity); };
             }
             else
             {
@@ -97,7 +112,11 @@ namespace DCL.Components
             visibilityDirty = true;
             collisionsDirty = true;
             UpdateRenderer(entity);
+            OnShapeFinishedLoading(entity);
+        }
 
+        void OnShapeFinishedLoading(IDCLEntity entity)
+        {
             entity.OnShapeUpdated?.Invoke(entity);
         }
 
@@ -115,6 +134,8 @@ namespace DCL.Components
 
             Utils.SafeDestroy(entity.meshRootGameObject);
             entity.meshesInfo.CleanReferences();
+
+            RemoveRendereableFromDataStore(entity);
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModelRaw)
@@ -134,7 +155,10 @@ namespace DCL.Components
             if (attachedEntities.Count > 0)
             {
                 if (shouldGenerateMesh)
+                {
+                    DestroyGeometry();
                     currentMesh = GenerateGeometry();
+                }
 
                 using (var iterator = attachedEntities.GetEnumerator())
                 {
@@ -172,5 +196,34 @@ namespace DCL.Components
         public override bool HasCollisions() { return cachedModel.withCollisions; }
 
         protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel) { return true; }
+
+        private void RemoveRendereableFromDataStore(IDCLEntity entity)
+        {
+            if ( attachedRendereables.ContainsKey(entity) )
+            {
+                DataStore.i.sceneWorldObjects.RemoveRendereable(entity, attachedRendereables[entity]);
+                attachedRendereables.Remove(entity);
+            }
+        }
+
+        private void AddRendereableToDataStore(IDCLEntity entity)
+        {
+            int triangleCount = currentMesh.triangles.Length;
+
+            var newRendereable = new Rendereable()
+            {
+                renderers = new List<Renderer>(entity.meshesInfo.renderers),
+                container = entity.meshRootGameObject,
+                totalTriangleCount = triangleCount,
+                meshes = new List<Mesh>() { currentMesh },
+                meshToTriangleCount = new Dictionary<Mesh, int>() { { currentMesh, triangleCount } }
+            };
+
+            if ( !attachedRendereables.ContainsKey(entity) )
+            {
+                attachedRendereables.Add(entity, newRendereable);
+                DataStore.i.sceneWorldObjects.AddRendereable(entity, newRendereable);
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Auto Quality", fileName = "AutoQualityControlController")]
     public class AutoQualityControlController : ToggleSettingsControlController
@@ -15,7 +16,7 @@ namespace DCL.SettingsControls
 
             if (autoQualityValue)
             {
-                SettingsData.QualitySettings.BaseResolution currentBaseResolution = currentQualitySetting.baseResolution;
+                QualitySettings.BaseResolution currentBaseResolution = currentQualitySetting.baseResolution;
                 bool currentFpsCap = currentQualitySetting.fpsCap;
                 currentQualitySetting = Settings.i.lastValidAutoqualitySet;
                 currentQualitySetting.baseResolution = currentBaseResolution;

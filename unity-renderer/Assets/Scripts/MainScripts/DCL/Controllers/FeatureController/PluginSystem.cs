@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Tutorial;
-using DCL.Skybox;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// This class is used to handle a feature that needs the MonoBehaviour callbacks.
@@ -14,16 +11,16 @@ using UnityEngine;
 /// </summary>
 public class PluginSystem
 {
-    private List<PluginFeature> activeFeatures = new List<PluginFeature>();
+    private readonly List<PluginFeature> activeFeatures = new List<PluginFeature>();
 
-    private KernelConfigModel currentConfig;
+    private FeatureFlag currentConfig;
 
-    public KernelConfigModel GetCurrentConfig() { return currentConfig; }
+    public FeatureFlag GetCurrentConfig() { return currentConfig; }
 
-    public void Start()
+    public PluginSystem()
     {
-        KernelConfig.i.EnsureConfigInitialized().Then(ApplyFeaturesConfig);
-        KernelConfig.i.OnChange += OnKernelConfigChanged;
+        DataStore.i.featureFlags.flags.OnChange += ApplyConfig;
+        AddBasePlugins();
     }
 
     public void OnGUI()
@@ -52,24 +49,27 @@ public class PluginSystem
 
     public void OnDestroy()
     {
+        DataStore.i.featureFlags.flags.OnChange -= ApplyConfig;
+
         foreach (PluginFeature feature in activeFeatures)
         {
             feature.Dispose();
         }
     }
 
-    public void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { ApplyFeaturesConfig(current); }
+    public void ApplyConfig(FeatureFlag newConfig, FeatureFlag oldConfig) { ApplyFeaturesConfig(newConfig); }
 
-    public void ApplyFeaturesConfig(KernelConfigModel config)
+    public void AddBasePlugins() { HandleFeature<DebugPluginFeature>(true); }
+
+    public void ApplyFeaturesConfig(FeatureFlag featureFlag)
     {
-        HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
-        HandleFeature<TutorialController>(config.features.enableTutorial);
-        HandleFeature<DebugPluginFeature>(true);
-        HandleFeature<SkyboxController>(config.features.enableProceduralSkybox);
-        currentConfig = config;
+        HandleFeature<BuilderInWorldPlugin>(featureFlag.IsFeatureEnabled("builder_in_world"));
+        HandleFeature<TutorialController>(featureFlag.IsFeatureEnabled("tutorial"));
+        HandleFeature<ExploreV2Feature>(featureFlag.IsFeatureEnabled("explorev2"));
+        currentConfig = featureFlag;
     }
 
-    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new()
+    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new ()
     {
         if (isActive)
             InitializeFeature<T>();
@@ -77,7 +77,7 @@ public class PluginSystem
             RemoveFeature<T>();
     }
 
-    private void InitializeFeature<T>() where T : PluginFeature, new()
+    private void InitializeFeature<T>() where T : PluginFeature, new ()
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {
@@ -103,5 +103,4 @@ public class PluginSystem
             }
         }
     }
-
 }

@@ -10,45 +10,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using DCL.Builder;
 using UnityEngine;
 using Environment = DCL.Environment;
-
-public interface IBIWEntityHandler
-{
-    event Action<BIWEntity> OnEntityDeselected;
-    event Action OnEntitySelected;
-    event Action<List<BIWEntity>> OnDeleteSelectedEntities;
-    event Action<BIWEntity> OnEntityDeleted;
-    BIWEntity GetConvertedEntity(string entityId);
-    BIWEntity GetConvertedEntity(IDCLEntity entity);
-    void DeleteEntity(BIWEntity entityToDelete);
-    void DeleteEntity(string entityId);
-    void DeleteFloorEntities();
-    void DeleteSelectedEntities();
-    IDCLEntity CreateEntityFromJSON(string entityJson);
-    BIWEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true);
-    List<BIWEntity> GetAllEntitiesFromCurrentScene();
-    void DeselectEntities();
-    List<BIWEntity> GetSelectedEntityList();
-    bool IsAnyEntitySelected();
-    void SetActiveMode(BIWMode buildMode);
-    void SetMultiSelectionActive(bool isActive);
-    void ChangeLockStateSelectedEntities();
-    void DeleteEntitiesOutsideSceneBoundaries();
-    bool AreAllEntitiesInsideBoundaries();
-    void EntityListChanged();
-    void NotifyEntityIsCreated(IDCLEntity entity);
-    void SetEntityName(BIWEntity entityToApply, string newName, bool sendUpdateToKernel = true);
-    void EntityClicked(BIWEntity entityToSelect);
-    void ReportTransform(bool forceReport = false);
-    void CancelSelection();
-    bool IsPointerInSelectedEntity();
-    void DestroyLastCreatedEntities();
-    void Select(IDCLEntity entity);
-    bool SelectEntity(BIWEntity entityEditable, bool selectedFromCatalog = false);
-    void DeselectEntity(BIWEntity entity);
-    int GetCurrentSceneEntityCount();
-}
 
 public class BIWEntityHandler : BIWController, IBIWEntityHandler
 {
@@ -71,7 +35,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private readonly Dictionary<string, BIWEntity> convertedEntities = new Dictionary<string, BIWEntity>();
     private readonly List<BIWEntity> selectedEntities = new List<BIWEntity>();
 
-    private BIWMode currentActiveMode;
+    private IBIWMode currentActiveMode;
     internal bool isMultiSelectionActive = false;
     internal bool isSecondayClickPressed = false;
 
@@ -82,7 +46,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private InputAction_Trigger.Triggered hideSelectedEntitiesDelegate;
     private InputAction_Trigger.Triggered showAllEntitiesDelegate;
 
-    private BuildModeHUDController hudController;
+    private IBuilderEditorHUDController hudController;
 
     public event Action<BIWEntity> OnEntityDeselected;
     public event Action OnEntitySelected;
@@ -92,12 +56,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private BIWEntity lastClickedEntity;
     private float lastTimeEntityClicked;
 
-    public override void Init(BIWContext context)
+    public override void Initialize(IContext context)
     {
-        base.Init(context);
-        if (HUDController.i.builderInWorldMainHud != null)
+        base.Initialize(context);
+        if ( context.editorContext.editorHUD != null)
         {
-            hudController = HUDController.i.builderInWorldMainHud;
+            hudController = context.editorContext.editorHUD;
             hudController.OnEntityDelete += DeleteSingleEntity;
             hudController.OnDuplicateSelectedAction += DuplicateSelectedEntitiesInput;
             hudController.OnDeleteSelectedAction += DeleteSelectedEntitiesInput;
@@ -114,14 +78,14 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
 
-        bridge = context.sceneReferences.builderInWorldBridge;
+        bridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
 
-        outlinerController = context.outlinerController;
+        outlinerController = context.editorContext.outlinerController;
 
-        modeController = context.modeController;
-        actionController = context.actionController;
-        creatorController = context.creatorController;
-        raycastController = context.raycastController;
+        modeController = context.editorContext.modeController;
+        actionController = context.editorContext.actionController;
+        creatorController = context.editorContext.creatorController;
+        raycastController = context.editorContext.raycastController;
 
         editMaterial = context.projectReferencesAsset.editMaterial;
 
@@ -214,8 +178,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     public List<BIWEntity> GetSelectedEntityList() { return selectedEntities; }
 
     public bool IsAnyEntitySelected() { return selectedEntities.Count > 0; }
-
-    public void SetActiveMode(BIWMode buildMode)
+    public void SetActiveMode(IBIWMode buildMode)
     {
         currentActiveMode = buildMode;
         DeselectEntities();
@@ -223,7 +186,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void SetMultiSelectionActive(bool isActive) { isMultiSelectionActive = isActive; }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public override void EnterEditMode(IParcelScene scene)
     {
         base.EnterEditMode(scene);
 
@@ -448,7 +411,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         currentActiveMode?.SelectedEntity(entityEditable);
 
-        if (HUDController.i.builderInWorldMainHud != null)
+        if ( context.editorContext.editorHUD != null)
         {
             hudController.UpdateEntitiesSelection(selectedEntities.Count);
             hudController.ShowEntityInformation(selectedFromCatalog);
@@ -505,7 +468,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     public void DuplicateSelectedEntities()
     {
         BIWCompleteAction buildAction = new BIWCompleteAction();
-        buildAction.actionType = BIWCompleteAction.ActionType.CREATE;
+        buildAction.actionType = IBIWCompleteAction.ActionType.CREATE;
 
         List<BIWEntityAction> entityActionList = new List<BIWEntityAction>();
         List<BIWEntity> entitiesToDuplicate = new List<BIWEntity>(selectedEntities);
@@ -524,7 +487,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         currentActiveMode?.SetDuplicationOffset(DUPLICATE_OFFSET);
 
-        buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.CREATE);
+        buildAction.CreateActionType(entityActionList, IBIWCompleteAction.ActionType.CREATE);
         actionController.AddAction(buildAction);
     }
 
@@ -594,7 +557,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         return newEntity;
     }
 
-    public BIWEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
+    public BIWEntity CreateEmptyEntity(IParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
         IDCLEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
 
@@ -649,7 +612,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void EntityListChanged()
     {
-        if (HUDController.i.builderInWorldMainHud == null)
+        if ( context.editorContext.editorHUD == null)
             return;
         hudController.SetEntityList(GetEntitiesInCurrentScene());
     }
@@ -670,33 +633,31 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     BIWEntity SetupEntityToEdit(IDCLEntity entity, bool hasBeenCreated = false)
     {
-        if (!convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
+        string biwEntityId = GetConvertedUniqueKeyForEntity(entity);
+
+        if (convertedEntities.ContainsKey(biwEntityId))
+            return convertedEntities[biwEntityId];
+
+        BIWEntity entityToEdit = new BIWEntity();
+        entityToEdit.Initialize(entity, editMaterial);
+        convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
+        entity.OnRemoved += RemoveConvertedEntity;
+        entityToEdit.isNew = hasBeenCreated;
+
+        string entityName = entityToEdit.GetDescriptiveName();
+        var catalogItem = entityToEdit.GetCatalogItemAssociated();
+
+        if ((string.IsNullOrEmpty(entityName) || entityNameList.Contains(entityName)) && catalogItem != null)
         {
-            BIWEntity entityToEdit = new BIWEntity();
-            entityToEdit.Init(entity, editMaterial);
-            convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
-            entity.OnRemoved += RemoveConvertedEntity;
-            entityToEdit.isNew = hasBeenCreated;
-
-            string entityName = entityToEdit.GetDescriptiveName();
-            var catalogItem = entityToEdit.GetCatalogItemAssociated();
-
-            if ((string.IsNullOrEmpty(entityName) || entityNameList.Contains(entityName)) && catalogItem != null)
-            {
-                entityName = GetNewNameForEntity(catalogItem);
-                SetEntityName(entityToEdit, entityName);
-            }
-            else if (!string.IsNullOrEmpty(entityName) && !entityNameList.Contains(entityName))
-            {
-                entityNameList.Add(entityName);
-            }
-
-            return entityToEdit;
+            entityName = GetNewNameForEntity(catalogItem);
+            SetEntityName(entityToEdit, entityName);
         }
-        else
+        else if (!string.IsNullOrEmpty(entityName) && !entityNameList.Contains(entityName))
         {
-            return convertedEntities[GetConvertedUniqueKeyForEntity(entity)];
+            entityNameList.Add(entityName);
         }
+
+        return entityToEdit;
     }
 
     internal void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)

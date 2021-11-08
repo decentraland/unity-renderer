@@ -10,11 +10,10 @@ namespace DCL
     }
 
     /// <summary>
-    /// The AssetPromiseKeeper is the user entry point interface.
+    /// The AssetPromiseKeeper is the user entry point interface of the asset management system.
     /// It manages stuff like requesting something that's already being loaded, etc.
     ///
-    /// It also handles the special case of a promise that depends on another
-    /// to be completed (blocked promise)
+    /// It also handles the special cases of promises that depend on another to be completed (blocked promise)
     /// </summary>
     /// <typeparam name="AssetType">Asset type to be handled</typeparam>
     /// <typeparam name="AssetLibraryType">Asset library type. It must handle the same type as AssetType.</typeparam>
@@ -37,7 +36,7 @@ namespace DCL
         HashSet<AssetPromiseType> blockedPromises = new HashSet<AssetPromiseType>();
 
         //NOTE(Brian): Master promise id -> blocked promises HashSet
-        Dictionary<object, HashSet<AssetPromiseType>> masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>(100);
+        protected Dictionary<object, HashSet<AssetPromiseType>> masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>(100);
 
         public bool useTimeBudget => CommonScriptableObjects.rendererState.Get();
 
@@ -111,7 +110,7 @@ namespace DCL
             return promise;
         }
 
-        public AssetPromiseType Forget(AssetPromiseType promise)
+        public virtual AssetPromiseType Forget(AssetPromiseType promise)
         {
             if (promise == null)
                 return null;

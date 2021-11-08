@@ -1,0 +1,20 @@
+{
+    "name": "BIWInterfaces",
+    "rootNamespace": "",
+    "references": [
+        "GUID:92d421569a4b2234c837b61c50b146c8",
+        "GUID:4623a7b5e6ee6e24c833abc6c810140f",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:54b47dcc31254eb44b1a0b99e490fabd",
+        "GUID:a29ec59757211ac43915595dc2467094"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

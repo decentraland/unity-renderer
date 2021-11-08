@@ -3,7 +3,8 @@ using System.Collections;
 using DCL.Controllers;
 using UnityEngine;
 using DCL.Models;
-using System.Collections.Generic;
+using DCL.SettingsCommon;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Components
 {
@@ -35,7 +36,7 @@ namespace DCL.Components
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = new Model();
 
-            Settings.i.OnAudioSettingsChanged += OnAudioSettingsChanged;
+            Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
@@ -115,7 +116,7 @@ namespace DCL.Components
             }
         }
 
-        private void OnAudioSettingsChanged(SettingsData.AudioSettings settings)
+        private void OnAudioSettingsChanged(AudioSettings settings)
         {
             UpdateAudioSourceVolume();
         }
@@ -127,7 +128,8 @@ namespace DCL.Components
 
         private void UpdateAudioSourceVolume()
         {
-            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
+            AudioSettings audioSettingsData = Settings.i.audioSettings.Data;
+            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume * audioSettingsData.masterVolume);
 
             if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
             {
@@ -167,7 +169,7 @@ namespace DCL.Components
             //NOTE(Brian): Unsuscribe events.
             InitDCLAudioClip(null);
 
-            Settings.i.OnAudioSettingsChanged -= OnAudioSettingsChanged;
+            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
         }
 

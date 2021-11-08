@@ -32,15 +32,9 @@ public class LazyTextureObserverShould
             OnSuccess?.Invoke(texture);
         }
 
-        public void Unload()
-        {
-            texture = null;
-        }
+        public void Unload() { texture = null; }
 
-        public Texture2D GetTexture()
-        {
-            return texture;
-        }
+        public Texture2D GetTexture() { return texture; }
     }
 
     [Test]
@@ -153,6 +147,40 @@ public class LazyTextureObserverShould
     }
 
     [Test]
+    public void CallListenersWhenTheyAreAddedAfterTextureIs_MultipleSubscriptions()
+    {
+        // Arrange
+        var textureLoader = new TextureLoader_Mock();
+
+        bool onSuccessCalled = false;
+
+        textureLoader.OnSuccess += (x) => onSuccessCalled = true;
+        var lazyTextureObserver = new LazyTextureObserver(textureLoader);
+
+        lazyTextureObserver.RefreshWithUri("white");
+        lazyTextureObserver.AddListener( (x) => { } );
+
+        Assert.That( onSuccessCalled, Is.True );
+
+        onSuccessCalled = false;
+
+        int newListenerCalledCount  = 0;
+
+        // Act
+        void listener(Texture2D x) { newListenerCalledCount++; }
+        lazyTextureObserver.AddListener( listener );
+        lazyTextureObserver.AddListener( listener );
+        lazyTextureObserver.AddListener( listener );
+
+        // Assert
+        Assert.That( onSuccessCalled, Is.False, "The success event shouldn't be called twice each time we add a new listener for the same asset!" );
+        Assert.AreEqual(3, newListenerCalledCount);
+
+        // TearDown
+        lazyTextureObserver.Dispose();
+    }
+
+    [Test]
     public void CallListenersWhenTextureIsChangedMultipleTimes()
     {
         // Arrange
@@ -179,7 +207,6 @@ public class LazyTextureObserverShould
         // TearDown
         lazyTextureObserver.Dispose();
     }
-
 
     [Test]
     public void UnloadTextureWhenAllListenersAreRemoved()

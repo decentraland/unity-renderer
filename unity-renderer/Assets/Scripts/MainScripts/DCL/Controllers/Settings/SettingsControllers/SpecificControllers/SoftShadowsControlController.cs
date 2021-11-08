@@ -1,10 +1,10 @@
-using DCL.SettingsController;
 using System.Reflection;
+using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-namespace DCL.SettingsControls
+namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/SoftShadows", fileName = "SoftShadowsControlController")]
     public class SoftShadowsControlController : ToggleSettingsControlController

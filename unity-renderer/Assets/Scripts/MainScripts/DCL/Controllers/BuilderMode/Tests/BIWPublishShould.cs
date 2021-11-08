@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -13,6 +14,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 {
     private BIWPublishController biwPublishController;
     private BIWEntityHandler biwEntityHandler;
+    private IContext context;
 
     private const string entityId = "E1";
 
@@ -22,13 +24,13 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 
         biwPublishController = new BIWPublishController();
         biwEntityHandler = new BIWEntityHandler();
-        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             biwPublishController,
             biwEntityHandler
         );
 
-        biwPublishController.Init(referencesController);
-        biwEntityHandler.Init(referencesController);
+        biwPublishController.Initialize(context);
+        biwEntityHandler.Initialize(context);
 
         biwPublishController.EnterEditMode(scene);
         biwEntityHandler.EnterEditMode(scene);
@@ -72,7 +74,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     public void TestMetricsPublish()
     {
         //Act
-        for (int i = 0; i < scene.metricsController.GetLimits().entities + 1; i++)
+        for (int i = 0; i < scene.metricsCounter.GetLimits().entities + 1; i++)
         {
             TestHelpers.CreateSceneEntity(scene, entityId + i);
         }

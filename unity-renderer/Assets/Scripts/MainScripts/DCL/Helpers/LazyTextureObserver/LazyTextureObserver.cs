@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
-using DCL;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -48,7 +46,6 @@ namespace DCL.Helpers
         void RefreshWithTexture(Texture2D texture);
     }
 
-
     /// <summary>
     /// The LazyTextureObserver class is a reactive texture loader wrapper.
     /// <br/> <br/>
@@ -73,6 +70,7 @@ namespace DCL.Helpers
 
         private State state = State.NONE;
         private Action<Texture2D> OnLoaded;
+        private Action OnFail;
 
         private HashSet<Action<Texture2D>> subscriptions = new HashSet<Action<Texture2D>>();
 
@@ -80,9 +78,7 @@ namespace DCL.Helpers
         private string uri;
         private ITextureLoader textureLoader;
 
-        public LazyTextureObserver () : this(new TextureLoader())
-        {
-        }
+        public LazyTextureObserver () : this(new TextureLoader()) { }
 
         internal LazyTextureObserver (ITextureLoader textureLoader)
         {
@@ -98,6 +94,7 @@ namespace DCL.Helpers
             {
                 state = State.NONE;
                 uri = null;
+                OnFail?.Invoke();
             };
         }
 
@@ -105,12 +102,12 @@ namespace DCL.Helpers
         {
             Assert.IsNotNull(listener, "Listener can't be null!");
 
-            // Not using assert here because this case is more probable, I want to fail silently in this case.
-            if (subscriptions.Contains(listener))
-                return;
-
-            subscriptions.Add(listener);
-            this.OnLoaded += listener;
+            if (!subscriptions.Contains(listener))
+            {
+                subscriptions.Add(listener);
+                this.OnLoaded += listener;
+                this.OnFail += () => listener.Invoke(null);
+            }
 
             // First, check if we did set a texture directly and return it if so.
             if ( texture != null )

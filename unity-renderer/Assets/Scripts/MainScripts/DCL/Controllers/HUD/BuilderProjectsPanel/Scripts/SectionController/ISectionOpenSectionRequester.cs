@@ -1,6 +1,9 @@
 using System;
 
-internal interface ISectionOpenSectionRequester
+namespace DCL.Builder
 {
-    event Action<SectionId> OnRequestOpenSection;
+    internal interface ISectionOpenSectionRequester
+    {
+        event Action<SectionId> OnRequestOpenSection;
+    }
 }

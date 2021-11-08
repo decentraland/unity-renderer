@@ -54,6 +54,7 @@ namespace DCL.Components
             {
                 entity.OnShapeUpdated.Invoke(entity);
             }
+            entity.OnShapeLoaded?.Invoke(entity);
 
             CollidersManager.i.ConfigureColliders(entity);
         }

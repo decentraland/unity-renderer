@@ -210,19 +210,21 @@ namespace DCL.Helpers
             return component;
         }
 
-        public static WebRequestAsyncOperation FetchTexture(string textureURL, Action<Texture2D> OnSuccess, Action<UnityWebRequest> OnFail = null)
+        public static WebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<UnityWebRequest> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
             void SuccessInternal(UnityWebRequest request)
             {
-                var texture = DownloadHandlerTexture.GetContent(request);
-                OnSuccess?.Invoke(texture);
+                OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request));
             }
 
-            return DCL.Environment.i.platform.webRequest.GetTexture(
+            var asyncOp = DCL.Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
                 OnSuccess: SuccessInternal,
-                OnFail: OnFail);
+                OnFail: OnFail,
+                isReadable: isReadable);
+
+            return asyncOp;
         }
 
         public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)
@@ -501,7 +503,7 @@ namespace DCL.Helpers
             key = tuple.Key;
             value = tuple.Value;
         }
-        
+
         /// <summary>
         /// Set a layer to the given transform and its child
         /// </summary>
@@ -520,17 +522,13 @@ namespace DCL.Helpers
         /// </summary>
         /// <param name="volume">Linear volume float</param>
         /// <returns>Exponential volume curve float</returns>
-        public static float ToVolumeCurve(float volume) {
-            return volume * (2f - volume);
-        }
+        public static float ToVolumeCurve(float volume) { return volume * (2f - volume); }
 
         /// <summary>
         /// Takes a linear volume value between 0 and 1, converts to exponential curve and maps to a value fitting for audio mixer group volume.
         /// </summary>
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>
-        public static float ToAudioMixerGroupVolume(float volume) {
-            return (ToVolumeCurve(volume) * 80f) - 80f;
-        }
+        public static float ToAudioMixerGroupVolume(float volume) { return (ToVolumeCurve(volume) * 80f) - 80f; }
     }
 }

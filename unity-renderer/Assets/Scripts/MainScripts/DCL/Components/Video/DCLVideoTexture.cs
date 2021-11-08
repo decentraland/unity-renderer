@@ -6,6 +6,8 @@ using UnityEngine;
 using DCL.Components.Video.Plugin;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.SettingsCommon;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.Components
 {
@@ -94,15 +96,7 @@ namespace DCL.Components
                     yield break;
                 }
 
-                string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
-                texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
-                CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
-                CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
-                scene.OnEntityRemoved += OnEntityRemoved;
-                Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
-
-                OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
+                Initialize(dclVideoClip);
             }
 
             // NOTE: create texture for testing cause real texture will only be created on web platform
@@ -165,6 +159,19 @@ namespace DCL.Components
                 texturePlayer.SetPlaybackRate(model.playbackRate);
                 texturePlayer.SetLoop(model.loop);
             }
+        }
+        private void Initialize(DCLVideoClip dclVideoClip)
+        {
+            string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
+            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
+            texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
+            CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
+            CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
+            scene.OnEntityRemoved += OnEntityRemoved;
+            
+            Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
+
+            OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
         }
 
         public float GetVolume() { return ((Model) model).volume; }
@@ -260,7 +267,7 @@ namespace DCL.Components
 
             if (isVisible)
             {
-                const float maxDistanceBlockForSound = 6;
+                const float maxDistanceBlockForSound = 12;
                 float sqrParcelDistance = DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 2.25f;
                 distanceVolumeModifier = 1 - Mathf.Clamp01(Mathf.FloorToInt(minDistance / sqrParcelDistance) / maxDistanceBlockForSound);
             }
@@ -282,12 +289,12 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get())))
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID.Get()))
             {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
-                float sceneSFXSetting = Settings.i.currentAudioSettings.sceneSFXVolume;
-                float masterSetting = Settings.i.currentAudioSettings.masterVolume;
+                float sceneSFXSetting = Settings.i.audioSettings.Data.sceneSFXVolume;
+                float masterSetting = Settings.i.audioSettings.Data.masterVolume;
                 targetVolume *= Utils.ToVolumeCurve(virtualMixerVolume * sceneSFXSetting * masterSetting);
             }
 
@@ -388,14 +395,15 @@ namespace DCL.Components
 
         void OnEntityRemoved(IDCLEntity entity) { isPlayStateDirty = true; }
 
-        void OnSettingsChanged(SettingsData.GeneralSettings settings) { UpdateVolume(); }
+        void OnAudioSettingsChanged(AudioSettings settings) { UpdateVolume(); }
 
         public override void Dispose()
         {
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
+            Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
+            
             if (scene != null)
                 scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)

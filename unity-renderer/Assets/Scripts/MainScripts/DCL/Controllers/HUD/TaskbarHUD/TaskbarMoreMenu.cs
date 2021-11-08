@@ -1,10 +1,16 @@
 using DCL;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using DCL.Interface;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class TaskbarMoreMenu : MonoBehaviour
 {
+    private const string HIDE_NAMES = "Hide Names";
+    private const string SHOW_NAMES = "Show Names";
+
     [Header("Menu Animation")]
     [SerializeField] internal ShowHideAnimator moreMenuAnimator;
     [SerializeField] internal float timeBetweenAnimations = 0.01f;
@@ -18,16 +24,20 @@ public class TaskbarMoreMenu : MonoBehaviour
 
     [Header("Other Buttons Config")]
     [SerializeField] internal TaskbarMoreMenuButton hideUIButton;
+    [SerializeField] internal TaskbarMoreMenuButton toggleAvatarNamesButton;
     [SerializeField] internal TaskbarMoreMenuButton controlsButton;
     [SerializeField] internal InputAction_Trigger controlsToggleAction;
     [SerializeField] internal TaskbarMoreMenuButton helpAndSupportButton;
     [SerializeField] internal TaskbarMoreMenuButton tutorialButton;
     [SerializeField] internal TaskbarMoreMenuButton dayModeButton;
     [SerializeField] internal TaskbarMoreMenuButton nightModeButton;
+    [SerializeField] internal TaskbarMoreMenuButton reportBugButton;
 
     private TaskbarHUDView view;
     protected internal List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
     internal Coroutine moreMenuAnimationsCoroutine;
+
+    private BaseVariable<bool> avatarNamesVisible => DataStore.i.HUDs.avatarNamesVisible;
 
     public event System.Action<bool> OnMoreMenuOpened;
     public event System.Action OnRestartTutorial;
@@ -37,12 +47,15 @@ public class TaskbarMoreMenu : MonoBehaviour
         this.view = view;
 
         CommonScriptableObjects.tutorialActive.OnChange += TutorialActive_OnChange;
+        avatarNamesVisible.OnChange += OnAvatarNamesVisibleChanged;
 
         collapseBarButton.gameObject.SetActive(true);
         hideUIButton.gameObject.SetActive(true);
         controlsButton.gameObject.SetActive(false);
         helpAndSupportButton.gameObject.SetActive(false);
         tutorialButton.gameObject.SetActive(true);
+        reportBugButton.gameObject.SetActive(true);
+        toggleAvatarNamesButton.gameObject.SetActive(true);
 
         SortButtonsAnimations();
 
@@ -63,17 +76,30 @@ public class TaskbarMoreMenu : MonoBehaviour
             view.moreButton.SetToggleState(false);
         });
 
-        collapseBarButton.mainButton.onClick.AddListener(() => { ToggleCollapseBar(); });
+        toggleAvatarNamesButton.mainButton.onClick.AddListener(() => { avatarNamesVisible.Set(!avatarNamesVisible.Get()); });
+        OnAvatarNamesVisibleChanged(avatarNamesVisible.Get(), false);
 
-        hideUIButton.mainButton.onClick.AddListener(() => { ToggleHideUI(); });
+        collapseBarButton.mainButton.onClick.AddListener(ToggleCollapseBar);
+
+        hideUIButton.mainButton.onClick.AddListener(ToggleHideUI);
 
         tutorialButton.mainButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
+    }
+
+    private void OnAvatarNamesVisibleChanged(bool current, bool previous)
+    {
+        if (current)
+            toggleAvatarNamesButton.buttonText.SetText(HIDE_NAMES);
+        else
+            toggleAvatarNamesButton.buttonText.SetText(SHOW_NAMES);
     }
 
     protected void SortButtonsAnimations()
     {
         sortedButtonsAnimations.Add(helpAndSupportButton);
+        sortedButtonsAnimations.Add(reportBugButton);
         sortedButtonsAnimations.Add(controlsButton);
+        sortedButtonsAnimations.Add(toggleAvatarNamesButton);
         sortedButtonsAnimations.Add(hideUIButton);
         sortedButtonsAnimations.Add(nightModeButton);
         sortedButtonsAnimations.Add(dayModeButton);
@@ -112,6 +138,7 @@ public class TaskbarMoreMenu : MonoBehaviour
     {
         CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
         RenderProfileManifest.i.OnChangeProfile -= OnChangeProfile;
+        avatarNamesVisible.OnChange -= OnAvatarNamesVisibleChanged;
     }
 
     private void TutorialActive_OnChange(bool current, bool previous)

@@ -1,32 +1,24 @@
 using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
-
-public interface IBIWController
-{
-    void Init(BIWContext context);
-    void EnterEditMode(ParcelScene scene);
-    void ExitEditMode();
-    void OnGUI();
-
-    void LateUpdate();
-
-    void Update();
-    void Dispose();
-}
 
 public abstract class BIWController : IBIWController
 {
     internal ParcelScene sceneToEdit;
 
     protected bool isEditModeActive = false;
-
-    public virtual void Init(BIWContext context) { isEditModeActive = false; }
-
-    public virtual void EnterEditMode(ParcelScene scene)
+    protected IContext context;
+    public virtual void Initialize(IContext context)
     {
-        this.sceneToEdit = scene;
+        this.context = context;
+        isEditModeActive = false;
+    }
+
+    public virtual void EnterEditMode(IParcelScene scene)
+    {
+        this.sceneToEdit = (ParcelScene)scene;
         isEditModeActive = true;
     }
 
@@ -40,11 +32,7 @@ public abstract class BIWController : IBIWController
 
     public virtual void LateUpdate() { }
 
-    public virtual void Update()
-    {
-        if (!isEditModeActive)
-            return;
-    }
+    public virtual void Update() { }
 
     public virtual void Dispose() { }
 }

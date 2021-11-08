@@ -4,38 +4,40 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityGLTF;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    private BIWActionController biwActionController;
-    private BIWEntityHandler entityHandler;
-    private BIWFloorHandler biwFloorHandler;
-    private BIWCreatorController biwCreatorController;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
-        biwActionController = new BIWActionController();
-        entityHandler = new BIWEntityHandler();
-        biwFloorHandler = new BIWFloorHandler();
-        biwCreatorController = new BIWCreatorController();
 
-        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+        TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
+
+        var biwActionController = new BIWActionController();
+        var entityHandler = new BIWEntityHandler();
+        var biwFloorHandler = new BIWFloorHandler();
+        var biwCreatorController = new BIWCreatorController();
+
+        context = BIWTestUtils.CreateContextWithGenericMocks(
             biwActionController,
             entityHandler,
             biwFloorHandler,
             biwCreatorController
         );
 
-        biwActionController.Init(referencesController);
-        entityHandler.Init(referencesController);
-        biwFloorHandler.Init(referencesController);
-        biwCreatorController.Init(referencesController);
+        biwActionController.Initialize(context);
+        entityHandler.Initialize(context);
+        biwFloorHandler.Initialize(context);
+        biwCreatorController.Initialize(context);
 
         biwActionController.EnterEditMode(scene);
         entityHandler.EnterEditMode(scene);
@@ -55,15 +57,15 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityAction.oldValue = oldPosition;
         entityAction.newValue = newPosition;
 
-        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.MOVE);
+        buildModeAction.CreateActionType(entityAction, IBIWCompleteAction.ActionType.MOVE);
 
         scene.entities[ENTITY_ID].gameObject.transform.position = newPosition;
-        biwActionController.AddAction(buildModeAction);
+        context.editorContext.actionController.AddAction(buildModeAction);
 
-        biwActionController.TryToUndoAction();
+        context.editorContext.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.position == oldPosition);
 
-        biwActionController.TryToRedoAction();
+        context.editorContext.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.position == newPosition);
     }
 
@@ -79,15 +81,15 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityAction.oldValue = oldRotation;
         entityAction.newValue = newRotation;
 
-        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.ROTATE);
+        buildModeAction.CreateActionType(entityAction, IBIWCompleteAction.ActionType.ROTATE);
 
         scene.entities[ENTITY_ID].gameObject.transform.rotation = Quaternion.Euler(newRotation);
-        biwActionController.AddAction(buildModeAction);
+        context.editorContext.actionController.AddAction(buildModeAction);
 
-        biwActionController.TryToUndoAction();
+        context.editorContext.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.rotation.eulerAngles == oldRotation);
 
-        biwActionController.TryToRedoAction();
+        context.editorContext.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.rotation.eulerAngles == newRotation);
     }
 
@@ -103,60 +105,59 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityAction.oldValue = oldScale;
         entityAction.newValue = newScale;
 
-        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.SCALE);
+        buildModeAction.CreateActionType(entityAction, IBIWCompleteAction.ActionType.SCALE);
 
         scene.entities[ENTITY_ID].gameObject.transform.localScale = newScale;
-        biwActionController.AddAction(buildModeAction);
+        context.editorContext.actionController.AddAction(buildModeAction);
 
-        biwActionController.TryToUndoAction();
+        context.editorContext.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.localScale == oldScale);
 
-        biwActionController.TryToRedoAction();
+        context.editorContext.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities[ENTITY_ID].gameObject.transform.localScale == newScale);
     }
 
     [Test]
     public void UndoRedoCreateDeleteActions()
     {
-        biwActionController.CreateActionEntityCreated(scene.entities[ENTITY_ID]);
-        biwActionController.TryToUndoAction();
+        context.editorContext.actionController.CreateActionEntityCreated(scene.entities[ENTITY_ID]);
+        context.editorContext.actionController.TryToUndoAction();
         Assert.IsFalse(scene.entities.ContainsKey(ENTITY_ID));
 
-        biwActionController.TryToRedoAction();
+        context.editorContext.actionController.TryToRedoAction();
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
         BIWEntity biwEntity = new BIWEntity();
-        biwEntity.Init(scene.entities[ENTITY_ID], null);
+        biwEntity.Initialize(scene.entities[ENTITY_ID], null);
 
-        biwActionController.CreateActionEntityDeleted(biwEntity);
-        biwActionController.TryToUndoAction();
+        context.editorContext.actionController.CreateActionEntityDeleted(biwEntity);
+        context.editorContext.actionController.TryToUndoAction();
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
-        biwActionController.TryToRedoAction();
+        context.editorContext.actionController.TryToRedoAction();
         Assert.IsFalse(scene.entities.ContainsKey(ENTITY_ID));
     }
 
-    [Test]
-    public void UndoRedoChangeFloorAction()
+    [UnityTest]
+    public IEnumerator UndoRedoChangeFloorAction()
     {
         BIWCatalogManager.Init();
 
-        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
 
         CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
         BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
-        biwCreatorController.EnterEditMode(scene);
-        biwFloorHandler.EnterEditMode(scene);
-
-        biwFloorHandler.CreateFloor(oldFloor);
-        biwFloorHandler.ChangeFloor(newFloor);
+        context.editorContext.floorHandler.CreateFloor(oldFloor);
+        context.editorContext.floorHandler.ChangeFloor(newFloor);
 
         buildModeAction.CreateChangeFloorAction(oldFloor, newFloor);
-        biwActionController.AddAction(buildModeAction);
+        context.editorContext.actionController.AddAction(buildModeAction);
 
-        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        yield return new WaitUntil( () => GLTFComponent.downloadingCount == 0 );
+
+        foreach (BIWEntity entity in context.editorContext.entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -165,21 +166,20 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
             }
         }
 
-        biwActionController.TryToUndoAction();
+        context.editorContext.actionController.TryToUndoAction();
 
-        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in context.editorContext.entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
                 Assert.AreEqual(entity.GetCatalogItemAssociated().id, oldFloor.id);
-
                 break;
             }
         }
 
-        biwActionController.TryToRedoAction();
+        context.editorContext.actionController.TryToRedoAction();
 
-        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in context.editorContext.entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -187,16 +187,15 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
                 break;
             }
         }
+
+        context.editorContext.floorHandler.Dispose();
     }
 
     protected override IEnumerator TearDown()
     {
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
-        entityHandler.Dispose();
-        biwActionController.Dispose();
-        biwFloorHandler.Dispose();
-        biwCreatorController.Dispose();
+        context.Dispose();
         yield return base.TearDown();
     }
 }

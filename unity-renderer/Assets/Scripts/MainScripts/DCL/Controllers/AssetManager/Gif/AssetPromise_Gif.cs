@@ -21,6 +21,7 @@ namespace DCL
                     frames =>
                     {
                         asset.frames = frames;
+
                         OnSuccess?.Invoke();
                     }, OnFail));
         }
@@ -34,6 +35,7 @@ namespace DCL
                 Debug.Log("add to library fail?");
                 return false;
             }
+
             asset = library.Get(asset.id);
             return true;
         }
