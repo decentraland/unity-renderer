@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using ExploreV2Analytics;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,11 +16,14 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IExploreV2MenuComponentView view;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal InputAction_Trigger toggleExploreTrigger;
+    internal IExploreV2Analytics exploreV2Analytics;
+    internal float lastTimeWasOpen = 0f;
 
     public void Initialize()
     {
+        exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
-        SetVisibility(false);
+        SetVisibility(false, false);
 
         DataStore.i.playerRealm.OnChange += UpdateRealmInfo;
         UpdateRealmInfo(DataStore.i.playerRealm.Get(), null);
@@ -66,7 +70,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         toggleExploreTrigger.OnTriggered -= OnToggleActionTriggered;
     }
 
-    public void SetVisibility(bool visible)
+    public void SetVisibility(bool visible, bool fromShortcout)
     {
         if (view == null)
             return;
@@ -78,15 +82,24 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 Utils.UnlockCursor();
                 AudioScriptableObjects.dialogOpen.Play(true);
                 AudioScriptableObjects.listItemAppear.ResetPitch();
+                lastTimeWasOpen = Time.realtimeSinceStartup;
             }
             else
             {
                 AudioScriptableObjects.dialogClose.Play(true);
+                exploreV2Analytics.SendExploreElapsedTime(Time.realtimeSinceStartup - lastTimeWasOpen);
             }
+
+            exploreV2Analytics.SendExploreVisibility(visible, fromShortcout ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
         }
 
         DataStore.i.exploreV2.isOpen.Set(visible);
         view.SetVisible(visible);
+
+        if (visible)
+            lastTimeWasOpen = Time.realtimeSinceStartup;
+        else
+            lastTimeWasOpen = Time.realtimeSinceStartup - lastTimeWasOpen;
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
@@ -119,11 +132,17 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
     }
 
-    internal void OnCloseButtonPressed() { SetVisibility(false); }
+    internal void OnCloseButtonPressed() { SetVisibility(false, false); }
 
-    internal void OnToggleActionTriggered(DCLAction_Trigger action) { SetVisibility(!DataStore.i.exploreV2.isOpen.Get()); }
+    internal void OnToggleActionTriggered(DCLAction_Trigger action)
+    {
+        bool isVisible = !DataStore.i.exploreV2.isOpen.Get();
+        SetVisibility(isVisible, true);
+    }
 
-    internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current); }
+    internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current, false); }
+
+    internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();
 
     internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }

@@ -1,4 +1,5 @@
 using DCL;
+using ExploreV2Analytics;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -9,13 +10,16 @@ public class ExploreV2MenuComponentControllerTests
 {
     private ExploreV2MenuComponentController exploreV2MenuController;
     private IExploreV2MenuComponentView exploreV2MenuView;
+    private IExploreV2Analytics exploreV2Analytics;
 
     [SetUp]
     public void SetUp()
     {
         exploreV2MenuView = Substitute.For<IExploreV2MenuComponentView>();
+        exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>();
         exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
+        exploreV2MenuController.Configure().CreateAnalyticsController().Returns(info => exploreV2Analytics);
         exploreV2MenuController.Initialize();
     }
 
@@ -54,11 +58,15 @@ public class ExploreV2MenuComponentControllerTests
         DataStore.i.exploreV2.isOpen.Set(!isVisible);
 
         // Act
-        exploreV2MenuController.SetVisibility(isVisible);
+        exploreV2MenuController.SetVisibility(isVisible, false);
 
         //Assert
         Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(isVisible);
+        exploreV2Analytics.Received().SendExploreVisibility(isVisible, ExploreUIVisibilityMethod.FromClick);
+
+        if (!isVisible)
+            exploreV2Analytics.Received().SendExploreElapsedTime(Arg.Any<float>());
     }
 
     [Test]
