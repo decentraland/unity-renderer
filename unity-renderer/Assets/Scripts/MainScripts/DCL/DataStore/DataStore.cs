@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -37,7 +37,8 @@ namespace DCL
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
         public readonly DataStore_Camera camera = new DataStore_Camera();
         public readonly DataStore_Settings settings = new DataStore_Settings();
-        
+        public readonly DataStore_SkyboxConfig skyboxConfig = new DataStore_SkyboxConfig();
+
         public class DataStore_Settings
         {
             public readonly BaseVariable<bool> profanityChatFilteringEnabled = new BaseVariable<bool>();
@@ -152,7 +153,18 @@ namespace DCL
 
         public class DataStore_Camera
         {
-            public readonly BaseVariable<Quaternion> rotation =  new BaseVariable<Quaternion>();
+            public readonly BaseVariable<Quaternion> rotation = new BaseVariable<Quaternion>();
+        }
+
+        public class DataStore_SkyboxConfig
+        {
+            public BaseVariable<bool> objectUpdated = new BaseVariable<bool>(false);
+            public BaseVariable<bool> useProceduralSkybox = new BaseVariable<bool>(false);
+            public BaseVariable<string> configToLoad = new BaseVariable<string>("Generic Skybox");
+            public BaseVariable<float> minutesPerSecond = new BaseVariable<float>(60);
+            public BaseVariable<bool> pauseTime = new BaseVariable<bool>(false);
+            public bool jumpTime = false;
+            public BaseVariable<float> jumpToTime = new BaseVariable<float>(0);
         }
     }
 }

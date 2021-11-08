@@ -66,10 +66,11 @@ public class PluginSystem
         HandleFeature<BuilderInWorldPlugin>(featureFlag.IsFeatureEnabled("builder_in_world"));
         HandleFeature<TutorialController>(featureFlag.IsFeatureEnabled("tutorial"));
         HandleFeature<ExploreV2Feature>(featureFlag.IsFeatureEnabled("explorev2"));
+        HandleFeature<DCL.Skybox.SkyboxController>(featureFlag.IsFeatureEnabled("procedural_skybox"));
         currentConfig = featureFlag;
     }
 
-    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new ()
+    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new()
     {
         if (isActive)
             InitializeFeature<T>();
@@ -77,7 +78,7 @@ public class PluginSystem
             RemoveFeature<T>();
     }
 
-    private void InitializeFeature<T>() where T : PluginFeature, new ()
+    private void InitializeFeature<T>() where T : PluginFeature, new()
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {

@@ -47,44 +47,10 @@ namespace DCL.Skybox
 
             timeOfTheDay = 0;
 
+            DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
+
             UpdateConfig();
             DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
-        }
-
-        private void SelectSkyboxConfiguration()
-        {
-            string configToLoad = DEFAULT_SKYBOX_ID;
-
-            if (overrideDefaultSkybox)
-            {
-                configToLoad = overrideSkyboxID;
-                overrideDefaultSkybox = false;
-            }
-            configuration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
-
-            if (configuration == null)
-            {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-                Debug.LogError("No configuration found in Resources. (Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
-#endif
-                return;
-            }
-
-            // Apply material as per number of Layers.
-            //TODO: Change shader on same materialinstead of having multiple material.
-            MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(configuration.slots.Count);
-            if (matLayer == null)
-            {
-                matLayer = MaterialReferenceContainer.i.materials[0];
-            }
-
-            configuration.ResetMaterial(matLayer.material, matLayer.numberOfSlots);
-            selectedMat = matLayer.material;
-
-            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
-            {
-                RenderSettings.skybox = selectedMat;
-            }
         }
 
         public void UpdateConfig(bool current = true, bool previous = false)
@@ -143,6 +109,42 @@ namespace DCL.Skybox
                 minutesPerSecond = 0.01f;
             }
             timeNormalizationFactor = 60 / minutesPerSecond;
+        }
+
+        private void SelectSkyboxConfiguration()
+        {
+            string configToLoad = DEFAULT_SKYBOX_ID;
+
+            if (overrideDefaultSkybox)
+            {
+                configToLoad = overrideSkyboxID;
+                overrideDefaultSkybox = false;
+            }
+            configuration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+
+            if (configuration == null)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                Debug.LogError("No configuration found in Resources. (Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
+#endif
+                return;
+            }
+
+            // Apply material as per number of Slots.
+            //TODO: Change shader on same material instead of having multiple material.
+            MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(configuration.slots.Count);
+            if (matLayer == null)
+            {
+                matLayer = MaterialReferenceContainer.i.materials[0];
+            }
+
+            configuration.ResetMaterial(matLayer.material, matLayer.numberOfSlots);
+            selectedMat = matLayer.material;
+
+            if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
+            {
+                RenderSettings.skybox = selectedMat;
+            }
         }
 
         // Update is called once per frame
