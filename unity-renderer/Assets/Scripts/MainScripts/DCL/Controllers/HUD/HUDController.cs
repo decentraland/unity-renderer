@@ -56,7 +56,7 @@ public class HUDController : IHUDController
     public SettingsPanelHUDController settingsPanelHud => GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
     public ExpressionsHUDController expressionsHud =>
-        GetHUDElement(HUDElementID.EXPRESSIONS) as ExpressionsHUDController;
+        GetHUDElement(HUDElementID.EMOTES) as ExpressionsHUDController;
 
     public PlayerInfoCardHUDController playerInfoCardHud =>
         GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;
@@ -177,6 +177,7 @@ public class HUDController : IHUDController
                     settingsPanelHud.Initialize();
                 break;
             case HUDElementID.EXPRESSIONS:
+            case HUDElementID.EMOTES:
                 CreateHudElement(configuration, hudElementId);
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
