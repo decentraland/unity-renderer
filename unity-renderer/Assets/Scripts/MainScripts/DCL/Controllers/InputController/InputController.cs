@@ -220,7 +220,6 @@ public class InputController : MonoBehaviour
                     if (allUIHidden)
                         break;
                     InputProcessor.FromKey(action, KeyCode.B, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleControlsHud:
                     InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -369,7 +368,7 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Hold.Sprint:
-                    InputProcessor.FromKey(action,InputSettings.WalkButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromKey(action, InputSettings.WalkButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Hold.Jump:
                     InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);

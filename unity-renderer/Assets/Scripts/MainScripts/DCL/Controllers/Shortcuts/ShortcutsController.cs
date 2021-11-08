@@ -9,6 +9,7 @@ public class ShortcutsController : IDisposable
     internal InputAction_Trigger toggleControls;
     internal InputAction_Trigger toggleAvatarEditor;
     internal InputAction_Trigger toggleExplore;
+    internal InputAction_Trigger toggleExpressionsHUD;
     internal InputAction_Trigger toggleNavMap;
 
     public ShortcutsController()
@@ -18,6 +19,7 @@ public class ShortcutsController : IDisposable
         toggleControls = Resources.Load<InputAction_Trigger>("ToggleControlsHud");
         toggleAvatarEditor = Resources.Load<InputAction_Trigger>("ToggleAvatarEditorHud");
         toggleExplore = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
+        toggleExpressionsHUD = Resources.Load<InputAction_Trigger>("OpenExpressions");
 
         //TODO: These require a small refactor to convert to DataStore
         //toggleNavMap = Resources.Load<InputAction_Trigger>("ToggleNavMap");
@@ -33,6 +35,7 @@ public class ShortcutsController : IDisposable
         toggleAvatarNames.OnTriggered += ToggleAvatarNamesTriggered;
         toggleQuestsPanel.OnTriggered += ToggleQuestPanel;
         toggleExplore.OnTriggered += ToggleExploreTriggered;
+        toggleExpressionsHUD.OnTriggered += ToggleExpressionsTriggered;
 
         //TODO
         //toggleNavMap.OnTriggered += ToggleNavMapTriggered;
@@ -45,6 +48,7 @@ public class ShortcutsController : IDisposable
         toggleAvatarNames.OnTriggered -= ToggleAvatarNamesTriggered;
         toggleQuestsPanel.OnTriggered -= ToggleQuestPanel;
         toggleExplore.OnTriggered -= ToggleExploreTriggered;
+        toggleExpressionsHUD.OnTriggered -= ToggleExpressionsTriggered;
 
         //TODO
         //toggleNavMap.OnTriggered -= ToggleNavMapTriggered;
@@ -60,6 +64,7 @@ public class ShortcutsController : IDisposable
         DataStore.i.HUDs.questsPanelVisible.Set(value);
     }
     private void ToggleExploreTriggered(DCLAction_Trigger action) { DataStore.i.exploreV2.isOpen.Set(!DataStore.i.exploreV2.isOpen.Get()); }
+    private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.expressionsVisible.Set(!DataStore.i.HUDs.expressionsVisible.Get()); }
 
     public void Dispose() { Unsubscribe(); }
 

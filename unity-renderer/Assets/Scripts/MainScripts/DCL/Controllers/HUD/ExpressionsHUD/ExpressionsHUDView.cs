@@ -7,6 +7,7 @@ public class ExpressionsHUDView : MonoBehaviour
     private const string PATH = "ExpressionsHUD";
 
     public delegate void ExpressionClicked(string expressionId);
+    public event Action OnClose;
 
     [Serializable]
     public class ButtonToExpression
@@ -16,40 +17,22 @@ public class ExpressionsHUDView : MonoBehaviour
     }
 
     [SerializeField] internal ButtonToExpression[] buttonToExpressionMap;
-    [SerializeField] internal Button showContentButton;
-    [SerializeField] internal Button_OnPointerDown[] hideContentButtons;
+    [SerializeField] internal Button_OnPointerDown[] closeButtons;
     [SerializeField] internal RectTransform content;
-    [SerializeField] internal InputAction_Trigger openExpressionsAction;
     [SerializeField] internal RawImage avatarPic;
 
     public static ExpressionsHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<ExpressionsHUDView>(); }
 
-    void OnOpenExpressions(DCLAction_Trigger trigger)
-    {
-        if (!IsVisible())
-            return;
-
-        if (Input.GetKeyDown(KeyCode.Escape) && !IsContentVisible())
-            return;
-
-        ToggleContent();
-    }
-
     private void Awake()
     {
-        openExpressionsAction.OnTriggered += OnOpenExpressions;
-        showContentButton.onClick.AddListener(ToggleContent);
-
-        for (int i = 0; i < hideContentButtons.Length; i++)
+        for (int i = 0; i < closeButtons.Length; i++)
         {
-            hideContentButtons[i].onPointerDown += HideContent;
+            closeButtons[i].onPointerDown += Close;
         }
     }
 
     internal void Initialize(ExpressionClicked clickedDelegate)
     {
-        content.gameObject.SetActive(false);
-
         foreach (var buttonToExpression in buttonToExpressionMap)
         {
             buttonToExpression.button.onPointerDown += () => clickedDelegate?.Invoke(buttonToExpression.expressionId);
@@ -64,47 +47,23 @@ public class ExpressionsHUDView : MonoBehaviour
         avatarPic.texture = avatarTexture;
     }
 
-    internal void ToggleContent()
+    public void SetVisiblity(bool visible)
     {
-        if (IsContentVisible())
-        {
-            HideContent();
-        }
+        gameObject.SetActive(visible);
+        if (visible)
+            AudioScriptableObjects.dialogOpen.Play(true);
         else
-        {
-            ShowContent();
-        }
+            AudioScriptableObjects.dialogClose.Play(true);
     }
 
-    internal void ShowContent()
-    {
-        content.gameObject.SetActive(true);
-        DCL.Helpers.Utils.UnlockCursor();
-        AudioScriptableObjects.dialogOpen.Play(true);
-    }
-
-    internal void HideContent()
-    {
-        content.gameObject.SetActive(false);
-        DCL.Helpers.Utils.LockCursor();
-        AudioScriptableObjects.dialogClose.Play(true);
-    }
-
-    public bool IsContentVisible() { return content.gameObject.activeSelf; }
-
-    public void SetVisiblity(bool visible) { gameObject.SetActive(visible); }
-
-    public bool IsVisible() { return gameObject.activeSelf; }
-
+    private void Close() { OnClose?.Invoke(); }
     public void OnDestroy() { CleanUp(); }
 
     public void CleanUp()
     {
-        openExpressionsAction.OnTriggered -= OnOpenExpressions;
-
-        for (int i = 0; i < hideContentButtons.Length; i++)
+        for (int i = 0; i < closeButtons.Length; i++)
         {
-            hideContentButtons[i].onPointerDown -= HideContent;
+            closeButtons[i].onPointerDown -= Close;
         }
     }
 }

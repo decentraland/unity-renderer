@@ -77,6 +77,7 @@ namespace DCL
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> controlsVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> avatarEditorVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> expressionsVisible = new BaseVariable<bool>(false);
 
             public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
             public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);

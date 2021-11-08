@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DCL;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -53,16 +54,9 @@ namespace ExpressionsHUD_Test
 
         protected override IEnumerator TearDown()
         {
+            DataStore.Clear();
             controller.Dispose();
             yield return base.TearDown();
-        }
-
-        [Test]
-        public void BeInitializedProperly()
-        {
-            view.content.gameObject.SetActive(true);
-            view.Initialize(null);
-            Assert.IsFalse(view.content.gameObject.activeSelf);
         }
 
         [Test]
@@ -78,33 +72,13 @@ namespace ExpressionsHUD_Test
         }
 
         [Test]
-        public void ToggleContentProperly()
+        public void ReactToExpressionsVisibleChange()
         {
-            var currentActive = view.content.gameObject.activeSelf;
-            view.ToggleContent();
-            Assert.AreNotEqual(currentActive, view.content.gameObject.activeSelf);
-
-            currentActive = view.content.gameObject.activeSelf;
-            view.ToggleContent();
-            Assert.AreNotEqual(currentActive, view.content.gameObject.activeSelf);
-
-            currentActive = view.content.gameObject.activeSelf;
-            view.ToggleContent();
-            Assert.AreNotEqual(currentActive, view.content.gameObject.activeSelf);
-        }
-
-        [Test]
-        public void ReactToOpenExpressionsInputAction()
-        {
-            var inputAction = view.openExpressionsAction;
-
-            var currentActive = view.content.gameObject.activeSelf;
-            inputAction.RaiseOnTriggered();
-            Assert.AreNotEqual(currentActive, view.content.gameObject.activeSelf);
-
-            currentActive = view.content.gameObject.activeSelf;
-            inputAction.RaiseOnTriggered();
-            Assert.AreNotEqual(currentActive, view.content.gameObject.activeSelf);
+            Assert.True(!view.gameObject.activeSelf);
+            DataStore.i.HUDs.expressionsVisible.Set(true);
+            Assert.True(view.gameObject.activeSelf);
+            DataStore.i.HUDs.expressionsVisible.Set(false);
+            Assert.False(view.gameObject.activeSelf);
         }
     }
 }
