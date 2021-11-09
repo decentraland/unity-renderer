@@ -1,3 +1,4 @@
+using ExploreV2Analytics;
 using System;
 using UnityEngine;
 
@@ -12,6 +13,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// It will be triggered when the close button is clicked.
     /// </summary>
     event Action OnCloseButtonPressed;
+
+    /// <summary>
+    /// It will be triggered when a section is open.
+    /// </summary>
+    event Action<ExploreSection> OnSectionOpen;
 
     /// <summary>
     /// Real viewer component.
@@ -56,6 +62,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public event Action OnInitialized;
     public event Action OnCloseButtonPressed;
+    public event Action<ExploreSection> OnSectionOpen;
+
     public override void Start()
     {
         CreateSectionSelectorMappings();
@@ -87,7 +95,17 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         }
     }
 
-    internal void CreateSectionSelectorMappings() { sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.onSelect.AddListener((isOn) => placesAndEventsSection.gameObject.SetActive(isOn)); }
+    internal void CreateSectionSelectorMappings()
+    {
+        sectionSelector.GetSection(EXPLORE_SECTION_INDEX)
+                       ?.onSelect.AddListener((isOn) =>
+                       {
+                           placesAndEventsSection.gameObject.SetActive(isOn);
+
+                           if (isOn)
+                               OnSectionOpen?.Invoke(ExploreSection.Explore);
+                       });
+    }
 
     internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.onSelect.RemoveAllListeners(); }
 

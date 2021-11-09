@@ -51,6 +51,24 @@ public class ExploreV2MenuComponentControllerTests
     }
 
     [Test]
+    [TestCase(ExploreSection.Explore)]
+    [TestCase(ExploreSection.Quest)]
+    [TestCase(ExploreSection.Backpack)]
+    public void RaiseOnSectionOpenCorrectly(ExploreSection section)
+    {
+        // Arrange
+        exploreV2MenuController.lastTimeSectionWasOpen = 5f;
+        exploreV2MenuController.currentOpenSection = ExploreSection.Settings;
+
+        // Act
+        exploreV2MenuController.OnSectionOpen(section);
+
+        // Assert
+        exploreV2Analytics.Received().SendExploreSectionElapsedTime(Arg.Any<ExploreSection>(), Arg.Any<float>());
+        Assert.AreEqual(section, exploreV2MenuController.currentOpenSection);
+    }
+
+    [Test]
     [TestCase(true)]
     [TestCase(false)]
     public void SetVisibilityCorrectly(bool isVisible)
@@ -64,10 +82,10 @@ public class ExploreV2MenuComponentControllerTests
         //Assert
         Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(isVisible);
-        exploreV2Analytics.Received().SendExploreMainMenuVisibility(isVisible, ExploreUIVisibilityMethod.FromClick);
+        exploreV2Analytics.Received().SendExploreVisibility(isVisible, ExploreUIVisibilityMethod.FromClick);
 
         if (!isVisible)
-            exploreV2Analytics.Received().SendExploreMainMenuElapsedTime(Arg.Any<float>());
+            exploreV2Analytics.Received().SendExploreSectionElapsedTime(Arg.Any<ExploreSection>(), Arg.Any<float>());
     }
 
     [Test]

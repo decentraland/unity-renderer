@@ -5,4 +5,15 @@ namespace ExploreV2Analytics
         FromShortcut,
         FromClick,
     }
+
+    public enum ExploreSection
+    {
+        Explore,
+        Quest,
+        Backpack,
+        Map,
+        Builder,
+        Market,
+        Settings
+    }
 }

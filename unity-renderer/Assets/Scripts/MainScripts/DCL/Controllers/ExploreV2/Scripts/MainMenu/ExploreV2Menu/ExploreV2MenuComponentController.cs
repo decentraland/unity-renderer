@@ -17,7 +17,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal InputAction_Trigger toggleExploreTrigger;
     internal IExploreV2Analytics exploreV2Analytics;
-    internal float lastTimeMainMenuWasOpen = 0f;
+    internal ExploreSection currentOpenSection;
+    internal float lastTimeSectionWasOpen = 0f;
 
     public void Initialize()
     {
@@ -36,6 +37,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.isInitialized.Set(true);
 
         view.OnInitialized += CreateControllers;
+        view.OnSectionOpen += OnSectionOpen;
 
         toggleExploreTrigger = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
         toggleExploreTrigger.OnTriggered += OnToggleActionTriggered;
@@ -47,6 +49,15 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
 
+    internal void OnSectionOpen(ExploreSection section)
+    {
+        if (lastTimeSectionWasOpen > 0f && section != currentOpenSection)
+            exploreV2Analytics.SendExploreSectionElapsedTime(currentOpenSection, Time.realtimeSinceStartup - lastTimeSectionWasOpen);
+
+        lastTimeSectionWasOpen = Time.realtimeSinceStartup;
+        currentOpenSection = section;
+    }
+
     public void Dispose()
     {
         DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
@@ -56,6 +67,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
             view.OnInitialized -= CreateControllers;
+            view.OnSectionOpen -= OnSectionOpen;
             view.Dispose();
         }
 
@@ -82,24 +94,20 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 Utils.UnlockCursor();
                 AudioScriptableObjects.dialogOpen.Play(true);
                 AudioScriptableObjects.listItemAppear.ResetPitch();
-                lastTimeMainMenuWasOpen = Time.realtimeSinceStartup;
             }
             else
             {
                 AudioScriptableObjects.dialogClose.Play(true);
-                exploreV2Analytics.SendExploreMainMenuElapsedTime(Time.realtimeSinceStartup - lastTimeMainMenuWasOpen);
+
+                exploreV2Analytics.SendExploreSectionElapsedTime(currentOpenSection, Time.realtimeSinceStartup - lastTimeSectionWasOpen);
+                lastTimeSectionWasOpen = 0f;
             }
 
-            exploreV2Analytics.SendExploreMainMenuVisibility(visible, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+            exploreV2Analytics.SendExploreVisibility(visible, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
         }
 
         DataStore.i.exploreV2.isOpen.Set(visible);
         view.SetVisible(visible);
-
-        if (visible)
-            lastTimeMainMenuWasOpen = Time.realtimeSinceStartup;
-        else
-            lastTimeMainMenuWasOpen = Time.realtimeSinceStartup - lastTimeMainMenuWasOpen;
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
