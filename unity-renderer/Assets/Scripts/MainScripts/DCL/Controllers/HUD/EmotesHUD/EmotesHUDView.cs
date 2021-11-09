@@ -1,27 +1,27 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class ExpressionsHUDView : MonoBehaviour
+public class EmotesHUDView : MonoBehaviour
 {
-    private const string PATH = "ExpressionsHUD";
+    private const string PATH = "EmotesHUD";
 
     public delegate void ExpressionClicked(string expressionId);
     public event Action OnClose;
 
     [Serializable]
-    public class ButtonToExpression
+    public class ButtonToEmote
     {
         public string expressionId;
         public Button_OnPointerDown button; // When the button is used to lock/unlock the mouse we have to use onPointerDown
     }
 
-    [SerializeField] internal ButtonToExpression[] buttonToExpressionMap;
+    [SerializeField] internal ButtonToEmote[] buttonToEmotesMap;
     [SerializeField] internal Button_OnPointerDown[] closeButtons;
-    [SerializeField] internal RectTransform content;
     [SerializeField] internal RawImage avatarPic;
 
-    public static ExpressionsHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<ExpressionsHUDView>(); }
+    public static EmotesHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesHUDView>(); }
 
     private void Awake()
     {
@@ -33,7 +33,7 @@ public class ExpressionsHUDView : MonoBehaviour
 
     internal void Initialize(ExpressionClicked clickedDelegate)
     {
-        foreach (var buttonToExpression in buttonToExpressionMap)
+        foreach (var buttonToExpression in buttonToEmotesMap)
         {
             buttonToExpression.button.onPointerDown += () => clickedDelegate?.Invoke(buttonToExpression.expressionId);
         }

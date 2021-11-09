@@ -55,8 +55,8 @@ public class HUDController : IHUDController
 
     public SettingsPanelHUDController settingsPanelHud => GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
-    public ExpressionsHUDController expressionsHud =>
-        GetHUDElement(HUDElementID.EMOTES) as ExpressionsHUDController;
+    public EmotesHUDController emotesHUD =>
+        GetHUDElement(HUDElementID.EMOTES) as EmotesHUDController;
 
     public PlayerInfoCardHUDController playerInfoCardHud =>
         GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;

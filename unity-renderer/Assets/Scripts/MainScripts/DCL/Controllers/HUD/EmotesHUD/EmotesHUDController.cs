@@ -3,25 +3,25 @@ using DCL;
 using UnityEngine;
 
 //TODO rename to EmotesHUDController
-public class ExpressionsHUDController : IHUD
+public class EmotesHUDController : IHUD
 {
-    internal ExpressionsHUDView view;
-    private BaseVariable<bool> expressionsVisible => DataStore.i.HUDs.expressionsVisible;
+    internal EmotesHUDView view;
+    private BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private InputAction_Trigger closeWindow;
 
-    public ExpressionsHUDController()
+    public EmotesHUDController()
     {
         closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
         closeWindow.OnTriggered += OnCloseWindowPressed;
-        view = ExpressionsHUDView.Create();
-        view.Initialize(ExpressionCalled);
+        view = EmotesHUDView.Create();
+        view.Initialize(EmoteCalled);
         view.OnClose += OnViewClosed;
 
-        ownUserProfile.OnAvatarExpressionSet += OnAvatarExpressionSet;
-        expressionsVisible.OnChange += OnExpressionVisibleChanged;
-        OnExpressionVisibleChanged(expressionsVisible.Get(), false);
+        ownUserProfile.OnAvatarExpressionSet += OnAvatarEmoteSet;
+        emotesVisible.OnChange += OnEmoteVisibleChanged;
+        OnEmoteVisibleChanged(emotesVisible.Get(), false);
     }
 
     public void SetVisibility(bool visible)
@@ -29,7 +29,7 @@ public class ExpressionsHUDController : IHUD
         //TODO once kernel sends visible properly
         //expressionsVisible.Set(visible);
     }
-    private void OnExpressionVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+    private void OnEmoteVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
     public void SetVisibility_Internal(bool visible)
     {
         view.SetVisiblity(visible);
@@ -50,8 +50,8 @@ public class ExpressionsHUDController : IHUD
     {
         ownUserProfile.snapshotObserver.RemoveListener(view.UpdateAvatarSprite);
         closeWindow.OnTriggered -= OnCloseWindowPressed;
-        ownUserProfile.OnAvatarExpressionSet -= OnAvatarExpressionSet;
-        expressionsVisible.OnChange -= OnExpressionVisibleChanged;
+        ownUserProfile.OnAvatarExpressionSet -= OnAvatarEmoteSet;
+        emotesVisible.OnChange -= OnEmoteVisibleChanged;
 
         if (view != null)
         {
@@ -60,9 +60,9 @@ public class ExpressionsHUDController : IHUD
         }
     }
 
-    public void ExpressionCalled(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
+    public void EmoteCalled(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
 
-    private void OnViewClosed() { expressionsVisible.Set(false); }
-    private void OnAvatarExpressionSet(string id, long timestamp) { expressionsVisible.Set(false); }
-    private void OnCloseWindowPressed(DCLAction_Trigger action) { expressionsVisible.Set(false); }
+    private void OnViewClosed() { emotesVisible.Set(false); }
+    private void OnAvatarEmoteSet(string id, long timestamp) { emotesVisible.Set(false); }
+    private void OnCloseWindowPressed(DCLAction_Trigger action) { emotesVisible.Set(false); }
 }

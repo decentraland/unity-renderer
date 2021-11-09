@@ -64,7 +64,7 @@ public class ShortcutsController : IDisposable
         DataStore.i.HUDs.questsPanelVisible.Set(value);
     }
     private void ToggleExploreTriggered(DCLAction_Trigger action) { DataStore.i.exploreV2.isOpen.Set(!DataStore.i.exploreV2.isOpen.Get()); }
-    private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.expressionsVisible.Set(!DataStore.i.HUDs.expressionsVisible.Get()); }
+    private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }
 
     public void Dispose() { Unsubscribe(); }
 

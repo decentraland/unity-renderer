@@ -1,19 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using DCL;
 using NUnit.Framework;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 namespace ExpressionsHUD_Test
 {
-    public class ExpressionsHUDControllerShould : IntegrationTestSuite_Legacy
+    public class EmotesHUDControllerShould : IntegrationTestSuite_Legacy
     {
-        private ExpressionsHUDController controller;
+        private EmotesHUDController controller;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new ExpressionsHUDController();
+            controller = new EmotesHUDController();
         }
 
         [UnityTearDown]
@@ -33,7 +35,7 @@ namespace ExpressionsHUD_Test
         [Test]
         public void UpdateOwnUserProfileWhenExpressionIsCalled()
         {
-            controller.ExpressionCalled("wave");
+            controller.EmoteCalled("wave");
 
             Assert.AreEqual("wave", UserProfile.GetOwnUserProfile().avatar.expressionTriggerId);
         }
@@ -41,14 +43,14 @@ namespace ExpressionsHUD_Test
 
     public class ExpressionsHUDViewShould : IntegrationTestSuite_Legacy
     {
-        private ExpressionsHUDController controller;
-        private ExpressionsHUDView view;
+        private EmotesHUDController controller;
+        private EmotesHUDView view;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new ExpressionsHUDController();
+            controller = new EmotesHUDController();
             view = controller.view;
         }
 
@@ -63,21 +65,21 @@ namespace ExpressionsHUD_Test
         public void RegisterButtonsCallbackProperly()
         {
             string expressionCalled = null;
-            ExpressionsHUDView.ExpressionClicked callback = (x) => expressionCalled = x;
+            EmotesHUDView.ExpressionClicked callback = (x) => expressionCalled = x;
             view.Initialize(callback);
 
-            view.buttonToExpressionMap[0].button.OnPointerDown(null);
+            view.buttonToEmotesMap[0].button.OnPointerDown(null);
 
-            Assert.AreEqual(view.buttonToExpressionMap[0].expressionId, expressionCalled);
+            Assert.AreEqual(view.buttonToEmotesMap[0].expressionId, expressionCalled);
         }
 
         [Test]
         public void ReactToExpressionsVisibleChange()
         {
             Assert.True(!view.gameObject.activeSelf);
-            DataStore.i.HUDs.expressionsVisible.Set(true);
+            DataStore.i.HUDs.emotesVisible.Set(true);
             Assert.True(view.gameObject.activeSelf);
-            DataStore.i.HUDs.expressionsVisible.Set(false);
+            DataStore.i.HUDs.emotesVisible.Set(false);
             Assert.False(view.gameObject.activeSelf);
         }
     }
