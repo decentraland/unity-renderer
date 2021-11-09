@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,6 +13,11 @@ public interface IEventsSubSectionComponentController : IDisposable
     /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
     /// </summary>
     event Action OnCloseExploreV2;
+
+    /// <summary>
+    /// It will be triggered when any action is executed inside the events sub-section.
+    /// </summary>
+    event Action OnAnyActionExecuted;
 
     /// <summary>
     /// Request all events from the API.
@@ -47,6 +53,7 @@ public interface IEventsSubSectionComponentController : IDisposable
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
+    public event Action OnAnyActionExecuted;
     internal event Action OnEventsFromAPIUpdated;
 
     internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
@@ -59,8 +66,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
     internal int currentUpcomingEventsShowed = 0;
     internal bool reloadEvents = false;
+    internal IExploreV2Analytics exploreV2Analytics;
 
-    public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI)
+    public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -72,6 +80,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         eventsAPIApiController = eventsAPI;
         OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
+
+        this.exploreV2Analytics = exploreV2Analytics;
     }
 
     internal void FirstLoading()
@@ -204,6 +214,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             currentUpcomingEventsShowed = eventsFromAPI.Count;
 
         view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
+
+        OnAnyActionExecuted?.Invoke();
     }
 
     public void LoadGoingEvents()
@@ -306,7 +318,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal string FormatEventPlace(EventFromAPIModel eventFromAPI) { return string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name; }
 
-    internal void ShowEventDetailedInfo(EventCardComponentModel eventModel) { view.ShowEventModal(eventModel); }
+    internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
+    {
+        view.ShowEventModal(eventModel);
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
+        OnAnyActionExecuted?.Invoke();
+    }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
@@ -322,6 +339,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
+        OnAnyActionExecuted?.Invoke();
+
+        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, coords);
     }
 
     internal void SubscribeToEvent(string eventId)
@@ -341,6 +361,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
+
+        OnAnyActionExecuted?.Invoke();
     }
 
     internal void UnsubscribeToEvent(string eventId)
@@ -360,5 +382,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
+
+        OnAnyActionExecuted?.Invoke();
     }
 }

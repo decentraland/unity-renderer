@@ -166,4 +166,17 @@ public class ExploreV2MenuComponentControllerTests
         Assert.AreEqual(isActive, DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(isActive);
     }
+
+    [Test]
+    public void RaiseOnAnyActionExecutedCorrectly()
+    {
+        // Arrange
+        exploreV2MenuController.anyActionExecutedFromLastOpen = false;
+
+        // Act
+        exploreV2MenuController.OnAnyActionExecuted();
+
+        // Assert
+        Assert.IsTrue(exploreV2MenuController.anyActionExecutedFromLastOpen);
+    }
 }

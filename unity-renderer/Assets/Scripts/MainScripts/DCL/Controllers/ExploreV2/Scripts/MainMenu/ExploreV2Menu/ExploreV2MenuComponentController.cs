@@ -19,6 +19,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
     internal float lastTimeSectionWasOpen = 0f;
+    internal bool anyActionExecutedFromLastOpen = false;
 
     public void Initialize()
     {
@@ -45,14 +46,18 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void CreateControllers()
     {
-        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection);
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics);
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
+        placesAndEventsSectionController.OnAnyActionExecuted += OnAnyActionExecuted;
     }
 
     internal void OnSectionOpen(ExploreSection section)
     {
         if (lastTimeSectionWasOpen > 0f && section != currentOpenSection)
+        {
             exploreV2Analytics.SendExploreSectionElapsedTime(currentOpenSection, Time.realtimeSinceStartup - lastTimeSectionWasOpen);
+            anyActionExecutedFromLastOpen = true;
+        }
 
         lastTimeSectionWasOpen = Time.realtimeSinceStartup;
         currentOpenSection = section;
@@ -76,6 +81,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (placesAndEventsSectionController != null)
         {
             placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
+            placesAndEventsSectionController.OnAnyActionExecuted -= OnAnyActionExecuted;
             placesAndEventsSectionController.Dispose();
         }
 
@@ -99,11 +105,16 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             {
                 AudioScriptableObjects.dialogClose.Play(true);
 
-                exploreV2Analytics.SendExploreSectionElapsedTime(currentOpenSection, Time.realtimeSinceStartup - lastTimeSectionWasOpen);
+                float elpasedTimeInCurrentSection = Time.realtimeSinceStartup - lastTimeSectionWasOpen;
+                exploreV2Analytics.SendExploreSectionElapsedTime(currentOpenSection, elpasedTimeInCurrentSection);
                 lastTimeSectionWasOpen = 0f;
+
+                if (!anyActionExecutedFromLastOpen)
+                    exploreV2Analytics.SendExploreExitWithoutActions(elpasedTimeInCurrentSection);
             }
 
             exploreV2Analytics.SendExploreVisibility(visible, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+            anyActionExecutedFromLastOpen = false;
         }
 
         DataStore.i.exploreV2.isOpen.Set(visible);
@@ -149,6 +160,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     }
 
     internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current, false); }
+
+    internal void OnAnyActionExecuted() { anyActionExecutedFromLastOpen = true; }
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();
 

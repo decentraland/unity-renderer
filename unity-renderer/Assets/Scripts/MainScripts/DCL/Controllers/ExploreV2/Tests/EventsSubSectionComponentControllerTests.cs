@@ -1,3 +1,4 @@
+using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -9,13 +10,15 @@ public class EventsSubSectionComponentControllerTests
     private EventsSubSectionComponentController eventsSubSectionComponentController;
     private IEventsSubSectionComponentView eventsSubSectionComponentView;
     private IEventsAPIController eventsAPIController;
+    private IExploreV2Analytics exploreV2Analytics;
 
     [SetUp]
     public void SetUp()
     {
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
         eventsAPIController = Substitute.For<IEventsAPIController>();
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController);
+        exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics);
     }
 
     [TearDown]
@@ -232,6 +235,7 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().ShowEventModal(testEventCardModel);
+        exploreV2Analytics.Received().SendClickOnEventInfo(testEventCardModel.eventId, testEventCardModel.eventName);
     }
 
     [Test]
@@ -248,6 +252,7 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         eventsSubSectionComponentView.Received().HideEventModal();
         Assert.IsTrue(exploreClosed);
+        exploreV2Analytics.Received().SendEventTeleport(testEventFromAPI.id, testEventFromAPI.name, new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]));
     }
 
     // TODO (Santi): Uncomment when the RegisterAttendEvent POST is available.
