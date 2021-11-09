@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +28,7 @@ namespace DCL.Builder
     {
         [Header("General")]
         [SerializeField] internal Button closeButton;
+        [SerializeField] internal Button backgroundButton;
         [SerializeField] internal Transform sectionsContainer;
         [SerializeField] internal SceneCardViewContextMenu contextMenu;
         [SerializeField] internal SearchBarView searchBarView;
@@ -125,6 +126,7 @@ namespace DCL.Builder
             name = "_BuilderProjectsPanel";
 
             closeButton.onClick.AddListener(() => OnClosePressed?.Invoke());
+            backgroundButton?.onClick.AddListener(() => OnClosePressed?.Invoke());
             createSceneButton.onClick.AddListener(() => OnCreateProjectPressed?.Invoke());
             importSceneButton.onClick.AddListener(() => OnImportScenePressed?.Invoke());
             backToMainPanelButton.onClick.AddListener(() => OnBackToMainMenuPressed?.Invoke());
