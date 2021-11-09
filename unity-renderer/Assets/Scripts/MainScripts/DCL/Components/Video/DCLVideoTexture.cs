@@ -66,7 +66,6 @@ namespace DCL.Components
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
             if (isDisposed)
             {
-                var toDebug = this.model as Model;
                 yield break;
             }
 
