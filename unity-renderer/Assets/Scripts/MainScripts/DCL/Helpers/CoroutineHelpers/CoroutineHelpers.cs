@@ -26,7 +26,7 @@ namespace DCL
             Action<Exception> done
         )
         {
-            return CoroutineStarter.Start(RunThrowingIterator(enumerator, done));
+            return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, done));
         }
 
         /// <summary>
