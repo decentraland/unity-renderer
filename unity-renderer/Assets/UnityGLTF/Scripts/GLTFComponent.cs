@@ -162,9 +162,8 @@ namespace UnityGLTF
                 return;
 
             state = State.FAILED;
-
-            if (loadingRoutine != null)
-                CoroutineStarter.Stop(loadingRoutine);
+            
+            CoroutineStarter.Stop(loadingRoutine);   
             loadingRoutine = null;
 
             DecrementDownloadCount();
