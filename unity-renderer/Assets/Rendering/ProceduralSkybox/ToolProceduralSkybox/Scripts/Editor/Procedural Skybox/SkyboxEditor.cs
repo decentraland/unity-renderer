@@ -430,7 +430,7 @@ namespace DCL.Skybox
                 EditorGUILayout.Separator();
             }
 
-
+            // Avatar Light Direction
             selectedConfiguration.useAvatarRealtimeDLDirection = EditorGUILayout.Toggle("Realtime DL Direction", selectedConfiguration.useAvatarRealtimeDLDirection);
 
             if (!selectedConfiguration.useAvatarRealtimeDLDirection)
@@ -440,6 +440,7 @@ namespace DCL.Skybox
 
             EditorGUILayout.Separator();
 
+            // Avatar Light Color
             selectedConfiguration.useAvatarRealtimeLightColor = EditorGUILayout.Toggle("Realtime Light Color", selectedConfiguration.useAvatarRealtimeLightColor);
 
             if (!selectedConfiguration.useAvatarRealtimeLightColor)

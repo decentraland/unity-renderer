@@ -74,7 +74,7 @@ namespace DCL.Skybox
             selectedMat.SetColor("_horizonColor", horizonColor.Evaluate(normalizedDayTime));
             selectedMat.SetFloat("_horizonHeight", GetTransitionValue(horizonHeight, percentage, 0f));
             selectedMat.SetFloat("_horizonWidth", GetTransitionValue(horizonWidth, percentage, 0f));
-            selectedMat.SetTexture("_horizonMask_", horizonMask);
+            selectedMat.SetTexture("_horizonMask", horizonMask);
             selectedMat.SetVector("_horizonMaskValues", horizonMaskValues);
 
 
