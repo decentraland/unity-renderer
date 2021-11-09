@@ -2,5 +2,6 @@
 
 public interface IProfanityWordProvider
 {
-    IEnumerable<string> GetAll();
+    IEnumerable<string> GetExplicitWords();
+    IEnumerable<string> GetNonExplicitWords();
 }
