@@ -82,7 +82,7 @@ public class RenderProfileWorld : ScriptableObject
 
     public void Apply(bool verbose = false)
     {
-        avatarProfile.Apply();
+        RenderSettings.customReflection = reflectionCubemap;
 
         if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
         {
@@ -104,7 +104,7 @@ public class RenderProfileWorld : ScriptableObject
             RenderSettings.sun.transform.rotation = Quaternion.Euler(directionalColorAngle);
         }
 
-        RenderSettings.customReflection = reflectionCubemap;
+        avatarProfile.Apply();
 
         if (verbose)
             Debug.Log("Applying profile... " + name);

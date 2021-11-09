@@ -27,6 +27,8 @@ namespace DCL.Skybox
         private bool showAmbienLayer;
         private bool showFogLayer;
         private bool showDLLayer;
+        private bool showAvatarLayer;
+        private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
         public static SkyboxEditorWindow instance { get { return GetWindow<SkyboxEditorWindow>(); } }
 
@@ -36,7 +38,6 @@ namespace DCL.Skybox
             {
                 EnsureDependencies();
             }
-
         }
 
         void OnFocus()
@@ -50,9 +51,7 @@ namespace DCL.Skybox
         [MenuItem("Window/Skybox Editor")]
         static void Init()
         {
-
             SkyboxEditorWindow window = (SkyboxEditorWindow)EditorWindow.GetWindow(typeof(SkyboxEditorWindow));
-            //SkyboxEditorWindow.selectedConfiguration = new SkyboxConfiguration();
             window.minSize = new Vector2(500, 500);
             window.Show();
             window.InitializeWindow();
@@ -66,7 +65,6 @@ namespace DCL.Skybox
                 {
                     isPaused = SkyboxController.i.IsPaused();
                 }
-
             }
             EnsureDependencies();
         }
@@ -106,6 +104,16 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
             GUILayout.Space(32);
+            showAvatarLayer = EditorGUILayout.Foldout(showAvatarLayer, "Avatar Layer", true);
+            if (showAvatarLayer)
+            {
+                EditorGUI.indentLevel++;
+                RenderAvatarColorLayer();
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+            GUILayout.Space(32);
             showFogLayer = EditorGUILayout.Foldout(showFogLayer, "Fog Layer", true);
             if (showFogLayer)
             {
@@ -129,9 +137,6 @@ namespace DCL.Skybox
 
             // Render Slots
             RenderSlots();
-
-            // Render Texture Layers
-            //RenderTextureLayers();
 
             GUILayout.Space(300);
             EditorGUILayout.EndScrollView();
@@ -182,12 +187,8 @@ namespace DCL.Skybox
             directionalLight = GameObject.FindObjectsOfType<Light>(true).Where(s => s.type == LightType.Directional).FirstOrDefault();
         }
 
-        //bool initialized = false;
-        MaterialReferenceContainer.Mat_Layer matLayer = null;
-
         void InitializeMaterial()
         {
-
             matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(selectedConfiguration.slots.Count);
 
             if (matLayer == null)
@@ -198,12 +199,11 @@ namespace DCL.Skybox
             selectedMat = matLayer.material;
             selectedConfiguration.ResetMaterial(selectedMat, matLayer.numberOfSlots);
             RenderSettings.skybox = selectedMat;
-            //initialized = true;
         }
 
         private void UpdateMaterial() { InitializeMaterial(); }
 
-        SkyboxConfiguration AddNewConfiguration(string name)
+        private SkyboxConfiguration AddNewConfiguration(string name)
         {
             SkyboxConfiguration temp = null;
             temp = ScriptableObject.CreateInstance<SkyboxConfiguration>();
@@ -308,14 +308,10 @@ namespace DCL.Skybox
 
             InitializeMaterial();
 
-            //isPaused = true;
-
             if (!Application.isPlaying)
             {
                 isPaused = true;
             }
-
-
         }
 
         /// <summary>
@@ -383,8 +379,6 @@ namespace DCL.Skybox
 
         void RenderBackgroundColorLayer()
         {
-
-            //GUILayout.Label("Background Layer", EditorStyles.boldLabel);
             RenderColorGradientField(selectedConfiguration.skyColor, "Sky Color", 0, 24);
             RenderColorGradientField(selectedConfiguration.horizonColor, "Horizon Color", 0, 24);
             RenderColorGradientField(selectedConfiguration.groundColor, "Ground Color", 0, 24);
@@ -410,8 +404,6 @@ namespace DCL.Skybox
 
         void RenderAmbientLayer()
         {
-
-            //GUILayout.Label("Ambient Layer", EditorStyles.boldLabel);
             selectedConfiguration.ambientTrilight = EditorGUILayout.Toggle("Use Gradient", selectedConfiguration.ambientTrilight);
 
             if (selectedConfiguration.ambientTrilight)
@@ -423,15 +415,46 @@ namespace DCL.Skybox
 
         }
 
+        void RenderAvatarColorLayer()
+        {
+            // Avatar Color
+            selectedConfiguration.useAvatarGradient = EditorGUILayout.Toggle("Color Gradient", selectedConfiguration.useAvatarGradient, GUILayout.Width(500));
+
+            if (selectedConfiguration.useAvatarGradient)
+            {
+                RenderColorGradientField(selectedConfiguration.avatarTintGradient, "Tint Gradient", 0, 24, true);
+            }
+            else
+            {
+                selectedConfiguration.avatarTintColor = EditorGUILayout.ColorField("Tint Color", selectedConfiguration.avatarTintColor, GUILayout.Width(400));
+                EditorGUILayout.Separator();
+            }
+
+
+            selectedConfiguration.useAvatarRealtimeDLDirection = EditorGUILayout.Toggle("Realtime DL Direction", selectedConfiguration.useAvatarRealtimeDLDirection);
+
+            if (!selectedConfiguration.useAvatarRealtimeDLDirection)
+            {
+                RenderVector3Field("Light Direction", ref selectedConfiguration.avatarLightConstantDir);
+            }
+
+            EditorGUILayout.Separator();
+
+            selectedConfiguration.useAvatarRealtimeLightColor = EditorGUILayout.Toggle("Realtime Light Color", selectedConfiguration.useAvatarRealtimeLightColor);
+
+            if (!selectedConfiguration.useAvatarRealtimeLightColor)
+            {
+                selectedConfiguration.avatarConstantLightColor = EditorGUILayout.ColorField("Light Color", selectedConfiguration.avatarConstantLightColor, GUILayout.Width(400));
+                EditorGUILayout.Separator();
+            }
+        }
+
         void RenderFogLayer()
         {
-
-            //GUILayout.Label("Fog Layer", EditorStyles.boldLabel);
             selectedConfiguration.useFog = EditorGUILayout.Toggle("Use Fog", selectedConfiguration.useFog);
             if (selectedConfiguration.useFog)
             {
                 RenderColorGradientField(selectedConfiguration.fogColor, "Fog Color", 0, 24);
-                //selectedConfiguration.fogColor = EditorGUILayout.GradientField("Fog Color", selectedConfiguration.fogColor);
                 selectedConfiguration.fogMode = (FogMode)EditorGUILayout.EnumPopup("Fog Mode", selectedConfiguration.fogMode);
 
                 switch (selectedConfiguration.fogMode)
@@ -450,8 +473,6 @@ namespace DCL.Skybox
 
         void RenderDirectionalLightLayer()
         {
-
-            //GUILayout.Label("Directional Light Layer", EditorStyles.boldLabel);
             selectedConfiguration.useDirectionalLight = EditorGUILayout.Toggle("Use Directional Light", selectedConfiguration.useDirectionalLight);
 
             if (!selectedConfiguration.useDirectionalLight)
@@ -467,7 +488,6 @@ namespace DCL.Skybox
             RenderTransitioningFloat(selectedConfiguration.directionalLightLayer.intensity, "Light Intensity", "%", "Intensity");
 
             GUILayout.Space(10);
-
 
             RenderTransitioningQuaternionAsVector3(selectedConfiguration.directionalLightLayer.lightDirection, "Light Direction", "%", "Direction", GetDLDirection, 0, 24);
         }
@@ -485,10 +505,9 @@ namespace DCL.Skybox
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
                 selectedConfiguration.slots[i].enabled = EditorGUILayout.Toggle(selectedConfiguration.slots[i].enabled, GUILayout.Width(20), GUILayout.Height(10), GUILayout.ExpandWidth(false));
                 selectedConfiguration.slots[i].expandedInEditor = EditorGUILayout.Foldout(selectedConfiguration.slots[i].expandedInEditor, "Slot " + i, true, style);
-                //selectedConfiguration.slots[i].slotName = EditorGUILayout.TextField(selectedConfiguration.slots[i].slotName, GUILayout.Width(100));
                 EditorGUILayout.EndHorizontal();
 
-                // Render slots texture layers
+                // Render layers in slots
                 if (selectedConfiguration.slots[i].expandedInEditor)
                 {
                     EditorGUI.indentLevel++;
@@ -590,7 +609,6 @@ namespace DCL.Skybox
 
             GUI.enabled = true;
 
-            //EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
             {
                 slot.layers.Add(new TextureLayer("Tex Layer " + (slot.layers.Count + 1)));
@@ -735,8 +753,6 @@ namespace DCL.Skybox
             RenderDistortionVariables(layer);
 
             EditorGUILayout.Space(10);
-
-            //RenderParticleLayer(layer);
         }
 
         void RenderSatelliteLayer(TextureLayer layer)
@@ -759,12 +775,8 @@ namespace DCL.Skybox
             // Gradient
             RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
 
-
             EditorGUILayout.Space(10);
-
-
             EditorGUILayout.Space(10);
-
 
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField("Movemnt Type", GUILayout.Width(150), GUILayout.ExpandWidth(false));
@@ -786,7 +798,6 @@ namespace DCL.Skybox
             }
 
             EditorGUI.indentLevel--;
-
             EditorGUILayout.Space(20);
 
             // Rotation
@@ -823,7 +834,6 @@ namespace DCL.Skybox
 
             // Offset
             RenderVector2Field("Offset", ref layer.particlesOffset);
-
 
             // Amount
             RenderFloatField("Amount", ref layer.particlesAmount);
@@ -890,7 +900,6 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField(label2, GUILayout.Width(90), GUILayout.ExpandWidth(false));
             value2 = EditorGUILayout.FloatField("", value2, GUILayout.Width(90));
             GUILayout.EndHorizontal();
-
             EditorGUILayout.Separator();
         }
 
@@ -900,7 +909,6 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             value = EditorGUILayout.FloatField(value, GUILayout.Width(90));
             EditorGUILayout.EndHorizontal();
-
             EditorGUILayout.Separator();
         }
 
@@ -937,7 +945,6 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             tex = (Texture2D)EditorGUILayout.ObjectField(tex, typeof(Texture2D), false, GUILayout.Width(200));
             GUILayout.EndHorizontal();
-
             EditorGUILayout.Separator();
         }
 
@@ -947,7 +954,6 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             tex = (Cubemap)EditorGUILayout.ObjectField(tex, typeof(Cubemap), false, GUILayout.Width(200));
             GUILayout.EndHorizontal();
-
             EditorGUILayout.Separator();
         }
 
@@ -984,7 +990,6 @@ namespace DCL.Skybox
                 }
 
                 // Percentage
-
                 GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
 
                 RenderPercentagePart(layerStartTime, layerEndTime, ref _list[i].percentage);
@@ -1000,7 +1005,6 @@ namespace DCL.Skybox
                 if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
                 {
                     _list.RemoveAt(i);
-                    //break;
                 }
 
                 if (i == (_list.Count - 1))
@@ -1014,7 +1018,6 @@ namespace DCL.Skybox
                             tLastPos = _list[_list.Count - 1].value;
                         }
                         _list.Add(new TransitioningVector3(GetNormalizedLayerCurrentTime(layerStartTime, layerEndTime) * 100, tLastPos));
-                        //break;
                     }
                 }
 
@@ -1059,7 +1062,6 @@ namespace DCL.Skybox
                 }
 
                 // Percentage
-
                 GUILayout.Label(percentTxt, GUILayout.ExpandWidth(false));
 
                 RenderPercentagePart(layerStartTime, layerEndTime, ref _list[i].percentage);
@@ -1286,23 +1288,17 @@ namespace DCL.Skybox
 
         #endregion
 
-        Vector4 QuaternionToVector4(Quaternion rot) { return new Vector4(rot.x, rot.y, rot.z, rot.w); }
-
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
-
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), directionalLight);
         }
 
         private float GetNormalizedDayTime()
         {
             float tTime = 0;
-
             tTime = timeOfTheDay / 24;
-
             tTime = Mathf.Clamp(tTime, 0, 1);
-
             return tTime;
         }
 
@@ -1337,8 +1333,6 @@ namespace DCL.Skybox
 
             return time;
         }
-
-        private Quaternion Vector4ToQuaternion(Vector4 val) { return new Quaternion(val.x, val.y, val.z, val.w); }
     }
 
 }

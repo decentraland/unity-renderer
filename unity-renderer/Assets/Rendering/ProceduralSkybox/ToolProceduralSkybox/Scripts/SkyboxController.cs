@@ -47,12 +47,18 @@ namespace DCL.Skybox
 
             timeOfTheDay = 0;
 
+            // set skyboxConfig to true
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
 
             UpdateConfig();
             DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
         }
 
+        /// <summary>
+        /// Called whenever any change in skyboxConfig is observed
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="previous"></param>
         public void UpdateConfig(bool current = true, bool previous = false)
         {
             // Apply configuration
@@ -82,7 +88,7 @@ namespace DCL.Skybox
 
             if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {
-                Applyconfig();
+                ApplyConfig();
             }
             else
             {
@@ -93,7 +99,10 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
         }
 
-        void Applyconfig()
+        /// <summary>
+        /// Apply changed configuration
+        /// </summary>
+        void ApplyConfig()
         {
             SelectSkyboxConfiguration();
 
@@ -101,7 +110,6 @@ namespace DCL.Skybox
             {
                 directionalLight.gameObject.SetActive(false);
             }
-            //DCL.DataStore.i.isProceduralSkyboxInUse.Set(true);
 
             // Calculate time factor
             if (minutesPerSecond <= 0)
@@ -111,6 +119,9 @@ namespace DCL.Skybox
             timeNormalizationFactor = 60 / minutesPerSecond;
         }
 
+        /// <summary>
+        /// Select Configuration to load.
+        /// </summary>
         private void SelectSkyboxConfiguration()
         {
             string configToLoad = DEFAULT_SKYBOX_ID;
@@ -154,6 +165,7 @@ namespace DCL.Skybox
             {
                 return;
             }
+
             timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
 
@@ -168,7 +180,8 @@ namespace DCL.Skybox
         public override void Dispose()
         {
             base.Dispose();
-            //DCL.DataStore.i.isProceduralSkyboxInUse.Set(false);
+            // set skyboxConfig to true
+            DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
         }
 
