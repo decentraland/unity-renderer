@@ -70,7 +70,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         toggleExploreTrigger.OnTriggered -= OnToggleActionTriggered;
     }
 
-    public void SetVisibility(bool visible, bool fromShortcout)
+    public void SetVisibility(bool visible, bool fromShortcut)
     {
         if (view == null)
             return;
@@ -90,7 +90,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                 exploreV2Analytics.SendExploreMainMenuElapsedTime(Time.realtimeSinceStartup - lastTimeMainMenuWasOpen);
             }
 
-            exploreV2Analytics.SendExploreMainMenuVisibility(visible, fromShortcout ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
+            exploreV2Analytics.SendExploreMainMenuVisibility(visible, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
         }
 
         DataStore.i.exploreV2.isOpen.Set(visible);
