@@ -113,8 +113,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [NUnit.Framework.Category("Explicit")]
-        [Explicit]
         public IEnumerator AudioIsLooped()
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
@@ -125,11 +123,8 @@ namespace Tests
             yield return TestHelpers.CreateAudioSource(scene, entity.entityId, "1", true, loop: true);
 
             DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
-            float initTime = dclAudioSource.audioSource.clip.length - 0.05f;
-            dclAudioSource.audioSource.time = initTime;
-            yield return new WaitForSeconds(0.1f);
 
-            Assert.IsTrue(dclAudioSource.playTime > 0 && dclAudioSource.playTime < initTime);
+            Assert.IsTrue(dclAudioSource.audioSource.loop);
         }
 
         [UnityTest]
