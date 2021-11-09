@@ -269,7 +269,7 @@ namespace UnityGLTF
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.initialVisibility = initialVisibility;
                     sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
-                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh;
+                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
 
                     float time = Time.realtimeSinceStartup;
 
