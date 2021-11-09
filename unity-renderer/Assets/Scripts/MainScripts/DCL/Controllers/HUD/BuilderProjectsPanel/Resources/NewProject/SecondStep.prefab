@@ -1660,7 +1660,7 @@ MonoBehaviour:
     adaptHorizontallyItemSizeToContainer: 1
     adaptVerticallyItemSizeToContainer: 1
     itemSize: {x: 0, y: 0}
-    spaceBetweenItems: {x: 0, y: 0}
+    spaceBetweenItems: {x: 5, y: 5}
     minWidthForFlexibleItems: 20
   parcelImagePrefab: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
     type: 3}
