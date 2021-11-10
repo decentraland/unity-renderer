@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 
 public interface INewProjectFlowView
@@ -19,6 +20,17 @@ public interface INewProjectFlowView
     /// This will show the first step of the new project flow
     /// </summary>
     void ShowNewProjectTitleAndDescrition();
+
+    /// <summary>
+    /// This will reset the view to the initial values
+    /// </summary>
+    void Reset();
+
+    /// <summary>
+    /// Hide the view
+    /// </summary>
+    void Hide();
+    
     void Dispose();
 }
 
@@ -37,6 +49,7 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
 
     private void Awake()
     {
+        name = "_BuilderNewProjectFlowView";
         firstStep.OnBackPressed += BackPressed;
         secondStep.OnBackPressed += BackPressed;
 
@@ -44,7 +57,21 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
         secondStep.OnNextPressed += SetSize;
     }
 
-    public void ShowNewProjectTitleAndDescrition() { modal.Show(); }
+    public void ShowNewProjectTitleAndDescrition()
+    {
+        gameObject.SetActive(true);
+        modal.Show();
+    }
+    
+    public void Reset()
+    {
+        carrousel.ResetCarousel();
+    }
+    
+    public void Hide()
+    {
+        modal.Hide();
+    }
 
     public void Dispose()
     {
@@ -79,7 +106,7 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     private void BackPressed()
     {
         if (currentStep == 0)
-            modal.Hide();
+            Hide();
         else
         {
             currentStep--;

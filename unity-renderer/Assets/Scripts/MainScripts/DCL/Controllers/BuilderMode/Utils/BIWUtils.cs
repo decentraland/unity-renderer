@@ -14,9 +14,11 @@ using Environment = DCL.Environment;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using DCL.Builder;
 using DCL.Builder.Manifest;
 using DCL.Controllers;
 using DCL.Helpers;
+using UnityEditor;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
@@ -28,6 +30,45 @@ public static partial class BIWUtils
     {
         TimeSpan elapsedTime = value - Epoch;
         return (long) elapsedTime.TotalMilliseconds;
+    }
+
+    public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
+    {
+        SceneMetricsModel  cachedModel = new SceneMetricsModel();
+
+        float log = Mathf.Log(parcelAmount + 1, 2);
+        float lineal = parcelAmount;
+
+        cachedModel.triangles = (int) (lineal * SceneMetricsCounter.LimitsConfig.triangles);
+        cachedModel.bodies = (int) (lineal * SceneMetricsCounter.LimitsConfig.bodies);
+        cachedModel.entities = (int) (lineal * SceneMetricsCounter.LimitsConfig.entities);
+        cachedModel.materials = (int) (log * SceneMetricsCounter.LimitsConfig.materials);
+        cachedModel.textures = (int) (log * SceneMetricsCounter.LimitsConfig.textures);
+        cachedModel.meshes = (int) (log * SceneMetricsCounter.LimitsConfig.meshes);
+        cachedModel.sceneHeight = (int) (log * SceneMetricsCounter.LimitsConfig.height);
+        
+        return cachedModel;
+    }
+
+    public static Manifest CreateManifestFromProject(ProjectData projectData)
+    {
+        Manifest manifest = new Manifest();
+        manifest.version = 10;
+        manifest.project = projectData;
+        manifest.builderScene = CreateEmtpyBuilderScene(projectData.rows * projectData.colums);
+        return manifest;
+    }
+
+    //We create the scene as it doest the current builder so we ensure the compatibility between both builders
+    private static BuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
+    {
+        BuilderScene scene = new BuilderScene
+        {
+            id = Guid.NewGuid().ToString(), 
+            limits = GetSceneMetricsLimits(parcelsAmount)
+        };
+
+        return scene;
     }
     
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)

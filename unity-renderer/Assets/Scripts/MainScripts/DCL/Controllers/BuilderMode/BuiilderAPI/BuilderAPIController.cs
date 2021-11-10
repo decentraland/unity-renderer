@@ -10,47 +10,52 @@ using DCL.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SocialPlatforms.Impl;
 
 public class BuilderAPIController : IBuilderAPIController
 {
     internal const string CATALOG_ENDPOINT = "/assetPacks";
     internal const string ASSETS_ENDPOINT = "/assets?";
-    internal const string PROJECTS_ENDPOINT = "/projects";
-        
+    internal const string GET_PROJECTS_ENDPOINT = "/projects";
+    internal const string SET_PROJECTS_ENDPOINT = "/projects/{ID}/manifest";
+
+    internal const string API_KO_RESPONSE_ERROR = "API response is not OK";
+
     internal const string GET = "get";
-    
+    internal const string PUT = "put";
+
     public event Action<IWebRequestAsyncOperation> OnWebRequestCreated;
 
     internal IBuilderAPIResponseResolver apiResponseResolver;
-    
+
     private BuilderInWorldBridge builderInWorldBridge;
-    
+
     private Dictionary<string, List<Promise<RequestHeader>>> headersRequests = new Dictionary<string, List<Promise<RequestHeader>>>();
 
     public void Initialize(IContext context)
     {
         apiResponseResolver = new BuilderAPIResponseResolver();
         builderInWorldBridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
-        if(builderInWorldBridge != null)
+        if (builderInWorldBridge != null)
             builderInWorldBridge.OnHeadersReceived += HeadersReceived;
     }
 
     public void Dispose()
     {
-        if(builderInWorldBridge != null)
+        if (builderInWorldBridge != null)
             builderInWorldBridge.OnHeadersReceived -= HeadersReceived;
     }
 
     internal Promise<RequestHeader> AskHeadersToKernel(string method, string endpoint)
     {
         Promise<RequestHeader> promise = new Promise<RequestHeader>();
-        if(headersRequests.ContainsKey(endpoint))
+        if (headersRequests.ContainsKey(endpoint))
             headersRequests[endpoint].Add(promise);
-        else 
-            headersRequests.Add(endpoint, new List<Promise<RequestHeader>>(){ promise });
-        
-        if(builderInWorldBridge != null)
+        else
+            headersRequests.Add(endpoint, new List<Promise<RequestHeader>>() { promise });
+
+        if (builderInWorldBridge != null)
             builderInWorldBridge.AskKernelForCatalogHeadersWithParams(method, endpoint);
         return promise;
     }
@@ -69,27 +74,76 @@ public class BuilderAPIController : IBuilderAPIController
                 }
             }
         }
-        
-        if(headersRequests.ContainsKey(keyToRemove))
+
+        if (headersRequests.ContainsKey(keyToRemove))
             headersRequests.Remove(keyToRemove);
     }
 
-    internal Promise<string> CallUrl(string method, string endpoint, string callParams = "")
+    internal Promise<string> CallUrl(string method, string endpoint, string callParams = "", byte[] body = null)
     {
         Promise<string> resultPromise = new Promise<string>();
-        Promise<RequestHeader> headersPromise =AskHeadersToKernel(method, endpoint);
+        Promise<RequestHeader> headersPromise = AskHeadersToKernel(method, endpoint);
         headersPromise.Then(request =>
         {
             switch (method)
             {
                 case GET:
-                    IWebRequestAsyncOperation webRequest = BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl()+request.endpoint+callParams, resultPromise, request.headers);
+                    IWebRequestAsyncOperation webRequest = BIWUtils.MakeGetCall(BIWUrlUtils.GetBuilderAPIBaseUrl() + request.endpoint + callParams, resultPromise, request.headers);
                     OnWebRequestCreated?.Invoke(webRequest);
+                    break;
+                case PUT:
+                    request.body = body;
+                    CoroutineStarter.Start(CallPUT(request,resultPromise));
                     break;
             }
         });
-     
+
         return resultPromise;
+    }
+
+    //This will dissapear when we implement the signed fetch call
+    IEnumerator CallPUT (RequestHeader requestHeader, Promise<string> resultPromise)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Put (BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, requestHeader.body))
+        {
+            www.SetRequestHeader("Content-Type", "application/json");
+            
+            foreach (var header in requestHeader.headers)
+            {
+                www.SetRequestHeader(header.Key,header.Value);
+            }
+     
+            yield return www.SendWebRequest();
+
+            if (www.isError)
+            {
+                resultPromise.Reject(www.error);
+            }
+            else
+            {
+                byte[] byteArray = www.downloadHandler.data;
+                string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                resultPromise.Resolve(result);
+            }
+        }
+    }
+
+    public Promise<bool> CreateNewProject(ProjectData newProject)
+    {
+        Promise<bool> fullNewProjectPromise = new Promise<bool>();
+        Manifest builderManifest = BIWUtils.CreateManifestFromProject(newProject);
+        byte[] myData = System.Text.Encoding.UTF8.GetBytes (JsonUtility.ToJson(builderManifest));
+
+        string endpoint = SET_PROJECTS_ENDPOINT.Replace("{ID}", newProject.id);
+        var promise =  CallUrl(PUT, endpoint,"",myData);
+
+        promise.Then(apiResult =>
+        {
+            var result = apiResponseResolver.GetDataFromCall(apiResult);
+
+        });
+
+        return fullNewProjectPromise;
     }
 
     public Promise<bool> GetCompleteCatalog(string ethAddres)
@@ -97,7 +151,7 @@ public class BuilderAPIController : IBuilderAPIController
         Promise<bool> fullCatalogPromise = new Promise<bool>();
 
         var promiseDefaultCatalog =  CallUrl(GET, CATALOG_ENDPOINT, "?owner=default");
-        var promiseOwnedCatalog = CallUrl(GET, CATALOG_ENDPOINT, "?owner="+ethAddres);
+        var promiseOwnedCatalog = CallUrl(GET, CATALOG_ENDPOINT, "?owner=" + ethAddres);
         int amountOfCatalogReceived = 0;
 
         // Note: In order to get the full catalog we need to do 2 calls, the default one and the specific one
@@ -105,7 +159,7 @@ public class BuilderAPIController : IBuilderAPIController
         promiseDefaultCatalog.Then(catalogJson =>
         {
             AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
-        
+
             amountOfCatalogReceived++;
             if (amountOfCatalogReceived >= 2)
                 fullCatalogPromise.Resolve(true);
@@ -119,7 +173,7 @@ public class BuilderAPIController : IBuilderAPIController
             if (amountOfCatalogReceived >= 2)
                 fullCatalogPromise.Resolve(true);
         });
-        
+
         return fullCatalogPromise;
     }
 
@@ -128,10 +182,10 @@ public class BuilderAPIController : IBuilderAPIController
         List<string> assetsToAsk = new List<string>();
         foreach (string assetsId in assetsIds)
         {
-            if(!AssetCatalogBridge.i.sceneObjectCatalog.ContainsKey(assetsId))
+            if (!AssetCatalogBridge.i.sceneObjectCatalog.ContainsKey(assetsId))
                 assetsToAsk.Add(assetsId);
         }
-        
+
         string query = "";
         foreach (string assetsId in assetsToAsk)
         {
@@ -143,7 +197,7 @@ public class BuilderAPIController : IBuilderAPIController
 
         Promise<bool> fullCatalogPromise = new Promise<bool>();
 
-        var promise =  CallUrl(GET, ASSETS_ENDPOINT ,query);
+        var promise =  CallUrl(GET, ASSETS_ENDPOINT , query);
 
         promise.Then(apiResult =>
         {
@@ -155,10 +209,10 @@ public class BuilderAPIController : IBuilderAPIController
             }
             else
             {
-                fullCatalogPromise.Reject("API response is not OK");
+                fullCatalogPromise.Reject(API_KO_RESPONSE_ERROR);
             }
         });
-        
+
         return fullCatalogPromise;
     }
 
@@ -166,11 +220,11 @@ public class BuilderAPIController : IBuilderAPIController
     {
         Promise<List<ProjectData>> fullCatalogPromise = new Promise< List<ProjectData>>();
 
-        var promise =  CallUrl(GET, PROJECTS_ENDPOINT);
+        var promise =  CallUrl(GET, GET_PROJECTS_ENDPOINT);
 
         promise.Then(result =>
         {
-            string projectsJson = apiResponseResolver.GetDataFromCallArray(result);
+            string projectsJson = apiResponseResolver.GetDataFromCall(result, true);
             List<ProjectData> allManifest = JsonConvert.DeserializeObject<List<ProjectData>>(projectsJson);
             fullCatalogPromise.Resolve(allManifest);
         });

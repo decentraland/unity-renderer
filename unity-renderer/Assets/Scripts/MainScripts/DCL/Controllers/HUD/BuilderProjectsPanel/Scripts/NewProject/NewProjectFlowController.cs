@@ -1,28 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Builder;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public interface INewProjectFlowController
 {
+    event Action<ProjectData> OnNewProjectCrated;
     /// <summary>
     /// This will create a new project data and show the view to create it
     /// </summary>
     void NewProject();
-
-    /// <summary>
-    /// This will set the title and the description of the project
-    /// </summary>
-    /// <param name="title"></param>
-    /// <param name="description"></param>
-    void SetTitleAndDescription(string title, string description);
-
-    /// <summary>
-    /// This will set the size of the size in terms of rows and columns
-    /// </summary>
-    /// <param name="rows"></param>
-    /// <param name="columns"></param>
-    void SetRowsAndColumns(int rows, int columns);
+    
     void Dispose();
 }
 
@@ -30,7 +20,9 @@ public class NewProjectFlowController : INewProjectFlowController
 {
     public const string VIEW_PATH = "NewProject/NewProjectFlowView";
 
-    private ProjectData projectData;
+    public event Action<ProjectData> OnNewProjectCrated;
+    
+    internal ProjectData projectData;
 
     internal INewProjectFlowView view;
 
@@ -38,11 +30,24 @@ public class NewProjectFlowController : INewProjectFlowController
     {
         var prefab = Resources.Load<NewProjectFlowView>(VIEW_PATH);
         view = Object.Instantiate(prefab);
+
+        view.OnTittleAndDescriptionSet += SetTitleAndDescription;
+        view.OnSizeSet += SetRowsAndColumns;
+    }
+    
+    public void Dispose()
+    {
+        view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
+        view.OnSizeSet -= SetRowsAndColumns;
+        view.Dispose();
     }
 
     public void NewProject()
     {
         projectData = new ProjectData();
+        projectData.id = Guid.NewGuid().ToString();
+        projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
+        
         view.ShowNewProjectTitleAndDescrition();
     }
 
@@ -56,7 +61,13 @@ public class NewProjectFlowController : INewProjectFlowController
     {
         projectData.rows = rows;
         projectData.colums = columns;
+        
+        NewProjectCreated();
     }
 
-    public void Dispose() { view.Dispose(); }
+    internal void NewProjectCreated()
+    {
+        OnNewProjectCrated?.Invoke(projectData);
+        view.Hide();
+    }
 }

@@ -77,7 +77,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     public void GetAllManifestsCorrectly()
     {
         //Arrange
-        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.PROJECTS_ENDPOINT);
+        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.GET_PROJECTS_ENDPOINT);
 
         List<ProjectData> projectDatas = new List<ProjectData>();
         ProjectData data = new ProjectData();
@@ -88,7 +88,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
 
         string jsonData = JsonConvert.SerializeObject(projectDatas);
         apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
-        apiController.apiResponseResolver.Configure().GetDataFromCallArray(Arg.Any<string>()).Returns(jsonData);
+        apiController.apiResponseResolver.Configure().GetDataFromCall(Arg.Any<string>(),true).Returns(jsonData);
         
         TestHelpers.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
 

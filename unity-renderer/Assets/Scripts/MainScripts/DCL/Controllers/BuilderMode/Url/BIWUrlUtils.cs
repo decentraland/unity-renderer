@@ -35,14 +35,14 @@ public static class BIWUrlUtils
         return url.Replace("{ENV}", GetEnvBase());
     }
     
-    private static bool IsMainnet()
+    private static bool IsMainNet()
     {
         return KernelConfig.i.Get().network == "mainnet";
     }
     
     private static string GetEnvBase()
     {
-        if (IsMainnet())
+        if (IsMainNet())
             return "org";
 
         return "io";

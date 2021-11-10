@@ -17,6 +17,5 @@ namespace DCL.Builder.Manifest
         public SceneMetricsModel limits;
 
         public BuilderGround ground;
-
     }
 }

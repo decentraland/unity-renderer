@@ -91,6 +91,10 @@ internal interface IProjectCardView : IDisposable
 internal class ProjectCardView : MonoBehaviour, IProjectCardView
 {
     static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 12f, 0);
+
+    private string NOT_PUBLISHED = "NOT PUBLISHED";
+    private string PUBLISHED_IN = "PUBLISHED IN";
+    
     private float SCENE_CARD_SIZE = 84;
     private float SCENE_CARD_ITEM_PADDING = 18;
     private float SCENE_CARD_TOTAL_PADDING = 36;
@@ -190,7 +194,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         if (scenes.Count == 0)
         {
             syncImage.enabled = false;
-            projectSyncTxt.text = "NOT PUBLISHED";
+            projectSyncTxt.text = NOT_PUBLISHED;
             downButtonTransform.gameObject.SetActive(false);
         }
         else
@@ -211,7 +215,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
             else
                 syncImage.color = desyncColor;
             
-            projectSyncTxt.text = "PUBLISHED IN";
+            projectSyncTxt.text = PUBLISHED_IN;
         }
     }
 

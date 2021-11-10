@@ -141,10 +141,17 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
         scenesViewController.OnEditorPressed += OnGoToEditScene;
+        newProjectFlowController.OnNewProjectCrated += CreateNewProject;
+        
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
+    }
+
+    private void CreateNewProject(ProjectData project)
+    {
+        context.builderAPIController.CreateNewProject(project);
     }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }

@@ -10,6 +10,9 @@ namespace DCL.Builder
         public string title;
         public string description;
 
+        public bool is_public = false;
+        public string eth_address;
+        
         public string thumbnail;
         public string scene_id;
 

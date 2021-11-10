@@ -337,8 +337,7 @@ namespace DCL
 
             logger.Log("Disposing...");
         }
-
-
+        
         public SceneMetricsModel GetLimits()
         {
             if (cachedModel == null)

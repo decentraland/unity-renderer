@@ -121,7 +121,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         if (model == null)
             return;
 
-        RegisterCurrentInstantiatedItems();
+        //We only do this if we don't have items, this is done because the editor doesn't call awake method
+        if(instantiatedItems.Count == 0)
+            RegisterCurrentInstantiatedItems();
         
         SetConstraint(model.constraint);
         SetItemSize(model.itemSize);
@@ -233,16 +235,38 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         float height = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.height : ((RectTransform)transform).rect.height;
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+        
+        int amountsOfHorizontalItemsPerRow =  instantiatedItems.Count / model.constraintCount;
+        int amountsOfVerticalItemsPerColumn =  instantiatedItems.Count / amountsOfHorizontalItemsPerRow;
+        
+        float extraSpaceToRemoveX = model.spaceBetweenItems.x * (amountsOfHorizontalItemsPerRow - 1);
+        float extraSpaceToRemoveY = model.spaceBetweenItems.y * (amountsOfVerticalItemsPerColumn - 1);
 
-        int amountsOfVerticalItems =  instantiatedItems.Count / model.constraintCount;
-        int amountsOfHorizontalItems =  instantiatedItems.Count / amountsOfVerticalItems;
+        float itemWidth = model.recommendedWidthForFlexibleItems; 
+        float itemHeight = model.recommendedHeightForFlexibleItems;
 
-        float extraSpaceToRemoveX = model.spaceBetweenItems.x * (amountsOfHorizontalItems - 1);
-        float extraSpaceToRemoveY = model.spaceBetweenItems.y * (amountsOfVerticalItems - 1);
+        if (itemWidth * amountsOfHorizontalItemsPerRow + extraSpaceToRemoveX >= width)
+            itemWidth = width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX; 
+        
+        if (itemWidth < model.minWidthForFlexibleItems)
+            itemWidth = model.minWidthForFlexibleItems;
+        
+        if (itemHeight * amountsOfVerticalItemsPerColumn + extraSpaceToRemoveY >= height)
+            itemHeight = height / amountsOfVerticalItemsPerColumn - extraSpaceToRemoveY;
 
+        if (itemHeight < model.minHeightForFlexibleItems)
+            itemHeight = model.minHeightForFlexibleItems;
+
+        if (model.sameHeightAndWidhtFlexibleItem)
+        {
+            float minValue = Mathf.Min(itemHeight, itemWidth);
+            itemHeight = minValue;
+            itemWidth = minValue;
+        }
+        
         newSizeToApply = new Vector2(
-            width / amountsOfHorizontalItems - extraSpaceToRemoveX,
-            height / amountsOfVerticalItems - extraSpaceToRemoveY);
+            itemWidth,
+            itemHeight);
 
         currentItemsPerRow = model.constraintCount;
     }
