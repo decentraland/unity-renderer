@@ -14,7 +14,10 @@ namespace DCL
 
         [SerializeField] private PerformanceMetricsDataVariable performanceMetricsDataVariable;
 
-        public PerformanceMetricsController() { performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData"); }
+        public PerformanceMetricsController()
+        {
+            performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+        }
 
         public void Update()
         {
