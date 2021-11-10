@@ -579,7 +579,8 @@ namespace UnityGLTF
             else
 #endif
             {
-                GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition);
+                _gltfRoot = new GLTFRoot();
+                yield return GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition);
             }
 
             yield break;
@@ -1012,7 +1013,7 @@ namespace UnityGLTF
                 string relativePath = RelativePathFrom(node.transform, root);
 
                 NumericArray input = samplerCache.Input.AccessorContent,
-                             output = samplerCache.Output.AccessorContent;
+                    output = samplerCache.Output.AccessorContent;
 
                 string[] propertyNames;
                 Vector3 coordinateSpaceConversionScale = new Vector3(-1, 1, 1);
