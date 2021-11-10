@@ -71,6 +71,8 @@ namespace DCL
                 return;
 
             CoroutineStarter.Stop(assetBundlesLoadingCoroutine);
+            assetBundlesLoadingCoroutine = null;
+
             highPriorityLoadQueue.Clear();
             lowPriorityLoadQueue.Clear();
         }
@@ -217,9 +219,6 @@ namespace DCL
             }
         }
 
-        private float GetDistanceFromPlayer(Transform containerTransform)
-        {
-            return (containerTransform != null && limitTimeBudget) ? Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) : 0f;
-        }
+        private float GetDistanceFromPlayer(Transform containerTransform) { return (containerTransform != null && limitTimeBudget) ? Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) : 0f; }
     }
 }

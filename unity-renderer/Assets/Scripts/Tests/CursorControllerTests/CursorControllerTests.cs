@@ -164,8 +164,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit]
         public IEnumerator FeedbackIsNotDisplayedOnParent()
         {
             var cursorController = GameObject.FindObjectOfType<CursorController>();
@@ -211,6 +209,8 @@ namespace Tests
             var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
+            yield return component.routine;
+
             Assert.IsTrue(component != null);
 
             // Check if target entity is triggered by looking at the parent entity
@@ -220,6 +220,8 @@ namespace Tests
             DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
             cameraController.SetRotation(0, 0, 0, new Vector3(0, 0, -1));
 
+            yield return null;
+            yield return null;
             yield return null;
 
             // Check if target entity is triggered when looked at directly
@@ -286,7 +288,7 @@ namespace Tests
 
             DCLCharacterController.i.ResumeGravity();
         }
-        
+
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackIsNotBlockedByFullyAlphaUIContainer()
         {
@@ -346,6 +348,6 @@ namespace Tests
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
             DCLCharacterController.i.ResumeGravity();
-        }        
+        }
     }
 }
