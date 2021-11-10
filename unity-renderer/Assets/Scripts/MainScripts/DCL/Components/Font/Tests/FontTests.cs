@@ -38,13 +38,13 @@ namespace Tests
         public IEnumerator BuiltInFontCreateAndLoadTest()
         {
             DCLFont font =
-                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = TEST_BUILTIN_FONT_NAME });
+                TestUtils.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = TEST_BUILTIN_FONT_NAME });
             yield return font.routine;
 
-            var entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestUtils.CreateSceneEntity(scene);
 
             TextShape textShape =
-                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model() { font = font.id });
+                TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model() { font = font.id });
             yield return textShape.routine;
 
             Assert.IsTrue(font.loaded, "Built-in font didn't load");
@@ -57,16 +57,16 @@ namespace Tests
         [UnityTest]
         public IEnumerator BuiltInFontHandleErrorProperly()
         {
-            var entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestUtils.CreateSceneEntity(scene);
 
             TextShape textShape =
-                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model());
+                TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model());
             yield return textShape.routine;
 
             TMP_FontAsset defaultFont = textShape.GetComponentInChildren<TextMeshPro>().font;
 
             DCLFont font =
-                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = "no-valid-font" });
+                TestUtils.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = "no-valid-font" });
             yield return font.routine;
 
             scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,
@@ -80,14 +80,14 @@ namespace Tests
         [UnityTest]
         public IEnumerator BuiltInFontAttachCorrectlyOnTextComponentUpdate()
         {
-            var entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestUtils.CreateSceneEntity(scene);
 
             TextShape textShape =
-                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model());
+                TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model());
             yield return textShape.routine;
 
             DCLFont font =
-                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = TEST_BUILTIN_FONT_NAME });
+                TestUtils.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = TEST_BUILTIN_FONT_NAME });
             yield return font.routine;
 
             scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,

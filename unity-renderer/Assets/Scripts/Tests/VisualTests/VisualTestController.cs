@@ -47,13 +47,13 @@ public class VisualTestController : MonoBehaviour
         var scene = Environment.i.world.state.loadedScenes["0,0"] as ParcelScene;
         string textureUrl = TestAssetsUtils.GetPath() + "/Images/atlas.png";
 
-        TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3),
+        TestUtils.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3),
             new DCL.Components.BasicMaterial.Model
             {
                 texture = textureUrl,
             }, "testBasicMaterial");
 
-        TestHelpers.InstantiateEntityWithMaterial(scene, "2", new Vector3(0, 1, 3), new DCL.Components.PBRMaterial.Model
+        TestUtils.InstantiateEntityWithMaterial(scene, "2", new Vector3(0, 1, 3), new DCL.Components.PBRMaterial.Model
         {
             albedoTexture = textureUrl,
             metallic = 0,
@@ -61,7 +61,7 @@ public class VisualTestController : MonoBehaviour
         }, "testMaterial1");
 
         string materialID = "testMaterial2";
-        TestHelpers.InstantiateEntityWithMaterial(scene, "3", new Vector3(3, 1, 3), new DCL.Components.PBRMaterial.Model
+        TestUtils.InstantiateEntityWithMaterial(scene, "3", new Vector3(3, 1, 3), new DCL.Components.PBRMaterial.Model
         {
             albedoTexture = textureUrl,
             metallic = 1,
@@ -70,7 +70,7 @@ public class VisualTestController : MonoBehaviour
         }, materialID);
 
         // Re-assign last PBR material to new entity
-        TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(6, 1, 3));
+        TestUtils.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(6, 1, 3));
 
         string entityId = "4";
 
@@ -91,11 +91,11 @@ public class VisualTestController : MonoBehaviour
             albedoColor = color
         }));
 
-        TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(-6, 1, 6));
-        TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(-3, 1, 6));
-        TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.PLANE_SHAPE, new Vector3(0, 1, 6));
-        TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(3, 1, 6));
-        TestHelpers.InstantiateEntityWithShape(scene, "9", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 6));
+        TestUtils.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(-6, 1, 6));
+        TestUtils.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(-3, 1, 6));
+        TestUtils.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.PLANE_SHAPE, new Vector3(0, 1, 6));
+        TestUtils.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(3, 1, 6));
+        TestUtils.InstantiateEntityWithShape(scene, "9", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 6));
     }
 
     IEnumerator TakeSnapshots()

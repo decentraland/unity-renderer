@@ -70,7 +70,7 @@ public class FeatureFlagShould
         //Arrange
         GameObject newGameObject = new GameObject("Test");
         FeatureFlagBridge bridge = newGameObject.AddComponent<FeatureFlagBridge>();
-        FeatureFlag config = TestHelpers.CreateFeatureFlag();
+        FeatureFlag config = TestUtils.CreateFeatureFlag();
         DataStore.i.featureFlags.flags.OnChange += FlagConfigReceived;
         var featureFlagReceived = false;
 

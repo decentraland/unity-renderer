@@ -17,13 +17,13 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
 
         var scene = Environment.i.world.state.loadedScenes["0,0"] as ParcelScene;
 
-        DCLTexture dclAtlasTexture = TestHelpers.CreateDCLTexture(
+        DCLTexture dclAtlasTexture = TestUtils.CreateDCLTexture(
             scene,
             TestAssetsUtils.GetPath() + "/Images/atlas.png",
             DCLTexture.BabylonWrapMode.CLAMP,
             FilterMode.Bilinear);
 
-        DCLTexture dclAvatarTexture = TestHelpers.CreateDCLTexture(
+        DCLTexture dclAvatarTexture = TestUtils.CreateDCLTexture(
             scene,
             TestAssetsUtils.GetPath() + "/Images/avatar.png",
             DCLTexture.BabylonWrapMode.CLAMP,
@@ -32,7 +32,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
 
         IDCLEntity entity;
 
-        TestHelpers.CreateEntityWithBasicMaterial(
+        TestUtils.CreateEntityWithBasicMaterial(
             scene,
             new BasicMaterial.Model
             {
@@ -40,7 +40,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
             },
             out entity);
 
-        TestHelpers.CreateEntityWithPBRMaterial(scene,
+        TestUtils.CreateEntityWithPBRMaterial(scene,
             new PBRMaterial.Model
             {
                 albedoTexture = dclAvatarTexture.id,
@@ -49,7 +49,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
             },
             out entity);
 
-        PBRMaterial mat = TestHelpers.CreateEntityWithPBRMaterial(scene,
+        PBRMaterial mat = TestUtils.CreateEntityWithPBRMaterial(scene,
             new PBRMaterial.Model
             {
                 albedoTexture = dclAvatarTexture.id,
@@ -60,9 +60,9 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
             out entity);
 
         // Re-assign last PBR material to new entity
-        BoxShape shape = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(5, 1, 2));
+        BoxShape shape = TestUtils.CreateEntityWithBoxShape(scene, new Vector3(5, 1, 2));
         BasicMaterial m =
-            TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL);
+            TestUtils.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL);
 
         Color color1;
         ColorUtility.TryParseHtmlString("#FF9292", out color1);

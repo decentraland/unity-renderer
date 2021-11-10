@@ -64,13 +64,13 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
         var biwStyle = new SceneBoundsFeedbackStyle_BIW();
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
         Assert.IsTrue(
             scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
             "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-        TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"

@@ -15,13 +15,13 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     public IEnumerator ShapeUpdate()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
         Assert.IsTrue(
             scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
             "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-        TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
@@ -39,7 +39,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     public void CustomContentProvider()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
         string mockupAssetId = "cdd5a4ea94388dd21babdecd26dd560f739dce2fbb8c99cc10a45bb8306b6076";
         string mockupKey = "key";
@@ -58,7 +58,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         AssetCatalogBridge.i.AddSceneAssetPackToCatalog(sceneAssetPack);
 
-        TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 assetId = mockupAssetId,
@@ -83,9 +83,9 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     public IEnumerator PreExistentShapeUpdate()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
-        var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
@@ -101,7 +101,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             Assert.IsTrue(gltfObject.transform.Find("TreeStump_01") != null, "Can't find \"TreeStump_01!\"");
         }
 
-        TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
+        TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
@@ -123,9 +123,9 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     public IEnumerator PreExistentShapeImmediateUpdate()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
-        var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
@@ -134,7 +134,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
-        TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
+        TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
@@ -151,10 +151,10 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator AttachedGetsReplacedOnNewAttachment()
     {
-        var entity = TestHelpers.CreateSceneEntity(scene);
+        var entity = TestUtils.CreateSceneEntity(scene);
 
         // set first GLTF
-        string gltfId1 = TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+        string gltfId1 = TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
             JsonConvert.SerializeObject(new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
@@ -167,7 +167,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         Assert.AreEqual(gltf1, entity.GetSharedComponent(typeof(BaseShape)));
 
         // set second GLTF
-        string gltfId2 = TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+        string gltfId2 = TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
             JsonConvert.SerializeObject(new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
@@ -188,7 +188,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     public IEnumerator CollisionProperty()
     {
         string entityId = "entityId";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
 
@@ -196,15 +196,15 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
         shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb";
 
-        var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
+        var shapeComponent = TestUtils.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
         var shapeLoader = GLTFShape.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
-        yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
     }
 
     [UnityTest]
@@ -213,7 +213,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     public IEnumerator VisibleProperty()
     {
         string entityId = "entityId";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
 
@@ -221,21 +221,21 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
         shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb";
 
-        var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
+        var shapeComponent = TestUtils.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
         var shapeLoader = GLTFShape.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
-        yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
     }
 
     [Test]
     public void OnReadyBeforeLoading()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
 
         bool isOnReady = false;
         gltfShape.CallWhenReady((x) => { isOnReady = true; });
@@ -246,11 +246,11 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnReadyWaitLoading()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
 
         bool isOnReady = false;
         gltfShape.CallWhenReady((x) => { isOnReady = true; });
-        yield return TestHelpers.WaitForGLTFLoad(entity);
+        yield return TestUtils.WaitForGLTFLoad(entity);
 
         Assert.IsTrue(isOnReady);
     }
@@ -260,7 +260,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public void OnReadyWithoutAttachInstantlyCalled()
     {
-        GLTFShape gltfShape = TestHelpers.SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, new LoadableShape.Model()
+        GLTFShape gltfShape = TestUtils.SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, new LoadableShape.Model()
         {
             src = TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb"
         });
@@ -274,8 +274,8 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnReadyAfterLoadingInstantlyCalled()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
-        yield return TestHelpers.WaitForGLTFLoad(entity);
+        GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        yield return TestUtils.WaitForGLTFLoad(entity);
 
         bool isOnReady = false;
         gltfShape.CallWhenReady((x) => { isOnReady = true; });
@@ -285,12 +285,12 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnDestroyWhileLoading()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
-        GLTFShape gltfShape2 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out IDCLEntity entity2);
-        GLTFShape gltfShape3 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb", out IDCLEntity entity3);
+        GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        GLTFShape gltfShape2 = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out IDCLEntity entity2);
+        GLTFShape gltfShape3 = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb", out IDCLEntity entity3);
 
-        TestHelpers.SetEntityParent(scene, entity2, entity);
-        TestHelpers.SetEntityParent(scene, entity3, entity);
+        TestUtils.SetEntityParent(scene, entity2, entity);
+        TestUtils.SetEntityParent(scene, entity3, entity);
 
         yield return null;
         yield return null;

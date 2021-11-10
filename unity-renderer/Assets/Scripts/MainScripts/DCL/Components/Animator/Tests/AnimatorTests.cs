@@ -15,12 +15,12 @@ namespace Tests
         [UnityTest]
         public IEnumerator CreateAnimationComponent()
         {
-            var entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestUtils.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
@@ -42,7 +42,7 @@ namespace Tests
             };
 
             DCLAnimator animator =
-                TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+                TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
@@ -63,7 +63,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator DCLAnimatorResetAnimation()
         {
-            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero,
+            GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero,
                 new LoadableShape.Model
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
@@ -94,7 +94,7 @@ namespace Tests
             };
 
             DCLAnimator animator =
-                TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+                TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
             LoadWrapper gltfLoader = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
@@ -112,7 +112,7 @@ namespace Tests
 
             animatorModel.states[1].shouldReset = true;
 
-            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
+            yield return TestUtils.EntityComponentUpdate(animator, animatorModel);
 
             animator.ResetAnimation(animator.GetStateByString("Swim"));
             foreach (AnimationState animState in animation)
@@ -131,7 +131,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator DCLAnimatorResetAllAnimations()
         {
-            var gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero,
+            var gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero,
                 new LoadableShape.Model
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
@@ -162,7 +162,7 @@ namespace Tests
             };
 
             DCLAnimator animator =
-                TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+                TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
             LoadWrapper gltfLoader = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
@@ -182,7 +182,7 @@ namespace Tests
             animatorModel.states[0].shouldReset = true;
             animatorModel.states[1].shouldReset = true;
 
-            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
+            yield return TestUtils.EntityComponentUpdate(animator, animatorModel);
 
             foreach (AnimationState animState in animation)
             {
@@ -191,17 +191,17 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AnimationComponentMissingValuesGetDefaultedOnUpdate() { yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAnimator.Model, DCLAnimator>(scene); }
+        public IEnumerator AnimationComponentMissingValuesGetDefaultedOnUpdate() { yield return TestUtils.TestEntityComponentDefaultsOnUpdate<DCLAnimator.Model, DCLAnimator>(scene); }
 
         [UnityTest]
         public IEnumerator UpdateAnimationComponent()
         {
-            var entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestUtils.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
@@ -224,7 +224,7 @@ namespace Tests
                 }
             };
 
-            DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+            DCLAnimator animator = TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
@@ -238,7 +238,7 @@ namespace Tests
             // update component properties
             animatorModel.states[0].playing = false;
             animatorModel.states[0].looping = true;
-            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
+            yield return TestUtils.EntityComponentUpdate(animator, animatorModel);
 
             Assert.IsFalse(animator.animComponent.isPlaying);
             Assert.IsTrue(animator.animComponent.clip.wrapMode == WrapMode.Loop);
@@ -250,12 +250,12 @@ namespace Tests
         public IEnumerator AnimationStartsAutomaticallyWithNoDCLAnimator()
         {
             // GLTFShape without DCLAnimator
-            var entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestUtils.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
@@ -270,12 +270,12 @@ namespace Tests
             Assert.IsTrue(animation.isPlaying);
 
             // GLTFShape with DCLAnimator
-            var entity2 = TestHelpers.CreateSceneEntity(scene);
+            var entity2 = TestUtils.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity2.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            TestHelpers.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+            TestUtils.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
@@ -298,7 +298,7 @@ namespace Tests
                 }
             };
 
-            DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+            DCLAnimator animator = TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
             LoadWrapper gltfShape2 = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape2.alreadyLoaded == true);
@@ -311,14 +311,14 @@ namespace Tests
         [UnityTest]
         public IEnumerator NonSkeletalAnimationsSupport()
         {
-            var entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestUtils.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 8), Quaternion.identity, Vector3.one);
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 8), Quaternion.identity, Vector3.one);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/non-skeletal-3-transformations.glb"
@@ -341,7 +341,7 @@ namespace Tests
                 }
             };
 
-            DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+            DCLAnimator animator = TestUtils.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
@@ -360,7 +360,7 @@ namespace Tests
 
             // start animation
             animatorModel.states[0].playing = true;
-            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
+            yield return TestUtils.EntityComponentUpdate(animator, animatorModel);
 
             yield return new WaitForSeconds(0.1f);
 

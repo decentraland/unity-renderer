@@ -20,9 +20,9 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
 
         string entityId = "1";
 
-        var entity = TestHelpers.CreateSceneEntity(scene, entityId);
+        var entity = TestUtils.CreateSceneEntity(scene, entityId);
 
-        string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+        string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
             JsonConvert.SerializeObject(new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
@@ -31,7 +31,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
         LoadWrapper_GLTF gltfShape = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
-        TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, -1, 8), Quaternion.identity, new Vector3(0.5f, 0.5f, 0.5f));
+        TestUtils.SetEntityTransform(scene, entity, new Vector3(8, -1, 8), Quaternion.identity, new Vector3(0.5f, 0.5f, 0.5f));
 
         var onClickComponentModel = new OnClick.Model()
         {
@@ -39,7 +39,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
             uuid = "pointerevent-1",
             button = this.button.ToString()
         };
-        var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+        var onClickComponent = TestUtils.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
         scene.sceneLifecycleHandler.SetInitMessagesDone();
 

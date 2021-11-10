@@ -36,7 +36,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         DCLCharacterController.i.enabled = false;
 
         // Position character inside parcel (0,0)
-        TestHelpers.SetCharacterPosition(new Vector3(0, 2f, 0f));
+        TestUtils.SetCharacterPosition(new Vector3(0, 2f, 0f));
 
         yield return null;
     }

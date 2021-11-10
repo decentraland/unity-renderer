@@ -16,13 +16,13 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UITextShape
-            UIText uiTextShape = TestHelpers.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE,
+            UIText uiTextShape = TestUtils.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE,
                 new UIText.Model { });
 
             yield return uiTextShape.routine;
@@ -52,7 +52,7 @@ namespace Tests
             Assert.AreEqual(0, uiTextShape.referencesContainer.text.margin.w);
 
             // Update UITextShape
-            yield return TestHelpers.SharedComponentUpdate<UIText>(uiTextShape,
+            yield return TestUtils.SharedComponentUpdate<UIText>(uiTextShape,
                 new UIText.Model
                 {
                     isPointerBlocker = true,
@@ -73,7 +73,6 @@ namespace Tests
                     shadowOffsetY = 0.1f,
                     shadowColor = Color.yellow,
                     textWrapping = true
-
                 });
 
             // Check default properties are applied correctly
@@ -100,10 +99,9 @@ namespace Tests
             Assert.AreEqual(30f, uiTextShape.referencesContainer.text.margin.z);
             Assert.AreEqual(20f, uiTextShape.referencesContainer.text.margin.w);
 
-            yield return TestHelpers.SharedComponentUpdate<UIText>(uiTextShape,
+            yield return TestUtils.SharedComponentUpdate<UIText>(uiTextShape,
                 new UIText.Model
                 {
-
                     positionX = new UIValue(80),
                     positionY = new UIValue(80),
                 });
@@ -116,7 +114,7 @@ namespace Tests
         public IEnumerator TestOnClickEvent()
         {
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
@@ -124,13 +122,13 @@ namespace Tests
             Assert.IsFalse(screenSpaceShape == null);
 
             // Create UITextShape
-            UIText uiTextShape = TestHelpers.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE,
+            UIText uiTextShape = TestUtils.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE,
                 new UIText.Model { });
 
             yield return uiTextShape.routine;
 
             // Update UITextShape
-            yield return TestHelpers.SharedComponentUpdate(
+            yield return TestUtils.SharedComponentUpdate(
                 uiTextShape,
                 new UIText.Model
                 {
@@ -153,14 +151,13 @@ namespace Tests
                     shadowOffsetY = 0.1f,
                     shadowColor = Color.yellow,
                     textWrapping = true,
-
                 });
 
             //------------------------------------------------------------------------
             // Test click events
             bool eventResult = false;
 
-            yield return TestHelpers.TestUIClickEventPropagation(
+            yield return TestUtils.TestUIClickEventPropagation(
                 scene.sceneData.id,
                 uiTextShape.model,
                 uiTextShape.referencesContainer.childHookRectTransform,
@@ -174,6 +171,6 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE); }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestUtils.TestUIElementAddedCorrectlyOnInvisibleParent<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE); }
     }
 }

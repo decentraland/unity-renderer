@@ -16,7 +16,7 @@ namespace Tests
         [Explicit("Test is too slow")]
         public IEnumerator MaterialTransitionWithGLTF()
         {
-            var entity1 = TestHelpers.CreateSceneEntity(scene);
+            var entity1 = TestUtils.CreateSceneEntity(scene);
 
             ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
@@ -29,7 +29,7 @@ namespace Tests
 
             IDCLEntity entity = null;
 
-            GLTFShape shape = TestHelpers.InstantiateEntityWithShape<GLTFShape, GLTFShape.Model>
+            GLTFShape shape = TestUtils.InstantiateEntityWithShape<GLTFShape, GLTFShape.Model>
             (scene,
                 DCL.Models.CLASS_ID.GLTF_SHAPE,
                 Vector3.zero,
@@ -87,12 +87,12 @@ namespace Tests
         {
             DCL.Configuration.EnvironmentSettings.DEBUG = true;
 
-            var entity1 = TestHelpers.CreateSceneEntity(scene);
+            var entity1 = TestUtils.CreateSceneEntity(scene);
 
             ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
             IDCLEntity entity = null;
-            ConeShape shape = TestHelpers.InstantiateEntityWithShape<ConeShape, ConeShape.Model>
+            ConeShape shape = TestUtils.InstantiateEntityWithShape<ConeShape, ConeShape.Model>
             (
                 scene,
                 DCL.Models.CLASS_ID.CONE_SHAPE,

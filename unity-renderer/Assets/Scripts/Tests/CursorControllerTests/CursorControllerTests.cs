@@ -28,14 +28,14 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
 
-            shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+            shape = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
                 Vector3.zero,
                 out entity,
                 new BoxShape.Model() { });
 
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
             yield return shape.routine;
 
             var OnPointerDownModel = new OnPointerDown.Model()
@@ -44,7 +44,7 @@ namespace Tests
                 uuid = "pointerevent-1"
             };
 
-            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component != null);
@@ -107,14 +107,14 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
 
-            shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+            shape = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
                 Vector3.zero,
                 out entity,
                 new BoxShape.Model() { });
 
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
             yield return shape.routine;
 
             var OnPointerDownModel = new OnPointerDown.Model()
@@ -123,7 +123,7 @@ namespace Tests
                 uuid = "pointerevent-1"
             };
 
-            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(component != null);
@@ -147,7 +147,7 @@ namespace Tests
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.hoverCursor);
 
             // Make shape invisible
-            TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(
+            TestUtils.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(
                 new
                 {
                     visible = false,
@@ -172,28 +172,28 @@ namespace Tests
 
             // Create parent entity
             IDCLEntity blockingEntity;
-            BoxShape blockingShape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+            BoxShape blockingShape = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
                 Vector3.zero,
                 out blockingEntity,
                 new BoxShape.Model() { });
-            TestHelpers.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
             yield return blockingShape.routine;
 
             // Create target entity for click
             IDCLEntity clickTargetEntity;
-            BoxShape clickTargetShape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+            BoxShape clickTargetShape = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
                 Vector3.zero,
                 out clickTargetEntity,
                 new BoxShape.Model() { });
-            TestHelpers.SetEntityTransform(scene, clickTargetEntity, new Vector3(0, 0, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            TestUtils.SetEntityTransform(scene, clickTargetEntity, new Vector3(0, 0, 5), Quaternion.identity, new Vector3(1, 1, 1));
             yield return clickTargetShape.routine;
 
             // Enparent target entity as a child of the blocking entity
-            TestHelpers.SetEntityParent(scene, clickTargetEntity, blockingEntity);
+            TestUtils.SetEntityParent(scene, clickTargetEntity, blockingEntity);
 
             // Set character position and camera rotation
             DCLCharacterController.i.SetPosition(new Vector3(3, 2, 1));
@@ -206,7 +206,7 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             yield return component.routine;
@@ -234,14 +234,14 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
 
-            shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+            shape = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
                 Vector3.zero,
                 out entity,
                 new BoxShape.Model() { });
 
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
             yield return shape.routine;
 
             var onPointerDownModel = new OnPointerDown.Model()
@@ -249,7 +249,7 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = "pointerevent-1"
             };
-            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 onPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             Assert.IsTrue(component != null);
 
@@ -272,12 +272,12 @@ namespace Tests
 
             // Put UI in the middle
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             UIContainerRect uiContainerRectShape =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model() { color = Color.white });
             yield return uiContainerRectShape.routine;
 
@@ -295,14 +295,14 @@ namespace Tests
             IDCLEntity entity;
             BoxShape shape;
 
-            shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+            shape = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
                 Vector3.zero,
                 out entity,
                 new BoxShape.Model() { });
 
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
             yield return shape.routine;
 
             var onPointerDownModel = new OnPointerDown.Model()
@@ -310,7 +310,7 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = "pointerevent-1"
             };
-            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 onPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             Assert.IsTrue(component != null);
 
@@ -333,12 +333,12 @@ namespace Tests
 
             // Put UI in the middle
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             UIContainerRect uiContainerRectShape =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model() { color = Color.clear });
             yield return uiContainerRectShape.routine;
 
