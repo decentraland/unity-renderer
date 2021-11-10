@@ -132,7 +132,7 @@ public class BuilderAPIController : IBuilderAPIController
     {
         Promise<bool> fullNewProjectPromise = new Promise<bool>();
         Manifest builderManifest = BIWUtils.CreateManifestFromProject(newProject);
-        byte[] myData = System.Text.Encoding.UTF8.GetBytes (JsonUtility.ToJson(builderManifest));
+        byte[] myData = System.Text.Encoding.UTF8.GetBytes ("{\"manifest\":"+JsonUtility.ToJson(builderManifest)+"}");
 
         string endpoint = SET_PROJECTS_ENDPOINT.Replace("{ID}", newProject.id);
         var promise =  CallUrl(PUT, endpoint,"",myData);

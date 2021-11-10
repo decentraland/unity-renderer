@@ -70,6 +70,18 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         StopFetchInterval();
 
+        sectionsController.OnRequestOpenUrl -= OpenUrl;
+        sectionsController.OnRequestGoToCoords -= GoToCoords;
+        sectionsController.OnRequestEditSceneAtCoords -= OnGoToEditScene;
+        sectionsController.OnCreateProjectRequest -= newProjectFlowController.NewProject;
+        
+        scenesViewController.OnJumpInPressed -= GoToCoords;
+        scenesViewController.OnRequestOpenUrl -= OpenUrl;
+        scenesViewController.OnEditorPressed -= OnGoToEditScene;
+        newProjectFlowController.OnNewProjectCrated -= CreateNewProject;
+
+        view.OnCreateProjectPressed -= newProjectFlowController.NewProject;
+        
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
@@ -138,11 +150,13 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestOpenUrl += OpenUrl;
         sectionsController.OnRequestGoToCoords += GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords += OnGoToEditScene;
+        sectionsController.OnCreateProjectRequest += newProjectFlowController.NewProject;
+        
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
         scenesViewController.OnEditorPressed += OnGoToEditScene;
         newProjectFlowController.OnNewProjectCrated += CreateNewProject;
-        
+
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
