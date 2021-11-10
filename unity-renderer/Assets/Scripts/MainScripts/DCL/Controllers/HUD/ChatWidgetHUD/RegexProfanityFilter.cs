@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,9 +8,9 @@ public class RegexProfanityFilter
 
     public RegexProfanityFilter(IProfanityWordProvider wordProvider)
     {
-        var words = wordProvider.GetAll();
-        var join = string.Join("|", words);
-        regex = new Regex(@$"\b({join})\b", RegexOptions.IgnoreCase);
+        var explicitWords = ToRegex(wordProvider.GetExplicitWords());
+        var nonExplicitWords = ToRegex(wordProvider.GetNonExplicitWords());
+        regex = new Regex(@$"\b({explicitWords})\b|({nonExplicitWords})", RegexOptions.IgnoreCase);
     }
 
     public string Filter(string message)
@@ -18,4 +18,6 @@ public class RegexProfanityFilter
         return regex.Replace(message,
             match => new StringBuilder().Append('*', match.Value.Length).ToString());
     }
+
+    private string ToRegex(IEnumerable<string> words) => string.Join("|", words);
 }
