@@ -67,6 +67,9 @@ public class NewProjectFlowController : INewProjectFlowController
 
     internal void NewProjectCreated()
     {
+        projectData.created_at = DateTime.Now;
+        projectData.updated_at = DateTime.Now;
+
         view.Reset();
         OnNewProjectCrated?.Invoke(projectData);
         view.Hide();

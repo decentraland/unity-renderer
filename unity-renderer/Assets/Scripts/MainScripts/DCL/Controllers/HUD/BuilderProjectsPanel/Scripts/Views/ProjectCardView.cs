@@ -347,8 +347,13 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     
     public void SetSize(int rows, int columns)
     {
-        projectSizeTxt.text = rows + "x" + columns;
+        projectSizeTxt.text = GetSizeText(rows,columns);
         ((IProjectCardView)this).searchInfo.SetSize(rows * columns);
+    }
+
+    internal string GetSizeText(int rows, int columns)
+    {
+        return rows * BIWSettings.PARCEL_SIZE_METERS + "x" + columns * BIWSettings.PARCEL_SIZE_METERS + "m";
     }
 
     IEnumerator ChangeHeightAnimation(RectTransform rectTransform, float height)

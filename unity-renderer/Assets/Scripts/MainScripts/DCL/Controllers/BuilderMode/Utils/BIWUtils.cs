@@ -55,17 +55,24 @@ public static partial class BIWUtils
         Manifest manifest = new Manifest();
         manifest.version = 10;
         manifest.project = projectData;
-        manifest.builderScene = CreateEmtpyBuilderScene(projectData.rows * projectData.colums);
+        manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.colums);
+
+        manifest.project.scene_id = manifest.scene.id;
         return manifest;
     }
 
     //We create the scene as it doest the current builder so we ensure the compatibility between both builders
     private static BuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
     {
+        BuilderGround ground = new BuilderGround();
+        ground.assetId = BIWSettings.FLOOR_ID;
+        
         BuilderScene scene = new BuilderScene
         {
             id = Guid.NewGuid().ToString(), 
-            limits = GetSceneMetricsLimits(parcelsAmount)
+            limits = GetSceneMetricsLimits(parcelsAmount),
+            metrics = new SceneMetricsModel(),
+            ground = ground
         };
 
         return scene;
@@ -73,8 +80,6 @@ public static partial class BIWUtils
     
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
     {
-        UserProfile profile = UserProfile.GetOwnUserProfile();
-
         Manifest manifest = new Manifest();
         return manifest;
     }

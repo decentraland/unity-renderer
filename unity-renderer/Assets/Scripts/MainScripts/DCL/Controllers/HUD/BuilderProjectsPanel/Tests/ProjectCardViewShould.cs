@@ -20,60 +20,57 @@ public class ProjectCardViewShould
 
         [TearDown]
         public void TearDown() { UnityEngine.Object.Destroy(cardView.gameObject); }
-        //
-        // [Test]
-        // public void DisplayCorrectlyWhenSceneIsDeployed()
-        // {
-        //     //Arrange
-        //     ProjectData data = new ProjectData()
-        //     {
-        //         id = "",
-        //     };
-        //     
-        //     //Act
-        //     ((IProjectCardView)cardView).Setup(data);
-        //
-        //     //should show both jump-in and editor buttons
-        //     Assert.IsTrue(cardView.jumpInButton.gameObject.activeSelf, "JumpIn button should be active");
-        //     Assert.IsTrue(cardView.editorButton.gameObject.activeSelf, "Editor button should be active");
-        //
-        //     //should show coords instead of size
-        //     Assert.IsTrue(cardView.coordsContainer.activeSelf, "Coords should be displayed");
-        //     Assert.IsFalse(cardView.sizeContainer.activeSelf, "Size should not be displayed");
-        //
-        //     //should show role
-        //     Assert.IsTrue(cardView.roleOwnerGO.activeSelf, "Owner role tag should be displayed");
-        //     Assert.IsFalse(cardView.roleOperatorGO.activeSelf, "Operator role tag should not be displayed");
-        //     Assert.IsFalse(cardView.roleContributorGO.activeSelf, "Contributor role tag should not be displayed");
-        // }
-        //
-        // [Test]
-        // public void DisplayCorrectlyWhenSceneIsNotDeployed()
-        // {
-        //     ((IProjectCardView)cardView).Setup(new ProjectData()
-        //     {
-        //         id = "",
-        //         isDeployed = false,
-        //         name = "test",
-        //         coords = Vector2Int.zero,
-        //         size = Vector2Int.zero,
-        //         isContributor = true,
-        //         isEditable = true
-        //     });
-        //
-        //     //should show only editor button, no jump-in
-        //     Assert.IsFalse(cardView.jumpInButton.gameObject.activeSelf, "JumpIn button should not be active");
-        //     Assert.IsTrue(cardView.editorButton.gameObject.activeSelf, "Editor button should be active");
-        //
-        //     //should show size instead of coords
-        //     Assert.IsFalse(cardView.coordsContainer.activeSelf, "Coords should not be displayed");
-        //     Assert.IsTrue(cardView.sizeContainer.activeSelf, "Size should be displayed");
-        //
-        //     //should show role
-        //     Assert.IsTrue(cardView.roleContributorGO.activeSelf, "Contributor role tag should be displayed");
-        //     Assert.IsFalse(cardView.roleOperatorGO.activeSelf, "Operator role tag should not be displayed");
-        //     Assert.IsFalse(cardView.roleOwnerGO.activeSelf, "Owner role tag should not be displayed");
-        // }
+        
+        [Test]
+        public void SetupAndDisplayInfoCorrectly()
+        {
+            //Arrange
+            ProjectData data = new ProjectData()
+            {
+                id = "",
+                title = "TesTitle",
+                rows = 2,
+                colums = 2
+            };
+            
+            //Act
+            ((IProjectCardView)cardView).Setup(data);
+        
+            //Assert
+            
+            //should show editor buttons
+            Assert.IsTrue(cardView.editorButton.gameObject.activeSelf, "Editor button should be active");
+        
+            //should show coords and title
+            Assert.AreEqual(cardView.projectNameTxt.text, "TesTitle");
+            Assert.AreEqual(cardView.projectSizeTxt.text, cardView.GetSizeText(2,2));
+        }
+        
+        [Test]
+        public void SetScenesCorrectly()
+        {
+            //Arrange
+            List<Scene> sceneList = new List<Scene>()
+            {
+                CreateScene(),
+                CreateScene()
+            };
+            
+            ((IProjectCardView)cardView).Setup(new ProjectData()
+            {
+                id = "",
+                title = "TesTitle",
+                rows = 2,
+                colums = 2
+            });
+            
+            //Act
+            cardView.SetScenes(sceneList);
+        
+            //Assert
+            
+        }
+    
         //
         // [Test]
         // public void DisplayCorrectlyWhenSceneIsNotEditable()
@@ -110,4 +107,21 @@ public class ProjectCardViewShould
         //     Assert.IsTrue(cardView.editorButton.gameObject.activeSelf, "Editor button should be active");
         //     Assert.IsFalse(cardView.editorLockedGO.activeSelf, "Editor locked indicator should not be active");
         // }
+
+    private Scene CreateScene()
+    {
+        var metadata = new CatalystSceneEntityPayload();
+        metadata.metadata  = new CatalystSceneEntityMetadata();
+        metadata.metadata.scene = new CatalystSceneEntityMetadata.Scene();
+        metadata.metadata.scene.@base = "0,0";
+        metadata.metadata.scene.parcels = new string[] { "0,0" };
+        metadata.metadata.display = new CatalystSceneEntityMetadata.Display();
+        metadata.metadata.display.navmapThumbnail = "TestURl";
+        metadata.metadata.contact = new CatalystSceneEntityMetadata.Contact();
+        metadata.metadata.contact.name = "";
+        metadata.metadata.policy = new CatalystSceneEntityMetadata.Policy();
+        Scene scene = new Scene(metadata, "TestURL");
+        scene.parcelsCoord = new [] { new Vector2Int(1, 1) };
+        return scene;
+    }
 }
