@@ -60,7 +60,9 @@ namespace DCL.Huds.QuestsPanel
             }
         }
 
-        public void SetVisibility(bool visible)
+        public void SetVisibility(bool visible) { DataStore.i.HUDs.questsPanelVisible.Set(visible); }
+
+        private void SetViewActive(bool visible)
         {
             if ( CommonScriptableObjects.rendererState.Get() )
             {
@@ -69,11 +71,8 @@ namespace DCL.Huds.QuestsPanel
                 else
                     Utils.LockCursor();
             }
-
-            DataStore.i.HUDs.questsPanelVisible.Set(visible);
+            view?.SetVisibility(visible);
         }
-
-        private void SetViewActive(bool visible) { view?.SetVisibility(visible); }
 
         internal virtual IQuestsPanelHUDView CreateView() => QuestsPanelHUDView.Create();
 

@@ -196,7 +196,6 @@ public class InputController : MonoBehaviour
                         break;
                     InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleFriends:
                     if (allUIHidden)

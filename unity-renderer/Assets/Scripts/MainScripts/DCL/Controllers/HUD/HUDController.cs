@@ -114,7 +114,7 @@ public class HUDController : IHUDController
         if (anyInputFieldIsSelected ||
             settingsPanelHud.view.isOpen ||
             avatarEditorHud.view.isOpen ||
-            DCL.NavmapView.isOpen ||
+            DataStore.i.HUDs.navmapVisible.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 

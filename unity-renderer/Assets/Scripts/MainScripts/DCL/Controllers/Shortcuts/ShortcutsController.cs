@@ -20,9 +20,7 @@ public class ShortcutsController : IDisposable
         toggleAvatarEditor = Resources.Load<InputAction_Trigger>("ToggleAvatarEditorHud");
         toggleExplore = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
         toggleExpressionsHUD = Resources.Load<InputAction_Trigger>("OpenExpressions");
-
-        //TODO: These require a small refactor to convert to DataStore
-        //toggleNavMap = Resources.Load<InputAction_Trigger>("ToggleNavMap");
+        toggleNavMap = Resources.Load<InputAction_Trigger>("ToggleNavMap");
 
         Subscribe();
     }
@@ -36,9 +34,7 @@ public class ShortcutsController : IDisposable
         toggleQuestsPanel.OnTriggered += ToggleQuestPanel;
         toggleExplore.OnTriggered += ToggleExploreTriggered;
         toggleExpressionsHUD.OnTriggered += ToggleExpressionsTriggered;
-
-        //TODO
-        //toggleNavMap.OnTriggered += ToggleNavMapTriggered;
+        toggleNavMap.OnTriggered += ToggleNavMapTriggered;
     }
 
     internal void Unsubscribe()
@@ -49,9 +45,7 @@ public class ShortcutsController : IDisposable
         toggleQuestsPanel.OnTriggered -= ToggleQuestPanel;
         toggleExplore.OnTriggered -= ToggleExploreTriggered;
         toggleExpressionsHUD.OnTriggered -= ToggleExpressionsTriggered;
-
-        //TODO
-        //toggleNavMap.OnTriggered -= ToggleNavMapTriggered;
+        toggleNavMap.OnTriggered -= ToggleNavMapTriggered;
     }
 
     private void ToggleControlsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.controlsVisible.Set(!DataStore.i.HUDs.controlsVisible.Get()); }
@@ -65,6 +59,7 @@ public class ShortcutsController : IDisposable
     }
     private void ToggleExploreTriggered(DCLAction_Trigger action) { DataStore.i.exploreV2.isOpen.Set(!DataStore.i.exploreV2.isOpen.Get()); }
     private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }
+    private void ToggleNavMapTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.navmapVisible.Set(!DataStore.i.HUDs.navmapVisible.Get()); }
 
     public void Dispose() { Unsubscribe(); }
 
