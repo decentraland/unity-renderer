@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class ProfanityWordProviderFromJson : IProfanityWordProvider
+public class ProfanityWordProviderFromResourcesJson : IProfanityWordProvider
 {
     private readonly string jsonFilePath;
 
-    public ProfanityWordProviderFromJson(string jsonFilePath)
+    public ProfanityWordProviderFromResourcesJson(string jsonFilePath)
     {
         this.jsonFilePath = jsonFilePath;
     }
