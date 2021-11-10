@@ -22,9 +22,11 @@ public class PlacesAndEventsSectionComponentViewTests
     [Test]
     [TestCase(0)]
     [TestCase(1)]
+    [TestCase(2)]
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
+        placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
 
@@ -36,9 +38,12 @@ public class PlacesAndEventsSectionComponentViewTests
         switch (subSectionIndex)
         {
             case 0:
-                Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf);
+                Assert.IsTrue(placesAndEventsSectionComponent.highlightsSubSection.gameObject.activeSelf);
                 break;
             case 1:
+                Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf);
+                break;
+            case 2:
                 Assert.IsTrue(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
                 break;
         }
