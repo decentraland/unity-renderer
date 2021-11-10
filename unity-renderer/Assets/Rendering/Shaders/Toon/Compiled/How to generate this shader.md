@@ -77,7 +77,7 @@ and replace for
             float4x4 _Matrices[100];
             float4x4 _BindPoses[100];
 ```
-> NOTE: If this is not done, GPU Skinning may not work on some platforms like MacOS
+> NOTE: If this is not done, GPU Skinning will stop working
 
 ---
 ## You're done!.
