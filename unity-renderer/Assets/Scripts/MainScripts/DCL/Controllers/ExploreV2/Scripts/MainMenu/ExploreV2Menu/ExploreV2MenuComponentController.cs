@@ -18,14 +18,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal InputAction_Trigger toggleExploreTrigger;
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
-    internal float lastTimeSectionWasOpen = 0f;
     internal bool anyActionExecutedFromLastOpen = false;
 
     public void Initialize()
     {
         exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
-        SetVisibility(false, false);
+        SetVisibility(false);
 
         DataStore.i.playerRealm.OnChange += UpdateRealmInfo;
         UpdateRealmInfo(DataStore.i.playerRealm.Get(), null);
@@ -53,13 +52,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnSectionOpen(ExploreSection section)
     {
-        if (lastTimeSectionWasOpen > 0f && section != currentOpenSection)
+        if (section != currentOpenSection)
         {
-            exploreV2Analytics.SendExploreSectionElapsedTime(currentOpenSection, Time.realtimeSinceStartup - lastTimeSectionWasOpen);
+            exploreV2Analytics.SendExploreSectionVisibility(currentOpenSection, false);
+            exploreV2Analytics.SendExploreSectionVisibility(section, true);
             anyActionExecutedFromLastOpen = true;
         }
 
-        lastTimeSectionWasOpen = Time.realtimeSinceStartup;
         currentOpenSection = section;
     }
 
@@ -88,7 +87,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         toggleExploreTrigger.OnTriggered -= OnToggleActionTriggered;
     }
 
-    public void SetVisibility(bool visible, bool fromShortcut)
+    public void SetVisibility(bool visible)
     {
         if (view == null)
             return;
@@ -104,16 +103,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             else
             {
                 AudioScriptableObjects.dialogClose.Play(true);
-
-                float elpasedTimeInCurrentSection = Time.realtimeSinceStartup - lastTimeSectionWasOpen;
-                exploreV2Analytics.SendExploreSectionElapsedTime(currentOpenSection, elpasedTimeInCurrentSection);
-                lastTimeSectionWasOpen = 0f;
-
-                if (!anyActionExecutedFromLastOpen)
-                    exploreV2Analytics.SendExploreExitWithoutActions(elpasedTimeInCurrentSection);
             }
 
-            exploreV2Analytics.SendExploreVisibility(visible, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
             anyActionExecutedFromLastOpen = false;
         }
 
@@ -151,15 +142,43 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
     }
 
-    internal void OnCloseButtonPressed() { SetVisibility(false, false); }
+    internal void OnCloseButtonPressed()
+    {
+        if (DataStore.i.exploreV2.isOpen.Get())
+        {
+            exploreV2Analytics.SendExploreMainMenuVisibility(
+                false,
+                ExploreUIVisibilityMethod.FromClick,
+                anyActionExecutedFromLastOpen);
+        }
+
+        SetVisibility(false);
+    }
 
     internal void OnToggleActionTriggered(DCLAction_Trigger action)
     {
         bool isVisible = !DataStore.i.exploreV2.isOpen.Get();
-        SetVisibility(isVisible, true);
+
+        exploreV2Analytics.SendExploreMainMenuVisibility(
+            isVisible,
+            ExploreUIVisibilityMethod.FromShortcut,
+            anyActionExecutedFromLastOpen);
+
+        SetVisibility(isVisible);
     }
 
-    internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current, false); }
+    internal void OnActivateFromTaskbar(bool current, bool previous)
+    {
+        if (current != DataStore.i.exploreV2.isOpen.Get())
+        {
+            exploreV2Analytics.SendExploreMainMenuVisibility(
+                current,
+                ExploreUIVisibilityMethod.FromClick,
+                anyActionExecutedFromLastOpen);
+        }
+
+        SetVisibility(current);
+    }
 
     internal void OnAnyActionExecuted() { anyActionExecutedFromLastOpen = true; }
 

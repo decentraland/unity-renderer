@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,9 +6,8 @@ namespace ExploreV2Analytics
 {
     public interface IExploreV2Analytics
     {
-        void SendExploreVisibility(bool isVisible, ExploreUIVisibilityMethod method);
-        void SendExploreExitWithoutActions(float elapsedTime);
-        void SendExploreSectionElapsedTime(ExploreSection section, float elapsedTime);
+        void SendExploreMainMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method, bool anyActionAfterClose);
+        void SendExploreSectionVisibility(ExploreSection section, bool isVisible);
         void SendEventTeleport(string eventId, string eventName, Vector2Int coords);
         void SendClickOnEventInfo(string eventId, string eventName);
         void SendPlaceTeleport(string placeId, string placeName, Vector2Int coords);
@@ -17,34 +17,56 @@ namespace ExploreV2Analytics
 
     public class ExploreV2Analytics : IExploreV2Analytics
     {
-        private const string EXPLORE_VIBILILITY = "explore_visibility";
-        private const string EXPLORE_EXIT_WITHOUT_ACTIONS = "explore_exit_without_actions";
-        private const string EXPLORE_SECTION_ELAPSED_TIME = "explore_section_elapsed_time";
+        private const string EXPLORE_MAIN_MENU_VIBILILITY = "explore_main_menu_visibility";
+        private const string EXPLORE_SECTION_VISIBILITY = "explore_section_visibility";
         private const string EXPLORE_EVENT_TELEPORT = "explore_event_teleport";
         private const string EXPLORE_CLICK_EVENT_INFO = "explore_click_event_info";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
         private const string EXPLORE_CLICK_PLACE_INFO = "explore_click_place_info";
 
-        public void SendExploreVisibility(bool isVisible, ExploreUIVisibilityMethod method)
+        private static DateTime? exploreMainMenuSetVisibleTimeStamp = null;
+        private static DateTime? exploreSectionSetVisibleTimeStamp = null;
+
+        public void SendExploreMainMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method, bool anyActionAfterClose)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("visible", isVisible.ToString());
             data.Add("method", method.ToString());
-            GenericAnalytics.SendAnalytic(EXPLORE_VIBILILITY, data);
+
+            if (isVisible)
+                exploreMainMenuSetVisibleTimeStamp = DateTime.Now;
+            else
+            {
+                if (exploreMainMenuSetVisibleTimeStamp.HasValue)
+                {
+                    data.Add("open_duration_ms", (DateTime.Now - exploreMainMenuSetVisibleTimeStamp.Value).TotalMilliseconds.ToString());
+                    exploreMainMenuSetVisibleTimeStamp = null;
+                }
+
+                data.Add("any_action_after_close", anyActionAfterClose.ToString());
+            }
+
+            GenericAnalytics.SendAnalytic(EXPLORE_MAIN_MENU_VIBILILITY, data);
         }
 
-        public void SendExploreExitWithoutActions(float elapsedTime)
-        {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            GenericAnalytics.SendAnalytic(EXPLORE_EXIT_WITHOUT_ACTIONS, data);
-        }
-
-        public void SendExploreSectionElapsedTime(ExploreSection section, float elapsedTime)
+        public void SendExploreSectionVisibility(ExploreSection section, bool isVisible)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("section", section.ToString());
-            data.Add("elapsed_time", elapsedTime.ToString());
-            GenericAnalytics.SendAnalytic(EXPLORE_SECTION_ELAPSED_TIME, data);
+            data.Add("visible", isVisible.ToString());
+
+            if (isVisible)
+                exploreSectionSetVisibleTimeStamp = DateTime.Now;
+            else
+            {
+                if (exploreSectionSetVisibleTimeStamp.HasValue)
+                {
+                    data.Add("open_duration_ms", (DateTime.Now - exploreSectionSetVisibleTimeStamp.Value).TotalMilliseconds.ToString());
+                    exploreSectionSetVisibleTimeStamp = null;
+                }
+            }
+
+            GenericAnalytics.SendAnalytic(EXPLORE_SECTION_VISIBILITY, data);
         }
 
         public void SendEventTeleport(string eventId, string eventName, Vector2Int coords)

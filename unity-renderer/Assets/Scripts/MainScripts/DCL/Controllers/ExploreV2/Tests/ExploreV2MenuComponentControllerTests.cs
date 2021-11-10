@@ -57,14 +57,16 @@ public class ExploreV2MenuComponentControllerTests
     public void RaiseOnSectionOpenCorrectly(ExploreSection section)
     {
         // Arrange
-        exploreV2MenuController.lastTimeSectionWasOpen = 5f;
         exploreV2MenuController.currentOpenSection = ExploreSection.Settings;
+        exploreV2MenuController.anyActionExecutedFromLastOpen = false;
 
         // Act
         exploreV2MenuController.OnSectionOpen(section);
 
         // Assert
-        exploreV2Analytics.Received().SendExploreSectionElapsedTime(Arg.Any<ExploreSection>(), Arg.Any<float>());
+        exploreV2Analytics.Received().SendExploreSectionVisibility(Arg.Any<ExploreSection>(), false);
+        exploreV2Analytics.Received().SendExploreSectionVisibility(Arg.Any<ExploreSection>(), true);
+        Assert.IsTrue(exploreV2MenuController.anyActionExecutedFromLastOpen);
         Assert.AreEqual(section, exploreV2MenuController.currentOpenSection);
     }
 
@@ -77,15 +79,11 @@ public class ExploreV2MenuComponentControllerTests
         DataStore.i.exploreV2.isOpen.Set(!isVisible);
 
         // Act
-        exploreV2MenuController.SetVisibility(isVisible, false);
+        exploreV2MenuController.SetVisibility(isVisible);
 
         //Assert
         Assert.AreEqual(isVisible, DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(isVisible);
-        exploreV2Analytics.Received().SendExploreVisibility(isVisible, ExploreUIVisibilityMethod.FromClick);
-
-        if (!isVisible)
-            exploreV2Analytics.Received().SendExploreSectionElapsedTime(Arg.Any<ExploreSection>(), Arg.Any<float>());
     }
 
     [Test]
@@ -136,10 +134,14 @@ public class ExploreV2MenuComponentControllerTests
     [Test]
     public void ClickOnCloseButtonCorrectly()
     {
+        // Arrange
+        DataStore.i.exploreV2.isOpen.Set(true);
+
         // Act
         exploreV2MenuController.OnCloseButtonPressed();
 
         // Assert
+        exploreV2Analytics.Received().SendExploreMainMenuVisibility(false, ExploreUIVisibilityMethod.FromClick, false);
         Assert.IsFalse(DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(false);
     }
@@ -151,6 +153,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.OnToggleActionTriggered(new DCLAction_Trigger());
 
         // Assert
+        exploreV2Analytics.Received().SendExploreMainMenuVisibility(Arg.Any<bool>(), ExploreUIVisibilityMethod.FromShortcut, Arg.Any<bool>());
         exploreV2MenuView.Received().SetVisible(!DataStore.i.exploreV2.isOpen.Get());
     }
 
@@ -159,10 +162,14 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(false)]
     public void ActivateFromTaskbarCorrectly(bool isActive)
     {
+        // Arrange
+        DataStore.i.exploreV2.isOpen.Set(!isActive);
+
         // Act
         exploreV2MenuController.OnActivateFromTaskbar(isActive, !isActive);
 
         // Assert
+        exploreV2Analytics.Received().SendExploreMainMenuVisibility(isActive, ExploreUIVisibilityMethod.FromClick, false);
         Assert.AreEqual(isActive, DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(isActive);
     }
