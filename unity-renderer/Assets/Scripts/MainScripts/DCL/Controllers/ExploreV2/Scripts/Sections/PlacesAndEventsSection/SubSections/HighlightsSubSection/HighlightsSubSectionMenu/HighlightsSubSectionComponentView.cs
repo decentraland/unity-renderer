@@ -147,10 +147,10 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     [SerializeField] internal GridContainerComponentView featuredPlaces;
     [SerializeField] internal GameObject featuredPlacesLoading;
     [SerializeField] internal TMP_Text featuredPlacesNoDataText;
-    [SerializeField] internal Color[] friendColors = null;
     [SerializeField] internal GridContainerComponentView liveEvents;
     [SerializeField] internal GameObject liveEventsLoading;
     [SerializeField] internal TMP_Text liveEventsNoDataText;
+    [SerializeField] internal Color[] friendColors = null;
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
