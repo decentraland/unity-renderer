@@ -55,7 +55,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.onSelect.AddListener((isOn) => highlightsSubSection.gameObject.SetActive(isOn));
         subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.AddListener((isOn) => placesSubSection.gameObject.SetActive(isOn));
         subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.AddListener((isOn) => eventsSubSection.gameObject.SetActive(isOn));
-        subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.SelectToggle(true);
+        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(true);
     }
 
     internal void RemoveSectionSelectorMappings()
