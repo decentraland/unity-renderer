@@ -885,7 +885,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 4
     slotName: 
-    expandedInEditor: 0
+    expandedInEditor: 1
     startTime: 0
     endTime: 0
     layers:
@@ -932,8 +932,8 @@ MonoBehaviour:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       tiling: {x: 1, y: 1}
-      flipBookRowsAndColumns: {x: 0, y: 0}
-      flipbookAnimSpeed: 0
+      flipBookRowsAndColumns: {x: 3, y: 3}
+      flipbookAnimSpeed: 1
       offset: []
       satelliteWidthHeight: []
       rotation_float: []
