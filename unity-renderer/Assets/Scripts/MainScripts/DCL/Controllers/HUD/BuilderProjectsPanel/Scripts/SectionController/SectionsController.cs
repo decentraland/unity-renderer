@@ -21,6 +21,7 @@ namespace DCL.Builder
         event Action<SectionBase> OnSectionShow;
         event Action<SectionBase> OnSectionHide;
         event Action OnRequestContextMenuHide;
+        event Action OnCreateProjectRequest;
         event Action<SectionId> OnOpenSectionId;
         event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
         event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
@@ -43,6 +44,7 @@ namespace DCL.Builder
         public event Action<SectionBase> OnSectionShow;
         public event Action<SectionBase> OnSectionHide;
         public event Action OnRequestContextMenuHide;
+        public event Action OnCreateProjectRequest;
         public event Action<SectionId> OnOpenSectionId;
         public event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
         public event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
@@ -178,6 +180,8 @@ namespace DCL.Builder
 
         private void OnOpenUrlRequested(string url) { OnRequestOpenUrl?.Invoke(url); }
 
+        private void CreateProjectRequest() {OnCreateProjectRequest?.Invoke(); }
+
         private void OnGoToCoordsRequested(Vector2Int coords) { OnRequestGoToCoords?.Invoke(coords); }
 
         private void OnEditSceneAtCoordsRequested(Vector2Int coords) { OnRequestEditSceneAtCoords?.Invoke(coords); }
@@ -219,6 +223,10 @@ namespace DCL.Builder
             if (sectionBase is ISectionEditSceneAtCoordsRequester editSceneRequester)
             {
                 editSceneRequester.OnRequestEditSceneAtCoords += OnEditSceneAtCoordsRequested;
+            }
+            if (sectionBase is ISectionProjectController sectionProjectController)
+            {
+                sectionProjectController.OnCreateProjectRequest += CreateProjectRequest;
             }
         }
     }

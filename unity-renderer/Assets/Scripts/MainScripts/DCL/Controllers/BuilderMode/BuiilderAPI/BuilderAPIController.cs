@@ -115,7 +115,7 @@ public class BuilderAPIController : IBuilderAPIController
      
             yield return www.SendWebRequest();
 
-            if (www.isError)
+            if (www.result != UnityWebRequest.Result.Success)
             {
                 resultPromise.Reject(www.error);
             }

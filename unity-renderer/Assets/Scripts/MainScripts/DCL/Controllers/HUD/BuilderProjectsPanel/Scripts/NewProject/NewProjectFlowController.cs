@@ -67,6 +67,7 @@ public class NewProjectFlowController : INewProjectFlowController
 
     internal void NewProjectCreated()
     {
+        view.Reset();
         OnNewProjectCrated?.Invoke(projectData);
         view.Hide();
     }

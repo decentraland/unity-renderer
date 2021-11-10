@@ -65,6 +65,7 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     
     public void Reset()
     {
+        currentStep = 0;
         carrousel.ResetCarousel();
     }
     
@@ -84,14 +85,14 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
 
     private void SetSize(int rows, int colums)
     {
-        OnSizeSet?.Invoke(rows, colums);
         NextPressed();
+        OnSizeSet?.Invoke(rows, colums);
     }
 
     private void SetTittleAndDescription(string title, string description)
     {
-        OnTittleAndDescriptionSet?.Invoke(title, description);
         NextPressed();
+        OnTittleAndDescriptionSet?.Invoke(title, description);
     }
 
     private void NextPressed()

@@ -6,11 +6,20 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Builder
 {
-    internal class SectionProjectController : SectionBase, IProjectsListener, ISectionHideContextMenuRequester
+    public interface ISectionProjectController
+    {
+        /// <summary>
+        /// This event will be fired when the view request a new project creation
+        /// </summary>
+        event Action OnCreateProjectRequest;
+    }
+    
+    internal class SectionProjectController : SectionBase, IProjectsListener, ISectionHideContextMenuRequester,ISectionProjectController
     {
         public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionProjectView";
 
         public event Action OnRequestContextMenuHide;
+        public event Action OnCreateProjectRequest;
 
         public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
@@ -28,6 +37,7 @@ namespace DCL.Builder
             this.view = view;
 
             view.OnScrollRectValueChanged += OnRequestContextMenuHide;
+            view.OnCreateProjectRequest += CreateProjectRequest;
             sceneSearchHandler.OnResult += OnSearchResult;
         }
 
@@ -36,6 +46,7 @@ namespace DCL.Builder
         public override void Dispose()
         {
             view.OnScrollRectValueChanged -= OnRequestContextMenuHide;
+            view.OnCreateProjectRequest -= CreateProjectRequest;
             sceneSearchHandler.OnResult -= OnSearchResult;
             view.Dispose();
         }
@@ -43,6 +54,11 @@ namespace DCL.Builder
         protected override void OnShow() { view.SetActive(true); }
 
         protected override void OnHide() { view.SetActive(false); }
+
+        private void CreateProjectRequest()
+        {
+            OnCreateProjectRequest?.Invoke();
+        }
 
         void IProjectsListener.OnSetProjects(Dictionary<string, IProjectCardView> projectsViews)
         {
