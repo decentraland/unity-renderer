@@ -20,13 +20,33 @@ namespace DCL
         /// <param name="done">Callback to call when the coroutine has thrown an exception or finished.
         /// The thrown exception or null is passed as the parameter.</param>
         /// <returns>The started coroutine</returns>
+        public static Coroutine StartThrottledCoroutine(
+            this MonoBehaviour monoBehaviour,
+            IEnumerator enumerator,
+            Action<Exception> done,
+            Func<float, bool> timeBudgetCounter
+        )
+        {
+            return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, done, timeBudgetCounter));
+        }
+
+
+        /// <summary>
+        /// Start a coroutine that might throw an exception. Call the callback with the exception if it
+        /// does or null if it finishes without throwing an exception.
+        /// </summary>
+        /// <param name="monoBehaviour">MonoBehaviour to start the coroutine on</param>
+        /// <param name="enumerator">Iterator function to run as the coroutine</param>
+        /// <param name="done">Callback to call when the coroutine has thrown an exception or finished.
+        /// The thrown exception or null is passed as the parameter.</param>
+        /// <returns>The started coroutine</returns>
         public static Coroutine StartThrowingCoroutine(
             this MonoBehaviour monoBehaviour,
             IEnumerator enumerator,
             Action<Exception> done
         )
         {
-            return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, done));
+            return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, done, null));
         }
 
         /// <summary>
@@ -39,7 +59,8 @@ namespace DCL
         /// <returns>An enumerator that runs the given enumerator</returns>
         public static IEnumerator RunThrowingIterator(
             IEnumerator enumerator,
-            Action<Exception> done
+            Action<Exception> done,
+            Func<float, bool> timeBudgetCounter
         )
         {
             // The enumerator might yield return enumerators, in which case 
@@ -53,6 +74,7 @@ namespace DCL
 
             while (stack.Count > 0)
             {
+                float currentTime = Time.realtimeSinceStartup;
                 // any inner enumerator will be at the top of the stack
                 // otherwise the original one
                 var currentEnumerator = stack.Peek();
@@ -78,6 +100,20 @@ namespace DCL
                     // this part is the whole point of this method!
                     done(ex);
                     yield break;
+                }
+
+                currentTime = Time.realtimeSinceStartup - currentTime;
+
+                bool handleTimeBudget = timeBudgetCounter != null && currentYieldedObject is SkipFrameIfDepletedTimeBudget;
+
+                if ( handleTimeBudget )
+                {
+                    if ( timeBudgetCounter( currentTime ) )
+                    {
+                        yield return null;
+                    }
+
+                    continue;
                 }
 
                 // in unity you can yield return whatever the hell you want,
@@ -109,6 +145,15 @@ namespace DCL
                 yield return coroutine;
             }
         }
+    }
+
+    /// <summary>
+    /// Must use this instead of 
+    /// </summary>
+    public class SkipFrameIfDepletedTimeBudget : CustomYieldInstruction
+    {
+        public static SkipFrameIfDepletedTimeBudget cachedInstance = new SkipFrameIfDepletedTimeBudget();
+        public override bool keepWaiting => false;
     }
 
     // Suspends the coroutine execution until the supplied delegate evaluates to true or the timeout is reached.

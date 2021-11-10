@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using DCL;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -16,6 +17,7 @@ using UnityGLTF.Cache;
 using UnityGLTF.Extensions;
 using UnityGLTF.Loader;
 using Object = UnityEngine.Object;
+using WaitUntil = UnityEngine.WaitUntil;
 #if !WINDOWS_UWP
 using ThreadPriority = System.Threading.ThreadPriority;
 #endif
@@ -713,10 +715,12 @@ namespace UnityGLTF
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
                 bufferContents.Stream.Read(data, 0, data.Length);
 
-                if (ShouldYieldOnTimeout())
-                {
-                    yield return YieldOnTimeout();
-                }
+
+                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+                // if (ShouldYieldOnTimeout())
+                // {
+                //     yield return YieldOnTimeout();
+                // }
 
                 yield return ConstructUnityTexture(settings, data, imageCacheIndex);
             }
@@ -735,10 +739,14 @@ namespace UnityGLTF
                     stream = _assetCache.ImageStreamCache[imageCacheIndex];
                 }
 
-                if (ShouldYieldOnTimeout())
-                {
-                    yield return YieldOnTimeout();
-                }
+                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+                //
+                // if (ShouldYieldOnTimeout())
+                // {
+                //     yield return YieldOnTimeout();
+                // }
+
+                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
 
                 yield return ConstructUnityTexture(settings, stream, imageCacheIndex);
             }
@@ -763,10 +771,11 @@ namespace UnityGLTF
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
 
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            // if (ShouldYieldOnTimeout())
+            // {
+            //     yield return YieldOnTimeout();
+            // }
         }
 
         protected virtual IEnumerator ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
@@ -1815,13 +1824,13 @@ namespace UnityGLTF
             }
         }
 
-        static protected bool ShouldYieldOnTimeout() { return ((Time.realtimeSinceStartup - _timeAtLastYield) > (budgetPerFrameInMilliseconds / 1000f / (float) GLTFComponent.downloadingCount)); }
+        // static protected bool ShouldYieldOnTimeout() { return ((Time.realtimeSinceStartup - _timeAtLastYield) > (budgetPerFrameInMilliseconds / 1000f / (float) GLTFComponent.downloadingCount)); }
 
-        static protected IEnumerator YieldOnTimeout()
-        {
-            yield return null;
-            _timeAtLastYield = Time.realtimeSinceStartup;
-        }
+        // static protected IEnumerator YieldOnTimeout()
+        // {
+        //     yield return null;
+        //     _timeAtLastYield = Time.realtimeSinceStartup;
+        // }
 
         protected UnityMeshData ConvertAccessorsToUnityTypes(MeshConstructionData meshConstructionData)
         {
@@ -2049,10 +2058,11 @@ namespace UnityGLTF
             int vertexCount = (int) primitive.Attributes[SemanticProperties.POSITION].Value.Count;
             bool hasNormals = unityMeshData.Normals != null;
 
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            // if (ShouldYieldOnTimeout())
+            // {
+            //     yield return YieldOnTimeout();
+            // }
 
             Mesh mesh = new Mesh
             {
@@ -2064,46 +2074,20 @@ namespace UnityGLTF
             _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
 
             mesh.vertices = unityMeshData.Vertices;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
 
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.normals = unityMeshData.Normals;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.uv = unityMeshData.Uv1;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.uv2 = unityMeshData.Uv2;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.uv3 = unityMeshData.Uv3;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.uv4 = unityMeshData.Uv4;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.colors = unityMeshData.Colors;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
 
             mesh.triangles = unityMeshData.Triangles;
             if (ShouldYieldOnTimeout())
@@ -2112,38 +2096,16 @@ namespace UnityGLTF
             }
 
             mesh.tangents = unityMeshData.Tangents;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.boneWeights = unityMeshData.BoneWeights;
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
 
             if (!hasNormals)
-            {
                 mesh.RecalculateNormals();
-            }
 
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             mesh.Optimize();
-
-// Disable it in runtime so this optimization only takes place in
-// asset bundle converter time.
-#if UNITY_EDITOR
-
-            if (ShouldYieldOnTimeout())
-            {
-                yield return YieldOnTimeout();
-            }
-#endif
+            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
 
             OnMeshCreated?.Invoke(mesh);
 

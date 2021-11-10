@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DCL;
 
 namespace GLTF.Schema
 {
@@ -278,6 +279,8 @@ namespace GLTF.Schema
 
             while (jsonReader.Read() && jsonReader.TokenType == JsonToken.PropertyName)
             {
+                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+
                 var curProp = jsonReader.Value.ToString();
 
                 switch (curProp)

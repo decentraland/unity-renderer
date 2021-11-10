@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GLTF.Schema;
@@ -80,7 +81,7 @@ namespace GLTF.Extensions
                     break;
                 }
 
-                yield return null;
+                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
             }
 
             onComplete.Invoke(list);
