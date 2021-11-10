@@ -238,7 +238,7 @@ MonoBehaviour:
     soloScene: 0
     soloSceneCoords: {x: 0, y: 0}
     ignoreGlobalScenes: 0
-    msgStepByStep: 1
+    msgStepByStep: 0
   openBrowserWhenStart: 1
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/

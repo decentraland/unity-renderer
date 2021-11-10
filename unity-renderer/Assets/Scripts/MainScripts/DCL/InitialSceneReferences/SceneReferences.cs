@@ -7,10 +7,8 @@ using UnityEngine.Rendering;
 
 namespace DCL
 {
-    public class SceneReferences : ISceneReferences
+    public class SceneReferences : Singleton<SceneReferences>, ISceneReferences
     {
-        public static SceneReferences i { get; private set; }
-
         public MouseCatcher mouseCatcher { get; private set; }
         public GameObject groundVisual { get; private set; }
         public GameObject biwCameraParent { get; private set; }
@@ -27,7 +25,7 @@ namespace DCL
         public CinemachineVirtualCamera firstPersonCamera { get; private set; }
         public void Dispose() {  }
 
-        public SceneReferences(MouseCatcher mouseCatcher,
+        public void Initialize(MouseCatcher mouseCatcher,
             GameObject groundVisual,
             GameObject biwCameraParent,
             InputController inputController,
@@ -56,8 +54,6 @@ namespace DCL
             this.postProcessVolume = postProcessVolume;
             this.thirdPersonCamera = thirdPersonCamera;
             this.firstPersonCamera = firstPersonCamera;
-
-            i = this;
         }
     }
 

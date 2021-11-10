@@ -131,7 +131,7 @@ namespace DCL
             Init("NavMap");
             Init("SettingsController");
 
-            var sceneReferences = new SceneReferences(
+            SceneReferences.i.Initialize(
                 mouseCatcher,
                 environment.ground,
                 playerReferences.biwCameraRoot,
