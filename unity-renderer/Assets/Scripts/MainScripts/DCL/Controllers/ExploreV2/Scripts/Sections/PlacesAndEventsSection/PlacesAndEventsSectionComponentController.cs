@@ -21,20 +21,27 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     {
         this.view = view;
 
-        highlightsSubSectionComponentController = new HighlightsSubSectionComponentController();
+        PlacesAPIController placesAPI = new PlacesAPIController();
+        EventsAPIController eventsAPI = new EventsAPIController();
+
+        highlightsSubSectionComponentController = new HighlightsSubSectionComponentController(
+            view.currentHighlightsSubSectionComponentView,
+            placesAPI,
+            eventsAPI,
+            FriendsController.i);
 
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         placesSubSectionComponentController = new PlacesSubSectionComponentController(
             view.currentPlacesSubSectionComponentView,
-            new PlacesAPIController(),
+            placesAPI,
             FriendsController.i);
 
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
             view.currentEventsSubSectionComponentView,
-            new EventsAPIController());
+            eventsAPI);
 
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
     }
