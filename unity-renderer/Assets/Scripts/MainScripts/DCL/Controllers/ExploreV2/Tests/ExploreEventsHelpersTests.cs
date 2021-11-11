@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class EventCardHelpersTests
+public class ExploreEventsHelpersTests
 {
     private EventsSubSectionComponentView eventsSubSectionComponent;
     private EventCardComponentView testEventCard;
@@ -48,11 +48,11 @@ public class EventCardHelpersTests
         eventsSubSectionComponent.eventModal = null;
 
         // Act
-        eventsSubSectionComponent.eventModal = EventCardHelpers.ConfigureEventCardModal(eventsSubSectionComponent.eventCardModalPrefab);
+        eventsSubSectionComponent.eventModal = ExploreEventsHelpers.ConfigureEventCardModal(eventsSubSectionComponent.eventCardModalPrefab);
 
         // Assert
         Assert.IsNotNull(eventsSubSectionComponent.eventModal);
-        Assert.AreEqual(EventCardHelpers.EVENT_CARD_MODAL_ID, eventsSubSectionComponent.eventModal.gameObject.name);
+        Assert.AreEqual(ExploreEventsHelpers.EVENT_CARD_MODAL_ID, eventsSubSectionComponent.eventModal.gameObject.name);
     }
 
     [Test]
@@ -62,7 +62,7 @@ public class EventCardHelpersTests
         eventsSubSectionComponent.featuredEventCardsPool = null;
 
         // Act
-        EventCardHelpers.ConfigureEventCardsPool(
+        ExploreEventsHelpers.ConfigureEventCardsPool(
             out eventsSubSectionComponent.featuredEventCardsPool,
             EventsSubSectionComponentView.FEATURED_EVENT_CARDS_POOL_NAME,
             eventsSubSectionComponent.eventCardLongPrefab,
@@ -77,16 +77,43 @@ public class EventCardHelpersTests
     public void ConfigureEventCardCorrectly()
     {
         // Arrange
-        EventCardComponentModel testEventInfo = CreateTestEvent("1");
+        EventCardComponentModel testEventInfo = CreateTestEventModel("1");
 
         // Act
-        EventCardHelpers.ConfigureEventCard(testEventCard, testEventInfo, null, null, null, null);
+        ExploreEventsHelpers.ConfigureEventCard(testEventCard, testEventInfo, null, null, null, null);
 
         // Assert
         Assert.AreEqual(testEventInfo, testEventCard.model, "The event card model does not match.");
     }
 
-    private EventCardComponentModel CreateTestEvent(string id)
+    [Test]
+    public void CreateEventCardModelFromAPIEventCorrectly()
+    {
+        // Arrange
+        EventFromAPIModel testEventFromAPI = CreateTestEventFromAPI("1");
+
+        // Act
+        EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(testEventFromAPI);
+
+        // Assert
+        Assert.AreEqual(testEventFromAPI.id, eventCardModel.eventId);
+        Assert.AreEqual(testEventFromAPI.image, eventCardModel.eventPictureUri);
+        Assert.AreEqual(testEventFromAPI.live, eventCardModel.isLive);
+        Assert.AreEqual(EventsSubSectionComponentController.LIVE_TAG_TEXT, eventCardModel.liveTagText);
+        Assert.AreEqual(ExploreEventsHelpers.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
+        Assert.AreEqual(testEventFromAPI.name, eventCardModel.eventName);
+        Assert.AreEqual(testEventFromAPI.description, eventCardModel.eventDescription);
+        Assert.AreEqual(ExploreEventsHelpers.FormatEventStartDate(testEventFromAPI), eventCardModel.eventStartedIn);
+        Assert.AreEqual(ExploreEventsHelpers.FormatEventStartDateFromTo(testEventFromAPI), eventCardModel.eventStartsInFromTo);
+        Assert.AreEqual(ExploreEventsHelpers.FormatEventOrganized(testEventFromAPI), eventCardModel.eventOrganizer);
+        Assert.AreEqual(ExploreEventsHelpers.FormatEventPlace(testEventFromAPI), eventCardModel.eventPlace);
+        Assert.AreEqual(testEventFromAPI.total_attendees, eventCardModel.subscribedUsers);
+        Assert.AreEqual(false, eventCardModel.isSubscribed);
+        Assert.AreEqual(new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]), eventCardModel.coords);
+        Assert.AreEqual(testEventFromAPI, eventCardModel.eventFromAPIInfo);
+    }
+
+    private EventCardComponentModel CreateTestEventModel(string id)
     {
         return new EventCardComponentModel
         {
@@ -122,6 +149,28 @@ public class EventCardHelpersTests
                 trending = false,
                 user_name = "Test User Name"
             }
+        };
+    }
+
+    private EventFromAPIModel CreateTestEventFromAPI(string id)
+    {
+        return new EventFromAPIModel
+        {
+            id = id,
+            attending = false,
+            coordinates = new int[] { 10, 10 },
+            description = "Test Description",
+            finish_at = "2021-11-30T11:11:00.000Z",
+            highlighted = false,
+            image = "Test Uri",
+            live = true,
+            name = "Test Name",
+            next_start_at = "2021-09-30T11:11:00.000Z",
+            realm = null,
+            scene_name = "Test Scene Name",
+            total_attendees = 100,
+            trending = false,
+            user_name = "Test User Name"
         };
     }
 }

@@ -123,8 +123,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void Start()
     {
-        placeModal = PlaceCardHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
-        PlaceCardHelpers.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, 200);
+        placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
+        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, 200);
 
         places.RemoveItems();
 
@@ -156,7 +156,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         this.places.ExtractItems();
         placeCardsPool.ReleaseAll();
 
-        List<BaseComponentView> placeComponentsToAdd = PlaceCardHelpers.InstantiateAndConfigurePlaceCards(
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
             places,
             placeCardsPool,
             OnFriendHandlerAdded,
@@ -169,7 +169,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void AddPlaces(List<PlaceCardComponentModel> places)
     {
-        List<BaseComponentView> placeComponentsToAdd = PlaceCardHelpers.InstantiateAndConfigurePlaceCards(
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
             places,
             placeCardsPool,
             OnFriendHandlerAdded,
@@ -196,7 +196,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        PlaceCardHelpers.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
+        ExplorePlacesHelpers.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
     public void HidePlaceModal() { placeModal.Hide(); }

@@ -141,26 +141,6 @@ public class PlacesSubSectionComponentControllerTests
     }
 
     [Test]
-    public void CreatePlaceCardModelFromAPIPlaceCorrectly()
-    {
-        // Arrange
-        HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
-
-        // Act
-        PlaceCardComponentModel placeCardModel = placesSubSectionComponentController.CreatePlaceCardModelFromAPIPlace(testPlaceFromAPI);
-
-        // Assert
-        Assert.AreEqual(testPlaceFromAPI.thumbnail, placeCardModel.placePictureUri);
-        Assert.AreEqual(testPlaceFromAPI.name, placeCardModel.placeName);
-        Assert.AreEqual(placesSubSectionComponentController.FormatDescription(testPlaceFromAPI), placeCardModel.placeDescription);
-        Assert.AreEqual(placesSubSectionComponentController.FormatAuthorName(testPlaceFromAPI), placeCardModel.placeAuthor);
-        Assert.AreEqual(testPlaceFromAPI.usersTotalCount, placeCardModel.numberOfUsers);
-        Assert.AreEqual(testPlaceFromAPI.parcels, placeCardModel.parcels);
-        Assert.AreEqual(testPlaceFromAPI.baseCoords, placeCardModel.coords);
-        Assert.AreEqual(testPlaceFromAPI, placeCardModel.hotSceneInfo);
-    }
-
-    [Test]
     public void ShowPlaceDetailedInfoCorrectly()
     {
         // Arrange

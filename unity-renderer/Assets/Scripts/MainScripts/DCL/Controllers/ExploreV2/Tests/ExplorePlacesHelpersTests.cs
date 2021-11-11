@@ -1,7 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
+using static HotScenesController;
 
-public class PlaceCardHelpersTests
+public class ExplorePlacesHelpersTests
 {
     private PlacesSubSectionComponentView placesSubSectionComponent;
     private PlaceCardComponentView testPlaceCard;
@@ -42,11 +43,11 @@ public class PlaceCardHelpersTests
         placesSubSectionComponent.placeModal = null;
 
         // Act
-        placesSubSectionComponent.placeModal = PlaceCardHelpers.ConfigurePlaceCardModal(placesSubSectionComponent.placeCardModalPrefab);
+        placesSubSectionComponent.placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placesSubSectionComponent.placeCardModalPrefab);
 
         // Assert
         Assert.IsNotNull(placesSubSectionComponent.placeModal);
-        Assert.AreEqual(PlaceCardHelpers.PLACE_CARD_MODAL_ID, placesSubSectionComponent.placeModal.gameObject.name);
+        Assert.AreEqual(ExplorePlacesHelpers.PLACE_CARD_MODAL_ID, placesSubSectionComponent.placeModal.gameObject.name);
     }
 
     [Test]
@@ -56,7 +57,7 @@ public class PlaceCardHelpersTests
         placesSubSectionComponent.placeCardsPool = null;
 
         // Act
-        PlaceCardHelpers.ConfigurePlaceCardsPool(
+        ExplorePlacesHelpers.ConfigurePlaceCardsPool(
             out placesSubSectionComponent.placeCardsPool,
             PlacesSubSectionComponentView.PLACE_CARDS_POOL_NAME,
             placesSubSectionComponent.placeCardPrefab,
@@ -74,10 +75,30 @@ public class PlaceCardHelpersTests
         PlaceCardComponentModel testPlaceInfo = CreateTestPlace("Test Place");
 
         // Act
-        PlaceCardHelpers.ConfigurePlaceCard(testPlaceCard, testPlaceInfo, null, null);
+        ExplorePlacesHelpers.ConfigurePlaceCard(testPlaceCard, testPlaceInfo, null, null);
 
         // Assert
         Assert.AreEqual(testPlaceInfo, testPlaceCard.model, "The place card model does not match.");
+    }
+
+    [Test]
+    public void CreatePlaceCardModelFromAPIPlaceCorrectly()
+    {
+        // Arrange
+        HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
+
+        // Act
+        PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(testPlaceFromAPI);
+
+        // Assert
+        Assert.AreEqual(testPlaceFromAPI.thumbnail, placeCardModel.placePictureUri);
+        Assert.AreEqual(testPlaceFromAPI.name, placeCardModel.placeName);
+        Assert.AreEqual(ExplorePlacesHelpers.FormatDescription(testPlaceFromAPI), placeCardModel.placeDescription);
+        Assert.AreEqual(ExplorePlacesHelpers.FormatAuthorName(testPlaceFromAPI), placeCardModel.placeAuthor);
+        Assert.AreEqual(testPlaceFromAPI.usersTotalCount, placeCardModel.numberOfUsers);
+        Assert.AreEqual(testPlaceFromAPI.parcels, placeCardModel.parcels);
+        Assert.AreEqual(testPlaceFromAPI.baseCoords, placeCardModel.coords);
+        Assert.AreEqual(testPlaceFromAPI, placeCardModel.hotSceneInfo);
     }
 
     private PlaceCardComponentModel CreateTestPlace(string name)
@@ -92,6 +113,32 @@ public class PlaceCardHelpersTests
             placeDescription = "Test Description",
             placeName = name,
             placePictureSprite = testSprite
+        };
+    }
+
+    private HotSceneInfo CreateTestHotSceneInfo(string id)
+    {
+        return new HotSceneInfo
+        {
+            id = id,
+            baseCoords = new Vector2Int(10, 10),
+            creator = "Test Creator",
+            description = "Test Description",
+            name = "Test Name",
+            parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
+            realms = new HotSceneInfo.Realm[]
+            {
+                new HotSceneInfo.Realm
+                {
+                    layer = "Test Layer",
+                    maxUsers = 500,
+                    serverName = "Test Server",
+                    userParcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
+                    usersCount = 50
+                }
+            },
+            thumbnail = "Test Thumbnail",
+            usersTotalCount = 50
         };
     }
 }

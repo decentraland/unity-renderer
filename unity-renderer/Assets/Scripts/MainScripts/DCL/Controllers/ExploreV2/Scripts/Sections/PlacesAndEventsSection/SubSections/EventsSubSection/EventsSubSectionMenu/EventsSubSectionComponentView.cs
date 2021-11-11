@@ -178,11 +178,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void Start()
     {
-        eventModal = EventCardHelpers.ConfigureEventCardModal(eventCardModalPrefab);
-        EventCardHelpers.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, 10);
-        EventCardHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
-        EventCardHelpers.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
-        EventCardHelpers.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
+        eventModal = ExploreEventsHelpers.ConfigureEventCardModal(eventCardModalPrefab);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, 10);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
 
         featuredEvents.RemoveItems();
         trendingEvents.RemoveItems();
@@ -226,7 +226,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         featuredEvents.ExtractItems();
         featuredEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = EventCardHelpers.InstantiateAndConfigureEventCards(
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
             events,
             featuredEventCardsPool,
             OnInfoClicked,
@@ -250,7 +250,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         trendingEvents.ExtractItems();
         trendingEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = EventCardHelpers.InstantiateAndConfigureEventCards(
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
             events,
             trendingEventCardsPool,
             OnInfoClicked,
@@ -276,7 +276,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         upcomingEvents.ExtractItems();
         upcomingEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = EventCardHelpers.InstantiateAndConfigureEventCards(
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
             events,
             upcomingEventCardsPool,
             OnInfoClicked,
@@ -290,7 +290,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void AddUpcomingEvents(List<EventCardComponentModel> events)
     {
-        List<BaseComponentView> eventComponentsToAdd = EventCardHelpers.InstantiateAndConfigureEventCards(
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
             events,
             upcomingEventCardsPool,
             OnInfoClicked,
@@ -318,7 +318,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         goingEvents.ExtractItems();
         goingEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = EventCardHelpers.InstantiateAndConfigureEventCards(
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
             events,
             goingEventCardsPool,
             OnInfoClicked,
@@ -342,7 +342,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        EventCardHelpers.ConfigureEventCard(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+        ExploreEventsHelpers.ConfigureEventCard(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
     }
 
     public void HideEventModal() { eventModal.Hide(); }

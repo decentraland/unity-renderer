@@ -36,7 +36,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     internal const int SHOW_MORE_ROWS_INCREMENT = 1;
-    internal const string NO_PLACE_DESCRIPTION_WRITTEN = "The author hasn't written a description yet.";
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal FriendTrackerController friendsTrackerController;
@@ -109,7 +108,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         List<HotSceneInfo> placesFiltered = placesFromAPI.Take(currentPlacesShowed).ToList();
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
-            PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
@@ -132,7 +131,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
-            PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
+            PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
@@ -157,48 +156,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
-    internal PlaceCardComponentModel CreatePlaceCardModelFromAPIPlace(HotSceneInfo placeFromAPI)
-    {
-        PlaceCardComponentModel placeCardModel = new PlaceCardComponentModel();
-        placeCardModel.placePictureUri = placeFromAPI.thumbnail;
-        placeCardModel.placeName = placeFromAPI.name;
-        placeCardModel.placeDescription = FormatDescription(placeFromAPI);
-        placeCardModel.placeAuthor = FormatAuthorName(placeFromAPI);
-        placeCardModel.numberOfUsers = placeFromAPI.usersTotalCount;
-        placeCardModel.parcels = placeFromAPI.parcels;
-        placeCardModel.coords = placeFromAPI.baseCoords;
-        placeCardModel.hotSceneInfo = placeFromAPI;
-
-        return placeCardModel;
-    }
-
-    internal string FormatDescription(HotSceneInfo placeFromAPI) { return string.IsNullOrEmpty(placeFromAPI.description) ? NO_PLACE_DESCRIPTION_WRITTEN : placeFromAPI.description; }
-
-    internal string FormatAuthorName(HotSceneInfo placeFromAPI) { return $"Author <b>{placeFromAPI.creator}</b>"; }
-
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel) { view.ShowPlaceModal(placeModel); }
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
-        HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
-        placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
-
-        for (int i = 0; i < placeFromAPI.realms.Length; i++)
-        {
-            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms[i].layer);
-
-            if (isArchipelagoRealm || placeFromAPI.realms[i].usersCount < placeFromAPI.realms[i].maxUsers)
-            {
-                realm = placeFromAPI.realms[i];
-                break;
-            }
-        }
-
-        if (string.IsNullOrEmpty(realm.serverName))
-            WebInterface.GoTo(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
-        else
-            WebInterface.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
-
+        ExplorePlacesHelpers.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
     }

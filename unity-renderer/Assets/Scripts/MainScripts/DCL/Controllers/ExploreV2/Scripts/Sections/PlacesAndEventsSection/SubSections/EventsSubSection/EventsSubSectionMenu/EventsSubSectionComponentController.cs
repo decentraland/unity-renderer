@@ -66,8 +66,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowEventDetailedInfo;
         this.view.OnJumpInClicked += JumpInToEvent;
-        this.view.OnSubscribeEventClicked += SubscribeToEvent;
-        this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
+        this.view.OnSubscribeEventClicked += ExploreEventsHelpers.SubscribeToEvent;
+        this.view.OnUnsubscribeEventClicked += ExploreEventsHelpers.UnsubscribeToEvent;
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
 
         eventsAPIApiController = eventsAPI;
@@ -139,7 +139,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
             featuredEvents.Add(eventCardModel);
         }
 
@@ -155,7 +155,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
             trendingEvents.Add(eventCardModel);
         }
 
@@ -170,7 +170,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
             upcomingEvents.Add(eventCardModel);
         }
 
@@ -193,7 +193,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel placeCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel placeCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
             upcomingEvents.Add(placeCardModel);
         }
 
@@ -213,7 +213,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
-            EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
+            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
             goingEvents.Add(eventCardModel);
         }
 
@@ -226,139 +226,20 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowEventDetailedInfo;
         view.OnJumpInClicked -= JumpInToEvent;
-        view.OnSubscribeEventClicked -= SubscribeToEvent;
-        view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
+        view.OnSubscribeEventClicked -= ExploreEventsHelpers.SubscribeToEvent;
+        view.OnUnsubscribeEventClicked -= ExploreEventsHelpers.UnsubscribeToEvent;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
         OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
-    internal EventCardComponentModel CreateEventCardModelFromAPIEvent(EventFromAPIModel eventFromAPI)
-    {
-        EventCardComponentModel eventCardModel = new EventCardComponentModel();
-        eventCardModel.eventId = eventFromAPI.id;
-        eventCardModel.eventPictureUri = eventFromAPI.image;
-        eventCardModel.isLive = eventFromAPI.live;
-        eventCardModel.liveTagText = LIVE_TAG_TEXT;
-        eventCardModel.eventDateText = FormatEventDate(eventFromAPI);
-        eventCardModel.eventName = eventFromAPI.name;
-        eventCardModel.eventDescription = eventFromAPI.description;
-        eventCardModel.eventStartedIn = FormatEventStartDate(eventFromAPI);
-        eventCardModel.eventStartsInFromTo = FormatEventStartDateFromTo(eventFromAPI);
-        eventCardModel.eventOrganizer = FormatEventOrganized(eventFromAPI);
-        eventCardModel.eventPlace = FormatEventPlace(eventFromAPI);
-        eventCardModel.subscribedUsers = eventFromAPI.total_attendees;
-        eventCardModel.isSubscribed = false;
-        eventCardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
-        eventCardModel.eventFromAPIInfo = eventFromAPI;
-
-        // Card events
-        return eventCardModel;
-    }
-
-    internal string FormatEventDate(EventFromAPIModel eventFromAPI)
-    {
-        DateTime eventDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
-        return eventDateTime.ToString("MMMM d", new CultureInfo("en-US"));
-    }
-
-    internal string FormatEventStartDate(EventFromAPIModel eventFromAPI)
-    {
-        DateTime eventDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
-        string formattedDate;
-        if (eventFromAPI.live)
-        {
-            int daysAgo = (int)Math.Ceiling((DateTime.Now - eventDateTime).TotalDays);
-            int hoursAgo = (int)Math.Ceiling((DateTime.Now - eventDateTime).TotalHours);
-
-            if (daysAgo > 0)
-                formattedDate = $"{daysAgo} days ago";
-            else
-                formattedDate = $"{hoursAgo} hr ago";
-        }
-        else
-        {
-            int daysToStart = (int)Math.Ceiling((eventDateTime - DateTime.Now).TotalDays);
-            int hoursToStart = (int)Math.Ceiling((eventDateTime - DateTime.Now).TotalHours);
-
-            if (daysToStart > 0)
-                formattedDate = $"in {daysToStart} days";
-            else
-                formattedDate = $"in {hoursToStart} hours";
-        }
-
-        return formattedDate;
-    }
-
-    internal string FormatEventStartDateFromTo(EventFromAPIModel eventFromAPI)
-    {
-        CultureInfo cultureInfo = new CultureInfo("en-US");
-        DateTime eventStartDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
-        DateTime eventEndDateTime = Convert.ToDateTime(eventFromAPI.finish_at).ToUniversalTime();
-        string formattedDate = $"From {eventStartDateTime.ToString("dddd", cultureInfo)}, {eventStartDateTime.Day} {eventStartDateTime.ToString("MMM", cultureInfo)}" +
-                               $" to {eventEndDateTime.ToString("dddd", cultureInfo)}, {eventEndDateTime.Day} {eventEndDateTime.ToString("MMM", cultureInfo)} UTC";
-
-        return formattedDate;
-    }
-
-    internal string FormatEventOrganized(EventFromAPIModel eventFromAPI) { return $"Public, Organized by {eventFromAPI.user_name}"; }
-
-    internal string FormatEventPlace(EventFromAPIModel eventFromAPI) { return string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name; }
-
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel) { view.ShowEventModal(eventModel); }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
-        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.realm) ? new string[] { "", "" } : eventFromAPI.realm.Split('-');
-        string serverName = realmFromAPI[0];
-        string layerName = realmFromAPI[1];
-
-        if (string.IsNullOrEmpty(serverName))
-            WebInterface.GoTo(coords.x, coords.y);
-        else
-            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
-
+        ExploreEventsHelpers.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
-    }
-
-    internal void SubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    true,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
-    }
-
-    internal void UnsubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    false,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
     }
 }

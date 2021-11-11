@@ -1,11 +1,15 @@
 using DCL;
+using DCL.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static HotScenesController;
 
-public static class PlaceCardHelpers
+public static class ExplorePlacesHelpers
 {
     internal const string PLACE_CARD_MODAL_ID = "PlaceCard_Modal";
+    internal const string NO_PLACE_DESCRIPTION_WRITTEN = "The author hasn't written a description yet.";
 
     public static PlaceCardComponentView ConfigurePlaceCardModal(PlaceCardComponentView placeCardModalPrefab)
     {
@@ -69,5 +73,46 @@ public static class PlaceCardHelpers
         placeCard.onInfoClick?.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
         placeCard.onJumpInClick?.RemoveAllListeners();
         placeCard.onJumpInClick?.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
+    }
+
+    public static PlaceCardComponentModel CreatePlaceCardModelFromAPIPlace(HotSceneInfo placeFromAPI)
+    {
+        PlaceCardComponentModel placeCardModel = new PlaceCardComponentModel();
+        placeCardModel.placePictureUri = placeFromAPI.thumbnail;
+        placeCardModel.placeName = placeFromAPI.name;
+        placeCardModel.placeDescription = FormatDescription(placeFromAPI);
+        placeCardModel.placeAuthor = FormatAuthorName(placeFromAPI);
+        placeCardModel.numberOfUsers = placeFromAPI.usersTotalCount;
+        placeCardModel.parcels = placeFromAPI.parcels;
+        placeCardModel.coords = placeFromAPI.baseCoords;
+        placeCardModel.hotSceneInfo = placeFromAPI;
+
+        return placeCardModel;
+    }
+
+    internal static string FormatDescription(HotSceneInfo placeFromAPI) { return string.IsNullOrEmpty(placeFromAPI.description) ? NO_PLACE_DESCRIPTION_WRITTEN : placeFromAPI.description; }
+
+    internal static string FormatAuthorName(HotSceneInfo placeFromAPI) { return $"Author <b>{placeFromAPI.creator}</b>"; }
+
+    public static void JumpInToPlace(HotSceneInfo placeFromAPI)
+    {
+        HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
+        placeFromAPI.realms = placeFromAPI.realms.OrderByDescending(x => x.usersCount).ToArray();
+
+        for (int i = 0; i < placeFromAPI.realms.Length; i++)
+        {
+            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms[i].layer);
+
+            if (isArchipelagoRealm || placeFromAPI.realms[i].usersCount < placeFromAPI.realms[i].maxUsers)
+            {
+                realm = placeFromAPI.realms[i];
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(realm.serverName))
+            WebInterface.GoTo(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y);
+        else
+            WebInterface.JumpIn(placeFromAPI.baseCoords.x, placeFromAPI.baseCoords.y, realm.serverName, realm.layer);
     }
 }

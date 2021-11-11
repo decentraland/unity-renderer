@@ -195,33 +195,6 @@ public class EventsSubSectionComponentControllerTests
     }
 
     [Test]
-    public void CreateEventCardModelFromAPIEventCorrectly()
-    {
-        // Arrange
-        EventFromAPIModel testEventFromAPI = CreateTestEvent("1");
-
-        // Act
-        EventCardComponentModel eventCardModel = eventsSubSectionComponentController.CreateEventCardModelFromAPIEvent(testEventFromAPI);
-
-        // Assert
-        Assert.AreEqual(testEventFromAPI.id, eventCardModel.eventId);
-        Assert.AreEqual(testEventFromAPI.image, eventCardModel.eventPictureUri);
-        Assert.AreEqual(testEventFromAPI.live, eventCardModel.isLive);
-        Assert.AreEqual(EventsSubSectionComponentController.LIVE_TAG_TEXT, eventCardModel.liveTagText);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
-        Assert.AreEqual(testEventFromAPI.name, eventCardModel.eventName);
-        Assert.AreEqual(testEventFromAPI.description, eventCardModel.eventDescription);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventStartDate(testEventFromAPI), eventCardModel.eventStartedIn);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventStartDateFromTo(testEventFromAPI), eventCardModel.eventStartsInFromTo);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventOrganized(testEventFromAPI), eventCardModel.eventOrganizer);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventPlace(testEventFromAPI), eventCardModel.eventPlace);
-        Assert.AreEqual(testEventFromAPI.total_attendees, eventCardModel.subscribedUsers);
-        Assert.AreEqual(false, eventCardModel.isSubscribed);
-        Assert.AreEqual(new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]), eventCardModel.coords);
-        Assert.AreEqual(testEventFromAPI, eventCardModel.eventFromAPIInfo);
-    }
-
-    [Test]
     public void ShowEventDetailedInfoCorrectly()
     {
         // Arrange
@@ -249,34 +222,6 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView.Received().HideEventModal();
         Assert.IsTrue(exploreClosed);
     }
-
-    // TODO (Santi): Uncomment when the RegisterAttendEvent POST is available.
-    //[Test]
-    //public void SubscribeToEventCorrectly()
-    //{
-    //    // Arrange
-    //    string testEventId = "1";
-
-    //    // Act
-    //    eventsSubSectionComponentController.SubscribeToEvent(testEventId);
-
-    //    // Assert
-    //    eventsAPIController.Received().RegisterAttendEvent(testEventId, true, Arg.Any<Action>(), Arg.Any<Action<string>>());
-    //}
-
-    // TODO (Santi): Uncomment when the RegisterAttendEvent POST is available.
-    //[Test]
-    //public void UnsubscribeToEventCorrectly()
-    //{
-    //    // Arrange
-    //    string testEventId = "1";
-
-    //    // Act
-    //    eventsSubSectionComponentController.UnsubscribeToEvent(testEventId);
-
-    //    // Assert
-    //    eventsAPIController.Received().RegisterAttendEvent(testEventId, false, Arg.Any<Action>(), Arg.Any<Action<string>>());
-    //}
 
     private List<EventFromAPIModel> CreateTestEventsFromApi(int numberOfEvents)
     {
