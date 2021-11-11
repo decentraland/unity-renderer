@@ -42,8 +42,12 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal event Action OnEventsFromAPIUpdated;
 
     internal const string NO_PLACE_DESCRIPTION_WRITTEN = "The author hasn't written a description yet.";
+    internal const int DEFAULT_NUMBER_OF_PROMOTED_PLACES = 10;
+    internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 6;
+    internal const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
     internal const string LIVE_TAG_TEXT = "LIVE";
     internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
+
     internal IHighlightsSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal IEventsAPIController eventsAPIApiController;
@@ -144,7 +148,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public void LoadPromotedPlaces()
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(10).ToList();
+        List<HotSceneInfo> placesFiltered = placesFromAPI
+                                            .Where(x => !string.IsNullOrEmpty(x.thumbnail))
+                                            .Take(DEFAULT_NUMBER_OF_PROMOTED_PLACES)
+                                            .ToList();
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
             PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
@@ -158,7 +165,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public void LoadFeaturedPlaces()
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI.Take(6).ToList();
+        List<HotSceneInfo> placesFiltered = placesFromAPI
+                                            .Take(DEFAULT_NUMBER_OF_FEATURED_PLACES)
+                                            .ToList();
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
             PlaceCardComponentModel placeCardModel = CreatePlaceCardModelFromAPIPlace(receivedPlace);
@@ -172,7 +181,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public void LoadLiveEvents()
     {
         List<EventCardComponentModel> events = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Take(3).ToList();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(x => x.trending)
+                                                              .Where(x => x.live)
+                                                              .Take(DEFAULT_NUMBER_OF_LIVE_EVENTS)
+                                                              .ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
         {
             EventCardComponentModel eventCardModel = CreateEventCardModelFromAPIEvent(receivedEvent);
