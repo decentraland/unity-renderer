@@ -19,7 +19,7 @@ namespace DCL.Builder
         public IBIWEditor editor  { get; internal set; }
         public IBuilderAPIController builderAPIController { get; internal set; }
 
-        public IInitialSceneReferences sceneReferences { get; internal set; }
+        public ISceneReferences sceneReferences { get; internal set; }
 
         //Editor
         public IEditorContext editorContext { get; internal set; }
@@ -40,7 +40,7 @@ namespace DCL.Builder
             IBIWSaveController saveController,
             IBIWRaycastController raycastController,
             IBIWGizmosController gizmosController,
-            IInitialSceneReferences sceneReferences)
+            ISceneReferences sceneReferences)
         {
 
             projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
@@ -107,7 +107,7 @@ namespace DCL.Builder
         public IBIWSaveController saveController { get; private set; }
         public IBIWRaycastController raycastController { get; private set; }
         public IBIWGizmosController gizmosController { get; private set; }
-        public IInitialSceneReferences sceneReferences { get; private set; }
+        public ISceneReferences sceneReferences { get; private set; }
 
         //Scriptable Objects
         internal BIWGodModeDynamicVariables godModeDynamicVariablesAssetReference;
@@ -126,7 +126,7 @@ namespace DCL.Builder
             IBIWSaveController saveController,
             IBIWRaycastController raycastController,
             IBIWGizmosController gizmosController,
-            IInitialSceneReferences sceneReferences)
+            ISceneReferences sceneReferences)
         {
             godModeDynamicVariablesAssetReference = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
             firstPersonDynamicVariablesAssetReference = Resources.Load<BIWFirstPersonDynamicVariables>(FIRST_PERSON_DYNAMIC_VARIABLE_PATH);
@@ -166,7 +166,7 @@ namespace DCL.Builder
             gizmosController.Dispose();
 
             sceneReferences.Dispose();
-
+            
             godModeDynamicVariablesAssetReference = null;
             firstPersonDynamicVariablesAssetReference = null;
         }

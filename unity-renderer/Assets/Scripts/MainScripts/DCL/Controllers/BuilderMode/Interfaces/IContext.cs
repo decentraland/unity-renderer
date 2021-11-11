@@ -16,7 +16,7 @@ namespace DCL.Builder
 
         IEditorContext editorContext { get; }
 
-        IInitialSceneReferences sceneReferences { get; }
+        ISceneReferences sceneReferences { get; }
 
         void Dispose();
     }
@@ -42,7 +42,7 @@ namespace DCL.Builder
         IBIWRaycastController raycastController { get;  }
         IBIWGizmosController gizmosController { get;  }
 
-        IInitialSceneReferences sceneReferences { get; }
+        ISceneReferences sceneReferences { get; }
 
         void Dispose();
     }

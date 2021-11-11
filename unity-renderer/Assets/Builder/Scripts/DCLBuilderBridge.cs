@@ -359,7 +359,7 @@ namespace Builder
 
             cameraController = Object.FindObjectOfType<CameraController>();
             cursorController = Object.FindObjectOfType<CursorController>();
-            mouseCatcher = InitialSceneReferences.i?.data?.mouseCatcher;
+            mouseCatcher = SceneReferences.i.mouseCatcher;
             var playerAvatarController = Object.FindObjectOfType<PlayerAvatarController>();
 
             if (mouseCatcher != null)

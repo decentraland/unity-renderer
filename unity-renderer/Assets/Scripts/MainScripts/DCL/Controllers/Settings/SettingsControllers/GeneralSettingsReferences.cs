@@ -8,9 +8,6 @@ namespace DCL.SettingsCommon.SettingsControllers
     /// </summary>
     public class GeneralSettingsReferences : MonoBehaviour
     {
-        public CinemachineFreeLook thirdPersonCamera;
-        public CinemachineVirtualCamera firstPersonCamera;
-
         public static GeneralSettingsReferences i { get; private set; }
 
         private void Awake() { i = this; }
