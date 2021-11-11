@@ -1,16 +1,12 @@
+using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public interface ICarouselComponentView
 {
-    /// <summary>
-    /// Fill the model and updates the carousel with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the carousel.</param>
-    void Configure(CarouselComponentModel model);
-
     /// <summary>
     /// Set the distance between carousel items.
     /// </summary>
@@ -51,21 +47,36 @@ public interface ICarouselComponentView
     /// Set the items of the carousel.
     /// </summary>
     /// <param name="items">List of UI components.</param>
-    /// <param name="instantiateNewCopyOfItems">Indicates if the items provided will be instantiated as a new copy or not.</param>
-    void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true);
+    void SetItems(List<BaseComponentView> items);
 
     /// <summary>
-    /// Get an item of the carousel.
+    /// Adds a new item in the carousel.
     /// </summary>
-    /// <param name="index">Index of the list of items.</param>
-    /// <returns>A specific UI component.</returns>
-    BaseComponentView GetItem(int index);
+    /// <param name="item">An UI component.</param>
+    void AddItem(BaseComponentView item);
+
+    /// <summary>
+    /// Remove an item from the carousel.
+    /// </summary>
+    /// <param name="item">An UI component</param>
+    void RemoveItem(BaseComponentView item);
 
     /// <summary>
     /// Get all the items of the carousel.
     /// </summary>
     /// <returns>The list of items.</returns>
-    List<BaseComponentView> GetAllItems();
+    List<BaseComponentView> GetItems();
+
+    /// <summary>
+    /// Extract all items out of the carousel.
+    /// </summary>
+    /// <returns>The list of extracted items.</returns>
+    List<BaseComponentView> ExtractItems();
+
+    /// <summary>
+    /// Remove all existing items from the carousel.
+    /// </summary>
+    void RemoveItems();
 
     /// <summary>
     /// Start carousel animation.
@@ -74,7 +85,8 @@ public interface ICarouselComponentView
     /// <param name="startInmediately">True to directly execute the first transition.</param>
     /// <param name="direction">Set the direction of the carousel animations: right or left.</param>
     /// <param name="changeDirectionAfterFirstTransition">True to change the carousel direction just after the first transition.</param>
-    void StartCarousel(int fromIndex, bool startInmediately, CarouselDirection direction, bool changeDirectionAfterFirstTransition);
+    /// <param name="numberOfInitialJumps">Number of jumps that will be executed in the first transition.</param>
+    void StartCarousel(int fromIndex, bool startInmediately, CarouselDirection direction, bool changeDirectionAfterFirstTransition, int numberOfInitialJumps);
 
     /// <summary>
     /// Stop carousel animation.
@@ -90,6 +102,13 @@ public interface ICarouselComponentView
     /// Force the carousel to show the next item.
     /// </summary>
     void GoToNextItem();
+
+    /// <summary>
+    /// Force the carousel to jump to a specific item.
+    /// </summary>
+    /// <param name="numberOfJumps">Number of jumps that will be executed during the transition.</param>
+    /// <param name="direction">Direction in which to make the jumps.</param>
+    void MakeJumpFromDotsSelector(int numberOfJumps, CarouselDirection direction);
 }
 
 public enum CarouselDirection
@@ -98,7 +117,7 @@ public enum CarouselDirection
     Left
 }
 
-public class CarouselComponentView : BaseComponentView, ICarouselComponentView
+public class CarouselComponentView : BaseComponentView, ICarouselComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal RectTransform itemsContainer;
@@ -108,6 +127,10 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     [SerializeField] internal Image background;
     [SerializeField] internal Button previousButton;
     [SerializeField] internal Button nextButton;
+    [SerializeField] internal HorizontalLayoutGroup dotsSelector;
+    [SerializeField] internal Button dotButtonTemplate;
+    [SerializeField] internal Color dotSelectedColor;
+    [SerializeField] internal Color dotUnselectedColor;
 
     [Header("Configuration")]
     [SerializeField] internal CarouselComponentModel model;
@@ -115,20 +138,27 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
     internal List<BaseComponentView> instantiatedItems = new List<BaseComponentView>();
     internal Coroutine itemsCoroutine;
     internal int currentItemIndex = 0;
+    internal int currentDotIndex = 0;
     internal float currentFinalNormalizedPos;
     internal bool isInTransition = false;
-    internal bool destroyOnlyUnnecesaryItems = false;
 
-    public override void PostInitialization()
+    public override void Awake()
     {
-        Configure(model);
+        base.Awake();
+
+        StartCoroutine(RegisterCurrentInstantiatedItems());
         ConfigureManualButtonsEvents();
-        StartCarousel();
     }
 
-    public void Configure(CarouselComponentModel model)
+    public override void Start()
     {
-        this.model = model;
+        if (model.automaticTransition)
+            StartCarousel();
+    }
+
+    public void Configure(BaseComponentModel newModel)
+    {
+        model = (CarouselComponentModel)newModel;
         RefreshControl();
     }
 
@@ -143,12 +173,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         SetAnimationCurve(model.animationCurve);
         SetBackgroundColor(model.backgroundColor);
         SetManualControlsActive(model.showManualControls);
-        SetItems(model.items);
+        ResizeAllItems();
+        GenerateDotsSelector();
     }
 
-    public override void PostScreenSizeChanged()
+    public override void OnScreenSizeChanged()
     {
-        base.PostScreenSizeChanged();
+        base.OnScreenSizeChanged();
 
         ResizeAllItems();
     }
@@ -158,7 +189,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         base.Dispose();
 
         StopCarousel();
-        DestroyInstantiatedItems(true);
+        DestroyInstantiatedItems();
     }
 
     public void SetSpaceBetweenItems(float newSpace)
@@ -194,42 +225,78 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         if (previousButton == null || nextButton == null)
             return;
 
-        previousButton.gameObject.SetActive(isActived);
-        nextButton.gameObject.SetActive(isActived);
+        int currentNumberOfItems = itemsContainer.childCount;
+        previousButton.gameObject.SetActive(isActived && currentNumberOfItems > 1);
+        nextButton.gameObject.SetActive(isActived && currentNumberOfItems > 1);
+        dotsSelector.gameObject.SetActive(isActived && currentNumberOfItems > 1);
     }
 
-    public void SetItems(List<BaseComponentView> items, bool instantiateNewCopyOfItems = true)
+    public void SetItems(List<BaseComponentView> items)
     {
-        model.items = items;
 
-        DestroyInstantiatedItems(!destroyOnlyUnnecesaryItems);
+        DestroyInstantiatedItems();
 
         for (int i = 0; i < items.Count; i++)
         {
-            CreateItem(items[i], $"Item{i}", instantiateNewCopyOfItems && !destroyOnlyUnnecesaryItems);
+            CreateItem(items[i], $"Item{i}");
         }
 
-        if (!instantiateNewCopyOfItems)
-            destroyOnlyUnnecesaryItems = true;
+        SetManualControlsActive(model.showManualControls);
+        GenerateDotsSelector();
     }
 
-    public BaseComponentView GetItem(int index)
+    public void AddItem(BaseComponentView item)
     {
-        if (index >= instantiatedItems.Count)
-            return null;
-
-        return instantiatedItems[index];
+        CreateItem(item, $"Item{instantiatedItems.Count}");
+        SetManualControlsActive(model.showManualControls);
+        GenerateDotsSelector();
     }
 
-    public List<BaseComponentView> GetAllItems() { return instantiatedItems; }
+    public void RemoveItem(BaseComponentView item)
+    {
+        BaseComponentView itemToRemove = instantiatedItems.FirstOrDefault(x => x == item);
+        if (itemToRemove != null)
+        {
+            Destroy(itemToRemove.gameObject);
+            instantiatedItems.Remove(item);
+        }
+
+        SetManualControlsActive(model.showManualControls);
+        GenerateDotsSelector();
+    }
+
+    public List<BaseComponentView> GetItems() { return instantiatedItems; }
+
+    public List<BaseComponentView> ExtractItems()
+    {
+        List<BaseComponentView> extractedItems = new List<BaseComponentView>();
+        foreach (BaseComponentView item in instantiatedItems)
+        {
+            item.transform.SetParent(null);
+            extractedItems.Add(item);
+        }
+
+        instantiatedItems.Clear();
+        SetManualControlsActive(model.showManualControls);
+
+        return extractedItems;
+    }
+
+    public void RemoveItems()
+    {
+        DestroyInstantiatedItems();
+        SetManualControlsActive(model.showManualControls);
+    }
 
     public void StartCarousel(
         int fromIndex = 0,
         bool startInmediately = false,
         CarouselDirection direction = CarouselDirection.Right,
-        bool changeDirectionAfterFirstTransition = false)
+        bool changeDirectionAfterFirstTransition = false,
+        int numberOfInitialJumps = 1)
     {
-        itemsCoroutine = CoroutineStarter.Start(RunCarouselCoroutine(fromIndex, startInmediately, direction, changeDirectionAfterFirstTransition));
+        StopCarousel();
+        itemsCoroutine = CoroutineStarter.Start(RunCarouselCoroutine(fromIndex, startInmediately, direction, changeDirectionAfterFirstTransition, numberOfInitialJumps));
     }
 
     public void StopCarousel()
@@ -239,6 +306,7 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
 
         CoroutineStarter.Stop(itemsCoroutine);
         itemsCoroutine = null;
+        isInTransition = false;
     }
 
     public void GoToPreviousItem()
@@ -246,12 +314,19 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         if (isInTransition)
             return;
 
-        StopCarousel();
         StartCarousel(
             fromIndex: currentItemIndex,
             startInmediately: true,
             direction: CarouselDirection.Left,
-            changeDirectionAfterFirstTransition: true);
+            changeDirectionAfterFirstTransition: true,
+            numberOfInitialJumps: 1);
+    }
+
+    public void ResetCarousel()
+    {
+        int index = 0;
+        SetSelectedDot(index);
+
     }
 
     public void GoToNextItem()
@@ -259,12 +334,25 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         if (isInTransition)
             return;
 
-        StopCarousel();
         StartCarousel(
             fromIndex: currentItemIndex,
             startInmediately: true,
             direction: CarouselDirection.Right,
-            changeDirectionAfterFirstTransition: false);
+            changeDirectionAfterFirstTransition: false,
+            numberOfInitialJumps: 1);
+    }
+
+    public void MakeJumpFromDotsSelector(int numberOfJumps, CarouselDirection direction)
+    {
+        if (isInTransition)
+            return;
+
+        StartCarousel(
+            fromIndex: currentItemIndex,
+            startInmediately: true,
+            direction: direction,
+            changeDirectionAfterFirstTransition: direction == CarouselDirection.Left,
+            numberOfInitialJumps: numberOfJumps);
     }
 
     internal void ConfigureManualButtonsEvents()
@@ -282,94 +370,48 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         }
     }
 
-    internal void CreateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
-    {
-        if (Application.isPlaying)
-        {
-            InstantiateItem(newItem, name, instantiateNewCopyOfItem);
-        }
-        else
-        {
-            if (isActiveAndEnabled)
-                StartCoroutine(IntantiateItemOnEditor(newItem, name));
-        }
-    }
-
-    internal void InstantiateItem(BaseComponentView newItem, string name, bool instantiateNewCopyOfItem = true)
+    internal void CreateItem(BaseComponentView newItem, string name)
     {
         if (newItem == null)
             return;
 
-        BaseComponentView newGO;
-        if (instantiateNewCopyOfItem)
-        {
-            newGO = Instantiate(newItem, itemsContainer);
-        }
-        else
-        {
-            newGO = newItem;
-            newGO.transform.SetParent(itemsContainer);
-            newGO.transform.localPosition = Vector3.zero;
-            newGO.transform.localScale = Vector3.one;
-        }
+        newItem.transform.SetParent(itemsContainer);
+        newItem.transform.localPosition = Vector3.zero;
+        newItem.transform.localScale = Vector3.one;
+        newItem.name = name;
 
-        newGO.name = name;
-        instantiatedItems.Add(newGO);
-        ResizeItem(newGO);
+        instantiatedItems.Add(newItem);
+
+        ResizeItem((RectTransform)newItem.transform);
     }
 
-    internal void ResizeItem(BaseComponentView item)
+    internal void ResizeItem(RectTransform item)
     {
         ((RectTransform)item.transform).sizeDelta = new Vector2(viewport.rect.width, viewport.rect.height);
 
+        int currentNumberOfItems = itemsContainer.childCount;
         itemsContainer.offsetMin = Vector2.zero;
-        if (instantiatedItems.Count > 1)
-        {
-            float extraSpace = (instantiatedItems.Count - 1) * model.spaceBetweenItems;
-            itemsContainer.offsetMax = new Vector2(viewport.rect.width * (instantiatedItems.Count - 1) + extraSpace, 0);
-        }
+        float extraSpace = (currentNumberOfItems - 1) * model.spaceBetweenItems;
+        itemsContainer.offsetMax = new Vector2(viewport.rect.width * (currentNumberOfItems - 1) + extraSpace, 0);
     }
 
     internal void ResizeAllItems()
     {
-        foreach (BaseComponentView item in instantiatedItems)
+        itemsScroll.horizontalNormalizedPosition = 0f;
+        if (model.automaticTransition)
+            StartCarousel();
+
+        foreach (Transform child in itemsContainer)
         {
-            ResizeItem(item);
+            ResizeItem((RectTransform)child);
         }
     }
 
-    internal IEnumerator IntantiateItemOnEditor(BaseComponentView newItem, string name)
+    internal void DestroyInstantiatedItems()
     {
-        yield return null;
-        InstantiateItem(newItem, name);
-    }
-
-    internal void DestroyInstantiatedItems(bool forzeToDestroyAll)
-    {
-        if (forzeToDestroyAll)
+        foreach (Transform child in itemsContainer)
         {
-            foreach (Transform child in itemsContainer)
-            {
-                if (Application.isPlaying)
-                {
-                    Destroy(child.gameObject);
-                }
-                else
-                {
-                    if (isActiveAndEnabled)
-                        StartCoroutine(DestroyGameObjectOnEditor(child.gameObject));
-                }
-            }
-        }
-        else
-        {
-            foreach (BaseComponentView child in instantiatedItems)
-            {
-                if (!model.items.Contains(child))
-                {
-                    Destroy(child.gameObject);
-                }
-            }
+            Destroy(child.gameObject);
         }
 
         instantiatedItems.Clear();
@@ -378,111 +420,93 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
         itemsContainer.offsetMax = Vector2.zero;
     }
 
-    internal IEnumerator DestroyGameObjectOnEditor(GameObject go)
-    {
-        yield return null;
-        DestroyImmediate(go);
-    }
-
     internal IEnumerator RunCarouselCoroutine(
         int fromIndex = 0,
         bool startInmediately = false,
         CarouselDirection direction = CarouselDirection.Right,
-        bool changeDirectionAfterFirstTransition = false)
+        bool changeDirectionAfterFirstTransition = false,
+        int numberOfInitialJumps = 1)
     {
         currentItemIndex = fromIndex;
+        SetSelectedDot(currentItemIndex);
 
-        while (true)
+        bool continueCarrousel = true;
+        while (gameObject.activeInHierarchy && itemsContainer.childCount > 1 && continueCarrousel)
         {
             if (!startInmediately)
                 yield return new WaitForSeconds(model.timeBetweenItems);
-            else
-                startInmediately = false;
 
             if (instantiatedItems.Count > 0)
             {
                 if (direction == CarouselDirection.Right)
                 {
-                    yield return RunRightAnimation();
+                    SetSelectedDot(currentItemIndex == (instantiatedItems.Count - 1) ? 0 : currentItemIndex + numberOfInitialJumps);
+                    yield return RunRightAnimation(numberOfInitialJumps);
 
                     if (changeDirectionAfterFirstTransition)
                     {
                         direction = CarouselDirection.Left;
                         changeDirectionAfterFirstTransition = false;
                     }
+                    continueCarrousel = model.automaticTransition;
                 }
                 else
                 {
-                    yield return RunLeftAnimation();
+                    SetSelectedDot(currentItemIndex == 0 ? (instantiatedItems.Count - 1) : currentItemIndex - numberOfInitialJumps);
+                    yield return RunLeftAnimation(numberOfInitialJumps);
 
                     if (changeDirectionAfterFirstTransition)
                     {
                         direction = CarouselDirection.Right;
                         changeDirectionAfterFirstTransition = false;
                     }
+                    continueCarrousel = model.automaticTransition;
                 }
             }
+
+            startInmediately = false;
+            numberOfInitialJumps = 1;
         }
     }
 
-    internal IEnumerator RunRightAnimation()
+    internal IEnumerator RunRightAnimation(int numberOfJumps = 1)
     {
         if (currentItemIndex == instantiatedItems.Count - 1)
         {
-            currentItemIndex = 1;
-            itemsScroll.horizontalNormalizedPosition = 0f;
-            itemsContainer.GetChild(itemsContainer.childCount - 1).SetAsFirstSibling();
-
-            yield return RunAnimationCoroutine(CarouselDirection.Right);
+            currentItemIndex = 0;
+            yield return RunAnimationCoroutine(CarouselDirection.Left, instantiatedItems.Count - 1);
         }
         else
         {
-            yield return RunAnimationCoroutine(CarouselDirection.Right);
-
-            currentItemIndex++;
-            if (currentItemIndex >= instantiatedItems.Count - 1)
-            {
-                currentItemIndex = 0;
-                itemsScroll.horizontalNormalizedPosition = 0f;
-                itemsContainer.GetChild(itemsContainer.childCount - 1).SetAsFirstSibling();
-            }
+            currentItemIndex += numberOfJumps;
+            yield return RunAnimationCoroutine(CarouselDirection.Right, numberOfJumps);
         }
     }
 
-    internal IEnumerator RunLeftAnimation()
+    internal IEnumerator RunLeftAnimation(int numberOfJumps = 1)
     {
         if (currentItemIndex == 0)
         {
-            currentItemIndex = instantiatedItems.Count - 2;
-            itemsScroll.horizontalNormalizedPosition = 1f;
-            itemsContainer.GetChild(0).SetAsLastSibling();
-
-            yield return RunAnimationCoroutine(CarouselDirection.Left);
+            currentItemIndex = instantiatedItems.Count - 1;
+            yield return RunAnimationCoroutine(CarouselDirection.Right, instantiatedItems.Count - 1);
         }
         else
         {
-            yield return RunAnimationCoroutine(CarouselDirection.Left);
-
-            currentItemIndex--;
-            if (currentItemIndex <= 0)
-            {
-                currentItemIndex = instantiatedItems.Count - 1;
-                itemsScroll.horizontalNormalizedPosition = 1f;
-                itemsContainer.GetChild(0).SetAsLastSibling();
-            }
+            currentItemIndex -= numberOfJumps;
+            yield return RunAnimationCoroutine(CarouselDirection.Left, numberOfJumps);
         }
     }
 
-    internal IEnumerator RunAnimationCoroutine(CarouselDirection direction)
+    internal IEnumerator RunAnimationCoroutine(CarouselDirection direction, int numberOfJumps = 1)
     {
         isInTransition = true;
         float currentAnimationTime = 0f;
         float initialNormalizedPos = itemsScroll.horizontalNormalizedPosition;
 
         if (direction == CarouselDirection.Right)
-            currentFinalNormalizedPos = initialNormalizedPos + (1f / (instantiatedItems.Count - 1));
+            currentFinalNormalizedPos = initialNormalizedPos + ((float)numberOfJumps / (instantiatedItems.Count - 1));
         else
-            currentFinalNormalizedPos = initialNormalizedPos - (1f / (instantiatedItems.Count - 1));
+            currentFinalNormalizedPos = initialNormalizedPos - ((float)numberOfJumps / (instantiatedItems.Count - 1));
 
         while (currentAnimationTime <= model.animationTransitionTime)
         {
@@ -498,5 +522,87 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView
 
         itemsScroll.horizontalNormalizedPosition = currentFinalNormalizedPos;
         isInTransition = false;
+    }
+
+    internal void GenerateDotsSelector()
+    {
+        List<GameObject> dotsToRemove = new List<GameObject>();
+        foreach (Transform child in dotsSelector.transform)
+        {
+            if (child.gameObject == dotButtonTemplate.gameObject)
+                continue;
+
+            dotsToRemove.Add(child.gameObject);
+        }
+
+        foreach (GameObject dotToRemove in dotsToRemove)
+        {
+            Utils.SafeDestroy(dotToRemove);
+        }
+
+        for (int i = 0; i < itemsContainer.childCount; i++)
+        {
+            Button newDotButton = Instantiate(dotButtonTemplate, dotsSelector.transform);
+            newDotButton.gameObject.SetActive(true);
+            newDotButton.onClick.AddListener(() =>
+            {
+                int dotButtonIndex = newDotButton.transform.GetSiblingIndex() - 1;
+                if (dotButtonIndex != currentDotIndex)
+                {
+                    MakeJumpFromDotsSelector(
+                        Mathf.Abs(dotButtonIndex - currentDotIndex),
+                        dotButtonIndex > currentDotIndex ? CarouselDirection.Right : CarouselDirection.Left);
+                }
+            });
+        }
+
+        SetSelectedDot(0);
+    }
+
+    internal void SetSelectedDot(int index)
+    {
+        int currentIndex = 0;
+        currentDotIndex = -1;
+        foreach (Transform child in dotsSelector.transform)
+        {
+            if (child.gameObject == dotButtonTemplate.gameObject)
+                continue;
+
+            if (currentIndex == index)
+            {
+                child.GetComponent<Image>().color = dotSelectedColor;
+                child.transform.localScale = Vector3.one * 1.5f;
+                currentDotIndex = index;
+            }
+            else
+            {
+                child.GetComponent<Image>().color = dotUnselectedColor;
+                child.transform.localScale = Vector3.one;
+            }
+
+            currentIndex++;
+        }
+    }
+
+    internal IEnumerator RegisterCurrentInstantiatedItems()
+    {
+        instantiatedItems.Clear();
+
+        foreach (Transform child in itemsContainer)
+        {
+            BaseComponentView existingItem = child.GetComponent<BaseComponentView>();
+            if (existingItem != null)
+                instantiatedItems.Add(existingItem);
+            else
+                Destroy(child.gameObject);
+        }
+
+        // In the first loading, before calculating the size of the current items, it is needed to wait for a frame in order to
+        // allow time for the carousel viewport to get its final size to be able to execute the 'ResizeAllItems' function correctly.
+        yield return null;
+
+        ResizeAllItems();
+        SetManualControlsActive(model.showManualControls);
+        GenerateDotsSelector();
     }
 }

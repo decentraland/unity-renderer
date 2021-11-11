@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -18,6 +19,7 @@ using Environment = DCL.Environment;
 public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 {
     private BuilderInWorldEditor mainController;
+    private IBuilderAPIController apiSubstitute;
 
     protected override IEnumerator SetUp()
     {
@@ -25,7 +27,8 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController = new BuilderInWorldEditor();
         BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
-        mainController.Initialize(BIWTestUtils.CreateMockedContext());
+        apiSubstitute = Substitute.For<IBuilderAPIController>();
+        mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(apiSubstitute));
         mainController.initialLoadingController.Dispose();
         mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
         mainController.initialLoadingController.Configure().isActive.Returns(true);
@@ -254,9 +257,14 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         mainController.isCatalogRequested = false;
+        
+        ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
+        Promise<bool> resultOkPromise = new Promise<bool>();
+        mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
 
         // Act
         mainController.GetCatalog();
+        resultOkPromise.Resolve(true);
 
         // Assert
         Assert.IsTrue(mainController.isCatalogRequested);
@@ -305,19 +313,19 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         Parcel parcel = new Parcel();
-        parcel.x = scene.sceneData.basePosition.x;
-        parcel.y = scene.sceneData.basePosition.y;
+        parcel.x = base.scene.sceneData.basePosition.x;
+        parcel.y = base.scene.sceneData.basePosition.y;
 
-        Vector2Int parcelCoords = new Vector2Int(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
+        Vector2Int parcelCoords = new Vector2Int(base.scene.sceneData.basePosition.x, base.scene.sceneData.basePosition.y);
         Land land = new Land();
         land.parcels = new List<Parcel>() { parcel };
 
         LandWithAccess landWithAccess = new LandWithAccess(land);
-        DeployedScene deployedScene = new DeployedScene();
-        deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
-        deployedScene.deploymentSource = DeployedScene.Source.SDK;
+        Scene scene = new Scene();
+        scene.parcelsCoord = new Vector2Int[] { parcelCoords };
+        scene.deploymentSource = Scene.Source.SDK;
 
-        landWithAccess.scenes = new List<DeployedScene>() { deployedScene };
+        landWithAccess.scenes = new List<Scene>() { scene };
         var lands = new LandWithAccess[]
         {
             landWithAccess
@@ -325,7 +333,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         DataStore.i.builderInWorld.landsWithAccess.Set(lands);
 
         // Act
-        var result = mainController.IsParcelSceneDeployedFromSDK(scene);
+        var result = mainController.IsParcelSceneDeployedFromSDK(base.scene);
 
         // Assert
         Assert.IsTrue(result);
@@ -335,25 +343,16 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void CatalogReceived()
     {
         // Arrange
-        string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
-        string jsonValue = File.ReadAllText(jsonPath);
-
+        ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
+        Promise<bool> resultOkPromise = new Promise<bool>();
+        mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
+        
         // Act
-        mainController.CatalogReceived(jsonValue);
-        mainController.CatalogReceived(jsonValue);
+        mainController.GetCatalog();
+        resultOkPromise.Resolve(true);
 
         // Assert
         Assert.IsTrue(mainController.catalogAdded);
-    }
-
-    [Test]
-    public void CatalogHeaderReceived()
-    {
-        // Act
-        mainController.CatalogHeadersReceived("");
-
-        // Assert
-        Assert.IsTrue(mainController.areCatalogHeadersReady);
     }
 
     [Test]
@@ -362,9 +361,13 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         mainController.sceneToEdit = scene;
         AddSceneToPermissions();
+        ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
+        Promise<bool> resultOkPromise = new Promise<bool>();
+        mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
 
         // Act
         mainController.CheckSceneToEditByShorcut();
+        resultOkPromise.Resolve(true);
 
         // Assert
         Assert.IsTrue(mainController.isEnteringEditMode);
@@ -393,7 +396,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         mainController = new BuilderInWorldEditor();
         BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(new BIWModeController(),
-            new BIWSaveController(), InitialSceneReferences.i.data));
+            new BIWSaveController(), SceneReferences.i));
         mainController.initialLoadingController.Dispose();
         mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
         mainController.initialLoadingController.Configure().isActive.Returns(true);
@@ -417,7 +420,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         BIWCatalogManager.Init();
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
-        mainController.context.editorContext.floorHandler = Substitute.For<IBIWFloorHandler>();
+        ((EditorContext) mainController.context.editorContext).floorHandlerReference = Substitute.For<IBIWFloorHandler>();
         mainController.sceneToEdit = scene;
         mainController.EnterBiwControllers();
 
@@ -442,21 +445,6 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(mainController.isBuilderInWorldActivated);
     }
 
-    [Test]
-    public void ActiveLandCheckerCoroutineAfterUserProfileIsLoaded()
-    {
-        // Arrange
-        var profile = UserProfile.GetOwnUserProfile();
-        mainController.ActivateLandAccessBackgroundChecker();
-        profile.UpdateData(new UserProfileModel() { userId = "testId", ethAddress = "0x00" });
-
-        // Act
-        mainController.OnUserProfileUpdate(profile);
-
-        // Assert
-        Assert.IsNotNull(mainController.updateLandsWithAcessCoroutine);
-    }
-
     private void AddSceneToPermissions()
     {
         var parcel = new Parcel();
@@ -467,7 +455,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         land.parcels = new List<Parcel>() { parcel };
 
         var landWithAccess = new LandWithAccess(land);
-        landWithAccess.scenes = new List<DeployedScene>();
+        landWithAccess.scenes = new List<Scene>();
 
         var lands = new LandWithAccess[]
         {

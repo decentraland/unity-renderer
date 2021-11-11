@@ -110,6 +110,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["PublishSceneResult"] = "Main";
         messageTypeToBridgeName["BuilderProjectInfo"] = "Main";
         messageTypeToBridgeName["BuilderInWorldCatalogHeaders"] = "Main";
+        messageTypeToBridgeName["RequestedHeaders"] = "Main";
         messageTypeToBridgeName["AddAssets"] = "Main";
         messageTypeToBridgeName["RunPerformanceMeterTool"] = "Main";
         messageTypeToBridgeName["InstantiateBotsAtWorldPos"] = "Main";
@@ -134,7 +135,9 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["UpdateBalanceOfMANA"] = "HUDController";
         messageTypeToBridgeName["SetPlayerTalking"] = "HUDController";
         messageTypeToBridgeName["SetVoiceChatEnabledByScene"] = "HUDController";
-
+        messageTypeToBridgeName["TriggerSelfUserExpression"] = "HUDController";
+        messageTypeToBridgeName["AirdroppingRequest"] = "HUDController";
+        
         messageTypeToBridgeName["GetMousePosition"] = "BuilderController";
         messageTypeToBridgeName["SelectGizmo"] = "BuilderController";
         messageTypeToBridgeName["ResetObject"] = "BuilderController";
@@ -152,8 +155,6 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["GetCameraTargetBuilder"] = "BuilderController";
         messageTypeToBridgeName["PreloadFile"] = "BuilderController";
         messageTypeToBridgeName["SetBuilderConfiguration"] = "BuilderController";
-        messageTypeToBridgeName["TriggerSelfUserExpression"] = "BuilderController";
-        messageTypeToBridgeName["AirdroppingRequest"] = "BuilderController";
 
         messageTypeToBridgeName["SetTutorialEnabled"] = "TutorialController";
         messageTypeToBridgeName["SetTutorialEnabledForUsersThatAlreadyDidTheTutorial"] = "TutorialController";

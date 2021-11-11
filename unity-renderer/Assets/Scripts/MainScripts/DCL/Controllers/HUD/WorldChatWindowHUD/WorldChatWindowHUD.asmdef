@@ -1,5 +1,6 @@
 {
     "name": "WorldChatWindowHUD",
+    "rootNamespace": "",
     "references": [
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
         "GUID:555c1f3c6d18648df910b7a1de75b424",
@@ -12,7 +13,8 @@
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:6afcac5154f98e846bbd9f27e454b57a",
         "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-        "GUID:d7f1765642f0c22cda30addd0275b5e1"
+        "GUID:d7f1765642f0c22cda30addd0275b5e1",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

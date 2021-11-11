@@ -4,210 +4,213 @@ using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneListener,
-                                                      ISectionUpdateSceneAdminsRequester, ISectionUpdateSceneBannedUsersRequester
+namespace DCL.Builder
 {
-    public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneAdminsSettingsView";
-
-    public event Action<string, SceneAdminsUpdatePayload> OnRequestUpdateSceneAdmins;
-    public event Action<string, SceneBannedUsersUpdatePayload> OnRequestUpdateSceneBannedUsers;
-
-    private readonly SectionSceneAdminsSettingsView view;
-    private readonly FriendsSearchPromptController friendsSearchPromptController;
-    private readonly UsersSearchPromptController usersSearchPromptController;
-    private readonly UserProfileFetcher profileFetcher = new UserProfileFetcher();
-
-    internal readonly SceneAdminsUpdatePayload adminsUpdatePayload = new SceneAdminsUpdatePayload();
-    internal readonly SceneBannedUsersUpdatePayload bannedUsersUpdatePayload = new SceneBannedUsersUpdatePayload();
-
-    private List<string> admins = new List<string>();
-    private List<string> bannedUsers = new List<string>();
-    private string sceneId;
-
-    public SectionSceneAdminsSettingsController() : this(
-        Object.Instantiate(Resources.Load<SectionSceneAdminsSettingsView>(VIEW_PREFAB_PATH)),
-        FriendsController.i
-    ) { }
-
-    public SectionSceneAdminsSettingsController(SectionSceneAdminsSettingsView view, IFriendsController friendsController)
+    internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneListener,
+                                                          ISectionUpdateSceneAdminsRequester, ISectionUpdateSceneBannedUsersRequester
     {
-        this.view = view;
-        friendsSearchPromptController = new FriendsSearchPromptController(view.GetAdminsSearchPromptView(), friendsController);
-        usersSearchPromptController = new UsersSearchPromptController(view.GetBlockedSearchPromptView());
+        public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneAdminsSettingsView";
 
-        view.OnSearchFriendButtonPressed += () => friendsSearchPromptController.Show();
-        view.OnSearchUserButtonPressed += () => usersSearchPromptController.Show();
+        public event Action<string, SceneAdminsUpdatePayload> OnRequestUpdateSceneAdmins;
+        public event Action<string, SceneBannedUsersUpdatePayload> OnRequestUpdateSceneBannedUsers;
 
-        friendsSearchPromptController.OnAddUser += OnAddAdminPressed;
-        friendsSearchPromptController.OnRemoveUser += OnRemoveAdminPressed;
-        usersSearchPromptController.OnAddUser += OnAddBannedUserPressed;
-        usersSearchPromptController.OnRemoveUser += OnRemoveBannedUserPressed;
-    }
+        private readonly SectionSceneAdminsSettingsView view;
+        private readonly FriendsSearchPromptController friendsSearchPromptController;
+        private readonly UsersSearchPromptController usersSearchPromptController;
+        private readonly UserProfileFetcher profileFetcher = new UserProfileFetcher();
 
-    public override void Dispose()
-    {
-        view.Dispose();
-        profileFetcher.Dispose();
-        friendsSearchPromptController.Dispose();
-        usersSearchPromptController.Dispose();
-    }
+        internal readonly SceneAdminsUpdatePayload adminsUpdatePayload = new SceneAdminsUpdatePayload();
+        internal readonly SceneBannedUsersUpdatePayload bannedUsersUpdatePayload = new SceneBannedUsersUpdatePayload();
 
-    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
+        private List<string> admins = new List<string>();
+        private List<string> bannedUsers = new List<string>();
+        private string sceneId;
 
-    protected override void OnShow() { view.SetActive(true); }
+        public SectionSceneAdminsSettingsController() : this(
+            Object.Instantiate(Resources.Load<SectionSceneAdminsSettingsView>(VIEW_PREFAB_PATH)),
+            FriendsController.i
+        ) { }
 
-    protected override void OnHide() { view.SetActive(false); }
-
-    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
-    {
-        sceneId = sceneCardView.sceneData.id;
-        SetAdmins(sceneCardView.sceneData.admins);
-        SetBannedUsers(sceneCardView.sceneData.bannedUsers);
-    }
-
-    internal void SetAdmins(string[] usersId)
-    {
-        if (usersId == null || usersId.Length == 0)
+        public SectionSceneAdminsSettingsController(SectionSceneAdminsSettingsView view, IFriendsController friendsController)
         {
-            if (admins.Count > 0)
-                admins.Clear();
+            this.view = view;
+            friendsSearchPromptController = new FriendsSearchPromptController(view.GetAdminsSearchPromptView(), friendsController);
+            usersSearchPromptController = new UsersSearchPromptController(view.GetBlockedSearchPromptView());
 
-            view.SetAdminsEmptyList(true);
-            view.SetAdminsCount(0);
-            return;
+            view.OnSearchFriendButtonPressed += () => friendsSearchPromptController.Show();
+            view.OnSearchUserButtonPressed += () => usersSearchPromptController.Show();
+
+            friendsSearchPromptController.OnAddUser += OnAddAdminPressed;
+            friendsSearchPromptController.OnRemoveUser += OnRemoveAdminPressed;
+            usersSearchPromptController.OnAddUser += OnAddBannedUserPressed;
+            usersSearchPromptController.OnRemoveUser += OnRemoveBannedUserPressed;
         }
 
-        var newAdmins = new List<string>(usersId);
-        for (int i = 0; i < newAdmins.Count; i++)
+        public override void Dispose()
         {
-            AddAdmin(newAdmins[i]);
-            admins.Remove(newAdmins[i]);
+            view.Dispose();
+            profileFetcher.Dispose();
+            friendsSearchPromptController.Dispose();
+            usersSearchPromptController.Dispose();
         }
 
-        for (int i = 0; i < admins.Count; i++)
+        public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
+
+        protected override void OnShow() { view.SetActive(true); }
+
+        protected override void OnHide() { view.SetActive(false); }
+
+        void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
         {
-            view.RemoveAdmin(admins[i]);
+            sceneId = sceneCardView.SceneData.id;
+            SetAdmins(sceneCardView.SceneData.admins);
+            SetBannedUsers(sceneCardView.SceneData.bannedUsers);
         }
 
-        admins = newAdmins;
-
-        friendsSearchPromptController.SetUsersInRolList(admins);
-        view.SetAdminsEmptyList(false);
-        view.SetAdminsCount(admins.Count);
-    }
-
-    internal void SetBannedUsers(string[] usersId)
-    {
-        if (usersId == null || usersId.Length == 0)
+        internal void SetAdmins(string[] usersId)
         {
-            if (bannedUsers.Count > 0)
-                bannedUsers.Clear();
+            if (usersId == null || usersId.Length == 0)
+            {
+                if (admins.Count > 0)
+                    admins.Clear();
 
-            view.SetBannedUsersEmptyList(true);
-            view.SetBannedUsersCount(0);
-            return;
+                view.SetAdminsEmptyList(true);
+                view.SetAdminsCount(0);
+                return;
+            }
+
+            var newAdmins = new List<string>(usersId);
+            for (int i = 0; i < newAdmins.Count; i++)
+            {
+                AddAdmin(newAdmins[i]);
+                admins.Remove(newAdmins[i]);
+            }
+
+            for (int i = 0; i < admins.Count; i++)
+            {
+                view.RemoveAdmin(admins[i]);
+            }
+
+            admins = newAdmins;
+
+            friendsSearchPromptController.SetUsersInRolList(admins);
+            view.SetAdminsEmptyList(false);
+            view.SetAdminsCount(admins.Count);
         }
 
-        var newBlocked = new List<string>(usersId);
-        for (int i = 0; i < newBlocked.Count; i++)
+        internal void SetBannedUsers(string[] usersId)
         {
-            AddBannedUser(newBlocked[i]);
-            bannedUsers.Remove(newBlocked[i]);
+            if (usersId == null || usersId.Length == 0)
+            {
+                if (bannedUsers.Count > 0)
+                    bannedUsers.Clear();
+
+                view.SetBannedUsersEmptyList(true);
+                view.SetBannedUsersCount(0);
+                return;
+            }
+
+            var newBlocked = new List<string>(usersId);
+            for (int i = 0; i < newBlocked.Count; i++)
+            {
+                AddBannedUser(newBlocked[i]);
+                bannedUsers.Remove(newBlocked[i]);
+            }
+
+            for (int i = 0; i < bannedUsers.Count; i++)
+            {
+                view.RemoveBannedUser(bannedUsers[i]);
+            }
+
+            bannedUsers = newBlocked;
+
+            usersSearchPromptController.SetUsersInRolList(bannedUsers);
+            view.SetBannedUsersEmptyList(false);
+            view.SetBannedUsersCount(bannedUsers.Count);
         }
 
-        for (int i = 0; i < bannedUsers.Count; i++)
+        internal void AddAdmin(string userId)
         {
-            view.RemoveBannedUser(bannedUsers[i]);
+            if (string.IsNullOrEmpty(userId))
+                return;
+
+            var userView = view.AddAdmin(userId);
+            profileFetcher.FetchProfile(userId)
+                          .Then(userProfile => userView.SetUserProfile(userProfile));
+
+            userView.OnAddPressed -= OnAddAdminPressed;
+            userView.OnRemovePressed -= OnRemoveAdminPressed;
+            userView.OnAddPressed += OnAddAdminPressed;
+            userView.OnRemovePressed += OnRemoveAdminPressed;
         }
 
-        bannedUsers = newBlocked;
+        internal void AddBannedUser(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return;
 
-        usersSearchPromptController.SetUsersInRolList(bannedUsers);
-        view.SetBannedUsersEmptyList(false);
-        view.SetBannedUsersCount(bannedUsers.Count);
-    }
+            var userView = view.AddBannedUser(userId);
+            profileFetcher.FetchProfile(userId)
+                          .Then(userProfile => userView.SetUserProfile(userProfile));
 
-    internal void AddAdmin(string userId)
-    {
-        if (string.IsNullOrEmpty(userId))
-            return;
+            userView.OnAddPressed -= OnAddBannedUserPressed;
+            userView.OnRemovePressed -= OnRemoveBannedUserPressed;
+            userView.OnAddPressed += OnAddBannedUserPressed;
+            userView.OnRemovePressed += OnRemoveBannedUserPressed;
+        }
 
-        var userView = view.AddAdmin(userId);
-        profileFetcher.FetchProfile(userId)
-                      .Then(userProfile => userView.SetUserProfile(userProfile));
+        internal void OnAddAdminPressed(string userId)
+        {
+            if (admins.Contains(userId))
+                return;
 
-        userView.OnAddPressed -= OnAddAdminPressed;
-        userView.OnRemovePressed -= OnRemoveAdminPressed;
-        userView.OnAddPressed += OnAddAdminPressed;
-        userView.OnRemovePressed += OnRemoveAdminPressed;
-    }
+            admins.Add(userId);
+            AddAdmin(userId);
+            friendsSearchPromptController.SetUsersInRolList(admins);
+            view.SetAdminsEmptyList(false);
+            view.SetAdminsCount(admins.Count);
+            adminsUpdatePayload.admins = admins.ToArray();
+            OnRequestUpdateSceneAdmins?.Invoke(sceneId, adminsUpdatePayload);
+        }
 
-    internal void AddBannedUser(string userId)
-    {
-        if (string.IsNullOrEmpty(userId))
-            return;
+        void OnRemoveAdminPressed(string userId)
+        {
+            if (!admins.Remove(userId))
+                return;
 
-        var userView = view.AddBannedUser(userId);
-        profileFetcher.FetchProfile(userId)
-                      .Then(userProfile => userView.SetUserProfile(userProfile));
+            view.RemoveAdmin(userId);
+            friendsSearchPromptController.SetUsersInRolList(admins);
+            view.SetAdminsEmptyList(admins.Count == 0);
+            view.SetAdminsCount(admins.Count);
+            adminsUpdatePayload.admins = admins.ToArray();
+            OnRequestUpdateSceneAdmins?.Invoke(sceneId, adminsUpdatePayload);
+        }
 
-        userView.OnAddPressed -= OnAddBannedUserPressed;
-        userView.OnRemovePressed -= OnRemoveBannedUserPressed;
-        userView.OnAddPressed += OnAddBannedUserPressed;
-        userView.OnRemovePressed += OnRemoveBannedUserPressed;
-    }
+        internal void OnAddBannedUserPressed(string userId)
+        {
+            if (bannedUsers.Contains(userId))
+                return;
 
-    internal void OnAddAdminPressed(string userId)
-    {
-        if (admins.Contains(userId))
-            return;
+            bannedUsers.Add(userId);
+            AddBannedUser(userId);
+            usersSearchPromptController.SetUsersInRolList(bannedUsers);
+            view.SetBannedUsersEmptyList(false);
+            view.SetBannedUsersCount(bannedUsers.Count);
+            bannedUsersUpdatePayload.bannedUsers = bannedUsers.ToArray();
+            OnRequestUpdateSceneBannedUsers?.Invoke(sceneId, bannedUsersUpdatePayload);
+        }
 
-        admins.Add(userId);
-        AddAdmin(userId);
-        friendsSearchPromptController.SetUsersInRolList(admins);
-        view.SetAdminsEmptyList(false);
-        view.SetAdminsCount(admins.Count);
-        adminsUpdatePayload.admins = admins.ToArray();
-        OnRequestUpdateSceneAdmins?.Invoke(sceneId, adminsUpdatePayload);
-    }
+        void OnRemoveBannedUserPressed(string userId)
+        {
+            if (!bannedUsers.Remove(userId))
+                return;
 
-    void OnRemoveAdminPressed(string userId)
-    {
-        if (!admins.Remove(userId))
-            return;
-
-        view.RemoveAdmin(userId);
-        friendsSearchPromptController.SetUsersInRolList(admins);
-        view.SetAdminsEmptyList(admins.Count == 0);
-        view.SetAdminsCount(admins.Count);
-        adminsUpdatePayload.admins = admins.ToArray();
-        OnRequestUpdateSceneAdmins?.Invoke(sceneId, adminsUpdatePayload);
-    }
-
-    internal void OnAddBannedUserPressed(string userId)
-    {
-        if (bannedUsers.Contains(userId))
-            return;
-
-        bannedUsers.Add(userId);
-        AddBannedUser(userId);
-        usersSearchPromptController.SetUsersInRolList(bannedUsers);
-        view.SetBannedUsersEmptyList(false);
-        view.SetBannedUsersCount(bannedUsers.Count);
-        bannedUsersUpdatePayload.bannedUsers = bannedUsers.ToArray();
-        OnRequestUpdateSceneBannedUsers?.Invoke(sceneId, bannedUsersUpdatePayload);
-    }
-
-    void OnRemoveBannedUserPressed(string userId)
-    {
-        if (!bannedUsers.Remove(userId))
-            return;
-
-        view.RemoveBannedUser(userId);
-        usersSearchPromptController.SetUsersInRolList(bannedUsers);
-        view.SetBannedUsersEmptyList(bannedUsers.Count == 0);
-        view.SetBannedUsersCount(bannedUsers.Count);
-        bannedUsersUpdatePayload.bannedUsers = bannedUsers.ToArray();
-        OnRequestUpdateSceneBannedUsers?.Invoke(sceneId, bannedUsersUpdatePayload);
+            view.RemoveBannedUser(userId);
+            usersSearchPromptController.SetUsersInRolList(bannedUsers);
+            view.SetBannedUsersEmptyList(bannedUsers.Count == 0);
+            view.SetBannedUsersCount(bannedUsers.Count);
+            bannedUsersUpdatePayload.bannedUsers = bannedUsers.ToArray();
+            OnRequestUpdateSceneBannedUsers?.Invoke(sceneId, bannedUsersUpdatePayload);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,12 +10,6 @@ public interface IImageComponentView
     /// It will be triggered when the sprite has been loaded.
     /// </summary>
     event Action<Sprite> OnLoaded;
-
-    /// <summary>
-    /// Fill the model and updates the image with this data.
-    /// </summary>
-    /// <param name="model">Data to configure the image.</param>
-    void Configure(ImageComponentModel model);
 
     /// <summary>
     /// Set an image directly from a sprite.
@@ -35,13 +30,19 @@ public interface IImageComponentView
     void SetImage(string uri);
 
     /// <summary>
+    /// Resize the image size to fit into the parent.
+    /// </summary>
+    /// <param name="fitParent">True to fit the size.</param>
+    void SetFitParent(bool fitParent);
+
+    /// <summary>
     /// Active or deactive the loading indicator.
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the image.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
 }
 
-public class ImageComponentView : BaseComponentView, IImageComponentView
+public class ImageComponentView : BaseComponentView, IImageComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Image image;
@@ -54,16 +55,19 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
 
     internal Sprite currentSprite;
     internal ILazyTextureObserver imageObserver = new LazyTextureObserver();
+    internal Vector2 lastParentSize;
 
-    public override void PostInitialization()
+    public override void Start() { imageObserver.AddListener(OnImageObserverUpdated); }
+
+    private void LateUpdate()
     {
-        imageObserver.AddListener(OnImageObserverUpdated);
-        Configure(model);
+        if (model.fitParent && HasParentSizeChanged())
+            SetFitParent(model.fitParent);
     }
 
-    public void Configure(ImageComponentModel model)
+    public void Configure(BaseComponentModel newModel)
     {
-        this.model = model;
+        model = (ImageComponentModel)newModel;
         RefreshControl();
     }
 
@@ -98,31 +102,51 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
             return;
 
         image.sprite = sprite;
+        SetFitParent(model.fitParent);
     }
 
     public void SetImage(Texture2D texture)
     {
-        model.texture = texture;
-
-        if (!Application.isPlaying)
+        if (model.texture != texture)
         {
-            OnImageObserverUpdated(texture);
-            return;
+            model.texture = texture;
+
+            if (!Application.isPlaying)
+            {
+                OnImageObserverUpdated(texture);
+                return;
+            }
+
+            SetLoadingIndicatorVisible(true);
+            imageObserver.RefreshWithTexture(texture);
         }
 
-        imageObserver.RefreshWithTexture(texture);
-        SetLoadingIndicatorVisible(true);
+        SetFitParent(model.fitParent);
     }
 
     public void SetImage(string uri)
     {
+        if (model.uri == uri)
+            return;
+
         model.uri = uri;
 
         if (!Application.isPlaying)
             return;
 
-        imageObserver.RefreshWithUri(uri);
         SetLoadingIndicatorVisible(true);
+        if (!string.IsNullOrEmpty(uri))
+            imageObserver.RefreshWithUri(uri);
+        else
+            OnImageObserverUpdated(null);
+    }
+
+    public void SetFitParent(bool fitParent)
+    {
+        model.fitParent = fitParent;
+
+        if (fitParent)
+            ResizeFillParent();
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)
@@ -138,9 +162,53 @@ public class ImageComponentView : BaseComponentView, IImageComponentView
         else
             DestroyImmediate(currentSprite);
 
-        currentSprite = Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+        currentSprite = texture != null ? Sprite.Create((Texture2D)texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
         SetImage(currentSprite);
         SetLoadingIndicatorVisible(false);
         OnLoaded?.Invoke(currentSprite);
+    }
+
+    internal void ResizeFillParent()
+    {
+        RectTransform imageRectTransform = (RectTransform)image.transform;
+
+        imageRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        imageRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        imageRectTransform.pivot = new Vector2(0.5f, 0.5f);
+        imageRectTransform.localPosition = Vector2.zero;
+
+        if (transform.parent == null)
+            return;
+
+        RectTransform parent = transform.parent as RectTransform;
+
+        float h, w;
+        h = parent.rect.height;
+        w = h * (image.mainTexture.width / (float)image.mainTexture.height);
+
+        if ((parent.rect.width - w) > 0)
+        {
+            w = parent.rect.width;
+            h = w * (image.mainTexture.height / (float)image.mainTexture.width);
+        }
+
+        imageRectTransform.sizeDelta = new Vector2(w, h);
+    }
+
+    internal bool HasParentSizeChanged()
+    {
+        Transform imageParent = transform.parent;
+        if (imageParent != null)
+        {
+            Vector2 currentParentSize = ((RectTransform)imageParent).rect.size;
+
+            if (lastParentSize != currentParentSize)
+            {
+                lastParentSize = currentParentSize;
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -27,6 +27,7 @@ namespace DCL.SettingsPanelHUD
 
         [Header("Open/Close Settings")]
         [SerializeField] private Button closeButton;
+        [SerializeField] private Button backgroundButton;
         [SerializeField] private InputAction_Trigger closeAction;
         [SerializeField] private InputAction_Trigger openAction;
 
@@ -59,6 +60,7 @@ namespace DCL.SettingsPanelHUD
             resetAllOkButton.onClick.AddListener(ResetAllSettings);
 
             closeButton.onClick.AddListener(CloseSettingsPanel);
+            backgroundButton.onClick.AddListener(CloseSettingsPanel);
             settingsAnimator.OnWillFinishHide += OnFinishHide;
 
             CreateSections();

@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using DCL.Builder;
 using UnityEngine;
 
 [ExcludeFromCodeCoverage]
@@ -25,7 +26,7 @@ public class BIWFirstPersonMode : BIWMode
     private InputAction_Hold.Started rotationHoldStartDelegate;
     private InputAction_Hold.Finished rotationHoldFinishedDelegate;
 
-    public override void Init(Context context)
+    public override void Init(IContext context)
     {
         base.Init(context);
         maxDistanceToSelectEntitiesValue = context.editorContext.firstPersonDynamicVariablesAsset.maxDistanceToSelectEntities;

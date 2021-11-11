@@ -6,10 +6,18 @@ public class PlacesAndEventsSectionComponentViewTests
     private PlacesAndEventsSectionComponentView placesAndEventsSectionComponent;
 
     [SetUp]
-    public void SetUp() { placesAndEventsSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesAndEventsSection")).GetComponent<PlacesAndEventsSectionComponentView>(); }
+    public void SetUp()
+    {
+        placesAndEventsSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesAndEventsSection")).GetComponent<PlacesAndEventsSectionComponentView>();
+        placesAndEventsSectionComponent.Start();
+    }
 
     [TearDown]
-    public void TearDown() { GameObject.Destroy(placesAndEventsSectionComponent.gameObject); }
+    public void TearDown()
+    {
+        placesAndEventsSectionComponent.Dispose();
+        GameObject.Destroy(placesAndEventsSectionComponent.gameObject);
+    }
 
     [Test]
     [TestCase(0)]
@@ -17,7 +25,6 @@ public class PlacesAndEventsSectionComponentViewTests
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
-        placesAndEventsSectionComponent.subSectionSelector.RefreshControl();
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
 
@@ -62,18 +69,5 @@ public class PlacesAndEventsSectionComponentViewTests
                 Assert.IsFalse(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
                 break;
         }
-    }
-
-    [Test]
-    public void ShowDefaultSubSectionCorrectly()
-    {
-        // Arrange
-        placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
-
-        // Act
-        placesAndEventsSectionComponent.ShowDefaultSubSection();
-
-        // Assert
-        Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.gameObject.activeSelf, "The places sub-section should be actived.");
     }
 }

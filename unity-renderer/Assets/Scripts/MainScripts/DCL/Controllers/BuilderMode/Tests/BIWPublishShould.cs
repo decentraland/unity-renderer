@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -13,7 +14,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 {
     private BIWPublishController biwPublishController;
     private BIWEntityHandler biwEntityHandler;
-    private Context context;
+    private IContext context;
 
     private const string entityId = "E1";
 

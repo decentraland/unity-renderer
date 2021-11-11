@@ -51,8 +51,6 @@ namespace AssetPromiseKeeper_Mock_Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
             var library = new AssetLibrary_Mock();

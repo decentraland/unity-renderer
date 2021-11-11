@@ -1,21 +1,59 @@
+using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Helpers.NFT;
 using System.IO;
+using System.Linq;
 using DCL;
+using DCL.Builder;
+using DCL.Camera;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
 using NSubstitute;
+using NSubstitute.Extensions;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public static class BIWTestUtils
 {
-    public static Context CreateMockedContext()
+    public static ISceneReferences CreateMocekdInitialSceneReference()
     {
-        Context context = new Context(
+        ISceneReferences sceneReferences = SceneReferences.i;
+
+        if (sceneReferences == null)
+        {
+            GameObject gameObjectToDestroy = new GameObject("BIWTestGO");
+            var mouseCatcher = gameObjectToDestroy.AddComponent<MouseCatcher>();
+            gameObjectToDestroy.AddComponent<BuilderInWorldBridge>();
+            var avatarController = gameObjectToDestroy.AddComponent<PlayerAvatarController>();
+            var cameraController = gameObjectToDestroy.AddComponent<CameraController>();
+
+            sceneReferences = Substitute.For<ISceneReferences>();
+            sceneReferences.Configure().biwCameraParent.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().cursorCanvas.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().mouseCatcher.Returns(mouseCatcher);
+            sceneReferences.Configure().bridgeGameObject.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().playerAvatarController.Returns(avatarController);
+            sceneReferences.Configure().cameraController.Returns(cameraController);
+            sceneReferences.Configure().mainCamera.Returns(Camera.main);
+
+            sceneReferences.When( x => x.Dispose())
+                           .Do( x => Object.Destroy(gameObjectToDestroy));
+        }
+
+        return sceneReferences;
+    }
+
+    public static IContext CreateMockedContext()
+    {
+        IContext context = new Context(
             Substitute.For<IBIWEditor>(),
-            Substitute.For<IBuilderProjectsPanelController>(),
+            Substitute.For<IBuilderMainPanelController>(),
+            Substitute.For<IBuilderAPIController>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -29,15 +67,40 @@ public static class BIWTestUtils
             Substitute.For<IBIWSaveController>(),
             Substitute.For<IBIWRaycastController>(),
             Substitute.For<IBIWGizmosController>(),
-            new InitialSceneReferences.Data()
+            Substitute.For<ISceneReferences>()
+        );
+        return context;
+    }
+    
+    public static IContext CreateMockedContextForTestScene()
+    {
+        IContext context = new Context(
+            Substitute.For<IBIWEditor>(),
+            Substitute.For<IBuilderMainPanelController>(),
+            Substitute.For<IBuilderAPIController>(),
+            Substitute.For<IBuilderEditorHUDController>(),
+            Substitute.For<IBIWOutlinerController>(),
+            Substitute.For<IBIWInputHandler>(),
+            Substitute.For<IBIWInputWrapper>(),
+            Substitute.For<IBIWPublishController>(),
+            Substitute.For<IBIWCreatorController>(),
+            Substitute.For<IBIWModeController>(),
+            Substitute.For<IBIWFloorHandler>(),
+            Substitute.For<IBIWEntityHandler>(),
+            Substitute.For<IBIWActionController>(),
+            Substitute.For<IBIWSaveController>(),
+            Substitute.For<IBIWRaycastController>(),
+            Substitute.For<IBIWGizmosController>(),
+            CreateMocekdInitialSceneReference()
         );
         return context;
     }
 
-    public static Context CreateContextWithGenericMocks(params object[] mocks)
+    public static IContext CreateContextWithGenericMocks(params object[] mocks)
     {
         IBIWEditor editor = Substitute.For<IBIWEditor>();
-        IBuilderProjectsPanelController panelHUD = Substitute.For<IBuilderProjectsPanelController>();
+        IBuilderAPIController apiController = Substitute.For<IBuilderAPIController>();
+        IBuilderMainPanelController panelHUD = Substitute.For<IBuilderMainPanelController>();
         IBuilderEditorHUDController editorHUD = Substitute.For<IBuilderEditorHUDController>();
 
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
@@ -52,7 +115,7 @@ public static class BIWTestUtils
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
-        InitialSceneReferences.Data sceneReferences = new InitialSceneReferences.Data();
+        ISceneReferences sceneReferences =    CreateMocekdInitialSceneReference();
 
         foreach (var mock in mocks)
         {
@@ -61,8 +124,11 @@ public static class BIWTestUtils
                 case IBIWEditor e:
                     editor = e;
                     break;
-                case IBuilderProjectsPanelController ppc:
+                case IBuilderMainPanelController ppc:
                     panelHUD = ppc;
+                    break;
+                case IBuilderAPIController ibapc:
+                    apiController = ibapc;
                     break;
                 case IBuilderEditorHUDController ehc:
                     editorHUD = ehc;
@@ -103,14 +169,15 @@ public static class BIWTestUtils
                 case IBIWGizmosController gc:
                     gizmosController = gc;
                     break;
-                case InitialSceneReferences.Data isr:
+                case ISceneReferences isr:
                     sceneReferences = isr;
                     break;
             }
         }
 
-        Context context = new Context(editor,
+        IContext context = new Context(editor,
             panelHUD,
+            apiController,
             editorHUD,
             outliner,
             inputHandler,

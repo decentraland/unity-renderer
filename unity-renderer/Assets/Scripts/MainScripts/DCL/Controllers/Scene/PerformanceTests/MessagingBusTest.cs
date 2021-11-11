@@ -37,6 +37,8 @@ namespace MessagingBusTest
         }
 
         [Test, Performance]
+        [Category("Explicit")]
+        [Explicit]
         public void MeasureTimeToEnqueueThousandMessages()
         {
             Measure.Method(() =>
@@ -55,6 +57,8 @@ namespace MessagingBusTest
         }
 
         [Test, Performance]
+        [Category("Explicit")]
+        [Explicit]
         public void MeasureTimeToProcessThousandMessages()
         {
             controller.StartBus(MessagingBusType.INIT);
@@ -155,6 +159,8 @@ namespace MessagingBusTest
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void LossyMessageIsReplaced()
         {
             string entityId = "entity";
@@ -178,6 +184,8 @@ namespace MessagingBusTest
         }
 
         [Test]
+        [Category("Explicit")]
+        [Explicit]
         public void RemoveEntityShouldClearLossyMessages()
         {
             string entityId = "entity";

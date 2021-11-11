@@ -7,20 +7,20 @@ namespace DCL
 {
     public class MemoryManager : IMemoryManager
     {
-        private const uint MAX_USED_MEMORY = 1300 * 1024 * 1024;
-        private const float TIME_FOR_NEW_MEMORY_CHECK = 1.0f;
+        private const long MAX_USED_MEMORY = 1300 * 1024 * 1024; // 1.3GB
+        private const float TIME_FOR_NEW_MEMORY_CHECK = 1.0f; // Each second
 
         private Coroutine autoCleanupCoroutine;
 
-        private uint memoryThresholdForCleanup = 0;
+        private long memoryThresholdForCleanup = 0;
         private float cleanupInterval;
 
         public event System.Action OnCriticalMemory;
 
-        public MemoryManager (uint memoryThresholdForCleanup, float cleanupInterval)
+        public MemoryManager (long memoryThresholdForCleanup, float cleanupInterval)
         {
-            this.memoryThresholdForCleanup = this.memoryThresholdForCleanup;
-            this.cleanupInterval = this.cleanupInterval;
+            this.memoryThresholdForCleanup = memoryThresholdForCleanup;
+            this.cleanupInterval = cleanupInterval;
             autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
         }
 
@@ -42,7 +42,7 @@ namespace DCL
         bool NeedsMemoryCleanup()
         {
             long usedMemory = Profiler.GetTotalAllocatedMemoryLong() + Profiler.GetMonoUsedSizeLong() + Profiler.GetAllocatedMemoryForGraphicsDriver();
-            return usedMemory >= MAX_USED_MEMORY;
+            return usedMemory >= this.memoryThresholdForCleanup;
         }
 
         IEnumerator AutoCleanup()
@@ -56,7 +56,7 @@ namespace DCL
                     Resources.UnloadUnusedAssets();
                 }
 
-                yield return new WaitForSecondsRealtime(TIME_FOR_NEW_MEMORY_CHECK);
+                yield return new WaitForSecondsRealtime(this.cleanupInterval);
             }
         }
 

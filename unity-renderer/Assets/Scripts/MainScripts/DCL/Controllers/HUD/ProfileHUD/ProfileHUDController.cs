@@ -41,7 +41,7 @@ public class ProfileHUDController : IHUD
     public ProfileHUDController(IUserProfileBridge userProfileBridge)
     {
         this.userProfileBridge = userProfileBridge;
-        mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
+        mouseCatcher = SceneReferences.i?.mouseCatcher;
 
 
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ProfileHUD")).GetComponent<ProfileHUDView>();

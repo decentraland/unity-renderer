@@ -147,7 +147,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         if (fetchNFTImageRoutine != null)
             StopCoroutine(fetchNFTImageRoutine);
 
-        imageNftBackground.color = Color.white;
+        SetTransparentBackground();
 
         imageNft.gameObject.SetActive(false);
         textNftName.gameObject.SetActive(false);
@@ -178,7 +178,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         nftContent.SetActive(true);
 
         nftTokenId = info.tokenId;
-        imageNftBackground.color = Color.white;
+        SetTransparentBackground();
         backgroundColorSet = info.backgroundColor != null;
         if (backgroundColorSet)
         {
@@ -309,7 +309,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
             }
             else if (!backgroundColorSet)
             {
-                SetSmartBackgroundColor(texture);
+                SetTransparentBackground();
             }
 
             SetNFTImageSize(texture);
@@ -365,7 +365,14 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         return ret;
     }
 
-    private void SetSmartBackgroundColor(Texture2D texture) { imageNftBackground.color = texture.GetPixel(0, 0); }
+    private void SetTransparentBackground()
+    {
+        imageNftBackground.color = new Color(
+            imageNftBackground.color.r,
+            imageNftBackground.color.g,
+            imageNftBackground.color.b,
+            0f);
+    }
 
     private void SetTokenSymbol(TextMeshProUGUI textToken, string symbol)
     {

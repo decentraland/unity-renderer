@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using Tests;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
-    private Context context;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {

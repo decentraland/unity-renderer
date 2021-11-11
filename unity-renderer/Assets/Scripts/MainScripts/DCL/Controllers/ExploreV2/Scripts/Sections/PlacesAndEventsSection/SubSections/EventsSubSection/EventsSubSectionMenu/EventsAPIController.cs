@@ -1,6 +1,7 @@
 using DCL;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -25,25 +26,27 @@ public interface IEventsAPIController
     UnityWebRequestAsyncOperation RegisterAttendEvent(string eventId, bool isRegistered, Action OnSuccess, Action<string> OnFail);
 }
 
+[ExcludeFromCodeCoverage]
 public class EventsAPIController : IEventsAPIController
 {
     internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
     internal const string URL_POST_MESSAGE = "https://events.decentraland.org/api/message";
+    internal const string ATTEND_EVENTS_MESSAGE_TYPE = "attend";
 
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
     public WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
     {
-        return DCL.Environment.i.platform.webRequest.Get(
+        return (WebRequestAsyncOperation) DCL.Environment.i.platform.webRequest.Get(
             URL_GET_ALL_EVENTS,
             OnSuccess: (webRequestResult) =>
             {
-                EventListFromAPIModel upcomingEventsResult = JsonUtility.FromJson<EventListFromAPIModel>(webRequestResult.downloadHandler.text);
+                EventListFromAPIModel upcomingEventsResult = JsonUtility.FromJson<EventListFromAPIModel>(webRequestResult.webRequest.downloadHandler.text);
                 OnSuccess?.Invoke(upcomingEventsResult.data);
             },
             OnFail: (webRequestResult) =>
             {
-                OnFail?.Invoke(webRequestResult.error);
+                OnFail?.Invoke(webRequestResult.webRequest.error);
             });
     }
 
@@ -54,7 +57,7 @@ public class EventsAPIController : IEventsAPIController
             address = ownUserProfile.userId,
             message = new AttendEventMessageModel
             {
-                type = "attend",
+                type = ATTEND_EVENTS_MESSAGE_TYPE,
                 timestamp = DateTime.Now.ToLongDateString(),
                 @event = eventId,
                 attend = isRegistered

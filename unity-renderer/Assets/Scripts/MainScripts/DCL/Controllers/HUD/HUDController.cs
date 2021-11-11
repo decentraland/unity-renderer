@@ -92,7 +92,7 @@ public class HUDController : IHUDController
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-    public BuilderProjectsPanelController builderProjectsPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderProjectsPanelController;
+    public BuilderMainPanelController BuilderMainPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderMainPanelController;
     public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
@@ -195,7 +195,7 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.mouseCatcher);
+                        worldChatWindowHud.Initialize(ChatController.i, SceneReferences.i.mouseCatcher);
                         worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
                         worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
@@ -255,7 +255,7 @@ public class HUDController : IHUDController
                     if (taskbarHud != null)
                     {
                         taskbarHud.Initialize(
-                            InitialSceneReferences.i?.mouseCatcher,
+                            SceneReferences.i.mouseCatcher,
                             ChatController.i,
                             FriendsController.i,
                             DCL.Environment.i.world.sceneController,
@@ -325,11 +325,6 @@ public class HUDController : IHUDController
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 CreateHudElement(configuration, hudElementId);
                 break;
-            //Deprecated
-            case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                //This HUD has been migrated to the Plugin system - BuilderInWorld
-                //The plugin has the responsibility to create and manage it
-                break;
             case HUDElementID.QUESTS_PANEL:
                 CreateHudElement(configuration, hudElementId);
                 if (configuration.active)
@@ -350,11 +345,6 @@ public class HUDController : IHUDController
                     //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
                     signupHUD.Initialize(avatarEditorHud);
                 }
-                break;
-            //Deprecated
-            case HUDElementID.BUILDER_PROJECTS_PANEL:
-                //This HUD has been migrated to the Plugin system - BuilderInWorld
-                //The plugin has the responsibility to create and manage it
                 break;
             case HUDElementID.LOADING:
                 CreateHudElement(configuration, hudElementId);

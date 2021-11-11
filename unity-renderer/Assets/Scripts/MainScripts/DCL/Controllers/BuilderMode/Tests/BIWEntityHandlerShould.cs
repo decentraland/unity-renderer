@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using System.Linq;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Models;
@@ -23,13 +24,13 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     private const string ENTITY_ID = "1";
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
-    private Context context;
+    private IContext context;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
-        context = BIWTestUtils.CreateMockedContext();
+        context = BIWTestUtils.CreateMockedContextForTestScene();
         entityHandler.Initialize(context);
 
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);

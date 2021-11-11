@@ -143,15 +143,74 @@ namespace Tests
         {
             yield return InputTextCreate();
 
-            textInput.inputField.text = "hello world";
-            textInput.OnSubmit("");
+            const string testValue = "hello world";
+            const string uuid1 = "submit1";
+            const string uuid2 = "submit2";
+            
+            textInput.model.onTextChanged = uuid1;
+            textInput.model.onTextSubmit = uuid2;
+            
+            // NOTE: test ReportOnTextInputChangedTextEvent
+            var submitEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.OnTextInputChangeTextEventPayload>>();
+            submitEvent.sceneId = scene.sceneData.id;
+            submitEvent.payload = new WebInterface.UUIDEvent<WebInterface.OnTextInputChangeTextEventPayload>()
+            {
+                payload = new WebInterface.OnTextInputChangeTextEventPayload(){ 
+                    value = new WebInterface.OnTextInputChangeTextEventPayload.Payload()
+                    {
+                        value = testValue,
+                        isSubmit = true
+                    }
+                },
+                uuid = uuid1
+            };
+            submitEvent.eventType = "uuidEvent";
 
-            Assert.IsTrue(textInput.inputField.text == "");
-            Assert.IsTrue(textInput.inputField.caretColor == Color.white);
+            bool eventTriggered = false;
+            yield return TestHelpers.WaitForMessageFromEngine("SceneEvent", JsonUtility.ToJson(submitEvent),
+                ()=>
+                {
+                    textInput.inputField.text = testValue;
+                    textInput.inputField.onSubmit.Invoke(testValue);
+                },
+                () => { eventTriggered = true; });
+
+            yield return null;
+
+            Assert.IsTrue(eventTriggered);
+            
+            // NOTE: test ReportOnTextSubmitEvent
+            var submitEvent2 = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.OnTextSubmitEventPayload>>();
+            submitEvent2.sceneId = scene.sceneData.id;
+            submitEvent2.payload = new WebInterface.UUIDEvent<WebInterface.OnTextSubmitEventPayload>()
+            {
+                payload = new WebInterface.OnTextSubmitEventPayload(){ 
+                    text = testValue
+                },
+                uuid = uuid2
+            };
+            submitEvent2.eventType = "uuidEvent";
+            
+            eventTriggered = false;
+            yield return TestHelpers.WaitForMessageFromEngine("SceneEvent", JsonUtility.ToJson(submitEvent2),
+                ()=>
+                {
+                    textInput.inputField.text = testValue;
+                    textInput.inputField.onSubmit.Invoke(testValue);
+                },
+                () => { eventTriggered = true; });
+
+            yield return null;
+
+            Assert.IsTrue(eventTriggered);
 
             ssshape.Dispose();
             textInput.Dispose();
-            Object.DestroyImmediate(mockCamera.gameObject);
+
+            if (mockCamera != null)
+            {
+                Object.DestroyImmediate(mockCamera.gameObject);
+            }
         }
     }
 }

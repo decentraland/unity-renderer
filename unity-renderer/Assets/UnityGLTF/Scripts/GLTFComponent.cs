@@ -159,13 +159,11 @@ namespace UnityGLTF
         private void OnFail_Internal(Exception obj)
         {
             if (state == State.FAILED)
-            {
                 return;
-            }
 
             state = State.FAILED;
-
-            CoroutineStarter.Stop(loadingRoutine);
+            
+            CoroutineStarter.Stop(loadingRoutine);   
             loadingRoutine = null;
 
             DecrementDownloadCount();
@@ -271,7 +269,7 @@ namespace UnityGLTF
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.initialVisibility = initialVisibility;
                     sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
-                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh;
+                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
 
                     float time = Time.realtimeSinceStartup;
 
@@ -351,15 +349,9 @@ namespace UnityGLTF
             }
         }
 
-        public void Load(string url)
-        {
-            throw new NotImplementedException();
-        }
+        public void Load(string url) { throw new NotImplementedException(); }
 
-        public void SetPrioritized()
-        {
-            prioritizeDownload = true;
-        }
+        public void SetPrioritized() { prioritizeDownload = true; }
 
 #if UNITY_EDITOR
         // In production it will always be false
@@ -368,10 +360,7 @@ namespace UnityGLTF
         // We need to check if application is quitting in editor
         // to prevent the pool from releasing objects that are
         // being destroyed 
-        void Awake()
-        {
-            Application.quitting += OnIsQuitting;
-        }
+        void Awake() { Application.quitting += OnIsQuitting; }
 
         void OnIsQuitting()
         {
@@ -406,15 +395,9 @@ namespace UnityGLTF
             DecrementDownloadCount();
         }
 
-        bool IDownloadQueueElement.ShouldPrioritizeDownload()
-        {
-            return prioritizeDownload;
-        }
+        bool IDownloadQueueElement.ShouldPrioritizeDownload() { return prioritizeDownload; }
 
-        bool IDownloadQueueElement.ShouldForceDownload()
-        {
-            return mainCamera == null;
-        }
+        bool IDownloadQueueElement.ShouldForceDownload() { return mainCamera == null; }
 
         float IDownloadQueueElement.GetSqrDistance()
         {

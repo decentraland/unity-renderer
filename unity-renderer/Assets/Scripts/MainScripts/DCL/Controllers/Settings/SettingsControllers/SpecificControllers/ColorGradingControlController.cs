@@ -14,7 +14,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             currentQualitySetting.colorGrading = (bool)newValue;
 
             Tonemapping toneMapping;
-            if (QualitySettingsReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
+            if (SceneReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
             {
                 toneMapping.active = currentQualitySetting.colorGrading;
             }

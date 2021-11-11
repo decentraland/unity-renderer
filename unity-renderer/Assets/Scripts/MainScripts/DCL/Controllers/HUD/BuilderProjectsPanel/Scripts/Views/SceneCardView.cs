@@ -1,23 +1,80 @@
 ﻿using DCL;
 using DCL.Helpers;
 using System;
+using DCL.Builder;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This interface represent a scene card 
+/// </summary>
 internal interface ISceneCardView : IDisposable
 {
+    /// <summary>
+    /// Jump button pressed
+    /// </summary>
     event Action<Vector2Int> OnJumpInPressed;
+
+    /// <summary>
+    /// Editor button pressed
+    /// </summary>
     event Action<Vector2Int> OnEditorPressed;
+
+    /// <summary>
+    /// Setting button presed
+    /// </summary>
     event Action<ISceneData> OnSettingsPressed;
+
+    /// <summary>
+    /// Context button present
+    /// </summary>
     event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
-    ISceneData sceneData { get; }
+
+    /// <summary>
+    /// Data of the scene
+    /// </summary>
+    ISceneData SceneData { get; }
+
+    /// <summary>
+    /// Info of the search
+    /// </summary>
     ISearchInfo searchInfo { get; }
+
+    /// <summary>
+    /// Position of the context menu
+    /// </summary>
     Vector3 contextMenuButtonPosition { get; }
+
+    /// <summary>
+    /// This set the data of the card
+    /// </summary>
+    /// <param name="sceneData">data of the card</param>
     void Setup(ISceneData sceneData);
+
+    /// <summary>
+    /// Set Parent of the card
+    /// </summary>
+    /// <param name="parent"></param>
     void SetParent(Transform parent);
+
+    /// <summary>
+    /// Reset to default parent
+    /// </summary>
     void SetToDefaultParent();
+
+    /// <summary>
+    /// Configure the default parent
+    /// </summary>
+    /// <param name="parent">default parent to apply</param>
     void ConfigureDefaultParent(Transform parent);
+
+    /// <summary>
+    /// This set the order of the card
+    /// </summary>
+    /// <param name="index"></param>
+    void SetSiblingIndex(int index);
+
     void SetName(string name);
     void SetCoords(Vector2Int coords);
     void SetSize(Vector2Int size);
@@ -27,7 +84,6 @@ internal interface ISceneCardView : IDisposable
     void SetEditable(bool isEditable);
     void SetUserRole(bool isOwner, bool isOperator, bool isContributor);
     void SetActive(bool active);
-    void SetSiblingIndex(int index);
 }
 
 internal class SceneCardView : MonoBehaviour, ISceneCardView
@@ -83,7 +139,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     private static readonly int isLoadingAnimation = Animator.StringToHash("isLoading");
 
     ISearchInfo ISceneCardView.searchInfo { get; } = new SearchInfo();
-    ISceneData ISceneCardView.sceneData => sceneData;
+    ISceneData ISceneCardView.SceneData => sceneData;
     Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position + CONTEXT_MENU_OFFSET;
 
     private ISceneData sceneData;

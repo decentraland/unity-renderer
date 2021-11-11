@@ -8,21 +8,15 @@ using UnityEngine.EventSystems;
  */
 public class BuilderProjectsPanelLocalTest : MonoBehaviour
 {
-    private BuilderProjectsPanelController controller;
+    private BuilderMainPanelController controller;
 
-    void Awake()
-    {
-        WebRequestController.Create();
-
-        controller = new BuilderProjectsPanelController();
-    }
     void Start()
     {
-        if (EventSystem.current == null)
-        {
-            var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-        }
-        controller.Initialize();
+        WebRequestController.Create();
+        DataStore.i.builderInWorld.isDevBuild.Set(true);
+        controller = new BuilderMainPanelController();
+    
         controller.SetVisibility(true);
+        
     }
 }

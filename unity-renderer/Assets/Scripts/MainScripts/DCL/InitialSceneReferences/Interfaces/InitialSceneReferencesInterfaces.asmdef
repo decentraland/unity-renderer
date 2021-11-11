@@ -1,0 +1,22 @@
+{
+    "name": "InitialSceneReferencesInterface",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:858f845923fcab3448cf8b66614b41a1",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:fc6576239b03d8445ba1a26d4b7b7b5d",
+        "GUID:1a483cdd86db6e641ad77c7046dd035f",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

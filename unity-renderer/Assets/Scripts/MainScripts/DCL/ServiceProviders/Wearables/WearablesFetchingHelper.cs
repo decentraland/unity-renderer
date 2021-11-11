@@ -28,11 +28,11 @@ namespace DCL.Helpers
                 disposeOnCompleted: false,
                 OnFail: (webRequest) =>
                 {
-                    Debug.LogWarning($"Request error! collections couldn't be fetched! -- {webRequest.error}");
+                    Debug.LogWarning($"Request error! collections couldn't be fetched! -- {webRequest.webRequest.error}");
                 },
                 OnSuccess: (webRequest) =>
                 {
-                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.downloadHandler.text);
+                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.webRequest.downloadHandler.text);
                     collections = collectionsApiData.collections;
                 });
         }
@@ -87,11 +87,11 @@ namespace DCL.Helpers
                 disposeOnCompleted: false,
                 OnFail: (webRequest) =>
                 {
-                    Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {webRequest.error}");
+                    Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {webRequest.webRequest.error}");
                 },
                 OnSuccess: (webRequest) =>
                 {
-                    var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.downloadHandler.text);
+                    var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.webRequest.downloadHandler.text);
                     var wearableItemsList = wearablesApiData.GetWearableItems();
                     finalWearableItemsList.AddRange(wearableItemsList);
 

@@ -11,7 +11,7 @@ public class BuilderInWorldShould
     public void CreateContextCorrectly()
     {
         //Act
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContext());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
 
         //Assert
         Assert.IsNotNull(builderInWorld.context);
@@ -22,9 +22,10 @@ public class BuilderInWorldShould
     public void InitializePartsCorrectly()
     {
         //Arrange
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContext());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
-        builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
+        builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
+        builderInWorld.builderAPIController = Substitute.For<IBuilderAPIController>();
 
         //Act
         builderInWorld.Initialize();
@@ -37,9 +38,9 @@ public class BuilderInWorldShould
     public void DisposePartsCorrectly()
     {
         //Arrange
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContext());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
-        builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
+        builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
 
         //Act
         builderInWorld.Dispose();
@@ -52,9 +53,9 @@ public class BuilderInWorldShould
     public void CallUpdateCorrectly()
     {
         //Arrange
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContext());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
-        builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
+        builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
 
         //Act
         builderInWorld.Update();
@@ -67,9 +68,9 @@ public class BuilderInWorldShould
     public void CallLateUpdateCorrectly()
     {
         //Arrange
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContext());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
-        builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
+        builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
 
         //Act
         builderInWorld.LateUpdate();
@@ -82,9 +83,9 @@ public class BuilderInWorldShould
     public void CallOnGUICorrectly()
     {
         //Arrange
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContext());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
-        builderInWorld.panelController = Substitute.For<IBuilderProjectsPanelController>();
+        builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
 
         //Act
         builderInWorld.OnGUI();

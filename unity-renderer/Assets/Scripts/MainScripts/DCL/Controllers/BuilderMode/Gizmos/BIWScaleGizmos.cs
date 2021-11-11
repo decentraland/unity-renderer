@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 
 public class BIWScaleGizmos : BIWGizmos
@@ -20,9 +21,9 @@ public class BIWScaleGizmos : BIWGizmos
         axisProportionalScale.SetGizmo(this);
     }
 
-    public override void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo) { snapFactor = snapInfo.scale; }
+    public override void SetSnapFactor(SnapInfo snapInfo) { snapFactor = snapInfo.scale; }
 
-    public override float TransformEntity(Transform entityTransform, BIWGizmosAxis axis, float axisValue)
+    public override float TransformEntity(Transform entityTransform, IBIWGizmosAxis axis, float axisValue)
     {
         Vector3 scaleDirection = GetScaleDirection(entityTransform, axis);
 
@@ -65,9 +66,9 @@ public class BIWScaleGizmos : BIWGizmos
         return axisValue;
     }
 
-    private Vector3 GetScaleDirection(Transform entityTransform, BIWGizmosAxis axis)
+    private Vector3 GetScaleDirection(Transform entityTransform, IBIWGizmosAxis axis)
     {
-        Vector3 scaleDirection = activeAxis.transform.forward;
+        Vector3 scaleDirection = activeAxis.axisTransform.forward;
         if (axis == axisProportionalScale)
         {
             scaleDirection = Vector3.one;
@@ -80,7 +81,7 @@ public class BIWScaleGizmos : BIWGizmos
         }
         else if (worldOrientedGizmos)
         {
-            scaleDirection = entityTransform.rotation * activeAxis.transform.forward;
+            scaleDirection = entityTransform.rotation * activeAxis.axisTransform.forward;
             scaleDirection.x = Mathf.Abs(scaleDirection.x);
             scaleDirection.y = Mathf.Abs(scaleDirection.y);
             scaleDirection.z = Mathf.Abs(scaleDirection.z);
@@ -123,7 +124,7 @@ public class BIWScaleGizmos : BIWGizmos
             previousAxisValue = axisValue;
     }
 
-    internal override float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
+    internal override float GetHitPointToAxisValue(IBIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
     {
         if (axis == axisProportionalScale)
         {
@@ -138,6 +139,6 @@ public class BIWScaleGizmos : BIWGizmos
             return Vector3.Distance(initialHitPoint, hitPoint);
         }
 
-        return axis.transform.InverseTransformPoint(hitPoint).z;
+        return axis.axisTransform.InverseTransformPoint(hitPoint).z;
     }
 }

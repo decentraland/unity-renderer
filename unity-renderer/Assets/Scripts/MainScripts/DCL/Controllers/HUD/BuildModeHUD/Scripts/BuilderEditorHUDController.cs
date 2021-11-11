@@ -7,76 +7,6 @@ using DCL;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public interface IBuilderEditorHUDController
-{
-    void Initialize();
-    void Dispose();
-    event Action OnTutorialAction;
-    event Action OnStartExitAction;
-    event Action OnLogoutAction;
-    void RefreshCatalogAssetPack();
-    void RefreshCatalogContent();
-    void SetBuilderProjectInfo(string title, string description);
-    void ExitStart();
-    void SetParcelScene(ParcelScene sceneToEdit);
-    void SetVisibilityOfCatalog(bool b);
-    void SetVisibilityOfInspector(bool b);
-    void SetVisibility(bool b);
-    void ConfigureConfirmationModal(string exitModalTitle, string exitWithoutPublishModalSubtitle, string exitWithoutPublishModalCancelButton, string exitWithoutPublishModalConfirmButton);
-    void ClearEntityList();
-    event Action OnTranslateSelectedAction;
-    event Action OnRotateSelectedAction;
-    event Action OnScaleSelectedAction;
-    event Action<Vector3> OnSelectedObjectPositionChange;
-    event Action<Vector3> OnSelectedObjectRotationChange;
-    event Action<Vector3> OnSelectedObjectScaleChange;
-    event Action OnResetCameraAction;
-    event Action OnPublishAction;
-    void ActivateGodModeUI();
-    void SetActionsButtonsInteractable(bool areInteratable);
-    void SetGizmosActive(string gizmos);
-    void SetBuilderProjectScreenshot(Texture2D sceneSnapshot);
-    void NewProjectStart(Texture2D sceneSnapshot);
-    event Action<CatalogItem> OnCatalogItemSelected;
-    event Action<CatalogItem> OnCatalogItemDropped;
-    BuildModeCatalogSection GetCatalogSectionSelected();
-    void ShowSceneLimitsPassed();
-    event Action OnStopInput;
-    event Action OnResumeInput;
-    void HideExtraBtns();
-    event Action<string, string, string> OnConfirmPublishAction;
-    void SaveSceneInfo();
-    event Action<string, string, string> OnSaveSceneInfoAction;
-    void SceneSaved();
-    void PublishStart();
-    void PublishEnd(bool isOk, string message);
-    void SetPublishBtnAvailability(bool canPublish, string feedbackMessage);
-    event Action OnUndoAction;
-    event Action OnRedoAction;
-    void SetRedoButtonInteractable(bool canRedoAction);
-    void SetUndoButtonInteractable(bool canUndoAction);
-    event Action OnResetAction;
-    event Action OnChangeModeAction;
-    event Action OnChangeSnapModeAction;
-    event Action<BIWEntity> OnEntityDelete;
-    event Action OnDuplicateSelectedAction;
-    event Action OnDeleteSelectedAction;
-    event Action<BIWEntity> OnEntityClick;
-    event Action<BIWEntity> OnEntityLock;
-    event Action<BIWEntity> OnEntityChangeVisibility;
-    event Action<BIWEntity> OnEntitySmartItemComponentUpdate;
-    void UpdateEntitiesSelection(int selectedEntitiesCount);
-    void SetEntityList(List<BIWEntity> getEntitiesInCurrentScene);
-    void HideEntityInformation();
-    void UpdateSceneLimitInfo();
-    void EntityInformationSetEntity(BIWEntity entityEditable, ParcelScene sceneToEdit);
-    void ShowEntityInformation(bool selectedFromCatalog);
-    event Action<BIWEntity, string> OnEntityRename;
-    void SetSnapModeActive(bool isSnapActiveValue);
-    void ActivateFirstPersonModeUI();
-    event Action OnCatalogOpen;
-}
-
 public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 {
     public event Action OnChangeModeAction;
@@ -464,7 +394,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
     }
 
     public void SetGizmosActive(string gizmos) { controllers.topActionsButtonsController.SetGizmosActive(gizmos); }
-    public void SetParcelScene(ParcelScene parcelScene) { controllers.inspectorController.sceneLimitsController.SetParcelScene(parcelScene); }
+    public void SetParcelScene(IParcelScene IParcelScene) { controllers.inspectorController.sceneLimitsController.SetParcelScene(IParcelScene); }
 
     public void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "") { view.SetPublishBtnAvailability(isAvailable, feedbackMessage); }
 
@@ -561,7 +491,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     #region EntityInformation
 
-    public void EntityInformationSetEntity(BIWEntity entity, ParcelScene scene) { controllers.entityInformationController.SetEntity(entity, scene); }
+    public void EntityInformationSetEntity(BIWEntity entity, IParcelScene scene) { controllers.entityInformationController.SetEntity(entity, scene); }
 
     public void ShowEntityInformation(bool activateTransparencyMode = false)
     {

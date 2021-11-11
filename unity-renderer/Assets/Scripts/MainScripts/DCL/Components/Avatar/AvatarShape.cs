@@ -10,6 +10,7 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        private const float MINIMUM_PLAYERNAME_HEIGHT = 2.7f;
         private const float AVATAR_PASSPORT_TOGGLE_ALPHA_THRESHOLD = 0.9f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
@@ -166,7 +167,7 @@ namespace DCL
                 otherPlayers.Add(player.id, player);
             }
             player.playerName.SetIsTalking(model.talking);
-            player.playerName.SetYOffset(avatarRenderer.maxY);
+            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
         }
 
         private void Update()

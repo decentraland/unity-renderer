@@ -17,6 +17,9 @@ public class FriendRequestEntry : FriendEntryBase
     {
         base.Awake();
 
+        acceptButton.onClick.RemoveAllListeners();
+        rejectButton.onClick.RemoveAllListeners();
+        cancelButton.onClick.RemoveAllListeners();
         acceptButton.onClick.AddListener(() => OnAccepted?.Invoke(this));
         rejectButton.onClick.AddListener(() => OnRejected?.Invoke(this));
         cancelButton.onClick.AddListener(() => OnCancelled?.Invoke(this));

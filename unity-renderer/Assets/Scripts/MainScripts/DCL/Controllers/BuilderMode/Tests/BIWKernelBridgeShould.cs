@@ -20,7 +20,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
-        entityHandler.Initialize(BIWTestUtils.CreateMockedContext());
+        entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
         entityHandler.EnterEditMode(scene);
 
         dummyGameObject = new GameObject();

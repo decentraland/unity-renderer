@@ -1,15 +1,8 @@
 using System;
 using DCL;
+using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
-
-public interface IBIWSaveController : IBIWController
-{
-    int GetSaveTimes();
-    void SetSaveActivation(bool isActive, bool tryToSave = false);
-    void TryToSave();
-    void ForceSave();
-}
 
 public class BIWSaveController : BIWController, IBIWSaveController
 {
@@ -23,11 +16,11 @@ public class BIWSaveController : BIWController, IBIWSaveController
     private bool canActivateSave = true;
     public int GetSaveTimes() { return numberOfSaves; }
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
-        bridge = context.sceneReferences.builderInWorldBridge;
+        bridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
         if (bridge != null)
             bridge.OnKernelUpdated += TryToSave;
 

@@ -1,6 +1,8 @@
 using DCL;
+using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 /// <summary>
@@ -12,6 +14,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal IExploreV2MenuComponentView view;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
+    internal InputAction_Trigger toggleExploreTrigger;
 
     public void Initialize()
     {
@@ -29,6 +32,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.isInitialized.Set(true);
 
         view.OnInitialized += CreateControllers;
+
+        toggleExploreTrigger = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
+        toggleExploreTrigger.OnTriggered += OnToggleActionTriggered;
     }
 
     internal void CreateControllers()
@@ -56,6 +62,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
             placesAndEventsSectionController.Dispose();
         }
+
+        toggleExploreTrigger.OnTriggered -= OnToggleActionTriggered;
     }
 
     public void SetVisibility(bool visible)
@@ -63,12 +71,22 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (view == null)
             return;
 
-        if (visible && !view.isActive)
-            DataStore.i.exploreV2.isOpen.Set(true);
-        else if (!visible && view.isActive)
-            DataStore.i.exploreV2.isOpen.Set(false);
+        if (visible != DataStore.i.exploreV2.isOpen.Get())
+        {
+            if (visible)
+            {
+                Utils.UnlockCursor();
+                AudioScriptableObjects.dialogOpen.Play(true);
+                AudioScriptableObjects.listItemAppear.ResetPitch();
+            }
+            else
+            {
+                AudioScriptableObjects.dialogClose.Play(true);
+            }
+        }
 
-        view.SetActive(visible);
+        DataStore.i.exploreV2.isOpen.Set(visible);
+        view.SetVisible(visible);
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
@@ -102,6 +120,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     }
 
     internal void OnCloseButtonPressed() { SetVisibility(false); }
+
+    internal void OnToggleActionTriggered(DCLAction_Trigger action) { SetVisibility(!DataStore.i.exploreV2.isOpen.Get()); }
 
     internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current); }
 

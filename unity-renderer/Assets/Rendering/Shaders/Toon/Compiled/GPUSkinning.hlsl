@@ -1,12 +1,7 @@
 #ifndef DCL_GPU_SKINNING_INCLUDED
 #define DCL_GPU_SKINNING_INCLUDED
-#include <HLSLSupport.cginc>
 
-CBUFFER_START(UnityPerMaterial)
-float4x4 _WorldInverse;
-float4x4 _Matrices[100];
-float4x4 _BindPoses[100];
-CBUFFER_END
+#include <HLSLSupport.cginc>
 
 float4x4 inverse(float4x4 input)
 {

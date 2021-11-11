@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DCL.Builder;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -36,6 +37,12 @@ namespace DCL
         public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
         public readonly DataStore_Camera camera = new DataStore_Camera();
+        public readonly DataStore_Settings settings = new DataStore_Settings();
+        
+        public class DataStore_Settings
+        {
+            public readonly BaseVariable<bool> profanityChatFilteringEnabled = new BaseVariable<bool>();
+        }
 
         public class DataStore_WorldObjects
         {
@@ -57,6 +64,8 @@ namespace DCL
             public readonly BaseVariable<bool> showTaskBar = new BaseVariable<bool>();
             public readonly BaseVariable<bool> isDevBuild = new BaseVariable<bool>();
             public readonly BaseVariable<LandWithAccess[]> landsWithAccess = new BaseVariable<LandWithAccess[]>();
+            public readonly BaseVariable<ProjectData[]> projectData = new BaseVariable<ProjectData[]>();
+            public readonly BaseVariable<Scene[]> scenesData = new BaseVariable<Scene[]>();
         }
 
         public class DataStore_Quests

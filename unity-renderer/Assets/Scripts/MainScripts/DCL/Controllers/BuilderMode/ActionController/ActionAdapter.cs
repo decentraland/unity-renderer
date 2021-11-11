@@ -26,16 +26,16 @@ public class ActionAdapter : MonoBehaviour
 
         switch (this.action.actionType)
         {
-            case BIWCompleteAction.ActionType.MOVE:
+            case IBIWCompleteAction.ActionType.MOVE:
                 actionImg.sprite = moveSprite;
                 break;
-            case BIWCompleteAction.ActionType.ROTATE:
+            case IBIWCompleteAction.ActionType.ROTATE:
                 actionImg.sprite = rotateSprite;
                 break;
-            case BIWCompleteAction.ActionType.SCALE:
+            case IBIWCompleteAction.ActionType.SCALE:
                 actionImg.sprite = scaleSprite;
                 break;
-            case BIWCompleteAction.ActionType.CREATE:
+            case IBIWCompleteAction.ActionType.CREATE:
                 actionImg.sprite = createdSprite;
                 break;
 

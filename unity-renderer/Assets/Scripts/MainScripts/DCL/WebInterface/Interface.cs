@@ -133,7 +133,17 @@ namespace DCL.Interface
             POINTER,
             PRIMARY,
             SECONDARY,
-            ANY
+            ANY,
+            FORWARD,
+            BACKWARD,
+            RIGHT,
+            LEFT,
+            JUMP,
+            WALK,
+            ACTION_1,
+            ACTION_2,
+            ACTION_3,
+            ACTION_4
         }
 
         [System.Serializable]
@@ -168,6 +178,9 @@ namespace DCL.Interface
 
         [System.Serializable]
         private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload> { };
+
+        [System.Serializable]
+        private class OnTextInputChangeTextEvent : UUIDEvent<OnTextInputChangeTextEventPayload> { };
 
         [System.Serializable]
         private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload> { };
@@ -251,6 +264,18 @@ namespace DCL.Interface
         public class OnTextInputChangeEventPayload
         {
             public string value;
+        }
+        
+        [System.Serializable]
+        public class OnTextInputChangeTextEventPayload
+        {
+            [System.Serializable]
+            public class Payload
+            {
+                public string value;
+                public bool isSubmit;          
+            }
+            public Payload value = new Payload();
         }
 
         [System.Serializable]
@@ -594,6 +619,7 @@ namespace DCL.Interface
         {
             public string method;
             public string url;
+            public Dictionary<string, object> metadata = new Dictionary<string, object>();
         }
 
         [System.Serializable]
@@ -690,6 +716,7 @@ namespace DCL.Interface
         private static OnPointerUpEvent onPointerUpEvent = new OnPointerUpEvent();
         private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
         private static OnTextInputChangeEvent onTextInputChangeEvent = new OnTextInputChangeEvent();
+        private static OnTextInputChangeTextEvent onTextInputChangeTextEvent = new OnTextInputChangeTextEvent();
         private static OnScrollChangeEvent onScrollChangeEvent = new OnScrollChangeEvent();
         private static OnFocusEvent onFocusEvent = new OnFocusEvent();
         private static OnBlurEvent onBlurEvent = new OnBlurEvent();
@@ -761,10 +788,12 @@ namespace DCL.Interface
 
         public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent { SendMessage("ControlEvent", controlEvent); }
 
-        public static void SendRequestHeadersForUrl(string eventName, string method, string url)
+        public static void SendRequestHeadersForUrl(string eventName, string method, string url, Dictionary<string, object> metadata = null)
         {
             headersPayload.method = method;
             headersPayload.url = url;
+            if(metadata != null)
+                headersPayload.metadata = metadata;
             SendMessage(eventName, headersPayload );
         }
 
@@ -829,7 +858,7 @@ namespace DCL.Interface
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
-            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
+            SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
         public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
@@ -839,7 +868,7 @@ namespace DCL.Interface
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
 
-            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
+            SendSceneEvent(sceneId, "actionButtonEvent", onGlobalPointerEvent);
         }
 
         public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
@@ -894,6 +923,20 @@ namespace DCL.Interface
             onTextInputChangeEvent.payload.value = text;
 
             SendSceneEvent(sceneId, "uuidEvent", onTextInputChangeEvent);
+        }
+
+        public static void ReportOnTextInputChangedTextEvent(string sceneId, string uuid, string text, bool isSubmit)
+        {
+            if (string.IsNullOrEmpty(uuid))
+            {
+                return;
+            }
+
+            onTextInputChangeTextEvent.uuid = uuid;
+            onTextInputChangeTextEvent.payload.value.value = text;
+            onTextInputChangeTextEvent.payload.value.isSubmit = isSubmit;
+
+            SendSceneEvent(sceneId, "uuidEvent", onTextInputChangeTextEvent);
         }
 
         public static void ReportOnFocusEvent(string sceneId, string uuid)

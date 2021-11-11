@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Builder.Gizmos;
 using DCL;
+using DCL.Builder;
 using DCL.Configuration;
 using DCL.Helpers;
 using NSubstitute;
@@ -27,7 +28,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
         gizmosAxis = mockedGameObject.AddComponent<BIWGizmosAxis>();
         gizmosAxis.SetGizmo(gizmo);
 
-        var referencesController = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
+        var referencesController = BIWTestUtils.CreateContextWithGenericMocks(SceneReferences.i);
         gizmosController = new BIWGizmosController();
         gizmosController.Initialize(referencesController);
         gizmosController.EnterEditMode(scene);

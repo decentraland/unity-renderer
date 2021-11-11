@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Configuration;
@@ -22,7 +23,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     private BIWRaycastController raycastController;
     private BIWGizmosController gizmosController;
     private BIWGodMode godMode;
-    private Context context;
+    private IContext context;
     private GameObject mockedGameObject, entityGameObject;
     private List<BIWEntity> selectedEntities;
 
@@ -38,7 +39,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
             modeController,
             raycastController,
             gizmosController,
-            InitialSceneReferences.i.data
+            SceneReferences.i
         );
 
         mockedGameObject = new GameObject("MockedGameObject");
@@ -69,6 +70,9 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         entities.Add(entity);
         context.editorContext.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
         godMode.lastMousePosition = Vector3.zero;
+        Camera camera = Camera.main;
+        camera.transform.position = new Vector3(-7.8f, 8.9f, -5.2f);
+        camera.transform.LookAt(new Vector3(8, 0, 8));
 
         //Act
         godMode.EndBoundMultiSelection(Vector3.one * 9999);

@@ -1,8 +1,7 @@
 using System;
 using DCL;
+using DCL.Builder;
 using UnityEngine;
-
-public interface IBIWPublishController : IBIWController { }
 
 public class BIWPublishController : BIWController, IBIWPublishController
 {
@@ -20,7 +19,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
 
     private float startPublishingTimestamp = 0;
 
-    public override void Initialize(Context context)
+    public override void Initialize(IContext context)
     {
         base.Initialize(context);
 
@@ -33,7 +32,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
             context.editorContext.editorHUD.OnConfirmPublishAction += StartPublishScene;
         }
 
-        builderInWorldBridge = context.sceneReferences.builderInWorldBridge;
+        builderInWorldBridge = context.sceneReferences.bridgeGameObject.GetComponent<BuilderInWorldBridge>();
 
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnPublishEnd += PublishEnd;

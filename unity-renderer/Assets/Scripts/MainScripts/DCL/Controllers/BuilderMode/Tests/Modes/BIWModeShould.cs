@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using DCL.Camera;
 using DCL.Controllers;
 using DCL.Models;
@@ -14,7 +15,7 @@ public class BIWModeShould
 {
     private BIWMode mode;
     private GameObject mockedGameObject;
-    private Context context;
+    private IContext context;
     private List<BIWEntity> selectedEntities;
 
     [UnitySetUp]
@@ -22,7 +23,7 @@ public class BIWModeShould
     {
         mode = new BIWMode();
         mockedGameObject = new GameObject("BIWModeGameObject");
-        context = BIWTestUtils.CreateMockedContext();
+        context = BIWTestUtils.CreateMockedContextForTestScene();
         selectedEntities = new List<BIWEntity>();
         mode.Init(context);
         mode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);

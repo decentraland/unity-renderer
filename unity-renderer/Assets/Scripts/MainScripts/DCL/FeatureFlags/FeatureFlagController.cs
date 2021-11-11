@@ -5,11 +5,8 @@ public class FeatureFlagController : IFeatureFlagController
 {
     internal FeatureFlagBridge featureFlagBridgeComponent;
 
-    public FeatureFlagController(GameObject bridgeGameObject = null)
+    public FeatureFlagController(GameObject bridgeGameObject)
     {
-        if ( bridgeGameObject == null )
-            bridgeGameObject = new GameObject("Bridges");
-
         AddBridgeComponent(bridgeGameObject);
     }
 

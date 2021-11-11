@@ -71,7 +71,7 @@ namespace DCL.SettingsCommon
 
         private GeneralSettings GetDefaultGeneralSettings()
         {
-            return new GeneralSettings()
+            return new GeneralSettings
             {
                 mouseSensitivity = 0.6f,
                 scenesLoadRadius = 4,
@@ -80,7 +80,8 @@ namespace DCL.SettingsCommon
                 voiceChatVolume = 1,
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
                 autoqualityOn = false,
-                namesOpacity = 0.5f
+                namesOpacity = 0.5f,
+                profanityChatFiltering = true
             };
         }
 
