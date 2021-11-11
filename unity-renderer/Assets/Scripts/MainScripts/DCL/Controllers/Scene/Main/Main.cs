@@ -38,7 +38,7 @@ namespace DCL
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
-                InitializePerfomanceMetrics();
+                performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
             }
@@ -64,7 +64,6 @@ namespace DCL
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
-        protected virtual void InitializePerfomanceMetrics() { performanceMetricsController = new PerformanceMetricsController(); }
 
         protected virtual void SetupEnvironment()
         {
