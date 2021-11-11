@@ -36,7 +36,7 @@ public interface IBuilderAPIController
     /// </summary>
     /// <param name="newProject">Data of the new Project</param>
     /// <returns></returns>
-    Promise<bool> CreateNewProject(ProjectData newProject);
+    Promise<APIResponse> CreateNewProject(ProjectData newProject);
     
     /// <summary>
     /// Dispose the component

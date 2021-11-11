@@ -60,15 +60,15 @@ public class NewProjectFlowController : INewProjectFlowController
     public void SetRowsAndColumns(int rows, int columns)
     {
         projectData.rows = rows;
-        projectData.colums = columns;
+        projectData.cols = columns;
         
         NewProjectCreated();
     }
 
     internal void NewProjectCreated()
     {
-        projectData.created_at = DateTime.Now;
-        projectData.updated_at = DateTime.Now;
+        projectData.created_at = DateTime.UtcNow;
+        projectData.updated_at = DateTime.UtcNow;
 
         view.Reset();
         OnNewProjectCrated?.Invoke(projectData);

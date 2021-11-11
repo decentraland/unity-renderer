@@ -26,6 +26,17 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     
+    public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
+    {
+        NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
+        {
+            message = message,
+            type = DCL.NotificationModel.Type.GENERIC,
+            timer = timer,
+            destroyOnFinish = true
+        });
+    }
+    
     public static long ConvertToMilisecondsTimestamp(DateTime value)
     {
         TimeSpan elapsedTime = value - Epoch;
@@ -55,7 +66,7 @@ public static partial class BIWUtils
         Manifest manifest = new Manifest();
         manifest.version = 10;
         manifest.project = projectData;
-        manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.colums);
+        manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.cols);
 
         manifest.project.scene_id = manifest.scene.id;
         return manifest;
@@ -66,6 +77,8 @@ public static partial class BIWUtils
     {
         BuilderGround ground = new BuilderGround();
         ground.assetId = BIWSettings.FLOOR_ID;
+        ground.componentId = Guid.NewGuid().ToString();
+        
         
         BuilderScene scene = new BuilderScene
         {

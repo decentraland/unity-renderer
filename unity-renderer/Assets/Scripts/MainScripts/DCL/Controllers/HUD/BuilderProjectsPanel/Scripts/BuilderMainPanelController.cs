@@ -13,6 +13,7 @@ using Object = UnityEngine.Object;
 
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
+    private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
@@ -165,7 +166,18 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void CreateNewProject(ProjectData project)
     {
-        context.builderAPIController.CreateNewProject(project);
+        Promise<APIResponse> projectPromise = context.builderAPIController.CreateNewProject(project);
+
+        projectPromise.Then( apiResponse =>
+        {
+            if (!apiResponse.ok)
+                BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+apiResponse.error);
+        });
+        
+        projectPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+errorString);
+        });
     }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
@@ -297,9 +309,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         isFetchingProjects = false;
         sectionsController.SetFetchingDataEnd();
-        landsesController.SetLands(new LandWithAccess[] { });
-        scenesViewController.SetScenes(new ISceneData[] { });
-        Debug.LogError(error);
+        projectsController.SetProjects(new ProjectData[]{ });
+        BIWUtils.ShowGenericNotification(error);
     }
 
     private void UpdateProjectsDeploymentStatus()

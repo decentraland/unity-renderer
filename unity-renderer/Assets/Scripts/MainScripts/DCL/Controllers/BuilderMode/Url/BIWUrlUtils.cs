@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Configuration;
-using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 
 public static class BIWUrlUtils
 {
     public static string GetUrlSceneObjectContent() { return BIWSettings.BASE_URL_SCENE_OBJECT_CONTENT.Replace("{ENV}", GetEnvBase()); }
 
+    public static string GetManifestJSON(string jsonManifest) { return "{\"manifest\":" + jsonManifest + "}"; }
+    
     public static string GetBuilderAPIBaseUrl()
     {
         return GetResolvedEnviromentUrl(BIWSettings.BASE_URL_BUILDER_API);

@@ -30,7 +30,7 @@ public class ProjectCardViewShould
                 id = "",
                 title = "TesTitle",
                 rows = 2,
-                colums = 2
+                cols = 2
             };
             
             //Act
@@ -61,7 +61,7 @@ public class ProjectCardViewShould
                 id = "",
                 title = "TesTitle",
                 rows = 2,
-                colums = 2
+                cols = 2
             });
             
             //Act

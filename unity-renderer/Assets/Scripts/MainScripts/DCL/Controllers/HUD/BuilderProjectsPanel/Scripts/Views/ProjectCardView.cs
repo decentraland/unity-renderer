@@ -180,7 +180,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     {
         this.projectData = projectData;
         SetName(projectData.title);
-        SetSize(projectData.rows,projectData.colums);
+        SetSize(projectData.rows,projectData.cols);
         
         SetThumbnail(projectData.id,projectData.thumbnail);
         

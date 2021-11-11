@@ -15,6 +15,8 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class BuilderAPIController : IBuilderAPIController
 {
+    internal const string API_DATEFORMAT = "yyyy-MM-ddThh:mm:ss.fff%K";
+
     internal const string CATALOG_ENDPOINT = "/assetPacks";
     internal const string ASSETS_ENDPOINT = "/assets?";
     internal const string GET_PROJECTS_ENDPOINT = "/projects";
@@ -128,25 +130,34 @@ public class BuilderAPIController : IBuilderAPIController
         }
     }
 
-    public Promise<bool> CreateNewProject(ProjectData newProject)
+    public Promise<APIResponse> CreateNewProject(ProjectData newProject)
     {
-        Promise<bool> fullNewProjectPromise = new Promise<bool>();
+        Promise<APIResponse> fullNewProjectPromise = new Promise<APIResponse>();
         Manifest builderManifest = BIWUtils.CreateManifestFromProject(newProject);
         
         JsonSerializerSettings dateFormatSettings = new JsonSerializerSettings
         {
-            DateFormatString = "yyyy-MM-ddThh:mm:ss.SSSZ"
+            DateFormatString = API_DATEFORMAT,
         };
         
-        byte[] myData = System.Text.Encoding.UTF8.GetBytes ("{\"manifest\":"+JsonConvert.SerializeObject(builderManifest,dateFormatSettings)+"}");
+        string jsonManifest =JsonConvert.SerializeObject(builderManifest, dateFormatSettings);
+        byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
 
         string endpoint = SET_PROJECTS_ENDPOINT.Replace("{ID}", newProject.id);
         var promise =  CallUrl(PUT, endpoint,"",myData);
 
-        promise.Then(apiResult =>
+        promise.Then(result =>
         {
-            var result = apiResponseResolver.GetDataFromCall(apiResult);
-
+            var apiResponse = apiResponseResolver.GetResponseFromCall(result);
+            if(apiResponse.ok)
+                fullNewProjectPromise.Resolve(apiResponse);
+            else   
+                fullNewProjectPromise.Reject(apiResponse.error);
+        });
+        
+        promise.Catch(error =>
+        {
+            fullNewProjectPromise.Reject(error);
         });
 
         return fullNewProjectPromise;
@@ -170,6 +181,7 @@ public class BuilderAPIController : IBuilderAPIController
             if (amountOfCatalogReceived >= 2)
                 fullCatalogPromise.Resolve(true);
         });
+        promiseDefaultCatalog.Reject("Unable to get default catalog");
 
         promiseOwnedCatalog.Then(catalogJson =>
         {
@@ -179,6 +191,8 @@ public class BuilderAPIController : IBuilderAPIController
             if (amountOfCatalogReceived >= 2)
                 fullCatalogPromise.Resolve(true);
         });
+        
+        promiseOwnedCatalog.Reject("Unable to get owned catalog");
 
         return fullCatalogPromise;
     }
@@ -233,6 +247,10 @@ public class BuilderAPIController : IBuilderAPIController
             string projectsJson = apiResponseResolver.GetDataFromCall(result, true);
             List<ProjectData> allManifest = JsonConvert.DeserializeObject<List<ProjectData>>(projectsJson);
             fullCatalogPromise.Resolve(allManifest);
+        });
+        promise.Catch(error =>
+        {
+            fullCatalogPromise.Reject(error);
         });
         return fullCatalogPromise;
     }
