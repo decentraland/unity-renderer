@@ -181,8 +181,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public void LoadLiveEvents()
     {
         List<EventCardComponentModel> events = new List<EventCardComponentModel>();
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(x => x.trending)
-                                                              .Where(x => x.live)
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(x => x.live)
                                                               .Take(DEFAULT_NUMBER_OF_LIVE_EVENTS)
                                                               .ToList();
         foreach (EventFromAPIModel receivedEvent in eventsFiltered)
