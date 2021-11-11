@@ -13,9 +13,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath =
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/UnpublishPopup/UnpublishPopupView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<UnpublishPopupView>(prefabAssetPath);
+            var prefab = TestAssets.Get<UnpublishPopupView>("UnpublishPopupView.prefab");
             view = UnityEngine.Object.Instantiate(prefab);
             controller = new UnpublishPopupController(view);
         }

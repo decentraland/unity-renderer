@@ -12,9 +12,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath =
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/UsersSearchPrompt/UsersSearchPromptView.prefab";
-            var viewPrefab = AssetDatabase.LoadAssetAtPath<UsersSearchPromptView>(prefabAssetPath);
+            var viewPrefab = TestAssets.Get<UsersSearchPromptView>("UsersSearchPromptView.prefab");
             promptView = Object.Instantiate(viewPrefab);
         }
 
