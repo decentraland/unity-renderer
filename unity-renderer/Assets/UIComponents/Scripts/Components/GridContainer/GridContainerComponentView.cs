@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -182,15 +183,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         }
         else if (model.adaptVerticallyItemSizeToContainer)
         {
-            switch (model.constraint)
-            {
-                case Constraint.FixedColumnCount:
-                    CalculateVerticalSizeForFixedColumnConstraint(out newSizeToApply);
-                    break;
-                case Constraint.FixedRowCount:
-                    CalculateVerticalSizeForFixedRowConstraint(out newSizeToApply);
-                    break;
-            }
+            //TODO: We need to implement this functionality. Nobody is using it
+            //      Please implement it if needed
+            throw new Exception("Not implemented yet! Please implement the functionality");
         }
         else if (model.adaptHorizontallyItemSizeToContainer)
         {
@@ -383,7 +378,6 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         SetItemSize(model.itemSize);
     }
-    
     
     public void SetItems(List<BaseComponentView> items)
     {
