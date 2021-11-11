@@ -397,7 +397,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
     internal void ResizeAllItems()
     {
-        itemsScroll.horizontalNormalizedPosition = 0f;
+        if (itemsScroll.horizontalNormalizedPosition != 0f)
+            itemsScroll.horizontalNormalizedPosition = 0f;
+
         if (model.automaticTransition)
             StartCarousel();
 

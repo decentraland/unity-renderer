@@ -30,6 +30,7 @@ public class EventsSubSectionComponentViewTests
         eventsSubSectionComponent.goingEvents.ExtractItems();
         eventsSubSectionComponent.goingEventCardsPool.ReleaseAll();
         eventsSubSectionComponent.Dispose();
+        GameObject.Destroy(eventsSubSectionComponent.eventModal.gameObject);
         GameObject.Destroy(eventsSubSectionComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
@@ -235,92 +236,6 @@ public class EventsSubSectionComponentViewTests
 
         // Assert
         Assert.AreEqual(isVisible, eventsSubSectionComponent.showMoreUpcomingEventsButtonContainer.gameObject.activeSelf);
-    }
-
-    [Test]
-    public void ConfigureEventCardModalCorrectly()
-    {
-        // Arrange
-        GameObject.Destroy(eventsSubSectionComponent.eventModal);
-        eventsSubSectionComponent.eventModal = null;
-
-        // Act
-        eventsSubSectionComponent.ConfigureEventCardModal();
-
-        // Assert
-        Assert.IsNotNull(eventsSubSectionComponent.eventModal);
-    }
-
-    [Test]
-    public void ConfigureFeaturedEventCardsPoolCorrectly()
-    {
-        // Arrange
-        eventsSubSectionComponent.featuredEventCardsPool = null;
-
-        // Act
-        eventsSubSectionComponent.ConfigureEventCardsPool(
-            out eventsSubSectionComponent.featuredEventCardsPool,
-            EventsSubSectionComponentView.FEATURED_EVENT_CARDS_POOL_NAME,
-            eventsSubSectionComponent.eventCardLongPrefab,
-            10);
-
-        // Assert
-        Assert.IsNotNull(eventsSubSectionComponent.featuredEventCardsPool);
-        Assert.AreEqual(EventsSubSectionComponentView.FEATURED_EVENT_CARDS_POOL_NAME, eventsSubSectionComponent.featuredEventCardsPool.id);
-    }
-
-    [Test]
-    public void ConfigureTrendingEventCardsPoolCorrectly()
-    {
-        // Arrange
-        eventsSubSectionComponent.trendingEventCardsPool = null;
-
-        // Act
-        eventsSubSectionComponent.ConfigureEventCardsPool(
-            out eventsSubSectionComponent.trendingEventCardsPool,
-            EventsSubSectionComponentView.TRENDING_EVENT_CARDS_POOL_NAME,
-            eventsSubSectionComponent.eventCardLongPrefab,
-            10);
-
-        // Assert
-        Assert.IsNotNull(eventsSubSectionComponent.trendingEventCardsPool);
-        Assert.AreEqual(EventsSubSectionComponentView.TRENDING_EVENT_CARDS_POOL_NAME, eventsSubSectionComponent.trendingEventCardsPool.id);
-    }
-
-    [Test]
-    public void ConfigureUpcomingEventCardsPoolCorrectly()
-    {
-        // Arrange
-        eventsSubSectionComponent.upcomingEventCardsPool = null;
-
-        // Act
-        eventsSubSectionComponent.ConfigureEventCardsPool(
-            out eventsSubSectionComponent.upcomingEventCardsPool,
-            EventsSubSectionComponentView.UPCOMING_EVENT_CARDS_POOL_NAME,
-            eventsSubSectionComponent.eventCardLongPrefab,
-            10);
-
-        // Assert
-        Assert.IsNotNull(eventsSubSectionComponent.upcomingEventCardsPool);
-        Assert.AreEqual(EventsSubSectionComponentView.UPCOMING_EVENT_CARDS_POOL_NAME, eventsSubSectionComponent.upcomingEventCardsPool.id);
-    }
-
-    [Test]
-    public void ConfigureGoingEventCardsPoolCorrectly()
-    {
-        // Arrange
-        eventsSubSectionComponent.goingEventCardsPool = null;
-
-        // Act
-        eventsSubSectionComponent.ConfigureEventCardsPool(
-            out eventsSubSectionComponent.goingEventCardsPool,
-            EventsSubSectionComponentView.GOING_EVENT_CARDS_POOL_NAME,
-            eventsSubSectionComponent.eventCardLongPrefab,
-            10);
-
-        // Assert
-        Assert.IsNotNull(eventsSubSectionComponent.goingEventCardsPool);
-        Assert.AreEqual(EventsSubSectionComponentView.GOING_EVENT_CARDS_POOL_NAME, eventsSubSectionComponent.goingEventCardsPool.id);
     }
 
     private List<EventCardComponentModel> CreateTestEvents()

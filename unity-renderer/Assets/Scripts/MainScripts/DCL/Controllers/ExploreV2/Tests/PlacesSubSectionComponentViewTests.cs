@@ -24,6 +24,7 @@ public class PlacesSubSectionComponentViewTests
         placesSubSectionComponent.places.ExtractItems();
         placesSubSectionComponent.placeCardsPool.ReleaseAll();
         placesSubSectionComponent.Dispose();
+        GameObject.Destroy(placesSubSectionComponent.placeModal.gameObject);
         GameObject.Destroy(placesSubSectionComponent.gameObject);
         GameObject.Destroy(testTexture);
         GameObject.Destroy(testSprite);
@@ -110,47 +111,6 @@ public class PlacesSubSectionComponentViewTests
         Assert.AreEqual(testPlaceInfo, placesSubSectionComponent.placeModal.model, "The place modal model does not match.");
 
         placesSubSectionComponent.HidePlaceModal();
-    }
-
-    [Test]
-    public void ConfigurePlaceCardModalCorrectly()
-    {
-        // Arrange
-        GameObject.Destroy(placesSubSectionComponent.placeModal);
-        placesSubSectionComponent.placeModal = null;
-
-        // Act
-        placesSubSectionComponent.ConfigurePlaceCardModal();
-
-        // Assert
-        Assert.IsNotNull(placesSubSectionComponent.placeModal);
-    }
-
-    [Test]
-    public void ConfigurePlaceCardsPoolCorrectly()
-    {
-        // Arrange
-        placesSubSectionComponent.placeCardsPool = null;
-
-        // Act
-        placesSubSectionComponent.ConfigurePlaceCardsPool();
-
-        // Assert
-        Assert.IsNotNull(placesSubSectionComponent.placeCardsPool);
-        Assert.AreEqual(PlacesSubSectionComponentView.PLACE_CARDS_POOL_NAME, placesSubSectionComponent.placeCardsPool.id);
-    }
-
-    [Test]
-    public void ConfigurePlaceCardCorrectly()
-    {
-        // Arrange
-        PlaceCardComponentModel testPlaceInfo = CreateTestPlace("Test Place");
-
-        // Act
-        placesSubSectionComponent.ConfigurePlaceCard(placesSubSectionComponent.placeModal, testPlaceInfo);
-
-        // Assert
-        Assert.AreEqual(testPlaceInfo, placesSubSectionComponent.placeModal.model, "The place card model does not match.");
     }
 
     private List<PlaceCardComponentModel> CreateTestPlaces()

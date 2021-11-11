@@ -174,11 +174,11 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public override void Start()
     {
-        ConfigurePlaceCardModal();
-        ConfigureEventCardModal();
-        ConfigurePlaceCardsPool(out promotedPlaceCardsPool, PROMOTED_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, 10);
-        ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, 6);
-        ConfigureEventCardsPool();
+        placeModal = PlaceCardHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
+        eventModal = EventCardHelpers.ConfigureEventCardModal(eventCardModalPrefab);
+        PlaceCardHelpers.ConfigurePlaceCardsPool(out promotedPlaceCardsPool, PROMOTED_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, 10);
+        PlaceCardHelpers.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, 6);
+        EventCardHelpers.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, 3);
 
         promotedPlaces.RemoveItems();
         featuredPlaces.RemoveItems();
@@ -219,7 +219,14 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         promotedPlaces.ExtractItems();
         promotedPlaceCardsPool.ReleaseAll();
-        List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places, promotedPlaceCardsPool);
+
+        List<BaseComponentView> placeComponentsToAdd = PlaceCardHelpers.InstantiateAndConfigurePlaceCards(
+            places,
+            promotedPlaceCardsPool,
+            OnFriendHandlerAdded,
+            OnPlaceInfoClicked,
+            OnPlaceJumpInClicked);
+
         promotedPlaces.SetItems(placeComponentsToAdd);
         SetPromotedPlacesActive(places.Count > 0);
     }
@@ -236,7 +243,14 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         featuredPlaces.ExtractItems();
         featuredPlaceCardsPool.ReleaseAll();
-        List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places, featuredPlaceCardsPool);
+
+        List<BaseComponentView> placeComponentsToAdd = PlaceCardHelpers.InstantiateAndConfigurePlaceCards(
+            places,
+            featuredPlaceCardsPool,
+            OnFriendHandlerAdded,
+            OnPlaceInfoClicked,
+            OnPlaceJumpInClicked);
+
         featuredPlaces.SetItems(placeComponentsToAdd);
         featuredPlacesNoDataText.gameObject.SetActive(places.Count == 0);
     }
@@ -254,7 +268,15 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         liveEvents.ExtractItems();
         liveEventCardsPool.ReleaseAll();
-        List<BaseComponentView> eventComponentsToAdd = InstantiateAndConfigureEventCards(events);
+
+        List<BaseComponentView> eventComponentsToAdd = EventCardHelpers.InstantiateAndConfigureEventCards(
+            events,
+            liveEventCardsPool,
+            OnEventInfoClicked,
+            OnEventJumpInClicked,
+            OnEventSubscribeEventClicked,
+            OnEventUnsubscribeEventClicked);
+
         liveEvents.SetItems(eventComponentsToAdd);
         liveEventsNoDataText.gameObject.SetActive(events.Count == 0);
     }
@@ -271,7 +293,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        ConfigurePlaceCard(placeModal, placeInfo);
+        PlaceCardHelpers.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
 
     public void HidePlaceModal() { placeModal.Hide(); }
@@ -279,99 +301,10 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        ConfigureEventCard(eventModal, eventInfo);
+        EventCardHelpers.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
 
     public void HideEventModal() { eventModal.Hide(); }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
-
-    internal void ConfigurePlaceCardModal()
-    {
-        placeModal = Instantiate(placeCardModalPrefab);
-        placeModal.Hide(true);
-    }
-
-    internal void ConfigureEventCardModal()
-    {
-        eventModal = GameObject.Instantiate(eventCardModalPrefab);
-        eventModal.Hide(true);
-    }
-
-    internal void ConfigurePlaceCardsPool(out Pool pool, string poolName, PlaceCardComponentView placeCardPrefab, int maxPrewarmCount)
-    {
-        pool = PoolManager.i.GetPool(poolName);
-        if (pool == null)
-        {
-            pool = PoolManager.i.AddPool(
-                poolName,
-                Instantiate(placeCardPrefab).gameObject,
-                maxPrewarmCount: maxPrewarmCount,
-                isPersistent: true);
-        }
-    }
-
-    internal void ConfigureEventCardsPool()
-    {
-        liveEventCardsPool = PoolManager.i.GetPool(LIVE_EVENT_CARDS_POOL_NAME);
-        if (liveEventCardsPool == null)
-        {
-            liveEventCardsPool = PoolManager.i.AddPool(
-                LIVE_EVENT_CARDS_POOL_NAME,
-                Instantiate(eventCardPrefab).gameObject,
-                maxPrewarmCount: 200,
-                isPersistent: true);
-        }
-    }
-
-    internal List<BaseComponentView> InstantiateAndConfigurePlaceCards(List<PlaceCardComponentModel> places, Pool pool)
-    {
-        List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
-
-        foreach (PlaceCardComponentModel placeInfo in places)
-        {
-            PlaceCardComponentView placeGO = pool.Get().gameObject.GetComponent<PlaceCardComponentView>();
-            ConfigurePlaceCard(placeGO, placeInfo);
-            OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
-            instantiatedPlaces.Add(placeGO);
-        }
-
-        return instantiatedPlaces;
-    }
-
-    internal List<BaseComponentView> InstantiateAndConfigureEventCards(List<EventCardComponentModel> events)
-    {
-        List<BaseComponentView> instantiatedEvents = new List<BaseComponentView>();
-
-        foreach (EventCardComponentModel eventInfo in events)
-        {
-            EventCardComponentView eventGO = liveEventCardsPool.Get().gameObject.GetComponent<EventCardComponentView>();
-            ConfigureEventCard(eventGO, eventInfo);
-            instantiatedEvents.Add(eventGO);
-        }
-
-        return instantiatedEvents;
-    }
-
-    internal void ConfigurePlaceCard(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo)
-    {
-        placeCard.Configure(placeInfo);
-        placeCard.onInfoClick?.RemoveAllListeners();
-        placeCard.onInfoClick?.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
-        placeCard.onJumpInClick?.RemoveAllListeners();
-        placeCard.onJumpInClick?.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
-    }
-
-    internal void ConfigureEventCard(EventCardComponentView eventCard, EventCardComponentModel eventInfo)
-    {
-        eventCard.Configure(eventInfo);
-        eventCard.onInfoClick?.RemoveAllListeners();
-        eventCard.onInfoClick?.AddListener(() => OnEventInfoClicked?.Invoke(eventInfo));
-        eventCard.onJumpInClick?.RemoveAllListeners();
-        eventCard.onJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
-        eventCard.onSubscribeClick?.RemoveAllListeners();
-        eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId));
-        eventCard.onUnsubscribeClick?.RemoveAllListeners();
-        eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
-    }
 }
