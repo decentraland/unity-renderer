@@ -1,15 +1,13 @@
 using System;
-using DCL.Helpers;
 using System.Collections.Generic;
+using System.Linq;
 using DCL;
-using DCL.Configuration;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Linq;
 
 public class PlayerInfoCardHUDView : MonoBehaviour
 {
@@ -22,7 +20,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         Block
     }
 
-    [System.Serializable]
+    [Serializable]
     internal class TabsMapping
     {
         public GameObject container;
@@ -169,8 +167,9 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
 
-        name.text = userProfile.userName;
-        description.text = userProfile.description;
+        var profanityFilter = ProfanityFilterSharedInstances.regexFilter;
+        name.text = profanityFilter.Filter(userProfile.userName);
+        description.text = profanityFilter.Filter(userProfile.description);
 
         ClearCollectibles();
 
