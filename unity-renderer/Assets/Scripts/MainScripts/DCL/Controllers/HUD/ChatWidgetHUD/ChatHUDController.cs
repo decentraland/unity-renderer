@@ -1,7 +1,9 @@
-using DCL.Interface;
 using System;
+using DCL;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 public class ChatHUDController : IDisposable
 {
@@ -11,7 +13,15 @@ public class ChatHUDController : IDisposable
 
     public event UnityAction<string> OnPressPrivateMessage;
 
+    private readonly DataStore dataStore;
+    private readonly RegexProfanityFilter profanityFilter;
     private InputAction_Trigger closeWindowTrigger;
+
+    public ChatHUDController(DataStore dataStore, RegexProfanityFilter profanityFilter = null)
+    {
+        this.dataStore = dataStore;
+        this.profanityFilter = profanityFilter;
+    }
 
     public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
     {
@@ -48,11 +58,13 @@ public class ChatHUDController : IDisposable
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
     {
+        if (IsProfanityFilteringEnabled() && chatEntryModel.messageType != ChatMessage.Type.PRIVATE)
+            chatEntryModel.bodyText = profanityFilter.Filter(chatEntryModel.bodyText);
         view.AddEntry(chatEntryModel, setScrollPositionToBottom);
 
         if (view.entries.Count > MAX_CHAT_ENTRIES)
         {
-            UnityEngine.Object.Destroy(view.entries[0].gameObject);
+            Object.Destroy(view.entries[0].gameObject);
             view.entries.Remove(view.entries[0]);
         }
     }
@@ -65,7 +77,7 @@ public class ChatHUDController : IDisposable
             view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
         }
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
-        UnityEngine.Object.Destroy(view.gameObject);
+        Object.Destroy(view.gameObject);
     }
 
     public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
@@ -110,5 +122,11 @@ public class ChatHUDController : IDisposable
         }
 
         return model;
+    }
+    
+    private bool IsProfanityFilteringEnabled()
+    {
+        return dataStore.settings.profanityChatFilteringEnabled.Get()
+            && profanityFilter != null;
     }
 }

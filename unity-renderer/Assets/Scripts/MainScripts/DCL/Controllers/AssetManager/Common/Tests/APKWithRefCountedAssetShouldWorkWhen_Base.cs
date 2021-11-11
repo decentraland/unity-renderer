@@ -1,32 +1,31 @@
 using DCL;
 using System.Collections;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace AssetPromiseKeeper_Tests
 {
-    public abstract class APKWithRefCountedAssetShouldWorkWhen_Base<APKType, AssetPromiseType, AssetType, AssetLibraryType> : IntegrationTestSuite_Legacy
+    public abstract class APKWithRefCountedAssetShouldWorkWhen_Base<APKType, AssetPromiseType, AssetType, AssetLibraryType>
+        : TestsBase_APK<APKType, AssetPromiseType, AssetType, AssetLibraryType>
         where AssetPromiseType : AssetPromise<AssetType>
         where AssetType : Asset, new()
         where AssetLibraryType : AssetLibrary_RefCounted<AssetType>, new()
         where APKType : AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType>, new()
     {
-        protected APKType keeper;
-
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             keeper = new APKType();
-            yield break;
+            yield return base.SetUp();
         }
 
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             keeper.Cleanup();
-            yield break;
+            AssetPromise_AB.assetBundlesLoader.Stop();
+            yield return base.TearDown();
         }
 
         protected abstract AssetPromiseType CreatePromise();
@@ -110,8 +109,6 @@ namespace AssetPromiseKeeper_Tests
         }
 
         [UnityTest]
-        [Category("Explicit")]
-        [Explicit]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
             var prom = CreatePromise();

@@ -29,6 +29,7 @@ namespace DCL.Huds.QuestsPanel
         [SerializeField] private GameObject noQuestsTitle;
         [SerializeField] internal QuestsPanelPopup questPopup;
         [SerializeField] private Button closeButton;
+        [SerializeField] private Button backgroundButton;
         [SerializeField] private DynamicScrollSensitivity dynamicScrollSensitivity;
 
         private static BaseDictionary<string, QuestModel> quests => DataStore.i.Quests.quests;
@@ -53,11 +54,8 @@ namespace DCL.Huds.QuestsPanel
         {
             questPopup.gameObject.SetActive(false);
             noQuestsTitle.SetActive(false);
-            closeButton.onClick.AddListener(() =>
-            {
-                QuestsUIAnalytics.SendQuestLogVisibiltyChanged(false, "quest_log_close_button");
-                DataStore.i.HUDs.questsPanelVisible.Set(false);
-            });
+            closeButton.onClick.AddListener(CloseQuestsPanel);
+            backgroundButton.onClick.AddListener(CloseQuestsPanel);
         }
 
         public void RequestAddOrUpdateQuest(string questId)
@@ -217,5 +215,11 @@ namespace DCL.Huds.QuestsPanel
         }
 
         private void OnDestroy() { isDestroyed = true; }
+
+        private void CloseQuestsPanel()
+        {
+            QuestsUIAnalytics.SendQuestLogVisibiltyChanged(false, "quest_log_close_button");
+            DataStore.i.HUDs.questsPanelVisible.Set(false);
+        }
     }
 }
