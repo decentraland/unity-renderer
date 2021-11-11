@@ -110,6 +110,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["PublishSceneResult"] = "Main";
         messageTypeToBridgeName["BuilderProjectInfo"] = "Main";
         messageTypeToBridgeName["BuilderInWorldCatalogHeaders"] = "Main";
+        messageTypeToBridgeName["RequestedHeaders"] = "Main";
         messageTypeToBridgeName["AddAssets"] = "Main";
         messageTypeToBridgeName["RunPerformanceMeterTool"] = "Main";
         messageTypeToBridgeName["InstantiateBotsAtWorldPos"] = "Main";

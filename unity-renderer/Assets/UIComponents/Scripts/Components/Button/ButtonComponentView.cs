@@ -62,8 +62,8 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView, ICom
 
     public bool IsInteractable() { return button.interactable; }
 
-    public void SetInteractable(bool isActive) { button.interactable = isActive; }
-    
+    public void SetInteractable(bool isActive) { button.interactable = isActive;}
+
     public void SetText(string newText)
     {
         model.text = newText;

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Helpers.NFT;
 using System.IO;
@@ -11,6 +13,7 @@ using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public static class BIWTestUtils
@@ -45,6 +48,30 @@ public static class BIWTestUtils
     }
 
     public static IContext CreateMockedContext()
+    {
+        IContext context = new Context(
+            Substitute.For<IBIWEditor>(),
+            Substitute.For<IBuilderMainPanelController>(),
+            Substitute.For<IBuilderAPIController>(),
+            Substitute.For<IBuilderEditorHUDController>(),
+            Substitute.For<IBIWOutlinerController>(),
+            Substitute.For<IBIWInputHandler>(),
+            Substitute.For<IBIWInputWrapper>(),
+            Substitute.For<IBIWPublishController>(),
+            Substitute.For<IBIWCreatorController>(),
+            Substitute.For<IBIWModeController>(),
+            Substitute.For<IBIWFloorHandler>(),
+            Substitute.For<IBIWEntityHandler>(),
+            Substitute.For<IBIWActionController>(),
+            Substitute.For<IBIWSaveController>(),
+            Substitute.For<IBIWRaycastController>(),
+            Substitute.For<IBIWGizmosController>(),
+            Substitute.For<IInitialSceneReferences>()
+        );
+        return context;
+    }
+    
+    public static IContext CreateMockedContextForTestScene()
     {
         IContext context = new Context(
             Substitute.For<IBIWEditor>(),

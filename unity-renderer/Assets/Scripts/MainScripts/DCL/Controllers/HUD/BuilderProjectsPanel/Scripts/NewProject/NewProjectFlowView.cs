@@ -5,8 +5,19 @@ using UnityEngine;
 
 public interface INewProjectFlowView
 {
+    /// <summary>
+    /// This will set the title and description of the new project. Order param: Title - Description
+    /// </summary>
     event Action<string, string> OnTittleAndDescriptionSet;
+
+    /// <summary>
+    /// Set the size of the new project. Order param: Rows - Columns
+    /// </summary>
     event Action<int, int> OnSizeSet;
+
+    /// <summary>
+    /// This will show the first step of the new project flow
+    /// </summary>
     void ShowNewProjectTitleAndDescrition();
     void Dispose();
 }

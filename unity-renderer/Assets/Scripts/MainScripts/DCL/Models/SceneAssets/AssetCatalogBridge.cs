@@ -115,7 +115,12 @@ public class AssetCatalogBridge : MonoBehaviour
         sceneObjectCatalog.Remove(sceneObjectId);
     }
 
-    public void AddSceneObjectToSceneCatalog(SceneObject[] sceneObjects)
+    public void AddScenesObjectToSceneCatalog(string payload)
+    {
+        AddScenesObjectToSceneCatalog(JsonConvert.DeserializeObject<SceneObject[]>(payload));
+    }
+    
+    public void AddScenesObjectToSceneCatalog(SceneObject[] sceneObjects)
     {
         foreach (var sceneObject in sceneObjects)
         {
@@ -146,12 +151,13 @@ public class AssetCatalogBridge : MonoBehaviour
         OnSceneAssetPackAdded?.Invoke(sceneAssetPack);
     }
 
-    public void AddSceneAssetPackToCatalog(JObject payload)
+    public SceneAssetPack AddSceneAssetPackToCatalog(JObject payload)
     {
         if (VERBOSE)
             Debug.Log("add sceneAssetPack: " + payload);
 
         SceneAssetPack sceneAssetPack = JsonConvert.DeserializeObject<SceneAssetPack>(payload.ToString());
         AddSceneAssetPackToCatalog(sceneAssetPack);
+        return sceneAssetPack;
     }
 }

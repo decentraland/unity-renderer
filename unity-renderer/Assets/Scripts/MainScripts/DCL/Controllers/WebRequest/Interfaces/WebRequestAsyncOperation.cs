@@ -4,10 +4,64 @@ using UnityEngine.Networking;
 
 namespace DCL
 {
+    public interface IWebRequestAsyncOperation
+    {
+        /// <summary>
+        /// Event that will be invoked when the request has been completed.
+        /// </summary>
+        event Action<WebRequestAsyncOperation> completed;
+
+        /// <summary>
+        /// WebRequest that is being managed.
+        /// </summary>
+        UnityWebRequest webRequest { get; }
+        
+        /// <summary>
+        /// Returns true after the request has finished communicating with the remote server.
+        /// </summary>
+        bool isDone { get; }
+        
+        /// <summary>
+        /// Returns true if the request was successfully finished.
+        /// </summary>
+        bool isSucceded { get; }
+        
+        /// <summary>
+        /// Returns true if webRequest has been disposed (webRequest = null).
+        /// </summary>
+        bool isDisposed { get; }
+        
+        /// <summary>
+        /// Set to true for disposing the request just after it has been completed.
+        /// </summary>
+        bool disposeOnCompleted { get; }
+        
+        /// <summary>
+        /// Returns the data that has been downloaded as a byte array, if not done or success it will return an empty array
+        /// </summary>
+        byte[] GetResultData();
+        
+        /// <summary>
+        /// If in progress, halts the request as soon as possible.
+        /// </summary>
+        void Abort();
+
+        /// <summary>
+        /// Signals that this request is no longer being used, and should clean up any resources it is using (it aborts the request before disposing).
+        /// </summary>
+        void Dispose();
+
+        /// <summary>
+        /// Mark the request as completed and throw the corresponding event.
+        /// </summary>
+        /// <param name="success">True if the request was successfully ended.</param>
+        void SetAsCompleted(bool success);
+    }
+    
     /// <summary>
     /// Our custom request async operation to be used with the WebRequestController.
     /// </summary>
-    public class WebRequestAsyncOperation : CustomYieldInstruction
+    public class WebRequestAsyncOperation : CustomYieldInstruction, IWebRequestAsyncOperation
     {
         /// <summary>
         /// Event that will be invoked when the request has been completed.
@@ -53,7 +107,7 @@ namespace DCL
         /// Mark the request as completed and throw the corresponding event.
         /// </summary>
         /// <param name="success">True if the request was successfully ended.</param>
-        internal void SetAsCompleted(bool success)
+        public void SetAsCompleted(bool success)
         {
             completed?.Invoke(this);
             isDone = true;
@@ -86,6 +140,14 @@ namespace DCL
 
             webRequest.Dispose();
             webRequest = null;
+        }
+        
+        /// <summary>
+        /// Returns the data that has been downloaded as a byte array, if not done or success it will return an empty array
+        /// </summary>
+        public byte[] GetResultData()
+        {
+            return webRequest.downloadHandler.data;
         }
 
         internal void SetNewWebRequest(UnityWebRequest newRequest) { webRequest = newRequest; }

@@ -619,6 +619,7 @@ namespace DCL.Interface
         {
             public string method;
             public string url;
+            public Dictionary<string, object> metadata = new Dictionary<string, object>();
         }
 
         [System.Serializable]
@@ -787,10 +788,12 @@ namespace DCL.Interface
 
         public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent { SendMessage("ControlEvent", controlEvent); }
 
-        public static void SendRequestHeadersForUrl(string eventName, string method, string url)
+        public static void SendRequestHeadersForUrl(string eventName, string method, string url, Dictionary<string, object> metadata = null)
         {
             headersPayload.method = method;
             headersPayload.url = url;
+            if(metadata != null)
+                headersPayload.metadata = metadata;
             SendMessage(eventName, headersPayload );
         }
 

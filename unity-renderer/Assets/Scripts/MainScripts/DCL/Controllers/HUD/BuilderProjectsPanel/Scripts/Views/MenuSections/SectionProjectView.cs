@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
     public event Action OnCreateProjectRequest;
 
     [SerializeField] public GameObject contentContainer;
+    [SerializeField] public GameObject contentGameObject;
     [SerializeField] public ScrollRect scrollRect;
     [SerializeField] internal GameObject emptyContainer;
     [SerializeField] internal GameObject loadingAnimationContainer;
@@ -51,7 +53,7 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
 
     public void SetEmpty()
     {
-        contentContainer.SetActive(false);
+        contentGameObject.SetActive(false);
         emptyContainer.SetActive(true);
         noSearchResultContainer.SetActive(false);
         loadingAnimationContainer.SetActive(false);
@@ -59,7 +61,7 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
 
     public void SetLoading()
     {
-        contentContainer.SetActive(false);
+        contentGameObject.SetActive(false);
         emptyContainer.SetActive(false);
         noSearchResultContainer.SetActive(false);
         loadingAnimationContainer.SetActive(true);
@@ -67,7 +69,7 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
 
     public void SetNoSearchResult()
     {
-        contentContainer.SetActive(false);
+        contentGameObject.SetActive(false);
         emptyContainer.SetActive(false);
         noSearchResultContainer.SetActive(true);
         loadingAnimationContainer.SetActive(false);
@@ -75,7 +77,7 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
 
     public void SetFilled()
     {
-        contentContainer.SetActive(true);
+        contentGameObject.SetActive(true);
         emptyContainer.SetActive(false);
         noSearchResultContainer.SetActive(false);
         loadingAnimationContainer.SetActive(false);

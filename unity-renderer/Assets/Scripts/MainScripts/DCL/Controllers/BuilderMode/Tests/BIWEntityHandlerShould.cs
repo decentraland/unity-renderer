@@ -30,7 +30,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
-        context = BIWTestUtils.CreateMockedContext();
+        context = BIWTestUtils.CreateMockedContextForTestScene();
         entityHandler.Initialize(context);
 
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);

@@ -6,16 +6,15 @@ using UnityEngine;
 
 public static class BuilderPanelDataFetcher
 {
-    public static Promise<ProjectData[]> FetchProjectData()
+    public static Promise<ProjectData[]> FetchProjectData(IBuilderAPIController apiController)
     {
         var promise = new Promise<ProjectData[]>();
-        CoroutineStarter.Start(MockedDelay(promise));
+        var manifestPromise = apiController.GetAllManifests();
+        manifestPromise.Then(projectList =>
+        {
+            promise.Resolve(projectList.ToArray());
+        });
+ 
         return promise;
-    }
-
-    private static IEnumerator MockedDelay(Promise<ProjectData[]> promise)
-    {
-        yield return new WaitForSeconds(0.5f);
-        promise.Resolve(new ProjectData[0]);
     }
 }

@@ -34,11 +34,11 @@ namespace DCL
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
         /// <param name="headers">This will set the headers for the request</param>
-        WebRequestAsyncOperation Get(
+        IWebRequestAsyncOperation Get(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -55,8 +55,8 @@ namespace DCL
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
         WebRequestAsyncOperation GetAssetBundle(
             string url,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);
@@ -74,8 +74,8 @@ namespace DCL
         WebRequestAsyncOperation GetAssetBundle(
             string url,
             Hash128 hash,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);
@@ -91,8 +91,8 @@ namespace DCL
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
         WebRequestAsyncOperation GetTexture(
             string url,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -111,8 +111,8 @@ namespace DCL
         WebRequestAsyncOperation GetAudioClip(
             string url,
             AudioType audioType,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);

@@ -12,7 +12,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
     [HideInInspector] public bool alreadyLoadedAsset = false;
     [HideInInspector] public GameObject loadedOBJGameObject;
 
-    WebRequestAsyncOperation asyncOp = null;
+    IWebRequestAsyncOperation asyncOp = null;
 
     void Awake()
     {
@@ -50,7 +50,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
                 url: OBJUrl,
                 OnSuccess: (webRequestResult) =>
                 {
-                    loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequestResult.downloadHandler.text, true);
+                    loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequestResult.webRequest.downloadHandler.text, true);
                     loadedOBJGameObject.name = "LoadedOBJ";
                     loadedOBJGameObject.transform.SetParent(transform);
                     loadedOBJGameObject.transform.localPosition = Vector3.zero;
@@ -60,7 +60,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
                 },
                 OnFail: (webRequestResult) =>
                 {
-                    Debug.Log("Couldn't get OBJ, error: " + webRequestResult.error + " ... " + OBJUrl);
+                    Debug.Log("Couldn't get OBJ, error: " + webRequestResult.webRequest.error + " ... " + OBJUrl);
                 });
         }
         else

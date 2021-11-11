@@ -37,16 +37,16 @@ public class EventsAPIController : IEventsAPIController
 
     public WebRequestAsyncOperation GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
     {
-        return DCL.Environment.i.platform.webRequest.Get(
+        return (WebRequestAsyncOperation) DCL.Environment.i.platform.webRequest.Get(
             URL_GET_ALL_EVENTS,
             OnSuccess: (webRequestResult) =>
             {
-                EventListFromAPIModel upcomingEventsResult = JsonUtility.FromJson<EventListFromAPIModel>(webRequestResult.downloadHandler.text);
+                EventListFromAPIModel upcomingEventsResult = JsonUtility.FromJson<EventListFromAPIModel>(webRequestResult.webRequest.downloadHandler.text);
                 OnSuccess?.Invoke(upcomingEventsResult.data);
             },
             OnFail: (webRequestResult) =>
             {
-                OnFail?.Invoke(webRequestResult.error);
+                OnFail?.Invoke(webRequestResult.webRequest.error);
             });
     }
 
