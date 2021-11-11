@@ -209,10 +209,28 @@ jobs:
             - unity-ab-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
-          name: Run AB tests
-          command: |
-            bash ./ci-asset-bundle-test.sh
-            exit $?
+          name: Run AB tests, Genesis Plaza
+          environment:
+            POSITION: "0,0"
+          command: ./ci-asset-bundle-test.sh
+          no_output_timeout: 30m
+      - run:
+          name: Run AB tests, tominoya
+          environment:
+            POSITION: "-121,-134"
+          command: ./ci-asset-bundle-test.sh
+          no_output_timeout: 30m
+      - run:
+          name: Run AB tests, DEXT
+          environment:
+            POSITION: "-110,-128"
+          command: ./ci-asset-bundle-test.sh
+          no_output_timeout: 30m
+      - run:
+          name: Run AB tests, wondermine
+          environment:
+            POSITION: "-26,57"
+          command: ./ci-asset-bundle-test.sh
           no_output_timeout: 30m
       - run:
           name: Cat logs
