@@ -92,12 +92,12 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 {
     static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 12f, 0);
 
-    private string NOT_PUBLISHED = "NOT PUBLISHED";
-    private string PUBLISHED_IN = "PUBLISHED IN";
+    internal const string NOT_PUBLISHED = "NOT PUBLISHED";
+    internal const string PUBLISHED_IN = "PUBLISHED IN";
     
-    private float SCENE_CARD_SIZE = 84;
-    private float SCENE_CARD_ITEM_PADDING = 18;
-    private float SCENE_CARD_TOTAL_PADDING = 36;
+    internal const float SCENE_CARD_SIZE = 84;
+    internal const float SCENE_CARD_ITEM_PADDING = 18;
+    internal const float SCENE_CARD_TOTAL_PADDING = 36;
 
     public event Action<ProjectData> OnEditorPressed;
     public event Action<ProjectData> OnSettingsPressed;
@@ -108,14 +108,14 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     [SerializeField] private  float animationSpeed = 6f;
 
     [Header("Project References")]
-    [SerializeField] private Color syncColor;
-    [SerializeField] private Color desyncColor;
+    [SerializeField] internal Color syncColor;
+    [SerializeField] internal Color desyncColor;
     [SerializeField] private Texture2D defaultThumbnail;
     [SerializeField] private GameObject projectSceneCardViewPrefab;
     
     
     [Header("Prefab references")]
-    [SerializeField] private Image syncImage;
+    [SerializeField] internal Image syncImage;
     
     [SerializeField] internal Button contextMenuButton;
     [SerializeField] internal Button expandButton;
@@ -150,8 +150,8 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     
     private RectTransform rectTransform;
 
-    private List<Scene> scenesDeployedFromProject = new List<Scene>();
-    private List<IProjectSceneCardView> sceneCardViews = new List<IProjectSceneCardView>();
+    internal List<Scene> scenesDeployedFromProject = new List<Scene>();
+    internal List<IProjectSceneCardView> sceneCardViews = new List<IProjectSceneCardView>();
 
     private void Awake()
     {
@@ -219,7 +219,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         }
     }
 
-    private void ExpandButtonPressed()
+    internal void ExpandButtonPressed()
     {
         if(scenesDeployedFromProject.Count == 0 )
             return;
@@ -255,7 +255,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     private void ScenesVisiblitityChange(bool isVisible)
     {
         if(sceneCardViews.Count == 0)
-            InstantiateScenes();
+            InstantiateScenesCards();
 
         foreach (IProjectSceneCardView scene in sceneCardViews)
         {
@@ -263,7 +263,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         }
     }
 
-    private void InstantiateScenes()
+    private void InstantiateScenesCards()
     {
         long projectTimestamp = BIWUtils.ConvertToMilisecondsTimestamp(projectData.updated_at);
         foreach (Scene scene in scenesDeployedFromProject)
@@ -276,7 +276,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         }
     }
 
-    private void EditorButtonClicked()
+    internal void EditorButtonClicked()
     {
         OnEditorPressed?.Invoke(projectData);
     }

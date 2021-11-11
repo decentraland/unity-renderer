@@ -321,14 +321,6 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         projectsController.UpdateDeploymentStatus();
     }
 
-    private void UpdateProjectsDeploymentStatus()
-    {
-        if(isFetchingLands || isFetchingProjects)
-            return;
-        
-        projectsController.UpdateDeploymentStatus();
-    }
-
     internal void LandsFetchedError(string error)
     {
         isFetchingLands = false;

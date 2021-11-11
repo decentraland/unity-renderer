@@ -36,7 +36,7 @@ public static partial class BIWUtils
             destroyOnFinish = true
         });
     }
-    
+
     public static long ConvertToMilisecondsTimestamp(DateTime value)
     {
         TimeSpan elapsedTime = value - Epoch;
