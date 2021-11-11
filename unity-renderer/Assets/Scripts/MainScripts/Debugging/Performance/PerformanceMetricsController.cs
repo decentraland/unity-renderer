@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using DCL.SettingsCommon;
@@ -7,16 +8,18 @@ namespace DCL
 {
     public class PerformanceMetricsController
     {
-        private LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
-        private const int SAMPLES_SIZE = 1000; // Send performance report every 1000 samples
-        private char[] encodedSamples = new char[SAMPLES_SIZE];
-        private int currentIndex = 0;
+        private const float REPORT_TIME_IN_SECONDS = 20f;
 
-        [SerializeField] private PerformanceMetricsDataVariable performanceMetricsDataVariable;
+        private readonly LinealBufferHiccupCounter tracker = new LinealBufferHiccupCounter();
+        private readonly PerformanceMetricsDataVariable performanceMetricsDataVariable;
+
+        private readonly List<char> encodedSamples = new List<char>();
+        private float lastReportTime;
 
         public PerformanceMetricsController()
         {
             performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+            lastReportTime = 0;
         }
 
         public void Update()
@@ -28,21 +31,34 @@ namespace DCL
             if (!CommonScriptableObjects.rendererState.Get())
                 return;
 
-            var deltaInMs = Time.deltaTime * 1000;
+            TrackFrame();
 
-            tracker.AddDeltaTime(Time.deltaTime);
-
-            performanceMetricsDataVariable?.Set(tracker.CurrentFPSCount(), tracker.CurrentHiccupCount(), tracker.HiccupsSum, tracker.GetTotalSeconds());
-
-            encodedSamples[currentIndex++] = (char)deltaInMs;
-
-            if (currentIndex == SAMPLES_SIZE)
+            if (IsTimeToReport())
             {
-                currentIndex = 0;
-                Report(new string(encodedSamples));
+                ReportFrame();
             }
         }
+        private void TrackFrame()
+        {
+            var deltaInMs = Time.deltaTime * 1000;
+            tracker.AddDeltaTime(Time.deltaTime);
+            performanceMetricsDataVariable.Set(tracker.CurrentFPSCount(), tracker.CurrentHiccupCount(), tracker.HiccupsSum, tracker.GetTotalSeconds());
+            encodedSamples.Add((char)deltaInMs);
+        }
+        private void ReportFrame()
+        {
+            lastReportTime = Time.unscaledTime;
+            
+            string samples = new string(encodedSamples.ToArray());
+            WebInterface.SendPerformanceReport(samples, 
+                Settings.i.qualitySettings.Data.fpsCap, 
+                tracker.CurrentHiccupCount(),
+                tracker.GetHiccupSum(),
+                tracker.GetTotalSeconds());
+            
+            encodedSamples.Clear();
+        }
+        private bool IsTimeToReport() { return Time.unscaledTime - lastReportTime > REPORT_TIME_IN_SECONDS; }
 
-        private void Report(string encodedSamples) { WebInterface.SendPerformanceReport(encodedSamples, Settings.i.qualitySettings.Data.fpsCap, tracker.CurrentHiccupCount(), tracker.GetHiccupSum(), tracker.GetTotalSeconds()); }
     }
 }
