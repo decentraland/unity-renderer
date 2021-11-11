@@ -265,31 +265,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         currentItemsPerRow = model.constraintCount;
     }
-
-    internal void CalculateVerticalSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
-    {
-        float height = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.height : ((RectTransform)transform).rect.height;
-        float extraSpaceToRemove = (model.spaceBetweenItems.y * (model.constraintCount - 1)) / model.constraintCount;
-
-        newSizeToApply = new Vector2(
-            model.itemSize.x,
-            (height / model.constraintCount) - extraSpaceToRemove);
-
-        currentItemsPerRow = model.constraintCount;
-    }
     
-    internal void CalculateVerticalSizeForFixedRowConstraint(out Vector2 newSizeToApply)
-    {
-        float width = ((RectTransform)transform).rect.width;
-        float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.constraintCount / 2f));
-
-        newSizeToApply = new Vector2(
-            (width / model.constraintCount) - extraSpaceToRemove,
-            model.itemSize.y);
-
-        currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constraintCount);
-    }
-
     internal void CalculateHorizontalSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
     {
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
