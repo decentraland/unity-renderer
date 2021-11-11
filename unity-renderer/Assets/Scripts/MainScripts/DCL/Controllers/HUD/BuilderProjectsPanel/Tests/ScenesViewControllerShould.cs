@@ -1,12 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using DCL.Builder;
-using UnityEditor;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
-using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Tests
 {
