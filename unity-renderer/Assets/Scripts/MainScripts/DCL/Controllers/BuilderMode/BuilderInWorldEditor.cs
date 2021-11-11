@@ -111,13 +111,6 @@ public class BuilderInWorldEditor : IBIWEditor
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    private void AskHeadersToKernel()
-    {
-        string ethAddress =  string.IsNullOrEmpty(userProfile.ethAddress) ? "default" : userProfile.ethAddress;
-        areCatalogHeadersAsked = true;
-        builderInWorldBridge.AskKernelForCatalogHeadersWithParams("get", "/assetPacks"); 
-    }
-
     public void InitReferences(SceneReferences sceneReferences)
     {
         builderInWorldBridge = sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();

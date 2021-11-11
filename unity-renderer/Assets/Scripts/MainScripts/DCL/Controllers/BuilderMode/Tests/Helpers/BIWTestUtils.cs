@@ -15,6 +15,7 @@ using NSubstitute.Extensions;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public static class BIWTestUtils
 {
@@ -66,7 +67,7 @@ public static class BIWTestUtils
             Substitute.For<IBIWSaveController>(),
             Substitute.For<IBIWRaycastController>(),
             Substitute.For<IBIWGizmosController>(),
-            Substitute.For<IInitialSceneReferences>()
+            Substitute.For<ISceneReferences>()
         );
         return context;
     }
