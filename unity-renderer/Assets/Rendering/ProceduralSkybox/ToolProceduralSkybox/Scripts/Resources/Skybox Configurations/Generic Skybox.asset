@@ -44,20 +44,20 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   horizonColor:
     serializedVersion: 2
-    key0: {r: 0.35760385, g: 0, b: 0.6037736, a: 1}
-    key1: {r: 0.04209684, g: 0.3394341, b: 0.8113208, a: 1}
-    key2: {r: 0.043137256, g: 0.34117648, b: 0.8117647, a: 0}
-    key3: {r: 0.35760385, g: 0, b: 0.6037736, a: 0}
-    key4: {r: 0.08343716, g: 0.6494904, b: 0.7075472, a: 0}
-    key5: {r: 0.8595352, g: 0.55553, b: 0.008383604, a: 0}
-    key6: {r: 0.33926463, g: 0, b: 0.5283019, a: 0}
+    key0: {r: 0.4716981, g: 0.3715735, b: 0.3715735, a: 1}
+    key1: {r: 0.9150943, g: 0.7869332, b: 0.43596473, a: 1}
+    key2: {r: 0.6406181, g: 0.8381198, b: 0.8590854, a: 0}
+    key3: {r: 0.9137255, g: 0.09019608, b: 0.36975482, a: 0}
+    key4: {r: 0.17671558, g: 0.0030704818, b: 0.21698111, a: 0}
+    key5: {r: 0.1259542, g: 0, b: 0.26415092, a: 0}
+    key6: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
     key7: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
     ctime0: 0
-    ctime1: 16384
-    ctime2: 49151
-    ctime3: 65535
-    ctime4: 49344
-    ctime5: 53585
+    ctime1: 8674
+    ctime2: 25829
+    ctime3: 32768
+    ctime4: 39899
+    ctime5: 57247
     ctime6: 65535
     ctime7: 65535
     atime0: 0
@@ -69,11 +69,11 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 4
+    m_NumColorKeys: 7
     m_NumAlphaKeys: 2
   groundColor:
     serializedVersion: 2
-    key0: {r: 0.08266131, g: 0.00088999845, b: 0.18867922, a: 1}
+    key0: {r: 0.17159714, g: 0.1882353, b: 0, a: 1}
     key1: {r: 0.1448469, g: 0.21552171, b: 0.2924528, a: 1}
     key2: {r: 0.14509805, g: 0.21568628, b: 0.29411766, a: 0}
     key3: {r: 0.08266131, g: 0.00088999845, b: 0.18867922, a: 0}
@@ -303,33 +303,11 @@ MonoBehaviour:
     intensity:
     - percentage: 0
       value: 1
-    - percentage: 20
-      value: 1
-    - percentage: 24
-      value: 0.1
-    - percentage: 30
-      value: 1
-    - percentage: 70
-      value: 1
-    - percentage: 74
-      value: 0.1
-    - percentage: 80
-      value: 1
     lightDirection:
     - percentage: 0.041666664
       value: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
-    - percentage: 24.99
-      value: {x: 1, y: -0.00000004371139, z: -0.00000004371139, w: 1.9106855e-15}
-    - percentage: 25
-      value: {x: 0, y: 0, z: 0, w: 1}
     - percentage: 50
       value: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
-    - percentage: 50
-      value: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
-    - percentage: 74.99
-      value: {x: 1, y: -0.00000004371139, z: -0.00000004371139, w: 1.9106855e-15}
-    - percentage: 75
-      value: {x: 0, y: 0, z: 0, w: 1}
     - percentage: 100
       value: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
     tintColor:
@@ -647,7 +625,7 @@ MonoBehaviour:
       color:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 1, g: 1, b: 1, a: 0}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -663,7 +641,7 @@ MonoBehaviour:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 65535
+        atime1: 964
         atime2: 65535
         atime3: 65535
         atime4: 0
@@ -885,7 +863,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 4
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
@@ -893,7 +871,7 @@ MonoBehaviour:
       enabled: 1
       nameInEditor: Eyes
       expandedInEditor: 1
-      timeSpan_start: 0
+      timeSpan_start: 23
       timeSpan_End: 24
       fadingInTime: 0
       fadingOutTime: 0
