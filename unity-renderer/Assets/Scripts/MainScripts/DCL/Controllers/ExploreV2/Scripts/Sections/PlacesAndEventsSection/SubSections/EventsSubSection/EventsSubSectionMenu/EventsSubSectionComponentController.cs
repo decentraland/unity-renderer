@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,6 +13,11 @@ public interface IEventsSubSectionComponentController : IDisposable
     /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
     /// </summary>
     event Action OnCloseExploreV2;
+
+    /// <summary>
+    /// It will be triggered when any action is executed inside the events sub-section.
+    /// </summary>
+    event Action OnAnyActionExecuted;
 
     /// <summary>
     /// Request all events from the API.
@@ -47,6 +53,7 @@ public interface IEventsSubSectionComponentController : IDisposable
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
+    public event Action OnAnyActionExecuted;
     internal event Action OnEventsFromAPIUpdated;
 
     internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
@@ -59,8 +66,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal List<EventFromAPIModel> eventsFromAPI = new List<EventFromAPIModel>();
     internal int currentUpcomingEventsShowed = 0;
     internal bool reloadEvents = false;
+    internal IExploreV2Analytics exploreV2Analytics;
 
-    public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI)
+    public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -72,6 +80,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         eventsAPIApiController = eventsAPI;
         OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
+
+        this.exploreV2Analytics = exploreV2Analytics;
     }
 
     internal void FirstLoading()
@@ -204,6 +214,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             currentUpcomingEventsShowed = eventsFromAPI.Count;
 
         view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
+
+        OnAnyActionExecuted?.Invoke();
     }
 
     public void LoadGoingEvents()
@@ -234,12 +246,62 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
-    internal void ShowEventDetailedInfo(EventCardComponentModel eventModel) { view.ShowEventModal(eventModel); }
+    internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
+    {
+        view.ShowEventModal(eventModel);
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
+        OnAnyActionExecuted?.Invoke();
+    }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
         ExploreEventsHelpers.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
+        OnAnyActionExecuted?.Invoke();
+
+        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, coords);
+    }
+
+    internal void SubscribeToEvent(string eventId)
+    {
+        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
+        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
+
+        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
+        //eventsAPIApiController.RegisterAttendEvent(
+        //    eventId,
+        //    true,
+        //    () =>
+        //    {
+        //        // ...
+        //    },
+        //    (error) =>
+        //    {
+        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
+        //    });
+
+        OnAnyActionExecuted?.Invoke();
+    }
+
+    internal void UnsubscribeToEvent(string eventId)
+    {
+        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
+        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
+
+        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
+        //eventsAPIApiController.RegisterAttendEvent(
+        //    eventId,
+        //    false,
+        //    () =>
+        //    {
+        //        // ...
+        //    },
+        //    (error) =>
+        //    {
+        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
+        //    });
+
+        OnAnyActionExecuted?.Invoke();
     }
 }

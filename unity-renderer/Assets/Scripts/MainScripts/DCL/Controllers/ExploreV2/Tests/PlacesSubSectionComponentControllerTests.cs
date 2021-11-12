@@ -1,3 +1,4 @@
+using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -11,6 +12,7 @@ public class PlacesSubSectionComponentControllerTests
     private IPlacesSubSectionComponentView placesSubSectionComponentView;
     private IPlacesAPIController placesAPIController;
     private IFriendsController friendsController;
+    private IExploreV2Analytics exploreV2Analytics;
 
     [SetUp]
     public void SetUp()
@@ -18,7 +20,8 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView = Substitute.For<IPlacesSubSectionComponentView>();
         placesAPIController = Substitute.For<IPlacesAPIController>();
         friendsController = Substitute.For<IFriendsController>();
-        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIController, friendsController);
+        exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
+        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIController, friendsController, exploreV2Analytics);
     }
 
     [TearDown]
@@ -145,12 +148,14 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Arrange
         PlaceCardComponentModel testPlaceCardModel = new PlaceCardComponentModel();
+        testPlaceCardModel.hotSceneInfo = new HotSceneInfo();
 
         // Act
         placesSubSectionComponentController.ShowPlaceDetailedInfo(testPlaceCardModel);
 
         // Assert
         placesSubSectionComponentView.Received().ShowPlaceModal(testPlaceCardModel);
+        exploreV2Analytics.Received().SendClickOnPlaceInfo(testPlaceCardModel.hotSceneInfo.id, testPlaceCardModel.placeName);
     }
 
     [Test]
@@ -167,6 +172,7 @@ public class PlacesSubSectionComponentControllerTests
         // Assert
         placesSubSectionComponentView.Received().HidePlaceModal();
         Assert.IsTrue(exploreClosed);
+        exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.name, testPlaceFromAPI.baseCoords);
     }
 
     private List<HotSceneInfo> CreateTestPlacesFromApi(int numberOfPlaces)

@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,11 @@ public interface IPlacesSubSectionComponentController : IDisposable
     /// It will be triggered when the sub-section want to request to close the ExploreV2 main menu.
     /// </summary>
     event Action OnCloseExploreV2;
+
+    /// <summary>
+    /// It will be triggered when any action is executed inside the places sub-section.
+    /// </summary>
+    event Action OnAnyActionExecuted;
 
     /// <summary>
     /// Request all places from the API.
@@ -32,6 +38,7 @@ public interface IPlacesSubSectionComponentController : IDisposable
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
+    public event Action OnAnyActionExecuted;
     internal event Action OnPlacesFromAPIUpdated;
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
@@ -42,8 +49,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal List<HotSceneInfo> placesFromAPI = new List<HotSceneInfo>();
     internal int currentPlacesShowed = 0;
     internal bool reloadPlaces = false;
+    internal IExploreV2Analytics exploreV2Analytics;
 
-    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController)
+    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -56,6 +64,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         OnPlacesFromAPIUpdated += OnRequestedPlacesUpdated;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
+
+        this.exploreV2Analytics = exploreV2Analytics;
     }
 
     internal void FirstLoading()
@@ -142,6 +152,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             currentPlacesShowed = placesFromAPI.Count;
 
         view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
+
+        OnAnyActionExecuted?.Invoke();
     }
 
     public void Dispose()
@@ -156,13 +168,21 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
-    internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel) { view.ShowPlaceModal(placeModel); }
+    internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
+    {
+        view.ShowPlaceModal(placeModel);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
+        OnAnyActionExecuted?.Invoke();
+    }
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
         ExplorePlacesHelpers.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
+        OnAnyActionExecuted?.Invoke();
+
+        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 
     internal void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) { friendsTrackerController.AddHandler(friendsHandler); }
