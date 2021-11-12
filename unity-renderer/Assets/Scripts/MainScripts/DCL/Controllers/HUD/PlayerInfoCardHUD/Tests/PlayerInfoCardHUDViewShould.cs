@@ -124,6 +124,7 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    [Ignore("This test never worked as it should be. Another test was overwriting the userProfile with an empty inventory, so failed when run individually but passed when run all. TODO refactor: requesting wearables behaviour should be mocked")]
     public void CreateCollectibles()
     {
         view.SetUserProfile(userProfile);
