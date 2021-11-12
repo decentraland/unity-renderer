@@ -39,6 +39,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             exploreV2Analytics);
 
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+        highlightsSubSectionComponentController.OnGoToEventsSubSection += GoToEventsSubSection;
 
         placesSubSectionComponentController = new PlacesSubSectionComponentController(
             view.currentPlacesSubSectionComponentView,
@@ -65,12 +66,15 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
     internal void OnAnyActionExecutedInAnySubSection() { OnAnyActionExecuted?.Invoke(); }
 
+    internal void GoToEventsSubSection() { view.GoToSubsection(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX); }
+
     public void Dispose()
     {
         view.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
 
         highlightsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         highlightsSubSectionComponentController.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
+        highlightsSubSectionComponentController.OnGoToEventsSubSection -= GoToEventsSubSection;
         highlightsSubSectionComponentController.Dispose();
 
         placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;

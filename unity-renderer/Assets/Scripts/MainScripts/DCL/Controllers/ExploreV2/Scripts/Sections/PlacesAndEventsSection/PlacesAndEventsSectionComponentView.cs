@@ -21,6 +21,12 @@ public interface IPlacesAndEventsSectionComponentView
     /// Events sub-section component.
     /// </summary>
     IEventsSubSectionComponentView currentEventsSubSectionComponentView { get; }
+
+    /// <summary>
+    /// Open a sub-section.
+    /// </summary>
+    /// <param name="subSectionIndex">Sub-section index.</param>
+    void GoToSubsection(int subSectionIndex);
 }
 
 public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
@@ -99,4 +105,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
     }
+
+    public void GoToSubsection(int subSectionIndex) { subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(true); }
 }

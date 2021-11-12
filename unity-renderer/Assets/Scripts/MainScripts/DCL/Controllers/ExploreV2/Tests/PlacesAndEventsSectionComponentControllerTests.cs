@@ -55,4 +55,14 @@ public class PlacesAndEventsSectionComponentControllerTests
         // Assert
         Assert.IsTrue(anyActionExecuted);
     }
+
+    [Test]
+    public void GoToEventsSubSectionCorrectly()
+    {
+        // Act
+        placesAndEventsSectionComponentController.GoToEventsSubSection();
+
+        // Assert
+        placesAndEventsSectionComponentView.Received().GoToSubsection(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX);
+    }
 }

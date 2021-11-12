@@ -43,6 +43,11 @@ public interface IHighlightsSubSectionComponentView
     event Action<string> OnEventUnsubscribeEventClicked;
 
     /// <summary>
+    /// It will be triggered when the view all events button is clicked.
+    /// </summary>
+    event Action OnViewAllEventsClicked;
+
+    /// <summary>
     /// It will be triggered when a new friend handler is added by a place card.
     /// </summary>
     event Action<FriendsHandler> OnFriendHandlerAdded;
@@ -150,6 +155,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     [SerializeField] internal GridContainerComponentView liveEvents;
     [SerializeField] internal GameObject liveEventsLoading;
     [SerializeField] internal TMP_Text liveEventsNoDataText;
+    [SerializeField] internal ButtonComponentView viewAllEventsButton;
     [SerializeField] internal Color[] friendColors = null;
 
     public event Action OnReady;
@@ -159,6 +165,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<string> OnEventSubscribeEventClicked;
     public event Action<string> OnEventUnsubscribeEventClicked;
+    public event Action OnViewAllEventsClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnHighlightsSubSectionEnable;
 
@@ -183,6 +190,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         promotedPlaces.RemoveItems();
         featuredPlaces.RemoveItems();
         liveEvents.RemoveItems();
+
+        viewAllEventsButton.onClick.AddListener(() => OnViewAllEventsClicked?.Invoke());
 
         OnReady?.Invoke();
     }
@@ -213,6 +222,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
             eventModal.Dispose();
             Destroy(eventModal.gameObject);
         }
+
+        viewAllEventsButton.onClick.RemoveAllListeners();
     }
 
     public void SetPromotedPlaces(List<PlaceCardComponentModel> places)
@@ -285,6 +296,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         liveEvents.gameObject.SetActive(!isVisible);
         liveEventsLoading.SetActive(isVisible);
+        viewAllEventsButton.gameObject.SetActive(!isVisible);
 
         if (isVisible)
             liveEventsNoDataText.gameObject.SetActive(false);

@@ -20,6 +20,11 @@ public interface IHighlightsSubSectionComponentController : IDisposable
     event Action OnAnyActionExecuted;
 
     /// <summary>
+    /// It will be triggered when the sub-section want to request to go to the Events sub-section.
+    /// </summary>
+    event Action OnGoToEventsSubSection;
+
+    /// <summary>
     /// Request all places and events from the API.
     /// </summary>
     void RequestAllPlacesAndEvents();
@@ -44,6 +49,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 {
     public event Action OnCloseExploreV2;
     public event Action OnAnyActionExecuted;
+    public event Action OnGoToEventsSubSection;
     internal event Action OnPlacesFromAPIUpdated;
     internal event Action OnEventsFromAPIUpdated;
 
@@ -77,6 +83,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.view.OnEventSubscribeEventClicked += SubscribeToEvent;
         this.view.OnEventUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
+        this.view.OnViewAllEventsClicked += GoToEventsSubSection;
 
         placesAPIApiController = placesAPI;
         eventsAPIApiController = eventsAPI;
@@ -212,6 +219,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.OnEventSubscribeEventClicked -= SubscribeToEvent;
         view.OnEventUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
+        view.OnViewAllEventsClicked -= GoToEventsSubSection;
     }
 
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
@@ -289,4 +297,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         OnAnyActionExecuted?.Invoke();
     }
+
+    internal void GoToEventsSubSection() { OnGoToEventsSubSection?.Invoke(); }
 }
