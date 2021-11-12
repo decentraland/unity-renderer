@@ -35,7 +35,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.currentHighlightsSubSectionComponentView,
             placesAPI,
             eventsAPI,
-            FriendsController.i);
+            FriendsController.i,
+            exploreV2Analytics);
 
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
@@ -55,6 +56,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         view.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
+        highlightsSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
         placesSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
         eventsSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
     }
@@ -66,8 +68,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     public void Dispose()
     {
         view.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
-        
+
         highlightsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
+        highlightsSubSectionComponentController.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
         highlightsSubSectionComponentController.Dispose();
 
         placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;

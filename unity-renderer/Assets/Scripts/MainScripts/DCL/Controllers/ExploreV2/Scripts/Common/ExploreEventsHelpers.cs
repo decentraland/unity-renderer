@@ -165,42 +165,4 @@ public static class ExploreEventsHelpers
         else
             WebInterface.JumpIn(coords.x, coords.y, serverName, layerName);
     }
-
-    public static void SubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to register our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    true,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
-    }
-
-    public static void UnsubscribeToEvent(string eventId)
-    {
-        // TODO (Santi): Remove when the RegisterAttendEvent POST is available.
-        WebInterface.OpenURL(string.Format(EVENT_DETAIL_URL, eventId));
-
-        // TODO (Santi): Waiting for the new version of the Events API where we will be able to send a signed POST to unregister our user in an event.
-        //eventsAPIApiController.RegisterAttendEvent(
-        //    eventId,
-        //    false,
-        //    () =>
-        //    {
-        //        // ...
-        //    },
-        //    (error) =>
-        //    {
-        //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
-        //    });
-    }
 }

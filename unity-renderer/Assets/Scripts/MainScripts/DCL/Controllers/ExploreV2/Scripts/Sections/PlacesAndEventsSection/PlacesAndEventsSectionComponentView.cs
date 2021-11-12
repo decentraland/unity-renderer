@@ -40,8 +40,8 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     internal bool isDefaultSubSectionLoadedByFirstTime = false;
 
     public IHighlightsSubSectionComponentView currentHighlightsSubSectionComponentView => highlightsSubSection;
-    public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
     public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
+    public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
 
     public event Action OnAnyActionExecuted;
 

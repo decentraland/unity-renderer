@@ -3,7 +3,6 @@ using DCL.Interface;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using UnityEngine;
 
@@ -59,7 +58,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
     internal const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 1;
-    internal const string LIVE_TAG_TEXT = "LIVE";
     internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;
@@ -68,14 +66,17 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal bool reloadEvents = false;
     internal IExploreV2Analytics exploreV2Analytics;
 
-    public EventsSubSectionComponentController(IEventsSubSectionComponentView view, IEventsAPIController eventsAPI, IExploreV2Analytics exploreV2Analytics)
+    public EventsSubSectionComponentController(
+        IEventsSubSectionComponentView view,
+        IEventsAPIController eventsAPI,
+        IExploreV2Analytics exploreV2Analytics)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowEventDetailedInfo;
         this.view.OnJumpInClicked += JumpInToEvent;
-        this.view.OnSubscribeEventClicked += ExploreEventsHelpers.SubscribeToEvent;
-        this.view.OnUnsubscribeEventClicked += ExploreEventsHelpers.UnsubscribeToEvent;
+        this.view.OnSubscribeEventClicked += SubscribeToEvent;
+        this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
 
         eventsAPIApiController = eventsAPI;
@@ -238,8 +239,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowEventDetailedInfo;
         view.OnJumpInClicked -= JumpInToEvent;
-        view.OnSubscribeEventClicked -= ExploreEventsHelpers.SubscribeToEvent;
-        view.OnUnsubscribeEventClicked -= ExploreEventsHelpers.UnsubscribeToEvent;
+        view.OnSubscribeEventClicked -= SubscribeToEvent;
+        view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
         OnEventsFromAPIUpdated -= OnRequestedEventsUpdated;
@@ -249,8 +250,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
         view.ShowEventModal(eventModel);
-        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
         OnAnyActionExecuted?.Invoke();
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
     }
 
     internal void JumpInToEvent(EventFromAPIModel eventFromAPI)
@@ -259,8 +260,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
         OnAnyActionExecuted?.Invoke();
-
-        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, coords);
+        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
     internal void SubscribeToEvent(string eventId)

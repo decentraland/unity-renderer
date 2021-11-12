@@ -99,7 +99,7 @@ public class ExploreEventsHelpersTests
         Assert.AreEqual(testEventFromAPI.id, eventCardModel.eventId);
         Assert.AreEqual(testEventFromAPI.image, eventCardModel.eventPictureUri);
         Assert.AreEqual(testEventFromAPI.live, eventCardModel.isLive);
-        Assert.AreEqual(EventsSubSectionComponentController.LIVE_TAG_TEXT, eventCardModel.liveTagText);
+        Assert.AreEqual(ExploreEventsHelpers.LIVE_TAG_TEXT, eventCardModel.liveTagText);
         Assert.AreEqual(ExploreEventsHelpers.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
         Assert.AreEqual(testEventFromAPI.name, eventCardModel.eventName);
         Assert.AreEqual(testEventFromAPI.description, eventCardModel.eventDescription);

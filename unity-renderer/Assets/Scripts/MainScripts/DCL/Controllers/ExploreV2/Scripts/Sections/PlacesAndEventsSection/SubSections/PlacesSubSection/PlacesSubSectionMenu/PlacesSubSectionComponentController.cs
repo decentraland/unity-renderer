@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Interface;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -51,7 +50,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal bool reloadPlaces = false;
     internal IExploreV2Analytics exploreV2Analytics;
 
-    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics)
+    public PlacesSubSectionComponentController(
+        IPlacesSubSectionComponentView view,
+        IPlacesAPIController placesAPI,
+        IFriendsController friendsController,
+        IExploreV2Analytics exploreV2Analytics)
     {
         this.view = view;
         this.view.OnReady += FirstLoading;
@@ -171,8 +174,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
         OnAnyActionExecuted?.Invoke();
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
     }
 
     internal void JumpInToPlace(HotSceneInfo placeFromAPI)
@@ -181,7 +184,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
         OnAnyActionExecuted?.Invoke();
-
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 
