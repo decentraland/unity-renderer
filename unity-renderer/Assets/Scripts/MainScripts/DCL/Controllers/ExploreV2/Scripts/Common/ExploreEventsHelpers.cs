@@ -5,12 +5,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
+/// <summary>
+/// Helpers related to the events management in ExploreV2.
+/// </summary>
 public static class ExploreEventsHelpers
 {
     internal const string EVENT_CARD_MODAL_ID = "EventCard_Modal";
     internal const string LIVE_TAG_TEXT = "LIVE";
     internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
+    /// <summary>
+    /// Instantiates (if does not already exists) a event card modal from the given prefab.
+    /// </summary>
+    /// <param name="eventCardModalPrefab">Prefab to instantiate.</param>
+    /// <returns>An instance of a event card modal.</returns>
     public static EventCardComponentView ConfigureEventCardModal(EventCardComponentView eventCardModalPrefab)
     {
         EventCardComponentView eventModal = null;
@@ -29,6 +37,13 @@ public static class ExploreEventsHelpers
         return eventModal;
     }
 
+    /// <summary>
+    /// Creates and configures a pool for event cards.
+    /// </summary>
+    /// <param name="pool">Pool to configure.</param>
+    /// <param name="poolName">Name of the pool.</param>
+    /// <param name="eventCardPrefab">Event card prefab to use by the pool.</param>
+    /// <param name="maxPrewarmCount">Max number of pre-created cards.</param>
     public static void ConfigureEventCardsPool(out Pool pool, string poolName, EventCardComponentView eventCardPrefab, int maxPrewarmCount)
     {
         pool = PoolManager.i.GetPool(poolName);
@@ -42,6 +57,16 @@ public static class ExploreEventsHelpers
         }
     }
 
+    /// <summary>
+    /// Instantiates and configures a given list of events.
+    /// </summary>
+    /// <param name="events">List of events data.</param>
+    /// <param name="pool">Pool to use.</param>
+    /// <param name="OnEventInfoClicked">Action to inform when the Info button has been clicked.</param>
+    /// <param name="OnEventJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
+    /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
+    /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
+    /// <returns>A list of instances of events.</returns>
     public static List<BaseComponentView> InstantiateAndConfigureEventCards(
         List<EventCardComponentModel> events,
         Pool pool,
@@ -62,6 +87,15 @@ public static class ExploreEventsHelpers
         return instantiatedPlaces;
     }
 
+    /// <summary>
+    /// Configure a event card with the given model.
+    /// </summary>
+    /// <param name="eventCard">Event card to configure.</param>
+    /// <param name="eventInfo">Model to apply.</param>
+    /// <param name="OnEventInfoClicked">Action to inform when the Info button has been clicked.</param>
+    /// <param name="OnEventJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
+    /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
+    /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
     public static void ConfigureEventCard(
         EventCardComponentView eventCard,
         EventCardComponentModel eventInfo,
@@ -81,6 +115,11 @@ public static class ExploreEventsHelpers
         eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
     }
 
+    /// <summary>
+    /// Returs a event card model from the given API data.
+    /// </summary>
+    /// <param name="eventFromAPI">Data received from the API.</param>
+    /// <returns>An event card model.</returns>
     public static EventCardComponentModel CreateEventCardModelFromAPIEvent(EventFromAPIModel eventFromAPI)
     {
         EventCardComponentModel eventCardModel = new EventCardComponentModel();
@@ -153,6 +192,10 @@ public static class ExploreEventsHelpers
 
     internal static string FormatEventPlace(EventFromAPIModel eventFromAPI) { return string.IsNullOrEmpty(eventFromAPI.scene_name) ? "Decentraland" : eventFromAPI.scene_name; }
 
+    /// <summary>
+    /// Makes a jump in to the event defined by the given place data from API.
+    /// </summary>
+    /// <param name="eventFromAPI">Event data from API.</param>
     public static void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
         Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);

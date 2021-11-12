@@ -6,11 +6,19 @@ using System.Linq;
 using UnityEngine;
 using static HotScenesController;
 
+/// <summary>
+/// Helpers related to the places management in ExploreV2.
+/// </summary>
 public static class ExplorePlacesHelpers
 {
     internal const string PLACE_CARD_MODAL_ID = "PlaceCard_Modal";
     internal const string NO_PLACE_DESCRIPTION_WRITTEN = "The author hasn't written a description yet.";
 
+    /// <summary>
+    /// Instantiates (if does not already exists) a place card modal from the given prefab.
+    /// </summary>
+    /// <param name="placeCardModalPrefab">Prefab to instantiate.</param>
+    /// <returns>An instance of a place card modal.</returns>
     public static PlaceCardComponentView ConfigurePlaceCardModal(PlaceCardComponentView placeCardModalPrefab)
     {
         PlaceCardComponentView placeModal = null;
@@ -29,6 +37,13 @@ public static class ExplorePlacesHelpers
         return placeModal;
     }
 
+    /// <summary>
+    /// Creates and configures a pool for place cards.
+    /// </summary>
+    /// <param name="pool">Pool to configure.</param>
+    /// <param name="poolName">Name of the pool.</param>
+    /// <param name="placeCardPrefab">Place card prefab to use by the pool.</param>
+    /// <param name="maxPrewarmCount">Max number of pre-created cards.</param>
     public static void ConfigurePlaceCardsPool(out Pool pool, string poolName, PlaceCardComponentView placeCardPrefab, int maxPrewarmCount)
     {
         pool = PoolManager.i.GetPool(poolName);
@@ -42,6 +57,15 @@ public static class ExplorePlacesHelpers
         }
     }
 
+    /// <summary>
+    /// Instantiates and configures a given list of places.
+    /// </summary>
+    /// <param name="places">List of places data.</param>
+    /// <param name="pool">Pool to use.</param>
+    /// <param name="OnFriendHandlerAdded">Action to inform about the addition of a new friend handler.</param>
+    /// <param name="OnPlaceInfoClicked">Action to inform when the Info button has been clicked.</param>
+    /// <param name="OnPlaceJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
+    /// <returns>A list of instances of places.</returns>
     public static List<BaseComponentView> InstantiateAndConfigurePlaceCards(
         List<PlaceCardComponentModel> places,
         Pool pool,
@@ -62,6 +86,13 @@ public static class ExplorePlacesHelpers
         return instantiatedPlaces;
     }
 
+    /// <summary>
+    /// Configure a place card with the given model.
+    /// </summary>
+    /// <param name="placeCard">Place card to configure.</param>
+    /// <param name="placeInfo">Model to apply.</param>
+    /// <param name="OnPlaceInfoClicked">Action to inform when the Info button has been clicked.</param>
+    /// <param name="OnPlaceJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
     public static void ConfigurePlaceCard(
         PlaceCardComponentView placeCard,
         PlaceCardComponentModel placeInfo,
@@ -75,6 +106,11 @@ public static class ExplorePlacesHelpers
         placeCard.onJumpInClick?.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
     }
 
+    /// <summary>
+    /// Returs a place card model from the given API data.
+    /// </summary>
+    /// <param name="placeFromAPI">Data received from the API.</param>
+    /// <returns>A place card model.</returns>
     public static PlaceCardComponentModel CreatePlaceCardModelFromAPIPlace(HotSceneInfo placeFromAPI)
     {
         PlaceCardComponentModel placeCardModel = new PlaceCardComponentModel();
@@ -94,6 +130,10 @@ public static class ExplorePlacesHelpers
 
     internal static string FormatAuthorName(HotSceneInfo placeFromAPI) { return $"Author <b>{placeFromAPI.creator}</b>"; }
 
+    /// <summary>
+    /// Makes a jump in to the place defined by the given place data from API.
+    /// </summary>
+    /// <param name="placeFromAPI">Place data from API.</param>
     public static void JumpInToPlace(HotSceneInfo placeFromAPI)
     {
         HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
