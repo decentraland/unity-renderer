@@ -170,6 +170,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         projectPromise.Then( apiResponse =>
         {
+            //TODO: If it is ok, Start the editor
             if (!apiResponse.ok)
                 BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+apiResponse.error);
         });
@@ -253,7 +254,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     private void SetView()
     {
         scenesViewController.AddListener((ISceneListener) view);
-        scenesViewController.AddListener((IProjectListener) view);
+        projectsController.AddListener((IProjectsListener) view);
     }
 
     private void FetchPanelInfo(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
@@ -283,7 +284,6 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         sectionsController.SetFetchingDataStart();
 
-
         fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, network, landCacheTime, scenesCacheTime);
         fetchLandPromise
             .Then(LandsFetched)
@@ -308,7 +308,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     internal void ProjectsFetchedError(string error)
     {
         isFetchingProjects = false;
-        sectionsController.SetFetchingDataEnd();
+        sectionsController.SetFetchingDataEnd<SectionProjectController>();
         projectsController.SetProjects(new ProjectData[]{ });
         BIWUtils.ShowGenericNotification(error);
     }
@@ -324,7 +324,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     internal void LandsFetchedError(string error)
     {
         isFetchingLands = false;
-        sectionsController.SetFetchingDataEnd();
+        sectionsController.SetFetchingDataEnd<SectionLandController>();
+        sectionsController.SetFetchingDataEnd<SectionScenesController>();
         landsesController.SetLands(new LandWithAccess[] { });
         scenesViewController.SetScenes(new ISceneData[] { });
         Debug.LogError(error);
@@ -333,7 +334,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     internal void LandsFetched(LandWithAccess[] lands)
     {
         DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-        sectionsController.SetFetchingDataEnd();
+        sectionsController.SetFetchingDataEnd<SectionLandController>();
         isFetchingLands = false;
         UpdateProjectsDeploymentStatus();
         

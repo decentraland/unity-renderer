@@ -26,7 +26,7 @@ namespace DCL.Builder
         private readonly SectionProjectView view;
 
         private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
-        private Dictionary<string, IProjectCardView> projectsViews;
+        internal Dictionary<string, IProjectCardView> projectsViews = new Dictionary<string, IProjectCardView>();
 
         public SectionProjectController() : this(
             Object.Instantiate(Resources.Load<SectionProjectView>(VIEW_PREFAB_PATH))
@@ -78,7 +78,7 @@ namespace DCL.Builder
             projectView.SetActive(false);
         }
 
-        private void OnSearchResult(List<ISearchInfo> searchInfoScenes)
+        internal void OnSearchResult(List<ISearchInfo> searchInfoScenes)
         {
             if (projectsViews == null)
                 return;

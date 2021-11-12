@@ -39,22 +39,27 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     public event Action<string, string> OnTittleAndDescriptionSet;
     public event Action<int, int> OnSizeSet;
 
-    [SerializeField] private FirstStep firstStep;
-    [SerializeField] private SecondStep secondStep;
+    [SerializeField] private NewProjectFirstStepView newProjectFirstStepView;
+    [SerializeField] private NewProjectSecondStepView newProjectSecondStepView;
 
     [SerializeField] private ModalComponentView modal;
     [SerializeField] private CarouselComponentView carrousel;
 
-    private int currentStep = 0;
+    internal int currentStep = 0;
 
     private void Awake()
     {
         name = "_BuilderNewProjectFlowView";
-        firstStep.OnBackPressed += BackPressed;
-        secondStep.OnBackPressed += BackPressed;
+        newProjectFirstStepView.OnBackPressed += BackPressed;
+        newProjectSecondStepView.OnBackPressed += BackPressed;
 
-        firstStep.OnNextPressed += SetTittleAndDescription;
-        secondStep.OnNextPressed += SetSize;
+        newProjectFirstStepView.OnNextPressed += SetTittleAndDescription;
+        newProjectSecondStepView.OnNextPressed += SetSize;
+    }
+
+    private void OnDestroy()
+    {
+        Dispose();
     }
 
     public void ShowNewProjectTitleAndDescrition()
@@ -76,26 +81,26 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
 
     public void Dispose()
     {
-        firstStep.OnBackPressed += BackPressed;
-        secondStep.OnBackPressed += BackPressed;
+        newProjectFirstStepView.OnBackPressed += BackPressed;
+        newProjectSecondStepView.OnBackPressed += BackPressed;
 
-        firstStep.OnNextPressed -= SetTittleAndDescription;
-        secondStep.OnNextPressed -= SetSize;
+        newProjectFirstStepView.OnNextPressed -= SetTittleAndDescription;
+        newProjectSecondStepView.OnNextPressed -= SetSize;
     }
 
-    private void SetSize(int rows, int colums)
+    internal void SetSize(int rows, int colums)
     {
         NextPressed();
         OnSizeSet?.Invoke(rows, colums);
     }
 
-    private void SetTittleAndDescription(string title, string description)
+    internal void SetTittleAndDescription(string title, string description)
     {
         NextPressed();
         OnTittleAndDescriptionSet?.Invoke(title, description);
     }
 
-    private void NextPressed()
+    internal void NextPressed()
     {
         if (currentStep >= 2)
             return;
@@ -104,7 +109,7 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
         carrousel.GoToNextItem();
     }
 
-    private void BackPressed()
+    internal void BackPressed()
     {
         if (currentStep == 0)
             Hide();

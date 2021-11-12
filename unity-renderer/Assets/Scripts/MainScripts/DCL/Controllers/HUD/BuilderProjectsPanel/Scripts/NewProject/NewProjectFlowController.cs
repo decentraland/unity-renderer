@@ -7,7 +7,11 @@ using Object = UnityEngine.Object;
 
 public interface INewProjectFlowController
 {
+    /// <summary>
+    /// When a new project is created
+    /// </summary>
     event Action<ProjectData> OnNewProjectCrated;
+    
     /// <summary>
     /// This will create a new project data and show the view to create it
     /// </summary>
@@ -25,12 +29,22 @@ public class NewProjectFlowController : INewProjectFlowController
     internal ProjectData projectData;
 
     internal INewProjectFlowView view;
-
+    
     public NewProjectFlowController()
     {
         var prefab = Resources.Load<NewProjectFlowView>(VIEW_PATH);
-        view = Object.Instantiate(prefab);
+        var instantiateView = Object.Instantiate(prefab);
+        Initilizate(instantiateView);
+    }
+    
+    public NewProjectFlowController(INewProjectFlowView view)
+    {
+        Initilizate(view);
+    }
 
+    private void Initilizate(INewProjectFlowView view)
+    {
+        this.view = view;
         view.OnTittleAndDescriptionSet += SetTitleAndDescription;
         view.OnSizeSet += SetRowsAndColumns;
     }

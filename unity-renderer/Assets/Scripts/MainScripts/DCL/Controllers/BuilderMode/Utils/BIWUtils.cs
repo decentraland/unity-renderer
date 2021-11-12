@@ -28,6 +28,8 @@ public static partial class BIWUtils
     
     public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
+        if(NotificationsController.i == null)
+            return;
         NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
         {
             message = message,
@@ -72,13 +74,12 @@ public static partial class BIWUtils
         return manifest;
     }
 
-    //We create the scene as it doest the current builder so we ensure the compatibility between both builders
+    //We create the scene the same way as the current builder do, so we ensure the compatibility between both builders
     private static BuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
     {
         BuilderGround ground = new BuilderGround();
         ground.assetId = BIWSettings.FLOOR_ID;
         ground.componentId = Guid.NewGuid().ToString();
-        
         
         BuilderScene scene = new BuilderScene
         {

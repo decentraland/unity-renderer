@@ -32,7 +32,7 @@ namespace DCL.Builder
         event Action<Vector2Int> OnRequestEditSceneAtCoords;
         void OpenSection(SectionId id);
         void SetFetchingDataStart();
-        void SetFetchingDataEnd();
+        void SetFetchingDataEnd<T>() where T : SectionBase;
     }
 
     /// <summary>
@@ -58,7 +58,6 @@ namespace DCL.Builder
         private Transform sectionsParent;
         private ISectionFactory sectionFactory;
         private SectionBase currentOpenSection;
-        private bool isLoading = false;
 
         /// <summary>
         /// Ctor
@@ -93,7 +92,7 @@ namespace DCL.Builder
             if (section != null)
             {
                 section.SetViewContainer(sectionsParent);
-                section.SetFetchingDataState(isLoading);
+                section.SetFetchingDataState(section.isLoading);
                 SubscribeEvents(section);
             }
 
@@ -117,18 +116,18 @@ namespace DCL.Builder
             }
         }
 
-        public void SetFetchingDataStart() { SetIsLoading(true); }
+        public void SetFetchingDataStart(){ SetIsLoading<SectionBase>(true); }
 
-        public void SetFetchingDataEnd() { SetIsLoading(false); }
+        public void SetFetchingDataEnd<T>() where T : SectionBase { SetIsLoading<T>(false); }
 
-        private void SetIsLoading(bool isLoading)
+        private void SetIsLoading<T>(bool isLoading) where T : SectionBase
         {
-            this.isLoading = isLoading;
             using (var iterator = loadedSections.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    iterator.Current.Value.SetFetchingDataState(isLoading);
+                    if(iterator.Current.Value is T sectionBase)
+                        sectionBase.SetFetchingDataState(isLoading);
                 }
             }
         }

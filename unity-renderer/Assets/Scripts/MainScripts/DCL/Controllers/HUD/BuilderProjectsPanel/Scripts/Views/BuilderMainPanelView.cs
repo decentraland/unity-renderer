@@ -25,7 +25,7 @@ namespace DCL.Builder
         IUnpublishPopupView GetUnpublishPopup();
     }
 
-    internal class BuilderMainPanelView : MonoBehaviour, IBuilderMainPanelView, ISceneListener, IProjectListener
+    internal class BuilderMainPanelView : MonoBehaviour, IBuilderMainPanelView, ISceneListener, IProjectsListener
     {
         [Header("General")]
         [SerializeField] internal Button closeButton;
@@ -151,14 +151,14 @@ namespace DCL.Builder
 
         void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes) { scenesCount = scenes.Count; }
 
-        void IProjectListener.SetScenes(Dictionary<string, ISceneCardView> scenes) { projectScenesCount = scenes.Count; }
-
         void ISceneListener.SceneAdded(ISceneCardView scene) { scenesCount++; }
-
-        void IProjectListener.SceneAdded(ISceneCardView scene) { projectScenesCount++; }
 
         void ISceneListener.SceneRemoved(ISceneCardView scene) { scenesCount--; }
 
-        void IProjectListener.SceneRemoved(ISceneCardView scene) { projectScenesCount--; }
+        public void OnSetProjects(Dictionary<string, IProjectCardView> projects) { projectScenesCount = projects.Count; }
+        
+        public void OnProjectAdded(IProjectCardView project) { projectScenesCount++; }
+        
+        public void OnProjectRemoved(IProjectCardView project) { projectScenesCount--; }
     }
 }
