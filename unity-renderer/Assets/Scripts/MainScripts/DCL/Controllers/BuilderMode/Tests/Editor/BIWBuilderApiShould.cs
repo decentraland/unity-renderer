@@ -41,7 +41,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         apiController = new BuilderAPIController();
         
         var context = BIWTestUtils.CreateMockedContext();
-        context.sceneReferences.Configure().builderInWorldBridge.Returns(gameObjectToDestroy);
+        context.sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
         apiController.Initialize(context);
     }
     

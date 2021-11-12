@@ -38,7 +38,7 @@ public class BuilderAPIController : IBuilderAPIController
     public void Initialize(IContext context)
     {
         apiResponseResolver = new BuilderAPIResponseResolver();
-        builderInWorldBridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
+        builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnHeadersReceived += HeadersReceived;
     }

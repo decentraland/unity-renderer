@@ -396,7 +396,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         mainController = new BuilderInWorldEditor();
         BuilderInWorldEditor.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(new BIWModeController(),
-            new BIWSaveController(), InitialSceneReferences.i.data));
+            new BIWSaveController(), SceneReferences.i));
         mainController.initialLoadingController.Dispose();
         mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
         mainController.initialLoadingController.Configure().isActive.Returns(true);

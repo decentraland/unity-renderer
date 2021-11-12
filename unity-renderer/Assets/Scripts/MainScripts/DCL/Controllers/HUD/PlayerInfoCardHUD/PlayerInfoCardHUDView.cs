@@ -119,9 +119,9 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         FriendsController.i.OnUpdateFriendship -= OnFriendStatusUpdated;
         FriendsController.i.OnUpdateFriendship += OnFriendStatusUpdated;
 
-        if (InitialSceneReferences.i != null)
+        if (SceneReferences.i != null)
         {
-            var mouseCatcher = DCL.InitialSceneReferences.i.data.mouseCatcher;
+            var mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
 
             if (mouseCatcher != null)
             {

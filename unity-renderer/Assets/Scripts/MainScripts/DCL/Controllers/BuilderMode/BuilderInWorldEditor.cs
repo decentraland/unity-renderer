@@ -83,9 +83,8 @@ public class BuilderInWorldEditor : IBIWEditor
         isInit = true;
 
         this.context = context;
-
-        if(InitialSceneReferences.i != null)
-            InitReferences(InitialSceneReferences.i.data);
+        
+        InitReferences(SceneReferences.i);
 
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnBuilderProjectInfo += BuilderProjectPanelInfo;
@@ -112,9 +111,9 @@ public class BuilderInWorldEditor : IBIWEditor
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    public void InitReferences(InitialSceneReferences.Data sceneReferences)
+    public void InitReferences(SceneReferences sceneReferences)
     {
-        builderInWorldBridge = sceneReferences.builderInWorldBridge;
+        builderInWorldBridge = sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
         cursorGO = sceneReferences.cursorCanvas;
         inputController = sceneReferences.inputController;
 

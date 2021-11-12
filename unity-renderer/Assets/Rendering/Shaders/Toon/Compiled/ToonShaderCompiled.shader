@@ -539,6 +539,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -1916,6 +1919,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -3220,6 +3226,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -4506,6 +4515,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -5806,6 +5818,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -7094,6 +7109,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -8381,6 +8399,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -9752,6 +9773,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -11054,6 +11078,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -12339,6 +12366,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -13638,6 +13668,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -14926,6 +14959,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;
@@ -16214,6 +16250,9 @@
 
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
+            float4x4 _WorldInverse;
+            float4x4 _Matrices[100];
+            float4x4 _BindPoses[100];
             float4 _MatCap_TexelSize;
             float4 _GlossIntensity;
             float4 _MultiplyColor;

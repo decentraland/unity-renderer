@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using Cinemachine;
+using DCL.Rendering;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsCommon.SettingsControllers.SpecificControllers;
 using NUnit.Framework;
@@ -34,7 +35,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         public IEnumerator SetUp()
         {
             yield return EditorSceneManager.LoadSceneAsyncInPlayMode($"{TEST_SCENE_PATH}/{TEST_SCENE_NAME}.unity", new LoadSceneParameters(LoadSceneMode.Additive));
-
+            yield return null;
             SetupReferences();
         }
 
@@ -62,29 +63,26 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             lwrpaSoftShadowField = urpAsset.GetType().GetField("m_SoftShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.IsNotNull(lwrpaSoftShadowField, "lwrpaSoftShadowField is null!");
 
-            GeneralSettingsReferences generalSettingsReferences = GameObject.FindObjectOfType<GeneralSettingsReferences>();
-            QualitySettingsReferences qualitySettingsReferences = GameObject.FindObjectOfType<QualitySettingsReferences>();
+            SceneReferences sceneReferences = SceneReferences.i;
+            Assert.IsNotNull(sceneReferences, "SceneReferences is invalid");
 
-            Assert.IsNotNull(generalSettingsReferences, "GeneralSettingsReferences not found in scene");
-            Assert.IsNotNull(qualitySettingsReferences, "QualitySettingsReferences not found in scene");
-
-            freeLookCamera = generalSettingsReferences.thirdPersonCamera;
+            freeLookCamera = sceneReferences.thirdPersonCamera;
             Assert.IsNotNull(freeLookCamera, "GeneralSettingsController: thirdPersonCamera reference missing");
 
-            CinemachineVirtualCamera virtualCamera = generalSettingsReferences.firstPersonCamera;
+            CinemachineVirtualCamera virtualCamera = sceneReferences.firstPersonCamera;
             Assert.IsNotNull(virtualCamera, "GeneralSettingsController: firstPersonCamera reference missing");
             povCamera = virtualCamera.GetCinemachineComponent<CinemachinePOV>();
             Assert.IsNotNull(povCamera, "GeneralSettingsController: firstPersonCamera doesn't have CinemachinePOV component");
 
-            environmentLight = qualitySettingsReferences.environmentLight;
+            environmentLight = sceneReferences.environmentLight;
             Assert.IsNotNull(environmentLight, "QualitySettingsController: environmentLight reference missing");
 
-            postProcessVolume = qualitySettingsReferences.postProcessVolume;
+            postProcessVolume = sceneReferences.postProcessVolume;
             Assert.IsNotNull(postProcessVolume, "QualitySettingsController: postProcessVolume reference missing");
 
-            firstPersonCamera = qualitySettingsReferences.firstPersonCamera;
+            firstPersonCamera = sceneReferences.firstPersonCamera;
             Assert.IsNotNull(firstPersonCamera, "QualitySettingsController: firstPersonCamera reference missing");
-            Assert.IsNotNull(qualitySettingsReferences.thirdPersonCamera, "QualitySettingsController: thirdPersonCamera reference missing");
+            Assert.IsNotNull(sceneReferences.thirdPersonCamera, "QualitySettingsController: thirdPersonCamera reference missing");
         }
 
         [Test]
@@ -167,7 +165,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "colorGrading stored value mismatch");
             Tonemapping toneMapping;
-            if (QualitySettingsReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
+            if (SceneReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
             {
                 Assert.AreEqual(newValue, toneMapping.active, "bloom mismatch");
             }
@@ -193,7 +191,13 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         public void ChangeDetailObjectCullingSizeCorrectly()
         {
             // Arrange
-            settingController = ScriptableObject.CreateInstance<DetailObjectCullingSizeControlController>();
+            var scriptableObject = ScriptableObject.CreateInstance<DetailObjectCullingSizeControlController>();
+            scriptableObject.cullingControllerSettingsData = ScriptableObject.CreateInstance<CullingControllerSettingsData>();
+            scriptableObject.cullingControllerSettingsData.rendererProfileMax = new CullingControllerProfile();
+            scriptableObject.cullingControllerSettingsData.rendererProfileMin = new CullingControllerProfile();
+            scriptableObject.cullingControllerSettingsData.skinnedRendererProfileMax = new CullingControllerProfile();
+            scriptableObject.cullingControllerSettingsData.skinnedRendererProfileMin = new CullingControllerProfile();
+            settingController = scriptableObject;
             settingController.Initialize();
 
             // Act
