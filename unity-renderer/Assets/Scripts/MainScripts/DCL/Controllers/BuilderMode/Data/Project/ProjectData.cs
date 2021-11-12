@@ -14,7 +14,7 @@ namespace DCL.Builder
         public string scene_id;
 
         public int rows;
-        public int colums;
+        public int cols;
 
         public DateTime created_at;
         public DateTime updated_at;

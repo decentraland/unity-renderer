@@ -55,7 +55,7 @@ public class NewProjectFlowController : INewProjectFlowController
     public void SetRowsAndColumns(int rows, int columns)
     {
         projectData.rows = rows;
-        projectData.colums = columns;
+        projectData.cols = columns;
     }
 
     public void Dispose() { view.Dispose(); }
