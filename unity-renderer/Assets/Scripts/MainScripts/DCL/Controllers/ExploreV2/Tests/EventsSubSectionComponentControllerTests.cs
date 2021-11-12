@@ -106,7 +106,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.OnRequestedEventsUpdated();
@@ -128,7 +128,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadFeaturedEvents();
@@ -144,7 +144,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadTrendingEvents();
@@ -159,7 +159,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadUpcomingEvents();
@@ -187,7 +187,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadGoingEvents();
@@ -217,7 +217,7 @@ public class EventsSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         eventsSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        EventFromAPIModel testEventFromAPI = CreateTestEvent("1");
+        EventFromAPIModel testEventFromAPI = ExploreEventsTestHelpers.CreateTestEvent("1");
 
         // Act
         eventsSubSectionComponentController.JumpInToEvent(testEventFromAPI);
@@ -226,39 +226,5 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView.Received().HideEventModal();
         Assert.IsTrue(exploreClosed);
         exploreV2Analytics.Received().SendEventTeleport(testEventFromAPI.id, testEventFromAPI.name, new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]));
-    }
-
-    private List<EventFromAPIModel> CreateTestEventsFromApi(int numberOfEvents)
-    {
-        List<EventFromAPIModel> testEvents = new List<EventFromAPIModel>();
-
-        for (int i = 0; i < numberOfEvents; i++)
-        {
-            testEvents.Add(CreateTestEvent((i + 1).ToString()));
-        }
-
-        return testEvents;
-    }
-
-    private EventFromAPIModel CreateTestEvent(string id)
-    {
-        return new EventFromAPIModel
-        {
-            id = id,
-            attending = false,
-            coordinates = new int[] { 10, 10 },
-            description = "Test Description",
-            finish_at = "2021-11-30T11:11:00.000Z",
-            highlighted = false,
-            image = "Test Uri",
-            live = true,
-            name = "Test Name",
-            next_start_at = "2021-09-30T11:11:00.000Z",
-            realm = null,
-            scene_name = "Test Scene Name",
-            total_attendees = 100,
-            trending = false,
-            user_name = "Test User Name"
-        };
     }
 }
