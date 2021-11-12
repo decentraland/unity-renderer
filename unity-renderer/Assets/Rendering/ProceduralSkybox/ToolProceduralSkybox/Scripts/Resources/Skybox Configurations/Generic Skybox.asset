@@ -340,7 +340,7 @@ MonoBehaviour:
       m_NumColorKeys: 8
       m_NumAlphaKeys: 2
   slots:
-  - enabled: 1
+  - enabled: 0
     slotID: 0
     slotName: 
     expandedInEditor: 0
@@ -362,7 +362,7 @@ MonoBehaviour:
       cubemap: {fileID: 0}
       color:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
+        key0: {r: 8, g: 8, b: 8, a: 1}
         key1: {r: 1, g: 1, b: 1, a: 0.38039216}
         key2: {r: 0, g: 0, b: 0, a: 0.9761685}
         key3: {r: 0, g: 0, b: 0, a: 0}
@@ -389,7 +389,7 @@ MonoBehaviour:
         m_Mode: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 3
-      tiling: {x: 4, y: 2}
+      tiling: {x: 1, y: 0.5}
       flipBookRowsAndColumns: {x: 0, y: 0}
       flipbookAnimSpeed: 0
       offset: []
@@ -423,9 +423,9 @@ MonoBehaviour:
       distortSpeed: []
       distortSharpness: []
       movementTypeCubemap: 0
-      movementTypePlanar_Radial: 0
+      movementTypePlanar_Radial: 1
       movementTypeSatellite: 0
-  - enabled: 1
+  - enabled: 0
     slotID: 1
     slotName: 
     expandedInEditor: 0
@@ -521,7 +521,7 @@ MonoBehaviour:
     - layerType: 2
       enabled: 1
       nameInEditor: Sun
-      expandedInEditor: 1
+      expandedInEditor: 0
       timeSpan_start: 5.1
       timeSpan_End: 19.9
       fadingInTime: 0
@@ -605,14 +605,14 @@ MonoBehaviour:
   - enabled: 1
     slotID: 2
     slotName: 
-    expandedInEditor: 0
+    expandedInEditor: 1
     startTime: 0
     endTime: 0
     layers:
     - layerType: 4
       enabled: 1
       nameInEditor: Clouds Night
-      expandedInEditor: 1
+      expandedInEditor: 0
       timeSpan_start: 21
       timeSpan_End: 4.5
       fadingInTime: 0
@@ -765,7 +765,7 @@ MonoBehaviour:
       movementTypeCubemap: 0
       movementTypePlanar_Radial: 0
       movementTypeSatellite: 0
-  - enabled: 1
+  - enabled: 0
     slotID: 3
     slotName: 
     expandedInEditor: 0
@@ -844,7 +844,7 @@ MonoBehaviour:
       particlesVerticalSpread: 1
       particleMinFade: 1
       particleMaxFade: 1
-      distortionExpanded: 0
+      distortionExpanded: 1
       distortIntensity:
       - percentage: 0
         value: 0.81
@@ -860,7 +860,7 @@ MonoBehaviour:
       movementTypeCubemap: 0
       movementTypePlanar_Radial: 0
       movementTypeSatellite: 0
-  - enabled: 1
+  - enabled: 0
     slotID: 4
     slotName: 
     expandedInEditor: 0
@@ -871,7 +871,7 @@ MonoBehaviour:
       enabled: 1
       nameInEditor: Eyes
       expandedInEditor: 1
-      timeSpan_start: 23
+      timeSpan_start: 10
       timeSpan_End: 24
       fadingInTime: 0
       fadingOutTime: 0
@@ -930,7 +930,7 @@ MonoBehaviour:
         value: {x: 0, y: 0, z: 0}
       - percentage: 0
         value: {x: 0, y: 0, z: 0}
-      particlesAmount: 10
+      particlesAmount: 50
       particleMinSize: 10
       particleMaxSize: 20
       particlesHorizontalSpread: 5.05

@@ -491,17 +491,17 @@
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "1a42db9da30541d8b5ae822ef8b68302",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "ef6f7486272c4a9e93430ed1ecc51137"
     },
     "m_Name": "Property",
     "m_DrawState": {
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 286.25,
-            "y": 105.0,
-            "width": 0.0,
-            "height": 0.0
+            "x": 270.0000305175781,
+            "y": -33.999977111816409,
+            "width": 145.0,
+            "height": 34.0
         }
     },
     "m_Slots": [
