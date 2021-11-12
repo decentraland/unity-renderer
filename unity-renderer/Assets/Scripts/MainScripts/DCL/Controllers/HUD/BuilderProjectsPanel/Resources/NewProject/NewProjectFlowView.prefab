@@ -53,10 +53,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e31fffc950c1cd4ab5981e4cecd7322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newProjectFirstStepView: {fileID: -160678705385318153, guid: c2ba191244a70f04b818ce6954f0582e,
-    type: 3}
-  newProjectSecondStepView: {fileID: 4141293239921478655, guid: 147c818d29791ca41b1b3f56fba950c4,
-    type: 3}
+  newProjectFirstStepView: {fileID: 6140185283116346676}
+  newProjectSecondStepView: {fileID: 5394032049005888145}
   modal: {fileID: 897233696589077236}
   carrousel: {fileID: 7053876965995045949}
 --- !u!225 &6490245455997205155

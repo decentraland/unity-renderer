@@ -16,8 +16,19 @@ public interface INewProjectFlowController
     /// This will create a new project data and show the view to create it
     /// </summary>
     void NewProject();
+
+    /// <summary>
+    /// Hide the view
+    /// </summary>
+    void Hide();
     
     void Dispose();
+
+    /// <summary>
+    /// This will return true if the new project windows is active
+    /// </summary>
+    /// <returns></returns>
+    bool IsActive();
 }
 
 public class NewProjectFlowController : INewProjectFlowController
@@ -48,12 +59,19 @@ public class NewProjectFlowController : INewProjectFlowController
         view.OnTittleAndDescriptionSet += SetTitleAndDescription;
         view.OnSizeSet += SetRowsAndColumns;
     }
+
+    public void Hide() { view.Hide(); }
     
     public void Dispose()
     {
         view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
         view.OnSizeSet -= SetRowsAndColumns;
         view.Dispose();
+    }
+    
+    public bool IsActive()
+    {
+        return view.IsActive();
     }
 
     public void NewProject()

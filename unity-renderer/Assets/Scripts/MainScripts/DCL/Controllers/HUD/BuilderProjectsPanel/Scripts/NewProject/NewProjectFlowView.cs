@@ -31,6 +31,12 @@ public interface INewProjectFlowView
     /// </summary>
     void Hide();
     
+    /// <summary>
+    /// This will return true if the new project windows is active
+    /// </summary>
+    /// <returns></returns>
+    bool IsActive();
+    
     void Dispose();
 }
 
@@ -77,6 +83,11 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     public void Hide()
     {
         modal.Hide();
+    }
+    
+    public bool IsActive()
+    {
+        return modal.isVisible;
     }
 
     public void Dispose()

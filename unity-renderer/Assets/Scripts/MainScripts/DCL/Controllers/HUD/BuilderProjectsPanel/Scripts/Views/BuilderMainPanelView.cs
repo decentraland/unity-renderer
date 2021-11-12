@@ -9,6 +9,7 @@ namespace DCL.Builder
     {
         event Action OnBackToMainMenuPressed;
         event Action OnClosePressed;
+        event Action OnBackPressed;
         event Action OnCreateProjectPressed;
         void SetVisible(bool visible);
         bool IsVisible();
@@ -55,6 +56,7 @@ namespace DCL.Builder
         [SerializeField] internal UnpublishPopupView unpublishPopupView;
 
         public event Action OnClosePressed;
+        public event Action OnBackPressed;
         public event Action OnCreateProjectPressed;
         public event Action OnImportScenePressed;
         public event Action OnBackToMainMenuPressed;
@@ -147,7 +149,7 @@ namespace DCL.Builder
 
         private void OnDestroy() { isDestroyed = true; }
 
-        private void CloseTriggerOnOnTriggered(DCLAction_Trigger action) { OnClosePressed?.Invoke(); }
+        private void CloseTriggerOnOnTriggered(DCLAction_Trigger action) { OnBackPressed?.Invoke(); }
 
         void ISceneListener.SetScenes(Dictionary<string, ISceneCardView> scenes) { scenesCount = scenes.Count; }
 

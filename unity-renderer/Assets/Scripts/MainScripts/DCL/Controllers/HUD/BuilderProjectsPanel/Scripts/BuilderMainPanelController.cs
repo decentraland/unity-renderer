@@ -65,6 +65,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         this.view = view;
         view.OnClosePressed += OnClose;
+        view.OnBackPressed += OnBack;
+    }
+
+    private void OnBack()
+    {
+        if(newProjectFlowController.IsActive())
+            newProjectFlowController.Hide();
+        else
+            OnClose();
     }
 
     public void Dispose()
