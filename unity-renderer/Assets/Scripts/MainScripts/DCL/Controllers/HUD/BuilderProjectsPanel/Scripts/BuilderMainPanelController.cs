@@ -95,6 +95,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
+        view.OnBackPressed -= OnBack;
 
         unpublishPopupController?.Dispose();
 
@@ -190,7 +191,10 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         });
     }
 
-    public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
+    public void SetVisibility(bool visible)
+    {
+        DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible);
+    }
 
     private void OnVisibilityChanged(bool isVisible, bool prev)
     {
