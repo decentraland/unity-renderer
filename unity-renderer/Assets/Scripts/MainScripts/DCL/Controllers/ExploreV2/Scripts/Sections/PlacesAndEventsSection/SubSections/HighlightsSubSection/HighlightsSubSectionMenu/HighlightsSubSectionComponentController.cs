@@ -118,7 +118,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             return;
 
         view.RestartScrollViewPosition();
-        view.SetPromotedPlacessAsLoading(true);
+        view.SetPromotedPlacesAsLoading(true);
         view.SetFeaturedPlacesAsLoading(true);
         view.SetLiveAsLoading(true);
         RequestAllPlacesFromAPI();
@@ -174,7 +174,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         }
 
         view.SetPromotedPlaces(places);
-        view.SetPromotedPlacessAsLoading(false);
+        view.SetPromotedPlacesAsLoading(false);
     }
 
     public void LoadFeaturedPlaces()

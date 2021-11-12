@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using static HotScenesController;
 
-public class ExplorePlacesHelpersTests
+public class ExplorePlacesCommonTests
 {
     private PlacesSubSectionComponentView placesSubSectionComponent;
     private PlaceCardComponentView testPlaceCard;

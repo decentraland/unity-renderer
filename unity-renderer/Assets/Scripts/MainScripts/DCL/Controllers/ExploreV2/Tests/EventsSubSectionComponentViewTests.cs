@@ -40,7 +40,7 @@ public class EventsSubSectionComponentViewTests
     public void SetFeaturedEventsCorrectly()
     {
         // Arrange
-        List<EventCardComponentModel> testEvents = CreateTestEvents();
+        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
         eventsSubSectionComponent.SetFeaturedEvents(testEvents);
@@ -88,7 +88,7 @@ public class EventsSubSectionComponentViewTests
     public void SetTrendingEventsCorrectly()
     {
         // Arrange
-        List<EventCardComponentModel> testEvents = CreateTestEvents();
+        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
         eventsSubSectionComponent.SetTrendingEvents(testEvents);
@@ -124,7 +124,7 @@ public class EventsSubSectionComponentViewTests
     public void SetUpcomingEventsCorrectly()
     {
         // Arrange
-        List<EventCardComponentModel> testEvents = CreateTestEvents();
+        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
         eventsSubSectionComponent.SetUpcomingEvents(testEvents);
@@ -141,7 +141,7 @@ public class EventsSubSectionComponentViewTests
     {
         // Arrange
         eventsSubSectionComponent.upcomingEvents.RemoveItems();
-        List<EventCardComponentModel> testEvents = CreateTestEvents();
+        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
         eventsSubSectionComponent.AddUpcomingEvents(testEvents);
@@ -176,7 +176,7 @@ public class EventsSubSectionComponentViewTests
     public void SetGoingEventsCorrectly()
     {
         // Arrange
-        List<EventCardComponentModel> testEvents = CreateTestEvents();
+        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
         eventsSubSectionComponent.SetGoingEvents(testEvents);
@@ -209,10 +209,10 @@ public class EventsSubSectionComponentViewTests
     }
 
     [Test]
-    public void ShowPlaceModalCorrectly()
+    public void ShowEventModalCorrectly()
     {
         // Arrange
-        EventCardComponentModel testEventInfo = CreateTestEvent("1");
+        EventCardComponentModel testEventInfo = ExploreEventsTestHelpers.CreateTestEvent("1", testSprite);
 
         // Act
         eventsSubSectionComponent.ShowEventModal(testEventInfo);
@@ -236,53 +236,5 @@ public class EventsSubSectionComponentViewTests
 
         // Assert
         Assert.AreEqual(isVisible, eventsSubSectionComponent.showMoreUpcomingEventsButtonContainer.gameObject.activeSelf);
-    }
-
-    private List<EventCardComponentModel> CreateTestEvents()
-    {
-        List<EventCardComponentModel> testEvents = new List<EventCardComponentModel>();
-        testEvents.Add(CreateTestEvent("1"));
-        testEvents.Add(CreateTestEvent("2"));
-
-        return testEvents;
-    }
-
-    private EventCardComponentModel CreateTestEvent(string id)
-    {
-        return new EventCardComponentModel
-        {
-            eventId = id,
-            coords = new Vector2Int(19, 10),
-            eventDateText = "Test Date",
-            eventDescription = "Test Description",
-            eventName = "Test Name",
-            eventOrganizer = "Test Organizer",
-            eventPictureSprite = testSprite,
-            eventPlace = "Test Place",
-            eventStartedIn = "Test Date",
-            eventStartsInFromTo = "Test Start",
-            isLive = true,
-            isSubscribed = false,
-            liveTagText = "Test Live Text",
-            subscribedUsers = 100,
-            eventFromAPIInfo = new EventFromAPIModel
-            {
-                id = id,
-                attending = false,
-                coordinates = new int[] { 10, 10 },
-                description = "Test Description",
-                finish_at = "Test Date",
-                highlighted = false,
-                image = "Test Uri",
-                live = true,
-                name = "Test Name",
-                next_start_at = "Test Start",
-                realm = "Test Realm",
-                scene_name = "Test Scene Name",
-                total_attendees = 100,
-                trending = false,
-                user_name = "Test User Name"
-            }
-        };
     }
 }

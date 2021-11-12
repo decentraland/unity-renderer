@@ -72,7 +72,7 @@ public interface IHighlightsSubSectionComponentView
     /// Set the promoted places component in loading mode.
     /// </summary>
     /// <param name="isVisible">True for activating the loading mode.</param>
-    void SetPromotedPlacessAsLoading(bool isVisible);
+    void SetPromotedPlacesAsLoading(bool isVisible);
 
     /// <summary>
     /// Activates/deactivates the promoted places component.
@@ -242,7 +242,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         SetPromotedPlacesActive(places.Count > 0);
     }
 
-    public void SetPromotedPlacessAsLoading(bool isVisible)
+    public void SetPromotedPlacesAsLoading(bool isVisible)
     {
         SetPromotedPlacesActive(!isVisible);
         promotedPlacesLoading.SetActive(isVisible);

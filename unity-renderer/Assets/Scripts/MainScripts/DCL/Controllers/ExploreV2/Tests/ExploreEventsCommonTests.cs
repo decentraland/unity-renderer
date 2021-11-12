@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class ExploreEventsHelpersTests
+public class ExploreEventsCommonTests
 {
     private EventsSubSectionComponentView eventsSubSectionComponent;
     private EventCardComponentView testEventCard;

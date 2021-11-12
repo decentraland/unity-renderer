@@ -34,7 +34,7 @@ public class PlacesSubSectionComponentViewTests
     public void SetPlacesCorrectly()
     {
         // Arrange
-        List<PlaceCardComponentModel> testPlaces = CreateTestPlaces();
+        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite);
 
         // Act
         placesSubSectionComponent.SetPlaces(testPlaces);
@@ -51,7 +51,7 @@ public class PlacesSubSectionComponentViewTests
     {
         // Arrange
         placesSubSectionComponent.places.RemoveItems();
-        List<PlaceCardComponentModel> testPlaces = CreateTestPlaces();
+        List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite);
 
         // Act
         placesSubSectionComponent.AddPlaces(testPlaces);
@@ -102,7 +102,7 @@ public class PlacesSubSectionComponentViewTests
     public void ShowPlaceModalCorrectly()
     {
         // Arrange
-        PlaceCardComponentModel testPlaceInfo = CreateTestPlace("Test Place");
+        PlaceCardComponentModel testPlaceInfo = ExplorePlacesTestHelpers.CreateTestPlace("Test Place", testSprite);
 
         // Act
         placesSubSectionComponent.ShowPlaceModal(testPlaceInfo);
@@ -111,29 +111,5 @@ public class PlacesSubSectionComponentViewTests
         Assert.AreEqual(testPlaceInfo, placesSubSectionComponent.placeModal.model, "The place modal model does not match.");
 
         placesSubSectionComponent.HidePlaceModal();
-    }
-
-    private List<PlaceCardComponentModel> CreateTestPlaces()
-    {
-        List<PlaceCardComponentModel> testPlaces = new List<PlaceCardComponentModel>();
-        testPlaces.Add(CreateTestPlace("Test Place 1"));
-        testPlaces.Add(CreateTestPlace("Test Place 2"));
-
-        return testPlaces;
-    }
-
-    private PlaceCardComponentModel CreateTestPlace(string name)
-    {
-        return new PlaceCardComponentModel
-        {
-            coords = new Vector2Int(10, 10),
-            hotSceneInfo = new HotScenesController.HotSceneInfo(),
-            numberOfUsers = 10,
-            parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
-            placeAuthor = "Test Author",
-            placeDescription = "Test Description",
-            placeName = name,
-            placePictureSprite = testSprite
-        };
     }
 }
