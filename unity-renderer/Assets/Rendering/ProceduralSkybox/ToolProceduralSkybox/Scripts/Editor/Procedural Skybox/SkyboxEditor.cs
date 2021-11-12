@@ -82,7 +82,7 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Space(12);
 
-            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos, GUILayout.Width(position.width - 20), GUILayout.Height(position.height - 90));
+            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos);
             GUILayout.Space(32);
             showBackgroundLayer = EditorGUILayout.Foldout(showBackgroundLayer, "BG Layer", true);
             if (showBackgroundLayer)
@@ -330,21 +330,27 @@ namespace DCL.Skybox
 
             GUILayout.Label("Preview", EditorStyles.boldLabel);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Time : " + timeOfTheDay, EditorStyles.label, GUILayout.MinWidth(100));
-            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.MinWidth(100), GUILayout.MaxWidth(300));
-            EditorGUILayout.LabelField((GetNormalizedDayTime() * 100).ToString("f2"), GUILayout.MaxWidth(50));
+            GUILayout.BeginHorizontal(GUILayout.Width(400));
+            EditorGUILayout.LabelField("Time : " + timeOfTheDay.ToString("f2"), EditorStyles.label, GUILayout.Width(70));
+            GUILayout.FlexibleSpace();
+
+            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.Width(150));
+
+            GUILayout.FlexibleSpace();
+
+            EditorGUILayout.LabelField((GetNormalizedDayTime() * 100).ToString("f2") + "%", GUILayout.MaxWidth(50));
+            GUILayout.FlexibleSpace();
 
             if (isPaused)
             {
-                if (GUILayout.Button("Play"))
+                if (GUILayout.Button("Play", GUILayout.ExpandWidth(false)))
                 {
                     ResumeTime();
                 }
             }
             else
             {
-                if (GUILayout.Button("Pause"))
+                if (GUILayout.Button("Pause", GUILayout.ExpandWidth(false)))
                 {
                     PauseTime();
                 }

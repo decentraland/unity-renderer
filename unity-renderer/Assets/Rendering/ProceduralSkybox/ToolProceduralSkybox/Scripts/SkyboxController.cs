@@ -15,6 +15,7 @@ namespace DCL.Skybox
 
         public const string DEFAULT_SKYBOX_ID = "Generic Skybox";
 
+        public string loadedConfig;
         //Time for one complete circle. In Hours. default 24
         public float cycleTime = 24;
         public float minutesPerSecond = 60;
@@ -34,7 +35,7 @@ namespace DCL.Skybox
 
             i = this;
 
-            // Enable/Disable or Create new Directional Light Object
+            // Get or Create new Directional Light Object
             directionalLight = GameObject.FindObjectsOfType<Light>().Where(s => s.type == LightType.Directional).FirstOrDefault();
 
             if (directionalLight == null)
@@ -47,11 +48,28 @@ namespace DCL.Skybox
 
             timeOfTheDay = 0;
 
+            // Update config whenever skybox config changed in data store. Can be used for both testing and runtime
+            DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
+
+            // Change as Kernel config is initialized or updated
+            KernelConfig.i.EnsureConfigInitialized()
+                        .Then(config =>
+                        {
+                            KernelConfig_OnChange(config, null);
+                        });
+
+            KernelConfig.i.OnChange += KernelConfig_OnChange;
+        }
+
+        private void KernelConfig_OnChange(KernelConfigModel current, KernelConfigModel previous)
+        {
             // set skyboxConfig to true
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
+            DataStore.i.skyboxConfig.configToLoad.Set(current.proceduralSkyboxConfig.configToLoad);
+            DataStore.i.skyboxConfig.minutesPerSecond.Set(current.proceduralSkyboxConfig.minutesPerSecond);
 
-            UpdateConfig();
-            DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
+            // Call update on skybox config which will call Update config in this class.
+            DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
         }
 
         /// <summary>
@@ -61,9 +79,12 @@ namespace DCL.Skybox
         /// <param name="previous"></param>
         public void UpdateConfig(bool current = true, bool previous = false)
         {
-            // Apply configuration
-            overrideDefaultSkybox = true;
-            overrideSkyboxID = DataStore.i.skyboxConfig.configToLoad.Get();
+            if (loadedConfig != DataStore.i.skyboxConfig.configToLoad.Get())
+            {
+                // Apply configuration
+                overrideDefaultSkybox = true;
+                overrideSkyboxID = DataStore.i.skyboxConfig.configToLoad.Get();
+            }
 
             // Apply time
             minutesPerSecond = DataStore.i.skyboxConfig.minutesPerSecond.Get();
@@ -88,7 +109,10 @@ namespace DCL.Skybox
 
             if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {
-                ApplyConfig();
+                if (!ApplyConfig())
+                {
+                    RenderProfileManifest.i.currentProfile.Apply();
+                }
             }
             else
             {
@@ -102,9 +126,12 @@ namespace DCL.Skybox
         /// <summary>
         /// Apply changed configuration
         /// </summary>
-        void ApplyConfig()
+        bool ApplyConfig()
         {
-            SelectSkyboxConfiguration();
+            if (!SelectSkyboxConfiguration())
+            {
+                return false;
+            }
 
             if (!configuration.useDirectionalLight)
             {
@@ -117,13 +144,16 @@ namespace DCL.Skybox
                 minutesPerSecond = 0.01f;
             }
             timeNormalizationFactor = 60 / minutesPerSecond;
+
+            return true;
         }
 
         /// <summary>
         /// Select Configuration to load.
         /// </summary>
-        private void SelectSkyboxConfiguration()
+        private bool SelectSkyboxConfiguration()
         {
+            bool tempConfigLoaded = true;
             string configToLoad = DEFAULT_SKYBOX_ID;
 
             if (overrideDefaultSkybox)
@@ -131,14 +161,34 @@ namespace DCL.Skybox
                 configToLoad = overrideSkyboxID;
                 overrideDefaultSkybox = false;
             }
+
+            // config already loaded, return
+            if (configToLoad.Equals(loadedConfig))
+            {
+                return tempConfigLoaded;
+            }
+
             configuration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
 
             if (configuration == null)
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                Debug.LogError("No configuration found in Resources. (Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
+                Debug.LogError(configToLoad + " configuration not found in Resources. Trying to load Default config: " + DEFAULT_SKYBOX_ID + "(Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
 #endif
-                return;
+                // Try to load default config
+                configToLoad = DEFAULT_SKYBOX_ID;
+                configuration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+
+                if (configuration == null)
+                {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                    Debug.LogError("Default configuration not found in Resources. Shifting to old skybox. (Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
+#endif
+
+
+                    tempConfigLoaded = false;
+                    return tempConfigLoaded;
+                }
             }
 
             // Apply material as per number of Slots.
@@ -156,6 +206,8 @@ namespace DCL.Skybox
             {
                 RenderSettings.skybox = selectedMat;
             }
+
+            return tempConfigLoaded;
         }
 
         // Update is called once per frame

@@ -79,9 +79,6 @@ namespace DCL
             DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
-
-            // Apply Skybox config to the skybox controller
-            ApplySkyboxConfig();
         }
 
         private void Start()
@@ -97,6 +94,9 @@ namespace DCL
                     DataStore.i.wsCommunication.communicationReady.OnChange += OnCommunicationReadyChangedValue;
                 }
             }
+
+            // Get changes of skybox config
+            DataStore.i.skyboxConfig.objectUpdated.OnChange += SkyboxConfigChanged;
         }
 
         private void OnCommunicationReadyChangedValue(bool newState, bool prevState)
@@ -201,6 +201,13 @@ namespace DCL
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
 
+        private void SkyboxConfigChanged(bool current, bool previous)
+        {
+            useProceduralSkybox = DataStore.i.skyboxConfig.useProceduralSkybox.Get();
+            configToLoad = DataStore.i.skyboxConfig.configToLoad.Get();
+            minutesPerSecond = DataStore.i.skyboxConfig.minutesPerSecond.Get();
+        }
+
         private void ApplySkyboxConfig()
         {
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(useProceduralSkybox);
@@ -218,6 +225,7 @@ namespace DCL
 
         private void OnValidate()
         {
+            // Changes to be applied while in editor
             if (Application.isPlaying)
             {
                 ApplySkyboxConfig();
