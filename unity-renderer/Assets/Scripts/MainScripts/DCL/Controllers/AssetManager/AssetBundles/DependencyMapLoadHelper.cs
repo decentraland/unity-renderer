@@ -54,7 +54,7 @@ public static class DependencyMapLoadHelper
             url: url,
             OnSuccess: (depmapRequest) =>
             {
-                AssetDependencyMap map = JsonUtility.FromJson<AssetDependencyMap>(depmapRequest.downloadHandler.text);
+                AssetDependencyMap map = JsonUtility.FromJson<AssetDependencyMap>(depmapRequest.webRequest.downloadHandler.text);
                 map.dependencies = map.dependencies.Where(x => !x.Contains(MAIN_SHADER_FILENAME)).ToArray();
 
                 dependenciesMap.Add(hash, new List<string>(map.dependencies));

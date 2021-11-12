@@ -38,7 +38,7 @@ namespace DCL.Tutorial
             tutorialController = TutorialController.i;
             stepAnimator = GetComponent<Animator>();
 
-            mouseCatcher = InitialSceneReferences.i?.data?.mouseCatcher;
+            mouseCatcher = SceneReferences.i?.mouseCatcher;
 
             if (unlockCursorAtStart)
                 mouseCatcher?.UnlockCursor();

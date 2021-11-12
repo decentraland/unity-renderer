@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEditor;
 
 namespace Tests

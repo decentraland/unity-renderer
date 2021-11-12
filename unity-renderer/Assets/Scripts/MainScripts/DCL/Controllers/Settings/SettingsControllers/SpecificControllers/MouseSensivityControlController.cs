@@ -19,7 +19,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             base.Initialize();
 
-            povCamera = GeneralSettingsReferences.i.firstPersonCamera.GetCinemachineComponent<CinemachinePOV>();
+            povCamera = SceneReferences.i.firstPersonCamera.GetCinemachineComponent<CinemachinePOV>();
         }
 
         public override object GetStoredValue() { return currentGeneralSettings.mouseSensitivity; }
@@ -31,8 +31,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             var povSpeed = Mathf.Lerp(FIRST_PERSON_MIN_SPEED, FIRST_PERSON_MAX_SPEED, currentGeneralSettings.mouseSensitivity);
             povCamera.m_HorizontalAxis.m_MaxSpeed = povSpeed;
             povCamera.m_VerticalAxis.m_MaxSpeed = povSpeed;
-            GeneralSettingsReferences.i.thirdPersonCamera.m_XAxis.m_MaxSpeed = Mathf.Lerp(THIRD_PERSON_X_MIN_SPEED, THIRD_PERSON_X_MAX_SPEED, currentGeneralSettings.mouseSensitivity);
-            GeneralSettingsReferences.i.thirdPersonCamera.m_YAxis.m_MaxSpeed = Mathf.Lerp(THIRD_PERSON_Y_MIN_SPEED, THIRD_PERSON_Y_MAX_SPEED, currentGeneralSettings.mouseSensitivity);
+            SceneReferences.i.thirdPersonCamera.m_XAxis.m_MaxSpeed = Mathf.Lerp(THIRD_PERSON_X_MIN_SPEED, THIRD_PERSON_X_MAX_SPEED, currentGeneralSettings.mouseSensitivity);
+            SceneReferences.i.thirdPersonCamera.m_YAxis.m_MaxSpeed = Mathf.Lerp(THIRD_PERSON_Y_MIN_SPEED, THIRD_PERSON_Y_MAX_SPEED, currentGeneralSettings.mouseSensitivity);
         }
     }
 }

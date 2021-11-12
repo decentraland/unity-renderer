@@ -28,7 +28,7 @@ public class GridContainerComponentViewTests
             itemSize = new Vector2Int(10, 10),
             constraintCount = 3,
             spaceBetweenItems = new Vector2Int(5, 5),
-            adaptItemSizeToContainer = false
+            adaptHorizontallyItemSizeToContainer = false
         };
 
         // Act
@@ -76,7 +76,7 @@ public class GridContainerComponentViewTests
         gridContainerComponent.SetItemSizeToContainerAdaptation(testadaptItemSizeToContainer);
 
         // Assert
-        Assert.AreEqual(testadaptItemSizeToContainer, gridContainerComponent.model.adaptItemSizeToContainer, "The adaptItemSizeToContainer does not match in the model.");
+        Assert.AreEqual(testadaptItemSizeToContainer, gridContainerComponent.model.adaptHorizontallyItemSizeToContainer, "The adaptItemSizeToContainer does not match in the model.");
     }
 
     [Test]
@@ -90,7 +90,7 @@ public class GridContainerComponentViewTests
     {
         // Arrange
         gridContainerComponent.model.constraint = constraint;
-        gridContainerComponent.model.adaptItemSizeToContainer = autoItemSize;
+        gridContainerComponent.model.adaptHorizontallyItemSizeToContainer = autoItemSize;
         Vector2 testItemSize = new Vector2(10f, 10f);
         if (autoItemSize)
             ((RectTransform)gridContainerComponent.transform).rect.Set(0, 0, 100, 100);

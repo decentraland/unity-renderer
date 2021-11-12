@@ -13,9 +13,9 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             currentQualitySetting.bloom = (bool)newValue;
 
-            if (QualitySettingsReferences.i.postProcessVolume)
+            if (SceneReferences.i.postProcessVolume)
             {
-                if (QualitySettingsReferences.i.postProcessVolume.profile.TryGet<Bloom>(out Bloom bloom))
+                if (SceneReferences.i.postProcessVolume.profile.TryGet<Bloom>(out Bloom bloom))
                 {
                     bloom.active = currentQualitySetting.bloom;
                 }

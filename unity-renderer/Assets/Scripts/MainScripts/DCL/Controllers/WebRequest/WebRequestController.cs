@@ -38,11 +38,11 @@ namespace DCL
             this.audioClipWebRequest = audioClipWebRequest;
         }
 
-        public WebRequestAsyncOperation Get(
+        public IWebRequestAsyncOperation Get(
             string url,
             DownloadHandler downloadHandler = null,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -53,8 +53,8 @@ namespace DCL
 
         public WebRequestAsyncOperation GetAssetBundle(
             string url,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true)
@@ -65,8 +65,8 @@ namespace DCL
         public WebRequestAsyncOperation GetAssetBundle(
             string url,
             Hash128 hash,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true)
@@ -77,8 +77,8 @@ namespace DCL
 
         public WebRequestAsyncOperation GetTexture(
             string url,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true,
@@ -91,8 +91,8 @@ namespace DCL
         public WebRequestAsyncOperation GetAudioClip(
             string url,
             AudioType audioType,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
+            Action<IWebRequestAsyncOperation> OnSuccess = null,
+            Action<IWebRequestAsyncOperation> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true)
@@ -105,8 +105,8 @@ namespace DCL
             T requestType,
             string url,
             DownloadHandler downloadHandler,
-            Action<UnityWebRequest> OnSuccess,
-            Action<UnityWebRequest> OnFail,
+            Action<IWebRequestAsyncOperation> OnSuccess,
+            Action<IWebRequestAsyncOperation> OnFail,
             int requestAttemps,
             int timeout,
             bool disposeOnCompleted,
@@ -146,7 +146,7 @@ namespace DCL
                 {
                     if (resultOp.webRequest.WebRequestSucceded())
                     {
-                        OnSuccess?.Invoke(resultOp.webRequest);
+                        OnSuccess?.Invoke(resultOp);
                         resultOp.SetAsCompleted(true);
                     }
                     else if (!resultOp.webRequest.WebRequestAborted() && resultOp.webRequest.WebRequestServerError())
@@ -160,13 +160,13 @@ namespace DCL
                         }
                         else
                         {
-                            OnFail?.Invoke(resultOp.webRequest);
+                            OnFail?.Invoke(resultOp);
                             resultOp.SetAsCompleted(false);
                         }
                     }
                     else
                     {
-                        OnFail?.Invoke(resultOp.webRequest);
+                        OnFail?.Invoke(resultOp);
                         resultOp.SetAsCompleted(false);
                     }
                 }

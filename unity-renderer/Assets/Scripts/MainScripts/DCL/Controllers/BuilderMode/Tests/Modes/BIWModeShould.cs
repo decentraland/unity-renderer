@@ -23,7 +23,7 @@ public class BIWModeShould
     {
         mode = new BIWMode();
         mockedGameObject = new GameObject("BIWModeGameObject");
-        context = BIWTestUtils.CreateMockedContext();
+        context = BIWTestUtils.CreateMockedContextForTestScene();
         selectedEntities = new List<BIWEntity>();
         mode.Init(context);
         mode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);

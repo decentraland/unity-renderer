@@ -16,11 +16,20 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Builder.Manifest;
 using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
 public static partial class BIWUtils
 {
+    private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    
+    public static long ConvertToMilisecondsTimestamp(DateTime value)
+    {
+        TimeSpan elapsedTime = value - Epoch;
+        return (long) elapsedTime.TotalMilliseconds;
+    }
+    
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
     {
         UserProfile profile = UserProfile.GetOwnUserProfile();
@@ -382,24 +391,24 @@ public static partial class BIWUtils
         original.pivot = rectTransformToCopy.pivot;
     }
 
-    public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall, Dictionary<string, string> headers)
+    public static IWebRequestAsyncOperation MakeGetCall(string url, Promise<string> callPromise, Dictionary<string, string> headers)
     {
-        return Environment.i.platform.webRequest.Get(
+        var asyncOperation = Environment.i.platform.webRequest.Get(
             url: url,
             OnSuccess: (webRequestResult) =>
             {
-                if (functionToCall != null)
-                {
-                    byte[] byteArray = webRequestResult.downloadHandler.data;
+                    byte[] byteArray = webRequestResult.GetResultData();
                     string result = System.Text.Encoding.UTF8.GetString(byteArray);
-                    functionToCall?.Invoke(result);
-                }
+                    callPromise?.Resolve(result);
             },
             OnFail: (webRequestResult) =>
             {
-                Debug.Log(webRequestResult.error);
+                Debug.Log(webRequestResult.webRequest.error);
+                callPromise.Reject(webRequestResult.webRequest.error);
             },
             headers: headers);
+
+        return asyncOperation;
     }
 
     public static void ConfigureEventTrigger(EventTrigger eventTrigger, EventTriggerType eventType, UnityAction<BaseEventData> call)

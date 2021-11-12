@@ -96,9 +96,25 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(testMessage, controller.view.inputField.text);
     }
 
-    [TestCase("ShiT hello", "**** hello")]
-    [TestCase("ass hi bitch", "*** hi *****")]
-    public void FilterProfanityMessage(string body, string expected)
+    [TestCase("ShiT hello shithead", "**** hello shithead")]
+    [TestCase("ass hi grass", "*** hi grass")]
+    public void FilterProfanityMessageWithExplicitWords(string body, string expected)
+    {
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "test",
+            bodyText = body
+        };
+
+        controller.AddChatMessage(msg);
+
+        Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
+    }
+    
+    [TestCase("fuck1 heh bitch", "****1 heh *****")]
+    [TestCase("assfuck bitching", "ass**** *****ing")]
+    public void FilterProfanityMessageWithNonExplicitWords(string body, string expected)
     {
         var msg = new ChatEntry.Model
         {
@@ -147,7 +163,8 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
     private RegexProfanityFilter GivenProfanityFilter()
     {
         var wordProvider = Substitute.For<IProfanityWordProvider>();
-        wordProvider.GetAll().Returns(new[] {"shit", "ass", "bitch"});
+        wordProvider.GetExplicitWords().Returns(new[] {"ass", "shit"});
+        wordProvider.GetNonExplicitWords().Returns(new[] {"fuck", "bitch"});
         return new RegexProfanityFilter(wordProvider);
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Helpers.NFT;
 using System.IO;
@@ -11,40 +13,66 @@ using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public static class BIWTestUtils
 {
-    public static IInitialSceneReferences CreateMocekdInitialSceneReference()
+    public static ISceneReferences CreateMocekdInitialSceneReference()
     {
-        IInitialSceneReferences sceneReferences = Resources.FindObjectsOfTypeAll<InitialSceneReferences>().FirstOrDefault();
+        ISceneReferences sceneReferences = SceneReferences.i;
 
         if (sceneReferences == null)
         {
             GameObject gameObjectToDestroy = new GameObject("BIWTestGO");
-            gameObjectToDestroy.AddComponent<MouseCatcher>();
+            var mouseCatcher = gameObjectToDestroy.AddComponent<MouseCatcher>();
             gameObjectToDestroy.AddComponent<BuilderInWorldBridge>();
-            gameObjectToDestroy.AddComponent<PlayerAvatarController>();
-            gameObjectToDestroy.AddComponent<CameraController>();
+            var avatarController = gameObjectToDestroy.AddComponent<PlayerAvatarController>();
+            var cameraController = gameObjectToDestroy.AddComponent<CameraController>();
 
-            sceneReferences = Substitute.For<IInitialSceneReferences>();
-            sceneReferences.Configure().cameraParent.Returns(gameObjectToDestroy);
+            sceneReferences = Substitute.For<ISceneReferences>();
+            sceneReferences.Configure().biwCameraParent.Returns(gameObjectToDestroy);
             sceneReferences.Configure().cursorCanvas.Returns(gameObjectToDestroy);
-            sceneReferences.Configure().mouseCatcher.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().mouseCatcher.Returns(mouseCatcher);
             sceneReferences.Configure().bridgeGameObject.Returns(gameObjectToDestroy);
-            sceneReferences.Configure().builderInWorldBridge.Returns(gameObjectToDestroy);
-            sceneReferences.Configure().playerAvatarController.Returns(gameObjectToDestroy);
-            sceneReferences.Configure().cameraController.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
+            sceneReferences.Configure().playerAvatarController.Returns(avatarController);
+            sceneReferences.Configure().cameraController.Returns(cameraController);
             sceneReferences.Configure().mainCamera.Returns(Camera.main);
 
             sceneReferences.When( x => x.Dispose())
-                           .Do( x => GameObject.Destroy(gameObjectToDestroy));
+                           .Do( x => Object.Destroy(gameObjectToDestroy));
         }
 
         return sceneReferences;
     }
 
     public static IContext CreateMockedContext()
+    {
+        IContext context = new Context(
+            Substitute.For<IBIWEditor>(),
+            Substitute.For<IBuilderMainPanelController>(),
+            Substitute.For<IBuilderAPIController>(),
+            Substitute.For<IBuilderEditorHUDController>(),
+            Substitute.For<IBIWOutlinerController>(),
+            Substitute.For<IBIWInputHandler>(),
+            Substitute.For<IBIWInputWrapper>(),
+            Substitute.For<IBIWPublishController>(),
+            Substitute.For<IBIWCreatorController>(),
+            Substitute.For<IBIWModeController>(),
+            Substitute.For<IBIWFloorHandler>(),
+            Substitute.For<IBIWEntityHandler>(),
+            Substitute.For<IBIWActionController>(),
+            Substitute.For<IBIWSaveController>(),
+            Substitute.For<IBIWRaycastController>(),
+            Substitute.For<IBIWGizmosController>(),
+            Substitute.For<ISceneReferences>()
+        );
+        return context;
+    }
+    
+    public static IContext CreateMockedContextForTestScene()
     {
         IContext context = new Context(
             Substitute.For<IBIWEditor>(),
@@ -87,7 +115,7 @@ public static class BIWTestUtils
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
-        IInitialSceneReferences sceneReferences =    CreateMocekdInitialSceneReference();
+        ISceneReferences sceneReferences =    CreateMocekdInitialSceneReference();
 
         foreach (var mock in mocks)
         {
@@ -141,7 +169,7 @@ public static class BIWTestUtils
                 case IBIWGizmosController gc:
                     gizmosController = gc;
                     break;
-                case IInitialSceneReferences isr:
+                case ISceneReferences isr:
                     sceneReferences = isr;
                     break;
             }

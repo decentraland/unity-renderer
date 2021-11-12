@@ -41,13 +41,16 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     private ICatalyst catalyst;
 
     private bool isInitialized = false;
-    internal bool isFetching = false;
+    internal bool isFetchingLands = false;
+    internal bool isFetchingProjects = false;
     private bool sendPlayerOpenPanelEvent = false;
     private Coroutine fetchDataInterval;
     private Promise<LandWithAccess[]> fetchLandPromise = null;
     private Promise<ProjectData[]> fetchProjectsPromise = null;
 
     public event Action OnJumpInOrEdit;
+
+    internal IContext context;
 
     public BuilderMainPanelController()
     {
@@ -91,10 +94,11 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     public void Initialize(IContext context)
     {
+        this.context = context;
         Initialize(new SectionsController(view.GetSectionContainer()),
-            new ScenesViewController(view.GetCardViewPrefab(), view.GetTransform()),
+            new ScenesViewController(view.GetSceneCardViewPrefab(), view.GetTransform()),
             new LandsController(),
-            new ProjectsController(view.GetCardViewPrefab(), view.GetTransform()),
+            new ProjectsController(view.GetProjectCardView(), view.GetTransform()),
             new NewProjectFlowController(),
             Environment.i.platform.serviceProviders.theGraph,
             Environment.i.platform.serviceProviders.catalyst);
@@ -221,10 +225,11 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void FetchPanelInfo(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
     {
-        if (isFetching)
+        if (isFetchingLands || isFetchingProjects)
             return;
 
-        isFetching = true;
+        isFetchingLands = true;
+        isFetchingProjects = true;
 
         var address = UserProfile.GetOwnUserProfile().ethAddress;
         var network = KernelConfig.i.Get().network;
@@ -253,26 +258,40 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         if (!DataStore.i.builderInWorld.isDevBuild.Get())
             return;
-        fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData();
+        fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData(context.builderAPIController);
         fetchProjectsPromise
             .Then(ProjectsFetched)
             .Catch(ProjectsFetchedError);
     }
 
-    internal void ProjectsFetched(ProjectData[] data) { projectsController.SetProjects(data); }
+    internal void ProjectsFetched(ProjectData[] data)
+    {
+        DataStore.i.builderInWorld.projectData.Set(data);
+        isFetchingProjects = false;
+        projectsController.SetProjects(data);
+        UpdateProjectsDeploymentStatus();
+    }
 
     internal void ProjectsFetchedError(string error)
     {
-        isFetching = false;
+        isFetchingProjects = false;
         sectionsController.SetFetchingDataEnd();
         landsesController.SetLands(new LandWithAccess[] { });
         scenesViewController.SetScenes(new ISceneData[] { });
         Debug.LogError(error);
     }
 
+    private void UpdateProjectsDeploymentStatus()
+    {
+        if(isFetchingLands || isFetchingProjects)
+            return;
+        
+        projectsController.UpdateDeploymentStatus();
+    }
+
     internal void LandsFetchedError(string error)
     {
-        isFetching = false;
+        isFetchingLands = false;
         sectionsController.SetFetchingDataEnd();
         landsesController.SetLands(new LandWithAccess[] { });
         scenesViewController.SetScenes(new ISceneData[] { });
@@ -283,14 +302,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
         sectionsController.SetFetchingDataEnd();
-        isFetching = false;
-
+        isFetchingLands = false;
+        UpdateProjectsDeploymentStatus();
+        
         try
         {
-            var places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                              .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                              .Aggregate((i, j) => i.Concat(j))
-                              .ToArray();
+            ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
+                                     .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                                     .Aggregate((i, j) => i.Concat(j))
+                                     .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);

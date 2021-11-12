@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -22,7 +23,8 @@ namespace DCL.Builder
         public string[] bannedUsers => metadata.policy?.blacklist;
         public string projectId => metadata.source?.projectId;
         public bool isEmpty => metadata.source?.isEmpty ?? false;
-
+        public long deployTimestamp => timestamp;
+        
         private CatalystSceneEntityMetadata metadata;
         internal Source deploymentSource;
         private Vector2Int baseCoord;
@@ -31,6 +33,7 @@ namespace DCL.Builder
         private string entityId;
 
         internal LandWithAccess sceneLand;
+        internal long timestamp;
 
         public Scene() { }
 
@@ -61,6 +64,8 @@ namespace DCL.Builder
             baseCoord = StringToVector2Int(metadata.scene.@base);
             parcelsCoord = metadata.scene.parcels.Select(StringToVector2Int).ToArray();
             thumbnail = GetNavmapThumbnailUrl(pointerData, contentUrl);
+
+            timestamp = pointerData.timestamp;
         }
 
         public void SetScene(LandWithAccess land) { sceneLand = land; }
