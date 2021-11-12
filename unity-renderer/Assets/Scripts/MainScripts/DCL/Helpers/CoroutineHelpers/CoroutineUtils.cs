@@ -72,9 +72,11 @@ namespace DCL
             var stack = new Stack<IEnumerator>();
             stack.Push(enumerator);
 
+
             while (stack.Count > 0)
             {
                 float currentTime = Time.realtimeSinceStartup;
+
                 // any inner enumerator will be at the top of the stack
                 // otherwise the original one
                 var currentEnumerator = stack.Peek();
@@ -102,13 +104,20 @@ namespace DCL
                     yield break;
                 }
 
-                currentTime = Time.realtimeSinceStartup - currentTime;
+                float elapsedTime = Time.realtimeSinceStartup - currentTime;
 
+                // NOTE: SkipFrameIfDepletedTimeBudget object type is used as a special token here and will not
+                // yield unless the time budget is exceeded for this frame.
+                //
+                // Handling the time budget frame skip for yield return null; calls was also considered.
+                // But this means that yield return null; will no longer skip a frame unless the time budget
+                // is exceeded. If the user wanted to skip the frame explicitly this detail would change
+                // the intended behaviour and introduce bugs.
                 bool handleTimeBudget = timeBudgetCounter != null && currentYieldedObject is SkipFrameIfDepletedTimeBudget;
 
                 if ( handleTimeBudget )
                 {
-                    if ( timeBudgetCounter( currentTime ) )
+                    if ( timeBudgetCounter( elapsedTime ) )
                     {
                         yield return null;
                     }
@@ -148,7 +157,10 @@ namespace DCL
     }
 
     /// <summary>
-    /// Must use this instead of 
+    /// When a coroutine is started by using StartThrottledCoroutine, yielding this object
+    /// will make the frame skip if the time budget is exceeded only.
+    ///
+    /// If the time budget is not exceeded, no frames will be skipped by yielding this object.
     /// </summary>
     public class SkipFrameIfDepletedTimeBudget : CustomYieldInstruction
     {
