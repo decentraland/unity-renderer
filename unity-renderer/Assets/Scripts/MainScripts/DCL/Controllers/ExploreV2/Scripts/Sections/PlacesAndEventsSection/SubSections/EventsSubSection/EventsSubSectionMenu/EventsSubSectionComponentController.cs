@@ -57,7 +57,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
-    internal const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 1;
+    internal const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
     internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
     internal IEventsSubSectionComponentView view;
     internal IEventsAPIController eventsAPIApiController;

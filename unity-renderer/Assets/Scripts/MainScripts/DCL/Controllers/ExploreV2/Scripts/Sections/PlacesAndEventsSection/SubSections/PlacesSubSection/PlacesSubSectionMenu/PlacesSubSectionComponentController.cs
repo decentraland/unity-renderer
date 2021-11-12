@@ -41,7 +41,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal event Action OnPlacesFromAPIUpdated;
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
-    internal const int SHOW_MORE_ROWS_INCREMENT = 1;
+    internal const int SHOW_MORE_ROWS_INCREMENT = 3;
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
     internal FriendTrackerController friendsTrackerController;
