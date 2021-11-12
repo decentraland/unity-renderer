@@ -23,9 +23,9 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
-        TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
+        TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 
-        TestHelpers.CreateAndSetShape(scene, ENTITY_ID, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, ENTITY_ID, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"

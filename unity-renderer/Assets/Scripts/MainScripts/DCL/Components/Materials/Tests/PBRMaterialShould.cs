@@ -21,11 +21,11 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator NotDestroySharedTextureWhenDisposed()
     {
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+            TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
-        PBRMaterial mat = TestHelpers.CreateEntityWithPBRMaterial(scene,
+        PBRMaterial mat = TestUtils.CreateEntityWithPBRMaterial(scene,
             new PBRMaterial.Model
             {
                 albedoTexture = texture.id,
@@ -36,7 +36,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         yield return mat.routine;
 
-        PBRMaterial mat2 = TestHelpers.CreateEntityWithPBRMaterial(scene,
+        PBRMaterial mat2 = TestUtils.CreateEntityWithPBRMaterial(scene,
             new PBRMaterial.Model
             {
                 albedoTexture = texture.id,
@@ -47,7 +47,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         yield return mat2.routine;
 
-        TestHelpers.SharedComponentDispose(mat);
+        TestUtils.SharedComponentDispose(mat);
         Assert.IsTrue(texture.texture != null, "Texture should persist because is used by the other material!!");
     }
 
@@ -55,11 +55,11 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator BeCreatedProperly()
     {
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+            TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
-        PBRMaterial matPBR = TestHelpers.CreateEntityWithPBRMaterial(scene,
+        PBRMaterial matPBR = TestUtils.CreateEntityWithPBRMaterial(scene,
             new PBRMaterial.Model
             {
                 albedoTexture = texture.id,
@@ -92,7 +92,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         string materialID = "a-material";
 
         // Instantiate entity with default PBR Material
-        TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+        TestUtils.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
             new PBRMaterial.Model(), materialID);
 
         var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
@@ -138,7 +138,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         // Update material
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+            TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
@@ -197,7 +197,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         string firstEntityID = "1";
         string firstMaterialID = "a-material";
 
-        TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero,
+        TestUtils.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero,
             new DCL.Components.PBRMaterial.Model
             {
                 metallic = 0.3f,
@@ -210,7 +210,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         string secondEntityID = "2";
         string secondMaterialID = "b-material";
 
-        TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero,
+        TestUtils.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero,
             new DCL.Components.PBRMaterial.Model
             {
                 metallic = 0.66f,
@@ -222,7 +222,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         // Create third entity and assign 1st material
         string thirdEntityID = "3";
 
-        TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
         scene.SharedComponentAttach(
             thirdEntityID,
             firstMaterialID
@@ -247,7 +247,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator AffectDifferentEntitiesCorrectly()
     {
         // Create first entity with material
-        PBRMaterial material1 = TestHelpers.CreateEntityWithPBRMaterial(scene,
+        PBRMaterial material1 = TestUtils.CreateEntityWithPBRMaterial(scene,
             new PBRMaterial.Model
             {
                 metallic = 0.3f,
@@ -257,7 +257,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         // Create second entity with material
-        PBRMaterial material2 = TestHelpers.CreateEntityWithPBRMaterial(scene,
+        PBRMaterial material2 = TestUtils.CreateEntityWithPBRMaterial(scene,
             new PBRMaterial.Model
             {
                 metallic = 0.66f,
@@ -267,7 +267,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         // Create third entity and assign 1st material
-        var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero);
+        var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero);
         var entity3 = boxShape.attachedEntities.First();
 
         scene.SharedComponentAttach(
@@ -311,9 +311,9 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator WorkCorrectlyWhenAttachedBeforeShape()
     {
-        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
 
-        DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
+        DCLTexture dclTexture = TestUtils.CreateDCLTexture(
             scene,
             TestAssetsUtils.GetPath() + "/Images/atlas.png",
             DCLTexture.BabylonWrapMode.CLAMP,
@@ -321,7 +321,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         yield return dclTexture.routine;
 
-        PBRMaterial mat = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene,
+        PBRMaterial mat = TestUtils.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene,
             CLASS_ID.PBR_MATERIAL,
             new PBRMaterial.Model
             {
@@ -333,15 +333,15 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         yield return mat.routine;
 
-        TestHelpers.SharedComponentAttach(mat, entity);
+        TestUtils.SharedComponentAttach(mat, entity);
 
-        SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene,
+        SphereShape shape = TestUtils.SharedComponentCreate<SphereShape, SphereShape.Model>(scene,
             CLASS_ID.SPHERE_SHAPE,
             new SphereShape.Model { });
 
         yield return shape.routine;
 
-        TestHelpers.SharedComponentAttach(shape, entity);
+        TestUtils.SharedComponentAttach(shape, entity);
 
         Assert.IsTrue(entity.meshRootGameObject != null);
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
@@ -355,7 +355,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         ColorUtility.TryParseHtmlString("#808080", out color1);
 
         // 1. Create component with non-default configs
-        PBRMaterial PBRMaterialComponent = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene,
+        PBRMaterial PBRMaterialComponent = TestUtils.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene,
             CLASS_ID.PBR_MATERIAL,
             new PBRMaterial.Model
             {
@@ -388,7 +388,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator GetReplacedWhenAnotherMaterialIsAttached()
     {
-        yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PBRMaterial.Model, PBRMaterial>(
+        yield return TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<PBRMaterial.Model, PBRMaterial>(
             scene, CLASS_ID.PBR_MATERIAL);
     }
 }

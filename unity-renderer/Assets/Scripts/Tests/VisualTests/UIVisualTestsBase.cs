@@ -24,7 +24,7 @@ public class UIVisualTestsBase : VisualTestsBase
         base.SetUp_Renderer();
 
         // Create UIScreenSpace
-        UIScreenSpace screenSpace = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+        UIScreenSpace screenSpace = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
         yield return screenSpace.routine;
 
         screenSpaceId = screenSpace.id;

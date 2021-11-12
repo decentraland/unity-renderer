@@ -19,7 +19,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
 
-        TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
+        TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         entityHandler.EnterEditMode(scene);
         entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
     }

@@ -34,7 +34,7 @@ namespace DCL.Helpers
     {
     }
 
-    public static class TestHelpers
+    public static class TestUtils
     {
         public static int testSceneIteration;
         public const string testingSceneName = "DCL_Testing_";
@@ -560,7 +560,7 @@ namespace DCL.Helpers
             };
 
             DCLAudioSource audioSource =
-                TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, scene.entities[entityId],
+                TestUtils.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, scene.entities[entityId],
                     audioSourceModel);
 
             yield return audioSource.routine;
@@ -767,7 +767,7 @@ namespace DCL.Helpers
             }
 
             CompareWithDefaultedInstance<TModel, TComponent>(component);
-            TestHelpers.RemoveSceneEntity(scene, e.entityId);
+            TestUtils.RemoveSceneEntity(scene, e.entityId);
         }
 
         public static IEnumerator TestAttachedSharedComponentOfSameTypeIsReplaced<TModel, TComponent>(ParcelScene scene,
@@ -793,7 +793,7 @@ namespace DCL.Helpers
             }
 
             // Attach 1st component to entity
-            TestHelpers.SharedComponentAttach(component, entity);
+            TestUtils.SharedComponentAttach(component, entity);
 
             Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
             Assert.AreEqual(component, entity.GetSharedComponent(componentType));
@@ -806,7 +806,7 @@ namespace DCL.Helpers
                 yield return component2.routine;
             }
 
-            TestHelpers.SharedComponentAttach(component2, entity);
+            TestUtils.SharedComponentAttach(component2, entity);
 
             Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
             Assert.AreEqual(component2, entity.GetSharedComponent(componentType));
@@ -818,7 +818,7 @@ namespace DCL.Helpers
             where TComponent : BaseDisposable
             where TModel : class, new()
         {
-            TComponent component = TestHelpers.SharedComponentCreate<TComponent, TModel>(scene, id);
+            TComponent component = TestUtils.SharedComponentCreate<TComponent, TModel>(scene, id);
 
             if (component.routine != null)
             {
@@ -836,7 +836,7 @@ namespace DCL.Helpers
 
             yield return SharedComponentUpdate(component, generatedModel);
 
-            yield return TestHelpers.SharedComponentUpdate(component, new TModel());
+            yield return TestUtils.SharedComponentUpdate(component, new TModel());
 
             yield return component.routine;
 
@@ -942,7 +942,7 @@ namespace DCL.Helpers
 
             ParcelScene scene = entity.scene as ParcelScene;
 
-            var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+            var onClickComponent = TestUtils.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             yield return onClickComponent.routine;
 
             Collider onPointerEventCollider;
@@ -969,7 +969,7 @@ namespace DCL.Helpers
             where TComponent : UIShape
             where TComponentModel : UIShape.Model, new()
         {
-            UIScreenSpace parentElement = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace parentElement = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return parentElement.routine;
 
             // make canvas invisible
@@ -1031,7 +1031,7 @@ namespace DCL.Helpers
 
             bool eventTriggered = false;
 
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            yield return TestUtils.WaitForMessageFromEngine(targetEventType, eventJSON,
                 () =>
                 {
                     ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
@@ -1067,7 +1067,7 @@ namespace DCL.Helpers
 
             bool eventTriggered = false;
 
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            yield return TestUtils.WaitForMessageFromEngine(targetEventType, eventJSON,
                 () =>
                 {
                     ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
@@ -1103,7 +1103,7 @@ namespace DCL.Helpers
 
             bool eventTriggered = false;
 
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            yield return TestUtils.WaitForMessageFromEngine(targetEventType, eventJSON,
                 () =>
                 {
                     ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,

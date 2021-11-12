@@ -32,7 +32,7 @@ namespace Tests.AvatarsLODController
         [Test]
         public void BeInitializedProperly()
         {
-            FeatureFlag flag =  TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME });
+            FeatureFlag flag =  TestUtils.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME });
             controller.Initialize(flag);
 
             Assert.IsTrue(controller.enabled);
@@ -46,7 +46,7 @@ namespace Tests.AvatarsLODController
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
 
             otherPlayers.Add("player0", new Player { name = "player0", id = "player0", renderer = Substitute.For<IAvatarRenderer>() });
-            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
+            controller.Initialize( TestUtils.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             Assert.IsTrue(controller.enabled);
             Assert.AreEqual(1, controller.lodControllers.Count);
@@ -58,7 +58,7 @@ namespace Tests.AvatarsLODController
         {
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
-            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
+            controller.Initialize( TestUtils.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
 
@@ -72,7 +72,7 @@ namespace Tests.AvatarsLODController
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();
             controller.Configure().CreateLodController(Arg.Any<Player>()).Returns(lodController);
             otherPlayers.Add("player0", CreateMockPlayer("player0"));
-            controller.Initialize( TestHelpers.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
+            controller.Initialize( TestUtils.CreateFeatureFlag(new List<string>() { DCL.AvatarsLODController.AVATAR_LODS_FLAG_NAME }));
 
             otherPlayers.Remove("player0");
 
@@ -84,12 +84,12 @@ namespace Tests.AvatarsLODController
         {
             IAvatarLODController lodController = null;
             controller.Configure()
-                      .CreateLodController(Arg.Any<Player>())
-                      .Returns(x =>
-                      {
-                          lodController = Substitute.For<IAvatarLODController>();
-                          return lodController;
-                      });
+                .CreateLodController(Arg.Any<Player>())
+                .Returns(x =>
+                {
+                    lodController = Substitute.For<IAvatarLODController>();
+                    return lodController;
+                });
             controller.enabled = true;
 
             controller.RegisterAvatar("player0", CreateMockPlayer("player0"));
@@ -474,6 +474,7 @@ namespace Tests.AvatarsLODController
             renderer = Substitute.For<IAvatarRenderer>();
             return new Player { name = id, id = id, renderer = renderer, worldPosition = worldPosition, playerName = Substitute.For<IPlayerName>() };
         }
+
         private IAvatarLODController CreateMockLODController(Player player)
         {
             IAvatarLODController lodController = Substitute.For<IAvatarLODController>();

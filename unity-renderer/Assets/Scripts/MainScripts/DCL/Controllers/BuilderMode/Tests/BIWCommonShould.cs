@@ -64,7 +64,7 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
     public void BuilderInWorldEntityComponents()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
         BIWEntity biwEntity = new BIWEntity();
         biwEntity.Initialize(scene.entities[entityId], null);

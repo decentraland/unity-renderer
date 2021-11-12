@@ -48,7 +48,7 @@ public class IntegrationTestController : MonoBehaviour
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
-            TestHelpers.CreateSceneMessage(
+            TestUtils.CreateSceneMessage(
                 sceneName,
                 entityId,
                 "CreateEntity",
@@ -61,7 +61,7 @@ public class IntegrationTestController : MonoBehaviour
 
         //NOTE(Brian): This is making my eyes bleed. (Zak): Twice
         sceneController.SendSceneMessage(
-            TestHelpers.CreateSceneMessage(
+            TestUtils.CreateSceneMessage(
                 sceneName,
                 entityId,
                 "SetEntityParent",
@@ -79,7 +79,7 @@ public class IntegrationTestController : MonoBehaviour
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject == null, "meshGameObject must be null");
 
         // 1st message
-        TestHelpers.CreateAndSetShape(scene as ParcelScene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+        TestUtils.CreateAndSetShape(scene as ParcelScene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
         {
             scene.EntityComponentCreateOrUpdate(
@@ -91,7 +91,7 @@ public class IntegrationTestController : MonoBehaviour
 
 
         // 2nd message
-        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+        TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
         {
             scene.EntityComponentCreateOrUpdate(
                 entityId,
@@ -100,7 +100,7 @@ public class IntegrationTestController : MonoBehaviour
             );
         }
 
-        TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10),
+        TestUtils.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10),
             new TextShape.Model() { value = "Hello World!!!" });
     }
 
@@ -126,7 +126,7 @@ public class IntegrationTestController : MonoBehaviour
 
         {
             // 3nd message, the box should remain the same, including references
-            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+            TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
             var newMesh = cube.meshRootGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
@@ -136,7 +136,7 @@ public class IntegrationTestController : MonoBehaviour
 
         {
             // 3nd message, the box should remain the same, including references
-            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+            TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
             var newMesh = cube.meshRootGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
@@ -146,7 +146,7 @@ public class IntegrationTestController : MonoBehaviour
 
         {
             // 4nd message, the box should be disposed and the new mesh should be a sphere
-            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE,
+            TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE,
                 "{\"withCollisions\":false,\"billboard\":0,\"visible\":true,\"tag\":\"sphere\"}");
 
             var newMesh = cube.meshRootGameObject.GetComponentInChildren<MeshFilter>().mesh;

@@ -13,7 +13,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
     public IEnumerator OBJShapeUpdate()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
         Material placeholderLoadingMaterial = Resources.Load<Material>("Materials/AssetLoading");
 
@@ -22,7 +22,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject == null,
             "Since the shape hasn't been updated yet, the child mesh shouldn't exist");
 
-        TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.OBJ_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.OBJ_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/OBJ/teapot.obj"
@@ -45,20 +45,20 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
     public IEnumerator PreExistentShapeUpdate()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
         Assert.IsTrue(entity.meshRootGameObject == null, "meshGameObject should be null");
 
         // Set its shape as a BOX
-        var componentId = TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+        var componentId = TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
         yield return ((scene.GetSharedComponent(componentId)) as IDelayedComponent).routine;
 
         var meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Box Instance", meshName);
 
         // Update its shape to a cylinder
-        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
+        TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
         yield return (scene.GetSharedComponent(componentId) as IDelayedComponent).routine;
 
         Assert.IsTrue(entity.meshRootGameObject != null, "meshGameObject should not be null");
@@ -72,7 +72,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
         Assert.IsTrue(entity.meshesInfo.currentShape is CylinderShape, "current shape is BoxShape");
 
         // Update its shape to a GLTF
-        TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
@@ -93,7 +93,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
             "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
         // Update its shape to a sphere
-        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE, "{}");
+        TestUtils.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE, "{}");
         yield return (scene.GetSharedComponent(componentId) as IDelayedComponent).routine;
 
         yield return null;
