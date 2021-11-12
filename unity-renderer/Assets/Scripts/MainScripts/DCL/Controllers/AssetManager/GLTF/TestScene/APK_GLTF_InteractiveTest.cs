@@ -22,7 +22,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
 
     void Start()
     {
-        GLTFSceneImporter.budgetPerFrameInMilliseconds = 4;
+        GLTFThrottlingHelper.budgetPerFrameInMilliseconds = 4;
         webRequestController = WebRequestController.Create();
         keeper = new AssetPromiseKeeper_GLTF();
     }

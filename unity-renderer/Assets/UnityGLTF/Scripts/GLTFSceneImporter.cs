@@ -118,9 +118,6 @@ namespace UnityGLTF
         public bool initialVisibility { get; set; }
 
         private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
-        private static float budgetPerFrameInMillisecondsValue = 2f;
-
-        public static float budgetPerFrameInMilliseconds { get => renderingIsDisabled ? float.MaxValue : budgetPerFrameInMillisecondsValue; set => budgetPerFrameInMillisecondsValue = value; }
 
         public bool forceGPUOnlyMesh = true;
         public bool forceGPUOnlyTex = true;
@@ -140,8 +137,8 @@ namespace UnityGLTF
             public long StartPosition;
         }
 
-        private static float _timeAtLastYield = 0f;
-        protected AsyncCoroutineHelper _asyncCoroutineHelper;
+        protected AsyncCoroutineHelper asyncCoroutineHelper;
+        private SkipFrameIfDepletedTimeBudget skipFrameIfDepletedTimeBudget;
 
         public bool addImagesToPersistentCaching = true;
         public bool addMaterialsToPersistentCaching = true;
@@ -193,6 +190,9 @@ namespace UnityGLTF
             this.id = id;
             _gltfRoot = rootNode;
             _loader = externalDataLoader;
+
+            skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
+
             if (gltfStream != null)
             {
                 _gltfStream = new GLBStream { Stream = gltfStream, StartPosition = gltfStream.Position };
@@ -202,7 +202,7 @@ namespace UnityGLTF
         private GLTFSceneImporter(ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper)
         {
             _loader = externalDataLoader;
-            _asyncCoroutineHelper = asyncCoroutineHelper;
+            this.asyncCoroutineHelper = asyncCoroutineHelper;
         }
 
         public void Dispose()
@@ -267,8 +267,6 @@ namespace UnityGLTF
 
                 float profiling = 0, frames = 0, jsonProfiling = 0;
 
-                _timeAtLastYield = Time.realtimeSinceStartup;
-
                 if (PROFILING_ENABLED)
                 {
                     jsonProfiling = Time.realtimeSinceStartup;
@@ -315,7 +313,7 @@ namespace UnityGLTF
                 //              the WaitUntil below will fail.
 
                 yield return new WaitUntil(
-                    () => { return _asyncCoroutineHelper == null || _asyncCoroutineHelper.AllCoroutinesAreFinished(); });
+                    () => { return asyncCoroutineHelper == null || asyncCoroutineHelper.AllCoroutinesAreFinished(); });
 
                 MaterialTransitionController[] matTransitions = CreatedObject.GetComponentsInChildren<MaterialTransitionController>(true);
 
@@ -396,7 +394,6 @@ namespace UnityGLTF
                     _assetCache = new AssetCache(_gltfRoot);
                 }
 
-                _timeAtLastYield = Time.realtimeSinceStartup;
                 yield return _LoadNode(nodeIndex);
 
                 CreatedObject = _assetCache.NodeCache[nodeIndex];
@@ -715,12 +712,7 @@ namespace UnityGLTF
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
                 bufferContents.Stream.Read(data, 0, data.Length);
 
-
-                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
-                // if (ShouldYieldOnTimeout())
-                // {
-                //     yield return YieldOnTimeout();
-                // }
+                yield return skipFrameIfDepletedTimeBudget;
 
                 yield return ConstructUnityTexture(settings, data, imageCacheIndex);
             }
@@ -739,14 +731,7 @@ namespace UnityGLTF
                     stream = _assetCache.ImageStreamCache[imageCacheIndex];
                 }
 
-                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
-                //
-                // if (ShouldYieldOnTimeout())
-                // {
-                //     yield return YieldOnTimeout();
-                // }
-
-                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+                yield return skipFrameIfDepletedTimeBudget;
 
                 yield return ConstructUnityTexture(settings, stream, imageCacheIndex);
             }
@@ -771,11 +756,7 @@ namespace UnityGLTF
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
 
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
-            // if (ShouldYieldOnTimeout())
-            // {
-            //     yield return YieldOnTimeout();
-            // }
+            yield return skipFrameIfDepletedTimeBudget;
         }
 
         protected virtual IEnumerator ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
@@ -1655,9 +1636,9 @@ namespace UnityGLTF
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
                 var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
 
-                if (_asyncCoroutineHelper != null)
+                if (asyncCoroutineHelper != null)
                 {
-                    _asyncCoroutineHelper.RunAsTask(coroutine, "matDownload");
+                    asyncCoroutineHelper.RunAsTask(coroutine, "matDownload");
                 }
                 else
                 {
@@ -1898,9 +1879,9 @@ namespace UnityGLTF
                     var textureId = pbr.BaseColorTexture.Index;
                     var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, false);
 
-                    if (_asyncCoroutineHelper != null)
+                    if (asyncCoroutineHelper != null)
                     {
-                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                        tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, ""));
                     }
                     else
                     {
@@ -1913,9 +1894,9 @@ namespace UnityGLTF
                     var textureId = pbr.MetallicRoughnessTexture.Index;
                     var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
-                    if (_asyncCoroutineHelper != null)
+                    if (asyncCoroutineHelper != null)
                     {
-                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                        tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, ""));
                     }
                     else
                     {
@@ -1931,9 +1912,9 @@ namespace UnityGLTF
                     var textureId = def.CommonConstant.LightmapTexture.Index;
                     var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
-                    if (_asyncCoroutineHelper != null)
+                    if (asyncCoroutineHelper != null)
                     {
-                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                        tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, ""));
                     }
                     else
                     {
@@ -1947,9 +1928,9 @@ namespace UnityGLTF
                 var textureId = def.NormalTexture.Index;
                 var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
-                if (_asyncCoroutineHelper != null)
+                if (asyncCoroutineHelper != null)
                 {
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                    tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, ""));
                 }
                 else
                 {
@@ -1967,9 +1948,9 @@ namespace UnityGLTF
                 {
                     var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
-                    if (_asyncCoroutineHelper != null)
+                    if (asyncCoroutineHelper != null)
                     {
-                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                        tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, ""));
                     }
                     else
                     {
@@ -1983,9 +1964,9 @@ namespace UnityGLTF
                 var textureId = def.EmissiveTexture.Index;
                 var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, false);
 
-                if (_asyncCoroutineHelper != null)
+                if (asyncCoroutineHelper != null)
                 {
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, "A"));
+                    tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, "A"));
                 }
                 else
                 {
@@ -2005,9 +1986,9 @@ namespace UnityGLTF
                     var textureId = specGlossDef.DiffuseTexture.Index;
                     var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
-                    if (_asyncCoroutineHelper != null)
+                    if (asyncCoroutineHelper != null)
                     {
-                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, "2"));
+                        tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, "2"));
                     }
                     else
                     {
@@ -2020,9 +2001,9 @@ namespace UnityGLTF
                     var textureId = specGlossDef.SpecularGlossinessTexture.Index;
                     var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id, true);
 
-                    if (_asyncCoroutineHelper != null)
+                    if (asyncCoroutineHelper != null)
                     {
-                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, "3"));
+                        tasks.Add(asyncCoroutineHelper.RunAsTask(coroutine, "3"));
                     }
                     else
                     {
@@ -2031,7 +2012,7 @@ namespace UnityGLTF
                 }
             }
 
-            if (_asyncCoroutineHelper == null)
+            if (asyncCoroutineHelper == null)
                 yield break;
 
             yield return null;
@@ -2058,11 +2039,7 @@ namespace UnityGLTF
             int vertexCount = (int) primitive.Attributes[SemanticProperties.POSITION].Value.Count;
             bool hasNormals = unityMeshData.Normals != null;
 
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
-            // if (ShouldYieldOnTimeout())
-            // {
-            //     yield return YieldOnTimeout();
-            // }
+            yield return skipFrameIfDepletedTimeBudget;
 
             Mesh mesh = new Mesh
             {
@@ -2075,19 +2052,18 @@ namespace UnityGLTF
 
             mesh.vertices = unityMeshData.Vertices;
 
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.normals = unityMeshData.Normals;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv = unityMeshData.Uv1;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv2 = unityMeshData.Uv2;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv3 = unityMeshData.Uv3;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv4 = unityMeshData.Uv4;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.colors = unityMeshData.Colors;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
 
             mesh.triangles = unityMeshData.Triangles;
             if (ShouldYieldOnTimeout())
@@ -2096,16 +2072,16 @@ namespace UnityGLTF
             }
 
             mesh.tangents = unityMeshData.Tangents;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.boneWeights = unityMeshData.BoneWeights;
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
 
             if (!hasNormals)
                 mesh.RecalculateNormals();
 
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.Optimize();
-            yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+            yield return skipFrameIfDepletedTimeBudget;
 
             OnMeshCreated?.Invoke(mesh);
 

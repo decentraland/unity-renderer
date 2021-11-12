@@ -17,17 +17,17 @@ namespace DCL
         /// </summary>
         /// <param name="monoBehaviour">MonoBehaviour to start the coroutine on</param>
         /// <param name="enumerator">Iterator function to run as the coroutine</param>
-        /// <param name="done">Callback to call when the coroutine has thrown an exception or finished.
+        /// <param name="onFinish">Callback to call when the coroutine has thrown an exception or finished.
         /// The thrown exception or null is passed as the parameter.</param>
         /// <returns>The started coroutine</returns>
         public static Coroutine StartThrottledCoroutine(
             this MonoBehaviour monoBehaviour,
             IEnumerator enumerator,
-            Action<Exception> done,
+            Action<Exception> onFinish,
             Func<float, bool> timeBudgetCounter
         )
         {
-            return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, done, timeBudgetCounter));
+            return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, onFinish, timeBudgetCounter));
         }
 
 
@@ -152,7 +152,6 @@ namespace DCL
     /// </summary>
     public class SkipFrameIfDepletedTimeBudget : CustomYieldInstruction
     {
-        public static SkipFrameIfDepletedTimeBudget cachedInstance = new SkipFrameIfDepletedTimeBudget();
         public override bool keepWaiting => false;
     }
 

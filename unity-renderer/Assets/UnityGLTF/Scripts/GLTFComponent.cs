@@ -133,7 +133,10 @@ namespace UnityGLTF
 
             this.fileToHashConverter = fileToHashConverter;
 
-            loadingRoutine = DCL.CoroutineUtils.StartThrowingCoroutine(this, LoadAssetCoroutine(settings), OnFail_Internal);
+            loadingRoutine = this.StartThrottledCoroutine(
+                enumerator: LoadAssetCoroutine(settings),
+                onFinish: OnFail_Internal,
+                timeBudgetCounter: GLTFThrottlingHelper.EvaluateTimeBudget);
         }
 
         void ApplySettings(Settings settings)

@@ -88,7 +88,7 @@ namespace DCL.Components
 #if UNITY_EDITOR
             loadStartTime = Time.realtimeSinceStartup;
 #endif
-            
+
             LoadingType finalLoadingType = forcedLoadingType == LoadingType.DEFAULT ? defaultLoadingType : forcedLoadingType;
             switch (finalLoadingType)
             {

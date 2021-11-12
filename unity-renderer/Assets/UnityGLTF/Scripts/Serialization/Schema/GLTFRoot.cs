@@ -277,9 +277,11 @@ namespace GLTF.Schema
                 throw new Exception("gltf json must be an object");
             }
 
+            SkipFrameIfDepletedTimeBudget skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
+
             while (jsonReader.Read() && jsonReader.TokenType == JsonToken.PropertyName)
             {
-                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+                yield return skipFrameIfDepletedTimeBudget;
 
                 var curProp = jsonReader.Value.ToString();
 

@@ -70,6 +70,7 @@ namespace GLTF.Extensions
             }
 
             var list = new List<T>();
+            var skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
 
             while (reader.Read() && reader.TokenType != JsonToken.EndArray)
             {
@@ -81,7 +82,7 @@ namespace GLTF.Extensions
                     break;
                 }
 
-                yield return SkipFrameIfDepletedTimeBudget.cachedInstance;
+                yield return skipFrameIfDepletedTimeBudget;
             }
 
             onComplete.Invoke(list);
