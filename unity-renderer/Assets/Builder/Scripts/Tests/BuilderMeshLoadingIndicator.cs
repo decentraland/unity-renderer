@@ -19,15 +19,15 @@ public class BuilderMeshLoadingIndicator : IntegrationTestSuite_Legacy
         var builderBridge = Object.FindObjectOfType<Builder.DCLBuilderBridge>();
         builderBridge.ResetBuilderScene();
 
-        var objectEntity = TestHelpers.CreateSceneEntity(scene);
-        var objectShape = TestHelpers.AttachGLTFShape(objectEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
+        var objectEntity = TestUtils.CreateSceneEntity(scene);
+        var objectShape = TestUtils.AttachGLTFShape(objectEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
         {
             src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
         });
 
         CheckActiveIndicatorsAmount(expectedAmount: 1);
 
-        yield return TestHelpers.WaitForGLTFLoad(objectEntity);
+        yield return TestUtils.WaitForGLTFLoad(objectEntity);
 
         CheckActiveIndicatorsAmount(expectedAmount: 0);
 

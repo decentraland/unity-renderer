@@ -14,7 +14,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator BoxShapeUpdate()
     {
         string entityId = "1";
-        TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Box Instance", meshName);
@@ -25,7 +25,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator SphereShapeUpdate()
     {
         string entityId = "2";
-        TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Sphere Instance", meshName);
@@ -36,7 +36,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator CylinderShapeUpdate()
     {
         string entityId = "5";
-        TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Cylinder Instance", meshName);
@@ -47,7 +47,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator ConeShapeUpdate()
     {
         string entityId = "4";
-        TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
 
@@ -59,7 +59,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator BoxShapeComponentMissingValuesGetDefaultedOnUpdate()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
         // 1. Create component with non-default configs
         string componentJSON = JsonUtility.ToJson(new BoxShape.Model
@@ -67,7 +67,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
             withCollisions = true
         });
 
-        string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+        string componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
             componentJSON
         );
 
@@ -87,7 +87,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BoxShapeAttachedGetsReplacedOnNewAttachment()
     {
-        yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(scene,
+        yield return TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(scene,
             CLASS_ID.BOX_SHAPE);
     }
 
@@ -95,38 +95,38 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator SphereShapeComponentMissingValuesGetDefaultedOnUpdate()
     {
         var component =
-            TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE);
+            TestUtils.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE);
         yield return component.routine;
 
         Assert.IsFalse(component == null);
 
-        yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<SphereShape.Model, SphereShape>(scene,
+        yield return TestUtils.TestSharedComponentDefaultsOnUpdate<SphereShape.Model, SphereShape>(scene,
             CLASS_ID.SPHERE_SHAPE);
     }
 
     [UnityTest]
     public IEnumerator SphereShapeAttachedGetsReplacedOnNewAttachment()
     {
-        yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<SphereShape.Model, SphereShape>(
+        yield return TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<SphereShape.Model, SphereShape>(
             scene, CLASS_ID.SPHERE_SHAPE);
     }
 
     [UnityTest]
     public IEnumerator ConeShapeComponentMissingValuesGetDefaultedOnUpdate()
     {
-        var component = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, CLASS_ID.CONE_SHAPE);
+        var component = TestUtils.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, CLASS_ID.CONE_SHAPE);
         yield return component.routine;
 
         Assert.IsFalse(component == null);
 
-        yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<ConeShape.Model, ConeShape>(scene,
+        yield return TestUtils.TestSharedComponentDefaultsOnUpdate<ConeShape.Model, ConeShape>(scene,
             CLASS_ID.CONE_SHAPE);
     }
 
     [UnityTest]
     public IEnumerator ConeShapeAttachedGetsReplacedOnNewAttachment()
     {
-        yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<ConeShape.Model, ConeShape>(scene,
+        yield return TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<ConeShape.Model, ConeShape>(scene,
             CLASS_ID.CONE_SHAPE);
     }
 
@@ -134,12 +134,12 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator CylinderShapeComponentMissingValuesGetDefaultedOnUpdate()
     {
         var component =
-            TestHelpers.SharedComponentCreate<CylinderShape, CylinderShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE);
+            TestUtils.SharedComponentCreate<CylinderShape, CylinderShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE);
         yield return component.routine;
 
         Assert.IsFalse(component == null);
 
-        yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<CylinderShape.Model, CylinderShape>(scene,
+        yield return TestUtils.TestSharedComponentDefaultsOnUpdate<CylinderShape.Model, CylinderShape>(scene,
             CLASS_ID.CYLINDER_SHAPE);
     }
 
@@ -147,7 +147,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator CylinderShapeAttachedGetsReplacedOnNewAttachment()
     {
         yield return
-            TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<CylinderShape.Model, CylinderShape>(scene,
+            TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<CylinderShape.Model, CylinderShape>(scene,
                 CLASS_ID.CYLINDER_SHAPE);
     }
 
@@ -155,75 +155,75 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator CollisionProperty()
     {
         string entityId = "entityId";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
-        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+        TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
         yield return null;
 
         // BoxShape
         BaseShape.Model shapeModel = new BoxShape.Model();
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
+        BaseShape shapeComponent = TestUtils.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // SphereShape
         shapeModel = new SphereShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // ConeShape
         shapeModel = new ConeShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<ConeShape, BaseShape.Model>(scene, CLASS_ID.CONE_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<ConeShape, BaseShape.Model>(scene, CLASS_ID.CONE_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // CylinderShape
         shapeModel = new CylinderShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<CylinderShape, BaseShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<CylinderShape, BaseShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // PlaneShape
         shapeModel = new PlaneShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<PlaneShape, BaseShape.Model>(scene, CLASS_ID.PLANE_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<PlaneShape, BaseShape.Model>(scene, CLASS_ID.PLANE_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
     }
@@ -232,75 +232,75 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
     public IEnumerator VisibleProperty()
     {
         string entityId = "entityId";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
-        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+        TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
         yield return null;
 
         // BoxShape
         BaseShape.Model shapeModel = new BoxShape.Model();
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
+        BaseShape shapeComponent = TestUtils.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // SphereShape
         shapeModel = new SphereShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // ConeShape
         shapeModel = new ConeShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<ConeShape, BaseShape.Model>(scene, CLASS_ID.CONE_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<ConeShape, BaseShape.Model>(scene, CLASS_ID.CONE_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // CylinderShape
         shapeModel = new CylinderShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<CylinderShape, BaseShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<CylinderShape, BaseShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
 
         // PlaneShape
         shapeModel = new PlaneShape.Model();
-        shapeComponent = TestHelpers.SharedComponentCreate<PlaneShape, BaseShape.Model>(scene, CLASS_ID.PLANE_SHAPE, shapeModel);
+        shapeComponent = TestUtils.SharedComponentCreate<PlaneShape, BaseShape.Model>(scene, CLASS_ID.PLANE_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
-        yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
 
-        TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+        TestUtils.DetachSharedComponent(scene, entityId, shapeComponent.id);
         shapeComponent.Dispose();
         yield return null;
     }
@@ -314,13 +314,13 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         Environment.i.world.sceneBoundsChecker.Stop();
 
         // Arrange: set inverse of withCollision to trigger is dirty later
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { withCollisions = !withCollision });
+        BaseShape shapeComponent = TestUtils.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { withCollisions = !withCollision });
         yield return shapeComponent.routine;
         List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
         {
-            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene, $"entity{i}");
-            TestHelpers.SharedComponentAttach(shapeComponent, entity);
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene, $"entity{i}");
+            TestUtils.SharedComponentAttach(shapeComponent, entity);
             entities.Add(entity);
         }
 
@@ -347,13 +347,13 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         Environment.i.world.sceneBoundsChecker.Stop();
 
         // Arrange: set inverse of visible to trigger is dirty later
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { visible = !visible });
+        BaseShape shapeComponent = TestUtils.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { visible = !visible });
         yield return shapeComponent.routine;
         List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
         {
-            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene, $"entity{i}");
-            TestHelpers.SharedComponentAttach(shapeComponent, entity);
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene, $"entity{i}");
+            TestUtils.SharedComponentAttach(shapeComponent, entity);
             entities.Add(entity);
         }
 

@@ -25,7 +25,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
         Vector3 camTarget = new Vector3(5, 1, 5);
         VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget + new Vector3(5, 1, 5), camTarget);
 
-        BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
+        BasicMaterial basicMaterialComponent = TestUtils.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {
             alphaTest = 1f,
             castShadows = false
@@ -54,7 +54,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
         Vector3 camTarget = new Vector3(5, 1, 5);
         VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget + new Vector3(5, 1, 5), camTarget);
 
-        BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
+        BasicMaterial basicMaterialComponent = TestUtils.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {
             alphaTest = 1f,
             castShadows = true

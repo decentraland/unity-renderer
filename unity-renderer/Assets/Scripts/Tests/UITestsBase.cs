@@ -10,7 +10,7 @@ namespace Tests
         {
             yield return base.SetUp();
             DCLCharacterController.i.PauseGravity();
-            TestHelpers.SetCharacterPosition(new Vector3(8f, 0f, 8f));
+            TestUtils.SetCharacterPosition(new Vector3(8f, 0f, 8f));
         }
 
         protected Vector2 CalculateAlignedAnchoredPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")

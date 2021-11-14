@@ -29,9 +29,9 @@ namespace SceneBoundariesCheckerTests
         [UnityTest]
         public IEnumerator ResetMaterialCorrectlyWhenInvalidEntitiesAreRemoved()
         {
-            var entity = TestHelpers.CreateSceneEntity(scene);
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
-            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            var entity = TestUtils.CreateSceneEntity(scene);
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
@@ -44,22 +44,22 @@ namespace SceneBoundariesCheckerTests
 
             SBC_Asserts.AssertMeshIsValid(entity.meshesInfo);
             // Move object to surpass the scene boundaries
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
+            TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             yield return null;
 
             SBC_Asserts.AssertMeshIsInvalid(entity.meshesInfo);
 
-            TestHelpers.RemoveSceneEntity(scene, entity.entityId);
+            TestUtils.RemoveSceneEntity(scene, entity.entityId);
 
             Environment.i.platform.parcelScenesCleaner.CleanMarkedEntities();
 
             yield return null;
 
-            var entity2 = TestHelpers.CreateSceneEntity(scene);
+            var entity2 = TestUtils.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity2, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
-            TestHelpers.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            TestUtils.SetEntityTransform(scene, entity2, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            TestUtils.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
                     src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"

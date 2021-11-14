@@ -13,14 +13,13 @@ namespace DCL.Components
 {
     public class DCLVideoTexture : DCLTexture
     {
-#if UNITY_EDITOR
-        internal static bool isTest = true;
-#else
-        internal static bool isTest = false;
-#endif
+        public static bool VERBOSE = false;
+        public static ILogger logger = new Logger(Debug.unityLogger) { filterLogType = VERBOSE ? LogType.Log : LogType.Error };
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS = 1.5f;
         private const float VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS = 1f;
+
+        public static System.Func<IVideoPluginWrapper> videoPluginWrapperBuilder = () => new VideoPluginWrapper_WebGL();
 
         [System.Serializable]
         new public class Model : BaseModel
@@ -66,7 +65,9 @@ namespace DCL.Components
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
             if (isDisposed)
+            {
                 yield break;
+            }
 
             var model = (Model) newModel;
 
@@ -84,6 +85,7 @@ namespace DCL.Components
                     unityWrap = TextureWrapMode.Mirror;
                     break;
             }
+
             lastVideoClipID = model.videoClipId;
 
             if (texturePlayer == null)
@@ -92,18 +94,11 @@ namespace DCL.Components
 
                 if (dclVideoClip == null)
                 {
-                    Debug.LogError("Wrong video clip type when playing VideoTexture!!");
+                    logger.LogError("DCLVideoTexture", "Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
 
                 Initialize(dclVideoClip);
-            }
-
-            // NOTE: create texture for testing cause real texture will only be created on web platform
-            if (isTest)
-            {
-                if (texture == null)
-                    texture = new Texture2D(1, 1);
             }
 
             if (texture == null)
@@ -163,7 +158,7 @@ namespace DCL.Components
 
         protected virtual IDCLVideoPlayer CreateVideoPlayer(string videoId, DCLVideoClip dclVideoClip)
         {
-            return new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
+            return new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
         }
         private void Initialize(DCLVideoClip dclVideoClip)
         {
@@ -173,7 +168,7 @@ namespace DCL.Components
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
             scene.OnEntityRemoved += OnEntityRemoved;
-            
+
             Settings.i.audioSettings.OnChanged += OnAudioSettingsChanged;
 
             OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
@@ -201,6 +196,7 @@ namespace DCL.Components
                 yield return null;
             }
         }
+
         private void UpdateDirtyState()
         {
             if (isPlayStateDirty)
@@ -209,28 +205,33 @@ namespace DCL.Components
                 isPlayStateDirty = false;
             }
         }
+
         private void UpdateVideoTexture()
         {
             if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS)
             {
                 currUpdateIntervalTime += Time.unscaledDeltaTime;
             }
-            else if (texturePlayer != null && !isTest)
+            else if (texturePlayer != null)
             {
                 currUpdateIntervalTime = 0;
-                texturePlayer.UpdateVideoTexture();
+                texturePlayer.Update();
+                texture = texturePlayer.texture;
             }
         }
+
         private void UpdateProgressReport()
         {
             var currentState = texturePlayer.GetState();
-            if ( currentState == VideoState.PLAYING 
+
+            if ( currentState == VideoState.PLAYING
                  && IsTimeToReportVideoProgress()
                  || previousVideoState != currentState)
             {
                 ReportVideoProgress();
             }
         }
+
         private void ReportVideoProgress()
         {
             lastVideoProgressReportTime = Time.unscaledTime;
@@ -241,7 +242,11 @@ namespace DCL.Components
             var length = texturePlayer.GetDuration();
             WebInterface.ReportVideoProgressEvent(id, scene.sceneData.id, lastVideoClipID, videoStatus, currentOffset, length );
         }
-        private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS; }
+
+        private bool IsTimeToReportVideoProgress()
+        {
+            return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL_IN_SECONDS;
+        }
 
         private void CalculateVideoVolumeAndPlayStatus()
         {
@@ -408,7 +413,7 @@ namespace DCL.Components
             Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
-            
+
             if (scene != null)
                 scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)

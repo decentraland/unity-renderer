@@ -33,10 +33,10 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
         string entityId = "Test";
 
         BIWEntity newEntity = new BIWEntity();
-        newEntity.Initialize(TestHelpers.CreateSceneEntity(scene, entityId), null);
+        newEntity.Initialize(TestUtils.CreateSceneEntity(scene, entityId), null);
         newEntity.rootEntity.gameObject.transform.position = Vector3.one * 444;
 
-        TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"

@@ -23,9 +23,9 @@ namespace AvatarShape_Tests
         public static AvatarShape CreateAvatarShape(ParcelScene scene, AvatarModel model)
         {
             GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
-            var entity = TestHelpers.CreateSceneEntity(scene);
-            AvatarShape shape = TestHelpers.EntityComponentCreate<AvatarShape, AvatarModel>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_SHAPE);
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            var entity = TestUtils.CreateSceneEntity(scene);
+            AvatarShape shape = TestUtils.EntityComponentCreate<AvatarShape, AvatarModel>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_SHAPE);
+            TestUtils.SetEntityTransform(scene, entity, new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
             return shape;
         }
 

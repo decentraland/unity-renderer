@@ -9,7 +9,7 @@ namespace DCL
     /// Utility functions to handle exceptions thrown from coroutine and iterator functions
     /// http://JacksonDunstan.com/articles/3718
     /// </summary>
-    public static class CoroutineHelpers
+    public static class CoroutineUtils
     {
         /// <summary>
         /// Start a coroutine that might throw an exception. Call the callback with the exception if it

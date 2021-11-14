@@ -1,7 +1,9 @@
+using System.Collections;
 using DCL.Components.Video.Plugin;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -10,118 +12,152 @@ namespace Tests
         private const string ID = "id";
         private const string ERROR_MESSAGE = "Error Message";
         private WebVideoPlayer webVideoPlayer;
-        private IWebVideoPlayerPlugin plugin;
+        private IVideoPluginWrapper plugin;
 
         [SetUp]
         public void Setup()
         {
-            plugin = Substitute.For<IWebVideoPlayerPlugin>();
+            plugin = Substitute.For<IVideoPluginWrapper>();
             webVideoPlayer = new WebVideoPlayer(ID, "url", true, plugin);
             plugin.GetError(ID).Returns(ERROR_MESSAGE);
         }
-        
+
         [Test]
-        public void VideoPlays()
+        public void NotPlayVideoIfVideoIsNotReady()
         {
+            plugin.GetState(ID).Returns(VideoState.LOADING);
+
             webVideoPlayer.Play();
-            
+
+            plugin.DidNotReceive().Play(ID, -1);
+        }
+
+        [Test]
+        public void PlayVideoIfSetBeforeIsReadyWhenIsReady()
+        {
+            plugin.GetState(ID).Returns(VideoState.LOADING);
+
+            webVideoPlayer.Play();
+
+            plugin.DidNotReceive().Play(ID, -1);
+
+            plugin.GetState(ID).Returns(VideoState.READY);
+
+            webVideoPlayer.Update();
+
             plugin.Received(1).Play(ID, -1);
         }
-        
+
         [Test]
-        public void VideoPlaysAtPausedPosition()
+        public void PlayVideo()
         {
-            webVideoPlayer.SetTime(100);
-            
+            plugin.GetState(ID).Returns(VideoState.READY);
+
+            webVideoPlayer.Update();
             webVideoPlayer.Play();
-            
+
+            plugin.Received(1).Play(ID, -1);
+        }
+
+        [Test]
+        public void PlayVideoAtPausedPosition()
+        {
+            plugin.GetState(ID).Returns(VideoState.READY);
+
+            webVideoPlayer.Update();
+            webVideoPlayer.SetTime(100);
+            webVideoPlayer.Play();
+
             plugin.Received(1).Play(ID, 100);
         }
 
         [Test]
-        public void VideoGetTimeReturnsNativeTime()
+        public void ReturnProperValueForGetTime()
         {
             plugin.GetTime(ID).Returns(7);
-            
+
             var time = webVideoPlayer.GetTime();
-            
+
             plugin.Received(1).GetTime(ID);
             Assert.AreEqual(7, time);
         }
 
         [Test]
-        public void VideoIsPausedCorrectly()
+        public void PauseVideo()
         {
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
-            
+
             plugin.Received(1).Pause(ID);
-            Assert.IsTrue(webVideoPlayer.IsPaused());
+            Assert.IsFalse(webVideoPlayer.playing);
         }
 
         [Test]
-        public void VideoIsResumedAtPausedTime()
+        public void ResumeVideoAtCorrectTimeAfterPaused()
         {
             plugin.GetTime(ID).Returns(80);
-            
+            plugin.GetState(ID).Returns(VideoState.READY);
+
+            webVideoPlayer.Update();
+
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
             webVideoPlayer.Play();
-            
+
             plugin.Received(1).Play(ID, -1);
             plugin.Received(1).Play(ID, 80);
         }
 
         [Test]
-        public void VideoVolumeIsSet()
+        public void SetVolume()
         {
             webVideoPlayer.SetVolume(77);
-            
+
             plugin.Received(1).SetVolume(ID, 77);
         }
 
         [Test]
-        public void VideoLoopIsSet()
+        public void SetVideoLoop()
         {
             webVideoPlayer.SetLoop(true);
             webVideoPlayer.SetLoop(false);
-            
+
             plugin.Received(1).SetLoop(ID, true);
             plugin.Received(1).SetLoop(ID, false);
         }
 
         [Test]
-        public void VideoPlaybackRateIsSet()
+        public void SetPlaybackRate()
         {
             webVideoPlayer.SetPlaybackRate(55);
-            
+
             plugin.Received(1).SetPlaybackRate(ID, 55);
         }
 
         [Test]
-        public void ReturnsVideoDuration()
+        public void ReturnVideoDurationWhenGetDurationIsCalled()
         {
             plugin.GetDuration(ID).Returns(200);
 
             var duration = webVideoPlayer.GetDuration();
-            
+
             Assert.AreEqual(200, duration);
         }
 
         [Test]
-        public void VideoIsDisposed()
+        public void DisposeVideo()
         {
             webVideoPlayer.Dispose();
-            
+
             plugin.Received(1).Remove(ID);
         }
 
         [Test]
-        public void VideoErrorStateOnUpdate()
+        public void SetErrorStateWhenUpdateIsCalled()
         {
-            plugin.GetState(ID).Returns((int)VideoState.ERROR);
-            
-            webVideoPlayer.UpdateWebVideoTexture();
+            plugin.GetState(ID).Returns(VideoState.ERROR);
+
+            webVideoPlayer.Update();
 
             plugin.Received(1).GetError(ID);
             Assert.IsTrue(webVideoPlayer.isError);
@@ -129,11 +165,11 @@ namespace Tests
         }
 
         [Test]
-        public void OnVideoErrorPlayerWontDoAnything()
+        public void DontDoAnythingWhenErrorStateIsSet()
         {
-            plugin.GetState(ID).Returns((int)VideoState.ERROR);
-            
-            webVideoPlayer.UpdateWebVideoTexture();
+            plugin.GetState(ID).Returns(VideoState.ERROR);
+
+            webVideoPlayer.Update();
             webVideoPlayer.Play();
             webVideoPlayer.Pause();
             webVideoPlayer.SetVolume(10);
@@ -142,7 +178,7 @@ namespace Tests
             webVideoPlayer.SetPlaybackRate(8);
             webVideoPlayer.GetTime();
             webVideoPlayer.GetDuration();
-            
+
             plugin.Received(0).Play(ID, Arg.Any<float>());
             plugin.Received(0).Pause(ID);
             plugin.Received(0).SetVolume(ID, Arg.Any<float>());
@@ -155,68 +191,22 @@ namespace Tests
         }
 
         [Test]
-        public void OnVideoReadyCreateTextureOnce()
+        public void ReturnVideoStateWhenGetStateIsCalled()
         {
-            Texture texture = new Texture2D(0, 0);
-            int timesTextureWasReady = 0;
-            plugin.GetWidth(ID).Returns(32);
-            plugin.GetHeight(ID).Returns(64);
-            plugin.GetState(ID).Returns((int)VideoState.READY);
-            webVideoPlayer.OnTextureReady += t =>
-            {
-                timesTextureWasReady++;
-                texture = t;
-            };
-            
-            webVideoPlayer.UpdateWebVideoTexture();
-            webVideoPlayer.UpdateWebVideoTexture();
-
-            Assert.IsTrue(timesTextureWasReady == 1);
-            Assert.AreEqual(32, texture.width);
-            Assert.AreEqual(64, texture.height);
-        }
-
-        [Test]
-        public void OnVideoPlayingResizeTextureAndUpdate()
-        {
-            Texture texture = new Texture2D(0, 0);
-            plugin.GetWidth(ID).Returns(5);
-            plugin.GetHeight(ID).Returns(5);
-            plugin.GetState(ID).Returns((int)VideoState.READY);
-            
-            webVideoPlayer.OnTextureReady += t =>
-            {
-                texture = t;
-            };
-            webVideoPlayer.Play();
-            webVideoPlayer.visible = true;
-            webVideoPlayer.UpdateWebVideoTexture();
-            
-            plugin.GetWidth(ID).Returns(64);
-            plugin.GetHeight(ID).Returns(64);
-            plugin.GetState(ID).Returns((int)VideoState.PLAYING);
-            
-            webVideoPlayer.UpdateWebVideoTexture();
-            plugin.Received(1).TextureUpdate(ID, texture.GetNativeTexturePtr(), Arg.Any<bool>() );
-        }
-
-        [Test]
-        public void VideoStateIsReturned()
-        {
-            plugin.GetState(ID).Returns(3);
+            plugin.GetState(ID).Returns(VideoState.READY);
 
             VideoState state = webVideoPlayer.GetState();
-            
+
             Assert.AreEqual(VideoState.READY, state);
         }
-        
+
         [Test]
-        public void WhenVideoDurationIsNaNReturnAValidNumber()
+        public void ReturnValidNumberWhenVideoDurationIsNaN()
         {
             plugin.GetDuration(ID).Returns(float.NaN);
 
             var duration = webVideoPlayer.GetDuration();
-            
+
             Assert.AreEqual(-1, duration);
         }
     }

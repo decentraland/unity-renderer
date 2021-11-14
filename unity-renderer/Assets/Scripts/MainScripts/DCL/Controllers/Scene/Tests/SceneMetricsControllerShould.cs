@@ -44,7 +44,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator CountParametrizedShapes()
     {
-        ConeShape coneShape = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(
+        ConeShape coneShape = TestUtils.SharedComponentCreate<ConeShape, ConeShape.Model>(
             scene,
             DCL.Models.CLASS_ID.CONE_SHAPE,
             new ConeShape.Model()
@@ -54,7 +54,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
             }
         );
 
-        PlaneShape planeShape = TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(
+        PlaneShape planeShape = TestUtils.SharedComponentCreate<PlaneShape, PlaneShape.Model>(
             scene,
             DCL.Models.CLASS_ID.PLANE_SHAPE,
             new PlaneShape.Model()
@@ -64,14 +64,14 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
             }
         );
 
-        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
-        TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
+        TestUtils.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
 
-        IDCLEntity entity2 = TestHelpers.CreateSceneEntity(scene);
-        TestHelpers.SetEntityTransform(scene, entity2, Vector3.zero, Quaternion.identity, Vector3.one);
+        IDCLEntity entity2 = TestUtils.CreateSceneEntity(scene);
+        TestUtils.SetEntityTransform(scene, entity2, Vector3.zero, Quaternion.identity, Vector3.one);
 
-        TestHelpers.SharedComponentAttach(coneShape, entity);
-        TestHelpers.SharedComponentAttach(planeShape, entity2);
+        TestUtils.SharedComponentAttach(coneShape, entity);
+        TestUtils.SharedComponentAttach(planeShape, entity2);
 
         yield return new WaitForAllMessagesProcessed();
 
@@ -83,8 +83,8 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
             bodies: 2,
             textures: 0);
 
-        TestHelpers.RemoveSceneEntity(scene, entity);
-        TestHelpers.RemoveSceneEntity(scene, entity2);
+        TestUtils.RemoveSceneEntity(scene, entity);
+        TestUtils.RemoveSceneEntity(scene, entity2);
 
         yield return new WaitForAllMessagesProcessed();
 
@@ -100,8 +100,8 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator CountGLTFShapes()
     {
-        IDCLEntity entity1 = TestHelpers.CreateSceneEntity(scene);
-        GLTFShape entity1shape = TestHelpers.AttachGLTFShape(entity1,
+        IDCLEntity entity1 = TestUtils.CreateSceneEntity(scene);
+        GLTFShape entity1shape = TestUtils.AttachGLTFShape(entity1,
             scene,
             new Vector3(8, 1, 8),
             new LoadableShape.Model()
@@ -109,10 +109,10 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             });
 
-        yield return TestHelpers.WaitForGLTFLoad(entity1);
+        yield return TestUtils.WaitForGLTFLoad(entity1);
 
-        IDCLEntity entity2 = TestHelpers.CreateSceneEntity(scene);
-        GLTFShape entity2shape = TestHelpers.AttachGLTFShape(entity2,
+        IDCLEntity entity2 = TestUtils.CreateSceneEntity(scene);
+        GLTFShape entity2shape = TestUtils.AttachGLTFShape(entity2,
             scene,
             new Vector3(8, 1, 8),
             new LoadableShape.Model()
@@ -120,7 +120,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             });
 
-        yield return TestHelpers.WaitForGLTFLoad(entity2);
+        yield return TestUtils.WaitForGLTFLoad(entity2);
 
         yield return new WaitForAllMessagesProcessed();
 
@@ -133,8 +133,8 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
             bodies: 2,
             textures: 0);
 
-        TestHelpers.RemoveSceneEntity(scene, entity1);
-        TestHelpers.RemoveSceneEntity(scene, entity2);
+        TestUtils.RemoveSceneEntity(scene, entity1);
+        TestUtils.RemoveSceneEntity(scene, entity2);
         yield return new WaitForAllMessagesProcessed();
 
         AssertMetricsModel(scene,
@@ -149,7 +149,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator CountNFTShapes()
     {
-        var entity = TestHelpers.CreateSceneEntity(scene);
+        var entity = TestUtils.CreateSceneEntity(scene);
 
         Assert.IsTrue(entity.meshRootGameObject == null, "entity mesh object should be null as the NFTShape hasn't been initialized yet");
 
@@ -160,9 +160,9 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
 
         CommonScriptableObjects.rendererState.Set(true);
 
-        NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
+        NFTShape component = TestUtils.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
         Debug.Log(scene.metricsCounter.GetModel());
-        TestHelpers.SharedComponentAttach(component, entity);
+        TestUtils.SharedComponentAttach(component, entity);
 
         LoadWrapper_NFT wrapper = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
         yield return new WaitUntil(() => wrapper.alreadyLoaded);
@@ -176,7 +176,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
             bodies: 4,
             textures: 0);
 
-        TestHelpers.RemoveSceneEntity(scene, entity);
+        TestUtils.RemoveSceneEntity(scene, entity);
         yield return new WaitForAllMessagesProcessed();
 
         AssertMetricsModel(scene,
@@ -197,62 +197,62 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator CountMetricsCorrectlyWhenStressed()
     {
-        var coneShape = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, DCL.Models.CLASS_ID.CONE_SHAPE, new ConeShape.Model()
+        var coneShape = TestUtils.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, DCL.Models.CLASS_ID.CONE_SHAPE, new ConeShape.Model()
         {
             radiusTop = 1,
             radiusBottom = 0
         });
 
-        var planeShape = TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, DCL.Models.CLASS_ID.PLANE_SHAPE, new PlaneShape.Model()
+        var planeShape = TestUtils.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, DCL.Models.CLASS_ID.PLANE_SHAPE, new PlaneShape.Model()
         {
             height = 1.5f,
             width = 1
         });
 
-        var shapeEntity = TestHelpers.CreateSceneEntity(scene);
-        TestHelpers.SetEntityTransform(scene, shapeEntity, Vector3.one, Quaternion.identity, Vector3.one);
-        TestHelpers.SharedComponentAttach(coneShape, shapeEntity);
+        var shapeEntity = TestUtils.CreateSceneEntity(scene);
+        TestUtils.SetEntityTransform(scene, shapeEntity, Vector3.one, Quaternion.identity, Vector3.one);
+        TestUtils.SharedComponentAttach(coneShape, shapeEntity);
 
-        TestHelpers.UpdateShape(scene, coneShape.id, JsonUtility.ToJson(new ConeShape.Model()
+        TestUtils.UpdateShape(scene, coneShape.id, JsonUtility.ToJson(new ConeShape.Model()
         {
             segmentsRadial = 180,
             segmentsHeight = 1.5f
         }));
 
-        TestHelpers.DetachSharedComponent(scene, shapeEntity.entityId, coneShape.id);
-        TestHelpers.SharedComponentAttach(planeShape, shapeEntity);
+        TestUtils.DetachSharedComponent(scene, shapeEntity.entityId, coneShape.id);
+        TestUtils.SharedComponentAttach(planeShape, shapeEntity);
 
         yield return new WaitForAllMessagesProcessed();
         yield return null;
 
-        var lanternEntity = TestHelpers.CreateSceneEntity(scene);
-        var lanternShape = TestHelpers.AttachGLTFShape(lanternEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
+        var lanternEntity = TestUtils.CreateSceneEntity(scene);
+        var lanternShape = TestUtils.AttachGLTFShape(lanternEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
         {
             src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
         });
 
-        yield return TestHelpers.WaitForGLTFLoad(lanternEntity);
+        yield return TestUtils.WaitForGLTFLoad(lanternEntity);
 
-        var shapeEntity2 = TestHelpers.CreateSceneEntity(scene);
-        var shape = TestHelpers.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
+        var shapeEntity2 = TestUtils.CreateSceneEntity(scene);
+        var shape = TestUtils.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
         {
             src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
         });
-        yield return TestHelpers.WaitForGLTFLoad(shapeEntity2);
+        yield return TestUtils.WaitForGLTFLoad(shapeEntity2);
 
-        TestHelpers.RemoveSceneEntity(scene, lanternEntity);
+        TestUtils.RemoveSceneEntity(scene, lanternEntity);
         yield return null;
 
-        TestHelpers.DetachSharedComponent(scene, shapeEntity2.entityId, shape.id);
-        shape = TestHelpers.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
+        TestUtils.DetachSharedComponent(scene, shapeEntity2.entityId, shape.id);
+        shape = TestUtils.AttachGLTFShape(shapeEntity2, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
         {
             src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
         });
 
-        yield return TestHelpers.WaitForGLTFLoad(shapeEntity2);
+        yield return TestUtils.WaitForGLTFLoad(shapeEntity2);
 
-        TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
-        TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(8, 1, 8));
+        TestUtils.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
+        TestUtils.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(8, 1, 8));
 
         yield return new WaitForAllMessagesProcessed();
 
@@ -264,9 +264,9 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
             bodies: 4,
             textures: 0);
 
-        TestHelpers.RemoveSceneEntity(scene, "1");
-        TestHelpers.RemoveSceneEntity(scene, "2");
-        TestHelpers.RemoveSceneEntity(scene, shapeEntity2);
+        TestUtils.RemoveSceneEntity(scene, "1");
+        TestUtils.RemoveSceneEntity(scene, "2");
+        TestUtils.RemoveSceneEntity(scene, shapeEntity2);
 
         AssertMetricsModel(scene,
             triangles: 4,
