@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
-    public class WebVideoPlayer : IDisposable
+    public class WebVideoPlayer : IDCLVideoPlayer
     {
         public event Action<Texture> OnTextureReady;
         public Texture2D texture { private set; get; }
@@ -30,7 +30,7 @@ namespace DCL.Components.Video.Plugin
             plugin.Create(id, url, useHls);
         }
 
-        public void UpdateWebVideoTexture()
+        public void UpdateVideoTexture()
         {
             if (isError)
             {

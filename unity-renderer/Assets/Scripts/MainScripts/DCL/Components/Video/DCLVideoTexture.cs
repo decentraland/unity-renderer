@@ -37,7 +37,7 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        internal WebVideoPlayer texturePlayer;
+        internal IDCLVideoPlayer texturePlayer;
         private Coroutine texturePlayerUpdateRoutine;
         private float baseVolume;
         private float distanceVolumeModifier = 1f;
@@ -160,10 +160,15 @@ namespace DCL.Components
                 texturePlayer.SetLoop(model.loop);
             }
         }
+
+        protected virtual IDCLVideoPlayer CreateVideoPlayer(string videoId, DCLVideoClip dclVideoClip)
+        {
+            return new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
+        }
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, new WebVideoPlayerNative());
+            texturePlayer = CreateVideoPlayer(videoId, dclVideoClip);
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
@@ -213,7 +218,7 @@ namespace DCL.Components
             else if (texturePlayer != null && !isTest)
             {
                 currUpdateIntervalTime = 0;
-                texturePlayer.UpdateWebVideoTexture();
+                texturePlayer.UpdateVideoTexture();
             }
         }
         private void UpdateProgressReport()
