@@ -166,10 +166,9 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     public void SetUserProfile(UserProfile userProfile)
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
-
-        var profanityFilter = ProfanityFilterSharedInstances.regexFilter;
-        name.text = profanityFilter.Filter(userProfile.userName);
-        description.text = profanityFilter.Filter(userProfile.description);
+        
+        name.text = FilterName(userProfile);
+        description.text = FilterDescription(userProfile);
 
         ClearCollectibles();
 
@@ -211,6 +210,20 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         currentUserProfile = userProfile;
 
         UpdateFriendButton();
+    }
+
+    private string FilterName(UserProfile userProfile)
+    {
+        return DataStore.i.settings.profanityChatFilteringEnabled.Get()
+            ? ProfanityFilterSharedInstances.regexFilter.Filter(userProfile.userName)
+            : userProfile.userName;
+    }
+    
+    private string FilterDescription(UserProfile userProfile)
+    {
+        return DataStore.i.settings.profanityChatFilteringEnabled.Get()
+            ? ProfanityFilterSharedInstances.regexFilter.Filter(userProfile.description)
+            : userProfile.description;
     }
 
     private void UpdateFriendButton()

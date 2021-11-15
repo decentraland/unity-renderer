@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Linq;
+using DCL;
 
 public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
 {
@@ -11,6 +12,8 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        
+        DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
 
         view = PlayerInfoCardHUDView.CreateView();
         view.Initialize(null, null, null, null, null, null, null, null);
