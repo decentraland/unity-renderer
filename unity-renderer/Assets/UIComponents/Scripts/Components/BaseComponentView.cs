@@ -6,7 +6,15 @@ using UnityEngine.EventSystems;
 
 public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler, IDisposable
 {
+    /// <summary>
+    /// It will inform if the UI Component is currently visible or not.
+    /// </summary>
     bool isVisible { get; }
+
+    /// <summary>
+    /// It will inform if the UI Component is focused or not.
+    /// </summary>
+    bool isFocused { get; }
 
     /// <summary>
     /// It is called at the beginning of the UI component lifecycle.
@@ -72,6 +80,8 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public bool isVisible { get; private set; }
 
+    public bool isFocused { get; private set; }
+
     public virtual void Awake()
     {
         showHideAnimator = GetComponent<ShowHideAnimator>();
@@ -102,9 +112,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         isVisible = false;
     }
 
-    public virtual void OnFocus() { }
+    public virtual void OnFocus() { isFocused = true; }
 
-    public virtual void OnLoseFocus() { }
+    public virtual void OnLoseFocus() { isFocused = false; }
 
     public virtual void OnScreenSizeChanged() { }
 

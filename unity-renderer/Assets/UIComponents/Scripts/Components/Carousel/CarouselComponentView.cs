@@ -435,8 +435,19 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         bool continueCarrousel = true;
         while (gameObject.activeInHierarchy && itemsContainer.childCount > 1 && continueCarrousel)
         {
+            float elapsedTime = 0f;
+
             if (!startInmediately)
-                yield return new WaitForSeconds(model.timeBetweenItems);
+            {
+                while (elapsedTime < model.timeBetweenItems)
+                {
+                    if (!model.pauseOnFocus || (model.pauseOnFocus && !isFocused))
+                        elapsedTime += Time.deltaTime;
+
+                    yield return null;
+                }
+
+            }
 
             if (instantiatedItems.Count > 0)
             {
