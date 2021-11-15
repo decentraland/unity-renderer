@@ -48,7 +48,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator BeDestroyedCorrectlyWhenReceivingComponentDestroyMessage()
         {
-            var shape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            var shape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
             IDCLEntity entity = shape.attachedEntities.First();
 
             yield return shape.routine;
@@ -60,17 +60,17 @@ namespace Tests
                 uuid = onPointerId
             };
 
-            TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity,
+            TestUtils.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             model.type = OnPointerDown.NAME;
 
-            TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             model.type = OnPointerUp.NAME;
 
-            TestHelpers.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene, entity,
+            TestUtils.EntityComponentCreate<OnPointerUp, OnPointerUp.Model>(scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue( entity.components.ContainsKey( CLASS_ID_COMPONENT.UUID_ON_CLICK ));
@@ -91,7 +91,7 @@ namespace Tests
         {
             // 1. Instantiate entity and add an OnPointerDown component
             string entityId = "1";
-            var entity = TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = TestUtils.CreateSceneEntity(scene, entityId);
 
             string onPointerId = "pointerevent-1";
             var model = new OnPointerEvent.Model()
@@ -99,17 +99,17 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerEvent.Model>(scene, entity,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerEvent.Model>(scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
 
             // 3. Change a shape component property while it loads
             shapeModel.visible = false;
-            TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(shapeModel));
+            TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(shapeModel));
 
             var pointerEventColliders = onPointerDownComponent.pointerEventHandler.eventColliders.colliders;
             Assert.IsTrue(pointerEventColliders == null || pointerEventColliders.Length == 0);
@@ -127,7 +127,7 @@ namespace Tests
         {
             // 1. Instantiate entity and add an OnPointerDown component
             string entityId = "1";
-            var entity = TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = TestUtils.CreateSceneEntity(scene, entityId);
 
             string onPointerId = "pointerevent-1";
             var model = new OnPointerDown.Model()
@@ -135,13 +135,13 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var componentId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -151,7 +151,7 @@ namespace Tests
 
             // 3. Change a shape component property conserving the same glb
             shapeModel.visible = false;
-            TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(shapeModel));
+            TestUtils.UpdateShape(scene, componentId, JsonConvert.SerializeObject(shapeModel));
             yield return null;
 
             // 4. Check the same colliders were kept 
@@ -163,7 +163,7 @@ namespace Tests
         {
             // 1. Instantiate entity and add an OnPointerDown component
             string entity1Id = "1";
-            var entity1 = TestHelpers.CreateSceneEntity(scene, entity1Id);
+            var entity1 = TestUtils.CreateSceneEntity(scene, entity1Id);
 
             string onPointerId = "pointerevent-1";
             var onPointerEventModel = new OnPointerDown.Model()
@@ -171,13 +171,13 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity1,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity1,
                 onPointerEventModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
-            var shapeComponentId = TestHelpers.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
+            var shapeComponentId = TestUtils.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShapeLoader1 = GLTFShape.GetLoaderForEntity(scene.entities[entity1Id]);
 
@@ -202,13 +202,13 @@ namespace Tests
 
             Assert.IsNull(onPointerDownComponent.pointerEventHandler.eventColliders.colliders);
         }
-        
+
         [UnityTest]
         public IEnumerator UpdateParametShapeOnPointerDownCollidersMeshOnShapeUpdate()
         {
             // 1. Instantiate entity and add an OnPointerDown component
             string entityId = "1";
-            var entity1 = TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity1 = TestUtils.CreateSceneEntity(scene, entityId);
 
             string onPointerId = "pointerevent-1";
             var onPointerEventModel = new OnPointerDown.Model()
@@ -216,15 +216,15 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity1,
+            var onPointerDownComponent = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity1,
                 onPointerEventModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
             var planeShapeModel = new PlaneShape.Model { };
-            var shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE,
+            var shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE,
                 JsonConvert.SerializeObject(planeShapeModel)
             );
-            
+
             yield return null;
 
             // 3. Check onPointerEvent collider mesh is not null
@@ -232,13 +232,14 @@ namespace Tests
             Assert.IsTrue(pointerEventColliders != null || pointerEventColliders.Length > 0);
             foreach (MeshCollider pointerEventCollider in pointerEventColliders)
             {
-                Assert.IsNotNull(pointerEventCollider.sharedMesh); 
+                Assert.IsNotNull(pointerEventCollider.sharedMesh);
             }
-            
+
             yield return null;
 
             // 4. Update shape uvs (to trigger entity's onShapeUpdate)
-            planeShapeModel.uvs = new [] {
+            planeShapeModel.uvs = new []
+            {
                 0,
                 0.75f,
                 0.25f,
@@ -256,7 +257,7 @@ namespace Tests
                 0.25f,
                 0.75f
             };
-            TestHelpers.UpdateShape(scene, shapeId, JsonConvert.SerializeObject(planeShapeModel));
+            TestUtils.UpdateShape(scene, shapeId, JsonConvert.SerializeObject(planeShapeModel));
             yield return null;
 
             // 5. Check that the onPointerEvent collider mesh is still not null

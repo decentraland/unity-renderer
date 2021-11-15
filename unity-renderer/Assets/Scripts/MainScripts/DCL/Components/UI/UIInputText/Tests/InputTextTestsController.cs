@@ -36,13 +36,13 @@ namespace DCL
 
             DCLCharacterController.i.gravity = 0;
 
-            UIScreenSpace ssshape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(
+            UIScreenSpace ssshape = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(
                 scene,
                 DCL.Models.CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return ssshape.routine;
 
-            UIInputText text = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(
+            UIInputText text = TestUtils.SharedComponentCreate<UIInputText, UIInputText.Model>(
                 scene,
                 Models.CLASS_ID.UI_INPUT_TEXT_SHAPE,
                 new UIInputText.Model()

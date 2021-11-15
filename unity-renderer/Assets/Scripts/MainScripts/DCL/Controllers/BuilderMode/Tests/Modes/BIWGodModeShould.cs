@@ -63,9 +63,9 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
-        var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
+        var rootEntity = TestUtils.CreateSceneEntity(scene, "testId");
         entity.Initialize(rootEntity, null);
-        yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
+        yield return TestUtils.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
         context.editorContext.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
@@ -167,9 +167,9 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
-        var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
+        var rootEntity = TestUtils.CreateSceneEntity(scene, "testId");
         entity.Initialize(rootEntity, null);
-        yield return TestHelpers.CreateShapeForEntity(scene, rootEntity);
+        yield return TestUtils.CreateShapeForEntity(scene, rootEntity);
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
         context.editorContext.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
@@ -210,7 +210,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
-        newEntity.Initialize(TestHelpers.CreateSceneEntity(scene), null);
+        newEntity.Initialize(TestUtils.CreateSceneEntity(scene), null);
         raycastController.RayCastFloor(out Vector3 floorPosition);
 
         //Act
@@ -523,11 +523,11 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     public IEnumerator CalculateEntityMidPoint()
     {
         //Arrange
-        var entity = TestHelpers.CreateSceneEntity(scene);
+        var entity = TestUtils.CreateSceneEntity(scene);
 
-        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
+        TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
-        TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"

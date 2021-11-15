@@ -33,7 +33,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         context = BIWTestUtils.CreateMockedContextForTestScene();
         entityHandler.Initialize(context);
 
-        TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
+        TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         entityHandler.EnterEditMode(scene);
         entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
     }
@@ -251,7 +251,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         newEntity.isNew = true;
         newEntity.rootEntity.gameObject.transform.position = Vector3.one * 444;
 
-        TestHelpers.CreateAndSetShape(scene, newEntity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, newEntity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"

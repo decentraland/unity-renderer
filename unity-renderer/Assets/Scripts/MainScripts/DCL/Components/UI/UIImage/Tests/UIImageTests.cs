@@ -16,13 +16,13 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIImage
             UIImage uiImageShape =
-                TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+                TestUtils.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImageShape.routine;
 
             // Check default properties are applied correctly
@@ -41,10 +41,10 @@ namespace Tests
 
             // Update UIImage properties
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+                TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
             yield return texture.routine;
 
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 parentComponent = screenSpaceShape.id,
                 source = texture.id,
@@ -100,39 +100,39 @@ namespace Tests
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIImage.Model, UIImage>(scene,
+            yield return TestUtils.TestSharedComponentDefaultsOnUpdate<UIImage.Model, UIImage>(scene,
                 CLASS_ID.UI_IMAGE_SHAPE);
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE); }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestUtils.TestUIElementAddedCorrectlyOnInvisibleParent<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE); }
 
         [UnityTest]
         public IEnumerator TestOnClickEvent()
         {
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+                TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
             yield return texture.routine;
 
-            UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImage = TestUtils.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImage.routine;
 
             string uiImageOnClickEventId = "UUIDFakeEventId";
 
-            yield return TestHelpers.SharedComponentUpdate(uiImage, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImage, new UIImage.Model
             {
                 parentComponent = screenSpaceShape.id,
                 source = texture.id,
@@ -143,7 +143,7 @@ namespace Tests
 
             bool eventResult = false;
 
-            yield return TestHelpers.TestUIClickEventPropagation(
+            yield return TestUtils.TestUIClickEventPropagation(
                 scene.sceneData.id,
                 uiImageOnClickEventId,
                 (RectTransform) uiImage.referencesContainer.image.transform,
@@ -157,18 +157,18 @@ namespace Tests
 
             // Check UI children won't trigger the parent/root image component event
             UIContainerRect uiContainer =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainer.routine;
 
-            yield return TestHelpers.SharedComponentUpdate(uiContainer, new UIContainerRect.Model
+            yield return TestUtils.SharedComponentUpdate(uiContainer, new UIContainerRect.Model
             {
                 parentComponent = uiImage.id
             });
 
             eventResult = false;
 
-            yield return TestHelpers.TestUIClickEventPropagation(
+            yield return TestUtils.TestUIClickEventPropagation(
                 scene.sceneData.id,
                 uiImageOnClickEventId,
                 (RectTransform) uiContainer.referencesContainer.image.transform,
@@ -189,22 +189,22 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestOnClickOnInvisibleShapeEvent()
         {
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+            DCLTexture texture = TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             // --------------------------------------------------------------------------------------
             // Visible image that should trigger click events
-            UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImage = TestUtils.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImage.routine;
 
             string uiImageOnClickEventId = "UUIDFakeEventId";
 
-            yield return TestHelpers.SharedComponentUpdate(uiImage, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImage, new UIImage.Model
             {
                 visible = true,
                 parentComponent = screenSpaceShape.id,
@@ -218,10 +218,10 @@ namespace Tests
             // Invisible image
             // Create an invisible image to check that it doesn't trigger click events
             // and that doesn't prevent previous image from triggering click events
-            UIImage uiImage2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImage2 = TestUtils.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImage2.routine;
 
-            yield return TestHelpers.SharedComponentUpdate(uiImage2, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImage2, new UIImage.Model
             {
                 visible = false,
                 parentComponent = screenSpaceShape.id,
@@ -234,29 +234,29 @@ namespace Tests
 
             // --------------------------------------------------------------------------------------
             // We need to cast a ray to check clicked objects
-            Assert.IsFalse(TestHelpers.TestUIClick(screenSpaceShape.canvas, uiImage2.referencesContainer.childHookRectTransform));
-            Assert.IsTrue(TestHelpers.TestUIClick(screenSpaceShape.canvas, uiImage.referencesContainer.childHookRectTransform));
+            Assert.IsFalse(TestUtils.TestUIClick(screenSpaceShape.canvas, uiImage2.referencesContainer.childHookRectTransform));
+            Assert.IsTrue(TestUtils.TestUIClick(screenSpaceShape.canvas, uiImage.referencesContainer.childHookRectTransform));
         }
 
         [UnityTest]
         public IEnumerator TestOnClickOnTransparentShapeEvent()
         {
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+            DCLTexture texture = TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             // --------------------------------------------------------------------------------------
             // Visible image that should trigger click events
-            UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImage = TestUtils.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImage.routine;
 
             string uiImageOnClickEventId = "UUIDFakeEventId";
 
-            yield return TestHelpers.SharedComponentUpdate(uiImage, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImage, new UIImage.Model
             {
                 visible = true,
                 parentComponent = screenSpaceShape.id,
@@ -274,10 +274,10 @@ namespace Tests
             // Invisible image
             // Create an invisible image to check that it doesn't trigger click events
             // and that doesn't prevent previous image from triggering click events
-            UIImage uiImage2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImage2 = TestUtils.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImage2.routine;
 
-            yield return TestHelpers.SharedComponentUpdate(uiImage2, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImage2, new UIImage.Model
             {
                 visible = true,
                 parentComponent = screenSpaceShape.id,
@@ -296,7 +296,7 @@ namespace Tests
             // We need to cast a ray to check clicked objects
             Canvas canvas = screenSpaceShape.canvas;
 
-            Assert.IsTrue(TestHelpers.TestUIClick(canvas, uiImage2.referencesContainer.childHookRectTransform));
+            Assert.IsTrue(TestUtils.TestUIClick(canvas, uiImage2.referencesContainer.childHookRectTransform));
         }
 
         [UnityTest]
@@ -304,21 +304,21 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIImage
             UIImage uiImageShape =
-                TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+                TestUtils.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImageShape.routine;
 
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+                TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             // Align to right-bottom
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 parentComponent = screenSpaceShape.id,
                 source = texture.id,
@@ -336,7 +336,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.LowerRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to right-center
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),
@@ -353,7 +353,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.MiddleRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to right-top
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),
@@ -370,7 +370,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.UpperRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-bottom
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),
@@ -387,7 +387,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.LowerCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-center
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),
@@ -404,7 +404,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.MiddleCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-top
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),
@@ -421,7 +421,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.UpperCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-bottom
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),
@@ -438,7 +438,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.LowerLeft, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-center
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),
@@ -455,7 +455,7 @@ namespace Tests
             Assert.AreEqual(TextAnchor.MiddleLeft, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-top
-            yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
+            yield return TestUtils.SharedComponentUpdate(uiImageShape, new UIImage.Model
             {
                 source = texture.id,
                 width = new UIValue(128f),

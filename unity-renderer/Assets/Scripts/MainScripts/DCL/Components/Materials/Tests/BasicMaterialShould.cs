@@ -21,11 +21,11 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator NotDestroySharedTextureWhenDisposed()
     {
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
+            TestUtils.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
-        BasicMaterial mat = TestHelpers.CreateEntityWithBasicMaterial(scene,
+        BasicMaterial mat = TestUtils.CreateEntityWithBasicMaterial(scene,
             new BasicMaterial.Model
             {
                 texture = texture.id,
@@ -35,7 +35,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         yield return mat.routine;
 
-        BasicMaterial mat2 = TestHelpers.CreateEntityWithBasicMaterial(scene,
+        BasicMaterial mat2 = TestUtils.CreateEntityWithBasicMaterial(scene,
             new BasicMaterial.Model
             {
                 texture = texture.id,
@@ -45,16 +45,16 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         yield return mat2.routine;
 
-        TestHelpers.SharedComponentDispose(mat);
+        TestUtils.SharedComponentDispose(mat);
         Assert.IsTrue(texture.texture != null, "Texture should persist because is used by the other material!!");
     }
 
     [UnityTest]
     public IEnumerator WorkCorrectlyWhenAttachedBeforeShape()
     {
-        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+        IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
 
-        DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
+        DCLTexture dclTexture = TestUtils.CreateDCLTexture(
             scene,
             TestAssetsUtils.GetPath() + "/Images/atlas.png",
             DCLTexture.BabylonWrapMode.CLAMP,
@@ -62,7 +62,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         yield return dclTexture.routine;
 
-        BasicMaterial mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>
+        BasicMaterial mat = TestUtils.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>
         (scene, CLASS_ID.BASIC_MATERIAL,
             new BasicMaterial.Model
             {
@@ -72,13 +72,13 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         yield return mat.routine;
 
-        TestHelpers.SharedComponentAttach(mat, entity);
+        TestUtils.SharedComponentAttach(mat, entity);
 
-        SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene,
+        SphereShape shape = TestUtils.SharedComponentCreate<SphereShape, SphereShape.Model>(scene,
             CLASS_ID.SPHERE_SHAPE,
             new SphereShape.Model { });
 
-        TestHelpers.SharedComponentAttach(shape, entity);
+        TestUtils.SharedComponentAttach(shape, entity);
 
         Assert.IsTrue(entity.meshRootGameObject != null);
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
@@ -89,7 +89,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator GetReplacedWhenAnotherMaterialIsAttached()
     {
         yield return
-            TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BasicMaterial.Model, BasicMaterial>(scene,
+            TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<BasicMaterial.Model, BasicMaterial>(scene,
                 CLASS_ID.BASIC_MATERIAL);
     }
 
@@ -99,7 +99,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         string entityId = "1";
         string materialID = "a-material";
 
-        TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+        TestUtils.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
             new BasicMaterial.Model(), materialID);
 
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
@@ -133,14 +133,14 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         string materialID = "a-material";
 
         // Instantiate entity with material
-        TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero,
+        TestUtils.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero,
             new BasicMaterial.Model(), materialID);
 
         Assert.IsTrue(scene.entities[firstEntityId].meshRootGameObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
         // Create 2nd entity and attach same material to it
-        TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, CLASS_ID.BOX_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, secondEntityId, CLASS_ID.BOX_SHAPE, Vector3.zero);
         scene.SharedComponentAttach(
             secondEntityId,
             materialID
@@ -181,7 +181,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(scene.disposableComponents.ContainsKey(materialID));
 
         // Instantiate entity with default material
-        TestHelpers.InstantiateEntityWithMaterial(scene, entityId, new Vector3(8, 1, 8),
+        TestUtils.InstantiateEntityWithMaterial(scene, entityId, new Vector3(8, 1, 8),
             new BasicMaterial.Model(), materialID);
 
         var meshObject = scene.entities[entityId].meshRootGameObject;
@@ -209,7 +209,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
             Assert.AreApproximatelyEqual(1.0f, materialComponent.material.GetFloat("_AlphaClip"));
         }
 
-        DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
+        DCLTexture dclTexture = TestUtils.CreateDCLTexture(
             scene,
             TestAssetsUtils.GetPath() + "/Images/atlas.png",
             DCLTexture.BabylonWrapMode.MIRROR,
@@ -240,7 +240,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     {
         // 1. Create component with non-default configs
         BasicMaterial basicMaterialComponent =
-            TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
+            TestUtils.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
                 new BasicMaterial.Model
                 {
                     alphaTest = 1f
@@ -264,7 +264,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator ProcessCastShadowProperty_True()
     {
-        BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
+        BasicMaterial basicMaterialComponent = TestUtils.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {
             alphaTest = 1f,
             castShadows = true
@@ -278,7 +278,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator ProcessCastShadowProperty_False()
     {
-        BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
+        BasicMaterial basicMaterialComponent = TestUtils.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {
             alphaTest = 1f,
             castShadows = false

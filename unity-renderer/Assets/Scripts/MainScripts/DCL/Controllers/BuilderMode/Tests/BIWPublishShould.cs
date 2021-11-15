@@ -54,7 +54,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity entity = biwEntityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
-        TestHelpers.CreateAndSetShape(scene, entity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+        TestUtils.CreateAndSetShape(scene, entity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
                 src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
@@ -76,7 +76,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
         //Act
         for (int i = 0; i < scene.metricsCounter.GetLimits().entities + 1; i++)
         {
-            TestHelpers.CreateSceneEntity(scene, entityId + i);
+            TestUtils.CreateSceneEntity(scene, entityId + i);
         }
 
         //Assert

@@ -22,12 +22,12 @@ public class PlaneShapeShould_VisualTests : VisualTestsBase
     {
         yield return InitVisualTestsScene("PlaneShape_ReceiveShadowsCorrectly");
 
-        TestHelpers.CreateEntityWithBoxShape(scene, Vector3.up);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.up);
 
-        var planeShape = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero);
+        var planeShape = TestUtils.CreateEntityWithPlaneShape(scene, Vector3.zero);
         var entity = planeShape.attachedEntities.First();
 
-        TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.Euler(90, 0, 0), Vector3.one);
+        TestUtils.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.Euler(90, 0, 0), Vector3.one);
 
         Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
         Vector3 camTarget = Vector3.zero;
