@@ -72,9 +72,9 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
     throw new Error("HTTP Live Streaming is not supported in your browser")
   }
 
-  const rendererVersion = options.versionQueryParam || performance.now()
+  const rendererVersion = options.versionQueryParam
   const { canvas, baseUrl, onProgress, onSuccess, onError, onMessageLegacy } = options
-  const resolveWithBaseUrl = (file: string) => new URL(file + "?v=" + rendererVersion, baseUrl).toString()
+  const resolveWithBaseUrl = (file: string) => new URL(file + (rendererVersion ? "?v=" + rendererVersion : ""), baseUrl).toString()
 
   const enableBrotli =
     typeof options.enableBrotli != "undefined" ? !!options.enableBrotli : document.location.protocol == "https:"
