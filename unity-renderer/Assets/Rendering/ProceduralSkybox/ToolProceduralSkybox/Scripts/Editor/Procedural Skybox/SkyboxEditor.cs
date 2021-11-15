@@ -255,7 +255,11 @@ namespace DCL.Skybox
             }
             else
             {
+                EditorGUILayout.BeginVertical();
                 newConfigIndex = EditorGUILayout.Popup(selectedConfigurationIndex, configurationNames.ToArray(), GUILayout.Width(200));
+                selectedConfiguration = (SkyboxConfiguration)EditorGUILayout.ObjectField(selectedConfiguration, typeof(SkyboxConfiguration), false);
+
+                EditorGUILayout.EndVertical();
 
                 if (newConfigIndex != selectedConfigurationIndex)
                 {
@@ -265,12 +269,16 @@ namespace DCL.Skybox
                     UpdateSlotsID();
                 }
 
+                if (selectedConfiguration != configurations[selectedConfigurationIndex])
+                {
+                    UpdateConfigurationsList();
+                }
+
                 if (GUILayout.Button("+", GUILayout.Width(50)))
                 {
                     creatingNewConfig = true;
                 }
             }
-
 
             GUILayout.EndHorizontal();
         }
@@ -297,6 +305,8 @@ namespace DCL.Skybox
 
             for (int i = 0; i < configurations.Count; i++)
             {
+                configurations[i].skyboxID = configurations[i].name;
+
                 configurationNames.Add(configurations[i].skyboxID);
                 if (selectedConfiguration == configurations[i])
                 {
