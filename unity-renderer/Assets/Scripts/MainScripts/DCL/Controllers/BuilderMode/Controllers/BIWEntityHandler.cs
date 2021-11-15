@@ -78,7 +78,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
 
-        bridge = context.sceneReferences.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
+        bridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
 
         outlinerController = context.editorContext.outlinerController;
 

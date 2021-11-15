@@ -36,6 +36,7 @@ namespace DCL.Builder
         public override void Dispose()
         {
             view.OnScrollRectValueChanged -= OnRequestContextMenuHide;
+            sceneSearchHandler.OnResult -= OnSearchResult;
             view.Dispose();
         }
 
@@ -54,7 +55,7 @@ namespace DCL.Builder
             projectsViews.Add(projectView.projectData.id, projectView);
             sceneSearchHandler.AddItem(projectView.searchInfo);
         }
-
+        
         void IProjectsListener.OnProjectRemoved(IProjectCardView projectView)
         {
             projectsViews.Remove(projectView.projectData.id);

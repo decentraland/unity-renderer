@@ -13,6 +13,7 @@ namespace DCL
     /// </summary>
     public class Main : MonoBehaviour
     {
+        [SerializeField] private bool disableSceneDependencies;
         public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
@@ -31,6 +32,9 @@ namespace DCL
             }
 
             i = this;
+
+            if (!disableSceneDependencies)
+                InitializeSceneDependencies();
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
@@ -59,15 +63,6 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
-
-            // this event should be the last one to be executed after initialization
-            // it is used by the kernel to signal "EngineReady" or something like that
-            // to prevent race conditions like "SceneController is not an object",
-            // aka sending events before unity is ready
-            DCL.Interface.WebInterface.SendSystemInfoReport();
-
-            // We trigger the Decentraland logic once everything is initialized.
-            DCL.Interface.WebInterface.StartDecentraland();
         }
 
         protected virtual void SetupEnvironment()
@@ -87,7 +82,19 @@ namespace DCL
 
         protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
 
-        private void Start() { Environment.i.world.sceneController.Start(); }
+        private void Start()
+        {
+            // this event should be the last one to be executed after initialization
+            // it is used by the kernel to signal "EngineReady" or something like that
+            // to prevent race conditions like "SceneController is not an object",
+            // aka sending events before unity is ready
+            DCL.Interface.WebInterface.SendSystemInfoReport();
+
+            // We trigger the Decentraland logic once everything is initialized.
+            DCL.Interface.WebInterface.StartDecentraland();
+
+            Environment.i.world.sceneController.Start();
+        }
 
         protected virtual void Update()
         {
@@ -112,5 +119,40 @@ namespace DCL
         }
 
         private void OnGUI() { pluginSystem?.OnGUI(); }
+        protected virtual void InitializeSceneDependencies()
+        {
+            var bridges = Init("Bridges");
+            var mouseCatcher = Init("MouseCatcher").GetComponent<MouseCatcher>();
+            var environment = Init("Environment").GetComponent<EnvironmentReferences>();
+            var playerReferences = Init("Player").GetComponent<PlayerReferences>();
+
+            Init("HUDController");
+            Init("HUDAudioHandler");
+            Init("NavMap");
+            Init("SettingsController");
+
+            SceneReferences.i.Initialize(
+                mouseCatcher,
+                environment.ground,
+                playerReferences.biwCameraRoot,
+                playerReferences.inputController,
+                playerReferences.cursorCanvas,
+                gameObject,
+                playerReferences.avatarController,
+                playerReferences.cameraController,
+                playerReferences.mainCamera,
+                bridges,
+                environment.environmentLight,
+                environment.postProcessVolume,
+                playerReferences.thirdPersonCamera,
+                playerReferences.firstPersonCamera);
+        }
+
+        private static GameObject Init(string name)
+        {
+            GameObject instance = Instantiate(Resources.Load(name)) as GameObject;
+            instance.name = name;
+            return instance;
+        }
     }
 }

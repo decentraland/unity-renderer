@@ -29,7 +29,7 @@ public class WorldChatWindowHUDController : IHUD
         view.controller = this;
 
         chatHudController = new ChatHUDController(DataStore.i,
-            new RegexProfanityFilter(new ProfanityWordProviderFromCsv("Profanity/badwords")));
+            new RegexProfanityFilter(new ProfanityWordProviderFromResourcesJson("Profanity/badwords")));
         chatHudController.Initialize(view.chatHudView);
         chatHudController.OnPressPrivateMessage -= ChatHUDController_OnPressPrivateMessage;
         chatHudController.OnPressPrivateMessage += ChatHUDController_OnPressPrivateMessage;
@@ -110,7 +110,7 @@ public class WorldChatWindowHUDController : IHUD
             if (!isPrivateMessage && !view.isInPreview)
             {
                 view.ActivatePreview();
-                InitialSceneReferences.i?.data?.mouseCatcher.LockCursor();
+                SceneReferences.i.mouseCatcher.LockCursor();
                 invalidSubmitLastFrame = Time.frameCount;
             }
 
@@ -154,7 +154,7 @@ public class WorldChatWindowHUDController : IHUD
         SetVisibility(true);
         view.chatHudView.FocusInputField();
         view.DeactivatePreview();
-        InitialSceneReferences.i?.data?.mouseCatcher.UnlockCursor();
+        SceneReferences.i?.mouseCatcher.UnlockCursor();
 
         if (!string.IsNullOrEmpty(setInputText))
         {

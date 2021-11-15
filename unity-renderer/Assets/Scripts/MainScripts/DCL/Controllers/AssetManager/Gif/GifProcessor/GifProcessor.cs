@@ -11,7 +11,7 @@ using DCL;
 public class GifProcessor
 {
     private bool jsGIFProcessingEnabled = false;
-    private WebRequestAsyncOperation webRequestOp;
+    private IWebRequestAsyncOperation webRequestOp;
     private string url;
 
     public GifProcessor(string url)

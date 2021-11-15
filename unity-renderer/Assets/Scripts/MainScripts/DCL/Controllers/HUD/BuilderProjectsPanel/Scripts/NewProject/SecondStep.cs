@@ -14,14 +14,19 @@ public class SecondStep : BaseComponentView
     public event Action OnBackPressed;
     public event Action<int, int> OnNextPressed;
 
+    [Header("Design variables")]
     [SerializeField] private Color normalTextColor;
     [SerializeField] private Color errorTextColor;
+    [SerializeField] private GridContainerComponentModel gridModel;
+    [SerializeField] private BaseComponentView parcelImagePrefab;
 
+    [Header("References")]
     [SerializeField] private LimitInputField rowsInputField;
     [SerializeField] private LimitInputField columsInputField;
     [SerializeField] private TextMeshProUGUI parcelText;
     [SerializeField] private GameObject errorGameObject;
     [SerializeField] private GameObject gridGameObject;
+    [SerializeField] private GridContainerComponentView gridView;
 
     [SerializeField] private ButtonComponentView nextButton;
     [SerializeField] private ButtonComponentView backButton;
@@ -38,28 +43,44 @@ public class SecondStep : BaseComponentView
 
         backButton.onClick.AddListener(BackPressed);
         nextButton.onClick.AddListener(NextPressed);
+        gridView.Configure(gridModel);
     }
 
     public override void RefreshControl() {  }
 
     private void RowsChanged(string value)
     {
-        rows = Int32.Parse(value);
+        //We ensure that the minimum size of the row is 1
+        if (string.IsNullOrEmpty(value) || value == "0")
+            rows = 1;
+        else
+            rows = Mathf.Abs(Int32.Parse(value));
         ValueChanged();
     }
 
     private void ColumnsChanged(string value)
     {
-        colums = Int32.Parse(value);
+        //We ensure that the minimum size of the column is 1
+        if (string.IsNullOrEmpty(value) || value == "0")
+            colums = 1;
+        else
+            colums = Mathf.Abs(Int32.Parse(value));
         ValueChanged();
     }
 
     private void ValueChanged()
     {
         if (rows * colums > MAX_PARCELS)
+        {
             ShowError();
+        }
         else
+        {
+            gridModel.constraintCount = rows;
+            gridView.SetItems(parcelImagePrefab,rows * colums);
+            gridView.Configure(gridModel);
             ShowGrid();
+        }
     }
 
     private void ShowError()

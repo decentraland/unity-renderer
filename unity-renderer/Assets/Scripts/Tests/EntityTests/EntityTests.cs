@@ -20,7 +20,7 @@ namespace Tests
             // Create first entity
             string entityId = "1";
 
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            TestUtils.CreateSceneEntity(scene, entityId);
             var entityObject = scene.entities[entityId];
 
             Assert.IsTrue(entityObject != null);
@@ -31,7 +31,7 @@ namespace Tests
             entityObject = null;
             entityId = "2";
 
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            TestUtils.CreateSceneEntity(scene, entityId);
             scene.entities.TryGetValue(entityId, out entityObject);
 
             Assert.IsTrue(entityObject != null);
@@ -45,8 +45,8 @@ namespace Tests
             string entityId = "2";
             string parentEntityId = "3";
 
-            TestHelpers.CreateSceneEntity(scene, entityId);
-            TestHelpers.CreateSceneEntity(scene, parentEntityId);
+            TestUtils.CreateSceneEntity(scene, entityId);
+            TestUtils.CreateSceneEntity(scene, parentEntityId);
 
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
@@ -55,14 +55,14 @@ namespace Tests
 
             var parentEntityObject = scene.entities[parentEntityId];
 
-            TestHelpers.SetEntityParent(scene, entityId, parentEntityId);
+            TestUtils.SetEntityParent(scene, entityId, parentEntityId);
 
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.transform.parent == parentEntityObject.gameObject.transform,
                 "parent is set to parentId"
             );
 
-            TestHelpers.SetEntityParent(scene, entityId, "0");
+            TestUtils.SetEntityParent(scene, entityId, "0");
 
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
@@ -77,13 +77,13 @@ namespace Tests
 
             string entityId = "2";
 
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(scene.entities.ContainsKey(entityId));
 
             var gameObjectReference = scene.entities[entityId].gameObject;
 
-            TestHelpers.RemoveSceneEntity(scene, entityId);
+            TestUtils.RemoveSceneEntity(scene, entityId);
 
             yield return null;
 

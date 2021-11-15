@@ -150,13 +150,13 @@ public class IntegrationTestSuite_Legacy
 
     protected IEnumerator InitUnityScene(string sceneName = null)
     {
-        yield return TestHelpers.UnloadAllUnityScenes();
+        yield return TestUtils.UnloadAllUnityScenes();
 
         Scene? newScene;
 
         if (string.IsNullOrEmpty(sceneName))
         {
-            newScene = SceneManager.CreateScene(TestHelpers.testingSceneName + (TestHelpers.testSceneIteration++));
+            newScene = SceneManager.CreateScene(TestUtils.testingSceneName + (TestUtils.testSceneIteration++));
             if (newScene.HasValue)
             {
                 SceneManager.SetActiveScene(newScene.Value);

@@ -17,8 +17,8 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         gameObject = new GameObject();
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge.GetComponent<BuilderInWorldBridge>();
-        context = BIWTestUtils.CreateContextWithGenericMocks(InitialSceneReferences.i.data);
+        builderInWorldBridge = SceneReferences.i.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
+        context = BIWTestUtils.CreateContextWithGenericMocks(SceneReferences.i);
 
         biwSaveController = new BIWSaveController();
         biwSaveController.Initialize(context);

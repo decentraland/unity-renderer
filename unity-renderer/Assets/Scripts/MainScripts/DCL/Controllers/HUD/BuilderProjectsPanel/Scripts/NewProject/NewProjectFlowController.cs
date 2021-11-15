@@ -5,8 +5,23 @@ using UnityEngine;
 
 public interface INewProjectFlowController
 {
+    /// <summary>
+    /// This will create a new project data and show the view to create it
+    /// </summary>
     void NewProject();
+
+    /// <summary>
+    /// This will set the title and the description of the project
+    /// </summary>
+    /// <param name="title"></param>
+    /// <param name="description"></param>
     void SetTitleAndDescription(string title, string description);
+
+    /// <summary>
+    /// This will set the size of the size in terms of rows and columns
+    /// </summary>
+    /// <param name="rows"></param>
+    /// <param name="columns"></param>
     void SetRowsAndColumns(int rows, int columns);
     void Dispose();
 }

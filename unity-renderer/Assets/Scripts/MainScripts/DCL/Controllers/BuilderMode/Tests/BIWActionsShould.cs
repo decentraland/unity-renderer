@@ -20,7 +20,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
-        TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
+        TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 
         var biwActionController = new BIWActionController();
         var entityHandler = new BIWEntityHandler();

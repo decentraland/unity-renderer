@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShowHideDefault
+  m_Name: ModalShowHide
   m_Controller: {fileID: 9100000, guid: cf8f1f9f15cf0db40836953597202697, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 8615be8b6820ee14295b29a91f54fc23, type: 2}

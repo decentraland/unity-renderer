@@ -20,10 +20,10 @@ public class UITextVisualTests : UIVisualTestsBase
     {
         yield return InitUIVisualTestScene("UITextTest");
 
-        var uiInputText = TestHelpers.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE);
+        var uiInputText = TestUtils.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE);
         yield return uiInputText.routine;
 
-        yield return TestHelpers.SharedComponentUpdate(uiInputText, new UIText.Model
+        yield return TestUtils.SharedComponentUpdate(uiInputText, new UIText.Model
         {
             parentComponent = screenSpaceId,
             name = "testUIText",

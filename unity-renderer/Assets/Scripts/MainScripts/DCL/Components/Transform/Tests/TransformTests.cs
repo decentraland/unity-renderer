@@ -11,7 +11,7 @@ namespace Tests
         [Test]
         public void TransformUpdate()
         {
-            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity != null);
 
@@ -26,7 +26,7 @@ namespace Tests
 
                 var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
 
-                TestHelpers.SetEntityTransform(scene, entity, transformModel);
+                TestUtils.SetEntityTransform(scene, entity, transformModel);
 
                 Assert.AreNotEqual(originalTransformPosition, entity.gameObject.transform.position);
                 Assert.AreEqual(position, entity.gameObject.transform.position);
@@ -49,7 +49,7 @@ namespace Tests
 
                 var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
 
-                TestHelpers.SetEntityTransform(scene, entity, transformModel);
+                TestUtils.SetEntityTransform(scene, entity, transformModel);
 
                 Assert.AreNotEqual(originalTransformPosition, entity.gameObject.transform.position);
                 Assert.AreEqual(position, entity.gameObject.transform.position);
@@ -72,7 +72,7 @@ namespace Tests
 
                 var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
 
-                TestHelpers.SetEntityTransform(scene, entity, transformModel);
+                TestUtils.SetEntityTransform(scene, entity, transformModel);
 
                 Assert.AreNotEqual(originalTransformPosition, entity.gameObject.transform.position);
                 Assert.AreEqual(position, entity.gameObject.transform.position);
@@ -88,7 +88,7 @@ namespace Tests
         [Test]
         public void TransformationsAreKeptRelativeAfterParenting()
         {
-            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
 
             Vector3 targetPosition = new Vector3(3f, 7f, 1f);
             Quaternion targetRotation = new Quaternion(4f, 9f, 1f, 7f);
@@ -102,7 +102,7 @@ namespace Tests
                 scale = targetScale
             };
 
-            TestHelpers.SetEntityTransform(scene, entity, componentModel);
+            TestUtils.SetEntityTransform(scene, entity, componentModel);
 
             // 2. Check configured values
             Assert.IsTrue(targetPosition == entity.gameObject.transform.localPosition);
@@ -110,7 +110,7 @@ namespace Tests
             Assert.IsTrue(targetScale == entity.gameObject.transform.localScale);
 
             // 3. Create new parent entity
-            IDCLEntity entity2 = TestHelpers.CreateSceneEntity(scene);
+            IDCLEntity entity2 = TestUtils.CreateSceneEntity(scene);
 
             componentModel = new DCLTransform.Model
             {
@@ -119,10 +119,10 @@ namespace Tests
                 scale = new Vector3(2f, 3f, 5f)
             };
 
-            TestHelpers.SetEntityTransform(scene, entity2, componentModel);
+            TestUtils.SetEntityTransform(scene, entity2, componentModel);
 
             // 4. set new parent
-            TestHelpers.SetEntityParent(scene, entity.entityId, entity2.entityId);
+            TestUtils.SetEntityParent(scene, entity.entityId, entity2.entityId);
 
             // 5. check transform values remains the same
             Assert.IsTrue(targetPosition == entity.gameObject.transform.localPosition);

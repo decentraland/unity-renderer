@@ -18,7 +18,7 @@ namespace Tests
 
         public IEnumerator InputTextCreate()
         {
-            ssshape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(
+            ssshape = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(
                 scene,
                 DCL.Models.CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
@@ -32,7 +32,7 @@ namespace Tests
                 mockCamera.backgroundColor = Color.black;
             }
 
-            textInput = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(
+            textInput = TestUtils.SharedComponentCreate<UIInputText, UIInputText.Model>(
                 scene,
                 DCL.Models.CLASS_ID.UI_INPUT_TEXT_SHAPE,
                 new UIInputText.Model()
@@ -81,7 +81,7 @@ namespace Tests
             bool eventTriggered = false;
 
 
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            yield return TestUtils.WaitForMessageFromEngine(targetEventType, eventJSON,
                 () =>
                 {
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(inputField.gameObject, null);
@@ -116,7 +116,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE); }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestUtils.TestUIElementAddedCorrectlyOnInvisibleParent<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE); }
 
         [UnityTest]
         public IEnumerator TestOnFocus()
@@ -146,16 +146,17 @@ namespace Tests
             const string testValue = "hello world";
             const string uuid1 = "submit1";
             const string uuid2 = "submit2";
-            
+
             textInput.model.onTextChanged = uuid1;
             textInput.model.onTextSubmit = uuid2;
-            
+
             // NOTE: test ReportOnTextInputChangedTextEvent
             var submitEvent = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.OnTextInputChangeTextEventPayload>>();
             submitEvent.sceneId = scene.sceneData.id;
             submitEvent.payload = new WebInterface.UUIDEvent<WebInterface.OnTextInputChangeTextEventPayload>()
             {
-                payload = new WebInterface.OnTextInputChangeTextEventPayload(){ 
+                payload = new WebInterface.OnTextInputChangeTextEventPayload()
+                {
                     value = new WebInterface.OnTextInputChangeTextEventPayload.Payload()
                     {
                         value = testValue,
@@ -167,8 +168,8 @@ namespace Tests
             submitEvent.eventType = "uuidEvent";
 
             bool eventTriggered = false;
-            yield return TestHelpers.WaitForMessageFromEngine("SceneEvent", JsonUtility.ToJson(submitEvent),
-                ()=>
+            yield return TestUtils.WaitForMessageFromEngine("SceneEvent", JsonUtility.ToJson(submitEvent),
+                () =>
                 {
                     textInput.inputField.text = testValue;
                     textInput.inputField.onSubmit.Invoke(testValue);
@@ -178,22 +179,23 @@ namespace Tests
             yield return null;
 
             Assert.IsTrue(eventTriggered);
-            
+
             // NOTE: test ReportOnTextSubmitEvent
             var submitEvent2 = new WebInterface.SceneEvent<WebInterface.UUIDEvent<WebInterface.OnTextSubmitEventPayload>>();
             submitEvent2.sceneId = scene.sceneData.id;
             submitEvent2.payload = new WebInterface.UUIDEvent<WebInterface.OnTextSubmitEventPayload>()
             {
-                payload = new WebInterface.OnTextSubmitEventPayload(){ 
+                payload = new WebInterface.OnTextSubmitEventPayload()
+                {
                     text = testValue
                 },
                 uuid = uuid2
             };
             submitEvent2.eventType = "uuidEvent";
-            
+
             eventTriggered = false;
-            yield return TestHelpers.WaitForMessageFromEngine("SceneEvent", JsonUtility.ToJson(submitEvent2),
-                ()=>
+            yield return TestUtils.WaitForMessageFromEngine("SceneEvent", JsonUtility.ToJson(submitEvent2),
+                () =>
                 {
                     textInput.inputField.text = testValue;
                     textInput.inputField.onSubmit.Invoke(testValue);
