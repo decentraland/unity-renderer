@@ -12,7 +12,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            var prefab = TestAssets.Get<SceneCardView>("SceneCardView.prefab");
+            var prefab = Resources.Load<SceneCardView>("SceneCardView");
             cardView = UnityEngine.Object.Instantiate(prefab);
         }
 

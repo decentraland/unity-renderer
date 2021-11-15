@@ -1,6 +1,7 @@
 ﻿using DCL.Builder;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 
 namespace Tests
 {
@@ -11,7 +12,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            prefab = TestAssets.Get<BuilderMainPanelView>("BuilderProjectsPanel.prefab");
+            prefab = Resources.Load<BuilderMainPanelView>("BuilderProjectsPanel");
         }
 
         [Test]

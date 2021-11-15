@@ -12,7 +12,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            var viewPrefab = TestAssets.Get<UsersSearchPromptView>("UsersSearchPromptView.prefab");
+            var viewPrefab = Resources.Load<UsersSearchPromptView>("UsersSearchPrompt/UsersSearchPromptView");
             promptView = Object.Instantiate(viewPrefab);
         }
 

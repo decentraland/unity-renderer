@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 
 namespace Tests
 {
@@ -10,7 +11,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            var prefab = TestAssets.Get<SceneCardViewContextMenu>("SceneCardViewContextMenu.prefab");
+            var prefab = Resources.Load<SceneCardViewContextMenu>("SceneCardViewContextMenu");
             contextMenu = UnityEngine.Object.Instantiate(prefab);
         }
 

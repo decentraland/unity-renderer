@@ -11,7 +11,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            var prefab = TestAssets.Get<LandElementView>("LandElementView.prefab");
+            var prefab = Resources.Load<LandElementView>("LandElementView");
             view = Object.Instantiate(prefab);
         }
 

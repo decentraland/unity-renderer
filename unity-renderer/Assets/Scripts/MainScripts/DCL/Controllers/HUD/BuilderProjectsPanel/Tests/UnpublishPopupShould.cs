@@ -13,7 +13,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            var prefab = TestAssets.Get<UnpublishPopupView>("UnpublishPopupView.prefab");
+            var prefab = Resources.Load<UnpublishPopupView>("UnpublishPopup/UnpublishPopupView");
             view = UnityEngine.Object.Instantiate(prefab);
             controller = new UnpublishPopupController(view);
         }

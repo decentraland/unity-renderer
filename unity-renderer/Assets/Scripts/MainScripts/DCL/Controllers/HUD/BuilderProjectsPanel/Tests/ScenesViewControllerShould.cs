@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using DCL.Builder;
+using UnityEngine;
 
 namespace Tests
 {
@@ -12,7 +13,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            var prefab = TestAssets.Get<SceneCardView>("SceneCardView.prefab");
+            var prefab = Resources.Load<SceneCardView>("SceneCardView");
 
             scenesViewController = new ScenesViewController(prefab);
             listenerMock = new Listener_Mock();
