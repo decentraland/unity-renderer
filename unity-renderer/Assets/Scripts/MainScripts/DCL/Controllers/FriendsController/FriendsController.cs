@@ -3,45 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface IFriendsController
-{
-    int friendCount { get; }
-    bool isInitialized { get; }
-    Dictionary<string, FriendsController.UserStatus> GetFriends();
-
-    event Action OnInitialized;
-    event Action<string, FriendshipAction> OnUpdateFriendship;
-    event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
-    event Action<string> OnFriendNotFound;
-}
-
-public enum PresenceStatus
-{
-    NONE,
-    OFFLINE,
-    ONLINE,
-    UNAVAILABLE,
-}
-
-public enum FriendshipStatus
-{
-    NONE,
-    FRIEND,
-    REQUESTED_FROM,
-    REQUESTED_TO
-}
-
-public enum FriendshipAction
-{
-    NONE,
-    APPROVED,
-    REJECTED,
-    CANCELLED,
-    REQUESTED_FROM,
-    REQUESTED_TO,
-    DELETED
-}
-
 public class FriendsController : MonoBehaviour, IFriendsController
 {
     public static bool VERBOSE = false;
@@ -96,12 +57,48 @@ public class FriendsController : MonoBehaviour, IFriendsController
         return friends[userId];
     }
 
-    public event System.Action<string, UserStatus> OnUpdateUserStatus;
-    public event System.Action<string, FriendshipAction> OnUpdateFriendship;
+    public event Action<string, UserStatus> OnUpdateUserStatus;
+    public event Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
 
     public Dictionary<string, UserStatus> GetFriends() { return new Dictionary<string, UserStatus>(friends); }
+    
+    public void RejectFriendship(string friendUserId)
+    {
+        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        {
+            userId = friendUserId,
+            action = FriendshipAction.REJECTED
+        });
+    }
+    
+    public void RequestFriendship(string friendUserId)
+    {
+        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        {
+            userId = friendUserId,
+            action = FriendshipAction.REQUESTED_TO
+        });
+    }
+
+    public void CancelRequest(string friendUserId)
+    {
+        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        {
+            userId = friendUserId,
+            action = FriendshipAction.CANCELLED
+        });
+    }
+
+    public void AcceptFriendship(string friendUserId)
+    {
+        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+        {
+            userId = friendUserId,
+            action = FriendshipAction.APPROVED
+        });
+    }
 
     public void FriendNotFound(string name) { OnFriendNotFound?.Invoke(name); }
 
