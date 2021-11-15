@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using ExploreV2Analytics;
 using UnityEngine;
 
 public class ShortcutsController : IDisposable
@@ -54,13 +55,25 @@ public class ShortcutsController : IDisposable
     private void ToggleQuestPanel(DCLAction_Trigger action)
     {
         bool value = !DataStore.i.HUDs.questsPanelVisible.Get();
-        QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "input_action");
+        SendQuestToggledAnalytic(value);
         DataStore.i.HUDs.questsPanelVisible.Set(value);
     }
-    private void ToggleExploreTriggered(DCLAction_Trigger action) { DataStore.i.exploreV2.isOpen.Set(!DataStore.i.exploreV2.isOpen.Get()); }
+
+    private void ToggleExploreTriggered(DCLAction_Trigger action)
+    {
+        bool value = !DataStore.i.exploreV2.isOpen.Get();
+        SendExploreToggledAnalytics(value);
+        DataStore.i.exploreV2.isOpen.Set(value);
+    }
+
     private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }
     private void ToggleNavMapTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.navmapVisible.Set(!DataStore.i.HUDs.navmapVisible.Get()); }
 
     public void Dispose() { Unsubscribe(); }
+
+    // In the future the analytics will be received through DI in the shape of a service locator,
+    // so we can remove these methods and mock the locator itself    
+    internal virtual void SendQuestToggledAnalytic(bool value) { QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "input_action"); }
+    internal virtual void SendExploreToggledAnalytics(bool value) { new ExploreV2Analytics.ExploreV2Analytics().SendExploreMainMenuVisibility(value, ExploreUIVisibilityMethod.FromShortcut); }
 
 }

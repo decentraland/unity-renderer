@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using DCL.Controllers;
+using ExploreV2Analytics;
 
 public class TaskbarHUDController : IHUD
 {
@@ -236,11 +237,28 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnExploreV2ToggleOn()
     {
+        if (!DataStore.i.exploreV2.isOpen.Get())
+        {
+            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+            exploreV2Analytics.SendExploreMainMenuVisibility(
+                true,
+                ExploreUIVisibilityMethod.FromClick);
+        }
         DataStore.i.exploreV2.isOpen.Set(true, true);
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
-    private void View_OnExploreV2ToggleOff() { DataStore.i.exploreV2.isOpen.Set(false); }
+    private void View_OnExploreV2ToggleOff()
+    {
+        if (!DataStore.i.exploreV2.isOpen.Get())
+        {
+            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+            exploreV2Analytics.SendExploreMainMenuVisibility(
+                false,
+                ExploreUIVisibilityMethod.FromClick);
+        }
+        DataStore.i.exploreV2.isOpen.Set(false);
+    }
 
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
 
