@@ -21,8 +21,8 @@ public class HighlightsSubSectionComponentViewTests
     [TearDown]
     public void TearDown()
     {
-        highlightsSubSectionComponent.promotedPlaces.ExtractItems();
-        highlightsSubSectionComponent.promotedPlaceCardsPool.ReleaseAll();
+        highlightsSubSectionComponent.trendingPlacesAndEvents.ExtractItems();
+        highlightsSubSectionComponent.trendingPlaceCardsPool.ReleaseAll();
         highlightsSubSectionComponent.featuredPlaces.ExtractItems();
         highlightsSubSectionComponent.featuredPlaceCardsPool.ReleaseAll();
         highlightsSubSectionComponent.liveEvents.ExtractItems();
@@ -36,19 +36,22 @@ public class HighlightsSubSectionComponentViewTests
     }
 
     [Test]
-    public void SetPromotedPlacesCorrectly()
+    public void SetPromotedPlacesAndEventsCorrectly()
     {
         // Arrange
         List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite);
+        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
-        highlightsSubSectionComponent.SetPromotedPlaces(testPlaces);
+        highlightsSubSectionComponent.SetTrendingPlacesAndEvents(testPlaces, testEvents);
 
         // Assert
-        Assert.AreEqual(2, highlightsSubSectionComponent.promotedPlaces.instantiatedItems.Count, "The number of set places does not match.");
-        Assert.IsTrue(highlightsSubSectionComponent.promotedPlaces.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[0]), "The place 1 is not contained in the places carousel");
-        Assert.IsTrue(highlightsSubSectionComponent.promotedPlaces.instantiatedItems.Any(x => (x as PlaceCardComponentView).model == testPlaces[1]), "The place 2 is not contained in the places carousel");
-        Assert.IsTrue(highlightsSubSectionComponent.promotedPlaces.gameObject.activeSelf, "The promotedPlaces section should be visible.");
+        Assert.AreEqual(4, highlightsSubSectionComponent.trendingPlacesAndEvents.instantiatedItems.Count, "The number of set places/events does not match.");
+        Assert.IsTrue(highlightsSubSectionComponent.trendingPlacesAndEvents.instantiatedItems.Any(x => (x as PlaceCardComponentView) && (x as PlaceCardComponentView).model == testPlaces[0]), "The place 1 is not contained in the carousel");
+        Assert.IsTrue(highlightsSubSectionComponent.trendingPlacesAndEvents.instantiatedItems.Any(x => (x as PlaceCardComponentView) && (x as PlaceCardComponentView).model == testPlaces[1]), "The place 2 is not contained in the carousel");
+        Assert.IsTrue(highlightsSubSectionComponent.trendingPlacesAndEvents.instantiatedItems.Any(x => (x is EventCardComponentView) && (x as EventCardComponentView).model == testEvents[0]), "The event 1 is not contained in the carousel");
+        Assert.IsTrue(highlightsSubSectionComponent.trendingPlacesAndEvents.instantiatedItems.Any(x => (x is EventCardComponentView) && (x as EventCardComponentView).model == testEvents[1]), "The event 2 is not contained in the carousel");
+        Assert.IsTrue(highlightsSubSectionComponent.trendingPlacesAndEvents.gameObject.activeSelf, "The promotedPlaces section should be visible.");
     }
 
     [Test]
@@ -57,15 +60,15 @@ public class HighlightsSubSectionComponentViewTests
     public void SetPromotedPlacesAsLoadingCorrectly(bool isVisible)
     {
         // Arrange
-        highlightsSubSectionComponent.promotedPlaces.gameObject.SetActive(isVisible);
-        highlightsSubSectionComponent.promotedPlacesLoading.SetActive(!isVisible);
+        highlightsSubSectionComponent.trendingPlacesAndEvents.gameObject.SetActive(isVisible);
+        highlightsSubSectionComponent.trendingPlacesAndEventsLoading.SetActive(!isVisible);
 
         // Act
-        highlightsSubSectionComponent.SetPromotedPlacesAsLoading(isVisible);
+        highlightsSubSectionComponent.SetTrendingPlacesAndEventsAsLoading(isVisible);
 
         // Assert
-        Assert.AreEqual(!isVisible, highlightsSubSectionComponent.promotedPlaces.gameObject.activeSelf);
-        Assert.AreEqual(isVisible, highlightsSubSectionComponent.promotedPlacesLoading.activeSelf);
+        Assert.AreEqual(!isVisible, highlightsSubSectionComponent.trendingPlacesAndEvents.gameObject.activeSelf);
+        Assert.AreEqual(isVisible, highlightsSubSectionComponent.trendingPlacesAndEventsLoading.activeSelf);
     }
 
     [Test]
@@ -74,13 +77,13 @@ public class HighlightsSubSectionComponentViewTests
     public void SetPromotedPlacesActiveCorrectly(bool isActive)
     {
         // Arrange
-        highlightsSubSectionComponent.promotedPlaces.gameObject.SetActive(!isActive);
+        highlightsSubSectionComponent.trendingPlacesAndEvents.gameObject.SetActive(!isActive);
 
         // Act
-        highlightsSubSectionComponent.SetPromotedPlacesActive(isActive);
+        highlightsSubSectionComponent.SetTrendingPlacesAndEventsActive(isActive);
 
         // Assert
-        Assert.AreEqual(isActive, highlightsSubSectionComponent.promotedPlaces.gameObject.activeSelf);
+        Assert.AreEqual(isActive, highlightsSubSectionComponent.trendingPlacesAndEvents.gameObject.activeSelf);
     }
 
     [Test]

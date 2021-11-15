@@ -132,10 +132,10 @@ public interface IEventsSubSectionComponentView
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
 {
-    internal const string FEATURED_EVENT_CARDS_POOL_NAME = "FeaturedEventCardsPool";
-    internal const string TRENDING_EVENT_CARDS_POOL_NAME = "TrendingEventCardsPool";
-    internal const string UPCOMING_EVENT_CARDS_POOL_NAME = "UpcomingEventCardsPool";
-    internal const string GOING_EVENT_CARDS_POOL_NAME = "FeatureGoingEventCardsPool";
+    internal const string FEATURED_EVENT_CARDS_POOL_NAME = "Events_FeaturedEventCardsPool";
+    internal const string TRENDING_EVENT_CARDS_POOL_NAME = "Events_TrendingEventCardsPool";
+    internal const string UPCOMING_EVENT_CARDS_POOL_NAME = "Events_UpcomingEventCardsPool";
+    internal const string GOING_EVENT_CARDS_POOL_NAME = "Events_FeatureGoingEventCardsPool";
 
     [Header("Assets References")]
     [SerializeField] internal EventCardComponentView eventCardPrefab;

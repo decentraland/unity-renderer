@@ -63,22 +63,23 @@ public interface IHighlightsSubSectionComponentView
     Color[] currentFriendColors { get; }
 
     /// <summary>
-    /// Set the promoted places component with a list of places.
+    /// Set the trending places/events component with a list of places and events.
     /// </summary>
     /// <param name="places">List of places (model) to be loaded.</param>
-    void SetPromotedPlaces(List<PlaceCardComponentModel> places);
+    /// <param name="events">List of events (model) to be loaded.</param>
+    void SetTrendingPlacesAndEvents(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events);
 
     /// <summary>
-    /// Set the promoted places component in loading mode.
+    /// Set the trending places and events component in loading mode.
     /// </summary>
     /// <param name="isVisible">True for activating the loading mode.</param>
-    void SetPromotedPlacesAsLoading(bool isVisible);
+    void SetTrendingPlacesAndEventsAsLoading(bool isVisible);
 
     /// <summary>
-    /// Activates/deactivates the promoted places component.
+    /// Activates/deactivates the trending places and events component.
     /// </summary>
     /// <param name="isActive">True for activating.</param>
-    void SetPromotedPlacesActive(bool isActive);
+    void SetTrendingPlacesAndEventsActive(bool isActive);
 
     /// <summary>
     /// Set the featured places component with a list of places.
@@ -134,12 +135,14 @@ public interface IHighlightsSubSectionComponentView
 
 public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsSubSectionComponentView
 {
-    internal const string PROMOTED_PLACE_CARDS_POOL_NAME = "PromotedPlaceCardsPool";
-    internal const string FEATURED_PLACE_CARDS_POOL_NAME = "FeaturedPlaceCardsPool";
-    internal const string LIVE_EVENT_CARDS_POOL_NAME = "LiveEventCardsPool";
+    internal const string TRENDING_PLACE_CARDS_POOL_NAME = "Highlights_TrendingPlaceCardsPool";
+    internal const string TRENDING_EVENT_CARDS_POOL_NAME = "Highlights_TrendingEventCardsPool";
+    internal const string FEATURED_PLACE_CARDS_POOL_NAME = "Highlights_FeaturedPlaceCardsPool";
+    internal const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardLongPrefab;
+    [SerializeField] internal EventCardComponentView eventCardLongPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
     [SerializeField] internal EventCardComponentView eventCardPrefab;
@@ -147,8 +150,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     [Header("Prefab References")]
     [SerializeField] internal ScrollRect scrollView;
-    [SerializeField] internal CarouselComponentView promotedPlaces;
-    [SerializeField] internal GameObject promotedPlacesLoading;
+    [SerializeField] internal CarouselComponentView trendingPlacesAndEvents;
+    [SerializeField] internal GameObject trendingPlacesAndEventsLoading;
     [SerializeField] internal GridContainerComponentView featuredPlaces;
     [SerializeField] internal GameObject featuredPlacesLoading;
     [SerializeField] internal TMP_Text featuredPlacesNoDataText;
@@ -171,7 +174,8 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     internal PlaceCardComponentView placeModal;
     internal EventCardComponentView eventModal;
-    internal Pool promotedPlaceCardsPool;
+    internal Pool trendingPlaceCardsPool;
+    internal Pool trendingEventCardsPool;
     internal Pool featuredPlaceCardsPool;
     internal Pool liveEventCardsPool;
 
@@ -183,11 +187,12 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
         eventModal = ExploreEventsHelpers.ConfigureEventCardModal(eventCardModalPrefab);
-        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out promotedPlaceCardsPool, PROMOTED_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, 10);
+        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, 10);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, 10);
         ExplorePlacesHelpers.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, 6);
         ExploreEventsHelpers.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, 3);
 
-        promotedPlaces.RemoveItems();
+        trendingPlacesAndEvents.RemoveItems();
         featuredPlaces.RemoveItems();
         liveEvents.RemoveItems();
 
@@ -198,7 +203,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public override void RefreshControl()
     {
-        promotedPlaces.RefreshControl();
+        trendingPlacesAndEvents.RefreshControl();
         featuredPlaces.RefreshControl();
         liveEvents.RefreshControl();
     }
@@ -207,7 +212,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         base.Dispose();
 
-        promotedPlaces.Dispose();
+        trendingPlacesAndEvents.Dispose();
         featuredPlaces.Dispose();
         liveEvents.Dispose();
 
@@ -226,29 +231,49 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         viewAllEventsButton.onClick.RemoveAllListeners();
     }
 
-    public void SetPromotedPlaces(List<PlaceCardComponentModel> places)
+    public void SetTrendingPlacesAndEvents(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events)
     {
-        promotedPlaces.ExtractItems();
-        promotedPlaceCardsPool.ReleaseAll();
+        List<BaseComponentView> placesAndEventsToSet = new List<BaseComponentView>();
+
+        trendingPlacesAndEvents.ExtractItems();
+        trendingPlaceCardsPool.ReleaseAll();
+        trendingEventCardsPool.ReleaseAll();
 
         List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
             places,
-            promotedPlaceCardsPool,
+            trendingPlaceCardsPool,
             OnFriendHandlerAdded,
             OnPlaceInfoClicked,
             OnPlaceJumpInClicked);
 
-        promotedPlaces.SetItems(placeComponentsToAdd);
-        SetPromotedPlacesActive(places.Count > 0);
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
+            events,
+            trendingEventCardsPool,
+            OnEventInfoClicked,
+            OnEventJumpInClicked,
+            OnEventSubscribeEventClicked,
+            OnEventUnsubscribeEventClicked);
+
+
+        for (int i = 0; i < placeComponentsToAdd.Count; i++)
+        {
+            placesAndEventsToSet.Add(placeComponentsToAdd[i]);
+
+            if (eventComponentsToAdd.Count - 1 >= i)
+                placesAndEventsToSet.Add(eventComponentsToAdd[i]);
+        }
+
+        trendingPlacesAndEvents.SetItems(placesAndEventsToSet);
+        SetTrendingPlacesAndEventsActive(placesAndEventsToSet.Count > 0);
     }
 
-    public void SetPromotedPlacesAsLoading(bool isVisible)
+    public void SetTrendingPlacesAndEventsAsLoading(bool isVisible)
     {
-        SetPromotedPlacesActive(!isVisible);
-        promotedPlacesLoading.SetActive(isVisible);
+        SetTrendingPlacesAndEventsActive(!isVisible);
+        trendingPlacesAndEventsLoading.SetActive(isVisible);
     }
 
-    public void SetPromotedPlacesActive(bool isActive) { promotedPlaces.gameObject.SetActive(isActive); }
+    public void SetTrendingPlacesAndEventsActive(bool isActive) { trendingPlacesAndEvents.gameObject.SetActive(isActive); }
 
     public void SetFeaturedPlaces(List<PlaceCardComponentModel> places)
     {

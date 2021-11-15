@@ -55,7 +55,7 @@ public class HighlightsSubSectionComponentControllerTests
 
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
-        highlightsSubSectionComponentView.Received().SetPromotedPlacesAsLoading(true);
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
         highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
         highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
         Assert.IsFalse(highlightsSubSectionComponentController.reloadHighlights);
@@ -90,62 +90,38 @@ public class HighlightsSubSectionComponentControllerTests
 
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
-        highlightsSubSectionComponentView.Received().SetPromotedPlacesAsLoading(true);
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(true);
         highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(true);
         highlightsSubSectionComponentView.Received().SetLiveAsLoading(true);
         placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
-        eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
         Assert.IsFalse(highlightsSubSectionComponentController.reloadHighlights);
     }
 
     [Test]
-    public void RequestAllPlacesFromAPICorrectly()
+    public void RequestAllPlacesAndEventsFromAPICorrectly()
     {
         // Act
-        highlightsSubSectionComponentController.RequestAllPlacesFromAPI();
+        highlightsSubSectionComponentController.RequestAllPlacesAndEventsFromAPI();
 
         // Assert
         placesAPIController.Received().GetAllPlaces(Arg.Any<Action<List<HotSceneInfo>>>());
     }
 
     [Test]
-    public void RequestAllEventsFromAPICorrectly()
-    {
-        // Act
-        highlightsSubSectionComponentController.RequestAllEventsFromAPI();
-
-        // Assert
-        eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
-    }
-
-    [Test]
-    public void RaiseOnRequestedPlacesUpdatedCorrectly()
+    public void RaiseOnRequestedPlacesAndEventsUpdatedCorrectly()
     {
         // Arrange
-        int numberOfPlaces = 2;
-        highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
+        highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(2);
+        highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(2);
 
         // Act
-        highlightsSubSectionComponentController.OnRequestedPlacesUpdated();
+        highlightsSubSectionComponentController.OnRequestedPlacesAndEventsUpdated();
 
         // Assert
-        highlightsSubSectionComponentView.Received().SetPromotedPlaces(Arg.Any<List<PlaceCardComponentModel>>());
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEvents(Arg.Any<List<PlaceCardComponentModel>>(), Arg.Any<List<EventCardComponentModel>>());
         highlightsSubSectionComponentView.Received().SetFeaturedPlaces(Arg.Any<List<PlaceCardComponentModel>>());
-        highlightsSubSectionComponentView.Received().SetPromotedPlacesAsLoading(false);
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(false);
         highlightsSubSectionComponentView.Received().SetFeaturedPlacesAsLoading(false);
-    }
-
-    [Test]
-    public void RaiseOnRequestedEventsUpdatedCorrectly()
-    {
-        // Arrange
-        int numberOfEvents = 2;
-        highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
-
-        // Act
-        highlightsSubSectionComponentController.OnRequestedEventsUpdated();
-
-        // Assert
         highlightsSubSectionComponentView.Received().SetLiveEvents(Arg.Any<List<EventCardComponentModel>>());
         highlightsSubSectionComponentView.Received().SetLiveAsLoading(false);
     }
@@ -154,15 +130,15 @@ public class HighlightsSubSectionComponentControllerTests
     public void LoadPromotedPlacesCorrectly()
     {
         // Arrange
-        int numberOfPlaces = 2;
-        highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
+        highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(2);
+        highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(2);
 
         // Act
-        highlightsSubSectionComponentController.LoadPromotedPlaces();
+        highlightsSubSectionComponentController.LoadTrendingPlacesAndEvents();
 
         // Assert
-        highlightsSubSectionComponentView.Received().SetPromotedPlaces(Arg.Any<List<PlaceCardComponentModel>>());
-        highlightsSubSectionComponentView.Received().SetPromotedPlacesAsLoading(false);
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEvents(Arg.Any<List<PlaceCardComponentModel>>(), Arg.Any<List<EventCardComponentModel>>());
+        highlightsSubSectionComponentView.Received().SetTrendingPlacesAndEventsAsLoading(false);
     }
 
     [Test]

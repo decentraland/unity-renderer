@@ -1327,8 +1327,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4025804822704696334}
   m_HandleRect: {fileID: 1170882600487984448}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.8427586
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1585,7 +1585,7 @@ GameObject:
   - component: {fileID: 3793751071402310574}
   - component: {fileID: 4867141453637440620}
   m_Layer: 5
-  m_Name: PromotedPlacesLoading
+  m_Name: TrendingPlacesAndEventsLoading
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1631,7 +1631,7 @@ GameObject:
   - component: {fileID: 4420621355828405291}
   - component: {fileID: 2226459223480267654}
   m_Layer: 5
-  m_Name: PromotedPlacesTitle
+  m_Name: TrendingPlacesAndEventsTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1684,7 +1684,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Trending Places
+  m_text: Trending
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6b705423dc77d4fceb4122f6d7e571d6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 9d9df32282a3c40299019c36b2157d37, type: 2}
@@ -2059,8 +2059,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -100}
-  m_SizeDelta: {x: 0, y: 200}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &3473412280489848481
 Animator:
@@ -2123,6 +2123,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   placeCardLongPrefab: {fileID: 76922209017619485, guid: 5467bc95643f3b445896a06005209053,
     type: 3}
+  eventCardLongPrefab: {fileID: 8248037141289851776, guid: 193c29daccba8f546945bc5b9a2442b2,
+    type: 3}
   placeCardPrefab: {fileID: 76922209017619485, guid: eb934d40e41b2c3419cd97c6e35d51b7,
     type: 3}
   placeCardModalPrefab: {fileID: 6938330954477096662, guid: ab186ea8747757847957451f6ec22160,
@@ -2132,8 +2134,8 @@ MonoBehaviour:
   eventCardModalPrefab: {fileID: 5942660468817174801, guid: 471a351208321e646a1b5be5934eddf3,
     type: 3}
   scrollView: {fileID: 7300105404694902297}
-  promotedPlaces: {fileID: 8570643667349543860}
-  promotedPlacesLoading: {fileID: 7376507868842047247}
+  trendingPlacesAndEvents: {fileID: 8570643667349543860}
+  trendingPlacesAndEventsLoading: {fileID: 7376507868842047247}
   featuredPlaces: {fileID: 2951951534848133522}
   featuredPlacesLoading: {fileID: 8753188848470460779}
   featuredPlacesNoDataText: {fileID: 4000417025086632422}
@@ -5168,7 +5170,7 @@ PrefabInstance:
     - target: {fileID: 3118676430322830111, guid: 117cfad517329394a8c1ea8c91298f8f,
         type: 3}
       propertyPath: m_Name
-      value: PromotedPlaces
+      value: TrendingPlacesAndEvents
       objectReference: {fileID: 0}
     - target: {fileID: 3502379854844355979, guid: 117cfad517329394a8c1ea8c91298f8f,
         type: 3}

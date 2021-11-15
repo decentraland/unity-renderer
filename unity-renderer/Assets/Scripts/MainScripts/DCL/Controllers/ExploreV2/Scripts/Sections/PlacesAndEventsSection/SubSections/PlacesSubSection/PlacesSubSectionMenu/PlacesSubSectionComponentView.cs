@@ -90,7 +90,7 @@ public interface IPlacesSubSectionComponentView
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
-    internal const string PLACE_CARDS_POOL_NAME = "PlaceCardsPool";
+    internal const string PLACE_CARDS_POOL_NAME = "Places_PlaceCardsPool";
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;

@@ -30,12 +30,12 @@ public interface IHighlightsSubSectionComponentController : IDisposable
     void RequestAllPlacesAndEvents();
 
     /// <summary>
-    /// Load the promoted places with the last requested ones.
+    /// Load the trending places and events with the last requested ones.
     /// </summary>
-    void LoadPromotedPlaces();
+    void LoadTrendingPlacesAndEvents();
 
     /// <summary>
-    /// Load the promoted places with the last requested ones.
+    /// Load the featured places with the last requested ones.
     /// </summary>
     void LoadFeaturedPlaces();
 
@@ -50,10 +50,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     public event Action OnCloseExploreV2;
     public event Action OnAnyActionExecuted;
     public event Action OnGoToEventsSubSection;
-    internal event Action OnPlacesFromAPIUpdated;
-    internal event Action OnEventsFromAPIUpdated;
+    internal event Action OnPlacesAndEventsFromAPIUpdated;
 
-    internal const int DEFAULT_NUMBER_OF_PROMOTED_PLACES = 10;
+    internal const int DEFAULT_NUMBER_OF_TRENDING_PLACES = 10;
     internal const int DEFAULT_NUMBER_OF_FEATURED_PLACES = 6;
     internal const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
     internal const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
@@ -87,8 +86,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         placesAPIApiController = placesAPI;
         eventsAPIApiController = eventsAPI;
-        OnPlacesFromAPIUpdated += OnRequestedPlacesUpdated;
-        OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
+        OnPlacesAndEventsFromAPIUpdated += OnRequestedPlacesAndEventsUpdated;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
@@ -118,71 +116,93 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             return;
 
         view.RestartScrollViewPosition();
-        view.SetPromotedPlacesAsLoading(true);
+        view.SetTrendingPlacesAndEventsAsLoading(true);
         view.SetFeaturedPlacesAsLoading(true);
         view.SetLiveAsLoading(true);
-        RequestAllPlacesFromAPI();
-        RequestAllEventsFromAPI();
+        RequestAllPlacesAndEventsFromAPI();
         reloadHighlights = false;
     }
 
-    internal void RequestAllPlacesFromAPI()
+    internal void RequestAllPlacesAndEventsFromAPI()
     {
         placesAPIApiController.GetAllPlaces(
             (placeList) =>
             {
                 placesFromAPI = placeList;
-                OnPlacesFromAPIUpdated?.Invoke();
+                eventsAPIApiController.GetAllEvents(
+                    (eventList) =>
+                    {
+                        eventsFromAPI = eventList;
+                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                    },
+                    (error) =>
+                    {
+                        OnPlacesAndEventsFromAPIUpdated?.Invoke();
+                        Debug.LogError($"Error receiving events from the API: {error}");
+                    });
             });
     }
 
-    internal void RequestAllEventsFromAPI()
-    {
-        eventsAPIApiController.GetAllEvents(
-            (eventList) =>
-            {
-                eventsFromAPI = eventList;
-                OnEventsFromAPIUpdated?.Invoke();
-            },
-            (error) =>
-            {
-                Debug.LogError($"Error receiving events from the API: {error}");
-            });
-    }
-
-    internal void OnRequestedPlacesUpdated()
+    internal void OnRequestedPlacesAndEventsUpdated()
     {
         friendsTrackerController.RemoveAllHandlers();
 
-        LoadPromotedPlaces();
+        LoadTrendingPlacesAndEvents();
         LoadFeaturedPlaces();
+        LoadLiveEvents();
     }
 
-    internal void OnRequestedEventsUpdated() { LoadLiveEvents(); }
-
-    public void LoadPromotedPlaces()
+    public void LoadTrendingPlacesAndEvents()
     {
+        // Places
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
         List<HotSceneInfo> placesFiltered = placesFromAPI
-                                            .Where(x => !string.IsNullOrEmpty(x.thumbnail))
-                                            .Take(DEFAULT_NUMBER_OF_PROMOTED_PLACES)
+                                            .Take(DEFAULT_NUMBER_OF_TRENDING_PLACES)
                                             .ToList();
+
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
             PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
             places.Add(placeCardModel);
         }
 
-        view.SetPromotedPlaces(places);
-        view.SetPromotedPlacesAsLoading(false);
+        // Events
+        List<EventCardComponentModel> events = new List<EventCardComponentModel>();
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+
+        foreach (EventFromAPIModel receivedEvent in eventsFiltered)
+        {
+            EventCardComponentModel eventCardModel = ExploreEventsHelpers.CreateEventCardModelFromAPIEvent(receivedEvent);
+            events.Add(eventCardModel);
+        }
+
+        view.SetTrendingPlacesAndEvents(places, events);
+        view.SetTrendingPlacesAndEventsAsLoading(false);
     }
 
     public void LoadFeaturedPlaces()
     {
         List<PlaceCardComponentModel> places = new List<PlaceCardComponentModel>();
-        List<HotSceneInfo> placesFiltered = placesFromAPI
-                                            .Take(DEFAULT_NUMBER_OF_FEATURED_PLACES)
-                                            .ToList();
+        List<HotSceneInfo> placesFiltered;
+        if (placesFromAPI.Count >= DEFAULT_NUMBER_OF_TRENDING_PLACES)
+        {
+            int numberOfPlaces = placesFromAPI.Count >= (DEFAULT_NUMBER_OF_TRENDING_PLACES + DEFAULT_NUMBER_OF_FEATURED_PLACES)
+                ? DEFAULT_NUMBER_OF_FEATURED_PLACES
+                : placesFromAPI.Count - DEFAULT_NUMBER_OF_TRENDING_PLACES;
+
+            placesFiltered = placesFromAPI
+                             .GetRange(DEFAULT_NUMBER_OF_TRENDING_PLACES, numberOfPlaces)
+                             .ToList();
+        }
+        else if (placesFromAPI.Count > 0)
+        {
+            placesFiltered = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList();
+        }
+        else
+        {
+            placesFiltered = new List<HotSceneInfo>();
+        }
+
         foreach (HotSceneInfo receivedPlace in placesFiltered)
         {
             PlaceCardComponentModel placeCardModel = ExplorePlacesHelpers.CreatePlaceCardModelFromAPIPlace(receivedPlace);
