@@ -11,7 +11,7 @@ namespace DCL.Builder
         public string error;
         public object data;
 
-        public string GetArrayJson()
+        public string GetArrayJsonString()
         {
             return ((JObject) data)["items"].ToString();
         }

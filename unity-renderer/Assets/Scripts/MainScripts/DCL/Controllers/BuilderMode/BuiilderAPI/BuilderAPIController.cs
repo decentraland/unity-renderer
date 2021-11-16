@@ -22,7 +22,7 @@ public class BuilderAPIController : IBuilderAPIController
     internal const string GET_PROJECTS_ENDPOINT = "/projects";
     internal const string SET_PROJECTS_ENDPOINT = "/projects/{ID}/manifest";
 
-    internal const string API_KO_RESPONSE_ERROR = "API response is not OK";
+    internal const string API_KO_RESPONSE_ERROR = "API response is KO";
 
     internal const string GET = "get";
     internal const string PUT = "put";
@@ -221,10 +221,10 @@ public class BuilderAPIController : IBuilderAPIController
 
         promise.Then(apiResult =>
         {
-            var result = apiResponseResolver.GetDataFromCall(apiResult);
-            if (!string.IsNullOrEmpty(result))
+            var assets = apiResponseResolver.GetArrayFromCall<SceneObject>(apiResult);
+            if (assets != null)
             {
-                AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(result);
+                AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(assets);
                 fullCatalogPromise.Resolve(true);
             }
             else
@@ -244,8 +244,7 @@ public class BuilderAPIController : IBuilderAPIController
 
         promise.Then(result =>
         {
-            string projectsJson = apiResponseResolver.GetDataFromCall(result, true);
-            List<ProjectData> allManifest = JsonConvert.DeserializeObject<List<ProjectData>>(projectsJson);
+            List<ProjectData> allManifest = apiResponseResolver.GetArrayFromCall<ProjectData>(result).ToList();
             fullCatalogPromise.Resolve(allManifest);
         });
         promise.Catch(error =>

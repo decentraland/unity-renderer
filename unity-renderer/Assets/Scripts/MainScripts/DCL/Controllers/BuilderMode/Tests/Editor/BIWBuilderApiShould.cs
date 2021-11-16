@@ -88,7 +88,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
 
         string jsonData = JsonConvert.SerializeObject(projectDatas);
         apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
-        apiController.apiResponseResolver.Configure().GetDataFromCall(Arg.Any<string>(),true).Returns(jsonData);
+        apiController.apiResponseResolver.Configure().GetArrayFromCall<ProjectData>(Arg.Any<string>()).Returns(projectDatas.ToArray());
         
         TestHelpers.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
 

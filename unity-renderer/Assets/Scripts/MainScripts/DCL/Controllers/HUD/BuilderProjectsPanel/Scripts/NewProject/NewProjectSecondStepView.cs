@@ -9,7 +9,6 @@ namespace DCL.Builder
     public class NewProjectSecondStepView : BaseComponentView
     {
         private const int MAX_PARCELS = 32;
-        private const int PARCEL_METERS_SIZE = 16;
 
         private const string MAX_PARCELS_TEXT = " parcels";
 
@@ -102,7 +101,7 @@ namespace DCL.Builder
 
             parcelText.color = normalTextColor;
 
-            parcelText.text = $"{(rows * colums)} parcels = {(rows * PARCEL_METERS_SIZE)}x{colums * PARCEL_METERS_SIZE}m";
+            parcelText.text = $"{(rows * colums)} parcels = {(rows * DCL.Configuration.ParcelSettings.PARCEL_SIZE)}x{colums * DCL.Configuration.ParcelSettings.PARCEL_SIZE}m";
         }
 
         internal void NextPressed()

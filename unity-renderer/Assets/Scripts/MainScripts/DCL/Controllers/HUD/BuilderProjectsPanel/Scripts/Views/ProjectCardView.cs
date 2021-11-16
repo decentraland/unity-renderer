@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using DCL;
 using DCL.Builder;
 using DCL.Configuration;
@@ -353,7 +354,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     internal string GetSizeText(int rows, int columns)
     {
-        return rows * BIWSettings.PARCEL_SIZE_METERS + "x" + columns * BIWSettings.PARCEL_SIZE_METERS + "m";
+        return (rows * ParcelSettings.PARCEL_SIZE) + "x" + (columns * ParcelSettings.PARCEL_SIZE)  + "m";
     }
 
     IEnumerator ChangeHeightAnimation(RectTransform rectTransform, float height)
