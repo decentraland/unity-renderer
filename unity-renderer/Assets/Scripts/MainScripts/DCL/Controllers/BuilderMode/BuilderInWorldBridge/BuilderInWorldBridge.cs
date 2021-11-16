@@ -257,7 +257,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void StartKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id)); }
 
-    public void ExitKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
+    public void ExitKernelEditMode(IParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
 
     public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
     {

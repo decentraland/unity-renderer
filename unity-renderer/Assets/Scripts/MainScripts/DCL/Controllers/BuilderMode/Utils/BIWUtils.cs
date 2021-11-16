@@ -23,13 +23,13 @@ using UnityEngine.Events;
 public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    
+
     public static long ConvertToMilisecondsTimestamp(DateTime value)
     {
         TimeSpan elapsedTime = value - Epoch;
         return (long) elapsedTime.TotalMilliseconds;
     }
-    
+
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
     {
         UserProfile profile = UserProfile.GetOwnUserProfile();
@@ -38,7 +38,7 @@ public static partial class BIWUtils
         return manifest;
     }
 
-    public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, ParcelScene scene)
+    public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, IParcelScene scene)
     {
         LandWithAccess filteredLand = lands.FirstOrDefault(land => scene.sceneData.basePosition == land.baseCoords);
         return GetLandOwnershipType(filteredLand);
@@ -79,7 +79,7 @@ public static partial class BIWUtils
         return n2;
     }
 
-    public static Vector2Int GetSceneSize(ParcelScene parcelScene)
+    public static Vector2Int GetSceneSize(IParcelScene parcelScene)
     {
         int minX = Int32.MaxValue;
         int maxX = Int32.MinValue;
@@ -397,9 +397,9 @@ public static partial class BIWUtils
             url: url,
             OnSuccess: (webRequestResult) =>
             {
-                    byte[] byteArray = webRequestResult.GetResultData();
-                    string result = System.Text.Encoding.UTF8.GetString(byteArray);
-                    callPromise?.Resolve(result);
+                byte[] byteArray = webRequestResult.GetResultData();
+                string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                callPromise?.Resolve(result);
             },
             OnFail: (webRequestResult) =>
             {

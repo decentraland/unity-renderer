@@ -590,16 +590,6 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
 
-    [Test]
-    public void OpenNewProjectDetails()
-    {
-        //Act
-        godMode.OpenNewProjectDetails();
-
-        //Assert
-        godMode.freeCameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
-    }
-
     protected override IEnumerator TearDown()
     {
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnFinished();

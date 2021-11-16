@@ -5,6 +5,7 @@ using DCL;
 using DCL.Builder;
 using DCL.Camera;
 using UnityEngine;
+using CameraController = DCL.Camera.CameraController;
 
 public class BIWGizmosController : BIWController, IBIWGizmosController
 {

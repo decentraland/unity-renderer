@@ -84,7 +84,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         entityHandler.OnEntitySelected += OnAssetSelect;
     }
 
-    public void EnterEditMode(ParcelScene scene)
+    public void EnterEditMode(IParcelScene scene)
     {
         UpdateEntityCount();
 

@@ -39,6 +39,4 @@ public interface IBIWModeController : IBIWController
     bool ShouldCancelUndoAction();
     void MouseClickDetected();
     void TakeSceneScreenshotForExit();
-    void ActivateCamera(IParcelScene sceneToEdit);
-    void OpenNewProjectDetails();
 }

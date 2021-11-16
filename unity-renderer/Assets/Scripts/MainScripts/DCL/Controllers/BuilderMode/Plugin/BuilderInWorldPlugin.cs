@@ -10,6 +10,7 @@ public class BuilderInWorldPlugin : PluginFeature
     internal IBIWEditor editor;
     internal IBuilderMainPanelController panelController;
     internal IBuilderAPIController builderAPIController;
+    internal ISceneManager sceneManager;
 
     internal IContext context;
 
@@ -21,6 +22,7 @@ public class BuilderInWorldPlugin : PluginFeature
         panelController = new BuilderMainPanelController();
         editor = new BuilderInWorldEditor();
         builderAPIController = new BuilderAPIController();
+        sceneManager = new SceneManager();
 
         context = new Context(editor,
             panelController,
@@ -55,6 +57,7 @@ public class BuilderInWorldPlugin : PluginFeature
         panelController.Initialize(context);
         editor.Initialize(context);
         builderAPIController.Initialize(context);
+        sceneManager.Initialize(context);
 
         if (HUDController.i == null)
             return;
@@ -80,6 +83,7 @@ public class BuilderInWorldPlugin : PluginFeature
 
         editor.Dispose();
         panelController.Dispose();
+        sceneManager.Dispose();
         context.Dispose();
     }
 
@@ -87,6 +91,7 @@ public class BuilderInWorldPlugin : PluginFeature
     {
         base.Update();
         editor.Update();
+        sceneManager.Update();
     }
 
     public override void LateUpdate()
