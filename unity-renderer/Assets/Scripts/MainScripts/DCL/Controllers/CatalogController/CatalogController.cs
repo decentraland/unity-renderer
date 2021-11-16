@@ -177,7 +177,7 @@ public class CatalogController : MonoBehaviour
         if (!awaitingWearablesByContextPromises.ContainsKey(OWNED_WEARABLES_CONTEXT))
         {
             promiseResult = new Promise<WearableItem[]>();
-            awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
+            /*awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
 
             if (!pendingWearablesByContextRequestedTimes.ContainsKey(OWNED_WEARABLES_CONTEXT))
                 pendingWearablesByContextRequestedTimes.Add(OWNED_WEARABLES_CONTEXT, Time.realtimeSinceStartup);
@@ -187,7 +187,7 @@ public class CatalogController : MonoBehaviour
                 wearableIds: null,
                 collectionIds: null,
                 context: OWNED_WEARABLES_CONTEXT
-            );
+            );*/
         }
         else
         {
