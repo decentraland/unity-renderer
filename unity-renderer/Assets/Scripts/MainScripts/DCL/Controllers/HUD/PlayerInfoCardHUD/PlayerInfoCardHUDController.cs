@@ -15,7 +15,6 @@ public class PlayerInfoCardHUDController : IHUD
     private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
     private readonly IFriendsController friendsController;
-    private readonly UserProfileController userProfileController;
     private readonly UserProfileDictionary userProfileCatalog;
     private readonly InputAction_Trigger toggleFriendsTrigger;
     private readonly InputAction_Trigger closeWindowTrigger;
@@ -27,7 +26,6 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly List<string> loadedWearables = new List<string>();
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
-        UserProfileController userProfileController,
         UserProfileDictionary userProfileCatalog,
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
@@ -36,7 +34,6 @@ public class PlayerInfoCardHUDController : IHUD
         DataStore dataStore)
     {
         this.friendsController = friendsController;
-        this.userProfileController = userProfileController;
         this.userProfileCatalog = userProfileCatalog;
         view = PlayerInfoCardHUDView.CreateView();
         view.Initialize(() => OnCloseButtonPressed(),
@@ -79,7 +76,7 @@ public class PlayerInfoCardHUDController : IHUD
     private void AddPlayerAsFriend()
     {
         // Add fake action to avoid waiting for kernel
-        userProfileController.AddUserProfileToCatalog(new UserProfileModel
+        userProfileBridge.AddUserProfileToCatalog(new UserProfileModel
         {
             userId = currentPlayerId,
             name = currentPlayerId

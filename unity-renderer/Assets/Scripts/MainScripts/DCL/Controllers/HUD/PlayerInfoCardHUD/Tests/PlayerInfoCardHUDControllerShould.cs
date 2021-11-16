@@ -46,7 +46,6 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         friendsController = new FriendsController_Mock();
 
         controller = new PlayerInfoCardHUDController(friendsController,
-            UserProfileController.i,
             userProfileCatalog,
             currentPlayerIdData,
             userProfileBridge,

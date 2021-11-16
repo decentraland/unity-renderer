@@ -37,7 +37,6 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
                 hudElement = new PlayerInfoCardHUDController(FriendsController.i,
-                    UserProfileController.i,
                     UserProfileController.userProfilesCatalog,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
