@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,22 @@ namespace DCL.Builder
         internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
         private const float MAX_DISTANCE_STOP_TRYING_TO_ENTER = 16;
 
+        private const string SOURCE_BUILDER_PANEl = "BuilderPanel";
+        private const string SOURCE_SHORTCUT = "Shortcut";
+
+        public enum State
+        {
+            IDLE = 0,
+            LOADING_CATALOG = 1,
+            CATALOG_LOADED = 2,
+            PREPARE_SCENE = 3,
+            LOADING_SCENE = 4,
+            SCENE_LOADED = 5,
+            EDITING = 6
+        }
+
+        internal State currentState = State.IDLE;
+
         private InputAction_Trigger editModeChangeInputAction;
 
         internal IContext context;
@@ -20,23 +37,19 @@ namespace DCL.Builder
         private UserProfile userProfile;
         internal Coroutine updateLandsWithAcessCoroutine;
 
-        internal bool catalogAdded = false;
-        private bool sceneReady = false;
         private bool alreadyAskedForLandPermissions = false;
         private Vector3 askPermissionLastPosition;
         private IWebRequestAsyncOperation catalogAsyncOp;
         internal bool isWaitingForPermission = false;
-        private bool isCatalogLoading = false;
-        internal ParcelScene sceneToEdit;
-        internal bool isCatalogRequested = false;
-        internal bool isEnteringEditMode = false;
-        internal bool isEditingScene = false;
+        internal IParcelScene sceneToEdit;
         private BiwSceneMetricsAnalyticsHelper sceneMetricsAnalyticsHelper;
         private InputController inputController;
         private BuilderInWorldBridge builderInWorldBridge;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
         private CameraController cameraController;
+
+        internal bool catalogLoaded = false;
 
         public void Initialize(IContext context)
         {
@@ -58,7 +71,7 @@ namespace DCL.Builder
 
             ConfigureLoadingController();
             if (context.panelHUD != null)
-                context.panelHUD.OnJumpInOrEdit += GetCatalog;
+                context.panelHUD.OnJumpInOrEdit += JumpInOrEdit;
 
         }
 
@@ -81,7 +94,7 @@ namespace DCL.Builder
                 sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
 
             if (context.panelHUD != null)
-                context.panelHUD.OnJumpInOrEdit -= GetCatalog;
+                context.panelHUD.OnJumpInOrEdit -= JumpInOrEdit;
             editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
             context.builderAPIController.OnWebRequestCreated -= WebRequestCreated;
 
@@ -94,18 +107,49 @@ namespace DCL.Builder
             initialLoadingController.Initialize();
         }
 
+        public void NextState()
+        {
+            currentState++;
+            switch (currentState)
+            {
+                case State.LOADING_CATALOG:
+                    if (!catalogLoaded)
+                        GetCatalog();
+                    else
+                        NextState();
+                    break;
+
+                case State.CATALOG_LOADED:
+                    NextState();
+                    break;
+
+                //TODO: This step wil be implemented in the future
+                case State.PREPARE_SCENE:
+                    NextState();
+                    break;
+
+                case State.LOADING_SCENE:
+                    LoadScene();
+                    break;
+
+                case State.SCENE_LOADED:
+                    EnterEditMode();
+                    break;
+            }
+        }
+
         public void WebRequestCreated(IWebRequestAsyncOperation webRequest)
         {
-            if (isCatalogLoading)
+            if (currentState == State.LOADING_CATALOG)
                 catalogAsyncOp = webRequest;
         }
 
         public void Update()
         {
-            if (!isEditingScene && !isEnteringEditMode)
+            if (currentState != State.LOADING_CATALOG)
                 return;
 
-            if (isCatalogLoading && catalogAsyncOp?.webRequest != null)
+            if (catalogAsyncOp?.webRequest != null)
                 UpdateCatalogLoadingProgress(catalogAsyncOp.webRequest.downloadProgress * 100);
         }
 
@@ -113,21 +157,7 @@ namespace DCL.Builder
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
                                          .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
-            TryStartEnterEditMode(targetScene);
-
-        }
-
-        public void FindSceneToEdit(IParcelScene targetScene)
-        {
-            if (targetScene != null)
-            {
-                var parcelSceneTarget = (ParcelScene)targetScene;
-                sceneToEdit = parcelSceneTarget;
-            }
-            else
-            {
-                FindSceneToEdit();
-            }
+            TryStartFlow(targetScene);
         }
 
         public IParcelScene FindSceneToEdit()
@@ -137,21 +167,11 @@ namespace DCL.Builder
                 if (WorldStateUtils.IsCharacterInsideScene(scene))
                 {
                     ParcelScene parcelScene = (ParcelScene)scene;
-                    sceneToEdit = parcelScene;
                     return sceneToEdit;
                 }
             }
 
             return null;
-        }
-
-        private IEnumerator CheckLandsAccess()
-        {
-            while (true)
-            {
-                UpdateLandsWithAccess();
-                yield return WaitForSecondsCache.Get(BIWSettings.REFRESH_LANDS_WITH_ACCESS_INTERVAL);
-            }
         }
 
         private void UpdateLandsWithAccess()
@@ -178,35 +198,51 @@ namespace DCL.Builder
 
         public void CatalogLoaded()
         {
-            isCatalogLoading = false;
-            catalogAdded = true;
+            catalogLoaded = true;
             if ( context.editorContext.editorHUD != null)
                 context.editorContext.editorHUD.RefreshCatalogContent();
-            StartEditMode();
+            NextState();
+        }
+
+        internal void JumpInOrEdit() { StartFlow(SOURCE_BUILDER_PANEl); }
+
+        internal void StartFlow(string source)
+        {
+            if (currentState != State.IDLE)
+                return;
+
+            NotificationsController.i.allowNotifications = false;
+            CommonScriptableObjects.allUIHidden.Set(true);
+            NotificationsController.i.allowNotifications = true;
+            inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
+            initialLoadingController.Show();
+            initialLoadingController.SetPercentage(0f);
+            DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
+            BIWAnalytics.StartEditorFlow(source);
+            beginStartFlowTimeStamp = Time.realtimeSinceStartup;
+
+            cameraController.ActivateCamera(sceneToEdit);
+
+            NextState();
         }
 
         internal void GetCatalog()
         {
-            if (catalogAdded)
-                return;
-
-            isCatalogLoading = true;
             BIWNFTController.i.StartFetchingNft();
             var catalogPromise = context.builderAPIController.GetCompleteCatalog(userProfile.ethAddress);
             catalogPromise.Then(x =>
             {
                 CatalogLoaded();
             });
-
-            isCatalogRequested = true;
         }
 
         public void ChangeEditModeStatusByShortcut(DCLAction_Trigger action)
         {
-            if (isEnteringEditMode)
+            if (currentState != State.EDITING || currentState != State.IDLE)
                 return;
 
-            if (isEditingScene)
+            if (currentState == State.EDITING )
             {
                 context.editorContext.editorHUD.ExitStart();
                 return;
@@ -241,8 +277,7 @@ namespace DCL.Builder
                 return;
             }
 
-            GetCatalog();
-            TryStartEnterEditMode(null, "Shortcut");
+            StartFlow(SOURCE_SHORTCUT);
         }
 
         internal void NewSceneAdded(IParcelScene newScene)
@@ -265,11 +300,10 @@ namespace DCL.Builder
             sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
             Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
             sceneToEditId = null;
-            sceneReady = true;
-            CheckEnterEditMode();
+            NextState();
         }
 
-        internal bool UserHasPermissionOnParcelScene(ParcelScene sceneToCheck)
+        internal bool UserHasPermissionOnParcelScene(IParcelScene sceneToCheck)
         {
             if (BYPASS_LAND_OWNERSHIP_CHECK)
                 return true;
@@ -284,7 +318,7 @@ namespace DCL.Builder
             return false;
         }
 
-        internal bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
+        internal bool IsParcelSceneDeployedFromSDK(IParcelScene sceneToCheck)
         {
             List<Scene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
             foreach (Scene scene in allDeployedScenesWithAccess)
@@ -303,15 +337,8 @@ namespace DCL.Builder
             return false;
         }
 
-        private void CheckEnterEditMode()
-        {
-            if (catalogAdded && sceneReady)
-                EnterEditMode();
-        }
-
         internal void EnterEditMode()
         {
-            isEnteringEditMode = false;
             initialLoadingController.SetPercentage(100f);
             initialLoadingController.Hide(onHideAction: () =>
             {
@@ -321,7 +348,6 @@ namespace DCL.Builder
                 OpenNewProjectDetails();
             });
 
-            isEditingScene = true;
             DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
             context.editor.EnterEditMode(sceneToEdit);
@@ -330,7 +356,7 @@ namespace DCL.Builder
 
         internal void ExitEditMode()
         {
-            isEditingScene = false;
+            currentState = State.IDLE;
             initialLoadingController.Hide(true);
             inputController.inputTypeMode = InputTypeMode.GENERAL;
             CommonScriptableObjects.allUIHidden.Set(false);
@@ -352,19 +378,17 @@ namespace DCL.Builder
 
         }
 
-        public void TryStartEnterEditMode(IParcelScene targetScene = null , string source = "BuilderPanel")
+        public void TryStartFlow(IParcelScene targetScene, string source = "BuilderPanel")
         {
             if (sceneToEditId != null)
                 return;
 
-            FindSceneToEdit(targetScene);
-
-            if (!UserHasPermissionOnParcelScene(sceneToEdit))
+            if (!UserHasPermissionOnParcelScene(targetScene))
             {
                 ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
                 return;
             }
-            else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
+            else if (IsParcelSceneDeployedFromSDK(targetScene))
             {
                 ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
                 return;
@@ -374,31 +398,12 @@ namespace DCL.Builder
             if (sceneToEditId != null)
                 return;
 
-            isEnteringEditMode = true;
-            NotificationsController.i.allowNotifications = false;
-            CommonScriptableObjects.allUIHidden.Set(true);
-            NotificationsController.i.allowNotifications = true;
-            inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
-            initialLoadingController.Show();
-            initialLoadingController.SetPercentage(0f);
-            DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
-            BIWAnalytics.StartEditorFlow(source);
-            beginStartFlowTimeStamp = Time.realtimeSinceStartup;
-
-            cameraController.ActivateCamera(sceneToEdit);
-
-            if (catalogAdded)
-                StartEditMode();
+            sceneToEdit = targetScene;
+            StartFlow(source);
         }
 
-        private void StartEditMode()
+        private void LoadScene()
         {
-            if (sceneToEdit == null)
-                return;
-
-            isEnteringEditMode = true;
-
             Environment.i.platform.cullingController.Stop();
 
             sceneToEditId = sceneToEdit.sceneData.id;
@@ -437,6 +442,15 @@ namespace DCL.Builder
             notificationModel.timer = timer;
             if (HUDController.i.notificationHud != null)
                 HUDController.i.notificationHud.ShowNotification(notificationModel);
+        }
+
+        private IEnumerator CheckLandsAccess()
+        {
+            while (true)
+            {
+                UpdateLandsWithAccess();
+                yield return WaitForSecondsCache.Get(BIWSettings.REFRESH_LANDS_WITH_ACCESS_INTERVAL);
+            }
         }
     }
 }

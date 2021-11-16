@@ -48,13 +48,13 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         // Act
-        mainController.TryStartEnterEditMode(scene, "Test");
+        mainController.TryStartFlow(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         // Assert
-        Assert.IsTrue(mainController.isEditingScene);
+        Assert.AreEqual(mainController.currentState, SceneManager.State.SCENE_LOADED );
     }
 
     [Test]
@@ -64,7 +64,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
-        mainController.TryStartEnterEditMode(scene, "Test");
+        mainController.TryStartFlow(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
@@ -73,7 +73,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.ExitEditMode();
 
         // Assert
-        Assert.IsFalse(mainController.isEditingScene);
+        Assert.AreEqual(mainController.currentState, SceneManager.State.IDLE );
     }
 
     [Test]
@@ -110,8 +110,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void RequestCatalog()
     {
         // Arrange
-        mainController.isCatalogRequested = false;
-
+        mainController.currentState = SceneManager.State.LOADING_CATALOG;
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
@@ -121,7 +120,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         resultOkPromise.Resolve(true);
 
         // Assert
-        Assert.IsTrue(mainController.isCatalogRequested);
+        Assert.AreEqual(mainController.currentState, SceneManager.State.CATALOG_LOADED );
     }
 
     [Test]
@@ -206,13 +205,14 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         resultOkPromise.Resolve(true);
 
         // Assert
-        Assert.IsTrue(mainController.catalogAdded);
+        Assert.IsTrue(mainController.catalogLoaded);
     }
 
     [Test]
     public void CheckSceneToEditByShortcut()
     {
         // Arrange
+        mainController.currentState = SceneManager.State.IDLE;
         mainController.sceneToEdit = scene;
         AddSceneToPermissions();
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
@@ -224,7 +224,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         resultOkPromise.Resolve(true);
 
         // Assert
-        Assert.IsTrue(mainController.isEnteringEditMode);
+        Assert.AreNotEqual(mainController.currentState, SceneManager.State.IDLE);
     }
 
     // [Test]
@@ -264,13 +264,13 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     {
         // Arrange
         mainController.sceneToEdit = scene;
-        mainController.isEditingScene = true;
+        mainController.currentState = SceneManager.State.EDITING;
 
         // Act
         mainController.ExitAfterCharacterTeleport(new DCLCharacterPosition());
 
         // Assert
-        Assert.IsFalse(mainController.isEditingScene);
+        Assert.AreEqual(mainController.currentState,  SceneManager.State.IDLE);
     }
 
     private void AddSceneToPermissions()
