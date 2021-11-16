@@ -15,7 +15,6 @@ public class PlayerInfoCardHUDController : IHUD
     private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
     private readonly IFriendsController friendsController;
-    private readonly UserProfileDictionary userProfileCatalog;
     private readonly InputAction_Trigger toggleFriendsTrigger;
     private readonly InputAction_Trigger closeWindowTrigger;
     private readonly InputAction_Trigger toggleWorldChatTrigger;
@@ -26,7 +25,6 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly List<string> loadedWearables = new List<string>();
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
-        UserProfileDictionary userProfileCatalog,
         StringVariable currentPlayerIdData,
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
@@ -34,7 +32,6 @@ public class PlayerInfoCardHUDController : IHUD
         DataStore dataStore)
     {
         this.friendsController = friendsController;
-        this.userProfileCatalog = userProfileCatalog;
         view = PlayerInfoCardHUDView.CreateView();
         view.Initialize(() => OnCloseButtonPressed(),
             ReportPlayer, BlockPlayer, UnblockPlayer,
@@ -129,7 +126,7 @@ public class PlayerInfoCardHUDController : IHUD
 
         currentUserProfile = string.IsNullOrEmpty(current)
             ? null
-            : userProfileCatalog.Get(current);
+            : userProfileBridge.Get(current);
 
         if (currentUserProfile == null)
         {

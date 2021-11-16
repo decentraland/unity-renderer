@@ -12,4 +12,9 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
     {
         UserProfileController.i.AddUserProfileToCatalog(userProfileModel);
     }
+
+    public UserProfile Get(string userId)
+    {
+        return UserProfileController.userProfilesCatalog.Get(userId);
+    }
 }

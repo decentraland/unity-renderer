@@ -14,7 +14,6 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private PlayerInfoCardHUDController controller;
     private UserProfile viewingUserProfile;
     private DataStore dataStore;
-    private UserProfileDictionary userProfileCatalog;
     private IWearableCatalogBridge wearableCatalogBridge;
     private WearableItem[] wearables;
     private FriendsController_Mock friendsController;
@@ -25,17 +24,15 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
-        userProfileCatalog = ScriptableObject.CreateInstance<UserProfileDictionary>();
         viewingUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         WhenViewingUserUpdates();
-
-        userProfileCatalog.Add(USER_ID, viewingUserProfile);
 
         var currentPlayerIdData = ScriptableObject.CreateInstance<StringVariable>();
         currentPlayerIdData.Set(USER_ID);
 
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         userProfileBridge.GetOwn().Returns(GivenMyOwnUserProfile());
+        userProfileBridge.Get(USER_ID).Returns(viewingUserProfile);
 
         GivenWearableCatalog();
 
@@ -46,7 +43,6 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         friendsController = new FriendsController_Mock();
 
         controller = new PlayerInfoCardHUDController(friendsController,
-            userProfileCatalog,
             currentPlayerIdData,
             userProfileBridge,
             wearableCatalogBridge,
@@ -77,15 +73,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void ReactToCurrentPlayerNameChanges()
     {
-        UserProfile userProfile;
-        using (var iterator = userProfileCatalog.GetEnumerator())
-        {
-            iterator.MoveNext();
-            userProfile = iterator.Current.Value;
-        }
-
-        controller.currentPlayerId.Set(userProfile.userId);
-        Assert.AreEqual(controller.currentUserProfile, userProfile);
+        controller.currentPlayerId.Set(USER_ID);
+        Assert.AreEqual(controller.currentUserProfile, viewingUserProfile);
     }
 
     [Test]
