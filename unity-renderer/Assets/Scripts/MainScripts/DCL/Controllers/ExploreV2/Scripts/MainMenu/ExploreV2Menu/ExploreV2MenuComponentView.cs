@@ -52,7 +52,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal RealmViewerComponentView realmViewer;
     [SerializeField] internal ButtonComponentView closeMenuButton;
     [SerializeField] internal InputAction_Trigger closeAction;
-    [SerializeField] internal Button backgroundButton;
 
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
@@ -82,7 +81,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
-        backgroundButton.onClick.RemoveAllListeners();
         closeAction.OnTriggered -= OnCloseActionTriggered;
     }
 
@@ -117,7 +115,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     internal void ConfigureCloseButton()
     {
         closeMenuButton.onClick.AddListener(CloseMenu);
-        backgroundButton.onClick.AddListener(CloseMenu);
         closeAction.OnTriggered += OnCloseActionTriggered;
     }
 

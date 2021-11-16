@@ -41,7 +41,6 @@ public class ExploreV2MenuComponentViewTests
     [TestCase(3)]
     [TestCase(4)]
     [TestCase(5)]
-    [TestCase(6)]
     public void CreateSectionSelectorMappingsCorrectly(int sectionIndex)
     {
         // Arrange
@@ -68,7 +67,6 @@ public class ExploreV2MenuComponentViewTests
     [TestCase(3)]
     [TestCase(4)]
     [TestCase(5)]
-    [TestCase(6)]
     public void RemoveSectionSelectorMappingsCorrectly(int sectionIndex)
     {
         // Arrange
