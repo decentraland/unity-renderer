@@ -15,6 +15,7 @@ public class RegexProfanityFilter
 
     public string Filter(string message)
     {
+        if (string.IsNullOrEmpty(message)) return message;
         return regex.Replace(message,
             match => new StringBuilder().Append('*', match.Value.Length).ToString());
     }

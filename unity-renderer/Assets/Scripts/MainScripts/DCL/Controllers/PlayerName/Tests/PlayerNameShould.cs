@@ -1,8 +1,6 @@
-using System.Collections;
 using DCL;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class PlayerNameShould : MonoBehaviour
 {
@@ -111,6 +109,14 @@ public class PlayerNameShould : MonoBehaviour
 
         Assert.AreEqual(rotation.eulerAngles, playerName.transform.localEulerAngles);
         Destroy(cameraStub);
+    }
+
+    [TestCase("shitholename", "****holename")]
+    [TestCase("fuckfaceboob", "****face****")]
+    public void ApplyProfanityFilteringToOffensiveNames(string originalName, string displayedName)
+    {
+        playerName.SetName(originalName);
+        Assert.AreEqual(displayedName, playerName.nameText.text);
     }
 
     [TearDown]
