@@ -91,21 +91,19 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (view == null)
             return;
 
-        if (visible != DataStore.i.exploreV2.isOpen.Get())
+        if (visible)
         {
-            if (visible)
-            {
-                Utils.UnlockCursor();
-                AudioScriptableObjects.dialogOpen.Play(true);
-                AudioScriptableObjects.listItemAppear.ResetPitch();
-            }
-            else
-            {
-                AudioScriptableObjects.dialogClose.Play(true);
-            }
-
-            exploreV2Analytics.anyActionExecutedFromLastOpen = false;
+            Utils.UnlockCursor();
+            AudioScriptableObjects.dialogOpen.Play(true);
+            AudioScriptableObjects.listItemAppear.ResetPitch();
         }
+        else
+        {
+            AudioScriptableObjects.dialogClose.Play(true);
+        }
+
+        if (!visible)
+            exploreV2Analytics.anyActionExecutedFromLastOpen = false;
 
         view.SetVisible(visible);
     }

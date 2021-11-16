@@ -2,7 +2,6 @@
 using DCL;
 using UnityEngine;
 
-//TODO rename to EmotesHUDController
 public class EmotesHUDController : IHUD
 {
     internal EmotesHUDView view;
