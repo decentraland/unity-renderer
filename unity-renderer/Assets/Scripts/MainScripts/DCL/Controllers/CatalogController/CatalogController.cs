@@ -179,6 +179,7 @@ public class CatalogController : MonoBehaviour
         {
             promiseResult = new Promise<WearableItem[]>();
 
+            // TODO: find a better solution to avoid executing a request when running tests, mocking the running instance
             if (EnvironmentSettings.RUNNING_TESTS) return promiseResult;
             
             awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
