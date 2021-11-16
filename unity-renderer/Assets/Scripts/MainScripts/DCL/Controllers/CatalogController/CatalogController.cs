@@ -3,6 +3,7 @@ using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using System.Collections.Generic;
+using DCL.Configuration;
 using UnityEngine;
 
 public class CatalogController : MonoBehaviour
@@ -169,7 +170,7 @@ public class CatalogController : MonoBehaviour
 
         return promiseResult;
     }
-
+    
     public static Promise<WearableItem[]> RequestOwnedWearables(string userId)
     {
         Promise<WearableItem[]> promiseResult;
@@ -177,7 +178,10 @@ public class CatalogController : MonoBehaviour
         if (!awaitingWearablesByContextPromises.ContainsKey(OWNED_WEARABLES_CONTEXT))
         {
             promiseResult = new Promise<WearableItem[]>();
-            /*awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
+
+            if (EnvironmentSettings.RUNNING_TESTS) return promiseResult;
+            
+            awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
 
             if (!pendingWearablesByContextRequestedTimes.ContainsKey(OWNED_WEARABLES_CONTEXT))
                 pendingWearablesByContextRequestedTimes.Add(OWNED_WEARABLES_CONTEXT, Time.realtimeSinceStartup);
@@ -187,7 +191,7 @@ public class CatalogController : MonoBehaviour
                 wearableIds: null,
                 collectionIds: null,
                 context: OWNED_WEARABLES_CONTEXT
-            );*/
+            );
         }
         else
         {
