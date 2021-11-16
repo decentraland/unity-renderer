@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DCL.Helpers;
 
-public class CatalogControllerBridge : IWearableCatalogBridge
+public class WearablesCatalogControllerBridge : IWearableCatalogBridge
 {
     public Promise<WearableItem[]> RequestOwnedWearables(string userId)
     {

@@ -39,7 +39,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new PlayerInfoCardHUDController(FriendsController.i,
                     Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
                     new UserProfileWebInterfaceBridge(),
-                    new CatalogControllerBridge(),
+                    new WearablesCatalogControllerBridge(),
                     ProfanityFilterSharedInstances.regexFilter,
                     DataStore.i);
                 break;

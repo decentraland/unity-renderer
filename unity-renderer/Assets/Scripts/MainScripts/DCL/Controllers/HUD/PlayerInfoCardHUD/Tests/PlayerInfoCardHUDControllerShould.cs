@@ -48,6 +48,10 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             wearableCatalogBridge,
             profanityFilter,
             dataStore);
+        
+        // flaky test
+        new WearablesCatalogControllerBridge().RequestOwnedWearables(
+            Resources.Load<StringVariable>("CurrentPlayerInfoCardId"));
     }
 
     protected override IEnumerator TearDown()
