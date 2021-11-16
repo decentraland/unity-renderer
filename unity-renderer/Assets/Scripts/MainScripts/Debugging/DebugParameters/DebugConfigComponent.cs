@@ -68,7 +68,7 @@ namespace DCL
         [Header("Skybox Settings")]
         public bool useProceduralSkybox;
         public string configToLoad = "Generic Skybox";
-        public float minutesPerSecond = 60.0f;
+        public float lifecycleDuration = 1;
         public bool pauseTime;
         public bool jumpTime;
         public float jumpToTime;
@@ -205,14 +205,14 @@ namespace DCL
         {
             useProceduralSkybox = DataStore.i.skyboxConfig.useProceduralSkybox.Get();
             configToLoad = DataStore.i.skyboxConfig.configToLoad.Get();
-            minutesPerSecond = DataStore.i.skyboxConfig.minutesPerSecond.Get();
+            lifecycleDuration = DataStore.i.skyboxConfig.lifecycleDuration.Get();
         }
 
         private void ApplySkyboxConfig()
         {
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(useProceduralSkybox);
             DataStore.i.skyboxConfig.configToLoad.Set(configToLoad);
-            DataStore.i.skyboxConfig.minutesPerSecond.Set(minutesPerSecond);
+            DataStore.i.skyboxConfig.lifecycleDuration.Set(lifecycleDuration);
             DataStore.i.skyboxConfig.pauseTime.Set(pauseTime);
             if (jumpTime)
             {

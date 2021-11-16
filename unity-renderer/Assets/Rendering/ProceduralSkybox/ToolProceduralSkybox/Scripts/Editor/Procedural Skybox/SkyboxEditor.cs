@@ -17,6 +17,8 @@ namespace DCL.Skybox
 
         public bool isPaused;
         public float timeOfTheDay;
+        public float lifecycleDuration;
+
         private Material selectedMat;
         private Vector2 panelScrollPos;
         private Light directionalLight;
@@ -159,7 +161,8 @@ namespace DCL.Skybox
                 return;
             }
 
-            timeOfTheDay += Time.deltaTime;
+            float timeNormalizationFactor = lifecycleDuration * 60 / 24;
+            timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, 24);
 
             ApplyOnMaterial();
@@ -342,14 +345,18 @@ namespace DCL.Skybox
 
             GUILayout.BeginHorizontal(GUILayout.Width(400));
             EditorGUILayout.LabelField("Time : " + timeOfTheDay.ToString("f2"), EditorStyles.label, GUILayout.Width(70));
-            GUILayout.FlexibleSpace();
 
+            EditorGUILayout.Space(20);
+
+            EditorGUILayout.BeginVertical();
             timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.Width(150));
-
-            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("cycle (minutes)", GUILayout.Width(95));
+            lifecycleDuration = EditorGUILayout.FloatField(lifecycleDuration, GUILayout.Width(50));
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
 
             EditorGUILayout.LabelField((GetNormalizedDayTime() * 100).ToString("f2") + "%", GUILayout.MaxWidth(50));
-            GUILayout.FlexibleSpace();
 
             if (isPaused)
             {
@@ -527,10 +534,13 @@ namespace DCL.Skybox
                 // Render layers in slots
                 if (selectedConfiguration.slots[i].expandedInEditor)
                 {
-                    EditorGUI.indentLevel++;
                     EditorGUILayout.Separator();
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space(10);
+                    EditorGUILayout.BeginVertical("box");
                     RenderTextureLayers(selectedConfiguration.slots[i]);
-                    EditorGUI.indentLevel--;
+                    EditorGUILayout.EndVertical();
+                    EditorGUILayout.EndHorizontal();
                 }
 
                 EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);

@@ -18,7 +18,7 @@ namespace DCL.Skybox
         public string loadedConfig;
         //Time for one complete circle. In Hours. default 24
         public float cycleTime = 24;
-        public float minutesPerSecond = 60;
+        public float lifecycleDuration = 1;
 
         private float timeOfTheDay;                            // (Nishant.K) Time will be provided from outside, So remove this variable
         private Light directionalLight;
@@ -66,7 +66,7 @@ namespace DCL.Skybox
             // set skyboxConfig to true
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
             DataStore.i.skyboxConfig.configToLoad.Set(current.proceduralSkyboxConfig.configToLoad);
-            DataStore.i.skyboxConfig.minutesPerSecond.Set(current.proceduralSkyboxConfig.minutesPerSecond);
+            DataStore.i.skyboxConfig.lifecycleDuration.Set(current.proceduralSkyboxConfig.lifecycleDuration);
 
             // Call update on skybox config which will call Update config in this class.
             DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
@@ -87,7 +87,7 @@ namespace DCL.Skybox
             }
 
             // Apply time
-            minutesPerSecond = DataStore.i.skyboxConfig.minutesPerSecond.Get();
+            lifecycleDuration = DataStore.i.skyboxConfig.lifecycleDuration.Get();
 
             // if Paused
             if (DataStore.i.skyboxConfig.pauseTime.Get())
@@ -139,11 +139,13 @@ namespace DCL.Skybox
             }
 
             // Calculate time factor
-            if (minutesPerSecond <= 0)
+            if (lifecycleDuration <= 0)
             {
-                minutesPerSecond = 0.01f;
+                lifecycleDuration = 0.01f;
             }
-            timeNormalizationFactor = 60 / minutesPerSecond;
+
+            // Convert minutes in seconds and then normalize with cycle time
+            timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
 
             return true;
         }
