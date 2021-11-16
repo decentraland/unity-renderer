@@ -20,7 +20,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         {
             yield return base.SetUp();
             contentProvider = new ContentProvider();
-            GLTFThrottlingHelper.budgetPerFrameInMilliseconds = float.MaxValue;
+            GLTFThrottlingCounter.i.budgetPerFrameInMilliseconds = float.MaxValue;
         }
 
         protected override AssetPromise_GLTF CreatePromise()

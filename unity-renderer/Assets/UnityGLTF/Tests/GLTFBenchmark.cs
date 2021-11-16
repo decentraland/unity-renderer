@@ -15,7 +15,7 @@ public class GLTFBenchmark : MonoBehaviour
     private IEnumerator Start()
     {
         GLTFSceneImporter.PROFILING_ENABLED = true;
-        GLTFThrottlingHelper.budgetPerFrameInMilliseconds = float.MaxValue;
+        GLTFThrottlingCounter.i.budgetPerFrameInMilliseconds = float.MaxValue;
         GLTFSceneImporter.OnPerformanceFinish += OnPerformanceFinish;
         yield return new WaitForSeconds(1.0f);
         RunTest();

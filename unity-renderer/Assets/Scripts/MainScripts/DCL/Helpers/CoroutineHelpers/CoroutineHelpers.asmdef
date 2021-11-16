@@ -1,14 +1,16 @@
 {
-    "name": "CoroutineHelpers",
-    "references": [
-        "GUID:1dd0780aa6be12b428c8005d0bee46b8"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
+  "name": "CoroutineHelpers",
+  "rootNamespace": "",
+  "references": [
+    "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+    "GUID:442475ca22441254d94d13faf49e36ee"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

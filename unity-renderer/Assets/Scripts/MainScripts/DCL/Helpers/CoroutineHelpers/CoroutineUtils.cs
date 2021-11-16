@@ -24,7 +24,7 @@ namespace DCL
             this MonoBehaviour monoBehaviour,
             IEnumerator enumerator,
             Action<Exception> onFinish,
-            Func<float, bool> timeBudgetCounter
+            Func<double, bool> timeBudgetCounter
         )
         {
             return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, onFinish, timeBudgetCounter));
@@ -60,9 +60,10 @@ namespace DCL
         public static IEnumerator RunThrowingIterator(
             IEnumerator enumerator,
             Action<Exception> done,
-            Func<float, bool> timeBudgetCounter
+            Func<double, bool> timeBudgetCounter
         )
         {
+            float currentTime = Time.realtimeSinceStartup;
             // The enumerator might yield return enumerators, in which case 
             // we need to enumerate those here rather than yield-returning 
             // them. Otherwise, any exceptions thrown by those "inner enumerators"
@@ -72,11 +73,8 @@ namespace DCL
             var stack = new Stack<IEnumerator>();
             stack.Push(enumerator);
 
-
             while (stack.Count > 0)
             {
-                float currentTime = Time.realtimeSinceStartup;
-
                 // any inner enumerator will be at the top of the stack
                 // otherwise the original one
                 var currentEnumerator = stack.Peek();
@@ -105,6 +103,7 @@ namespace DCL
                 }
 
                 float elapsedTime = Time.realtimeSinceStartup - currentTime;
+                currentTime = Time.realtimeSinceStartup;
 
                 // NOTE: SkipFrameIfDepletedTimeBudget object type is used as a special token here and will not
                 // yield unless the time budget is exceeded for this frame.
@@ -120,6 +119,7 @@ namespace DCL
                     if ( timeBudgetCounter( elapsedTime ) )
                     {
                         yield return null;
+                        currentTime = Time.realtimeSinceStartup;
                     }
 
                     continue;
@@ -135,6 +135,11 @@ namespace DCL
                 else
                 {
                     yield return currentYieldedObject;
+                    currentTime = Time.realtimeSinceStartup;
+
+                    // Force reset of time budget if a frame is skipped on purpose
+                    if ( timeBudgetCounter != null )
+                        timeBudgetCounter( double.MaxValue );
                 }
             }
         }
@@ -155,6 +160,7 @@ namespace DCL
             }
         }
     }
+
 
     /// <summary>
     /// When a coroutine is started by using StartThrottledCoroutine, yielding this object

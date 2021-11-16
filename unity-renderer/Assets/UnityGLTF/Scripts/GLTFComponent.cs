@@ -136,7 +136,7 @@ namespace UnityGLTF
             loadingRoutine = this.StartThrottledCoroutine(
                 enumerator: LoadAssetCoroutine(settings),
                 onFinish: OnFail_Internal,
-                timeBudgetCounter: GLTFThrottlingHelper.EvaluateTimeBudget);
+                timeBudgetCounter: GLTFThrottlingCounter.i.EvaluateTimeBudget);
         }
 
         void ApplySettings(Settings settings)
