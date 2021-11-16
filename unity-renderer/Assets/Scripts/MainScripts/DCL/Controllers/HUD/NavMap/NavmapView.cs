@@ -8,25 +8,22 @@ namespace DCL
 {
     public class NavmapView : MonoBehaviour
     {
-        [Header("References")] [SerializeField]
-        InputAction_Trigger toggleNavMapAction;
-
+        [Header("References")]
         [SerializeField] Button closeButton;
+        [SerializeField] InputAction_Trigger closeAction;
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapToastView toastView;
 
-        InputAction_Trigger.Triggered toggleNavMapDelegate;
         InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
         Transform mapRendererMinimapParent;
         Vector3 atlasOriginalPosition;
         MinimapMetadata mapMetadata;
-        bool cursorLockedBeforeOpening = true;
 
-        public static bool isOpen { private set; get; } = false;
+        public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         public static event System.Action<bool> OnToggle;
 
         void Start()
@@ -35,34 +32,30 @@ namespace DCL
 
             closeButton.onClick.AddListener(() =>
             {
-                ToggleNavMap();
+                navmapVisible.Set(false);
                 Utils.UnlockCursor();
             });
             scrollRect.onValueChanged.AddListener((x) =>
             {
-                if (!isOpen)
+                if (!navmapVisible.Get())
                     return;
 
                 MapRenderer.i.atlas.UpdateCulling();
                 toastView.OnCloseClick();
             });
 
-            toggleNavMapDelegate = (x) =>
-            {
-                if (!Input.GetKeyDown(KeyCode.Escape) || isOpen)
-                    ToggleNavMap();
-            };
-
-            toggleNavMapAction.OnTriggered += toggleNavMapDelegate;
-            toastView.OnGotoClicked += () => ToggleNavMap(true);
+            toastView.OnGotoClicked += () => navmapVisible.Set(false);
 
             MapRenderer.OnParcelClicked += TriggerToast;
             MapRenderer.OnParcelHold += TriggerToast;
             MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
+            closeAction.OnTriggered += OnCloseAction;
+            navmapVisible.OnChange += OnNavmapVisibleChanged;
 
             Initialize();
         }
+        private void OnNavmapVisibleChanged(bool current, bool previous) { SetVisible(current); }
 
         public void Initialize()
         {
@@ -75,24 +68,23 @@ namespace DCL
             MapRenderer.OnParcelClicked -= TriggerToast;
             MapRenderer.OnParcelHold -= TriggerToast;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
+            navmapVisible.OnChange -= OnNavmapVisibleChanged;
+            closeAction.OnTriggered += OnCloseAction;
         }
 
-        internal void ToggleNavMap(bool ignoreCursorLock = false)
+        internal void SetVisible(bool visible)
         {
             if (MapRenderer.i == null)
                 return;
 
             scrollRect.StopMovement();
 
-            isOpen = !isOpen;
-            scrollRect.gameObject.SetActive(isOpen);
-            MapRenderer.i.parcelHighlightEnabled = isOpen;
+            scrollRect.gameObject.SetActive(visible);
+            MapRenderer.i.parcelHighlightEnabled = visible;
 
-            if (isOpen)
+            if (visible)
             {
-                cursorLockedBeforeOpening = Utils.isCursorLocked;
-                if (!ignoreCursorLock && cursorLockedBeforeOpening)
-                    Utils.UnlockCursor();
+                Utils.UnlockCursor();
 
                 minimapViewport = MapRenderer.i.atlas.viewport;
                 mapRendererMinimapParent = MapRenderer.i.transform.parent;
@@ -119,8 +111,7 @@ namespace DCL
             }
             else
             {
-                if (!ignoreCursorLock && cursorLockedBeforeOpening)
-                    Utils.LockCursor();
+                Utils.LockCursor();
 
                 toastView.OnCloseClick();
 
@@ -142,9 +133,10 @@ namespace DCL
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
             }
 
-            OnToggle?.Invoke(isOpen);
+            OnToggle?.Invoke(visible);
         }
 
+        private void OnCloseAction(DCLAction_Trigger action) { navmapVisible.Set(false); }
         void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
         {
             const string format = "{0},{1}";

@@ -12,16 +12,11 @@ namespace DCL.Huds.QuestsPanel
         internal IQuestsController questsController;
         private static BaseDictionary<string, QuestModel> quests => DataStore.i.Quests.quests;
 
-        internal InputAction_Trigger toggleQuestsPanel;
-
         public void Initialize(IQuestsController newQuestsController)
         {
             questsController = newQuestsController;
             view = CreateView();
             SetViewActive(false);
-
-            toggleQuestsPanel = Resources.Load<InputAction_Trigger>("ToggleQuestsPanelHud");
-            toggleQuestsPanel.OnTriggered += OnToggleActionTriggered;
 
             questsController.OnQuestUpdated += OnQuestUpdated;
             quests.OnAdded += OnQuestAdded;
@@ -35,13 +30,6 @@ namespace DCL.Huds.QuestsPanel
         }
 
         private void OnQuestPanelVisibleChanged(bool current, bool previous) { SetViewActive(current); }
-
-        private void OnToggleActionTriggered(DCLAction_Trigger action)
-        {
-            bool value = !DataStore.i.HUDs.questsPanelVisible.Get();
-            QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "input_action");
-            SetVisibility(value);
-        }
 
         private void OnQuestUpdated(string questId, bool hasProgress)
         {
@@ -72,7 +60,9 @@ namespace DCL.Huds.QuestsPanel
             }
         }
 
-        public void SetVisibility(bool visible)
+        public void SetVisibility(bool visible) { DataStore.i.HUDs.questsPanelVisible.Set(visible); }
+
+        private void SetViewActive(bool visible)
         {
             if ( CommonScriptableObjects.rendererState.Get() )
             {
@@ -81,18 +71,14 @@ namespace DCL.Huds.QuestsPanel
                 else
                     Utils.LockCursor();
             }
-
-            DataStore.i.HUDs.questsPanelVisible.Set(visible);
+            view?.SetVisibility(visible);
         }
-
-        private void SetViewActive(bool visible) { view?.SetVisibility(visible); }
 
         internal virtual IQuestsPanelHUDView CreateView() => QuestsPanelHUDView.Create();
 
         public void Dispose()
         {
             view.Dispose();
-            toggleQuestsPanel.OnTriggered -= OnToggleActionTriggered;
             if (questsController != null)
                 questsController.OnQuestUpdated -= OnQuestUpdated;
             quests.OnAdded -= OnQuestAdded;
