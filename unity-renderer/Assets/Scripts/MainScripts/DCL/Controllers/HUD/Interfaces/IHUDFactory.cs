@@ -8,7 +8,10 @@ public enum HUDElementID
     NOTIFICATION = 3,
     AVATAR_EDITOR = 4,
     SETTINGS_PANEL = 5,
+
+    [Obsolete("Deprecated HUD Element, replaced by EMOTES")]
     EXPRESSIONS = 6,
+
     PLAYER_INFO_CARD = 7,
     AIRDROPPING = 8,
     TERMS_OF_SERVICE = 9,
@@ -45,7 +48,9 @@ public enum HUDElementID
     [Obsolete("Deprecated HUD Element")]
     AVATAR_NAMES = 31,
 
-    COUNT = 32
+    EMOTES = 32,
+
+    COUNT = 33
 }
 
 public interface IHUDFactory

@@ -44,19 +44,6 @@ namespace Tests.QuestsPanelHUD
         }
 
         [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ToggleViewVisibilityWhenActionPerformedForInitialState(bool initialState)
-        {
-            hudView.Configure().isVisible.Returns(initialState);
-
-            hudController.Initialize(questsController);
-            hudController.toggleQuestsPanel.RaiseOnTriggered();
-
-            hudView.Received().SetVisibility(!initialState);
-        }
-
-        [Test]
         public void CallViewWhenQuestProgressed()
         {
             hudController.Initialize(questsController);

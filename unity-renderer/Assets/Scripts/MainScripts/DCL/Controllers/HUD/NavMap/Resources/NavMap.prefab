@@ -3048,8 +3048,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41c277d3ff1164a5fb894b76c718d96a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleNavMapAction: {fileID: 11400000, guid: fc656e28ef52546e6a82e7ae7f5570b5, type: 2}
   closeButton: {fileID: 6221079439394858850}
+  closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   scrollRect: {fileID: 3015429049257244579}
   scrollRectContentTransform: {fileID: 4562892339457273614}
   currentSceneNameText: {fileID: 2734279282512924330}
@@ -3521,7 +3521,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3391553934498204799}
   m_HandleRect: {fileID: 8263587515024556417}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
