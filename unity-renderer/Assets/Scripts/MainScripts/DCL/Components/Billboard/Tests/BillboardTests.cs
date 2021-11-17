@@ -56,7 +56,7 @@ namespace Tests
                 z = true
             };
 
-            yield return TestHelpers.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
+            yield return TestUtils.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
 
             lookAt = GetLookAtVector(billboardModel, entityTransform);
             Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
@@ -68,7 +68,7 @@ namespace Tests
                 z = false
             };
 
-            yield return TestHelpers.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
+            yield return TestUtils.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
 
             lookAt = GetLookAtVector(billboardModel, entityTransform);
             Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
@@ -95,7 +95,7 @@ namespace Tests
 
             var billboardModel = new Billboard.Model();
 
-            yield return TestHelpers.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
+            yield return TestUtils.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
 
             lookAt = GetLookAtVector(billboardModel, entityTransform);
             Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
@@ -114,8 +114,8 @@ namespace Tests
 
         IEnumerator CreateComponent(bool x, bool y, bool z)
         {
-            var entity = TestHelpers.CreateSceneEntity(scene, entityId);
-            TestHelpers.SetEntityTransform(scene, entity, Vector3.one, Quaternion.identity, Vector3.one);
+            var entity = TestUtils.CreateSceneEntity(scene, entityId);
+            TestUtils.SetEntityTransform(scene, entity, Vector3.one, Quaternion.identity, Vector3.one);
             yield return null;
 
             var billboardModel = new Billboard.Model()
@@ -126,7 +126,7 @@ namespace Tests
             };
 
             billboard =
-                TestHelpers.EntityComponentCreate<Billboard, Billboard.Model>(scene, scene.entities[entityId],
+                TestUtils.EntityComponentCreate<Billboard, Billboard.Model>(scene, scene.entities[entityId],
                     billboardModel);
 
             Assert.IsTrue(billboard != null, "Component creation fail!");

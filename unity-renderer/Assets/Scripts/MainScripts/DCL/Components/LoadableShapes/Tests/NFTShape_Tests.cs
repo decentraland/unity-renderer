@@ -44,7 +44,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     public IEnumerator ShapeUpdate()
     {
         string entityId = "1";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
 
         var entity = scene.entities[entityId];
         Assert.IsTrue(entity.meshRootGameObject == null, "entity mesh object should be null as the NFTShape hasn't been initialized yet");
@@ -54,10 +54,10 @@ public class NFTShape_Tests : IntegrationTestSuite
             src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
         };
 
-        NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
+        NFTShape component = TestUtils.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
         yield return component.routine;
 
-        TestHelpers.SharedComponentAttach(component, entity);
+        TestUtils.SharedComponentAttach(component, entity);
 
         Assert.IsTrue(entity.meshRootGameObject != null, "entity mesh object should already exist as the NFTShape already initialized");
 
@@ -69,7 +69,7 @@ public class NFTShape_Tests : IntegrationTestSuite
 
         // Update color and check if it changed
         componentModel.color = Color.yellow;
-        yield return TestHelpers.SharedComponentUpdate(component, componentModel);
+        yield return TestUtils.SharedComponentUpdate(component, componentModel);
 
         Assert.AreEqual(Color.yellow, backgroundMaterial.GetColor("_BaseColor"), "The NFT frame background color should be yellow");
     }
@@ -77,12 +77,12 @@ public class NFTShape_Tests : IntegrationTestSuite
     [UnityTest]
     public IEnumerator MissingValuesGetDefaultedOnUpdate()
     {
-        var component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE);
+        var component = TestUtils.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE);
         yield return component.routine;
 
         Assert.IsFalse(component == null);
 
-        yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<NFTShape.Model, NFTShape>(scene, CLASS_ID.NFT_SHAPE);
+        yield return TestUtils.TestSharedComponentDefaultsOnUpdate<NFTShape.Model, NFTShape>(scene, CLASS_ID.NFT_SHAPE);
     }
 
     [UnityTest]
@@ -91,7 +91,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     public IEnumerator CollisionProperty()
     {
         string entityId = "entityId";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
 
@@ -99,15 +99,15 @@ public class NFTShape_Tests : IntegrationTestSuite
         var shapeModel = new LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model();
         shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
 
-        var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
+        var shapeComponent = TestUtils.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
         var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
         yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
-        yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
     }
 
     [UnityTest]
@@ -116,7 +116,7 @@ public class NFTShape_Tests : IntegrationTestSuite
     public IEnumerator VisibleProperty()
     {
         string entityId = "entityId";
-        TestHelpers.CreateSceneEntity(scene, entityId);
+        TestUtils.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
         yield return null;
 
@@ -124,14 +124,14 @@ public class NFTShape_Tests : IntegrationTestSuite
         var shapeModel = new LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model();
         shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
 
-        var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
+        var shapeComponent = TestUtils.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
         yield return shapeComponent.routine;
 
-        TestHelpers.SharedComponentAttach(shapeComponent, entity);
+        TestUtils.SharedComponentAttach(shapeComponent, entity);
 
         var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
         yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
-        yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
     }
 }

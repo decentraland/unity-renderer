@@ -12,7 +12,7 @@ public class BoxShapeShould : IntegrationTestSuite_Legacy
     public IEnumerator BeUpdatedCorrectly()
     {
         string entityId = "3";
-        TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Box Instance", meshName);
@@ -34,7 +34,7 @@ public class BoxShapeShould : IntegrationTestSuite_Legacy
 
         IDCLEntity entity;
 
-        BoxShape box = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+        BoxShape box = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
             scene,
             DCL.Models.CLASS_ID.BOX_SHAPE,
             Vector3.zero,
@@ -56,19 +56,19 @@ public class BoxShapeShould : IntegrationTestSuite_Legacy
     public IEnumerator DefaultMissingValuesOnUpdate()
     {
         var component =
-            TestHelpers.SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE);
+            TestUtils.SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE);
         yield return component.routine;
 
         Assert.IsFalse(component == null);
 
-        yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<BoxShape.Model, BoxShape>(scene,
+        yield return TestUtils.TestSharedComponentDefaultsOnUpdate<BoxShape.Model, BoxShape>(scene,
             CLASS_ID.BOX_SHAPE);
     }
 
     [UnityTest]
     public IEnumerator BeReplacedCorrectlyWhenAnotherComponentIsAttached()
     {
-        yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(
+        yield return TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(
             scene, CLASS_ID.BOX_SHAPE);
     }
 }

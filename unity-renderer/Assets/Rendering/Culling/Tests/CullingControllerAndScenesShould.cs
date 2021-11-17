@@ -32,7 +32,7 @@ namespace CullingControllerTests
         [UnityTest]
         public IEnumerator CullMovingEntities()
         {
-            var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.one * 1000, true);
+            var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.one * 1000, true);
             var entity = boxShape.attachedEntities.First();
 
             Assert.IsTrue(Environment.i.platform.cullingController.IsDirty(), "culling controller not dirty");
@@ -45,7 +45,7 @@ namespace CullingControllerTests
 
             Assert.IsTrue(entity.meshesInfo.renderers[0].forceRenderingOff, "renderer wasn't hidden!");
 
-            TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+            TestUtils.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
 
             yield return
                 new DCL.WaitUntil(() => !entity.meshesInfo.renderers[0].forceRenderingOff, 0.3f);
@@ -56,7 +56,7 @@ namespace CullingControllerTests
         [UnityTest]
         public IEnumerator TogglingOnAndOffSetRenderersCorrectly()
         {
-            var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.one * 1000, true);
+            var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.one * 1000, true);
             var entity = boxShape.attachedEntities.First();
 
             Assert.IsTrue(Environment.i.platform.cullingController.IsDirty(), "culling controller not dirty");
@@ -69,7 +69,7 @@ namespace CullingControllerTests
 
             Assert.IsTrue(entity.meshesInfo.renderers[0].forceRenderingOff, "renderer wasn't hidden!");
 
-            TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+            TestUtils.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
 
             var settings = Environment.i.platform.cullingController.GetSettingsCopy();
             settings.enableObjectCulling = false;
@@ -84,7 +84,7 @@ namespace CullingControllerTests
         [UnityTest]
         public IEnumerator StartStopCullingWithDisabledObjectsCorrectly()
         {
-            var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.one * 1000, true);
+            var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.one * 1000, true);
             var entity = boxShape.attachedEntities.First();
 
             Assert.IsTrue(Environment.i.platform.cullingController.IsDirty(), "culling controller not dirty");
@@ -101,7 +101,7 @@ namespace CullingControllerTests
             yield return null;
 
             Environment.i.platform.cullingController.Stop();
-            TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+            TestUtils.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
 
             yield return
                 new DCL.WaitUntil(() => !entity.meshesInfo.renderers[0].forceRenderingOff, 0.3f);

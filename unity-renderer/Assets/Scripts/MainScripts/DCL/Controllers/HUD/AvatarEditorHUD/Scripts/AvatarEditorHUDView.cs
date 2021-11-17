@@ -33,9 +33,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     }
 
     [SerializeField]
-    internal InputAction_Trigger toggleAction;
-
-    [SerializeField]
     internal InputAction_Trigger closeAction;
 
     [SerializeField]
@@ -106,12 +103,10 @@ public class AvatarEditorHUDView : MonoBehaviour
     public event System.Action<AvatarModel> OnAvatarAppear;
     public event System.Action<bool> OnSetVisibility;
     public event System.Action OnRandomize;
-    public event System.Action OnToggleActionTriggered;
     public event System.Action OnCloseActionTriggered;
 
     private void Awake()
     {
-        toggleAction.OnTriggered += ToggleAction_OnTriggered;
         closeAction.OnTriggered += CloseAction_OnTriggered;
         loadingSpinnerGameObject.SetActive(false);
         doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
@@ -124,13 +119,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         isOpen = false;
     }
 
-    private void OnDestroy()
-    {
-        toggleAction.OnTriggered -= ToggleAction_OnTriggered;
-        closeAction.OnTriggered -= CloseAction_OnTriggered;
-    }
-
-    private void ToggleAction_OnTriggered(DCLAction_Trigger action) { OnToggleActionTriggered?.Invoke(); }
+    private void OnDestroy() { closeAction.OnTriggered -= CloseAction_OnTriggered; }
 
     private void CloseAction_OnTriggered(DCLAction_Trigger action) { OnCloseActionTriggered?.Invoke(); }
 

@@ -16,14 +16,14 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             UIContainerRect uiContainerRectShape =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT);
 
             yield return uiContainerRectShape.routine;
@@ -81,13 +81,13 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             UIContainerRect uiContainerRectShape =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainerRectShape.routine;
 
@@ -104,7 +104,7 @@ namespace Tests
 
             // Create 2nd UIContainerRectShape
             UIContainerRect uiContainerRectShape2 =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainerRectShape2.routine;
 
@@ -127,31 +127,31 @@ namespace Tests
         {
             //// Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIContainerRect.Model, UIContainerRect>(scene,
+            yield return TestUtils.TestSharedComponentDefaultsOnUpdate<UIContainerRect.Model, UIContainerRect>(scene,
                 CLASS_ID.UI_CONTAINER_RECT);
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT); }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestUtils.TestUIElementAddedCorrectlyOnInvisibleParent<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT); }
 
         [UnityTest]
         public IEnumerator TestNormalizedSize()
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             UIContainerRect uiContainerRectShape =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainerRectShape.routine;
 
@@ -181,14 +181,14 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             UIContainerRect uiContainerRectShape =
-                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                     CLASS_ID.UI_CONTAINER_RECT);
 
             yield return uiContainerRectShape.routine;
@@ -215,7 +215,7 @@ namespace Tests
             // Test click events
             bool eventResult = false;
 
-            yield return TestHelpers.TestUIClickEventPropagation(
+            yield return TestUtils.TestUIClickEventPropagation(
                 scene.sceneData.id,
                 uiContainerRectShape.model.onClick,
                 uiContainerRectShape.referencesContainer.childHookRectTransform,

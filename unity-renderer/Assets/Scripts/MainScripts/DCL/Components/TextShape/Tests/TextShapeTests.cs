@@ -16,7 +16,7 @@ namespace Tests
         {
             string entityId = "e1";
 
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            TestUtils.CreateSceneEntity(scene, entityId);
 
             yield return null;
 
@@ -43,7 +43,7 @@ namespace Tests
             };
 
             TextShape textShape =
-                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
+                TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
                     textShapeModel);
 
             yield return textShape.routine;
@@ -63,7 +63,7 @@ namespace Tests
             textShapeModel.value = "Hello world again!";
 
             TextShape textShape2 =
-                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
+                TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
                     textShapeModel);
 
             TMProConsistencyAsserts(tmpro, textShapeModel);
@@ -89,7 +89,7 @@ namespace Tests
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
             string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            TestUtils.CreateSceneEntity(scene, entityId);
 
             // 1. Create component with non-default configs
             TextShape.Model textShapeModel = new TextShape.Model
@@ -102,7 +102,7 @@ namespace Tests
             };
 
             TextShape textShapeComponent =
-                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
+                TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
                     textShapeModel);
 
             yield return textShapeComponent.routine;
@@ -134,8 +134,8 @@ namespace Tests
         [TestCase(1, ExpectedResult = null)]
         public IEnumerator OpacityIsProcessedCorrectly(float opacity)
         {
-            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = opacity });
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
+            TextShape textShapeComponent = TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = opacity });
 
             yield return textShapeComponent.routine;
 
@@ -149,8 +149,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator VisibleTrueIsProcessedCorrectly()
         {
-            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = true });
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
+            TextShape textShapeComponent = TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = true });
 
             yield return textShapeComponent.routine;
 
@@ -165,8 +165,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator VisibleFalseIsProcessedCorrectly()
         {
-            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = false });
+            IDCLEntity entity = TestUtils.CreateSceneEntity(scene);
+            TextShape textShapeComponent = TestUtils.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = false });
 
             yield return textShapeComponent.routine;
 

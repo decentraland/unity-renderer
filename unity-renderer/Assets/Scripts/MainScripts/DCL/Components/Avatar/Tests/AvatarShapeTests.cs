@@ -12,7 +12,6 @@ namespace Tests
 {
     public class AvatarShapeTests : IntegrationTestSuite_Legacy
     {
-
         void AssertMaterialsAreCorrect(Transform root)
         {
             Renderer[] renderers = root.GetComponentsInChildren<Renderer>();
@@ -47,7 +46,7 @@ namespace Tests
 
             GameObject goEntity = avatar.entity.gameObject;
 
-            TestHelpers.RemoveSceneEntity(scene, avatar.entity);
+            TestUtils.RemoveSceneEntity(scene, avatar.entity);
 
             yield return null;
 
@@ -72,7 +71,7 @@ namespace Tests
             // Update position to the other end of the parcel
             var transformModel = new DCLTransform.Model { position = new Vector3(15, 2, 15) };
 
-            TestHelpers.SetEntityTransform(scene, avatar.entity, transformModel);
+            TestUtils.SetEntityTransform(scene, avatar.entity, transformModel);
 
             yield return null;
 

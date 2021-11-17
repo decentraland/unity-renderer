@@ -80,11 +80,11 @@ namespace Tests
         public IEnumerator CharacterIsNotParentedOnWorldReposition()
         {
             // We use a shape that represents a static ground and has collisions
-            TestHelpers.InstantiateEntityWithShape(scene, "groundShape", DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
+            TestUtils.InstantiateEntityWithShape(scene, "groundShape", DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
             var shapeEntity = scene.entities["groundShape"];
 
             // Reposition ground shape to be on the world-reposition-limit
-            TestHelpers.SetEntityTransform(scene, shapeEntity,
+            TestUtils.SetEntityTransform(scene, shapeEntity,
                 new DCLTransform.Model
                 {
                     position = new Vector3(PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE, 1f, PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE),
@@ -160,7 +160,7 @@ namespace Tests
             yield return InitCharacterPosition(originalCharacterPosition);
 
             string platformEntityId = "movingPlatform";
-            TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(2f, 1f, 8f));
+            TestUtils.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(2f, 1f, 8f));
 
             Transform platformTransform = scene.entities[platformEntityId].gameObject.transform;
             platformTransform.localScale = new Vector3(2f, 0.5f, 2f);
@@ -226,7 +226,7 @@ namespace Tests
             yield return InitCharacterPosition(originalCharacterPosition);
 
             string platformEntityId = "rotatingPlatform";
-            TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
+            TestUtils.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
 
             Transform platformTransform = scene.entities[platformEntityId].gameObject.transform;
             platformTransform.localScale = new Vector3(8f, 0.5f, 8f);
@@ -280,7 +280,7 @@ namespace Tests
             UnityEngine.Assertions.Assert.IsTrue(rotationIsExpected, "character is rotated");
 
             // remove platform and check character parent
-            TestHelpers.RemoveSceneEntity(scene, platformEntityId);
+            TestUtils.RemoveSceneEntity(scene, platformEntityId);
             yield return null;
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false as there's no platform anymore");
@@ -295,7 +295,7 @@ namespace Tests
 
             // remove platform and check character parent
             string platformEntityId = "movingPlatform";
-            TestHelpers.RemoveSceneEntity(scene, platformEntityId);
+            TestUtils.RemoveSceneEntity(scene, platformEntityId);
             yield return null;
             yield return null;
             yield return null;
@@ -313,7 +313,7 @@ namespace Tests
             // Disable shape colliders
             string platformEntityId = "movingPlatform";
             var shapeComponent = scene.entities[platformEntityId].GetSharedComponent(typeof(BaseShape));
-            yield return TestHelpers.SharedComponentUpdate(shapeComponent, new BaseShape.Model()
+            yield return TestUtils.SharedComponentUpdate(shapeComponent, new BaseShape.Model()
             {
                 withCollisions = false
             });
@@ -334,7 +334,7 @@ namespace Tests
             // remove shape component
             string platformEntityId = "movingPlatform";
             var shapeComponent = scene.entities[platformEntityId].GetSharedComponent(typeof(BaseShape));
-            TestHelpers.DetachSharedComponent(scene, platformEntityId, shapeComponent.id);
+            TestUtils.DetachSharedComponent(scene, platformEntityId, shapeComponent.id);
 
             yield return null;
             yield return null;

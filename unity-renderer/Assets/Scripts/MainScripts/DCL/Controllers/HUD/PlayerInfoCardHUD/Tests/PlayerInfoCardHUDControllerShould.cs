@@ -4,20 +4,27 @@ using UnityEngine;
 
 public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 {
+    private const string USER_ID = "userId";
     private PlayerInfoCardHUDController controller;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        controller = new PlayerInfoCardHUDController();
-        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel {userId = USER_ID});
+        var userProfile = UserProfileController.userProfilesCatalog.Get(USER_ID);
+        userProfile.UpdateData(new UserProfileModel
         {
-            userId = "userId",
+            userId = USER_ID,
             name = "username",
             description = "description",
             email = "email",
             inventory = new string[] { }
         });
+        Resources.Load<StringVariable>(PlayerInfoCardHUDController.CURRENT_PLAYER_ID)
+            .Set(USER_ID);
+
+        controller = new PlayerInfoCardHUDController();
     }
 
     protected override IEnumerator TearDown()

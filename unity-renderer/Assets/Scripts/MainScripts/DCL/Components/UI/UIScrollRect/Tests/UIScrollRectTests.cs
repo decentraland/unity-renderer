@@ -15,16 +15,16 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             UIScrollRect scrollRect =
-                TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
+                TestUtils.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
             yield return scrollRect.routine;
 
             // Force a new update to pass the first apply
-            yield return TestHelpers.SharedComponentUpdate(scrollRect, new UIScrollRect.Model
+            yield return TestUtils.SharedComponentUpdate(scrollRect, new UIScrollRect.Model
             {
                 name = "newName"
             });
@@ -48,7 +48,7 @@ namespace Tests
             Assert.AreEqual(0, refC.VScrollbar.value);
 
             // Update UIScrollRect properties
-            yield return TestHelpers.SharedComponentUpdate(scrollRect,
+            yield return TestUtils.SharedComponentUpdate(scrollRect,
                 new UIScrollRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -87,22 +87,22 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             UIScrollRect scrRect =
-                TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
+                TestUtils.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
             yield return scrRect.routine;
 
             // Force a new update to pass the first apply
-            yield return TestHelpers.SharedComponentUpdate(scrRect, new UIScrollRect.Model
+            yield return TestUtils.SharedComponentUpdate(scrRect, new UIScrollRect.Model
             {
                 name = "newName"
             });
 
             // Update UIScrollRect properties
-            yield return TestHelpers.SharedComponentUpdate(scrRect,
+            yield return TestUtils.SharedComponentUpdate(scrRect,
                 new UIScrollRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -120,7 +120,7 @@ namespace Tests
             // Test click events
             bool eventResult = false;
 
-            yield return TestHelpers.TestUIClickEventPropagation(
+            yield return TestUtils.TestUIClickEventPropagation(
                 scene.sceneData.id,
                 scrRect.model.onClick,
                 scrRect.referencesContainer.childHookRectTransform,
@@ -140,19 +140,19 @@ namespace Tests
         {
             //// Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScrollRect.Model, UIScrollRect>(scene,
+            yield return TestUtils.TestSharedComponentDefaultsOnUpdate<UIScrollRect.Model, UIScrollRect>(scene,
                 CLASS_ID.UI_SLIDER_SHAPE);
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE); }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestUtils.TestUIElementAddedCorrectlyOnInvisibleParent<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE); }
 
         [UnityTest]
         [Explicit]
@@ -160,19 +160,19 @@ namespace Tests
         {
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
-            UIContainerRect uiContainerRectShape = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+            UIContainerRect uiContainerRectShape = TestUtils.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
                 CLASS_ID.UI_CONTAINER_RECT);
 
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
-            yield return TestHelpers.SharedComponentUpdate(uiContainerRectShape,
+            yield return TestUtils.SharedComponentUpdate(uiContainerRectShape,
                 new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,

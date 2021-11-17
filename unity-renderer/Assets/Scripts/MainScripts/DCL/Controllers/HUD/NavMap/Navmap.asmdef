@@ -1,5 +1,6 @@
 {
     "name": "Navmap",
+    "rootNamespace": "",
     "references": [
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:4973650d2444c4561a15d50f24d91cd9",
@@ -14,7 +15,8 @@
         "GUID:99cea83ca76dcd846abed7e61a8c90bd",
         "GUID:a3ceb534947fac14da25035bc5c24788",
         "GUID:6222da1eb55534a83a993be4f9bb388c",
-        "GUID:d7f1765642f0c22cda30addd0275b5e1"
+        "GUID:d7f1765642f0c22cda30addd0275b5e1",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

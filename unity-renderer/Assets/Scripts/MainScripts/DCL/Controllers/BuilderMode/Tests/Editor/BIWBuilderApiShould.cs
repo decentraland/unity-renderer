@@ -27,7 +27,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     {
         mockedRequestController =  Substitute.For<IWebRequestController>();
         return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks( mockedRequestController
-          );
+        );
     }
 
     [UnitySetUp]
@@ -36,15 +36,15 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         yield return base.SetUp();
         gameObjectToDestroy = new GameObject("TestBuilderApi");
         gameObjectToDestroy.AddComponent<AssetCatalogBridge>();
-        
+
         baseURL = BIWUrlUtils.GetBuilderAPIBaseUrl();
         apiController = new BuilderAPIController();
-        
+
         var context = BIWTestUtils.CreateMockedContext();
         context.sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
         apiController.Initialize(context);
     }
-    
+
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
@@ -58,9 +58,9 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     public void AskHeadersToKernelCorrectly()
     {
         //Arrange
-        RequestHeader header = CreateRequestHeaders("get","Test");
+        RequestHeader header = CreateRequestHeaders("get", "Test");
         RequestHeader receivedHeader = null;
-        
+
         //Act
         var promise = apiController.AskHeadersToKernel("get", "Test");
         promise.Then( request =>
@@ -68,16 +68,16 @@ public class BIWBuilderApiShould : IntegrationTestSuite
             receivedHeader = request;
         });
         apiController.HeadersReceived(header);
-        
+
         //Assert
-        Assert.AreEqual(header,receivedHeader);
+        Assert.AreEqual(header, receivedHeader);
     }
-    
+
     [Test]
     public void GetAllManifestsCorrectly()
     {
         //Arrange
-        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.GET_PROJECTS_ENDPOINT);
+        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET, BuilderAPIController.GET_PROJECTS_ENDPOINT);
 
         List<ProjectData> projectDatas = new List<ProjectData>();
         ProjectData data = new ProjectData();
@@ -89,8 +89,8 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         string jsonData = JsonConvert.SerializeObject(projectDatas);
         apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
         apiController.apiResponseResolver.Configure().GetArrayFromCall<ProjectData>(Arg.Any<string>()).Returns(projectDatas.ToArray());
-        
-        TestHelpers.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
+
+        TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController, 2);
 
         //Act
         var promise = apiController.GetAllManifests();
@@ -98,24 +98,24 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         {
             result = data;
         });
-        
+
         apiController.HeadersReceived(header);
 
         //Assert
-        Assert.AreEqual(projectDatas.Count,result.Count);
+        Assert.AreEqual(projectDatas.Count, result.Count);
     }
-    
+
     [Test]
     public void GetCompleteCatalogCorrectly()
     {
         //Arrange
-        RequestHeader defaultCallheader = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.CATALOG_ENDPOINT);
-        RequestHeader addreesCallheader = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.CATALOG_ENDPOINT);
+        RequestHeader defaultCallheader = CreateRequestHeaders(BuilderAPIController.GET, BuilderAPIController.CATALOG_ENDPOINT);
+        RequestHeader addreesCallheader = CreateRequestHeaders(BuilderAPIController.GET, BuilderAPIController.CATALOG_ENDPOINT);
         bool result = false;
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
         string jsonValue = File.ReadAllText(jsonPath);
-        
-        TestHelpers.ConfigureMockedRequestController(jsonValue, mockedRequestController,2);
+
+        TestUtils.ConfigureMockedRequestController(jsonValue, mockedRequestController, 2);
 
         //Act
         var promise = apiController.GetCompleteCatalog("Test");
@@ -123,27 +123,27 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         {
             result = data;
         });
-        
+
         apiController.HeadersReceived(defaultCallheader);
         apiController.HeadersReceived(addreesCallheader);
 
         //Assert
         Assert.IsTrue(result);
-        Assert.Greater(AssetCatalogBridge.i.sceneObjectCatalog.Count,0);
+        Assert.Greater(AssetCatalogBridge.i.sceneObjectCatalog.Count, 0);
     }
-    
+
     [Test]
     public void GetAssetsCorrectly()
     {
         //Arrange
-        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET,BuilderAPIController.ASSETS_ENDPOINT);
+        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET, BuilderAPIController.ASSETS_ENDPOINT);
 
         bool result = false;
         List<SceneObject> list = new List<SceneObject>();
         list.Add(new SceneObject(){id ="test id"});
         
         string jsonData = JsonConvert.SerializeObject(list);
-        TestHelpers.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
+        TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
         
         apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
         apiController.apiResponseResolver.Configure().GetArrayFromCall<SceneObject>(Arg.Any<string>()).Returns(list.ToArray());
@@ -154,14 +154,14 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         {
             result = data;
         });
-        
+
         apiController.HeadersReceived(header);
 
         //Assert
         Assert.IsTrue(result);
-        Assert.Greater(AssetCatalogBridge.i.sceneObjectCatalog.Count,0);
+        Assert.Greater(AssetCatalogBridge.i.sceneObjectCatalog.Count, 0);
     }
-    
+
     private RequestHeader CreateRequestHeaders(string method, string endpoint)
     {
         RequestHeader header = new RequestHeader();
