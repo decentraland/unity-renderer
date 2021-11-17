@@ -34,7 +34,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     private ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     private EntityPayload entityPayload = new EntityPayload();
     private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
-    private BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
+    internal BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
 
     #region MessagesFromKernel
 

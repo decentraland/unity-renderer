@@ -44,7 +44,7 @@ namespace DCL.Builder
         internal IParcelScene sceneToEdit;
         private BiwSceneMetricsAnalyticsHelper sceneMetricsAnalyticsHelper;
         private InputController inputController;
-        private BuilderInWorldBridge builderInWorldBridge;
+        internal BuilderInWorldBridge builderInWorldBridge;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
         internal ICameraController cameraController;

@@ -36,6 +36,8 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     {
         //Arrange
         mainController.cameraController = Substitute.For<ICameraController>();
+        GameObject dummyGO = new GameObject("DummyGO");
+        mainController.builderInWorldBridge.builderProjectPayload.isNewEmptyProject = true;
         
         //Act
         mainController.OpenNewProjectDetails();
