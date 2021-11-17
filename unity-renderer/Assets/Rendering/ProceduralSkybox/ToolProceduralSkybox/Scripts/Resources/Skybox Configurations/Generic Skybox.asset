@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b94406dff7b8c418ade5811c705270, type: 3}
   m_Name: Generic Skybox
   m_EditorClassIdentifier: 
-  skyboxID: Generic skybox
+  skyboxID: Generic Skybox
   skyColor:
     serializedVersion: 2
     key0: {r: 0.13432328, g: 0, b: 0.2830189, a: 1}
@@ -605,7 +605,7 @@ MonoBehaviour:
   - enabled: 1
     slotID: 2
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
@@ -870,7 +870,7 @@ MonoBehaviour:
     - layerType: 3
       enabled: 1
       nameInEditor: Eyes
-      expandedInEditor: 1
+      expandedInEditor: 0
       timeSpan_start: 10
       timeSpan_End: 24
       fadingInTime: 0
