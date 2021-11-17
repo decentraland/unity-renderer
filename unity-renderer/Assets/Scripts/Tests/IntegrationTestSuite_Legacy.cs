@@ -127,6 +127,8 @@ public class IntegrationTestSuite_Legacy
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();
 
+        CatalogController.Dispose();
+
         yield return testSceneIntegrityChecker?.TestSceneSnapshot();
     }
 
