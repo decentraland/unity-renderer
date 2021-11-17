@@ -49,6 +49,8 @@ namespace DCL
             return monoBehaviour.StartCoroutine(RunThrowingIterator(enumerator, done, null));
         }
 
+        public static Func<float> realtimeSinceStartup => () => Time.realtimeSinceStartup;
+
         /// <summary>
         /// Run an iterator function that might throw an exception. Call the callback with the exception
         /// if it does or null if it finishes without throwing an exception.
@@ -63,7 +65,7 @@ namespace DCL
             Func<double, bool> timeBudgetCounter
         )
         {
-            float currentTime = Time.realtimeSinceStartup;
+            float currentTime = realtimeSinceStartup();
             // The enumerator might yield return enumerators, in which case 
             // we need to enumerate those here rather than yield-returning 
             // them. Otherwise, any exceptions thrown by those "inner enumerators"
@@ -102,8 +104,8 @@ namespace DCL
                     yield break;
                 }
 
-                float elapsedTime = Time.realtimeSinceStartup - currentTime;
-                currentTime = Time.realtimeSinceStartup;
+                float elapsedTime = realtimeSinceStartup() - currentTime;
+                currentTime = realtimeSinceStartup();
 
                 // NOTE: SkipFrameIfDepletedTimeBudget object type is used as a special token here and will not
                 // yield unless the time budget is exceeded for this frame.
@@ -119,7 +121,7 @@ namespace DCL
                     if ( timeBudgetCounter( elapsedTime ) )
                     {
                         yield return null;
-                        currentTime = Time.realtimeSinceStartup;
+                        currentTime = realtimeSinceStartup();
                     }
 
                     continue;
@@ -135,7 +137,7 @@ namespace DCL
                 else
                 {
                     yield return currentYieldedObject;
-                    currentTime = Time.realtimeSinceStartup;
+                    currentTime = realtimeSinceStartup();
 
                     // Force reset of time budget if a frame is skipped on purpose
                     if ( timeBudgetCounter != null )

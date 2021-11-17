@@ -11,7 +11,7 @@
   "overrideReferences": false,
   "precompiledReferences": [],
   "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }
