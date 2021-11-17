@@ -1,9 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
 using DCL.Camera;
 using DCL.Controllers;
+using DCL.Models;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityGLTF;
 
@@ -40,9 +43,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-
+        
         // Act
-        mainController.EnterEditMode(Substitute.For<IParcelScene>());
+        mainController.EnterEditMode(scene);
 
         // Assert
         controller.Received(1).EnterEditMode(scene);
@@ -54,7 +57,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        mainController.EnterEditMode(Substitute.For<IParcelScene>());
+        mainController.EnterEditMode(scene);
 
         // Act
         mainController.ExitEditMode();
@@ -69,7 +72,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        mainController.EnterEditMode(Substitute.For<IParcelScene>());
+        mainController.EnterEditMode(scene);
 
         // Act
         mainController.OnGUI();
@@ -84,7 +87,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        mainController.EnterEditMode(Substitute.For<IParcelScene>());
+        mainController.EnterEditMode(scene);
 
         // Act
         mainController.LateUpdate();
@@ -99,7 +102,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        mainController.EnterEditMode(Substitute.For<IParcelScene>());
+        mainController.EnterEditMode(scene);
 
         // Act
         mainController.Update();
@@ -114,7 +117,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        mainController.EnterEditMode(Substitute.For<IParcelScene>());
+        mainController.EnterEditMode(scene);
 
         // Act
         mainController.Update();

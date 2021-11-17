@@ -6,6 +6,7 @@ using DCL.Builder;
 using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -44,6 +45,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void SetFlagProperlyWhenBuilderInWorldIsEntered()
     {
         // Arrange
+        mainController.sceneToEdit = scene;
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
@@ -61,6 +63,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void SetFlagProperlyWhenBuilderInWorldIsExited()
     {
         // Arrange
+        mainController.sceneToEdit = scene;
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
@@ -199,7 +202,9 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
-
+        mainController.sceneToEdit = Substitute.For<IParcelScene>();
+        mainController.sceneToEdit.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene{id = "Test id"});
+        
         // Act
         mainController.GetCatalog();
         resultOkPromise.Resolve(true);

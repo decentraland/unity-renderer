@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -55,6 +56,7 @@ public class BuilderInWorldShould
         //Arrange
         BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
+        builderInWorld.sceneManager = Substitute.For<ISceneManager>();
         builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
 
         //Act
@@ -70,6 +72,7 @@ public class BuilderInWorldShould
         //Arrange
         BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
+        builderInWorld.sceneManager = Substitute.For<ISceneManager>();
         builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
 
         //Act
@@ -85,6 +88,7 @@ public class BuilderInWorldShould
         //Arrange
         BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
         builderInWorld.editor = Substitute.For<IBIWEditor>();
+        builderInWorld.sceneManager = Substitute.For<ISceneManager>();
         builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
 
         //Act
