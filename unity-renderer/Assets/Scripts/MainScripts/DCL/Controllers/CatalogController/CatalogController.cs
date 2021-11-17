@@ -48,7 +48,7 @@ public class CatalogController : MonoBehaviour
         }
     }
     
-    public static void Dispose()
+    public static void Clear()
     {
         wearablesInUseCounters.Clear();
         awaitingWearablePromises.Clear();
