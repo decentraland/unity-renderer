@@ -30,9 +30,6 @@ public class BuilderInWorldShould
     [Test]
     public void CreateContextCorrectly()
     {
-        //Act
-        builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
-
         //Assert
         Assert.IsNotNull(builderInWorld.context);
         Assert.IsNotNull(builderInWorld.context.editorContext);

@@ -117,9 +117,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
-        var mockedScene = Substitute.For<IParcelScene>();
-        mockedScene.Configure().sceneData.Returns(scene.sceneData);
-        mainController.sceneToEditId = scene.sceneData.id;
+        mainController.sceneToEdit = scene;
         
         // Act
         mainController.GetCatalog();
