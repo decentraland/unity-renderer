@@ -70,9 +70,6 @@ namespace DCL.Builder
             context.builderAPIController.OnWebRequestCreated += WebRequestCreated;
 
             ConfigureLoadingController();
-            if (context.panelHUD != null)
-                context.panelHUD.OnJumpInOrEdit += JumpInOrEdit;
-
         }
 
         public void Dispose()
@@ -92,9 +89,7 @@ namespace DCL.Builder
 
             if (sceneToEdit != null)
                 sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
-
-            if (context.panelHUD != null)
-                context.panelHUD.OnJumpInOrEdit -= JumpInOrEdit;
+            
             editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
             context.builderAPIController.OnWebRequestCreated -= WebRequestCreated;
 
@@ -157,7 +152,7 @@ namespace DCL.Builder
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
                                          .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
-            TryStartFlow(targetScene);
+            TryStartFlow(targetScene,SOURCE_BUILDER_PANEl);
         }
 
         public IParcelScene FindSceneToEdit()
@@ -165,10 +160,7 @@ namespace DCL.Builder
             foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
             {
                 if (WorldStateUtils.IsCharacterInsideScene(scene))
-                {
-                    ParcelScene parcelScene = (ParcelScene)scene;
-                    return sceneToEdit;
-                }
+                    return scene;
             }
 
             return null;
@@ -196,15 +188,13 @@ namespace DCL.Builder
                                  });
         }
 
-        public void CatalogLoaded()
+        internal void CatalogLoaded()
         {
             catalogLoaded = true;
             if ( context.editorContext.editorHUD != null)
                 context.editorContext.editorHUD.RefreshCatalogContent();
             NextState();
         }
-
-        internal void JumpInOrEdit() { StartFlow(SOURCE_BUILDER_PANEl); }
 
         internal void StartFlow(string source)
         {
@@ -239,7 +229,7 @@ namespace DCL.Builder
 
         public void ChangeEditModeStatusByShortcut(DCLAction_Trigger action)
         {
-            if (currentState != State.EDITING || currentState != State.IDLE)
+            if (currentState != State.EDITING && currentState != State.IDLE)
                 return;
 
             if (currentState == State.EDITING )
@@ -263,21 +253,8 @@ namespace DCL.Builder
 
         internal void CheckSceneToEditByShorcut()
         {
-            FindSceneToEdit();
-
-            if (!UserHasPermissionOnParcelScene(sceneToEdit))
-            {
-                ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
-                return;
-            }
-
-            if (IsParcelSceneDeployedFromSDK(sceneToEdit))
-            {
-                ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
-                return;
-            }
-
-            StartFlow(SOURCE_SHORTCUT);
+            var scene = FindSceneToEdit();
+            TryStartFlow(scene, SOURCE_SHORTCUT);
         }
 
         internal void NewSceneAdded(IParcelScene newScene)
@@ -340,7 +317,7 @@ namespace DCL.Builder
         internal void EnterEditMode()
         {
             initialLoadingController.SetPercentage(100f);
-            initialLoadingController.Hide(onHideAction: () =>
+            initialLoadingController.Hide(true, onHideAction: () =>
             {
                 inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
                 context.editorContext.editorHUD?.SetVisibility(true);
@@ -378,9 +355,9 @@ namespace DCL.Builder
 
         }
 
-        public void TryStartFlow(IParcelScene targetScene, string source = "BuilderPanel")
+        public void TryStartFlow(IParcelScene targetScene, string source)
         {
-            if (sceneToEditId != null)
+            if (currentState != State.IDLE || targetScene == null)
                 return;
 
             if (!UserHasPermissionOnParcelScene(targetScene))
@@ -393,11 +370,7 @@ namespace DCL.Builder
                 ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
                 return;
             }
-
-            //If the scene is still not loaded, we return as we still can't enter in builder in world 
-            if (sceneToEditId != null)
-                return;
-
+            
             sceneToEdit = targetScene;
             StartFlow(source);
         }

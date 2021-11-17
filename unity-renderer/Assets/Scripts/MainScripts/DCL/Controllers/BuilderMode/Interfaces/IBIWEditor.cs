@@ -5,8 +5,20 @@ public interface IBIWEditor
 {
     void Initialize(IContext context);
     void Dispose();
+    
+    /// <summary>
+    /// OnGUI unity call, don't use this one if it is not strictly necessary
+    /// </summary>
     void OnGUI();
+    
+    /// <summary>
+    /// Update unity callback
+    /// </summary>
     void Update();
+    
+    /// <summary>
+    /// LateUpdate unity callback
+    /// </summary>
     void LateUpdate();
 
     /// <summary>
