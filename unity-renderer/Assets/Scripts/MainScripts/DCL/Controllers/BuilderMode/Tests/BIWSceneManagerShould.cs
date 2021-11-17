@@ -124,7 +124,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         resultOkPromise.Resolve(true);
 
         // Assert
-        Assert.AreEqual(mainController.currentState, SceneManager.State.CATALOG_LOADED );
+        Assert.GreaterOrEqual(mainController.currentState, SceneManager.State.CATALOG_LOADED );
     }
 
     [Test]
