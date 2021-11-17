@@ -1,6 +1,6 @@
 ﻿public enum FriendshipStatus
 {
-    NONE,
+    NOT_FRIEND,
     FRIEND,
     REQUESTED_FROM,
     REQUESTED_TO

@@ -190,7 +190,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
         switch (status.friendshipStatus)
         {
-            case FriendshipStatus.NONE:
+            case FriendshipStatus.NOT_FRIEND:
                 addFriendButton.gameObject.SetActive(true);
                 break;
             case FriendshipStatus.FRIEND:

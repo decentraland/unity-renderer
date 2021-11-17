@@ -52,7 +52,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public UserStatus GetUserStatus(string userId)
     {
         if (!friends.ContainsKey(userId))
-            return new UserStatus() { userId = userId, friendshipStatus = FriendshipStatus.NONE };
+            return new UserStatus() { userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND };
 
         return friends[userId];
     }
@@ -209,7 +209,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         if (VERBOSE)
             Debug.Log($"Change friend status of {userId} to {friends[userId].friendshipStatus}");
 
-        if (friendshipStatus == FriendshipStatus.NONE)
+        if (friendshipStatus == FriendshipStatus.NOT_FRIEND)
             friends.Remove(userId);
 
         OnUpdateFriendship?.Invoke(userId, msg.action);
@@ -237,17 +237,17 @@ public class FriendsController : MonoBehaviour, IFriendsController
             case FriendshipAction.APPROVED:
                 return FriendshipStatus.FRIEND;
             case FriendshipAction.REJECTED:
-                return FriendshipStatus.NONE;
+                return FriendshipStatus.NOT_FRIEND;
             case FriendshipAction.CANCELLED:
-                return FriendshipStatus.NONE;
+                return FriendshipStatus.NOT_FRIEND;
             case FriendshipAction.REQUESTED_FROM:
                 return FriendshipStatus.REQUESTED_FROM;
             case FriendshipAction.REQUESTED_TO:
                 return FriendshipStatus.REQUESTED_TO;
             case FriendshipAction.DELETED:
-                return FriendshipStatus.NONE;
+                return FriendshipStatus.NOT_FRIEND;
         }
 
-        return FriendshipStatus.NONE;
+        return FriendshipStatus.NOT_FRIEND;
     }
 }

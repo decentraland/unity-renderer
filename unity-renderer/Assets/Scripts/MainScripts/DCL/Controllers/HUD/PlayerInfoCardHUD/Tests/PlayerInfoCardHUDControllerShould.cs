@@ -103,7 +103,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void ShowNoFriendshipStatus()
     {
-        GivenFriendshipStatus(FriendshipStatus.NONE);
+        GivenFriendshipStatus(FriendshipStatus.NOT_FRIEND);
 
         WhenViewingUserUpdates();
         
