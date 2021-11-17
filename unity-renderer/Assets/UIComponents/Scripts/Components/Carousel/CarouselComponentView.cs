@@ -296,7 +296,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         int numberOfInitialJumps = 1)
     {
         StopCarousel();
-        itemsCoroutine = CoroutineStarter.Start(RunCarouselCoroutine(fromIndex, startInmediately, direction, changeDirectionAfterFirstTransition, numberOfInitialJumps));
+
+        if (isActiveAndEnabled)
+            itemsCoroutine = StartCoroutine(RunCarouselCoroutine(fromIndex, startInmediately, direction, changeDirectionAfterFirstTransition, numberOfInitialJumps));
     }
 
     public void StopCarousel()
@@ -304,7 +306,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         if (itemsCoroutine == null)
             return;
 
-        CoroutineStarter.Stop(itemsCoroutine);
+        StopCoroutine(itemsCoroutine);
+
         itemsCoroutine = null;
         isInTransition = false;
     }
