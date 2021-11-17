@@ -47,6 +47,16 @@ public class CatalogController : MonoBehaviour
             timeSinceLastUnusedWearablesCheck = 0f;
         }
     }
+    
+    public static void Dispose()
+    {
+        wearablesInUseCounters.Clear();
+        awaitingWearablePromises.Clear();
+        pendingWearableRequestedTimes.Clear();
+        awaitingWearablesByContextPromises.Clear();
+        pendingWearablesByContextRequestedTimes.Clear();
+        pendingRequestsToSend.Clear();
+    }
 
     public void AddWearablesToCatalog(string payload)
     {
@@ -178,9 +188,6 @@ public class CatalogController : MonoBehaviour
         if (!awaitingWearablesByContextPromises.ContainsKey(OWNED_WEARABLES_CONTEXT))
         {
             promiseResult = new Promise<WearableItem[]>();
-
-            // TODO: find a better solution to avoid executing a request when running tests, mocking the running instance
-            if (EnvironmentSettings.RUNNING_TESTS) return promiseResult;
             
             awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
 
