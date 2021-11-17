@@ -12,7 +12,7 @@ public class PlaneShapeShould : IntegrationTestSuite_Legacy
     public IEnumerator BeUpdatedCorrectly()
     {
         string entityId = "3";
-        TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
+        TestUtils.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
 
         var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Plane Instance", meshName);
@@ -26,7 +26,7 @@ public class PlaneShapeShould : IntegrationTestSuite_Legacy
 
         IDCLEntity entity;
 
-        PlaneShape plane = TestHelpers.InstantiateEntityWithShape<PlaneShape, PlaneShape.Model>(
+        PlaneShape plane = TestUtils.InstantiateEntityWithShape<PlaneShape, PlaneShape.Model>(
             scene,
             DCL.Models.CLASS_ID.PLANE_SHAPE,
             Vector3.zero,
@@ -50,19 +50,19 @@ public class PlaneShapeShould : IntegrationTestSuite_Legacy
     public IEnumerator DefaultMissingValuesOnUpdate()
     {
         var component =
-            TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, CLASS_ID.PLANE_SHAPE);
+            TestUtils.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, CLASS_ID.PLANE_SHAPE);
         yield return component.routine;
 
         Assert.IsFalse(component == null);
 
-        yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<PlaneShape.Model, PlaneShape>(scene,
+        yield return TestUtils.TestSharedComponentDefaultsOnUpdate<PlaneShape.Model, PlaneShape>(scene,
             CLASS_ID.PLANE_SHAPE);
     }
 
     [UnityTest]
     public IEnumerator BeReplacedCorrectlyWhenAnotherComponentIsAttached()
     {
-        yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PlaneShape.Model, PlaneShape>(
+        yield return TestUtils.TestAttachedSharedComponentOfSameTypeIsReplaced<PlaneShape.Model, PlaneShape>(
             scene, CLASS_ID.PLANE_SHAPE);
     }
 }

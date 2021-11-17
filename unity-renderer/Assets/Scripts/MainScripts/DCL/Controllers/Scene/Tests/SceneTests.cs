@@ -27,7 +27,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator CreateGlobalScene()
     {
         // Position character inside parcel (0,0)
-        TestHelpers.SetCharacterPosition(Vector3.zero);
+        TestUtils.SetCharacterPosition(Vector3.zero);
 
         string sceneGameObjectNamePrefix = "Global Scene - ";
         string sceneId = "Test Global Scene";
@@ -51,7 +51,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         yield return null;
 
         // Position character inside parcel (0,0)
-        TestHelpers.SetCharacterPosition(new Vector3(100f, 0f, 100f));
+        TestUtils.SetCharacterPosition(new Vector3(100f, 0f, 100f));
 
         yield return null;
 
@@ -66,9 +66,9 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public void ParcelScene_TrackDisposables_AfterInitDone()
     {
         SetUp_TestScene();
-        TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
 
         scene.sceneLifecycleHandler.SetInitMessagesDone();
 
@@ -107,7 +107,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
 
         var loadedScene = Environment.i.world.state.loadedScenes[loadedSceneID] as ParcelScene;
         // Add 1 entity to the loaded scene
-        TestHelpers.CreateSceneEntity(loadedScene, "6");
+        TestUtils.CreateSceneEntity(loadedScene, "6");
 
         var sceneEntities = loadedScene.entities;
 
@@ -234,9 +234,9 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator ParcelScene_TrackDisposables_OneGLTF()
     {
         SetUp_TestScene();
-        var entity = TestHelpers.CreateSceneEntity(scene);
+        var entity = TestUtils.CreateSceneEntity(scene);
 
-        TestHelpers.AttachGLTFShape(entity, scene, Vector3.zero, new LoadableShape.Model()
+        TestUtils.AttachGLTFShape(entity, scene, Vector3.zero, new LoadableShape.Model()
         {
             src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
         });
@@ -244,7 +244,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
         Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
         scene.sceneLifecycleHandler.SetInitMessagesDone();
         Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
-        yield return TestHelpers.WaitForGLTFLoad(entity);
+        yield return TestUtils.WaitForGLTFLoad(entity);
         Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
     }
 
@@ -254,9 +254,9 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public void ParcelScene_TrackDisposables_BeforeInitDone()
     {
         SetUp_TestScene();
-        TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-        TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
 
         Assert.AreEqual(3, scene.sceneLifecycleHandler.disposableNotReadyCount);
     }
@@ -267,7 +267,7 @@ public class SceneTests : IntegrationTestSuite_Legacy
     public IEnumerator ParcelScene_TrackDisposables_InstantReadyDisposable()
     {
         SetUp_TestScene();
-        var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+        var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
         scene.sceneLifecycleHandler.SetInitMessagesDone();
         Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
@@ -280,24 +280,24 @@ public class SceneTests : IntegrationTestSuite_Legacy
     {
         SetUp_TestScene();
         var entityId = "entityId";
-        var entity = TestHelpers.CreateSceneEntity(scene, entityId);
+        var entity = TestUtils.CreateSceneEntity(scene, entityId);
 
         // Make sure that it doesn't have a parent
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set player reference as parent
-        TestHelpers.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
+        TestUtils.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
         Assert.AreEqual(entity.parent, DCLCharacterController.i.firstPersonCameraReference);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Set avatar position reference as parent
-        TestHelpers.SetEntityParent(scene, entityId, "AvatarEntityReference");
+        TestUtils.SetEntityParent(scene, entityId, "AvatarEntityReference");
         Assert.AreEqual(entity.parent, DCLCharacterController.i.avatarReference);
         Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
         // Remove all parents
-        TestHelpers.SetEntityParent(scene, entityId, "0");
+        TestUtils.SetEntityParent(scene, entityId, "0");
         Assert.IsNull(entity.parent);
         Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
     }

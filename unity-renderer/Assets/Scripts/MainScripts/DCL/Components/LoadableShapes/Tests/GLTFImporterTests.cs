@@ -18,7 +18,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
 
         IDCLEntity entity = null;
 
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, src, out entity);
+        GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, src, out entity);
 
         yield return gltfShape.routine;
 

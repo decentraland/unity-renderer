@@ -5,71 +5,57 @@ namespace DCL.Components.Video.Plugin
 {
     public class WebVideoPlayer : IDisposable
     {
-        public event Action<Texture> OnTextureReady;
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
-        public bool playing { get { return shouldBePlaying; } }
-        public bool visible { get; set; }
-        public bool isError { get; private set; }
+        public bool playing => GetState() == VideoState.PLAYING;
+        public bool isError => GetState() == VideoState.ERROR;
+        public bool visible { get; set; } = true;
 
-        private static bool isWebGL1 => SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2;
+        public readonly string url;
 
         private string videoPlayerId;
-        private readonly IWebVideoPlayerPlugin plugin;
-        private IntPtr textureNativePtr;
-        private bool initialized = false;
-        private bool shouldBePlaying = false;
-        private float pausedAtTime = -1;
 
+        private readonly IVideoPluginWrapper plugin;
 
-        public WebVideoPlayer(string id, string url, bool useHls, IWebVideoPlayerPlugin plugin)
+        private bool isReady = false;
+        private bool playWhenReady = false;
+        private float playStartTime = -1;
+
+        public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
             this.plugin = plugin;
-
+            this.url = url;
+            texture = new Texture2D(1, 1);
             plugin.Create(id, url, useHls);
         }
 
-        public void UpdateWebVideoTexture()
+        public void Update()
         {
-            if (isError)
-            {
-                return;
-            }
-
             switch (plugin.GetState(videoPlayerId))
             {
-                case (int)VideoState.ERROR:
+                case VideoState.ERROR:
                     Debug.LogError(plugin.GetError(videoPlayerId));
-                    isError = true;
                     break;
-                case (int)VideoState.READY:
-                    if (!initialized)
+                case VideoState.READY:
+                    if (!isReady)
                     {
-                        initialized = true;
-                        texture = CreateTexture(plugin.GetWidth(videoPlayerId), plugin.GetHeight(videoPlayerId));
-                        textureNativePtr = texture.GetNativeTexturePtr();
-                        OnTextureReady?.Invoke(texture);
+                        isReady = true;
+                        texture.UpdateExternalTexture((IntPtr)plugin.GetTexture(videoPlayerId));
+                        texture.Apply();
                     }
+
+                    if (playWhenReady)
+                    {
+                        PlayInternal();
+                        playWhenReady = false;
+                    }
+
                     break;
-                case (int)VideoState.PLAYING:
-                    if (shouldBePlaying && visible)
-                    {
-                        int width = plugin.GetWidth(videoPlayerId);
-                        int height = plugin.GetHeight(videoPlayerId);
-                        if (texture.width != width || texture.height != height)
-                        {
-                            if (texture.Resize(width, height))
-                            {
-                                texture.Apply();
-                                textureNativePtr = texture.GetNativeTexturePtr();
-                            }
-                        }
-                        if (texture.width > 0 && texture.height > 0)
-                        {
-                            plugin.TextureUpdate(videoPlayerId, textureNativePtr, isWebGL1);
-                        }
-                    }
+                case VideoState.PLAYING:
+                    if (visible)
+                        plugin.TextureUpdate(videoPlayerId);
+
                     break;
             }
         }
@@ -79,10 +65,19 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            plugin.Play(videoPlayerId, pausedAtTime);
-            pausedAtTime = -1;
+            if (!isReady)
+            {
+                playWhenReady = true;
+                return;
+            }
 
-            shouldBePlaying = true;
+            PlayInternal();
+        }
+
+        private void PlayInternal()
+        {
+            plugin.Play(videoPlayerId, playStartTime);
+            playStartTime = -1;
         }
 
         public void Pause()
@@ -90,12 +85,10 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            pausedAtTime = plugin.GetTime(videoPlayerId);
+            playStartTime = plugin.GetTime(videoPlayerId);
             plugin.Pause(videoPlayerId);
-            shouldBePlaying = false;
+            playWhenReady = false;
         }
-
-        public bool IsPaused() { return !shouldBePlaying; }
 
         public void SetVolume(float volume)
         {
@@ -111,7 +104,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            pausedAtTime = timeSecs;
+            playStartTime = timeSecs;
             plugin.SetTime(videoPlayerId, timeSecs);
         }
 
@@ -145,10 +138,10 @@ namespace DCL.Components.Video.Plugin
                 return 0;
 
             float duration = plugin.GetDuration(videoPlayerId);
-            
+
             if (float.IsNaN(duration))
                 duration = -1;
-            
+
             return duration;
         }
 
@@ -160,15 +153,6 @@ namespace DCL.Components.Video.Plugin
         public void Dispose()
         {
             plugin.Remove(videoPlayerId);
-            UnityEngine.Object.Destroy(texture);
-            texture = null;
-        }
-
-        private Texture2D CreateTexture(int width, int height)
-        {
-            Texture2D tex = new Texture2D(width, height, TextureFormat.ARGB32, false);
-            tex.wrapMode = TextureWrapMode.Clamp;
-            return tex;
         }
     }
 }

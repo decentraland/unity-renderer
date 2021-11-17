@@ -22,8 +22,8 @@ namespace Tests
             navmapView = Object.FindObjectOfType<NavmapView>();
             navmapToastView = navmapView.toastView;
 
-            if (!NavmapView.isOpen)
-                navmapView.ToggleNavMap();
+            if (!DataStore.i.HUDs.navmapVisible.Get())
+                navmapView.SetVisible(true);
         }
 
         protected override IEnumerator TearDown()

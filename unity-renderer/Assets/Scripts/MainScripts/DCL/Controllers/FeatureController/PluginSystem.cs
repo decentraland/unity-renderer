@@ -66,6 +66,7 @@ public class PluginSystem
         HandleFeature<BuilderInWorldPlugin>(featureFlag.IsFeatureEnabled("builder_in_world"));
         HandleFeature<TutorialController>(featureFlag.IsFeatureEnabled("tutorial"));
         HandleFeature<ExploreV2Feature>(featureFlag.IsFeatureEnabled("explorev2"));
+        HandleFeature<ShortcutsFeature>(true);
         currentConfig = featureFlag;
     }
 

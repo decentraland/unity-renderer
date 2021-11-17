@@ -34,11 +34,10 @@ namespace DCL
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
         public readonly DataStore_WorldObjects sceneWorldObjects = new DataStore_WorldObjects();
         public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
-        public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
         public readonly DataStore_Camera camera = new DataStore_Camera();
         public readonly DataStore_Settings settings = new DataStore_Settings();
-        
+
         public class DataStore_Settings
         {
             public readonly BaseVariable<bool> profanityChatFilteringEnabled = new BaseVariable<bool>();
@@ -79,6 +78,11 @@ namespace DCL
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> controlsVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> avatarEditorVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> emotesVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> navmapVisible = new BaseVariable<bool>(false);
+
             public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
             public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
             public readonly LoadingHUD loadingHUD = new LoadingHUD();
@@ -141,11 +145,6 @@ namespace DCL
         {
             public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
-        }
-
-        public class DataStore_Taskbar
-        {
-            public readonly BaseVariable<bool> isExploreV2Enabled = new BaseVariable<bool>(false);
         }
 
         public class DataStore_FeatureFlag

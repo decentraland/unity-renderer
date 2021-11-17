@@ -110,9 +110,9 @@ public class NFTShapeVisualTests : VisualTestsBase
 
     IEnumerator InstantiateNFTShape(Vector3 position, int styleIndex)
     {
-        var entity = TestHelpers.CreateSceneEntity(scene);
+        var entity = TestUtils.CreateSceneEntity(scene);
 
-        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = position });
+        TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = position });
 
         yield return null;
 
@@ -123,10 +123,10 @@ public class NFTShapeVisualTests : VisualTestsBase
             style = styleIndex
         };
 
-        NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
+        NFTShape component = TestUtils.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
         yield return component.routine;
 
-        TestHelpers.SharedComponentAttach(component, entity);
+        TestUtils.SharedComponentAttach(component, entity);
 
         // Override texture with a local test one
         var nftShape = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
