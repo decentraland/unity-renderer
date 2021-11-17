@@ -21,6 +21,8 @@ namespace DCL.Configuration
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
 
+        public const int PARCEL_SIZE_METERS = 16;
+
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
         public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";
         public const string FLOOR_CATEGORY = "ground";

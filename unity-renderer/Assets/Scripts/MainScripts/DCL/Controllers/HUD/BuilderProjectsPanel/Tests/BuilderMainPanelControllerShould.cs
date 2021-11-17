@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class BuilderProjectsPanelControllerShould
+    public class BuilderMainPanelControllerShould
     {
         private BuilderMainPanelController controller;
         private ISectionsController sectionsController;
@@ -98,6 +98,29 @@ namespace Tests
 
             //Assert
             landsesController.Received().SetLands(lands);
+        }
+
+        [Test]
+        public void AddProjectsCorrectly()
+        {
+            //Arrange
+            ProjectData[] projectDatas = new [] { new ProjectData() };
+            
+            //Act
+            controller.ProjectsFetched(projectDatas);
+            
+            //Assert
+            Assert.IsFalse(controller.isFetchingProjects);
+        }
+        
+        [Test]
+        public void FailCorrectlyOnProjectFetchedError()
+        {
+            //Act
+            controller.ProjectsFetchedError("Intended error");
+            
+            //Assert
+            Assert.IsFalse(controller.isFetchingProjects);
         }
 
         [Test]

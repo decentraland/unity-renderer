@@ -286,6 +286,10 @@ public class BuilderInWorldEditor : IBIWEditor
         {
             CatalogLoaded();
         });
+        catalogPromise.Catch(error =>
+        {
+            BIWUtils.ShowGenericNotification(error);
+        });
 
         isCatalogRequested = true;
     }
@@ -348,7 +352,7 @@ public class BuilderInWorldEditor : IBIWEditor
         if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0 && !alreadyAskedForLandPermissions)
         {
             ActivateLandAccessBackgroundChecker();
-            ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, DCL.NotificationModel.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
+            BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, DCL.NotificationModel.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
             isWaitingForPermission = true;
             askPermissionLastPosition = DCLCharacterController.i.characterPosition.unityPosition;
         }
@@ -364,13 +368,13 @@ public class BuilderInWorldEditor : IBIWEditor
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
-            ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
+            BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
             return;
         }
 
         if (IsParcelSceneDeployedFromSDK(sceneToEdit))
         {
-            ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
+            BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
             return;
         }
 
@@ -455,12 +459,12 @@ public class BuilderInWorldEditor : IBIWEditor
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
-            ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
+            BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
             return;
         }
         else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
         {
-            ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
+            BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
             return;
         }
 
@@ -788,15 +792,5 @@ public class BuilderInWorldEditor : IBIWEditor
                                  isWaitingForPermission = false;
                                  alreadyAskedForLandPermissions = true;
                              });
-    }
-
-    private static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
-    {
-        DCL.NotificationModel.Model notificationModel = new DCL.NotificationModel.Model();
-        notificationModel.message = message;
-        notificationModel.type = type;
-        notificationModel.timer = timer;
-        if (HUDController.i.notificationHud != null)
-            HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 }

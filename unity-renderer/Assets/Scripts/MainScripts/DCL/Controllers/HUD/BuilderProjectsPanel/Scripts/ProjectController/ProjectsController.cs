@@ -66,7 +66,7 @@ internal class ProjectsController : IProjectsController
 
     private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
     
-    private Dictionary<string, IProjectCardView> projects = new Dictionary<string, IProjectCardView>();
+    internal Dictionary<string, IProjectCardView> projects = new Dictionary<string, IProjectCardView>();
     private readonly ProjectCardView projectCardViewPrefab;
     private readonly Transform defaultParent;
 
@@ -121,11 +121,14 @@ internal class ProjectsController : IProjectsController
         listener.OnSetProjects(projects);
     }
 
-    public void RemoveListener(IProjectsListener listener) { }
+    public void RemoveListener(IProjectsListener listener)
+    {
+        OnProjectsSet -= listener.OnSetProjects;
+    }
 
     public Dictionary<string, IProjectCardView> GetProjects() { return projects; }
 
-    private void ExpandMenuPressed()
+    internal void ExpandMenuPressed()
     {
         OnExpandMenuPressed?.Invoke();
     }
@@ -164,4 +167,12 @@ internal class ProjectsController : IProjectsController
     }
 
     private void OnSceneSettingsPressed(ProjectData sceneData) {  }
+
+    public void Dispose()
+    {
+        foreach (var projectCard in this.projects.Values)
+        {
+            DestroyCardView(projectCard);
+        }
+    }
 }

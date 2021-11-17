@@ -23,10 +23,6 @@ namespace Tests
             scenesViewController.OnSceneRemoved += ((ISceneListener)listenerMock).SceneRemoved;
             scenesViewController.OnSceneAdded += ((ISceneListener)listenerMock).SceneAdded;
             scenesViewController.OnScenesSet += ((ISceneListener)listenerMock).SetScenes;
-
-            scenesViewController.OnProjectSceneRemoved += ((IProjectListener)listenerMock).SceneRemoved;
-            scenesViewController.OnProjectSceneAdded += ((IProjectListener)listenerMock).SceneAdded;
-            scenesViewController.OnProjectScenesSet += ((IProjectListener)listenerMock).SetScenes;
         }
 
         [TearDown]
@@ -41,7 +37,6 @@ namespace Tests
             Assert.AreEqual(1, listenerMock.setScenes.Count);
             Assert.AreEqual(0, listenerMock.addedScenes.Count);
             Assert.AreEqual(0, listenerMock.removedScenes.Count);
-            Assert.AreEqual(0, listenerMock.projectScenes.Count);
 
             listenerMock.Clear();
 
@@ -55,7 +50,6 @@ namespace Tests
             Assert.AreEqual(0, listenerMock.setScenes.Count);
             Assert.AreEqual(1, listenerMock.addedScenes.Count);
             Assert.AreEqual(0, listenerMock.removedScenes.Count);
-            Assert.AreEqual(0, listenerMock.projectScenes.Count);
 
             listenerMock.Clear();
 
@@ -66,10 +60,8 @@ namespace Tests
             });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
-            Assert.AreEqual(1, listenerMock.setScenes.Count);
             Assert.AreEqual(0, listenerMock.addedScenes.Count);
             Assert.AreEqual(1, listenerMock.removedScenes.Count);
-            Assert.AreEqual(1, listenerMock.projectScenes.Count);
 
             listenerMock.Clear();
 
@@ -80,10 +72,8 @@ namespace Tests
             });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
-            Assert.AreEqual(0, listenerMock.setScenes.Count);
             Assert.AreEqual(0, listenerMock.addedScenes.Count);
             Assert.AreEqual(0, listenerMock.removedScenes.Count);
-            Assert.AreEqual(1, listenerMock.projectScenes.Count);
 
             listenerMock.Clear();
 
@@ -94,21 +84,17 @@ namespace Tests
             });
 
             Assert.AreEqual(0, listenerMock.deployedScenes.Count);
-            Assert.AreEqual(0, listenerMock.setScenes.Count);
-            Assert.AreEqual(1, listenerMock.addedScenes.Count);
             Assert.AreEqual(1, listenerMock.removedScenes.Count);
-            Assert.AreEqual(2, listenerMock.projectScenes.Count);
         }
     }
 
-    class Listener_Mock : ISceneListener, IProjectListener
+    class Listener_Mock : ISceneListener
     {
         public List<string> setScenes = new List<string>();
         public List<string> addedScenes = new List<string>();
         public List<string> removedScenes = new List<string>();
 
         public List<string> deployedScenes = new List<string>();
-        public List<string> projectScenes = new List<string>();
 
         public void Clear()
         {
@@ -136,27 +122,6 @@ namespace Tests
         {
             removedScenes.Add(scene.SceneData.id);
             deployedScenes.Remove(scene.SceneData.id);
-        }
-
-        void IProjectListener.SetScenes(Dictionary<string, ISceneCardView> scenes)
-        {
-            foreach (var view in scenes.Values)
-            {
-                setScenes.Add(view.SceneData.id);
-                projectScenes.Add(view.SceneData.id);
-            }
-        }
-
-        void IProjectListener.SceneAdded(ISceneCardView scene)
-        {
-            addedScenes.Add(scene.SceneData.id);
-            projectScenes.Add(scene.SceneData.id);
-        }
-
-        void IProjectListener.SceneRemoved(ISceneCardView scene)
-        {
-            removedScenes.Add(scene.SceneData.id);
-            projectScenes.Remove(scene.SceneData.id);
         }
     }
 }

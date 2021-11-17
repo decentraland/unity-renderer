@@ -36,9 +36,9 @@ internal class SectionsHandler : IDisposable
             scenesViewController.AddListener(deployedSceneListener);
         }
 
-        if (sectionBase is IProjectListener projectSceneListener)
+        if (sectionBase is IProjectsListener projectsListener)
         {
-            scenesViewController.AddListener(projectSceneListener);
+            projectsController.AddListener(projectsListener);
         }
 
         if (sectionBase is ISelectSceneListener selectSceneListener)
@@ -51,11 +51,6 @@ internal class SectionsHandler : IDisposable
             landsController.AddListener(landsListener);
         }
 
-        if (sectionBase is IProjectsListener projectsListener)
-        {
-            projectsController.AddListener(projectsListener);
-        }
-
         searchBarView.SetSearchBar(sectionBase.searchHandler, sectionBase.searchBarConfig);
     }
 
@@ -66,9 +61,9 @@ internal class SectionsHandler : IDisposable
             scenesViewController.RemoveListener(deployedSceneListener);
         }
 
-        if (sectionBase is IProjectListener projectSceneListener)
+        if (sectionBase is IProjectsListener projectSceneListener)
         {
-            scenesViewController.RemoveListener(projectSceneListener);
+            projectsController.RemoveListener(projectSceneListener);
         }
 
         if (sectionBase is ISelectSceneListener selectSceneListener)

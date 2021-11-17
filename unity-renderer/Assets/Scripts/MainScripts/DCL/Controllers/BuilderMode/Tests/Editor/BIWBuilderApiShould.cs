@@ -77,7 +77,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     public void GetAllManifestsCorrectly()
     {
         //Arrange
-        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET, BuilderAPIController.PROJECTS_ENDPOINT);
+        RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET, BuilderAPIController.GET_PROJECTS_ENDPOINT);
 
         List<ProjectData> projectDatas = new List<ProjectData>();
         ProjectData data = new ProjectData();
@@ -88,7 +88,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
 
         string jsonData = JsonConvert.SerializeObject(projectDatas);
         apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
-        apiController.apiResponseResolver.Configure().GetDataFromCallArray(Arg.Any<string>()).Returns(jsonData);
+        apiController.apiResponseResolver.Configure().GetArrayFromCall<ProjectData>(Arg.Any<string>()).Returns(projectDatas.ToArray());
 
         TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController, 2);
 
@@ -139,11 +139,15 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         RequestHeader header = CreateRequestHeaders(BuilderAPIController.GET, BuilderAPIController.ASSETS_ENDPOINT);
 
         bool result = false;
-        string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
-        string jsonValue = File.ReadAllText(jsonPath);
-
-        TestUtils.ConfigureMockedRequestController(jsonValue, mockedRequestController, 2);
-
+        List<SceneObject> list = new List<SceneObject>();
+        list.Add(new SceneObject(){id ="test id"});
+        
+        string jsonData = JsonConvert.SerializeObject(list);
+        TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
+        
+        apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
+        apiController.apiResponseResolver.Configure().GetArrayFromCall<SceneObject>(Arg.Any<string>()).Returns(list.ToArray());
+        
         //Act
         var promise = apiController.GetAssets(new List<string>());
         promise.Then( data =>

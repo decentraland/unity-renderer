@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -121,7 +122,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         if (model == null)
             return;
 
-        RegisterCurrentInstantiatedItems();
+        //We only do this if we don't have items, this is done because the editor doesn't call awake method
+        if(instantiatedItems.Count == 0)
+            RegisterCurrentInstantiatedItems();
         
         SetConstraint(model.constraint);
         SetItemSize(model.itemSize);
@@ -180,15 +183,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         }
         else if (model.adaptVerticallyItemSizeToContainer)
         {
-            switch (model.constraint)
-            {
-                case Constraint.FixedColumnCount:
-                    CalculateVerticalSizeForFixedColumnConstraint(out newSizeToApply);
-                    break;
-                case Constraint.FixedRowCount:
-                    CalculateVerticalSizeForFixedRowConstraint(out newSizeToApply);
-                    break;
-            }
+            //TODO: We need to implement this functionality. Nobody is using it
+            //      Please implement it if needed
+            throw new Exception("Not implemented yet! Please implement the functionality");
         }
         else if (model.adaptHorizontallyItemSizeToContainer)
         {
@@ -233,44 +230,42 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         float height = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.height : ((RectTransform)transform).rect.height;
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
+        
+        int amountsOfHorizontalItemsPerRow =  instantiatedItems.Count / model.constraintCount;
+        int amountsOfVerticalItemsPerColumn =  instantiatedItems.Count / amountsOfHorizontalItemsPerRow;
+        
+        float extraSpaceToRemoveX = model.spaceBetweenItems.x * (amountsOfHorizontalItemsPerRow - 1);
+        float extraSpaceToRemoveY = model.spaceBetweenItems.y * (amountsOfVerticalItemsPerColumn - 1);
 
-        int amountsOfVerticalItems =  instantiatedItems.Count / model.constraintCount;
-        int amountsOfHorizontalItems =  instantiatedItems.Count / amountsOfVerticalItems;
+        float itemWidth = model.recommendedWidthForFlexibleItems; 
+        float itemHeight = model.recommendedHeightForFlexibleItems;
 
-        float extraSpaceToRemoveX = model.spaceBetweenItems.x * (amountsOfHorizontalItems - 1);
-        float extraSpaceToRemoveY = model.spaceBetweenItems.y * (amountsOfVerticalItems - 1);
+        if (itemWidth * amountsOfHorizontalItemsPerRow + extraSpaceToRemoveX >= width)
+            itemWidth = width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX; 
+        
+        if (itemWidth < model.minWidthForFlexibleItems)
+            itemWidth = model.minWidthForFlexibleItems;
+        
+        if (itemHeight * amountsOfVerticalItemsPerColumn + extraSpaceToRemoveY >= height)
+            itemHeight = height / amountsOfVerticalItemsPerColumn - extraSpaceToRemoveY;
 
+        if (itemHeight < model.minHeightForFlexibleItems)
+            itemHeight = model.minHeightForFlexibleItems;
+
+        if (model.sameHeightAndWidhtFlexibleItem)
+        {
+            float minValue = Mathf.Min(itemHeight, itemWidth);
+            itemHeight = minValue;
+            itemWidth = minValue;
+        }
+        
         newSizeToApply = new Vector2(
-            width / amountsOfHorizontalItems - extraSpaceToRemoveX,
-            height / amountsOfVerticalItems - extraSpaceToRemoveY);
-
-        currentItemsPerRow = model.constraintCount;
-    }
-
-    internal void CalculateVerticalSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
-    {
-        float height = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.height : ((RectTransform)transform).rect.height;
-        float extraSpaceToRemove = (model.spaceBetweenItems.y * (model.constraintCount - 1)) / model.constraintCount;
-
-        newSizeToApply = new Vector2(
-            model.itemSize.x,
-            (height / model.constraintCount) - extraSpaceToRemove);
+            itemWidth,
+            itemHeight);
 
         currentItemsPerRow = model.constraintCount;
     }
     
-    internal void CalculateVerticalSizeForFixedRowConstraint(out Vector2 newSizeToApply)
-    {
-        float width = ((RectTransform)transform).rect.width;
-        float extraSpaceToRemove = (model.spaceBetweenItems.x / (model.constraintCount / 2f));
-
-        newSizeToApply = new Vector2(
-            (width / model.constraintCount) - extraSpaceToRemove,
-            model.itemSize.y);
-
-        currentItemsPerRow = (int)Mathf.Ceil((float)instantiatedItems.Count / model.constraintCount);
-    }
-
     internal void CalculateHorizontalSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
     {
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
@@ -359,7 +354,6 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         SetItemSize(model.itemSize);
     }
-    
     
     public void SetItems(List<BaseComponentView> items)
     {
