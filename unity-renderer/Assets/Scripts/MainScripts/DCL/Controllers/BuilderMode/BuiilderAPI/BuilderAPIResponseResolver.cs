@@ -25,7 +25,6 @@ namespace DCL.Builder
 
     public class BuilderAPIResponseResolver: IBuilderAPIResponseResolver
     {
-   
         public T[] GetArrayFromCall<T>(string result)
         {
             APIResponse response = GetResponseFromCall(result);
