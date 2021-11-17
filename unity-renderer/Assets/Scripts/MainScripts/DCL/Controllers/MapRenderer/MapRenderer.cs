@@ -228,7 +228,7 @@ namespace DCL
                 parcelHighlightImage.gameObject.SetActive(true);
 
             string previousText = highlightedParcelText.text;
-            parcelHighlightImage.transform.position = worldCoordsOriginInMap + cursorMapCoords * parcelSizeInMap + new Vector3(parcelSizeInMap, parcelSizeInMap, 0f) / 2;
+            parcelHighlightImage.rectTransform.anchoredPosition = MapUtils.GetTileToLocalPosition(cursorMapCoords.x, cursorMapCoords.y);
             highlightedParcelText.text = showCursorCoords ? $"{cursorMapCoords.x}, {cursorMapCoords.y}" : string.Empty;
 
             if (highlightedParcelText.text != previousText && !Input.GetMouseButton(0))
