@@ -227,10 +227,10 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     public void ChangeTemporarySnapActive()
     {
         //Arrange
+        godMode.selectedEntities = selectedEntities;
         modeController.SetSnapActive(false);
         selectedEntities.Add(new BIWEntity());
-        godMode.selectedEntities = selectedEntities;
-
+        
         //Act
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 
@@ -242,9 +242,10 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     public void ChangeTemporarySnapDeactivated()
     {
         //Arrange
+        godMode.selectedEntities = selectedEntities;
         modeController.SetSnapActive(false);
         selectedEntities.Add(new BIWEntity());
-        godMode.selectedEntities = selectedEntities;
+
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 
         //Act
