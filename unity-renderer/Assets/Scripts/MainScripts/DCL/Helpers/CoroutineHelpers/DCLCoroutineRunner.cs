@@ -19,11 +19,14 @@ namespace DCL
         /// <param name="enumerator">Iterator function to run</param>
         /// <param name="done">Callback to call when the iterator has thrown an exception or finished.
         /// The thrown exception or null is passed as the parameter.</param>
+        /// <param name="timeBudgetCounter">A func that takes elapsed time as parameter, and returns a bool
+        /// indicating if a frame should be skipped or not. Use this in combination with ThrottlingCounter.EvaluateTimeBudget().
+        /// If this is passed as null, no time budget will be used.</param>
         /// <returns>An enumerator that runs the given enumerator</returns>
         public static IEnumerator Run(
             IEnumerator enumerator,
             Action<Exception> done,
-            Func<double, bool> timeBudgetCounter
+            Func<double, bool> timeBudgetCounter = null
         )
         {
             float currentTime = realtimeSinceStartup();
@@ -109,8 +112,8 @@ namespace DCL
     }
 
     /// <summary>
-    /// When a coroutine is started by using StartThrottledCoroutine, yielding this object
-    /// will make the frame skip if the time budget is exceeded only.
+    /// When a coroutine is started with throttling, yielding this object
+    /// will make the frame skip ONLY if the time budget is exceeded.
     ///
     /// If the time budget is not exceeded, no frames will be skipped by yielding this object.
     /// </summary>
