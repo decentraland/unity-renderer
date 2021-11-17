@@ -33,7 +33,7 @@ public class BIWMode : IBIWMode
     internal bool isSnapActiveValue = false;
     internal bool isModeActive = false;
     internal bool isMultiSelectionActive = false;
-    internal List<BIWEntity> selectedEntities;
+    internal List<BIWEntity> selectedEntities = new List<BIWEntity>();
 
     internal bool isNewObjectPlaced = false;
 
