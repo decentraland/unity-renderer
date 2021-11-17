@@ -25,9 +25,10 @@ using UnityEngine.Events;
 public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
+    
+    public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
-        if(NotificationsController.i == null)
+        if (NotificationsController.i == null)
             return;
         NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
         {
@@ -37,12 +38,14 @@ public static void ShowGenericNotification(string message, DCL.NotificationModel
             destroyOnFinish = true
         });
     }
+    
     public static long ConvertToMilisecondsTimestamp(DateTime value)
     {
         TimeSpan elapsedTime = value - Epoch;
         return (long) elapsedTime.TotalMilliseconds;
     }
-public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
+    
+    public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
     {
         SceneMetricsModel  cachedModel = new SceneMetricsModel();
 
@@ -56,7 +59,7 @@ public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
         cachedModel.textures = (int) (log * SceneMetricsCounter.LimitsConfig.textures);
         cachedModel.meshes = (int) (log * SceneMetricsCounter.LimitsConfig.meshes);
         cachedModel.sceneHeight = (int) (log * SceneMetricsCounter.LimitsConfig.height);
-        
+
         return cachedModel;
     }
 
@@ -77,10 +80,10 @@ public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
         BuilderGround ground = new BuilderGround();
         ground.assetId = BIWSettings.FLOOR_ID;
         ground.componentId = Guid.NewGuid().ToString();
-        
+
         BuilderScene scene = new BuilderScene
         {
-            id = Guid.NewGuid().ToString(), 
+            id = Guid.NewGuid().ToString(),
             limits = GetSceneMetricsLimits(parcelsAmount),
             metrics = new SceneMetricsModel(),
             ground = ground
@@ -88,7 +91,7 @@ public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
 
         return scene;
     }
-    
+
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
     {
         Manifest manifest = new Manifest();

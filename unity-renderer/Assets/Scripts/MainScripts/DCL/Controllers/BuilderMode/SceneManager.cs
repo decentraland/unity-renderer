@@ -225,6 +225,10 @@ namespace DCL.Builder
             {
                 CatalogLoaded();
             });
+            catalogPromise.Catch(error =>
+            {
+                BIWUtils.ShowGenericNotification(error);
+            });
         }
 
         public void ChangeEditModeStatusByShortcut(DCLAction_Trigger action)
@@ -241,7 +245,7 @@ namespace DCL.Builder
             if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0 && !alreadyAskedForLandPermissions)
             {
                 ActivateLandAccessBackgroundChecker();
-                ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, DCL.NotificationModel.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
+                BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, DCL.NotificationModel.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
                 isWaitingForPermission = true;
                 askPermissionLastPosition = DCLCharacterController.i.characterPosition.unityPosition;
             }
@@ -362,12 +366,12 @@ namespace DCL.Builder
 
             if (!UserHasPermissionOnParcelScene(targetScene))
             {
-                ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
+                BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
                 return;
             }
             else if (IsParcelSceneDeployedFromSDK(targetScene))
             {
-                ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
+                BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
                 return;
             }
             
@@ -406,16 +410,6 @@ namespace DCL.Builder
         private void UpdateCatalogLoadingProgress(float catalogLoadingProgress) { initialLoadingController.SetPercentage(catalogLoadingProgress / 2); }
 
         internal void ExitAfterCharacterTeleport(DCLCharacterPosition position) { ExitEditMode(); }
-
-        private static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
-        {
-            DCL.NotificationModel.Model notificationModel = new DCL.NotificationModel.Model();
-            notificationModel.message = message;
-            notificationModel.type = type;
-            notificationModel.timer = timer;
-            if (HUDController.i.notificationHud != null)
-                HUDController.i.notificationHud.ShowNotification(notificationModel);
-        }
 
         private IEnumerator CheckLandsAccess()
         {
