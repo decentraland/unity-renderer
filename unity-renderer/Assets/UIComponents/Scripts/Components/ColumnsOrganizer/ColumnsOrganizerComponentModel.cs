@@ -5,12 +5,12 @@ using System.Collections.Generic;
 public class ColumnsOrganizerComponentModel : BaseComponentModel
 {
     public float spaceBetweenColumns;
-    public List<ColumnModel> columns;
+    public List<ColumnConfigModel> columnsConfig;
     public List<BaseComponentView> uiComponentsToRefreshSize;
 }
 
 [Serializable]
-public class ColumnModel
+public class ColumnConfigModel
 {
     public bool isPercentage = false;
     public float width;

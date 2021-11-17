@@ -44,16 +44,16 @@ public class ColumnsOrganizerComponentView : BaseComponentView, IColumnsOrganize
 
         horizontalLayoutGroup.spacing = model.spaceBetweenColumns;
 
-        float totalWidthOfFixedSizeColumns = model.columns.Where(x => !x.isPercentage).Sum(x => x.width);
-        float totalWidthOfPercentageColumns = columnsContainer.rect.width - totalWidthOfFixedSizeColumns - (model.spaceBetweenColumns * (model.columns.Count - 1));
+        float totalWidthOfFixedSizeColumns = model.columnsConfig.Where(x => !x.isPercentage).Sum(x => x.width);
+        float totalWidthOfPercentageColumns = columnsContainer.rect.width - totalWidthOfFixedSizeColumns - (model.spaceBetweenColumns * (model.columnsConfig.Count - 1));
 
         for (int i = 0; i < currentColumns.Count; i++)
         {
-            if (model.columns.Count - 1 >= i)
+            if (model.columnsConfig.Count - 1 >= i)
             {
-                if (model.columns[i].isPercentage)
+                if (model.columnsConfig[i].isPercentage)
                 {
-                    float newWidth = totalWidthOfPercentageColumns * model.columns[i].width / 100f;
+                    float newWidth = totalWidthOfPercentageColumns * model.columnsConfig[i].width / 100f;
                     if (newWidth < 0)
                         newWidth = 0;
 
@@ -64,7 +64,7 @@ public class ColumnsOrganizerComponentView : BaseComponentView, IColumnsOrganize
                 else
                 {
                     currentColumns[i].sizeDelta = new Vector2(
-                        model.columns[i].width,
+                        model.columnsConfig[i].width,
                         currentColumns[i].sizeDelta.y);
                 }
             }

@@ -975,7 +975,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1170882600487984448}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.8427586
+  m_Size: 0.8441379
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5401,6 +5401,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
+      propertyPath: model.columnsConfig.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
+        type: 3}
       propertyPath: model.columns.Array.data[0].width
       value: 100
       objectReference: {fileID: 0}
@@ -5413,6 +5418,16 @@ PrefabInstance:
         type: 3}
       propertyPath: model.uiComponentsToRefresh.Array.size
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
+        type: 3}
+      propertyPath: model.columnsConfig.Array.data[0].width
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
+        type: 3}
+      propertyPath: model.columnsConfig.Array.data[1].width
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
@@ -5469,6 +5484,11 @@ PrefabInstance:
       propertyPath: model.uiComponentsToRefreshSize.Array.data[2]
       value: 
       objectReference: {fileID: 5460971252728717452}
+    - target: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
+        type: 3}
+      propertyPath: model.columnsConfig.Array.data[0].isPercentage
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: m_Pivot.x
