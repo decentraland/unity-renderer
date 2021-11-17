@@ -47,7 +47,7 @@ namespace DCL.Builder
         private BuilderInWorldBridge builderInWorldBridge;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
-        private CameraController cameraController;
+        internal ICameraController cameraController;
 
         internal bool catalogLoaded = false;
 
@@ -352,7 +352,7 @@ namespace DCL.Builder
             if (!builderInWorldBridge.builderProject.isNewEmptyProject)
                 return;
 
-            cameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
+            cameraController.TakeSceneScreenshot((sceneSnapshot) =>
             {
                 context.editorContext.editorHUD?.NewProjectStart(sceneSnapshot);
             });

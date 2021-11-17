@@ -10,7 +10,7 @@ using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityGLTF;
 
-public class BIWMainControllerShould : IntegrationTestSuite_Legacy
+public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
 {
     private BuilderInWorldEditor mainController;
     private IBuilderAPIController apiSubstitute;

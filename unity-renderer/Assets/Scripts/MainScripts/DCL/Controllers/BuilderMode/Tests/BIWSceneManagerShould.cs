@@ -34,11 +34,14 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     [Test]
     public void OpenNewProjectDetails()
     {
+        //Arrange
+        mainController.cameraController = Substitute.For<ICameraController>();
+        
         //Act
         mainController.OpenNewProjectDetails();
 
         //Assert
-        //mainController.freeCameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+        mainController.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
 
     [Test]
@@ -232,39 +235,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Assert
         Assert.AreNotEqual(mainController.currentState, SceneManager.State.IDLE);
     }
-
-    // [Test]
-    // public void InitialLoadingControllerHideOnFloorLoaded()
-    // {
-    //     // Arrange
-    //     mainController.initialLoadingController.Dispose();
-    //     mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
-    //     mainController.initialLoadingController.Configure().isActive.Returns(true);
-    //
-    //     // Act
-    //     mainController.OnAllParcelsFloorLoaded();
-    //
-    //     // Assert
-    //     mainController.initialLoadingController.Received().Hide(Arg.Any<bool>(), Arg.Any<Action>());
-    // }
-
-    // [Test]
-    // public void SetupNewScene()
-    // {
-    //     // Arrange
-    //     BIWCatalogManager.Init();
-    //     BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
-    //     ((EditorContext) mainController.context.editorContext).floorHandlerReference = Substitute.For<IBIWFloorHandler>();
-    //     mainController.sceneToEdit = scene;
-    //     mainController.EnterBiwControllers();
-    //
-    //     // Act
-    //     mainController.SetupNewScene();
-    //
-    //     // Assert
-    //     mainController.context.editorContext.floorHandler.Received(1).CreateDefaultFloor();
-    // }
-
+    
     [Test]
     public void ExitAfterTeleport()
     {
