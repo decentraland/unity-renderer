@@ -102,7 +102,6 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        mainController.EnterEditMode(scene);
 
         // Act
         mainController.Update();
