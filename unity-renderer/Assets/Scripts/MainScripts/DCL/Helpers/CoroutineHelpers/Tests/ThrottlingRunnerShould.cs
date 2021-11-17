@@ -33,7 +33,7 @@ public class ThrottlingRunnerShould
         counter.Reset();
 
         int frameCount = Time.frameCount;
-        yield return CoroutineHelpers.RunThrowingIterator(ThrottlingTest(totalMsDuration), null, counter.EvaluateTimeBudget);
+        yield return DCLCoroutineRunner.Run(ThrottlingTest(totalMsDuration), null, counter.EvaluateTimeBudget);
 
         int elapsedFrames = Time.frameCount - frameCount;
         Assert.That( elapsedFrames, Is.EqualTo(1), $"No frames must be skipped when throttling is disabled!");
@@ -47,7 +47,7 @@ public class ThrottlingRunnerShould
         int frameCount = Time.frameCount;
         int elapsedFrames = 0;
 
-        yield return CoroutineHelpers.RunThrowingIterator(ThrottlingTest(totalMsDuration), null, counter.EvaluateTimeBudget);
+        yield return DCLCoroutineRunner.Run(ThrottlingTest(totalMsDuration), null, counter.EvaluateTimeBudget);
 
         elapsedFrames = Time.frameCount - frameCount;
 
