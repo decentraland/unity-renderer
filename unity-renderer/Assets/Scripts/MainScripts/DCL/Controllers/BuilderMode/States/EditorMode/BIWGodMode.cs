@@ -88,8 +88,8 @@ public class BIWGodMode : BIWMode
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
-        multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
-        multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
+        multiSelectionInputAction.OnStarted += MultiSelectionInputStart;
+        multiSelectionInputAction.OnFinished += MultiSelectionInputEnd;
 
         gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
         gizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
@@ -104,6 +104,9 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
         gizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
+        
+        multiSelectionInputAction.OnStarted -= MultiSelectionInputStart;
+        multiSelectionInputAction.OnFinished -= MultiSelectionInputEnd;
 
         BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
         BIWInputWrapper.OnMouseUp -= OnInputMouseUp;
@@ -148,6 +151,16 @@ public class BIWGodMode : BIWMode
             BIWUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.25f));
             BIWUtils.DrawScreenRectBorder(rect, 1, Color.white);
         }
+    }
+
+    private void MultiSelectionInputStart(DCLAction_Hold action)
+    {
+      ChangeSnapTemporaryActivated();
+    }
+    
+    private void MultiSelectionInputEnd(DCLAction_Hold action)
+    {
+        ChangeSnapTemporaryDeactivated();
     }
 
     internal void CheckOutlineEntitiesInSquareSelection(Vector3 mousePosition)
