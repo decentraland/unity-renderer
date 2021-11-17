@@ -229,6 +229,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Arrange
         modeController.SetSnapActive(false);
         selectedEntities.Add(new BIWEntity());
+        godMode.selectedEntities = selectedEntities;
 
         //Act
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
@@ -243,6 +244,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Arrange
         modeController.SetSnapActive(false);
         selectedEntities.Add(new BIWEntity());
+        godMode.selectedEntities = selectedEntities;
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 
         //Act
