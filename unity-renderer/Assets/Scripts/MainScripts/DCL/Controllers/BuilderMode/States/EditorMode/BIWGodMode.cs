@@ -155,7 +155,7 @@ public class BIWGodMode : BIWMode
 
     private void MultiSelectionInputStart(DCLAction_Hold action)
     {
-      ChangeSnapTemporaryActivated();
+        ChangeSnapTemporaryActivated();
     }
     
     private void MultiSelectionInputEnd(DCLAction_Hold action)
