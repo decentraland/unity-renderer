@@ -60,7 +60,7 @@ namespace DCL.Builder
         
         [Header("Prefab references")]
         [SerializeField] private GameObject loadingImgGameObject;
-        [SerializeField] private GameObject outdatedGameObject;
+        [SerializeField] internal GameObject outdatedGameObject;
         
         [SerializeField] internal TextMeshProUGUI sceneNameTxt;
         [SerializeField] internal TextMeshProUGUI sceneCoordsTxt;

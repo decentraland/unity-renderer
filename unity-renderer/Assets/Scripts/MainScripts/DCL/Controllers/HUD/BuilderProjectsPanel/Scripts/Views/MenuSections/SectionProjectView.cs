@@ -46,6 +46,7 @@ internal class SectionProjectView : MonoBehaviour, IDisposable
     private void OnDestroy()
     {
         isDestroyed = true;
+        buttonNoProjectsCTA.onClick.RemoveAllListeners();
         scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
     }
 
