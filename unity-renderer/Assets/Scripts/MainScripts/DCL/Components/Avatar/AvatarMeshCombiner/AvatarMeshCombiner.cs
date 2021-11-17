@@ -124,8 +124,12 @@ namespace DCL
 
             finalMesh.bindposes = bindPoses;
 
+            //var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeightsV2( layers );
+            //finalMesh.boneWeights = boneWeights;
+
             var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
             finalMesh.boneWeights = boneWeights.ToArray();
+
 
             var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);

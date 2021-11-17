@@ -68,6 +68,53 @@ namespace DCL
             return result;
         }
 
+
+        /// <summary>
+        /// This method iterates over all the renderers contained in the given CombineLayer list, and
+        /// outputs an array of all the BoneWeights of the renderers in order.
+        ///
+        /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
+        /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
+        /// not the same skeleton.
+        /// </summary>
+        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
+        /// <returns>A list of BoneWeights that share the same skeleton.</returns>
+        public static BoneWeight[] ComputeBoneWeightsV2( List<CombineLayer> layers )
+        {
+            int layersCount = layers.Count;
+
+            int resultSize = 0;
+
+            List<BoneWeight[]> boneWeightArrays = new List<BoneWeight[]>(10);
+
+            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
+            {
+                CombineLayer layer = layers[layerIndex];
+                var layerRenderers = layer.renderers;
+
+                int layerRenderersCount = layerRenderers.Count;
+
+                for (int i = 0; i < layerRenderersCount; i++)
+                {
+                    var boneWeights = layerRenderers[i].sharedMesh.boneWeights;
+                    boneWeightArrays.Add(boneWeights);
+                    resultSize += boneWeights.Length;
+                }
+            }
+
+            BoneWeight[] result = new BoneWeight[resultSize];
+
+            int copyOffset = 0;
+            for ( int i = 0; i < boneWeightArrays.Count; i++ )
+            {
+                Array.Copy(boneWeightArrays[i], result, copyOffset);
+                copyOffset += boneWeightArrays[i].Length;
+            }
+
+            return result;
+        }
+
+
         /// <summary>
         /// FlattenMaterials take a CombineLayer list and returns a FlattenedMaterialsData object.
         /// 
