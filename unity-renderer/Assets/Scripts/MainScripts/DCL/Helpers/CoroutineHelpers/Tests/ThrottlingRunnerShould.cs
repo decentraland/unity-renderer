@@ -7,13 +7,42 @@ using UnityEngine.TestTools;
 public class ThrottlingRunnerShould
 {
     private ThrottlingCounter counter;
+    private float currentMockedTime;
+    private int lastFrame;
+
+    float TimeMocker()
+    {
+        // Fake random time pass each time the time is queried by the coroutine runner
+        currentMockedTime += Random.Range(0.0001f, 0.0002f);
+
+        if ( lastFrame != Time.frameCount )
+        {
+            // Fake new frame elapsed time. 
+            currentMockedTime += Random.Range(0.010f, 0.016f);
+            lastFrame = Time.frameCount;
+        }
+
+        return currentMockedTime;
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        // The time is just mocked to avoid flaky tests due to erratic running times on CI.
+        DCLCoroutineRunner.realtimeSinceStartup = TimeMocker;
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        DCLCoroutineRunner.realtimeSinceStartup = () => Time.realtimeSinceStartup;
+    }
 
     [UnityTest]
     public IEnumerator SkipFramesAccordingToBudgetWithMultipleCases()
     {
         counter = new ThrottlingCounter();
         counter.enabled = true;
-        counter.evaluationTimeElapsedCap = 5 / 1000.0;
 
         yield return SkipFramesAccordingToBudget(100, 2, 50, 5);
         yield return SkipFramesAccordingToBudget(100, 10, 10, 3);
@@ -44,6 +73,9 @@ public class ThrottlingRunnerShould
         counter.budgetPerFrame = budgetMs / 1000.0;
         counter.Reset();
 
+        currentMockedTime = 0;
+        lastFrame = Time.frameCount;
+
         int frameCount = Time.frameCount;
         int elapsedFrames = 0;
 
@@ -53,7 +85,7 @@ public class ThrottlingRunnerShould
 
         int elapsedFramesAccuracy = Mathf.Abs(elapsedFrames - framesThatShouldBeSkipped);
 
-        Assert.That( elapsedFramesAccuracy, Is.LessThanOrEqualTo(errorThreshold), $"An approx. value of {framesThatShouldBeSkipped} frames must be skipped when throttling {totalMsDuration} ms with {budgetMs} ms as time budget! (error threshold: {errorThreshold})");
+        Assert.That( elapsedFramesAccuracy, Is.LessThanOrEqualTo(errorThreshold), $"An approx. value of {framesThatShouldBeSkipped} frames must be skipped when throttling {totalMsDuration} ms with {budgetMs} ms as time budget! (elapsed: {elapsedFrames} - error threshold: {errorThreshold})");
     }
 
     IEnumerator ThrottlingTest(double msTotalDuration)
@@ -61,20 +93,22 @@ public class ThrottlingRunnerShould
         var skipFrameCoroutine = new SkipFrameIfDepletedTimeBudget();
         yield return skipFrameCoroutine;
 
-        double startTime = Time.realtimeSinceStartupAsDouble;
+        double startTime = currentMockedTime;
         double secsDuration = msTotalDuration / 1000.0;
 
-        while (Time.realtimeSinceStartupAsDouble - startTime < secsDuration)
+        while (currentMockedTime - startTime < secsDuration)
         {
-            int frameCount = Time.frameCount;
-            double frameStart = Time.realtimeSinceStartupAsDouble;
+            int lastFrame = Time.frameCount;
+            float mockedStartTime = currentMockedTime;
+
             yield return skipFrameCoroutine;
 
-            // We skipped a frame, so we add this frame time to the total time evaluation
-            // This way, we can ensure the skipped frames can be evaluated consistently no matter
-            // FPS values.
-            if ( frameCount != Time.frameCount )
-                secsDuration += Time.realtimeSinceStartupAsDouble - frameStart;
+            // This test must calculate the skipped frames between a interval, but this
+            // interval shouldn't take into account the frame delta.
+
+            // To account for this error, a new frame delta time is added to the total duration.
+            if ( lastFrame != Time.frameCount )
+                secsDuration += currentMockedTime - mockedStartTime;
         }
     }
 }

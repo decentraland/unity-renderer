@@ -10,7 +10,7 @@ namespace DCL
     /// </summary>
     public static class DCLCoroutineRunner
     {
-        public static Func<float> realtimeSinceStartup => () => Time.realtimeSinceStartup;
+        public static Func<float> realtimeSinceStartup = () => Time.realtimeSinceStartup;
 
         /// <summary>
         /// Run an iterator function that might throw an exception. Call the callback with the exception
@@ -68,8 +68,9 @@ namespace DCL
                     yield break;
                 }
 
-                float elapsedTime = realtimeSinceStartup() - currentTime;
-                currentTime = realtimeSinceStartup();
+                float newCurrentTime = realtimeSinceStartup();
+                float elapsedTime = newCurrentTime - currentTime;
+                currentTime = newCurrentTime;
 
                 // NOTE: SkipFrameIfDepletedTimeBudget object type is used as a special token here and will not
                 // yield unless the time budget is exceeded for this frame.

@@ -24,10 +24,10 @@ namespace DCL
 
             if ( timeBudgetCounter > budgetPerFrame )
             {
-                logger.Verbose($"Elapsed: {elapsedTime * 1000} - Counter: {timeBudgetCounter * 1000} - Total: {budgetPerFrame * 1000} - (Skipping frame)");
-
                 // We don't set the timeBudgetCounter to zero to avoid compounding of precision errors.
                 timeBudgetCounter -= budgetPerFrame;
+
+                logger.Verbose($"Elapsed: {elapsedTime * 1000} - Counter: {timeBudgetCounter * 1000} - Total: {budgetPerFrame * 1000} - (Skipping frame)");
                 return true;
             }
 
