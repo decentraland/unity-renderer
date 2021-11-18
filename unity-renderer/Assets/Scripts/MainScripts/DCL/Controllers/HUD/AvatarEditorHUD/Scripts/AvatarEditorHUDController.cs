@@ -99,36 +99,36 @@ public class AvatarEditorHUDController : IHUD
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
         CatalogController.RequestOwnedWearables(userProfile.userId)
-            .Then((ownedWearables) =>
-            {
-                ownedWearablesAlreadyLoaded = true;
-                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                LoadUserProfile(userProfile, true);
-                view.ShowCollectiblesLoadingSpinner(false);
-            })
-            .Catch((error) =>
-            {
-                ownedWearablesRemainingRequests--;
-                if (ownedWearablesRemainingRequests > 0)
-                {
-                    Debug.LogWarning("Retrying owned wereables loading...");
-                    LoadOwnedWereables(userProfile);
-                }
-                else
-                {
-                    NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
-                    {
-                        message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                        type = DCL.NotificationModel.Type.GENERIC,
-                        timer = 10f,
-                        destroyOnFinish = true
-                    });
+                         .Then((ownedWearables) =>
+                         {
+                             ownedWearablesAlreadyLoaded = true;
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             LoadUserProfile(userProfile, true);
+                             view.ShowCollectiblesLoadingSpinner(false);
+                         })
+                         .Catch((error) =>
+                         {
+                             ownedWearablesRemainingRequests--;
+                             if (ownedWearablesRemainingRequests > 0)
+                             {
+                                 Debug.LogWarning("Retrying owned wereables loading...");
+                                 LoadOwnedWereables(userProfile);
+                             }
+                             else
+                             {
+                                 NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
+                                 {
+                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                                     type = DCL.NotificationModel.Type.GENERIC,
+                                     timer = 10f,
+                                     destroyOnFinish = true
+                                 });
 
-                    view.ShowCollectiblesLoadingSpinner(false);
-                    view.ShowCollectiblesLoadingRetry(true);
-                    Debug.LogError(error);
-                }
-            });
+                                 view.ShowCollectiblesLoadingSpinner(false);
+                                 view.ShowCollectiblesLoadingRetry(true);
+                                 Debug.LogError(error);
+                             }
+                         });
     }
 
     private void QueryNftCollections(string userId)
@@ -137,12 +137,12 @@ public class AvatarEditorHUDController : IHUD
             return;
 
         DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
-            .Then((nfts) => ownedNftCollectionsL1 = nfts)
-            .Catch((error) => Debug.LogError(error));
+           .Then((nfts) => ownedNftCollectionsL1 = nfts)
+           .Catch((error) => Debug.LogError(error));
 
         DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
-            .Then((nfts) => ownedNftCollectionsL2 = nfts)
-            .Catch((error) => Debug.LogError(error));
+           .Then((nfts) => ownedNftCollectionsL2 = nfts)
+           .Catch((error) => Debug.LogError(error));
     }
 
     public void RetryLoadOwnedWearables()
@@ -556,7 +556,9 @@ public class AvatarEditorHUDController : IHUD
             var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
             asset.renderScale = prevRenderScale;
 
-            CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+            if (DataStore.i.isSignUpFlow.Get())
+                CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+
             DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
 
             OnClose?.Invoke();
@@ -577,7 +579,9 @@ public class AvatarEditorHUDController : IHUD
             prevRenderScale = asset.renderScale;
             asset.renderScale = 1.0f;
 
-            CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
+            if (DataStore.i.isSignUpFlow.Get())
+                CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
+
             DataStore.i.isPlayerRendererLoaded.OnChange += PlayerRendererLoaded;
 
             OnOpen?.Invoke();

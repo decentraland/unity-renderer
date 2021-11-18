@@ -1,9 +1,8 @@
 using DCL;
 using DCL.Helpers;
+using ExploreV2Analytics;
 using System.Collections.Generic;
 using System.Linq;
-using ExploreV2Analytics;
-using UnityEngine;
 using Variables.RealmsInfo;
 
 /// <summary>
@@ -15,9 +14,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal IExploreV2MenuComponentView view;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
-    internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
+
+    internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
+    internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
 
     public void Initialize()
     {
@@ -39,6 +40,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
+
+        avatarEditorVisible.OnChange += IsAvatarEditorVisibleChanged;
+        IsAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
     }
 
     internal void CreateControllers()
@@ -58,6 +62,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
 
         currentOpenSection = section;
+
+        avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
     }
 
     public void Dispose()
@@ -65,6 +71,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         isOpen.OnChange -= IsOpenChanged;
+        avatarEditorVisible.OnChange -= IsAvatarEditorVisibleChanged;
 
         if (view != null)
         {
@@ -84,7 +91,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void SetVisibility(bool visible) { isOpen.Set(visible); }
 
-    private void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+    internal void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
 
     internal void SetVisibility_Internal(bool visible)
     {
@@ -96,16 +103,33 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             Utils.UnlockCursor();
             AudioScriptableObjects.dialogOpen.Play(true);
             AudioScriptableObjects.listItemAppear.ResetPitch();
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
         }
         else
         {
             AudioScriptableObjects.dialogClose.Play(true);
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+            avatarEditorVisible.Set(false);
+            exploreV2Analytics.anyActionExecutedFromLastOpen = false;
         }
 
-        if (!visible)
-            exploreV2Analytics.anyActionExecutedFromLastOpen = false;
-
         view.SetVisible(visible);
+    }
+
+    internal void IsAvatarEditorVisibleChanged(bool current, bool previous)
+    {
+        if (current)
+        {
+            if (!DataStore.i.isSignUpFlow.Get() && HUDController.i != null)
+                view.ConfigureBackpackSection(HUDController.i.avatarEditorHud.view);
+
+            SetVisibility(true);
+            view.GoToSection(ExploreSection.Backpack);
+        }
+        else if (currentOpenSection == ExploreSection.Backpack)
+        {
+            SetVisibility(false);
+        }
     }
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)

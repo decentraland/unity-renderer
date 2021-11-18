@@ -1,7 +1,5 @@
-using ExploreV2Analytics;
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 public interface IExploreV2MenuComponentView : IDisposable
 {
@@ -40,11 +38,24 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// </summary>
     /// <param name="isActive">True to show it.</param>
     void SetVisible(bool isActive);
+
+    /// <summary>
+    /// Open a section.
+    /// </summary>
+    /// <param name="section">Section to go.</param>
+    void GoToSection(ExploreSection section);
+
+    /// <summary>
+    /// Encapsulates the AvatarEditorHUD into the backpack section.
+    /// </summary>
+    /// <param name="view">The AvatarEditorHUD view.</param>
+    void ConfigureBackpackSection(AvatarEditorHUDView view);
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
     internal const int EXPLORE_SECTION_INDEX = 0;
+    internal const int BACKPACK_SECTION_INDEX = 2;
 
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
@@ -55,15 +66,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
+    [SerializeField] internal BackpackSectionComponentView backpackSection;
 
     public GameObject go => this != null ? gameObject : null;
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
+    public IBackpackSectionComponentView currentBackpackSection => backpackSection;
 
     public event Action OnInitialized;
     public event Action OnCloseButtonPressed;
     public event Action<ExploreSection> OnSectionOpen;
+
+    internal ExploreSection currentSectionIndex = ExploreSection.Explore;
 
     public override void Start()
     {
@@ -89,13 +104,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         if (isActive)
         {
             Show();
-            sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.SelectToggle(true);
+            GoToSection(currentSectionIndex);
         }
         else
         {
             Hide();
             placesAndEventsSection.gameObject.SetActive(false);
         }
+    }
+
+    public void GoToSection(ExploreSection section)
+    {
+        currentSectionIndex = section;
+        sectionSelector.GetSection((int)section)?.SelectToggle(true);
     }
 
     internal void CreateSectionSelectorMappings()
@@ -106,11 +127,31 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            placesAndEventsSection.gameObject.SetActive(isOn);
 
                            if (isOn)
-                               OnSectionOpen?.Invoke(ExploreSection.Explore);
+                           {
+                               currentSectionIndex = ExploreSection.Explore;
+                               OnSectionOpen?.Invoke(currentSectionIndex);
+                           }
+                       });
+
+        sectionSelector.GetSection(BACKPACK_SECTION_INDEX)
+                       ?.onSelect.AddListener((isOn) =>
+                       {
+                           if (isOn)
+                           {
+                               backpackSection.Show();
+                               currentSectionIndex = ExploreSection.Backpack;
+                               OnSectionOpen?.Invoke(currentSectionIndex);
+                           }
+                           else
+                               backpackSection.Hide();
                        });
     }
 
-    internal void RemoveSectionSelectorMappings() { sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.onSelect.RemoveAllListeners(); }
+    internal void RemoveSectionSelectorMappings()
+    {
+        sectionSelector.GetSection(EXPLORE_SECTION_INDEX)?.onSelect.RemoveAllListeners();
+        sectionSelector.GetSection(BACKPACK_SECTION_INDEX)?.onSelect.RemoveAllListeners();
+    }
 
     internal void ConfigureCloseButton()
     {
@@ -129,4 +170,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         return exploreV2View;
     }
+
+    public void ConfigureBackpackSection(AvatarEditorHUDView view) { backpackSection.EncapsulateAvatarEditorHUD(view); }
 }
