@@ -29,6 +29,7 @@ public class AvatarEditorHUDController : IHUD
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.isPlayerRendererLoaded.Get();
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+    BaseVariable<Transform> showBackpackInMenuMode => DataStore.i.exploreV2.showBackpackInMenuMode;
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
@@ -58,6 +59,9 @@ public class AvatarEditorHUDController : IHUD
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
         OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
         view.OnCloseActionTriggered += DiscardAndClose;
+
+        showBackpackInMenuMode.OnChange += ShowBackpackInMenuModeChanged;
+        ShowBackpackInMenuModeChanged(showBackpackInMenuMode.Get(), null);
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
         hairColorList = Resources.Load<ColorList>("HairColor");
@@ -596,6 +600,7 @@ public class AvatarEditorHUDController : IHUD
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
+        showBackpackInMenuMode.OnChange -= ShowBackpackInMenuModeChanged;
 
         CleanUp();
     }
@@ -661,4 +666,22 @@ public class AvatarEditorHUDController : IHUD
     }
 
     public void ToggleVisibility() { SetVisibility(!view.isOpen); }
+
+    private void ShowBackpackInMenuModeChanged(Transform current, Transform previous)
+    {
+        if (current == null)
+            return;
+
+        view.transform.SetParent(current);
+        view.transform.localScale = Vector3.one;
+        view.SetExitButtonActive(false);
+
+        RectTransform rectTransform = view.transform as RectTransform;
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.localPosition = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+        rectTransform.offsetMin = Vector2.zero;
+    }
 }

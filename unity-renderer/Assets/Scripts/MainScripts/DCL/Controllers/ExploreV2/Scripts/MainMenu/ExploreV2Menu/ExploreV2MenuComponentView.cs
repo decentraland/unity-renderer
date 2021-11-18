@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using UnityEngine;
 
@@ -48,8 +49,7 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <summary>
     /// Encapsulates the AvatarEditorHUD into the backpack section.
     /// </summary>
-    /// <param name="view">The AvatarEditorHUD view.</param>
-    void ConfigureBackpackSection(AvatarEditorHUDView view);
+    void ConfigureBackpackSection();
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -72,7 +72,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
-    public IBackpackSectionComponentView currentBackpackSection => backpackSection;
 
     public event Action OnInitialized;
     public event Action OnCloseButtonPressed;
@@ -171,5 +170,5 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         return exploreV2View;
     }
 
-    public void ConfigureBackpackSection(AvatarEditorHUDView view) { backpackSection.EncapsulateAvatarEditorHUD(view); }
+    public void ConfigureBackpackSection() { DataStore.i.exploreV2.showBackpackInMenuMode.Set(backpackSection.transform, true); }
 }

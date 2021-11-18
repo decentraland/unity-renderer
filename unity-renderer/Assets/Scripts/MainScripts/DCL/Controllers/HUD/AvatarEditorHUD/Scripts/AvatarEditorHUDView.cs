@@ -435,4 +435,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
 
     public void ShowCollectiblesLoadingRetry(bool isActive) { collectiblesItemSelector.ShowRetryLoading(isActive); }
+
+    public void SetExitButtonActive(bool isActive) { exitButton.gameObject.SetActive(isActive); }
 }

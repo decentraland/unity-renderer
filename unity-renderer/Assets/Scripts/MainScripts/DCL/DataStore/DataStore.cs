@@ -1,4 +1,4 @@
-﻿using DCL.Builder;
+using DCL.Builder;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -145,6 +145,7 @@ namespace DCL
         {
             public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
+            public readonly BaseVariable<Transform> showBackpackInMenuMode = new BaseVariable<Transform>(null);
         }
 
         public class DataStore_FeatureFlag

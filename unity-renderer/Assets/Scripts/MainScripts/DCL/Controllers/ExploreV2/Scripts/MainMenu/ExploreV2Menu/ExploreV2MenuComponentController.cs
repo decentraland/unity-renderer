@@ -120,10 +120,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         if (current)
         {
-            if (!DataStore.i.isSignUpFlow.Get() &&
-                HUDController.i != null &&
-                HUDController.i.avatarEditorHud != null)
-                view.ConfigureBackpackSection(HUDController.i.avatarEditorHud.view);
+            if (!DataStore.i.isSignUpFlow.Get())
+                view.ConfigureBackpackSection();
 
             SetVisibility(true);
             view.GoToSection(ExploreSection.Backpack);
