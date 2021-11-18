@@ -265,7 +265,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_0:
-        m_Texture: {fileID: 2800000, guid: e115b258140375c48b22b4bdf6b4ae5b, type: 3}
+        m_Texture: {fileID: 2800000, guid: b0984e844db4deb41b7b3dd8e8bf688e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _tex_1:
@@ -318,7 +318,7 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
     - _LAYERTYPE_0: 0
     - _RenderDistance_0: 0
-    - _RenderDistance_1: 0
+    - _RenderDistance_1: 2.7
     - _RenderDistance_2: 3.8
     - _RenderDistance_3: 0
     - _RenderDistance_4: 0
@@ -335,7 +335,7 @@ Material:
     - _hasFade_0: 1
     - _hasFade_1: 0
     - _hasFade_2: 0
-    - _horizonHeight: 0.23
+    - _horizonHeight: 0.51
     - _horizonMaskSize: 5
     - _horizonWidth: -0.026
     - _isRadial00: 0
@@ -356,7 +356,7 @@ Material:
     - _lightIntensity01: 0
     - _lightIntensity02: 0
     - _lightIntensity_0: 0
-    - _lightIntensity_1: 0.94
+    - _lightIntensity_1: 0.227
     - _lightIntensity_2: 0
     - _lightIntensity_3: 0
     - _lightIntensity_4: 0
@@ -408,7 +408,7 @@ Material:
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
     - _color_0: {r: 1, g: 1, b: 1, a: 1}
-    - _color_1: {r: 51.836452, g: 51.836452, b: 51.836452, a: 1}
+    - _color_1: {r: 871.40393, g: 0, b: 0, a: 1}
     - _color_2: {r: 0.37638143, g: 0.31011927, b: 0.6509434, a: 0}
     - _color_3: {r: 0, g: 6.4980197, b: 0.42937273, a: 0}
     - _color_4: {r: 11.313707, g: 3.329958, b: 0, a: 0}
@@ -422,7 +422,7 @@ Material:
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
-    - _groundColor: {r: 0.19023663, g: 0.3009484, b: 0.4245282, a: 1}
+    - _groundColor: {r: 0.19215687, g: 0.42352942, b: 0.35525286, a: 1}
     - _horizonColor: {r: 0.034754362, g: 0.49483293, b: 0.6698113, a: 1}
     - _horizonMaskOffset: {r: 0, g: 0, b: 0, a: 0}
     - _horizonMaskValues: {r: 14.89, g: 4.25, b: 0, a: 0}
@@ -461,8 +461,8 @@ Material:
     - _tilingAndOffset00: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_0: {r: 3, g: 3, b: -1.29, a: 16.7}
-    - _tilingAndOffset_1: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _tilingAndOffset_0: {r: 1, g: 1, b: 83.09, a: 16.7}
+    - _tilingAndOffset_1: {r: 0.2, g: 0.2, b: 0, a: 0}
     - _tilingAndOffset_2: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _tilingAndOffset_3: {r: 1, g: 1, b: 0, a: -27.21}
     - _tilingAndOffset_4: {r: 0.5, g: 0.25, b: 0, a: 0}

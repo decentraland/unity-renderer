@@ -343,7 +343,7 @@ MonoBehaviour:
   - enabled: 0
     slotID: 0
     slotName: 
-    expandedInEditor: 0
+    expandedInEditor: 1
     startTime: 0
     endTime: 0
     layers:
@@ -428,7 +428,7 @@ MonoBehaviour:
   - enabled: 0
     slotID: 1
     slotName: 
-    expandedInEditor: 0
+    expandedInEditor: 1
     startTime: 0
     endTime: 0
     layers:
@@ -521,7 +521,7 @@ MonoBehaviour:
     - layerType: 2
       enabled: 1
       nameInEditor: Sun
-      expandedInEditor: 0
+      expandedInEditor: 1
       timeSpan_start: 5.1
       timeSpan_End: 19.9
       fadingInTime: 0
