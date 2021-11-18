@@ -11,7 +11,7 @@ namespace DCL.Tutorial
     /// <summary>
     /// Controller that handles all the flow related to the onboarding tutorial.
     /// </summary>
-    public class TutorialController : PluginFeature
+    public class TutorialController : IPlugin
     {
         [Serializable]
         public class TutorialInitializationMessage
@@ -73,10 +73,9 @@ namespace DCL.Tutorial
 
         internal bool userAlreadyDidTheTutorial { get; set; }
 
-        public override void Initialize()
+        public void Enable()
         {
-            base.Initialize();
-
+            enabled = true;
             tutorialView = CreateTutorialView();
             SetConfiguration(tutorialView.configuration);
         }
@@ -113,10 +112,8 @@ namespace DCL.Tutorial
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
-            base.Dispose();
-
             SetTutorialDisabled();
 
             CommonScriptableObjects.isTaskbarHUDInitialized.OnChange -= IsTaskbarHUDInitialized_OnChange;
@@ -636,6 +633,25 @@ namespace DCL.Tutorial
                 hudController?.minimapHud?.SetVisibility(true);
                 hudController?.profileHud?.SetVisibility(true);
             }
+        }
+
+        public bool enabled { get; private set;  } = false;
+
+        public void Disable()
+        {
+            enabled = false;
+        }
+
+        public void OnGUI()
+        {
+        }
+
+        public void Update()
+        {
+        }
+
+        public void LateUpdate()
+        {
         }
     }
 }

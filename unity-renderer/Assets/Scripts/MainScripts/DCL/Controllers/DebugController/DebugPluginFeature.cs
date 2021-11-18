@@ -4,18 +4,38 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class DebugPluginFeature : PluginFeature
+    public class DebugPluginFeature : IPlugin
     {
         private DebugController debugController;
         private DebugBridge debugBridge;
         private Promise<KernelConfigModel> kernelConfigPromise;
 
-        public override void Initialize()
+        public bool enabled { get; private set; } = false;
+
+        public void Enable()
         {
-            base.Initialize();
+            enabled = true;
             SetupSystems();
             SetupKernelConfig();
         }
+
+        public void Disable()
+        {
+            enabled = false;
+        }
+
+        public void OnGUI()
+        {
+        }
+
+        public void Update()
+        {
+        }
+
+        public void LateUpdate()
+        {
+        }
+
         private void SetupSystems()
         {
             var botsController = new BotsController();
@@ -23,6 +43,7 @@ namespace DCL
             debugBridge = GameObject.Find("Main").AddComponent<DebugBridge>(); // todo: unuglyfy this
             debugBridge.Setup(debugController);
         }
+
         private void SetupKernelConfig()
         {
             kernelConfigPromise = KernelConfig.i.EnsureConfigInitialized();
@@ -30,7 +51,9 @@ namespace DCL
             kernelConfigPromise.Then(OnKernelConfigChanged);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
+
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { OnKernelConfigChanged(current); }
+
         private void OnKernelConfigChanged(KernelConfigModel kernelConfig)
         {
             var network = kernelConfig.network;
@@ -44,20 +67,21 @@ namespace DCL
                 debugController.HideInfoPanel();
             }
         }
+
         private bool IsInfoPanelVisible(string network)
         {
-            #if UNITY_EDITOR
-                return true;
-            #endif
+#if UNITY_EDITOR
+            return true;
+#endif
             return !network.ToLower().Contains("mainnet");
         }
+
         private static string GetRealmName() { return DataStore.i.playerRealm.Get()?.serverName; }
 
-        public override void Dispose()
+        public void Dispose()
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
             kernelConfigPromise?.Dispose();
-            base.Dispose();
         }
     }
 }

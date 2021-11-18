@@ -21,7 +21,7 @@ namespace DCL
         private PerformanceMetricsController performanceMetricsController;
         private IKernelCommunication kernelCommunication;
 
-        private PluginSystem pluginSystem;
+        private PluginSystemV2 pluginSystem;
 
         protected virtual void Awake()
         {
@@ -43,7 +43,7 @@ namespace DCL
                 SetupEnvironment();
             }
 
-            pluginSystem = new PluginSystem();
+            pluginSystem = PluginSystemFactory.Create();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -114,11 +114,12 @@ namespace DCL
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.OnDestroy();
+            pluginSystem?.Dispose();
             kernelCommunication?.Dispose();
         }
 
         private void OnGUI() { pluginSystem?.OnGUI(); }
+
         protected virtual void InitializeSceneDependencies()
         {
             var bridges = Init("Bridges");

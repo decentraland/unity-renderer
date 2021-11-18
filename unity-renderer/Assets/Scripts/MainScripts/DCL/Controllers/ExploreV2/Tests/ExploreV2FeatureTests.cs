@@ -22,7 +22,7 @@ public class ExploreV2FeatureTests
     public void InitializeCorrectly()
     {
         // Act
-        exploreV2Feature.Initialize();
+        exploreV2Feature.Enable();
 
         // Assert
         exploreV2MenuComponentController.Received().Initialize();

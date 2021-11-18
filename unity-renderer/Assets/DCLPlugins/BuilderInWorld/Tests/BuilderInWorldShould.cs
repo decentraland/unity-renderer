@@ -40,9 +40,9 @@ public class BuilderInWorldShould
     public void InitializePartsCorrectly()
     {
         //Act
-        builderInWorld.Initialize();
+        builderInWorld.Enable();
 
-        //Arrange
+        //Assert
         builderInWorld.editor.Received(1).Initialize(builderInWorld.context);
     }
 
@@ -52,7 +52,7 @@ public class BuilderInWorldShould
         //Act
         builderInWorld.Dispose();
 
-        //Arrange
+        //Assert
         builderInWorld.editor.Received(1).Dispose();
     }
 
@@ -62,7 +62,7 @@ public class BuilderInWorldShould
         //Act
         builderInWorld.Update();
 
-        //Arrange
+        //Assert
         builderInWorld.editor.Received(1).Update();
     }
 
@@ -72,7 +72,7 @@ public class BuilderInWorldShould
         //Act
         builderInWorld.LateUpdate();
 
-        //Arrange
+        //Assert
         builderInWorld.editor.Received(1).LateUpdate();
     }
 
@@ -82,7 +82,7 @@ public class BuilderInWorldShould
         //Act
         builderInWorld.OnGUI();
 
-        //Arrange
+        //Assert
         builderInWorld.editor.Received(1).OnGUI();
     }
 }

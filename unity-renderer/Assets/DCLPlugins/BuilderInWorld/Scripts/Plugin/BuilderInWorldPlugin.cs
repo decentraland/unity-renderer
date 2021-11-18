@@ -4,7 +4,7 @@ using DCL;
 using DCL.Builder;
 using UnityEngine;
 
-public class BuilderInWorldPlugin : PluginFeature
+public class BuilderInWorldPlugin : IPlugin
 {
     private const string DEV_FLAG_NAME = "builder-dev";
     internal IBIWEditor editor;
@@ -49,10 +49,11 @@ public class BuilderInWorldPlugin : PluginFeature
 
     public BuilderInWorldPlugin(IContext context) { this.context = context; }
 
-    public override void Initialize()
-    {
-        base.Initialize();
+    public bool enabled { get; private set; } = false;
 
+    public void Enable()
+    {
+        enabled = true;
         //We init the lands so we don't have a null reference
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
 
@@ -73,16 +74,19 @@ public class BuilderInWorldPlugin : PluginFeature
             HUDController.i.OnTaskbarCreation += TaskBarCreated;
     }
 
+    public void Disable()
+    {
+        enabled = false;
+    }
+
     private void TaskBarCreated()
     {
         HUDController.i.OnTaskbarCreation -= TaskBarCreated;
         HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
     }
 
-    public override void Dispose()
+    public void Dispose()
     {
-        base.Dispose();
-
         if (HUDController.i != null)
             HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
@@ -93,22 +97,19 @@ public class BuilderInWorldPlugin : PluginFeature
         context.Dispose();
     }
 
-    public override void Update()
+    public void Update()
     {
-        base.Update();
         editor.Update();
         sceneManager.Update();
     }
 
-    public override void LateUpdate()
+    public void LateUpdate()
     {
-        base.LateUpdate();
         editor.LateUpdate();
     }
 
-    public override void OnGUI()
+    public void OnGUI()
     {
-        base.OnGUI();
         editor.OnGUI();
     }
 }

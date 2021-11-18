@@ -1,16 +1,34 @@
 using UnityEngine.Assertions;
 using UnityEngine.XR;
 
-public class ShortcutsFeature : PluginFeature
+public class ShortcutsFeature : IPlugin
 {
     internal ShortcutsController shortcutsController;
 
-    public override void Initialize()
+    public bool enabled { get; private set;  } = false;
+
+    public void Enable()
     {
-        base.Initialize();
-        Dispose();
+        enabled = true;
         shortcutsController = new ShortcutsController();
     }
 
-    public override void Dispose() { shortcutsController?.Dispose(); }
+    public void Disable()
+    {
+        enabled = false;
+    }
+
+    public void OnGUI()
+    {
+    }
+
+    public void Update()
+    {
+    }
+
+    public void LateUpdate()
+    {
+    }
+
+    public void Dispose() { shortcutsController?.Dispose(); }
 }
