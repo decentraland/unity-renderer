@@ -284,21 +284,15 @@ namespace DCL.Builder
 
         private void AddEntityNameComponent(CatalogItem catalogItem, BIWEntity entity)
         {
-            DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
-            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
-         
             entityHandler.SetEntityName(entity, catalogItem.name, false);
         }
 
         private void AddLockedComponent(BIWEntity entity)
         {
-            DCLLockedOnEdit entityLocked = (DCLLockedOnEdit) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
-            if (entity.isFloor)
-                entityLocked.SetIsLocked(true);
-            else
-                entityLocked.SetIsLocked(false);
-
-            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, entityLocked.id);
+            DCLLockedOnEdit.Model model = new DCLLockedOnEdit.Model();
+            model.isLocked = entity.isFloor;
+            
+            EntityComponentsUtils.AddLockedOnEditComponent(sceneToEdit, entity.rootEntity, model, Guid.NewGuid().ToString());
         }
 
         private void AddShape(CatalogItem catalogItem, BIWEntity entity)

@@ -45,6 +45,16 @@ namespace DCL.Builder
             scene.SharedComponentAttach(entity.entityId, name.id);
             return name;
         }
+        
+        public static DCLLockedOnEdit AddLockedOnEditComponent(IParcelScene scene, IDCLEntity entity, DCLLockedOnEdit.Model model, string id = "")
+        {
+            id = EnsureId(id);
+            
+            DCLLockedOnEdit lockedOnEditComponent = (DCLLockedOnEdit) scene.SharedComponentCreate(id, Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
+            lockedOnEditComponent.UpdateFromModel(model);
+            scene.SharedComponentAttach(entity.entityId, lockedOnEditComponent.id);
+            return lockedOnEditComponent;
+        }
 
         private static string EnsureId(string currentId)
         {

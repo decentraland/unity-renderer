@@ -25,6 +25,16 @@ using UnityEngine.Events;
 public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    public static void RemoveAssetsFromCurrentScene()
+    {
+        //We remove the old assets to they don't collide with the new ones
+        foreach (var catalogItem in DataStore.i.builderInWorld.currentSceneCatalogItemDict.GetValues())
+        {
+            AssetCatalogBridge.i.RemoveSceneObjectToSceneCatalog(catalogItem.id);
+        }
+        DataStore.i.builderInWorld.currentSceneCatalogItemDict.Clear();
+    }
     
     public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
