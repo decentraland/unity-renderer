@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 
 public interface INewProjectFlowView
@@ -19,6 +20,23 @@ public interface INewProjectFlowView
     /// This will show the first step of the new project flow
     /// </summary>
     void ShowNewProjectTitleAndDescrition();
+
+    /// <summary>
+    /// This will reset the view to the initial values
+    /// </summary>
+    void Reset();
+
+    /// <summary>
+    /// Hide the view
+    /// </summary>
+    void Hide();
+    
+    /// <summary>
+    /// This will return true if the new project windows is active
+    /// </summary>
+    /// <returns></returns>
+    bool IsActive();
+    
     void Dispose();
 }
 
@@ -27,47 +45,73 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
     public event Action<string, string> OnTittleAndDescriptionSet;
     public event Action<int, int> OnSizeSet;
 
-    [SerializeField] private FirstStep firstStep;
-    [SerializeField] private SecondStep secondStep;
+    [SerializeField] private NewProjectFirstStepView newProjectFirstStepView;
+    [SerializeField] private NewProjectSecondStepView newProjectSecondStepView;
 
     [SerializeField] private ModalComponentView modal;
     [SerializeField] private CarouselComponentView carrousel;
 
-    private int currentStep = 0;
+    internal int currentStep = 0;
 
     private void Awake()
     {
-        firstStep.OnBackPressed += BackPressed;
-        secondStep.OnBackPressed += BackPressed;
+        name = "_BuilderNewProjectFlowView";
+        newProjectFirstStepView.OnBackPressed += BackPressed;
+        newProjectSecondStepView.OnBackPressed += BackPressed;
 
-        firstStep.OnNextPressed += SetTittleAndDescription;
-        secondStep.OnNextPressed += SetSize;
+        newProjectFirstStepView.OnNextPressed += SetTittleAndDescription;
+        newProjectSecondStepView.OnNextPressed += SetSize;
     }
 
-    public void ShowNewProjectTitleAndDescrition() { modal.Show(); }
+    private void OnDestroy()
+    {
+        Dispose();
+    }
+
+    public void ShowNewProjectTitleAndDescrition()
+    {
+        gameObject.SetActive(true);
+        modal.Show();
+    }
+    
+    public void Reset()
+    {
+        currentStep = 0;
+        carrousel.ResetCarousel();
+    }
+    
+    public void Hide()
+    {
+        modal.Hide();
+    }
+    
+    public bool IsActive()
+    {
+        return modal.isVisible;
+    }
 
     public void Dispose()
     {
-        firstStep.OnBackPressed += BackPressed;
-        secondStep.OnBackPressed += BackPressed;
+        newProjectFirstStepView.OnBackPressed += BackPressed;
+        newProjectSecondStepView.OnBackPressed += BackPressed;
 
-        firstStep.OnNextPressed -= SetTittleAndDescription;
-        secondStep.OnNextPressed -= SetSize;
+        newProjectFirstStepView.OnNextPressed -= SetTittleAndDescription;
+        newProjectSecondStepView.OnNextPressed -= SetSize;
     }
 
-    private void SetSize(int rows, int colums)
+    internal void SetSize(int rows, int colums)
     {
+        NextPressed();
         OnSizeSet?.Invoke(rows, colums);
-        NextPressed();
     }
 
-    private void SetTittleAndDescription(string title, string description)
+    internal void SetTittleAndDescription(string title, string description)
     {
-        OnTittleAndDescriptionSet?.Invoke(title, description);
         NextPressed();
+        OnTittleAndDescriptionSet?.Invoke(title, description);
     }
 
-    private void NextPressed()
+    internal void NextPressed()
     {
         if (currentStep >= 2)
             return;
@@ -76,10 +120,10 @@ public class NewProjectFlowView : MonoBehaviour, INewProjectFlowView
         carrousel.GoToNextItem();
     }
 
-    private void BackPressed()
+    internal void BackPressed()
     {
         if (currentStep == 0)
-            modal.Hide();
+            Hide();
         else
         {
             currentStep--;

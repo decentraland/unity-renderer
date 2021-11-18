@@ -26,8 +26,8 @@ public class LimitInputField : MonoBehaviour
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TextMeshProUGUI limitText;
 
-    private bool hasPassedLimit = false;
-    private bool hasBeenEmpty = false;
+    internal bool hasPassedLimit = false;
+    internal bool hasBeenEmpty = false;
     private string currentValue = "";
 
     private void Start()
@@ -58,7 +58,7 @@ public class LimitInputField : MonoBehaviour
             inputFieldbackgroundImg.sprite = inputFieldFocusBackgroundSprite;
     }
 
-    private void InputChanged(string newValue)
+    internal void InputChanged(string newValue)
     {
         currentValue = newValue;
         limitText?.SetText(newValue.Length + "/" + characterLimit);
@@ -72,7 +72,7 @@ public class LimitInputField : MonoBehaviour
         OnInputChange?.Invoke(newValue);
     }
 
-    private void InputAvailable()
+    internal void InputAvailable()
     {
         if (!hasPassedLimit && !hasBeenEmpty)
             return;
@@ -85,7 +85,7 @@ public class LimitInputField : MonoBehaviour
         hasBeenEmpty = false;
     }
 
-    private void Empty()
+    internal void Empty()
     {
         if (hasBeenEmpty)
             return;
@@ -94,7 +94,7 @@ public class LimitInputField : MonoBehaviour
         OnEmptyValue?.Invoke();
     }
 
-    private void LimitReached()
+    internal void LimitReached()
     {
         if (hasPassedLimit)
             return;

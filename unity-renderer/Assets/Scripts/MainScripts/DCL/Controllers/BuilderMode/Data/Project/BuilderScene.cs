@@ -9,14 +9,13 @@ namespace DCL.Builder.Manifest
     public class BuilderScene
     {
         public string id;
-        public Dictionary<string, BuilderEntity> entities;
-        public Dictionary<string, BuilderComponent> components;
-        public Dictionary<string, SceneObject> assets;
+        public Dictionary<string, BuilderEntity> entities = new Dictionary<string, BuilderEntity>();
+        public Dictionary<string, BuilderComponent> components = new Dictionary<string, BuilderComponent>();
+        public Dictionary<string, SceneObject> assets = new Dictionary<string, SceneObject>();
 
         public SceneMetricsModel metrics;
         public SceneMetricsModel limits;
 
         public BuilderGround ground;
-
     }
 }

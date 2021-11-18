@@ -32,6 +32,13 @@ public interface IBuilderAPIController
     Promise<List<ProjectData>> GetAllManifests();
     
     /// <summary>
+    /// Create a new project and return a promise if it has been created correctly
+    /// </summary>
+    /// <param name="newProject">Data of the new Project</param>
+    /// <returns></returns>
+    Promise<APIResponse> CreateNewProject(ProjectData newProject);
+    
+    /// <summary>
     /// Dispose the component
     /// </summary>
     void Dispose();

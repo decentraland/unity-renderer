@@ -29,7 +29,7 @@ internal class SearchInfo : ISearchInfo
     private bool isOwner;
     private bool isOperator;
     private bool isContributor;
-    private string id;
+    internal string id;
     private string name;
     private int size;
     private string[] keywords;

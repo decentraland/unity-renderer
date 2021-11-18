@@ -1,48 +1,85 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Builder;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public interface INewProjectFlowController
 {
+    /// <summary>
+    /// When a new project is created
+    /// </summary>
+    event Action<ProjectData> OnNewProjectCrated;
+    
     /// <summary>
     /// This will create a new project data and show the view to create it
     /// </summary>
     void NewProject();
 
     /// <summary>
-    /// This will set the title and the description of the project
+    /// Hide the view
     /// </summary>
-    /// <param name="title"></param>
-    /// <param name="description"></param>
-    void SetTitleAndDescription(string title, string description);
+    void Hide();
+    
+    void Dispose();
 
     /// <summary>
-    /// This will set the size of the size in terms of rows and columns
+    /// This will return true if the new project windows is active
     /// </summary>
-    /// <param name="rows"></param>
-    /// <param name="columns"></param>
-    void SetRowsAndColumns(int rows, int columns);
-    void Dispose();
+    /// <returns></returns>
+    bool IsActive();
 }
 
 public class NewProjectFlowController : INewProjectFlowController
 {
     public const string VIEW_PATH = "NewProject/NewProjectFlowView";
 
-    private ProjectData projectData;
+    public event Action<ProjectData> OnNewProjectCrated;
+    
+    internal ProjectData projectData;
 
     internal INewProjectFlowView view;
-
+    
     public NewProjectFlowController()
     {
         var prefab = Resources.Load<NewProjectFlowView>(VIEW_PATH);
-        view = Object.Instantiate(prefab);
+        var instantiateView = Object.Instantiate(prefab);
+        Initilizate(instantiateView);
+    }
+    
+    public NewProjectFlowController(INewProjectFlowView view)
+    {
+        Initilizate(view);
+    }
+
+    private void Initilizate(INewProjectFlowView view)
+    {
+        this.view = view;
+        view.OnTittleAndDescriptionSet += SetTitleAndDescription;
+        view.OnSizeSet += SetRowsAndColumns;
+    }
+
+    public void Hide() { view.Hide(); }
+    
+    public void Dispose()
+    {
+        view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
+        view.OnSizeSet -= SetRowsAndColumns;
+        view.Dispose();
+    }
+    
+    public bool IsActive()
+    {
+        return view.IsActive();
     }
 
     public void NewProject()
     {
         projectData = new ProjectData();
+        projectData.id = Guid.NewGuid().ToString();
+        projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
+        
         view.ShowNewProjectTitleAndDescrition();
     }
 
@@ -55,8 +92,18 @@ public class NewProjectFlowController : INewProjectFlowController
     public void SetRowsAndColumns(int rows, int columns)
     {
         projectData.rows = rows;
-        projectData.colums = columns;
+        projectData.cols = columns;
+        
+        NewProjectCreated();
     }
 
-    public void Dispose() { view.Dispose(); }
+    internal void NewProjectCreated()
+    {
+        projectData.created_at = DateTime.UtcNow;
+        projectData.updated_at = DateTime.UtcNow;
+
+        view.Reset();
+        OnNewProjectCrated?.Invoke(projectData);
+        view.Hide();
+    }
 }

@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace DCL.Builder
@@ -10,14 +11,23 @@ namespace DCL.Builder
         public string title;
         public string description;
 
-        public string thumbnail;
+        public bool is_public = false;
         public string scene_id;
+        
+        public string eth_address;
+        
+        [JsonProperty("thumbnail", NullValueHandling=NullValueHandling.Ignore)]
+        public string thumbnail;
+
 
         public int rows;
-        public int colums;
+        public int cols;
 
         public DateTime created_at;
         public DateTime updated_at;
-        
+
+        [JsonProperty("creation_coords", NullValueHandling=NullValueHandling.Ignore)]
+        public string creation_coords;
+
     }
 }

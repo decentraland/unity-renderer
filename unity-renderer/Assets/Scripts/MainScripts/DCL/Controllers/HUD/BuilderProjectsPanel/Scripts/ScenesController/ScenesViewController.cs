@@ -20,10 +20,8 @@ internal interface IScenesViewController : IDisposable
     void SetScenes(ISceneData[] scenesData);
     void SelectScene(string id);
     void AddListener(ISceneListener listener);
-    void AddListener(IProjectListener listener);
     void AddListener(ISelectSceneListener listener);
     void RemoveListener(ISceneListener listener);
-    void RemoveListener(IProjectListener listener);
     void RemoveListener(ISelectSceneListener listener);
 }
 
@@ -154,14 +152,6 @@ internal class ScenesViewController : IScenesViewController
         listener.SetScenes(scenes);
     }
 
-    void IScenesViewController.AddListener(IProjectListener listener)
-    {
-        OnProjectSceneAdded += listener.SceneAdded;
-        OnProjectSceneRemoved += listener.SceneRemoved;
-        OnProjectScenesSet += listener.SetScenes;
-        listener.SetScenes(projects);
-    }
-
     void IScenesViewController.AddListener(ISelectSceneListener listener)
     {
         OnProjectSelected += listener.OnSelectScene;
@@ -174,12 +164,7 @@ internal class ScenesViewController : IScenesViewController
         OnSceneRemoved -= listener.SceneRemoved;
         OnScenesSet -= listener.SetScenes;
     }
-    void IScenesViewController.RemoveListener(IProjectListener listener)
-    {
-        OnProjectSceneAdded -= listener.SceneAdded;
-        OnProjectSceneRemoved -= listener.SceneRemoved;
-        OnProjectScenesSet -= listener.SetScenes;
-    }
+    
     void IScenesViewController.RemoveListener(ISelectSceneListener listener) { OnProjectSelected -= listener.OnSelectScene; }
 
     public void Dispose()
