@@ -19,6 +19,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+    internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
 
     public void Initialize()
     {
@@ -31,6 +32,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
+        view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         DataStore.i.exploreV2.isInitialized.Set(true);
@@ -70,6 +72,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
+        view.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
         avatarEditorVisible.OnChange -= IsAvatarEditorVisibleChanged;
 
@@ -110,6 +113,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             AudioScriptableObjects.dialogClose.Play(true);
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
             avatarEditorVisible.Set(false);
+            profileCardIsOpen.Set(false);
             exploreV2Analytics.anyActionExecutedFromLastOpen = false;
         }
 

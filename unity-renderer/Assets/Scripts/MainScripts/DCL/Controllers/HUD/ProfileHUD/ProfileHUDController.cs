@@ -48,6 +48,7 @@ public class ProfileHUDController : IHUD
         view.name = "_ProfileHUD";
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
+        DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetAsFullScreenMenuMode;
 
         SetBackpackButtonVisibility(false);
         view.connectedWalletSection.SetActive(false);
@@ -142,8 +143,9 @@ public class ProfileHUDController : IHUD
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
-        
+
         view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
+        DataStore.i.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
     }
 
     void OnProfileUpdated(UserProfile profile) { view?.SetProfile(profile); }
@@ -251,5 +253,13 @@ public class ProfileHUDController : IHUD
         view.SetDescription(description);
         view.ActivateDescriptionEditionMode(false);
         userProfileBridge.SaveDescription(description);
+    }
+
+    private void SetAsFullScreenMenuMode(bool current, bool previous)
+    {
+        view.SetCardAsFullScreenMenuMode(current);
+
+        if (current != CommonScriptableObjects.isProfileHUDOpen.Get())
+            view.ToggleMenu();
     }
 }

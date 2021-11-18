@@ -33,6 +33,9 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField]
     internal InputAction_Trigger closeAction;
 
+    [SerializeField]
+    internal Canvas mainCanvas;
+
     [Header("Hide GOs on claimed name")]
     [SerializeField]
     internal GameObject[] hideOnNameClaimed;
@@ -115,10 +118,10 @@ internal class ProfileHUDView : MonoBehaviour
     [Header("Description")]
     [SerializeField]
     internal TMP_InputField descriptionPreviewInput;
-    
+
     [SerializeField]
     internal TMP_InputField descriptionEditionInput;
-    
+
     [SerializeField]
     internal GameObject charLimitDescriptionContainer;
 
@@ -243,10 +246,7 @@ internal class ProfileHUDView : MonoBehaviour
         nonConnectedWalletSection.SetActive(!active);
     }
 
-    private void ForceLayoutToRefreshSize()
-    {
-        LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout);
-    }
+    private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
 
     private void SetActiveUnverifiedNameGOs(bool active)
     {
@@ -352,7 +352,7 @@ internal class ProfileHUDView : MonoBehaviour
         charLimitDescriptionContainer.SetActive(active);
         descriptionEditionInput.gameObject.SetActive(active);
         descriptionPreviewInput.gameObject.SetActive(!active);
-        
+
         if (active)
         {
             descriptionEditionInput.text = descriptionPreviewInput.text;
@@ -365,20 +365,20 @@ internal class ProfileHUDView : MonoBehaviour
         yield return null;
         selectable.Select();
     }
-    
+
     internal void SetDescription(string description)
     {
         descriptionPreviewInput.text = description;
         descriptionEditionInput.text = description;
     }
-    
-    private void UpdateDescriptionCharLimit(string newValue)
+
+    private void UpdateDescriptionCharLimit(string newValue) { textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}"; }
+
+    private void SetDescriptionEnabled(bool enabled) { descriptionContainer.SetActive(enabled); }
+
+    public void SetCardAsFullScreenMenuMode(bool isActive)
     {
-        textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}";
-    }
-    
-    private void SetDescriptionEnabled(bool enabled)
-    {
-        descriptionContainer.SetActive(enabled);
+        buttonToggleMenu.gameObject.SetActive(!isActive);
+        mainCanvas.sortingOrder = isActive ? 3 : 1;
     }
 }
