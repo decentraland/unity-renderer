@@ -195,7 +195,6 @@ public class InputController : MonoBehaviour
                     if (allUIHidden)
                         break;
                     InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleFriends:
                     if (allUIHidden)
@@ -230,6 +229,7 @@ public class InputController : MonoBehaviour
                     if (allUIHidden)
                         break;
                     InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput);

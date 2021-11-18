@@ -227,8 +227,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
+    m_Left: 5
+    m_Right: 5
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 3
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
+  m_HorizontalFit: 1
   m_VerticalFit: 0
 --- !u!1 &1579297398123846023
 GameObject:
@@ -713,10 +713,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12340181b73056a4dbcb3c4fe7ded73b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  horizontalLayoutGroup: {fileID: 5623538216401731658}
   realm: {fileID: 3849479200269392205}
   numberOfusers: {fileID: 5695617033880106558}
   model:
-    realmName: Loki 123456
+    realmName: Loki
     numberOfUsers: 150000
 --- !u!1001 &8758900178673377411
 PrefabInstance:
