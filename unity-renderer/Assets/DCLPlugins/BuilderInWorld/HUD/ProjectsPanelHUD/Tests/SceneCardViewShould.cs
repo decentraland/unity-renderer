@@ -12,9 +12,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath =
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
+            const string prefabAssetPath ="SceneCardView";
+            var prefab =  Resources.Load<SceneCardView>(prefabAssetPath);
             cardView = UnityEngine.Object.Instantiate(prefab);
         }
 

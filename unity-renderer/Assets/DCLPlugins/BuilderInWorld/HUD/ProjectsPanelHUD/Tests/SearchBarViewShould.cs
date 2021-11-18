@@ -17,9 +17,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath =
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SearchBar/SearchBarView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SearchBarView>(prefabAssetPath);
+            const string prefabAssetPath ="SearchBar/SearchBarView";
+            var prefab =  Resources.Load<SearchBarView>(prefabAssetPath);
             view = Object.Instantiate(prefab);
         }
 
