@@ -286,6 +286,7 @@ namespace DCL.Builder
         {
             DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
             sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
+         
             entityHandler.SetEntityName(entity, catalogItem.name, false);
         }
 
@@ -304,23 +305,21 @@ namespace DCL.Builder
         {
             if (catalogItem.IsNFT())
             {
-                NFTShape nftShape = (NFTShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
-                nftShape.model = new NFTShape.Model();
-                nftShape.model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
-                nftShape.model.src = catalogItem.model;
-                nftShape.model.assetId = catalogItem.id;
-                sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, nftShape.id);
-
+                NFTShape.Model model = new NFTShape.Model();
+                model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
+                model.src = catalogItem.model;
+                model.assetId = catalogItem.id;
+                
+                NFTShape nftShape = EntityComponentsUtils.AddNFTShapeComponent(sceneToEdit, entity.rootEntity, model, catalogItem.id);
                 nftShape.CallWhenReady(entity.ShapeLoadFinish);
             }
             else
             {
-                GLTFShape gltfComponent = (GLTFShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
-                gltfComponent.model = new LoadableShape.Model();
-                gltfComponent.model.src = catalogItem.model;
-                gltfComponent.model.assetId = catalogItem.id;
-                sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, gltfComponent.id);
-
+                LoadableShape.Model model = new LoadableShape.Model();
+                model.src = catalogItem.model;
+                model.assetId = catalogItem.id;
+                
+                GLTFShape gltfComponent = EntityComponentsUtils.AddGLTFComponent(sceneToEdit, entity.rootEntity, model, catalogItem.id);
                 gltfComponent.CallWhenReady(entity.ShapeLoadFinish);
             }
         }
