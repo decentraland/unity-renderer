@@ -118,11 +118,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void IsAvatarEditorVisibleChanged(bool current, bool previous)
     {
+        if (DataStore.i.isSignUpFlow.Get())
+            return;
+
         if (current)
         {
-            if (!DataStore.i.isSignUpFlow.Get())
-                view.ConfigureBackpackSection();
-
+            view.ConfigureBackpackSection();
             SetVisibility(true);
             view.GoToSection(ExploreSection.Backpack);
         }
