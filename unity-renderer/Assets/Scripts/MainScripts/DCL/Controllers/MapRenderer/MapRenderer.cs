@@ -228,6 +228,7 @@ namespace DCL
                 parcelHighlightImage.gameObject.SetActive(true);
 
             string previousText = highlightedParcelText.text;
+            parcelHighlightImage.rectTransform.SetAsLastSibling();
             parcelHighlightImage.rectTransform.anchoredPosition = MapUtils.GetTileToLocalPosition(cursorMapCoords.x, cursorMapCoords.y);
             highlightedParcelText.text = showCursorCoords ? $"{cursorMapCoords.x}, {cursorMapCoords.y}" : string.Empty;
 
