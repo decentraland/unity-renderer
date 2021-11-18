@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 
 namespace Tests
 {
@@ -10,9 +11,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath =
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardViewContextMenu.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardViewContextMenu>(prefabAssetPath);
+            const string prefabAssetPath ="SceneCardViewContextMenu";
+            var prefab =  Resources.Load<SceneCardViewContextMenu>(prefabAssetPath);
             contextMenu = UnityEngine.Object.Instantiate(prefab);
         }
 

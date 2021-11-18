@@ -11,8 +11,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<LandElementView>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/LandElementView.prefab");
+            const string prefabAssetPath ="LandElementView";
+            var prefab =  Resources.Load<LandElementView>(prefabAssetPath);
             view = Object.Instantiate(prefab);
         }
 
