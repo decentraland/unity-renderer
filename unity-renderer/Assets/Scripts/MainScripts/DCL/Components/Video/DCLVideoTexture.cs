@@ -36,12 +36,14 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        internal IDCLVideoPlayer texturePlayer;
+        internal WebVideoPlayer texturePlayer;
         private Coroutine texturePlayerUpdateRoutine;
         private float baseVolume;
         private float distanceVolumeModifier = 1f;
         private bool isPlayStateDirty = false;
         internal bool isVisible = false;
+
+        //public override Texture2D texture => texturePlayer?.texture;
 
         private bool isPlayerInScene = true;
         private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
@@ -61,6 +63,8 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+
+            yield return new WaitUntil(() => texturePlayer != null && texturePlayer.isReady);
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
@@ -155,15 +159,10 @@ namespace DCL.Components
                 texturePlayer.SetLoop(model.loop);
             }
         }
-
-        protected virtual IDCLVideoPlayer CreateVideoPlayer(string videoId, DCLVideoClip dclVideoClip)
-        {
-            return new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
-        }
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
-            texturePlayer = CreateVideoPlayer(videoId, dclVideoClip);
+            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
