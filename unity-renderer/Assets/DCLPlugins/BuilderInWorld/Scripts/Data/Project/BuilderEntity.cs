@@ -9,7 +9,7 @@ namespace DCL.Builder.Manifest
     public class BuilderEntity
     {
         public string id;
-        public string[] components;
+        public List<string> components = new List<string>();
         public bool disableGizmos;
         public string name;
     }
