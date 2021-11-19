@@ -1,4 +1,3 @@
-using DCL;
 using System;
 using UnityEngine;
 
@@ -50,6 +49,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Configures the backpack section.
     /// </summary>
     void ConfigureBackpackSection();
+
+    /// <summary>
+    /// Configures the map section.
+    /// </summary>
+    void ConfigureMapSection();
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -64,8 +68,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
     [SerializeField] internal BackpackSectionComponentView backpackSection;
+    [SerializeField] internal MapSectionComponentView mapSection;
 
-    public GameObject go => this != null ? gameObject : null;
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
@@ -115,6 +119,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection((int)section)?.SelectToggle(true);
     }
 
+    public void ConfigureBackpackSection() { backpackSection.ConfigureBackpack(); }
+
+    public void ConfigureMapSection() { mapSection.ConfigureMap(); }
+
     internal void CreateSectionSelectorMappings()
     {
         sectionSelector.GetSection((int)ExploreSection.Explore)
@@ -141,12 +149,26 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            else
                                backpackSection.Hide();
                        });
+
+        sectionSelector.GetSection((int)ExploreSection.Map)
+                       ?.onSelect.AddListener((isOn) =>
+                       {
+                           if (isOn)
+                           {
+                               mapSection.Show();
+                               currentSectionIndex = ExploreSection.Map;
+                               OnSectionOpen?.Invoke(currentSectionIndex);
+                           }
+                           else
+                               mapSection.Hide();
+                       });
     }
 
     internal void RemoveSectionSelectorMappings()
     {
         sectionSelector.GetSection((int)ExploreSection.Explore)?.onSelect.RemoveAllListeners();
         sectionSelector.GetSection((int)ExploreSection.Backpack)?.onSelect.RemoveAllListeners();
+        sectionSelector.GetSection((int)ExploreSection.Map)?.onSelect.RemoveAllListeners();
     }
 
     internal void ConfigureCloseButton()
@@ -166,6 +188,4 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         return exploreV2View;
     }
-
-    public void ConfigureBackpackSection() { backpackSection.ConfigureBackpack(); }
 }

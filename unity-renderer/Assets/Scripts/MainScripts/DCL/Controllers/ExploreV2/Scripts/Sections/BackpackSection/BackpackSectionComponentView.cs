@@ -14,7 +14,7 @@ public class BackpackSectionComponentView : BaseComponentView, IBackpackSectionC
     [Header("Prefab References")]
     [SerializeField] internal Transform contentContainer;
 
-    public override void RefreshControl() { ConfigureBackpack(); }
+    public override void RefreshControl() { }
 
     public void ConfigureBackpack() { DataStore.i.exploreV2.showBackpackInMenuMode.Set(contentContainer, true); }
 }

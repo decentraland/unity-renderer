@@ -60,8 +60,8 @@ public class AvatarEditorHUDController : IHUD
         OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
         view.OnCloseActionTriggered += DiscardAndClose;
 
-        showBackpackInMenuMode.OnChange += SetAsFullScreenMenuMode;
-        SetAsFullScreenMenuMode(showBackpackInMenuMode.Get(), null);
+        showBackpackInMenuMode.OnChange += ShowBackpackInMenuModeChanged;
+        ShowBackpackInMenuModeChanged(showBackpackInMenuMode.Get(), null);
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
         hairColorList = Resources.Load<ColorList>("HairColor");
@@ -553,7 +553,7 @@ public class AvatarEditorHUDController : IHUD
             DCL.Environment.i.messaging.manager.paused = false;
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.inWorld;
             currentRenderProfile.avatarProfile.Apply();
-            if (prevMouseLockState)
+            if (prevMouseLockState && DataStore.i.isSignUpFlow.Get())
             {
                 Utils.LockCursor();
             }
@@ -580,7 +580,9 @@ public class AvatarEditorHUDController : IHUD
             currentRenderProfile.avatarProfile.Apply();
 
             prevMouseLockState = Utils.isCursorLocked;
-            Utils.UnlockCursor();
+
+            if (DataStore.i.isSignUpFlow.Get())
+                Utils.UnlockCursor();
 
             // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
             var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
@@ -604,7 +606,7 @@ public class AvatarEditorHUDController : IHUD
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
-        showBackpackInMenuMode.OnChange -= SetAsFullScreenMenuMode;
+        showBackpackInMenuMode.OnChange -= ShowBackpackInMenuModeChanged;
 
         CleanUp();
     }
@@ -671,21 +673,5 @@ public class AvatarEditorHUDController : IHUD
 
     public void ToggleVisibility() { SetVisibility(!view.isOpen); }
 
-    private void SetAsFullScreenMenuMode(Transform currentParentTransform, Transform previousParentTransform)
-    {
-        if (currentParentTransform == null)
-            return;
-
-        view.transform.SetParent(currentParentTransform);
-        view.transform.localScale = Vector3.one;
-        view.SetExitButtonActive(false);
-
-        RectTransform rectTransform = view.transform as RectTransform;
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.one;
-        rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        rectTransform.localPosition = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
-        rectTransform.offsetMin = Vector2.zero;
-    }
+    private void ShowBackpackInMenuModeChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
 }

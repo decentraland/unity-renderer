@@ -23,6 +23,8 @@ namespace DCL
         Vector3 atlasOriginalPosition;
         MinimapMetadata mapMetadata;
 
+        BaseVariable<Transform> showMapInMenuMode => DataStore.i.exploreV2.showMapInMenuMode;
+
         public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         public static event System.Action<bool> OnToggle;
 
@@ -33,7 +35,6 @@ namespace DCL
             closeButton.onClick.AddListener(() =>
             {
                 navmapVisible.Set(false);
-                Utils.UnlockCursor();
             });
             scrollRect.onValueChanged.AddListener((x) =>
             {
@@ -53,8 +54,12 @@ namespace DCL
             closeAction.OnTriggered += OnCloseAction;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
+            showMapInMenuMode.OnChange += ShowMapInMenuModeChanged;
+            ShowMapInMenuModeChanged(showMapInMenuMode.Get(), null);
+
             Initialize();
         }
+
         private void OnNavmapVisibleChanged(bool current, bool previous) { SetVisible(current); }
 
         public void Initialize()
@@ -70,6 +75,7 @@ namespace DCL
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             closeAction.OnTriggered += OnCloseAction;
+            showMapInMenuMode.OnChange -= ShowMapInMenuModeChanged;
         }
 
         internal void SetVisible(bool visible)
@@ -84,8 +90,6 @@ namespace DCL
 
             if (visible)
             {
-                Utils.UnlockCursor();
-
                 minimapViewport = MapRenderer.i.atlas.viewport;
                 mapRendererMinimapParent = MapRenderer.i.transform.parent;
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
@@ -111,8 +115,6 @@ namespace DCL
             }
             else
             {
-                Utils.LockCursor();
-
                 toastView.OnCloseClick();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
@@ -152,5 +154,27 @@ namespace DCL
 
             toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
+
+        public void SetExitButtonActive(bool isActive) { closeButton.gameObject.SetActive(isActive); }
+
+        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        {
+            if (parentTransform == null)
+                return;
+
+            transform.SetParent(parentTransform);
+            transform.localScale = Vector3.one;
+            SetExitButtonActive(false);
+
+            RectTransform rectTransform = transform as RectTransform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.localPosition = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+        }
+
+        private void ShowMapInMenuModeChanged(Transform currentParentTransform, Transform previousParentTransform) { SetAsFullScreenMenuMode(currentParentTransform); }
     }
 }
