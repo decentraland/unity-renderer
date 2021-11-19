@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using DCL.Builder;
-using UnityEditor;
+using UnityEngine;
 
 namespace Tests
 {
@@ -13,9 +13,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath =
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
+            var prefab = Resources.Load<SceneCardView>("SceneCardView");
 
             scenesViewController = new ScenesViewController(prefab);
             listenerMock = new Listener_Mock();
