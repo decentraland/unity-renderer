@@ -60,8 +60,8 @@ public class AvatarEditorHUDController : IHUD
         OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
         view.OnCloseActionTriggered += DiscardAndClose;
 
-        showBackpackInMenuMode.OnChange += ShowBackpackInMenuModeChanged;
-        ShowBackpackInMenuModeChanged(showBackpackInMenuMode.Get(), null);
+        showBackpackInMenuMode.OnChange += SetAsFullScreenMenuMode;
+        SetAsFullScreenMenuMode(showBackpackInMenuMode.Get(), null);
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
         hairColorList = Resources.Load<ColorList>("HairColor");
@@ -547,7 +547,9 @@ public class AvatarEditorHUDController : IHUD
 
         if (!visible && view.isOpen)
         {
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+            if (DataStore.i.isSignUpFlow.Get())
+                DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+
             DCL.Environment.i.messaging.manager.paused = false;
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.inWorld;
             currentRenderProfile.avatarProfile.Apply();
@@ -569,7 +571,9 @@ public class AvatarEditorHUDController : IHUD
         }
         else if (visible && !view.isOpen)
         {
-            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
+            if (DataStore.i.isSignUpFlow.Get())
+                DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
+
             LoadOwnedWereables(userProfile);
             DCL.Environment.i.messaging.manager.paused = DataStore.i.isSignUpFlow.Get();
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.avatarEditor;
@@ -600,7 +604,7 @@ public class AvatarEditorHUDController : IHUD
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
-        showBackpackInMenuMode.OnChange -= ShowBackpackInMenuModeChanged;
+        showBackpackInMenuMode.OnChange -= SetAsFullScreenMenuMode;
 
         CleanUp();
     }
@@ -667,12 +671,12 @@ public class AvatarEditorHUDController : IHUD
 
     public void ToggleVisibility() { SetVisibility(!view.isOpen); }
 
-    private void ShowBackpackInMenuModeChanged(Transform current, Transform previous)
+    private void SetAsFullScreenMenuMode(Transform currentParentTransform, Transform previousParentTransform)
     {
-        if (current == null)
+        if (currentParentTransform == null)
             return;
 
-        view.transform.SetParent(current);
+        view.transform.SetParent(currentParentTransform);
         view.transform.localScale = Vector3.one;
         view.SetExitButtonActive(false);
 

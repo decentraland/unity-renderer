@@ -66,6 +66,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentOpenSection = section;
 
         avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
+        profileCardIsOpen.Set(false);
     }
 
     public void Dispose()

@@ -255,11 +255,11 @@ public class ProfileHUDController : IHUD
         userProfileBridge.SaveDescription(description);
     }
 
-    private void SetAsFullScreenMenuMode(bool current, bool previous)
+    private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
     {
-        view.SetCardAsFullScreenMenuMode(current);
+        view.SetCardAsFullScreenMenuMode(currentIsFullScreenMenuMode);
 
-        if (current != CommonScriptableObjects.isProfileHUDOpen.Get())
+        if (currentIsFullScreenMenuMode != CommonScriptableObjects.isProfileHUDOpen.Get())
             view.ToggleMenu();
     }
 }

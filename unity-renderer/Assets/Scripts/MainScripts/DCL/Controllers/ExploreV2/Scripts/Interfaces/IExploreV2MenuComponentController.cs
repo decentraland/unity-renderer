@@ -3,10 +3,10 @@ using System;
 public enum ExploreSection
 {
     Explore = 0,
-    Quest = 1,
-    Backpack = 2,
-    Map = 3,
-    Builder = 4,
+    Backpack = 1,
+    Map = 2,
+    Builder = 3,
+    Quest = 4,
     Settings = 5
 }
 
