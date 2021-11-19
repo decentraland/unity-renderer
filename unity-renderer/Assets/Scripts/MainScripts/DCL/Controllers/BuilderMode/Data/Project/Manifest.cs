@@ -10,6 +10,6 @@ namespace DCL.Builder.Manifest
     {
         public int version;
         public ProjectData project;
-        public BuilderScene builderScene;
+        public BuilderScene scene;
     }
 }

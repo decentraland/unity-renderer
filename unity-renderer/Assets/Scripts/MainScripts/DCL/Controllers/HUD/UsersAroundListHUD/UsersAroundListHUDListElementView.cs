@@ -142,7 +142,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         }
         else
         {
-            SetupFriendship(FriendshipStatus.NONE);
+            SetupFriendship(FriendshipStatus.NOT_FRIEND);
         }
 
         FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;

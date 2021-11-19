@@ -21,6 +21,8 @@ namespace DCL.Configuration
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
 
+        public const int PARCEL_SIZE_METERS = 16;
+
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
         public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";
         public const string FLOOR_CATEGORY = "ground";
@@ -118,10 +120,10 @@ namespace DCL.Configuration
         public static KeyCode RightButtonKeyCodeAlt = KeyCode.RightArrow;
         public static KeyCode JumpButtonKeyCode = KeyCode.Space;
         public static KeyCode WalkButtonKeyCode = KeyCode.LeftShift;
-        public static KeyCode OneButtonKeyCode = KeyCode.Alpha1;
-        public static KeyCode TwoButtonKeyCode = KeyCode.Alpha2;
-        public static KeyCode ThreeButtonKeyCode = KeyCode.Alpha3;
-        public static KeyCode FourButtonKeyCode = KeyCode.Alpha4;
+        public static KeyCode ActionButton3Keycode = KeyCode.Alpha1;
+        public static KeyCode ActionButton4Keycode = KeyCode.Alpha2;
+        public static KeyCode ActionButton5Keycode = KeyCode.Alpha3;
+        public static KeyCode ActionButton6Keycode = KeyCode.Alpha4;
     }
 
     public static class PlayerSettings

@@ -21,6 +21,7 @@ namespace DCL.Builder
         event Action<SectionBase> OnSectionShow;
         event Action<SectionBase> OnSectionHide;
         event Action OnRequestContextMenuHide;
+        event Action OnCreateProjectRequest;
         event Action<SectionId> OnOpenSectionId;
         event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
         event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
@@ -31,7 +32,7 @@ namespace DCL.Builder
         event Action<Vector2Int> OnRequestEditSceneAtCoords;
         void OpenSection(SectionId id);
         void SetFetchingDataStart();
-        void SetFetchingDataEnd();
+        void SetFetchingDataEnd<T>() where T : SectionBase;
     }
 
     /// <summary>
@@ -43,6 +44,7 @@ namespace DCL.Builder
         public event Action<SectionBase> OnSectionShow;
         public event Action<SectionBase> OnSectionHide;
         public event Action OnRequestContextMenuHide;
+        public event Action OnCreateProjectRequest;
         public event Action<SectionId> OnOpenSectionId;
         public event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
         public event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
@@ -56,7 +58,6 @@ namespace DCL.Builder
         private Transform sectionsParent;
         private ISectionFactory sectionFactory;
         private SectionBase currentOpenSection;
-        private bool isLoading = false;
 
         /// <summary>
         /// Ctor
@@ -91,7 +92,7 @@ namespace DCL.Builder
             if (section != null)
             {
                 section.SetViewContainer(sectionsParent);
-                section.SetFetchingDataState(isLoading);
+                section.SetFetchingDataState(section.isLoading);
                 SubscribeEvents(section);
             }
 
@@ -115,18 +116,18 @@ namespace DCL.Builder
             }
         }
 
-        public void SetFetchingDataStart() { SetIsLoading(true); }
+        public void SetFetchingDataStart(){ SetIsLoading<SectionBase>(true); }
 
-        public void SetFetchingDataEnd() { SetIsLoading(false); }
+        public void SetFetchingDataEnd<T>() where T : SectionBase { SetIsLoading<T>(false); }
 
-        private void SetIsLoading(bool isLoading)
+        private void SetIsLoading<T>(bool isLoading) where T : SectionBase
         {
-            this.isLoading = isLoading;
             using (var iterator = loadedSections.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    iterator.Current.Value.SetFetchingDataState(isLoading);
+                    if(iterator.Current.Value is T sectionBase)
+                        sectionBase.SetFetchingDataState(isLoading);
                 }
             }
         }
@@ -178,6 +179,8 @@ namespace DCL.Builder
 
         private void OnOpenUrlRequested(string url) { OnRequestOpenUrl?.Invoke(url); }
 
+        private void CreateProjectRequest() {OnCreateProjectRequest?.Invoke(); }
+
         private void OnGoToCoordsRequested(Vector2Int coords) { OnRequestGoToCoords?.Invoke(coords); }
 
         private void OnEditSceneAtCoordsRequested(Vector2Int coords) { OnRequestEditSceneAtCoords?.Invoke(coords); }
@@ -219,6 +222,10 @@ namespace DCL.Builder
             if (sectionBase is ISectionEditSceneAtCoordsRequester editSceneRequester)
             {
                 editSceneRequester.OnRequestEditSceneAtCoords += OnEditSceneAtCoordsRequested;
+            }
+            if (sectionBase is ISectionProjectController sectionProjectController)
+            {
+                sectionProjectController.OnCreateProjectRequest += CreateProjectRequest;
             }
         }
     }

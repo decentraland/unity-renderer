@@ -14,6 +14,10 @@ public static class BuilderPanelDataFetcher
         {
             promise.Resolve(projectList.ToArray());
         });
+        manifestPromise.Catch(error =>
+        {
+            promise.Reject(error);
+        });
  
         return promise;
     }

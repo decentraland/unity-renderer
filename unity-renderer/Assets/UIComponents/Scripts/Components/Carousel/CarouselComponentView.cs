@@ -50,6 +50,13 @@ public interface ICarouselComponentView
     void SetItems(List<BaseComponentView> items);
 
     /// <summary>
+    /// Creates the items of the carousel from the prefab. All previously existing items will be removed.
+    /// </summary>
+    /// <param name="prefab">Prefab to create items</param>
+    /// <param name="amountOfItems">Amounts of items to be created</param>
+    void SetItems(BaseComponentView prefab, int amountOfItems);
+    
+    /// <summary>
     /// Adds a new item in the carousel.
     /// </summary>
     /// <param name="item">An UI component.</param>
@@ -230,10 +237,23 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         nextButton.gameObject.SetActive(isActived && currentNumberOfItems > 1);
         dotsSelector.gameObject.SetActive(isActived && currentNumberOfItems > 1);
     }
+    
+    public void SetItems(BaseComponentView prefab, int amountOfItems)
+    {
+        DestroyInstantiatedItems();
+
+        for (int i = 0; i < amountOfItems; i++)
+        {
+            BaseComponentView instanciatedItem = Instantiate(prefab);
+            CreateItem(instanciatedItem, $"Item{i}");
+        }
+
+        SetManualControlsActive(model.showManualControls);
+        GenerateDotsSelector();
+    }
 
     public void SetItems(List<BaseComponentView> items)
     {
-
         DestroyInstantiatedItems();
 
         for (int i = 0; i < items.Count; i++)

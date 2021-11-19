@@ -25,7 +25,7 @@ namespace UnityGLTF.Loader
         {
             if (gltfFilePath == null)
             {
-                Debug.LogError("gltfFilePath is null!");
+                Debug.Log("GLTFSceneImporter - Error - gltfFilePath is null!");
                 yield break;
             }
 
@@ -38,7 +38,7 @@ namespace UnityGLTF.Loader
 
             if (!File.Exists(pathToLoad))
             {
-                Debug.LogError($"Buffer file not found ({pathToLoad}) -- {fileToLoad}");
+                Debug.Log($"GLTFSceneImporter - Error - Buffer file not found ({pathToLoad}) -- {fileToLoad}");
 
                 yield break;
             }
@@ -51,7 +51,7 @@ namespace UnityGLTF.Loader
         {
             if (gltfFilePath == null)
             {
-                Debug.LogError("gltfFilePath is null!");
+                Debug.Log("GLTFSceneImporter - Error - gltfFilePath is null!");
                 return;
             }
 
@@ -64,7 +64,7 @@ namespace UnityGLTF.Loader
 
             if (!File.Exists(pathToLoad))
             {
-                Debug.LogError("Buffer file not found -- " + fileToLoad);
+                Debug.Log("GLTFSceneImporter - Error - Buffer file not found -- " + fileToLoad);
 
                 return;
             }
