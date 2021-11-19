@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace DCL.SettingsCommon
 {
-    public class SettingsModule<T> where T : ICloneable
+    public class SettingsModule<T> : ISettingsRepository<T> where T : struct
     {
         public event Action<T> OnChanged;
 
         private readonly string playerPrefsKey;
         private readonly T defaultPreset;
 
-        public T Data => (T) dataValue?.Clone();
+        public T Data => dataValue;
         private T dataValue;
 
         public SettingsModule(string playerPrefsKey, T defaultPreset)
@@ -23,13 +23,13 @@ namespace DCL.SettingsCommon
 
         private void Preload()
         {
-            dataValue = (T) defaultPreset.Clone();
+            dataValue = defaultPreset;
             if (!PlayerPrefsUtils.HasKey(playerPrefsKey))
                 return;
 
             try
             {
-                JsonUtility.FromJsonOverwrite(PlayerPrefsUtils.GetString(playerPrefsKey), dataValue);
+                dataValue = JsonUtility.FromJson<T>(PlayerPrefsUtils.GetString(playerPrefsKey));
             }
             catch (Exception e)
             {
@@ -44,10 +44,12 @@ namespace DCL.SettingsCommon
             if (dataValue.Equals(newSettings))
                 return;
 
-            dataValue = (T) newSettings.Clone();
+            dataValue = newSettings;
             OnChanged?.Invoke(dataValue);
         }
 
         public void Save() { PlayerPrefsUtils.SetString(playerPrefsKey, JsonUtility.ToJson(dataValue)); }
+
+        public bool HasAnyData() => !Data.Equals(defaultPreset);
     }
 }
