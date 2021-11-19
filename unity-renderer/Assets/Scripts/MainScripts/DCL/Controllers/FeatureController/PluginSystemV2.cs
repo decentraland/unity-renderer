@@ -7,7 +7,7 @@ namespace DCL
 {
     public class PluginGroup
     {
-        public HashSet<IPlugin> plugins;
+        public HashSet<IPlugin> plugins = new HashSet<IPlugin>();
 
         public bool Add(IPlugin plugin)
         {
@@ -135,7 +135,8 @@ namespace DCL
         {
             foreach ( var feature in allPlugins.plugins )
             {
-                feature.Dispose();
+                if ( feature.enabled )
+                    feature.Dispose();
             }
 
             if ( featureFlagsDataSource != null )
