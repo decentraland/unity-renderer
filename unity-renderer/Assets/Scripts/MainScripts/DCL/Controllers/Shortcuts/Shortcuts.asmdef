@@ -1,0 +1,20 @@
+{
+    "name": "Shortcuts",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:97c9ff020b5afe540b9d6bec4a3b476c",
+        "GUID:320f1c61ad4373b4f9ffa3075e1f3d48"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

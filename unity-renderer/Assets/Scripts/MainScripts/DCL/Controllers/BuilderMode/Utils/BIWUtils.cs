@@ -14,9 +14,11 @@ using Environment = DCL.Environment;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using DCL.Builder;
 using DCL.Builder.Manifest;
 using DCL.Controllers;
 using DCL.Helpers;
+using UnityEditor;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
@@ -24,16 +26,74 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     
+    public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
+    {
+        if(NotificationsController.i == null)
+            return;
+        NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
+        {
+            message = message,
+            type = DCL.NotificationModel.Type.GENERIC,
+            timer = timer,
+            destroyOnFinish = true
+        });
+    }
+
     public static long ConvertToMilisecondsTimestamp(DateTime value)
     {
         TimeSpan elapsedTime = value - Epoch;
         return (long) elapsedTime.TotalMilliseconds;
     }
+
+    public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
+    {
+        SceneMetricsModel  cachedModel = new SceneMetricsModel();
+
+        float log = Mathf.Log(parcelAmount + 1, 2);
+        float lineal = parcelAmount;
+
+        cachedModel.triangles = (int) (lineal * SceneMetricsCounter.LimitsConfig.triangles);
+        cachedModel.bodies = (int) (lineal * SceneMetricsCounter.LimitsConfig.bodies);
+        cachedModel.entities = (int) (lineal * SceneMetricsCounter.LimitsConfig.entities);
+        cachedModel.materials = (int) (log * SceneMetricsCounter.LimitsConfig.materials);
+        cachedModel.textures = (int) (log * SceneMetricsCounter.LimitsConfig.textures);
+        cachedModel.meshes = (int) (log * SceneMetricsCounter.LimitsConfig.meshes);
+        cachedModel.sceneHeight = (int) (log * SceneMetricsCounter.LimitsConfig.height);
+        
+        return cachedModel;
+    }
+
+    public static Manifest CreateManifestFromProject(ProjectData projectData)
+    {
+        Manifest manifest = new Manifest();
+        manifest.version = 10;
+        manifest.project = projectData;
+        manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.cols);
+
+        manifest.project.scene_id = manifest.scene.id;
+        return manifest;
+    }
+
+    //We create the scene the same way as the current builder do, so we ensure the compatibility between both builders
+    private static BuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
+    {
+        BuilderGround ground = new BuilderGround();
+        ground.assetId = BIWSettings.FLOOR_ID;
+        ground.componentId = Guid.NewGuid().ToString();
+        
+        BuilderScene scene = new BuilderScene
+        {
+            id = Guid.NewGuid().ToString(), 
+            limits = GetSceneMetricsLimits(parcelsAmount),
+            metrics = new SceneMetricsModel(),
+            ground = ground
+        };
+
+        return scene;
+    }
     
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
     {
-        UserProfile profile = UserProfile.GetOwnUserProfile();
-
         Manifest manifest = new Manifest();
         return manifest;
     }

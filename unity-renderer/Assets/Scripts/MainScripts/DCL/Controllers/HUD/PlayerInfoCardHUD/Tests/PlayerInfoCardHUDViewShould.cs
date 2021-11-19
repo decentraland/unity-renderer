@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Linq;
+using DCL;
 
 public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
 {
@@ -11,6 +12,8 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        
+        DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
 
         view = PlayerInfoCardHUDView.CreateView();
         view.Initialize(null, null, null, null, null, null, null, null);
@@ -21,13 +24,16 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.RARE);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.UNIQUE);
 
-        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel {userId = "userId"});
+
+        userProfile = UserProfileController.userProfilesCatalog.Get("userId");
+        userProfile.UpdateData(new UserProfileModel
         {
             userId = "userId",
             name = "username",
             description = "description",
             email = "email",
-            inventory = new string[]
+            inventory = new[]
             {
                 WearableLiterals.ItemRarity.EPIC,
                 WearableLiterals.ItemRarity.LEGENDARY,
@@ -36,8 +42,6 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
                 WearableLiterals.ItemRarity.UNIQUE,
             }
         });
-
-        userProfile = UserProfileController.userProfilesCatalog.Get("userId");
     }
 
     protected override IEnumerator TearDown()
@@ -47,7 +51,10 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void BeCreatedProperly() { Assert.IsNotNull(view); }
+    public void BeCreatedProperly()
+    {
+        Assert.IsNotNull(view);
+    }
 
     [Test]
     public void InitializeProperly()
@@ -61,7 +68,9 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         bool acceptRequestWasPressed = false;
         bool rejectRequestWasPressed = false;
 
-        view.Initialize(() => hideCardButtonWasPressed = true, () => reportButtonWasPressed = true, () => blockButtonWasPressed = true, () => unblockButtonWasPressed = true, () => addFriendWasPressed = true, () => cancelWasPressed = true, () => acceptRequestWasPressed = true, () => rejectRequestWasPressed = true);
+        view.Initialize(() => hideCardButtonWasPressed = true, () => reportButtonWasPressed = true,
+            () => blockButtonWasPressed = true, () => unblockButtonWasPressed = true, () => addFriendWasPressed = true,
+            () => cancelWasPressed = true, () => acceptRequestWasPressed = true, () => rejectRequestWasPressed = true);
         view.hideCardButton.onClick.Invoke();
         view.reportPlayerButton.onClick.Invoke();
         view.blockPlayerButton.onClick.Invoke();
@@ -102,34 +111,15 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         GetTabMapping(tab).toggle.isOn = true;
         foreach (var tabsMapping in view.tabsMapping)
         {
-            Assert.AreEqual(tabsMapping.container.activeSelf, tabsMapping.tab == tab, $"{tab} Tab was selected and Tab: {tabsMapping.tab} is {tabsMapping.container.activeSelf}");
+            Assert.AreEqual(tabsMapping.container.activeSelf, tabsMapping.tab == tab,
+                $"{tab} Tab was selected and Tab: {tabsMapping.tab} is {tabsMapping.container.activeSelf}");
         }
     }
 
-    [Test]
-    public void UpdateProfileDataProperly()
+    private PlayerInfoCardHUDView.TabsMapping GetTabMapping(PlayerInfoCardHUDView.Tabs tab)
     {
-        view.SetUserProfile(userProfile);
-
-        Assert.AreEqual(userProfile, view.currentUserProfile);
-        Assert.AreEqual(userProfile.userName, view.name.text);
-        Assert.AreEqual(userProfile.description, view.description.text);
+        return view.tabsMapping.First(x => x.tab == tab);
     }
-
-    [Test]
-    public void CreateCollectibles()
-    {
-        view.SetUserProfile(userProfile);
-
-        Assert.AreEqual(userProfile.inventory.Count, view.playerInfoCollectibles.Count);
-        foreach (var keyValuePair in userProfile.inventory)
-        {
-            var wearable = CatalogController.wearableCatalog.Get(keyValuePair.Key);
-            Assert.IsTrue(view.playerInfoCollectibles.Any(x => x.collectible == wearable));
-        }
-    }
-
-    private PlayerInfoCardHUDView.TabsMapping GetTabMapping(PlayerInfoCardHUDView.Tabs tab) { return view.tabsMapping.First(x => x.tab == tab); }
 
     private WearableItem CreateMockWearableByRarity(string rarity)
     {

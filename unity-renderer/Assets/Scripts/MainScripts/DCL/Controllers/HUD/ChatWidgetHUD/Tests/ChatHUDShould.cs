@@ -128,6 +128,39 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(expected, controller.view.entries[0].model.bodyText);
     }
 
+    [TestCase("fucker123", "****er123")]
+    [TestCase("goodname", "goodname")]
+    public void FilterProfanitySenderName(string originalName, string filteredName)
+    {
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = originalName,
+            bodyText = "test"
+        };
+
+        controller.AddChatMessage(msg);
+
+        Assert.AreEqual(filteredName, controller.view.entries[0].model.senderName);
+    }
+    
+    [TestCase("assholeeee", "*******eee")]
+    [TestCase("goodname", "goodname")]
+    public void FilterProfanityReceiverName(string originalName, string filteredName)
+    {
+        var msg = new ChatEntry.Model
+        {
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "test",
+            recipientName = originalName,
+            bodyText = "test"
+        };
+
+        controller.AddChatMessage(msg);
+
+        Assert.AreEqual(filteredName, controller.view.entries[0].model.recipientName);
+    }
+
     [Test]
     public void DoNotFilterProfanityMessageWhenFeatureFlagIsDisabled()
     {
@@ -164,7 +197,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
     {
         var wordProvider = Substitute.For<IProfanityWordProvider>();
         wordProvider.GetExplicitWords().Returns(new[] {"ass", "shit"});
-        wordProvider.GetNonExplicitWords().Returns(new[] {"fuck", "bitch"});
+        wordProvider.GetNonExplicitWords().Returns(new[] {"fuck", "bitch", "asshole"});
         return new RegexProfanityFilter(wordProvider);
     }
 }

@@ -13,36 +13,29 @@ namespace DCL.Builder
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        string GetDataFromCall(string result);
-
+        T[] GetArrayFromCall<T>(string result);
+        
         /// <summary>
-        ///  Resolve the data from the call removing de OK response and getting only the array
+        /// Resolve the data from the call removing de OK response
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        string GetDataFromCallArray(string result);
+        APIResponse GetResponseFromCall(string result);
     }
 
     public class BuilderAPIResponseResolver: IBuilderAPIResponseResolver
     {
-        public string GetDataFromCall(string result)
+        public T[] GetArrayFromCall<T>(string result)
         {
-            JObject jObject = (JObject)JsonConvert.DeserializeObject(result);
-            if (jObject["ok"].ToObject<bool>())
-            {
-                return jObject["data"].ToString();
-            }
-            return "";
+            APIResponse response = GetResponseFromCall(result);
+            string array = response.GetArrayJsonString();
+            return JsonConvert.DeserializeObject<T[]>(array);
         }
-    
-        public string GetDataFromCallArray(string result)
+
+        public APIResponse GetResponseFromCall(string result)
         {
-            JObject jObject = (JObject)JsonConvert.DeserializeObject(result);
-            if (jObject["ok"].ToObject<bool>())
-            {
-                return jObject["data"]["items"].ToString();
-            }
-            return "";
+            APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
+            return response;
         }
     }
 }
