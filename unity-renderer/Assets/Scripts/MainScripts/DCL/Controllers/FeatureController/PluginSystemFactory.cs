@@ -4,9 +4,9 @@ namespace DCL
 {
     public static class PluginSystemFactory
     {
-        public static PluginSystemV2 Create()
+        public static PluginSystem Create()
         {
-            var pluginSystem = new PluginSystemV2();
+            var pluginSystem = new PluginSystem();
 
             pluginSystem.Register(new DebugPluginFeature());
             pluginSystem.Register(new ShortcutsFeature());

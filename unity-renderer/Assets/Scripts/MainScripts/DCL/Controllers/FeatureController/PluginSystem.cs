@@ -28,7 +28,7 @@ namespace DCL
         }
     }
 
-    public class PluginSystemV2 : IDisposable
+    public class PluginSystem : IDisposable
     {
         private static ILogger logger = new Logger(Debug.unityLogger);
         private PluginGroup allPlugins = new PluginGroup();
