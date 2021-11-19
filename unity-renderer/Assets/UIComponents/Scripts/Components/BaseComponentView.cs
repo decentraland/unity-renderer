@@ -88,7 +88,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         DataStore.i.screen.size.OnChange += OnScreenSizeModified;
     }
 
-    public virtual void OnEnable() { OnScreenSizeChanged(); }
+    public virtual void OnEnable() { StartCoroutine(RaiseOnScreenSizeChangedAfterDelay()); }
 
     public virtual void Start() { }
 

@@ -452,7 +452,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         rectTransform.anchorMax = Vector2.one;
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.localPosition = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
+        rectTransform.offsetMax = new Vector2(0f, 50f);
         rectTransform.offsetMin = Vector2.zero;
     }
 }

@@ -53,7 +53,12 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     public override void Start() { CreateSubSectionSelectorMappings(); }
 
-    public override void RefreshControl() { }
+    public override void RefreshControl()
+    {
+        highlightsSubSection.RefreshControl();
+        placesSubSection.RefreshControl();
+        eventsSubSection.RefreshControl();
+    }
 
     public override void Dispose()
     {

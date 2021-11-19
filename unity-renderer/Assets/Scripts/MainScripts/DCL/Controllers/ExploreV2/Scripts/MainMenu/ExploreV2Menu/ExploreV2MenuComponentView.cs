@@ -88,7 +88,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         OnInitialized?.Invoke();
     }
 
-    public override void RefreshControl() { }
+    public override void RefreshControl()
+    {
+        placesAndEventsSection.RefreshControl();
+        backpackSection.RefreshControl();
+        mapSection.RefreshControl();
+    }
 
     public override void Dispose()
     {

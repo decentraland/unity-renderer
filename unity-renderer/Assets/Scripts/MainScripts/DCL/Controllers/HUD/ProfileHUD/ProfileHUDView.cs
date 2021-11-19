@@ -379,6 +379,6 @@ internal class ProfileHUDView : MonoBehaviour
     public void SetCardAsFullScreenMenuMode(bool isActive)
     {
         buttonToggleMenu.gameObject.SetActive(!isActive);
-        mainCanvas.sortingOrder = isActive ? 3 : 1;
+        mainCanvas.sortingOrder = isActive ? 4 : 1;
     }
 }

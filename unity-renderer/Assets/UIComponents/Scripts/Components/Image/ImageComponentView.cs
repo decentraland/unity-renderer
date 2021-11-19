@@ -184,12 +184,12 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
         float h, w;
         h = parent.rect.height;
-        w = h * (image.mainTexture.width / (float)image.mainTexture.height);
+        w = h * (image.mainTexture != null ? (image.mainTexture.width / (float)image.mainTexture.height) : 1);
 
         if ((parent.rect.width - w) > 0)
         {
             w = parent.rect.width;
-            h = w * (image.mainTexture.height / (float)image.mainTexture.width);
+            h = w * (image.mainTexture != null ? (image.mainTexture.height / (float)image.mainTexture.width) : 1);
         }
 
         imageRectTransform.sizeDelta = new Vector2(w, h);
