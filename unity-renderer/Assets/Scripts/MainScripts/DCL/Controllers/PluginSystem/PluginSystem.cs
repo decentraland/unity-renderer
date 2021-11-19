@@ -43,11 +43,17 @@ namespace DCL
         private static ILogger logger = new Logger(Debug.unityLogger);
         private PluginGroup allPlugins = new PluginGroup();
         private Dictionary<string, PluginGroup> pluginGroupByFlag = new Dictionary<string, PluginGroup>();
-
-        //private Dictionary<IPlugin, string> flagByPlugin = new Dictionary<IPlugin, string>();
         private BaseVariable<FeatureFlag> featureFlagsDataSource;
 
-        public void RegisterWithFlag( PluginBuilder pluginBuilder, string featureFlag )
+        public bool IsEnabled(PluginBuilder pluginBuilder)
+        {
+            if (!allPlugins.plugins.ContainsKey(pluginBuilder))
+                return false;
+
+            return allPlugins.plugins[pluginBuilder].enabled;
+        }
+
+        public void RegisterWithFlag(PluginBuilder pluginBuilder, string featureFlag)
         {
             Register(pluginBuilder, false);
             ConfigureFlag(pluginBuilder, featureFlag);
@@ -145,6 +151,8 @@ namespace DCL
 
         private void OnFeatureFlagsChange(FeatureFlag current, FeatureFlag previous)
         {
+            Assert.IsNotNull(current, "Current feature flags object should never be null!");
+
             foreach ( var flag in current.flags )
             {
                 SetFlag(flag.Key, flag.Value);
