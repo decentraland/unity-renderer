@@ -51,7 +51,7 @@ public class BuilderInWorldPlugin : IPlugin
 
     public bool enabled { get; private set; } = false;
 
-    public void Enable()
+    public void Initialize()
     {
         enabled = true;
         //We init the lands so we don't have a null reference

@@ -12,7 +12,7 @@ namespace DCL
 
         public bool enabled { get; private set; } = false;
 
-        public void Enable()
+        public void Initialize()
         {
             enabled = true;
             SetupSystems();

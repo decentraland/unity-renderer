@@ -5,22 +5,32 @@ using UnityEngine.Assertions;
 
 namespace DCL
 {
+    public delegate IPlugin PluginBuilder();
+
+    public class PluginInfo
+    {
+        public bool enabled;
+        public string flag;
+        public PluginBuilder builder;
+        public IPlugin instance;
+    }
+
     public class PluginGroup
     {
-        public HashSet<IPlugin> plugins = new HashSet<IPlugin>();
+        public Dictionary<PluginBuilder, PluginInfo> plugins = new Dictionary<PluginBuilder, PluginInfo>();
 
-        public bool Add(IPlugin plugin)
+        public bool Add(PluginBuilder plugin, PluginInfo pluginInfo)
         {
-            if ( plugins.Contains(plugin) )
+            if ( plugins.ContainsKey(plugin) )
                 return false;
 
-            plugins.Add(plugin);
+            plugins.Add(plugin, pluginInfo);
             return true;
         }
 
-        public bool Remove(IPlugin plugin)
+        public bool Remove(PluginBuilder plugin)
         {
-            if ( !plugins.Contains(plugin))
+            if ( !plugins.ContainsKey(plugin))
                 return false;
 
             plugins.Remove(plugin);
@@ -33,51 +43,53 @@ namespace DCL
         private static ILogger logger = new Logger(Debug.unityLogger);
         private PluginGroup allPlugins = new PluginGroup();
         private Dictionary<string, PluginGroup> pluginGroupByFlag = new Dictionary<string, PluginGroup>();
-        private Dictionary<IPlugin, string> flagByPlugin = new Dictionary<IPlugin, string>();
+
+        //private Dictionary<IPlugin, string> flagByPlugin = new Dictionary<IPlugin, string>();
         private BaseVariable<FeatureFlag> featureFlagsDataSource;
 
-        public void RegisterWithFlag( IPlugin plugin, string featureFlag )
+        public void RegisterWithFlag( PluginBuilder pluginBuilder, string featureFlag )
         {
-            Register(plugin, false);
-            ConfigureFlag(plugin, featureFlag);
+            Register(pluginBuilder, false);
+            ConfigureFlag(pluginBuilder, featureFlag);
         }
 
-        public void Register(IPlugin plugin, bool enable = true)
+        public void Register(PluginBuilder pluginBuilder, bool enable = true)
         {
-            Assert.IsNotNull(plugin);
+            Assert.IsNotNull(pluginBuilder);
 
-            if ( allPlugins.plugins.Contains(plugin))
-                return;
-
-            allPlugins.Add(plugin);
+            PluginInfo pluginInfo = new PluginInfo() { builder = pluginBuilder, enabled = false };
+            allPlugins.Add(pluginBuilder, pluginInfo);
 
             if (enable)
-                plugin.Enable();
+            {
+                pluginInfo.enabled = true;
+                pluginInfo.instance = pluginInfo.builder.Invoke();
+                pluginInfo.instance.Initialize();
+            }
         }
 
-        public void Unregister(IPlugin plugin)
+        public void Unregister(PluginBuilder plugin)
         {
-            if ( !allPlugins.plugins.Contains(plugin))
+            if ( !allPlugins.plugins.ContainsKey(plugin))
                 return;
 
-            string flag = flagByPlugin[plugin];
+            string flag = allPlugins.plugins[plugin].flag;
 
             allPlugins.Remove(plugin);
             pluginGroupByFlag[flag].Remove(plugin);
-            flagByPlugin.Remove(plugin);
         }
 
-        public void ConfigureFlag(IPlugin plugin, string featureFlag)
+        public void ConfigureFlag(PluginBuilder plugin, string featureFlag)
         {
             Assert.IsNotNull(plugin);
-            Assert.IsTrue(allPlugins.plugins.Contains(plugin), $"Plugin for {featureFlag} should be registered first!");
-            Assert.IsFalse(flagByPlugin.ContainsKey(plugin), $"Plugin flag was already configured! ({featureFlag})");
+            //Assert.IsTrue(allPlugins.plugins.Contains(plugin), $"Plugin for {featureFlag} should be registered first!");
+            //Assert.IsFalse(flagByPlugin.ContainsKey(plugin), $"Plugin flag was already configured! ({featureFlag})");
 
             if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
                 pluginGroupByFlag.Add(featureFlag, new PluginGroup());
 
-            flagByPlugin.Add(plugin, featureFlag);
-            pluginGroupByFlag[featureFlag].Add(plugin);
+            //flagByPlugin.Add(plugin, featureFlag);
+            pluginGroupByFlag[featureFlag].Add(plugin, allPlugins.plugins[plugin]);
         }
 
         public void SetFlag(string featureFlag, bool value)
@@ -94,10 +106,14 @@ namespace DCL
 
             foreach ( var feature in pluginGroup.plugins )
             {
-                if ( feature.enabled )
+                PluginInfo info = feature.Value;
+
+                if ( info.enabled )
                     continue;
 
-                feature.Enable();
+                info.enabled = true;
+                info.instance = info.builder.Invoke();
+                info.instance.Initialize();
             }
         }
 
@@ -107,10 +123,13 @@ namespace DCL
 
             foreach ( var feature in pluginGroup.plugins )
             {
-                if ( !feature.enabled )
+                PluginInfo info = feature.Value;
+
+                if ( !info.enabled )
                     continue;
 
-                feature.Disable();
+                info.enabled = false;
+                info.instance.Dispose();
             }
         }
 
@@ -121,6 +140,7 @@ namespace DCL
 
             featureFlagsDataSource = flags;
             featureFlagsDataSource.OnChange += OnFeatureFlagsChange;
+            OnFeatureFlagsChange(flags.Get(), flags.Get());
         }
 
         private void OnFeatureFlagsChange(FeatureFlag current, FeatureFlag previous)
@@ -133,10 +153,14 @@ namespace DCL
 
         public void Dispose()
         {
-            foreach ( var feature in allPlugins.plugins )
+            foreach ( var kvp in allPlugins.plugins )
             {
-                if ( feature.enabled )
-                    feature.Dispose();
+                PluginInfo info = kvp.Value;
+
+                if ( !info.enabled )
+                    continue;
+
+                info.instance.Dispose();
             }
 
             if ( featureFlagsDataSource != null )
@@ -145,25 +169,28 @@ namespace DCL
 
         public void Update()
         {
-            foreach ( var feature in allPlugins.plugins )
+            foreach ( var kvp in allPlugins.plugins )
             {
-                feature.Update();
+                if (kvp.Value.enabled)
+                    kvp.Value.instance.Update();
             }
         }
 
         public void LateUpdate()
         {
-            foreach ( var feature in allPlugins.plugins )
+            foreach ( var kvp in allPlugins.plugins )
             {
-                feature.LateUpdate();
+                if (kvp.Value.enabled)
+                    kvp.Value.instance.LateUpdate();
             }
         }
 
         public void OnGUI()
         {
-            foreach ( var feature in allPlugins.plugins )
+            foreach ( var kvp in allPlugins.plugins )
             {
-                feature.OnGUI();
+                if (kvp.Value.enabled)
+                    kvp.Value.instance.OnGUI();
             }
         }
     }

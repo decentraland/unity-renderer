@@ -73,7 +73,7 @@ namespace DCL.Tutorial
 
         internal bool userAlreadyDidTheTutorial { get; set; }
 
-        public void Enable()
+        public void Initialize()
         {
             enabled = true;
             tutorialView = CreateTutorialView();
