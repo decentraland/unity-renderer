@@ -11,6 +11,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         public override void UpdateSetting(object newValue) {
             currentAudioSettings.musicVolume = (float)newValue * 0.01f;
             Settings.i.ApplyMusicVolume();
+            Settings.i.ApplyAudioSettings();
         }
     }
 }

@@ -95,11 +95,28 @@ namespace DCL.SettingsCommon
             WebInterface.ApplySettings(calculatedVolume, (int)generalSettings.Data.voiceChatAllow);
         }
 
-        public void ApplyAvatarSFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("AvatarSFXBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.avatarSFXVolume.Get() * audioSettings.Data.avatarSFXVolume)); }
+        public void ApplyAvatarSFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f)
+        {
+            audioMixer.SetFloat("AvatarSFXBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.avatarSFXVolume.Get() * audioSettings.Data.avatarSFXVolume));
+        }
 
-        public void ApplyUISFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("UIBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * audioSettings.Data.uiSFXVolume)); }
+        public void ApplyUISFXVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f)
+        {
+            audioMixer.SetFloat("UIBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * audioSettings.Data.uiSFXVolume));
+        }
 
-        public void ApplyMusicVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f) { audioMixer.SetFloat("MusicBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * audioSettings.Data.musicVolume)); }
+        public void ApplyMusicVolume(float currentDataStoreVolume = 0f, float previousDataStoreVolume = 0f)
+        {
+            audioMixer.SetFloat("MusicBusVolume", Utils.ToAudioMixerGroupVolume(DataStore.i.virtualAudioMixer.uiSFXVolume.Get() * audioSettings.Data.musicVolume));
+        }
+
+        /// <summary>
+        /// This gets called by each UI slider directly. They also edit their own value inside of the audioSettings before calling this.
+        /// </summary>
+        public void ApplyAudioSettings()
+        {
+            audioSettings.Apply(audioSettings.Data);
+        }
 
         public void SaveSettings()
         {

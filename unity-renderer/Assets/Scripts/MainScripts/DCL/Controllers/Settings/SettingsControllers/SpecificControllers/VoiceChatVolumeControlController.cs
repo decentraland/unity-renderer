@@ -12,6 +12,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             currentAudioSettings.voiceChatVolume = (float)newValue * 0.01f;
             Settings.i.ApplyVoiceChatSettings();
+            Settings.i.ApplyAudioSettings();
         }
     }
 }
