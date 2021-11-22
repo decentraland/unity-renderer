@@ -160,6 +160,7 @@ namespace DCL.SettingsCommon.Tests
         private IPlayerPrefsSettingsByKey GivenNoDataStoredInPrefs()
         {
             var prefsBykey = Substitute.For<IPlayerPrefsSettingsByKey>();
+            prefsBykey.GetString(Arg.Any<string>(), Arg.Any<string>()).Returns(info => info.Args()[1]);
             prefsBykey.GetBool(Arg.Any<string>(), Arg.Any<bool>()).Returns(info => info.Args()[1]);
             prefsBykey.GetFloat(Arg.Any<string>(), Arg.Any<float>()).Returns(info => info.Args()[1]);
             prefsBykey.GetInt(Arg.Any<string>(), Arg.Any<int>()).Returns(info => info.Args()[1]);

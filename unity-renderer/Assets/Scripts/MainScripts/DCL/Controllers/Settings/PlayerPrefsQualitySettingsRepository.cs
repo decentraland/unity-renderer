@@ -36,6 +36,7 @@ namespace DCL.SettingsCommon
 
         public void Save()
         {
+            settingsByKey.SetString("displayName", currentSettings.displayName);
             settingsByKey.SetBool("bloom", currentSettings.bloom);
             settingsByKey.SetBool("colorGrading", currentSettings.colorGrading);
             settingsByKey.SetBool("fpsCap", currentSettings.fpsCap);
@@ -61,6 +62,7 @@ namespace DCL.SettingsCommon
             
             try
             {
+                settings.displayName = settingsByKey.GetString("displayName", defaultSettings.displayName);
                 settings.bloom = settingsByKey.GetBool("bloom", defaultSettings.bloom);
                 settings.colorGrading = settingsByKey.GetBool("colorGrading", defaultSettings.colorGrading);
                 settings.fpsCap = settingsByKey.GetBool("fpsCap", defaultSettings.fpsCap);
@@ -79,7 +81,7 @@ namespace DCL.SettingsCommon
             }
             catch (Exception e)
             {
-                Debug.LogError(e.Message);
+                Debug.LogException(e);
             }
 
             return settings;

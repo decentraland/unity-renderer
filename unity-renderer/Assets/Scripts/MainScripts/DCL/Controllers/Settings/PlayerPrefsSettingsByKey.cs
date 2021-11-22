@@ -35,6 +35,11 @@ namespace DCL.SettingsCommon
             return PlayerPrefs.GetInt(GetFieldKey(fieldName), defaultValue);
         }
 
+        public string GetString(string fieldName, string defaultValue)
+        {
+            return PlayerPrefs.GetString(GetFieldKey(fieldName), defaultValue);
+        }
+
         public void SetBool(string fieldName, bool value)
         {
             PlayerPrefsUtils.SetBool(GetFieldKey(fieldName), value);
@@ -54,7 +59,12 @@ namespace DCL.SettingsCommon
         {
             PlayerPrefs.SetInt(GetFieldKey(fieldName), value);
         }
-        
+
+        public void SetString(string fieldName, string value)
+        {
+            PlayerPrefs.SetString(GetFieldKey(fieldName), value);
+        }
+
         private string GetFieldKey(string fieldName)
         {
             return $"{prefixPrefsKey}.{fieldName}";

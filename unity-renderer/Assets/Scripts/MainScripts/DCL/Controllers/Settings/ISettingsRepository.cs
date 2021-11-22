@@ -2,7 +2,7 @@
 
 namespace DCL.SettingsCommon
 {
-    public interface ISettingsRepository<T> where T : struct
+    public interface ISettingsRepository<T>
     {
         event Action<T> OnChanged;
         T Data { get; }
