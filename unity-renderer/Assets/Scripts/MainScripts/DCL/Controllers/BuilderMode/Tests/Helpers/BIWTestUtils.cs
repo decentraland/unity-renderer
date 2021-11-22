@@ -15,6 +15,7 @@ using NSubstitute.Extensions;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using CameraController = DCL.Camera.CameraController;
 using Object = UnityEngine.Object;
 
 public static class BIWTestUtils
@@ -71,7 +72,7 @@ public static class BIWTestUtils
         );
         return context;
     }
-    
+
     public static IContext CreateMockedContextForTestScene()
     {
         IContext context = new Context(

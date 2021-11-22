@@ -16,6 +16,7 @@ namespace DCL.Camera
         void SetCameraCanMove(bool canMove);
         void SetPosition(Vector3 position);
         void LookAt(Transform transformToLookAt);
+        void LookAt(Vector3 pointToLookAt);
         void SetResetConfiguration(Vector3 position, Transform lookAt);
         void ResetCameraPosition();
         void TakeSceneScreenshot(OnSnapshotsReady onSuccess);
@@ -495,6 +496,8 @@ namespace DCL.Camera
             yaw = transform.eulerAngles.y;
             pitch = transform.eulerAngles.x;
         }
+
+        public void LookAt(Vector3 pointToLookAt) { transform.LookAt(pointToLookAt); }
 
         public void SmoothLookAt(Transform transformToLookAt) { SmoothLookAt(transformToLookAt.position); }
 

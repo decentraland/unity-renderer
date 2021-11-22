@@ -101,11 +101,7 @@ public class BIWModeController : BIWController, IBIWModeController
         GameObject.Destroy(freeMovementGO);
     }
 
-    public void ActivateCamera(IParcelScene sceneToLook) { godMode.ActivateCamera(sceneToLook); }
-
     public void TakeSceneScreenshotForExit() { godMode.TakeSceneScreenshotForExit(); }
-
-    public void OpenNewProjectDetails() { godMode.OpenNewProjectDetails(); }
 
     private void SetEditorGameObjects()
     {

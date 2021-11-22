@@ -8,18 +8,14 @@ using System.Collections.Generic;
 using DCL.Builder;
 using DCL.Camera;
 using UnityEngine;
+using CameraController = DCL.Camera.CameraController;
 using Environment = DCL.Environment;
 
 public class BIWGodMode : BIWMode
 {
-    private float initialEagleCameraHeight = 10f;
-    private float initialEagleCameraDistance = 10f;
-    private float initialEagleCameraLookAtHeight = 0f;
-
     private float snapDragFactor = 5f;
     internal IFreeCameraMovement freeCameraController;
 
-    private CameraController cameraController;
     private Transform lookAtTransform;
     private MouseCatcher mouseCatcher;
     private PlayerAvatarController avatarRenderer;
@@ -42,9 +38,6 @@ public class BIWGodMode : BIWMode
     internal bool isDraggingStarted = false;
     internal bool canDragSelectedEntities = false;
 
-    private bool activateCamera = true;
-    private CameraMode.ModeId avatarCameraModeBeforeEditing;
-
     internal Vector3 lastMousePosition;
     internal Vector3 dragStartedPoint;
 
@@ -62,10 +55,6 @@ public class BIWGodMode : BIWMode
         snapRotationDegresFactor = context.editorContext.godModeDynamicVariablesAsset.snapRotationDegresFactor;
         snapScaleFactor =  context.editorContext.godModeDynamicVariablesAsset.snapScaleFactor;
         snapDistanceToActivateMovement =  context.editorContext.godModeDynamicVariablesAsset.snapDistanceToActivateMovement;
-
-        initialEagleCameraHeight = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraHeight;
-        initialEagleCameraDistance = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraDistance;
-        initialEagleCameraLookAtHeight = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraLookAtHeight;
 
         snapDragFactor = context.editorContext.godModeDynamicVariablesAsset.snapDragFactor;
 
@@ -88,7 +77,6 @@ public class BIWGodMode : BIWMode
             freeCameraController = (FreeCameraMovement) cameraState;
         mouseCatcher = context.sceneReferences.mouseCatcher.GetComponent<MouseCatcher>();
         avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
-        cameraController = context.sceneReferences.cameraController.GetComponent<CameraController>();
 
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;
@@ -100,8 +88,8 @@ public class BIWGodMode : BIWMode
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
-        multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
-        multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
+        multiSelectionInputAction.OnStarted += MultiSelectionInputStart;
+        multiSelectionInputAction.OnFinished += MultiSelectionInputEnd;
 
         gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
         gizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
@@ -116,6 +104,9 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
         gizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
+        
+        multiSelectionInputAction.OnStarted -= MultiSelectionInputStart;
+        multiSelectionInputAction.OnFinished -= MultiSelectionInputEnd;
 
         BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
         BIWInputWrapper.OnMouseUp -= OnInputMouseUp;
@@ -143,14 +134,12 @@ public class BIWGodMode : BIWMode
     public override void Update()
     {
         base.Update();
+
         if (isPlacingNewObject)
-        {
             SetEditObjectAtMouse();
-        }
         else if (isSquareMultiSelectionInputActive && isMouseDragging)
-        {
             CheckOutlineEntitiesInSquareSelection(Input.mousePosition);
-        }
+
     }
 
     public override void OnGUI()
@@ -162,6 +151,16 @@ public class BIWGodMode : BIWMode
             BIWUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.25f));
             BIWUtils.DrawScreenRectBorder(rect, 1, Color.white);
         }
+    }
+
+    private void MultiSelectionInputStart(DCLAction_Hold action)
+    {
+        ChangeSnapTemporaryActivated();
+    }
+    
+    private void MultiSelectionInputEnd(DCLAction_Hold action)
+    {
+        ChangeSnapTemporaryDeactivated();
     }
 
     internal void CheckOutlineEntitiesInSquareSelection(Vector3 mousePosition)
@@ -489,8 +488,9 @@ public class BIWGodMode : BIWMode
         base.Activate(scene);
         sceneToEdit = scene;
 
-        if (activateCamera)
-            ActivateCamera(scene);
+        SetLookAtObject(scene);
+
+        ConfigureCamera(scene);
 
         if (gizmoManager.GetSelectedGizmo() == DCL.Components.DCLGizmos.Gizmo.NONE)
             gizmoManager.SetGizmoType(BIWSettings.TRANSLATE_GIZMO_NAME);
@@ -505,20 +505,13 @@ public class BIWGodMode : BIWMode
         context.editorContext.editorHUD?.ActivateGodModeUI();
     }
 
-    public void ActivateCamera(IParcelScene parcelScene)
+    public void ConfigureCamera(IParcelScene parcelScene)
     {
         freeCameraController.gameObject.SetActive(true);
         SetLookAtObject(parcelScene);
 
-        Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
-        freeCameraController.SetPosition(cameraPosition);
         freeCameraController.LookAt(lookAtTransform);
-        freeCameraController.SetResetConfiguration(cameraPosition, lookAtTransform);
-
-        if (cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
-            avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
-
-        cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
+        freeCameraController.SetResetConfiguration(Camera.main.transform.position, lookAtTransform);
     }
 
     public override void OnDeleteEntity(BIWEntity entity)
@@ -541,7 +534,6 @@ public class BIWGodMode : BIWMode
         base.Deactivate();
         mouseCatcher.enabled = true;
         Utils.LockCursor();
-        cameraController.SetCameraMode(avatarCameraModeBeforeEditing);
 
         Environment.i.world.sceneController.ReIntegrateIsolatedScene();
 
@@ -758,20 +750,10 @@ public class BIWGodMode : BIWMode
 
     public void FocusEntities(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
-    internal Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
-    {
-        Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-        Vector3 direction = (parcelScene.GetSceneTransform().position - middlePoint).normalized;
-
-        return parcelScene.GetSceneTransform().position
-               + direction * initialEagleCameraDistance
-               + Vector3.up * initialEagleCameraHeight;
-    }
-
     internal void SetLookAtObject(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-        lookAtTransform.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
+        lookAtTransform.position = middlePoint;
     }
 
     internal void SetEditObjectAtMouse()
@@ -810,16 +792,6 @@ public class BIWGodMode : BIWMode
         freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
         {
             context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
-        });
-    }
-
-    public void OpenNewProjectDetails()
-    {
-        entityHandler.DeselectEntities();
-
-        freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
-        {
-            context.editorContext.editorHUD?.NewProjectStart(sceneSnapshot);
         });
     }
 }

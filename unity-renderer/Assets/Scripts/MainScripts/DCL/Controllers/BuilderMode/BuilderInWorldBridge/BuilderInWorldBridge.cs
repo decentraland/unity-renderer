@@ -34,7 +34,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     private ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     private EntityPayload entityPayload = new EntityPayload();
     private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
-    private BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
+    internal BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
 
     #region MessagesFromKernel
 
@@ -255,9 +255,9 @@ public class BuilderInWorldBridge : MonoBehaviour
         OnKernelUpdated?.Invoke();
     }
 
-    public void StartKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id)); }
+    public void StartKernelEditMode(IParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id)); }
 
-    public void ExitKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
+    public void ExitKernelEditMode(IParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
 
     public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
     {

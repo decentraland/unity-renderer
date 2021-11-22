@@ -28,7 +28,7 @@ public static partial class BIWUtils
     
     public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
-        if(NotificationsController.i == null)
+        if (NotificationsController.i == null)
             return;
         NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
         {
@@ -38,13 +38,13 @@ public static partial class BIWUtils
             destroyOnFinish = true
         });
     }
-
+    
     public static long ConvertToMilisecondsTimestamp(DateTime value)
     {
         TimeSpan elapsedTime = value - Epoch;
         return (long) elapsedTime.TotalMilliseconds;
     }
-
+    
     public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
     {
         SceneMetricsModel  cachedModel = new SceneMetricsModel();
@@ -59,7 +59,7 @@ public static partial class BIWUtils
         cachedModel.textures = (int) (log * SceneMetricsCounter.LimitsConfig.textures);
         cachedModel.meshes = (int) (log * SceneMetricsCounter.LimitsConfig.meshes);
         cachedModel.sceneHeight = (int) (log * SceneMetricsCounter.LimitsConfig.height);
-        
+
         return cachedModel;
     }
 
@@ -80,10 +80,10 @@ public static partial class BIWUtils
         BuilderGround ground = new BuilderGround();
         ground.assetId = BIWSettings.FLOOR_ID;
         ground.componentId = Guid.NewGuid().ToString();
-        
+
         BuilderScene scene = new BuilderScene
         {
-            id = Guid.NewGuid().ToString(), 
+            id = Guid.NewGuid().ToString(),
             limits = GetSceneMetricsLimits(parcelsAmount),
             metrics = new SceneMetricsModel(),
             ground = ground
@@ -91,14 +91,14 @@ public static partial class BIWUtils
 
         return scene;
     }
-    
+
     public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
     {
         Manifest manifest = new Manifest();
         return manifest;
     }
 
-    public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, ParcelScene scene)
+    public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, IParcelScene scene)
     {
         LandWithAccess filteredLand = lands.FirstOrDefault(land => scene.sceneData.basePosition == land.baseCoords);
         return GetLandOwnershipType(filteredLand);
@@ -139,7 +139,7 @@ public static partial class BIWUtils
         return n2;
     }
 
-    public static Vector2Int GetSceneSize(ParcelScene parcelScene)
+    public static Vector2Int GetSceneSize(IParcelScene parcelScene)
     {
         int minX = Int32.MaxValue;
         int maxX = Int32.MinValue;
@@ -457,9 +457,9 @@ public static partial class BIWUtils
             url: url,
             OnSuccess: (webRequestResult) =>
             {
-                    byte[] byteArray = webRequestResult.GetResultData();
-                    string result = System.Text.Encoding.UTF8.GetString(byteArray);
-                    callPromise?.Resolve(result);
+                byte[] byteArray = webRequestResult.GetResultData();
+                string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                callPromise?.Resolve(result);
             },
             OnFail: (webRequestResult) =>
             {
