@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7767177
+    totalSpriteSurfaceArea: 7773742
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -262,6 +262,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b23d5fabe4435364292b363710d399aa, type: 3}
   - {fileID: 21300000, guid: 7bfca4cb270a343c682028817c0d5bf4, type: 3}
   - {fileID: 21300000, guid: fe4a00db663ed4d3abe06167ea5b3317, type: 3}
+  - {fileID: 21300000, guid: c7f8f6db5623d8f4c935edeff9912df8, type: 3}
   - {fileID: 21300000, guid: 07a400eb205264a4f9e2aad5d599b4a3, type: 3}
   - {fileID: 21300000, guid: 42eb1ceb0cb414d60b49ce912a143517, type: 3}
   - {fileID: 21300000, guid: 64b96cebc797f4e75ad10e05ff68466f, type: 3}
@@ -291,6 +292,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ccff713df52bf45b5b10c8fcfb44fee7, type: 3}
   - {fileID: 21300000, guid: 8191374d830c647edb5ed715100f2b48, type: 3}
   - {fileID: 21300000, guid: a0422c4d3e4fd483f98f3bbd16e5ae2e, type: 3}
+  - {fileID: 21300000, guid: 59758d5dbedcd0746be3439895558d6a, type: 3}
   - {fileID: 21300000, guid: a260d5adf75b41c4cbddd7a6dd28706f, type: 3}
   - {fileID: 21300000, guid: afc72abd3262c43798a1167db98081d9, type: 3}
   - {fileID: 21300000, guid: 463541cd13ac34ce992618e04bc5dc9f, type: 3}
@@ -527,6 +529,7 @@ SpriteAtlas:
   - SoundIconWhite
   - SettingsVolumetricIcon
   - Compass
+  - rectangle_gray_corner_radius_8
   - BackpackIconNew
   - Ellipse32
   - ChatIcon
@@ -556,6 +559,7 @@ SpriteAtlas:
   - LeftClickWhite
   - EventsIcon
   - Div
+  - rectangle_100
   - EmptyProjects
   - OutlineRightRect12
   - Cursor
