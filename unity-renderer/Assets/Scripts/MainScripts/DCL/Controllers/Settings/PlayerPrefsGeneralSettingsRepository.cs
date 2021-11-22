@@ -68,7 +68,7 @@ namespace DCL.SettingsCommon
             }
             catch (Exception e)
             {
-                Debug.LogError(e.Message);
+                Debug.LogException(e);
             }
 
             return settings;
