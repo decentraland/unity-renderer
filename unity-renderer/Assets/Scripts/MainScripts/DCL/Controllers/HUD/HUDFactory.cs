@@ -6,7 +6,6 @@ using DCL.Huds.QuestsTracker;
 using DCL.SettingsPanelHUD;
 using LoadingHUD;
 using SignupHUD;
-using UnityEngine;
 
 public class HUDFactory : IHUDFactory
 {
@@ -37,12 +36,7 @@ public class HUDFactory : IHUDFactory
                 hudElement = new EmotesHUDController();
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
-                hudElement = new PlayerInfoCardHUDController(FriendsController.i,
-                    Resources.Load<StringVariable>("CurrentPlayerInfoCardId"),
-                    new UserProfileWebInterfaceBridge(),
-                    new WearablesCatalogControllerBridge(),
-                    ProfanityFilterSharedInstances.regexFilter,
-                    DataStore.i);
+                hudElement = new PlayerInfoCardHUDController();
                 break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();

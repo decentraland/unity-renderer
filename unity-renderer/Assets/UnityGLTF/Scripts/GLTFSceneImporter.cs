@@ -2104,17 +2104,10 @@ namespace UnityGLTF
                 yield return YieldOnTimeout();
             }
 
-            if (AreMeshTrianglesValid(unityMeshData.Triangles, vertexCount)) // Some scenes contain broken meshes that can trigger a fatal error
+            mesh.triangles = unityMeshData.Triangles;
+            if (ShouldYieldOnTimeout())
             {
-                mesh.triangles = unityMeshData.Triangles;
-                if (ShouldYieldOnTimeout())
-                {
-                    yield return YieldOnTimeout();
-                }
-            }
-            else
-            {
-                Debug.Log("GLTFSceneImporter - ERROR - ConstructUnityMesh - Couldn't assign triangles to mesh as there are indices pointing to vertices out of bounds");
+                yield return YieldOnTimeout();
             }
 
             mesh.tangents = unityMeshData.Tangents;
@@ -2158,23 +2151,6 @@ namespace UnityGLTF
                 Physics.BakeMesh(mesh.GetInstanceID(), false);
                 mesh.UploadMeshData(true);
             }
-        }
-
-        // This check is to avoid broken meshes fatal error "Failed setting triangles. Some indices are referencing out of bounds vertices."
-        private bool AreMeshTrianglesValid(int[] triangles, int vertexCount)
-        {
-            bool areValid = true;
-            
-            for (var i = 0; i < triangles.Length; i++)
-            {
-                if (triangles[i] > vertexCount)
-                {
-                    areValid = false;
-                    break;
-                }
-            }
-
-            return areValid;
         }
 
         protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex)
@@ -2420,7 +2396,7 @@ namespace UnityGLTF
             else
             {
                 yield return ConstructImage(settings, image, sourceId);
-                
+
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
                     Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {sourceId} / {image.Uri} / {id}, applying invalid-tex texture...");
