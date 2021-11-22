@@ -123,6 +123,22 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public UserProfileModel CloneModel() => model.Clone();
 
+    public bool IsBlocked(string userId)
+    {
+        return blocked != null && blocked.Contains(userId);
+    }
+
+    public void Block(string userId)
+    {
+        if (IsBlocked(userId)) return;
+        blocked.Add(userId);
+    }
+    
+    public void Unblock(string userId)
+    {
+        blocked.Remove(userId);
+    }
+
 #if UNITY_EDITOR
     private void OnEnable()
     {
