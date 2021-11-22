@@ -42,13 +42,10 @@ namespace DCL
         /// </summary>
         /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
         /// <returns>A list of BoneWeights that share the same skeleton.</returns>
-        public static BoneWeight[] ComputeBoneWeights( List<CombineLayer> layers )
+        public static List<BoneWeight> ComputeBoneWeights( List<CombineLayer> layers )
         {
+            List<BoneWeight> result = new List<BoneWeight>();
             int layersCount = layers.Count;
-
-            int resultSize = 0;
-
-            List<BoneWeight[]> boneWeightArrays = new List<BoneWeight[]>(10);
 
             for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
             {
@@ -59,24 +56,17 @@ namespace DCL
 
                 for (int i = 0; i < layerRenderersCount; i++)
                 {
-                    var boneWeights = layerRenderers[i].sharedMesh.boneWeights;
-                    boneWeightArrays.Add(boneWeights);
-                    resultSize += boneWeights.Length;
+                    var renderer = layerRenderers[i];
+
+                    // Bone Weights
+                    var sharedMesh = renderer.sharedMesh;
+                    var meshBoneWeights = sharedMesh.boneWeights;
+                    result.AddRange(meshBoneWeights);
                 }
-            }
-
-            BoneWeight[] result = new BoneWeight[resultSize];
-
-            int copyOffset = 0;
-            for ( int i = 0; i < boneWeightArrays.Count; i++ )
-            {
-                Array.Copy(boneWeightArrays[i], 0, result, copyOffset, boneWeightArrays[i].Length);
-                copyOffset += boneWeightArrays[i].Length;
             }
 
             return result;
         }
-
 
         /// <summary>
         /// FlattenMaterials take a CombineLayer list and returns a FlattenedMaterialsData object.

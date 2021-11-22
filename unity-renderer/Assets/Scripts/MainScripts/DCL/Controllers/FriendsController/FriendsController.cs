@@ -3,6 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public interface IFriendsController
+{
+    int friendCount { get; }
+    bool isInitialized { get; }
+    Dictionary<string, FriendsController.UserStatus> GetFriends();
+
+    event Action OnInitialized;
+    event Action<string, FriendshipAction> OnUpdateFriendship;
+    event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
+    event Action<string> OnFriendNotFound;
+}
+
+public enum PresenceStatus
+{
+    NONE,
+    OFFLINE,
+    ONLINE,
+    UNAVAILABLE,
+}
+
+public enum FriendshipStatus
+{
+    NONE,
+    FRIEND,
+    REQUESTED_FROM,
+    REQUESTED_TO
+}
+
+public enum FriendshipAction
+{
+    NONE,
+    APPROVED,
+    REJECTED,
+    CANCELLED,
+    REQUESTED_FROM,
+    REQUESTED_TO,
+    DELETED
+}
+
 public class FriendsController : MonoBehaviour, IFriendsController
 {
     public static bool VERBOSE = false;
@@ -52,53 +91,17 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public UserStatus GetUserStatus(string userId)
     {
         if (!friends.ContainsKey(userId))
-            return new UserStatus() { userId = userId, friendshipStatus = FriendshipStatus.NOT_FRIEND };
+            return new UserStatus() { userId = userId, friendshipStatus = FriendshipStatus.NONE };
 
         return friends[userId];
     }
 
-    public event Action<string, UserStatus> OnUpdateUserStatus;
-    public event Action<string, FriendshipAction> OnUpdateFriendship;
+    public event System.Action<string, UserStatus> OnUpdateUserStatus;
+    public event System.Action<string, FriendshipAction> OnUpdateFriendship;
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
 
     public Dictionary<string, UserStatus> GetFriends() { return new Dictionary<string, UserStatus>(friends); }
-    
-    public void RejectFriendship(string friendUserId)
-    {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-        {
-            userId = friendUserId,
-            action = FriendshipAction.REJECTED
-        });
-    }
-    
-    public void RequestFriendship(string friendUserId)
-    {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-        {
-            userId = friendUserId,
-            action = FriendshipAction.REQUESTED_TO
-        });
-    }
-
-    public void CancelRequest(string friendUserId)
-    {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-        {
-            userId = friendUserId,
-            action = FriendshipAction.CANCELLED
-        });
-    }
-
-    public void AcceptFriendship(string friendUserId)
-    {
-        UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-        {
-            userId = friendUserId,
-            action = FriendshipAction.APPROVED
-        });
-    }
 
     public void FriendNotFound(string name) { OnFriendNotFound?.Invoke(name); }
 
@@ -209,7 +212,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         if (VERBOSE)
             Debug.Log($"Change friend status of {userId} to {friends[userId].friendshipStatus}");
 
-        if (friendshipStatus == FriendshipStatus.NOT_FRIEND)
+        if (friendshipStatus == FriendshipStatus.NONE)
             friends.Remove(userId);
 
         OnUpdateFriendship?.Invoke(userId, msg.action);
@@ -237,17 +240,17 @@ public class FriendsController : MonoBehaviour, IFriendsController
             case FriendshipAction.APPROVED:
                 return FriendshipStatus.FRIEND;
             case FriendshipAction.REJECTED:
-                return FriendshipStatus.NOT_FRIEND;
+                return FriendshipStatus.NONE;
             case FriendshipAction.CANCELLED:
-                return FriendshipStatus.NOT_FRIEND;
+                return FriendshipStatus.NONE;
             case FriendshipAction.REQUESTED_FROM:
                 return FriendshipStatus.REQUESTED_FROM;
             case FriendshipAction.REQUESTED_TO:
                 return FriendshipStatus.REQUESTED_TO;
             case FriendshipAction.DELETED:
-                return FriendshipStatus.NOT_FRIEND;
+                return FriendshipStatus.NONE;
         }
 
-        return FriendshipStatus.NOT_FRIEND;
+        return FriendshipStatus.NONE;
     }
 }

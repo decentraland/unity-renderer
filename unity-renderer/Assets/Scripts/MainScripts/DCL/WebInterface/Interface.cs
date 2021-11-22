@@ -140,10 +140,10 @@ namespace DCL.Interface
             LEFT,
             JUMP,
             WALK,
+            ACTION_1,
+            ACTION_2,
             ACTION_3,
-            ACTION_4,
-            ACTION_5,
-            ACTION_6
+            ACTION_4
         }
 
         [System.Serializable]
