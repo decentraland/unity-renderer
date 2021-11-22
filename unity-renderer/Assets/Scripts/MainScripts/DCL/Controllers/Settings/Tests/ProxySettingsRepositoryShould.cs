@@ -72,6 +72,46 @@ namespace DCL.SettingsCommon.Tests
             Assert.AreEqual(latestEditedSettings, settings);
         }
 
+        [Test]
+        public void DefaultMissingAttributes()
+        {
+            var latestEditedSettings = new GeneralSettings
+            {
+                autoqualityOn = true,
+                namesOpacity = 0.75f,
+                voiceChatAllow = GeneralSettings.VoiceChatAllow.VERIFIED_ONLY
+            };
+            var settingsByKey = GivenDataStoredInPrefs(latestEditedSettings);
+            GivenMissingBoolAttribute(settingsByKey, "profanityChatFiltering");
+            GivenMissingFloatAttribute(settingsByKey, "scenesLoadRadius");
+            var defaultSettings = GetDefaultSettings();
+            var latestRepository = new PlayerPrefsGeneralSettingsRepository(
+                settingsByKey, defaultSettings);
+            var fallbackRepository = GivenSettingsRepositoryWithNoData();
+            var proxyRepository = new ProxySettingsRepository<GeneralSettings>(latestRepository,
+                fallbackRepository);
+            
+            var settings = proxyRepository.Data;
+            
+            Assert.AreEqual(latestEditedSettings.autoqualityOn, settings.autoqualityOn);
+            Assert.AreEqual(latestEditedSettings.namesOpacity, settings.namesOpacity);
+            Assert.AreEqual(latestEditedSettings.voiceChatAllow, settings.voiceChatAllow);
+            Assert.AreEqual(defaultSettings.profanityChatFiltering, settings.profanityChatFiltering);
+            Assert.AreEqual(defaultSettings.scenesLoadRadius, settings.scenesLoadRadius);
+        }
+
+        private void GivenMissingFloatAttribute(IPlayerPrefsSettingsByKey settingsByKey, string fieldName)
+        {
+            settingsByKey.GetFloat(fieldName, Arg.Any<float>())
+                .Returns(call => call[1]);
+        }
+
+        private void GivenMissingBoolAttribute(IPlayerPrefsSettingsByKey settingsByKey, string fieldName)
+        {
+            settingsByKey.GetBool(fieldName, Arg.Any<bool>())
+                .Returns(call => call[1]);
+        }
+
         private GeneralSettings GetDefaultSettings()
         {
             return new GeneralSettings
