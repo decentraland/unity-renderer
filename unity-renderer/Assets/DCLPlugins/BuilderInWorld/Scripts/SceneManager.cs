@@ -152,7 +152,13 @@ namespace DCL.Builder
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
                                          .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
-            TryStartFlow(targetScene,SOURCE_BUILDER_PANEl);
+            StartFlowWithPermission(targetScene,SOURCE_BUILDER_PANEl);
+        }
+
+        public void StartEditorFromManifest(Manifest.Manifest manifest)
+        {
+            ParcelScene convertedScene = ManifestTranslator.TranslateManifestToScene(manifest);
+            StartFlow(convertedScene,SOURCE_BUILDER_PANEl);
         }
 
         public IParcelScene FindSceneToEdit()
@@ -196,10 +202,12 @@ namespace DCL.Builder
             NextState();
         }
 
-        internal void StartFlow(string source)
+        internal void StartFlow(IParcelScene targetScene, string source)
         {
-            if (currentState != State.IDLE)
+            if (currentState != State.IDLE || targetScene == null)
                 return;
+            
+            sceneToEdit = targetScene;
 
             NotificationsController.i.allowNotifications = false;
             CommonScriptableObjects.allUIHidden.Set(true);
@@ -258,7 +266,7 @@ namespace DCL.Builder
         internal void CheckSceneToEditByShorcut()
         {
             var scene = FindSceneToEdit();
-            TryStartFlow(scene, SOURCE_SHORTCUT);
+            StartFlowWithPermission(scene, SOURCE_SHORTCUT);
         }
 
         internal void NewSceneAdded(IParcelScene newScene)
@@ -359,7 +367,7 @@ namespace DCL.Builder
 
         }
 
-        public void TryStartFlow(IParcelScene targetScene, string source)
+        public void StartFlowWithPermission(IParcelScene targetScene, string source)
         {
             if (currentState != State.IDLE || targetScene == null)
                 return;
@@ -375,8 +383,7 @@ namespace DCL.Builder
                 return;
             }
             
-            sceneToEdit = targetScene;
-            StartFlow(source);
+            StartFlow(targetScene, source);
         }
 
         private void LoadScene()

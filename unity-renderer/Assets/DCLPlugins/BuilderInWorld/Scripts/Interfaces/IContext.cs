@@ -13,6 +13,7 @@ namespace DCL.Builder
         IBuilderMainPanelController panelHUD { get; }
         IBIWEditor editor  { get; }
         IBuilderAPIController builderAPIController { get; }
+        ISceneManager sceneManager  { get; }
 
         IEditorContext editorContext { get; }
 

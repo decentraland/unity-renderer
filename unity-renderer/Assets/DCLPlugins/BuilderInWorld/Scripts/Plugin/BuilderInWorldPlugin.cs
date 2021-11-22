@@ -27,6 +27,7 @@ public class BuilderInWorldPlugin : PluginFeature
         context = new Context(editor,
             panelController,
             builderAPIController,
+            sceneManager,
             new BuilderEditorHUDController(),
             new BIWOutlinerController(),
             new BIWInputHandler(),

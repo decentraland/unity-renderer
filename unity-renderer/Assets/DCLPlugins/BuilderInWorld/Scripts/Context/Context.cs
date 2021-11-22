@@ -18,6 +18,7 @@ namespace DCL.Builder
         public IBuilderMainPanelController panelHUD { get; internal set; }
         public IBIWEditor editor  { get; internal set; }
         public IBuilderAPIController builderAPIController { get; internal set; }
+        public ISceneManager sceneManager  { get; internal set; }
 
         public ISceneReferences sceneReferences { get; internal set; }
 
@@ -27,6 +28,7 @@ namespace DCL.Builder
         public Context(IBIWEditor editor,
             IBuilderMainPanelController panelHUD,
             IBuilderAPIController builderAPIController,
+            ISceneManager sceneManager,
             IBuilderEditorHUDController editorHUD,
             IBIWOutlinerController outlinerController,
             IBIWInputHandler inputHandler,
@@ -52,6 +54,7 @@ namespace DCL.Builder
             this.panelHUD = panelHUD;
             this.editor = editor;
             this.builderAPIController = builderAPIController;
+            this.sceneManager = sceneManager;
 
             editorContext = new EditorContext(editorHUD,
                 outlinerController,

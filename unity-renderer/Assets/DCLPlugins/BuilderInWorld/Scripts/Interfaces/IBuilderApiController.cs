@@ -32,11 +32,18 @@ public interface IBuilderAPIController
     Promise<List<ProjectData>> GetAllManifests();
     
     /// <summary>
+    /// This will get the manifest from the project data
+    /// </summary>
+    /// <param name="projectData">Project data that we will use to recover the manifest associated</param>
+    /// <returns></returns>
+    Promise<Manifest> GetManifestById(string id);
+    
+    /// <summary>
     /// Create a new project and return a promise if it has been created correctly
     /// </summary>
     /// <param name="newProject">Data of the new Project</param>
     /// <returns></returns>
-    Promise<APIResponse> CreateNewProject(ProjectData newProject);
+    Promise<Manifest> CreateNewProject(ProjectData newProject);
     
     /// <summary>
     /// Dispose the component

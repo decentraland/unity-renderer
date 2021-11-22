@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Builder;
+using DCL.Builder.Manifest;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -14,6 +15,7 @@ using Object = UnityEngine.Object;
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
+    private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
@@ -169,26 +171,38 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         newProjectFlowController.OnNewProjectCrated += CreateNewProject;
 
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
-
+        this.projectsController.OnEditorPressed += GetManifestToEdit;
+        
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
+    private void GetManifestToEdit(ProjectData data)
+    {
+        Promise<Manifest> manifestPromise = context.builderAPIController.GetManifestById(data.id);
+        manifestPromise.Then( OpenEditorFromManifest);
+   
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(OBTAIN_PROJECT_ERROR+errorString);
+        });
+    }
+
     private void CreateNewProject(ProjectData project)
     {
-        Promise<APIResponse> projectPromise = context.builderAPIController.CreateNewProject(project);
+        Promise<Manifest> projectPromise = context.builderAPIController.CreateNewProject(project);
 
-        projectPromise.Then( apiResponse =>
-        {
-            //TODO: If it is ok, Start the editor
-            if (!apiResponse.ok)
-                BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+apiResponse.error);
-        });
-        
+        projectPromise.Then( OpenEditorFromManifest);
+   
         projectPromise.Catch( errorString =>
         {
             BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+errorString);
         });
+    }
+
+    private void OpenEditorFromManifest(Manifest manifest)
+    {
+        context.sceneManager.StartEditorFromManifest(manifest);
     }
 
     public void SetVisibility(bool visible)

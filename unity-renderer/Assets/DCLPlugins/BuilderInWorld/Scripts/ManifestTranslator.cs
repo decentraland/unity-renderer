@@ -7,8 +7,10 @@ using DCL.Builder.Manifest;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using ICSharpCode.NRefactory.Ast;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace DCL.Builder
@@ -51,7 +53,7 @@ namespace DCL.Builder
                     // We generate a new uuid for the component since there is no uuid for components in the stateful scheme
                     builderComponent.id = Guid.NewGuid().ToString();
                     builderComponent.type = componentType;
-                    builderComponent.data = entityComponent.Value.GetModel();
+                    builderComponent.data = JsonConvert.ToString(entityComponent.Value.GetModel());
                     
                     builderEntity.components.Add(builderComponent.id);
                     builderScene.components.Add(builderComponent.id,builderComponent);
@@ -63,13 +65,13 @@ namespace DCL.Builder
                     BuilderComponent builderComponent = new BuilderComponent();
                     // We generate a new uuid for the component since there is no uuid for components in the stateful scheme
                     builderComponent.id = Guid.NewGuid().ToString();
-                    builderComponent.data = sharedEntityComponent.Value.GetModel();
+                    builderComponent.data = JsonConvert.ToString(sharedEntityComponent.Value.GetModel());
                     
                     if (sharedEntityComponent.Key == typeof(GLTFShape))
                     {
                         componentType = "GLTFShape";
                         
-                        var gltfModel = (GLTFShape.Model) builderComponent.data;
+                        var gltfModel = JsonConvert.DeserializeObject<GLTFShape.Model>(builderComponent.data.ToString());
                         
                         //We get the associated asset to the GLFTShape and add it to the scene 
                         var asset = AssetCatalogBridge.i.sceneObjectCatalog.Get(gltfModel.assetId);
@@ -92,8 +94,8 @@ namespace DCL.Builder
                         
                         // This is a special case where we are assigning the builder url field for NFTs because builder model data is different
                         NFTShapeBuilderRepresentantion representantion;
-                        representantion.url = ((NFTShape.Model) builderComponent.data).src;
-                        builderComponent.data = representantion;
+                        representantion.url = JsonConvert.DeserializeObject<NFTShape.Model>(builderComponent.data.ToString()).src;
+                        builderComponent.data = JsonConvert.ToString(representantion);
                         
                         //This is the name format that is used by builder, we will have a different name in unity due to DCLName component
                         entityName = "nft";
@@ -156,10 +158,57 @@ namespace DCL.Builder
             return newName;
         }
         
-        public static IParcelScene TranslateManifestToScene(Manifest.Manifest manifest)
+        public static ParcelScene TranslateManifestToScene(Manifest.Manifest manifest)
         {
             GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.id);
             ParcelScene scene = parcelGameObject.AddComponent<ParcelScene>();
+            
+            //We remove the old assets to they don't collide with the new ones
+            BIWUtils.RemoveAssetsFromCurrentScene();
+            
+            //We add the assets from the scene to the catalog
+            var assets = manifest.scene.assets.Values.ToArray();
+            AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(assets);
+            
+            //We create and assign the data of the scene
+            LoadParcelScenesMessage.UnityParcelScene parcelData = new LoadParcelScenesMessage.UnityParcelScene();
+            parcelData.id = manifest.scene.id;
+            
+            //This scene doesn't exist in the world, so we set it in the 0,0 coordinate
+            parcelData.basePosition =  new Vector2Int(0, 0);
+            
+            //We set the parcels as the first one is in the 0,0, the first one will be in the bottom-left corner 
+            parcelData.parcels =  new Vector2Int[manifest.project.rows * manifest.project.cols];
+            int x = 0;
+            int y = 0;
+            for (int index = 0; index == parcelData.parcels.Length; index++)
+            {
+                parcelData.parcels[index] = new Vector2Int(x, y);
+                y++;
+                if (y == manifest.project.rows)
+                {
+                    x++;
+                    y = 0;
+                }
+            }
+
+            //We prepare the mappings to the scenes
+            Dictionary<string, string> contentDictionary = new Dictionary<string, string>();
+            
+            foreach (var sceneObject in assets)
+            {
+                foreach (var content in sceneObject.contents)
+                {
+                    if(!contentDictionary.ContainsKey(content.Key))
+                        contentDictionary.Add(content.Key,content.Value);    
+                }
+            }
+
+            //We add the mappings to the scene
+            BIWUtils.AddSceneMappings(contentDictionary, BIWUrlUtils.GetUrlSceneObjectContent(),parcelData);
+            
+            //The data is built so we set the data of the scene 
+            scene.SetData(parcelData);
 
             // We iterate all the entities to create the entity in the scene
             foreach (BuilderEntity builderEntity in manifest.scene.entities.Values)
@@ -180,18 +229,18 @@ namespace DCL.Builder
                     switch (component.type)
                     {
                         case "Transform":
-                            DCLTransform.Model model = (DCLTransform.Model)component.data;
+                            DCLTransform.Model model = JsonConvert.DeserializeObject<DCLTransform.Model>(component.data.ToString());
                             EntityComponentsUtils.AddTransformComponent(scene, entity, model);
                             break;
                         
                         case "GLTFShape":
-                            LoadableShape.Model gltfModel = (LoadableShape.Model) component.data;
+                            LoadableShape.Model gltfModel = JsonConvert.DeserializeObject<LoadableShape.Model>(component.data.ToString());
                             EntityComponentsUtils.AddGLTFComponent(scene, entity, gltfModel, component.id);
                             break;
                         
                         case "NFTShape":
                             //Builder use a different way to load the NFT so we convert it to our system
-                            string url = (string) component.data;
+                            string url = JsonConvert.DeserializeObject<string>(component.data.ToString());
                             string assedId = url.Replace("ethereum://","");
                             int index = assedId.IndexOf("/", StringComparison.Ordinal);
                             string partToremove = assedId.Substring(index);
@@ -207,13 +256,13 @@ namespace DCL.Builder
                         
                         case "Name":
                             nameComponentFound = true;
-                            DCLName.Model nameModel = (DCLName.Model) component.data;
+                            DCLName.Model nameModel = JsonConvert.DeserializeObject<DCLName.Model>(component.data.ToString());
                             nameModel.builderValue = builderEntity.name;
                             EntityComponentsUtils.AddNameComponent(scene , entity,nameModel, Guid.NewGuid().ToString());
                             break;
                         
                         case "LockedOnEdit":
-                            DCLLockedOnEdit.Model lockedModel = (DCLLockedOnEdit.Model) component.data;
+                            DCLLockedOnEdit.Model lockedModel = JsonConvert.DeserializeObject<DCLLockedOnEdit.Model>(component.data.ToString());
                             EntityComponentsUtils.AddLockedOnEditComponent(scene , entity, lockedModel, Guid.NewGuid().ToString()); 
                             break;
                     }
@@ -229,11 +278,8 @@ namespace DCL.Builder
                 }
             }
             
-            //We remove the old assets to they don't collide with the new ones
-            BIWUtils.RemoveAssetsFromCurrentScene();
-            
-            //We add the assets from the scene to the catalog
-            AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(manifest.scene.assets.Values.ToArray());
+            //We already have made all the necessary steps to configure the parcel, so we init the scene
+            scene.sceneLifecycleHandler.SetInitMessagesDone();
             
             return scene;
         }

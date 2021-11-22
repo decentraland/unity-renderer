@@ -21,5 +21,11 @@ namespace DCL.Builder
         /// Update call from unity
         /// </summary>
         void Update();
+
+        /// <summary>
+        /// This start the flow of the editor from a manifest 
+        /// </summary>
+        /// <param name="manifest"></param>
+        void StartEditorFromManifest(Manifest.Manifest manifest);
     }
 }

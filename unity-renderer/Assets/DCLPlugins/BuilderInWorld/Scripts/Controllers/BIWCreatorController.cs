@@ -179,10 +179,10 @@ namespace DCL.Builder
                 return null;
 
             IsInsideTheLimits(catalogItem);
-
-            //Note (Adrian): This is a workaround until the mapping is handle by kernel
-            AddSceneMappings(catalogItem);
-
+            
+            BIWUtils.AddSceneMappings(catalogItem.contents, BIWUrlUtils.GetUrlSceneObjectContent(), sceneToEdit.sceneData);
+            DCL.Environment.i.world.sceneController.UpdateParcelScenesExecute(sceneToEdit.sceneData);
+            
             Vector3 editionPosition = modeController.GetCurrentEditionPosition();
 
             BIWEntity entity = entityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition, false);

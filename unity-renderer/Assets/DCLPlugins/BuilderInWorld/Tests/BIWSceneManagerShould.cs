@@ -55,7 +55,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         // Act
-        mainController.TryStartFlow(scene, "Test");
+        mainController.StartFlowWithPermission(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
@@ -72,7 +72,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
-        mainController.TryStartFlow(scene, "Test");
+        mainController.StartFlowWithPermission(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);

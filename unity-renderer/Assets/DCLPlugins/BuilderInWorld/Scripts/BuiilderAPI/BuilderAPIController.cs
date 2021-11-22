@@ -20,7 +20,7 @@ public class BuilderAPIController : IBuilderAPIController
     internal const string CATALOG_ENDPOINT = "/assetPacks";
     internal const string ASSETS_ENDPOINT = "/assets?";
     internal const string GET_PROJECTS_ENDPOINT = "/projects";
-    internal const string SET_PROJECTS_ENDPOINT = "/projects/{ID}/manifest";
+    internal const string PROJECT_MANIFEST_ENDPOINT = "/projects/{ID}/manifest";
 
     internal const string API_KO_RESPONSE_ERROR = "API response is KO";
 
@@ -130,9 +130,39 @@ public class BuilderAPIController : IBuilderAPIController
         }
     }
 
-    public Promise<APIResponse> CreateNewProject(ProjectData newProject)
+    public Promise<Manifest> GetManifestById(string idProject)
     {
-        Promise<APIResponse> fullNewProjectPromise = new Promise<APIResponse>();
+        Promise<Manifest> fullNewProjectPromise = new Promise<Manifest>();
+
+        string url = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", idProject);
+        var promise =  CallUrl(GET, url);
+
+        promise.Then(result =>
+        {
+            Manifest manifest = null;
+            
+            try
+            {
+                manifest = JsonConvert.DeserializeObject<Manifest>(result);
+            }
+            catch (Exception e)
+            {
+                fullNewProjectPromise.Reject(e.Message);
+                return;
+            }
+            
+            fullNewProjectPromise.Resolve(manifest);
+        });
+        promise.Catch(error =>
+        {
+            fullNewProjectPromise.Reject(error);
+        });
+        return fullNewProjectPromise;
+    }
+
+    public Promise<Manifest> CreateNewProject(ProjectData newProject)
+    {
+        Promise<Manifest> fullNewProjectPromise = new Promise<Manifest>();
         Manifest builderManifest = BIWUtils.CreateManifestFromProject(newProject);
         
         JsonSerializerSettings dateFormatSettings = new JsonSerializerSettings
@@ -143,15 +173,15 @@ public class BuilderAPIController : IBuilderAPIController
         string jsonManifest =JsonConvert.SerializeObject(builderManifest, dateFormatSettings);
         byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
 
-        string endpoint = SET_PROJECTS_ENDPOINT.Replace("{ID}", newProject.id);
+        string endpoint = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", newProject.id);
         var promise =  CallUrl(PUT, endpoint,"",myData);
 
         promise.Then(result =>
         {
             var apiResponse = apiResponseResolver.GetResponseFromCall(result);
-            if(apiResponse.ok)
-                fullNewProjectPromise.Resolve(apiResponse);
-            else   
+            if (apiResponse.ok)
+                fullNewProjectPromise.Resolve((Manifest)apiResponse.data);
+            else
                 fullNewProjectPromise.Reject(apiResponse.error);
         });
         
