@@ -55,7 +55,7 @@ namespace DCL.Components
         where ModelType : UIShape.Model
     {
         public const float RAYCAST_ALPHA_THRESHOLD = 0.01f;
-
+        
         public UIShape() { }
 
         new public ModelType model { get { return base.model as ModelType; } set { base.model = value; } }
@@ -187,7 +187,10 @@ namespace DCL.Components
             }
         }
 
-        public override IEnumerator ApplyChanges(BaseModel newJson) { return null; }
+        public override IEnumerator ApplyChanges(BaseModel newJson)
+        {
+            return null;
+        }
 
         internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
@@ -238,9 +241,6 @@ namespace DCL.Components
                 yield return Application.isBatchMode ? null : new WaitForEndOfFrame();
 
                 if ( !isLayoutDirty )
-                    continue;
-
-                if (CommonScriptableObjects.sceneID.Get() != scene.sceneData.id)
                     continue;
 
                 RefreshAll();

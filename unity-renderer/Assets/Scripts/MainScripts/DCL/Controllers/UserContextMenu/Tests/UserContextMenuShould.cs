@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 
 public class UserContextMenuShould
 {
+    const string PREFAB_PATH = "Assets/Scripts/MainScripts/DCL/Controllers/UserContextMenu/Prefabs/UserContextMenuPanel.prefab";
     const string TEST_USER_ID = "TEST_USER_ID";
 
     private UserContextMenu contextMenu;
@@ -16,8 +17,8 @@ public class UserContextMenuShould
     [UnitySetUp]
     public IEnumerator SetUp()
     {
-        var prefab = Resources.Load<UserContextMenu>("UserContextMenuPanel");
-        contextMenu = UnityEngine.Object.Instantiate(prefab);
+        var prefab = AssetDatabase.LoadAssetAtPath(PREFAB_PATH, (typeof(GameObject))) as GameObject;
+        contextMenu = UnityEngine.Object.Instantiate(prefab).GetComponent<UserContextMenu>();
 
         friendsController = (new GameObject()).AddComponent<FriendsController>();
         profileController = (new GameObject()).AddComponent<UserProfileController>();
