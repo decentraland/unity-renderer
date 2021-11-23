@@ -16,5 +16,5 @@ public class MapSectionComponentView : BaseComponentView, IMapSectionComponentVi
 
     public override void RefreshControl() { }
 
-    public void ConfigureMap() { DataStore.i.exploreV2.showMapInMenuMode.Set(contentContainer, true); }
+    public void ConfigureMap() { DataStore.i.exploreV2.configureMapInFullscreenMenu.Set(contentContainer, true); }
 }

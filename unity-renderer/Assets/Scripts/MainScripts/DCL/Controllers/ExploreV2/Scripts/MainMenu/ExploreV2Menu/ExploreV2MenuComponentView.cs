@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using UnityEngine;
 
@@ -48,17 +49,20 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <summary>
     /// Configures the backpack section.
     /// </summary>
-    void ConfigureBackpackSection();
+    /// <param name="isActive">Indicates if the section is active or not.</param>
+    void ConfigureBackpackSection(bool isActive);
 
     /// <summary>
     /// Configures the map section.
     /// </summary>
-    void ConfigureMapSection();
+    /// <param name="isActive">Indicates if the section is active or not.</param>
+    void ConfigureMapSection(bool isActive);
 
     /// <summary>
     /// Configures the builder section.
     /// </summary>
-    void ConfigureBuilderSection();
+    /// <param name="isActive">Indicates if the section is active or not.</param>
+    void ConfigureBuilderSection(bool isActive);
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -131,11 +135,29 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection((int)section)?.SelectToggle(true);
     }
 
-    public void ConfigureBackpackSection() { backpackSection.ConfigureBackpack(); }
+    public void ConfigureBackpackSection(bool isActive)
+    {
+        sectionSelector.GetSection((int)ExploreSection.Backpack).SetActive(isActive);
 
-    public void ConfigureMapSection() { mapSection.ConfigureMap(); }
+        if (isActive)
+            backpackSection.ConfigureBackpack();
+    }
 
-    public void ConfigureBuilderSection() { builderSection.ConfigureBuilder(); }
+    public void ConfigureMapSection(bool isActive)
+    {
+        sectionSelector.GetSection((int)ExploreSection.Map).SetActive(isActive);
+
+        if (isActive)
+            mapSection.ConfigureMap();
+    }
+
+    public void ConfigureBuilderSection(bool isActive)
+    {
+        sectionSelector.GetSection((int)ExploreSection.Builder).SetActive(isActive);
+
+        if (isActive)
+            builderSection.ConfigureBuilder();
+    }
 
     internal void CreateSectionSelectorMappings()
     {

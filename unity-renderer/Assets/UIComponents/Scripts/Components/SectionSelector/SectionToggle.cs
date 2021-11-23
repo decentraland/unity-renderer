@@ -38,6 +38,12 @@ public interface ISectionToggle
     /// Set the toggle visuals as unselected.
     /// </summary>
     void SetUnselectedVisuals();
+
+    /// <summary>
+    /// Set the toggle as active or inactive.
+    /// </summary>
+    /// <param name="isActive">Tru for activating.</param>
+    void SetActive(bool isActive);
 }
 
 public class SectionToggle : MonoBehaviour, ISectionToggle
@@ -120,6 +126,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         sectionText.color = unselectedTextColor;
         sectionImage.color = unselectedImageColor;
     }
+
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
     internal void ConfigureDefaultOnSelectAction()
     {

@@ -55,6 +55,8 @@ public class BuilderInWorldPlugin : PluginFeature
         editor.Initialize(context);
         builderAPIController.Initialize(context);
         sceneManager.Initialize(context);
+
+        DataStore.i.builderInWorld.isInitialized.Set(true);
     }
 
     public override void Dispose()

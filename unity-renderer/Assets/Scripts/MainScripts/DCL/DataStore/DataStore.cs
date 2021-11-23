@@ -56,6 +56,7 @@ namespace DCL
 
         public class DataStore_BuilderInWorld
         {
+            public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
             public readonly BaseDictionary<string, CatalogItem> catalogItemDict = new BaseDictionary<string, CatalogItem>();
             public readonly BaseDictionary<string, CatalogItem> currentSceneCatalogItemDict = new BaseDictionary<string, CatalogItem>();
             public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();
@@ -79,8 +80,10 @@ namespace DCL
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> controlsVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> isAvatarEditorInitialized = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> avatarEditorVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> emotesVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> isNavMapInitialized = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> navmapVisible = new BaseVariable<bool>(false);
 
             public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
@@ -145,11 +148,10 @@ namespace DCL
         {
             public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
-            public readonly BaseVariable<Transform> showBackpackInMenuMode = new BaseVariable<Transform>(null);
             public readonly BaseVariable<bool> profileCardIsOpen = new BaseVariable<bool>(false);
-            public readonly BaseVariable<Transform> showProfileCardInMenuMode = new BaseVariable<Transform>(null);
-            public readonly BaseVariable<Transform> showMapInMenuMode = new BaseVariable<Transform>(null);
-            public readonly BaseVariable<Transform> showBuilderInMenuMode = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> configureBackpackInFullscreenMenu = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> configureMapInFullscreenMenu = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> configureBuilderInFullscreenMenu = new BaseVariable<Transform>(null);
         }
 
         public class DataStore_FeatureFlag

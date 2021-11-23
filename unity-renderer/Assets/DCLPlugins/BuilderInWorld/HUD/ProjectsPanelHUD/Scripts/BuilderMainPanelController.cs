@@ -52,7 +52,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal IContext context;
 
-    BaseVariable<Transform> showBuilderInMenuMode => DataStore.i.exploreV2.showBuilderInMenuMode;
+    BaseVariable<Transform> configureBuilderInFullscreenMenu => DataStore.i.exploreV2.configureBuilderInFullscreenMenu;
 
     public BuilderMainPanelController()
     {
@@ -61,8 +61,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         else
             SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
 
-        showBuilderInMenuMode.OnChange += ShowBuilderInMenuModeChanged;
-        ShowBuilderInMenuModeChanged(showBuilderInMenuMode.Get(), null);
+        configureBuilderInFullscreenMenu.OnChange += ConfigureBuilderInFullscreenMenuChanged;
+        ConfigureBuilderInFullscreenMenuChanged(configureBuilderInFullscreenMenu.Get(), null);
     }
 
     internal void SetView(IBuilderMainPanelView view)
@@ -101,7 +101,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         view.OnClosePressed -= OnClose;
         view.OnBackPressed -= OnBack;
 
-        showBuilderInMenuMode.OnChange -= ShowBuilderInMenuModeChanged;
+        configureBuilderInFullscreenMenu.OnChange -= ConfigureBuilderInFullscreenMenuChanged;
 
         unpublishPopupController?.Dispose();
 
@@ -426,5 +426,5 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         }
     }
 
-    internal void ShowBuilderInMenuModeChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
+    internal void ConfigureBuilderInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
 }

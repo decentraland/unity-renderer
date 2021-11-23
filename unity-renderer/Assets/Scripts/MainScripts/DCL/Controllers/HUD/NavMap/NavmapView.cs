@@ -23,7 +23,7 @@ namespace DCL
         Vector3 atlasOriginalPosition;
         MinimapMetadata mapMetadata;
 
-        BaseVariable<Transform> showMapInMenuMode => DataStore.i.exploreV2.showMapInMenuMode;
+        BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
 
         public BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
         public static event System.Action<bool> OnToggle;
@@ -54,8 +54,8 @@ namespace DCL
             closeAction.OnTriggered += OnCloseAction;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
-            showMapInMenuMode.OnChange += ShowMapInMenuModeChanged;
-            ShowMapInMenuModeChanged(showMapInMenuMode.Get(), null);
+            configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
+            ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
 
             Initialize();
         }
@@ -66,6 +66,7 @@ namespace DCL
         {
             toastView.gameObject.SetActive(false);
             scrollRect.gameObject.SetActive(false);
+            DataStore.i.HUDs.isNavMapInitialized.Set(true);
         }
 
         private void OnDestroy()
@@ -75,7 +76,7 @@ namespace DCL
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             closeAction.OnTriggered += OnCloseAction;
-            showMapInMenuMode.OnChange -= ShowMapInMenuModeChanged;
+            configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
         }
 
         internal void SetVisible(bool visible)
@@ -175,6 +176,6 @@ namespace DCL
             rectTransform.offsetMin = Vector2.zero;
         }
 
-        private void ShowMapInMenuModeChanged(Transform currentParentTransform, Transform previousParentTransform) { SetAsFullScreenMenuMode(currentParentTransform); }
+        private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { SetAsFullScreenMenuMode(currentParentTransform); }
     }
 }

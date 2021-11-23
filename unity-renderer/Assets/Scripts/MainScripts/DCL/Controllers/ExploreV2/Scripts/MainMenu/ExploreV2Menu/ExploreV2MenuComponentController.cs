@@ -18,9 +18,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal ExploreSection currentOpenSection;
 
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
-    internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
+    internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
+    internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+    internal BaseVariable<bool> isNavmapVisibleInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
+    internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized;
     internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
 
     public void Initialize()
@@ -45,12 +48,18 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
 
+        isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
+        IsAvatarEditorInitializedChanged(isAvatarEditorInitialized.Get(), false);
         avatarEditorVisible.OnChange += AvatarEditorVisibleChanged;
         AvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
 
+        isNavmapVisibleInitialized.OnChange += IsNavMapInitializedChanged;
+        IsNavMapInitializedChanged(isNavmapVisibleInitialized.Get(), false);
         navmapVisible.OnChange += NavmapVisibleChanged;
         NavmapVisibleChanged(navmapVisible.Get(), false);
 
+        isBuilderInitialized.OnChange += IsBuilderInitializedChanged;
+        IsBuilderInitializedChanged(isBuilderInitialized.Get(), false);
         builderVisible.OnChange += BuilderVisibleChanged;
         BuilderVisibleChanged(builderVisible.Get(), false);
     }
@@ -85,8 +94,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
+        isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
         avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
+        isNavmapVisibleInitialized.OnChange -= IsNavMapInitializedChanged;
         navmapVisible.OnChange -= NavmapVisibleChanged;
+        isBuilderInitialized.OnChange -= IsBuilderInitializedChanged;
         builderVisible.OnChange -= BuilderVisibleChanged;
 
         if (view != null)
@@ -135,6 +147,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.SetVisible(visible);
     }
 
+    private void IsAvatarEditorInitializedChanged(bool current, bool previous) { view.ConfigureBackpackSection(current); }
+
     internal void AvatarEditorVisibleChanged(bool current, bool previous)
     {
         if (DataStore.i.isSignUpFlow.Get())
@@ -142,7 +156,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            view.ConfigureBackpackSection();
             SetVisibility(true);
             view.GoToSection(ExploreSection.Backpack);
         }
@@ -152,11 +165,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
+    private void IsNavMapInitializedChanged(bool current, bool previous) { view.ConfigureMapSection(true); }
+
     internal void NavmapVisibleChanged(bool current, bool previous)
     {
         if (current)
         {
-            view.ConfigureMapSection();
             SetVisibility(true);
             view.GoToSection(ExploreSection.Map);
         }
@@ -166,11 +180,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
+    internal void IsBuilderInitializedChanged(bool current, bool previous) { view.ConfigureBuilderSection(current); }
+
     internal void BuilderVisibleChanged(bool current, bool previous)
     {
         if (current)
         {
-            view.ConfigureBuilderSection();
             SetVisibility(true);
             view.GoToSection(ExploreSection.Builder);
         }

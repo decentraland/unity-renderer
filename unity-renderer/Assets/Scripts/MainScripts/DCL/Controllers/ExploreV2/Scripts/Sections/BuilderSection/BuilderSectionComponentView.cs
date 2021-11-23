@@ -16,5 +16,5 @@ public class BuilderSectionComponentView : BaseComponentView, IBuilderSectionCom
 
     public override void RefreshControl() { }
 
-    public void ConfigureBuilder() { DataStore.i.exploreV2.showBuilderInMenuMode.Set(contentContainer, true); }
+    public void ConfigureBuilder() { DataStore.i.exploreV2.configureBuilderInFullscreenMenu.Set(contentContainer, true); }
 }

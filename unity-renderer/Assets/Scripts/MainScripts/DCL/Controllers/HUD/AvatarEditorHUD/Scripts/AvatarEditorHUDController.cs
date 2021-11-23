@@ -29,7 +29,7 @@ public class AvatarEditorHUDController : IHUD
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.isPlayerRendererLoaded.Get();
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
-    BaseVariable<Transform> showBackpackInMenuMode => DataStore.i.exploreV2.showBackpackInMenuMode;
+    BaseVariable<Transform> configureBackpackInFullscreenMenu => DataStore.i.exploreV2.configureBackpackInFullscreenMenu;
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
@@ -60,8 +60,8 @@ public class AvatarEditorHUDController : IHUD
         OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
         view.OnCloseActionTriggered += DiscardAndClose;
 
-        showBackpackInMenuMode.OnChange += ShowBackpackInMenuModeChanged;
-        ShowBackpackInMenuModeChanged(showBackpackInMenuMode.Get(), null);
+        configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
+        ConfigureBackpackInFullscreenMenuChanged(configureBackpackInFullscreenMenu.Get(), null);
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
         hairColorList = Resources.Load<ColorList>("HairColor");
@@ -72,6 +72,8 @@ public class AvatarEditorHUDController : IHUD
 
         LoadUserProfile(userProfile, true);
         this.userProfile.OnUpdate += LoadUserProfile;
+
+        DataStore.i.HUDs.isAvatarEditorInitialized.Set(true);
     }
 
     public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
@@ -606,7 +608,7 @@ public class AvatarEditorHUDController : IHUD
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
-        showBackpackInMenuMode.OnChange -= ShowBackpackInMenuModeChanged;
+        configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
 
         CleanUp();
     }
@@ -673,5 +675,5 @@ public class AvatarEditorHUDController : IHUD
 
     public void ToggleVisibility() { SetVisibility(!view.isOpen); }
 
-    private void ShowBackpackInMenuModeChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
+    private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
 }

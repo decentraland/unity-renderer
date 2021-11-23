@@ -16,5 +16,5 @@ public class BackpackSectionComponentView : BaseComponentView, IBackpackSectionC
 
     public override void RefreshControl() { }
 
-    public void ConfigureBackpack() { DataStore.i.exploreV2.showBackpackInMenuMode.Set(contentContainer, true); }
+    public void ConfigureBackpack() { DataStore.i.exploreV2.configureBackpackInFullscreenMenu.Set(contentContainer, true); }
 }
