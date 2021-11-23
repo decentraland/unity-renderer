@@ -25,7 +25,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_9afca1ec8792420484b88330ffad22ab:
-        m_Texture: {fileID: 2800000, guid: 43c4709ef7cd84e4dabe0746e0b0ffa7, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SGLayerNoiseGenerator_82d9520e4e6d4709922d5ddc9f1c4e0d_Texture2Dbe2fb4f95647450e93be7e7ad7aabda8_233460511:
@@ -46,12 +46,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_0c3661af4be04e80af52f7a9ba1b3a27: 45
-    - Vector1_111fbed745a84242a1ed47d238936cf2: 0
-    - Vector1_48bdbb7e2e794a97919c03a0641826f6: 1
+    - Vector1_111fbed745a84242a1ed47d238936cf2: 1
+    - Vector1_48bdbb7e2e794a97919c03a0641826f6: 1.36
     m_Colors:
     - Color_b3bbdc72bdc5482b8411626a2cf7db84: {r: 1, g: 1, b: 1, a: 1}
     - Vector2_8c3c66c149bf47a6808ce2a34403d766: {r: 0.01, g: -0.05, b: 0, a: 0}
-    - Vector2_e54fec4fd0454045ba6aa18d62cd4741: {r: 1, g: 1, b: 0, a: 0}
-    - Vector4_15e6427b7ae0471abf45be8d9283ef45: {r: 1, g: 1, b: 0, a: 0}
-    - Vector4_9c801e2c03b3457e831a0da3e9fc60aa: {r: 0.54, g: 0.82, b: 0.31, a: 0.89}
+    - Vector2_e54fec4fd0454045ba6aa18d62cd4741: {r: 10, g: 10, b: 0, a: 0}
+    - Vector4_15e6427b7ae0471abf45be8d9283ef45: {r: 10, g: 10, b: 0, a: 0}
+    - Vector4_9c801e2c03b3457e831a0da3e9fc60aa: {r: 0.54, g: 0.76, b: 0.31, a: 0.89}
   m_BuildTextureStacks: []

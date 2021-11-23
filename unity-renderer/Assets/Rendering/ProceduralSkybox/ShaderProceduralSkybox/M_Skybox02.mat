@@ -175,6 +175,7 @@ Material:
     m_Floats:
     - Vector1_1: 1
     - Vector1_124badfe62ea4e3f84853a36f1755f70: 0
+    - Vector1_1e1d6744b98b44e6a58172cca5720d78: 0
     - Vector1_2: 0
     - Vector1_3: 0.015
     - Vector1_4: 0.1
@@ -197,7 +198,7 @@ Material:
     - _RenderDistance_2: 0
     - _RenderDistance_3: 0
     - _RenderDistance_4: 3.4
-    - _dayTime: 0
+    - _dayTime: 0.01
     - _distance_0: 20
     - _fadeTime_0: 1
     - _fadeTime_1: 1
@@ -277,6 +278,7 @@ Material:
     - Vector4_0cf559245b2d4be8a1deafca41d5f1d6: {r: 1, g: 1, b: 0, a: 0}
     - Vector4_1: {r: 0.1, g: 0.1, b: 0.5, a: 0}
     - Vector4_2: {r: 1, g: 1, b: 0.5, a: 0.5}
+    - _HorizonPlaneColor: {r: 0.42452824, g: 0.30449164, b: 0.22628152, a: 0}
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
@@ -298,7 +300,7 @@ Material:
     - _groundColor: {r: 0.082764946, g: 0.0012477125, b: 0.18885218, a: 1}
     - _horizonColor: {r: 0.35707802, g: 0.00056571484, b: 0.6041195, a: 1}
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 90, g: 0, b: 0, a: 0}
+    - _lightDirection: {r: 40.72383, g: 180, b: 180, a: 0}
     - _lightTint: {r: 0.13534454, g: 0.00065322215, b: 0.2827618, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}

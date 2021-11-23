@@ -343,7 +343,7 @@ MonoBehaviour:
   - enabled: 0
     slotID: 0
     slotName: 
-    expandedInEditor: 1
+    expandedInEditor: 0
     startTime: 0
     endTime: 0
     layers:
@@ -425,7 +425,7 @@ MonoBehaviour:
       movementTypeCubemap: 0
       movementTypePlanar_Radial: 1
       movementTypeSatellite: 0
-  - enabled: 0
+  - enabled: 1
     slotID: 1
     slotName: 
     expandedInEditor: 1
