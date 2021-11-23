@@ -28,7 +28,6 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal TaskbarButton settingsButton;
     [SerializeField] internal TaskbarButton exploreButton;
     [SerializeField] internal TaskbarButton exploreV2Button;
-    [SerializeField] internal TaskbarButton builderInWorldButton;
     [SerializeField] internal GameObject portableExperiencesDiv;
     [SerializeField] internal PortableExperienceTaskbarItem portableExperienceItem;
     [SerializeField] internal TaskbarButton questPanelButton;
@@ -62,8 +61,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnFriendsToggleOff;
     public event System.Action OnSettingsToggleOn;
     public event System.Action OnSettingsToggleOff;
-    public event System.Action OnBuilderInWorldToggleOn;
-    public event System.Action OnBuilderInWorldToggleOff;
     public event System.Action OnExploreToggleOn;
     public event System.Action OnExploreToggleOff;
     public event System.Action OnExploreV2ToggleOn;
@@ -78,7 +75,6 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
-        taskbarButtonList.Add(builderInWorldButton);
         taskbarButtonList.Add(settingsButton);
         taskbarButtonList.Add(exploreButton);
         taskbarButtonList.Add(exploreV2Button);
@@ -112,7 +108,6 @@ public class TaskbarHUDView : MonoBehaviour
         ShowBar(true, true);
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
-        builderInWorldButton.transform.parent.gameObject.SetActive(false);
         settingsButton.transform.parent.gameObject.SetActive(false);
         exploreButton.transform.parent.gameObject.SetActive(false);
         exploreV2Button.transform.parent.gameObject.SetActive(false);
@@ -126,7 +121,6 @@ public class TaskbarHUDView : MonoBehaviour
         chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
-        builderInWorldButton.Initialize();
         settingsButton.Initialize();
         exploreButton.Initialize();
         exploreV2Button.Initialize();
@@ -141,9 +135,6 @@ public class TaskbarHUDView : MonoBehaviour
 
         friendsButton.OnToggleOn += OnWindowToggleOn;
         friendsButton.OnToggleOff += OnWindowToggleOff;
-
-        builderInWorldButton.OnToggleOn += OnWindowToggleOn;
-        builderInWorldButton.OnToggleOff += OnWindowToggleOff;
 
         settingsButton.OnToggleOn += OnWindowToggleOn;
         settingsButton.OnToggleOff += OnWindowToggleOff;
@@ -175,12 +166,6 @@ public class TaskbarHUDView : MonoBehaviour
         AdjustRightButtonsLayoutWidth();
     }
 
-    public void SetBuilderInWorldStatus(bool isActive)
-    {
-        builderInWorldButton.transform.parent.gameObject.SetActive(isActive);
-        AdjustRightButtonsLayoutWidth();
-    }
-
     public void SetQuestsPanelStatus(bool isActive) { questPanelButton.transform.parent.gameObject.SetActive(isActive); }
 
     private void OnWindowToggleOff(TaskbarButton obj)
@@ -191,8 +176,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnChatToggleOff?.Invoke();
         else if (obj == settingsButton)
             OnSettingsToggleOff?.Invoke();
-        else if (obj == builderInWorldButton)
-            OnBuilderInWorldToggleOff?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOff?.Invoke();
         else if (obj == exploreV2Button)
@@ -246,8 +229,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnChatToggleOn?.Invoke();
         else if (obj == settingsButton)
             OnSettingsToggleOn?.Invoke();
-        else if (obj == builderInWorldButton)
-            OnBuilderInWorldToggleOn?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOn?.Invoke();
         else if (obj == exploreV2Button)
@@ -360,12 +341,6 @@ public class TaskbarHUDView : MonoBehaviour
         {
             settingsButton.OnToggleOn -= OnWindowToggleOn;
             settingsButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (builderInWorldButton != null)
-        {
-            builderInWorldButton.OnToggleOn -= OnWindowToggleOn;
-            builderInWorldButton.OnToggleOff -= OnWindowToggleOff;
         }
 
         if (exploreButton != null)

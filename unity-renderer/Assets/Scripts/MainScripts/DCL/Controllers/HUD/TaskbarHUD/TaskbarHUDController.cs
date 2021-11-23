@@ -86,8 +86,6 @@ public class TaskbarHUDController : IHUD
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
         view.OnSettingsToggleOff += View_OnSettingsToggleOff;
         view.OnSettingsToggleOn += View_OnSettingsToggleOn;
-        view.OnBuilderInWorldToggleOff += View_OnBuilderInWorldToggleOff;
-        view.OnBuilderInWorldToggleOn += View_OnBuilderInWorldToggleOn;
         view.OnExploreToggleOff += View_OnExploreToggleOff;
         view.OnExploreToggleOn += View_OnExploreToggleOn;
         view.OnExploreV2ToggleOff += View_OnExploreV2ToggleOff;
@@ -219,14 +217,6 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnSettingsToggleOff() { settingsPanelHud.SetVisibility(false); }
 
-    private void View_OnBuilderInWorldToggleOn()
-    {
-        OnBuilderProjectsPanelTriggered(true, false);
-        OnAnyTaskbarButtonClicked?.Invoke();
-    }
-
-    private void View_OnBuilderInWorldToggleOff() { OnBuilderProjectsPanelTriggered(false, true); }
-
     private void View_OnExploreToggleOn()
     {
         exploreHud.SetVisibility(true);
@@ -275,15 +265,6 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.view.ActivatePreview();
 
         MarkWorldChatAsReadIfOtherWindowIsOpen();
-    }
-
-    public void SetBuilderInWorldStatus(bool isActive)
-    {
-        view.SetBuilderInWorldStatus(isActive);
-        DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
-
-        if (isActive)
-            DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnBuilderProjectsPanelTriggered;
     }
 
     public void SetQuestsPanelStatus(bool isActive) { view.SetQuestsPanelStatus(isActive); }
@@ -511,8 +492,6 @@ public class TaskbarHUDController : IHUD
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
             view.OnSettingsToggleOff -= View_OnSettingsToggleOff;
             view.OnSettingsToggleOn -= View_OnSettingsToggleOn;
-            view.OnBuilderInWorldToggleOff -= View_OnBuilderInWorldToggleOff;
-            view.OnBuilderInWorldToggleOn -= View_OnBuilderInWorldToggleOn;
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
             view.OnExploreV2ToggleOff -= View_OnExploreV2ToggleOff;
@@ -548,7 +527,6 @@ public class TaskbarHUDController : IHUD
         }
 
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
-        DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
         DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
@@ -651,15 +629,4 @@ public class TaskbarHUDController : IHUD
     private void SceneController_OnNewPortableExperienceSceneRemoved(string portableExperienceSceneIdToRemove) { view.RemovePortableExperienceElement(portableExperienceSceneIdToRemove); }
 
     public void KillPortableExperience(string portableExperienceSceneIdToKill) { WebInterface.KillPortableExperience(portableExperienceSceneIdToKill); }
-
-    private void OnBuilderProjectsPanelTriggered(bool isOn, bool prev)
-    {
-        if (isOn)
-        {
-            OnAnyTaskbarButtonClicked?.Invoke();
-        }
-
-        DataStore.i.HUDs.builderProjectsPanelVisible.Set(isOn);
-        view.builderInWorldButton.SetToggleState(isOn, false);
-    }
 }

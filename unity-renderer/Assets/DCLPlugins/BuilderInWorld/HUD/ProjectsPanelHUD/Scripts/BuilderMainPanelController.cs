@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DCL;
 using DCL.Builder;
 using DCL.Helpers;
 using DCL.Interface;
+using System;
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using Variables.RealmsInfo;
 using Environment = DCL.Environment;
@@ -53,12 +52,17 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal IContext context;
 
+    BaseVariable<Transform> showBuilderInMenuMode => DataStore.i.exploreV2.showBuilderInMenuMode;
+
     public BuilderMainPanelController()
     {
         if (DataStore.i.builderInWorld.isDevBuild.Get())
             SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH_DEV)));
         else
             SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
+
+        showBuilderInMenuMode.OnChange += ShowBuilderInMenuModeChanged;
+        ShowBuilderInMenuModeChanged(showBuilderInMenuMode.Get(), null);
     }
 
     internal void SetView(IBuilderMainPanelView view)
@@ -70,7 +74,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void OnBack()
     {
-        if(newProjectFlowController.IsActive())
+        if (newProjectFlowController.IsActive())
             newProjectFlowController.Hide();
         else
             OnClose();
@@ -84,18 +88,20 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestGoToCoords -= GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords -= OnGoToEditScene;
         sectionsController.OnCreateProjectRequest -= newProjectFlowController.NewProject;
-        
+
         scenesViewController.OnJumpInPressed -= GoToCoords;
         scenesViewController.OnRequestOpenUrl -= OpenUrl;
         scenesViewController.OnEditorPressed -= OnGoToEditScene;
         newProjectFlowController.OnNewProjectCrated -= CreateNewProject;
 
         view.OnCreateProjectPressed -= newProjectFlowController.NewProject;
-        
+
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
         view.OnBackPressed -= OnBack;
+
+        showBuilderInMenuMode.OnChange -= ShowBuilderInMenuModeChanged;
 
         unpublishPopupController?.Dispose();
 
@@ -162,7 +168,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestGoToCoords += GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords += OnGoToEditScene;
         sectionsController.OnCreateProjectRequest += newProjectFlowController.NewProject;
-        
+
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
         scenesViewController.OnEditorPressed += OnGoToEditScene;
@@ -182,19 +188,16 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         {
             //TODO: If it is ok, Start the editor
             if (!apiResponse.ok)
-                BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+apiResponse.error);
+                BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + apiResponse.error);
         });
-        
+
         projectPromise.Catch( errorString =>
         {
-            BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+errorString);
+            BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
     }
 
-    public void SetVisibility(bool visible)
-    {
-        DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible);
-    }
+    public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
 
     private void OnVisibilityChanged(bool isVisible, bool prev)
     {
@@ -322,15 +325,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         isFetchingProjects = false;
         sectionsController.SetFetchingDataEnd<SectionProjectController>();
-        projectsController.SetProjects(new ProjectData[]{ });
+        projectsController.SetProjects(new ProjectData[] { });
         BIWUtils.ShowGenericNotification(error);
     }
 
     private void UpdateProjectsDeploymentStatus()
     {
-        if(isFetchingLands || isFetchingProjects)
+        if (isFetchingLands || isFetchingProjects)
             return;
-        
+
         projectsController.UpdateDeploymentStatus();
     }
 
@@ -350,13 +353,13 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.SetFetchingDataEnd<SectionLandController>();
         isFetchingLands = false;
         UpdateProjectsDeploymentStatus();
-        
+
         try
         {
             ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                                     .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                                     .Aggregate((i, j) => i.Concat(j))
-                                     .ToArray();
+                                       .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                                       .Aggregate((i, j) => i.Concat(j))
+                                       .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);
@@ -422,4 +425,6 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             FetchPanelInfo(CACHE_TIME_LAND, 0);
         }
     }
+
+    internal void ShowBuilderInMenuModeChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
 }

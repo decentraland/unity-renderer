@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
-using UnityEngine;
 
 public class BuilderInWorldPlugin : PluginFeature
 {
@@ -58,28 +55,11 @@ public class BuilderInWorldPlugin : PluginFeature
         editor.Initialize(context);
         builderAPIController.Initialize(context);
         sceneManager.Initialize(context);
-
-        if (HUDController.i == null)
-            return;
-
-        if (HUDController.i.taskbarHud != null)
-            HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
-        else
-            HUDController.i.OnTaskbarCreation += TaskBarCreated;
-    }
-
-    private void TaskBarCreated()
-    {
-        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
-        HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
     }
 
     public override void Dispose()
     {
         base.Dispose();
-
-        if (HUDController.i != null)
-            HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
         editor.Dispose();
         panelController.Dispose();

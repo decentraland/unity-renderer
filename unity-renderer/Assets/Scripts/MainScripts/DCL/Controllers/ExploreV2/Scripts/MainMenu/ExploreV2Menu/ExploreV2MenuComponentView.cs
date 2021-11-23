@@ -54,6 +54,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Configures the map section.
     /// </summary>
     void ConfigureMapSection();
+
+    /// <summary>
+    /// Configures the builder section.
+    /// </summary>
+    void ConfigureBuilderSection();
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -69,6 +74,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
     [SerializeField] internal BackpackSectionComponentView backpackSection;
     [SerializeField] internal MapSectionComponentView mapSection;
+    [SerializeField] internal BuilderSectionComponentView builderSection;
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
@@ -93,6 +99,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         placesAndEventsSection.RefreshControl();
         backpackSection.RefreshControl();
         mapSection.RefreshControl();
+        builderSection.RefreshControl();
     }
 
     public override void Dispose()
@@ -127,6 +134,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public void ConfigureBackpackSection() { backpackSection.ConfigureBackpack(); }
 
     public void ConfigureMapSection() { mapSection.ConfigureMap(); }
+
+    public void ConfigureBuilderSection() { builderSection.ConfigureBuilder(); }
 
     internal void CreateSectionSelectorMappings()
     {
@@ -166,6 +175,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            }
                            else
                                mapSection.Hide();
+                       });
+
+        sectionSelector.GetSection((int)ExploreSection.Builder)
+                       ?.onSelect.AddListener((isOn) =>
+                       {
+                           if (isOn)
+                           {
+                               builderSection.Show();
+                               currentSectionIndex = ExploreSection.Builder;
+                               OnSectionOpen?.Invoke(currentSectionIndex);
+                           }
+                           else
+                               builderSection.Hide();
                        });
     }
 

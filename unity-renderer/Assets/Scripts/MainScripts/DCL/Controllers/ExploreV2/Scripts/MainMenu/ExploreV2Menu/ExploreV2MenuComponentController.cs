@@ -21,6 +21,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
+    internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
 
     public void Initialize()
     {
@@ -49,6 +50,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         navmapVisible.OnChange += NavmapVisibleChanged;
         NavmapVisibleChanged(navmapVisible.Get(), false);
+
+        builderVisible.OnChange += BuilderVisibleChanged;
+        BuilderVisibleChanged(builderVisible.Get(), false);
     }
 
     internal void CreateControllers()
@@ -71,6 +75,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
         navmapVisible.Set(currentOpenSection == ExploreSection.Map);
+        builderVisible.Set(currentOpenSection == ExploreSection.Builder);
         profileCardIsOpen.Set(false);
     }
 
@@ -82,6 +87,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         isOpen.OnChange -= IsOpenChanged;
         avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
         navmapVisible.OnChange -= NavmapVisibleChanged;
+        builderVisible.OnChange -= BuilderVisibleChanged;
 
         if (view != null)
         {
@@ -122,6 +128,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             avatarEditorVisible.Set(false);
             profileCardIsOpen.Set(false);
             navmapVisible.Set(false);
+            builderVisible.Set(false);
             exploreV2Analytics.anyActionExecutedFromLastOpen = false;
         }
 
@@ -145,7 +152,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    private void NavmapVisibleChanged(bool current, bool previous)
+    internal void NavmapVisibleChanged(bool current, bool previous)
     {
         if (current)
         {
@@ -154,6 +161,20 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.GoToSection(ExploreSection.Map);
         }
         else if (currentOpenSection == ExploreSection.Map)
+        {
+            SetVisibility(false);
+        }
+    }
+
+    internal void BuilderVisibleChanged(bool current, bool previous)
+    {
+        if (current)
+        {
+            view.ConfigureBuilderSection();
+            SetVisibility(true);
+            view.GoToSection(ExploreSection.Builder);
+        }
+        else if (currentOpenSection == ExploreSection.Builder)
         {
             SetVisibility(false);
         }

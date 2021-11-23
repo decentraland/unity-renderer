@@ -149,6 +149,7 @@ namespace DCL
             public readonly BaseVariable<bool> profileCardIsOpen = new BaseVariable<bool>(false);
             public readonly BaseVariable<Transform> showProfileCardInMenuMode = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> showMapInMenuMode = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> showBuilderInMenuMode = new BaseVariable<Transform>(null);
         }
 
         public class DataStore_FeatureFlag
