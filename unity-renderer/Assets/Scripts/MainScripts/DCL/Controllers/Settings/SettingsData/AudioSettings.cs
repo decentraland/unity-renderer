@@ -3,7 +3,7 @@ using System;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public class AudioSettings : ICloneable
+    public struct AudioSettings
     {
         public float masterVolume;
         public float voiceChatVolume;
@@ -12,7 +12,5 @@ namespace DCL.SettingsCommon
         public float sceneSFXVolume; // Note(Mordi): Also known as "World SFX"
         public float musicVolume;
         public bool chatSFXEnabled;
-
-        public object Clone() => MemberwiseClone();
     }
 }
