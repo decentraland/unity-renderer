@@ -10,18 +10,10 @@ namespace DCL
         private DebugBridge debugBridge;
         private Promise<KernelConfigModel> kernelConfigPromise;
 
-        public bool enabled { get; private set; } = false;
-
         public void Initialize()
         {
-            enabled = true;
             SetupSystems();
             SetupKernelConfig();
-        }
-
-        public void Disable()
-        {
-            enabled = false;
         }
 
         public void OnGUI()

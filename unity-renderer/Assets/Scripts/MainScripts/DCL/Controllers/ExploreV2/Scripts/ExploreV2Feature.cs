@@ -5,18 +5,10 @@ public class ExploreV2Feature : IPlugin
 {
     public IExploreV2MenuComponentController exploreV2MenuComponentController;
 
-    public bool enabled { get; private set; } = false;
-
     public void Initialize()
     {
-        enabled = true;
         exploreV2MenuComponentController = CreateController();
         exploreV2MenuComponentController.Initialize();
-    }
-
-    public void Disable()
-    {
-        enabled = false;
     }
 
     public void OnGUI()

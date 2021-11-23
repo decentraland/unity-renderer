@@ -75,7 +75,6 @@ namespace DCL.Tutorial
 
         public void Initialize()
         {
-            enabled = true;
             tutorialView = CreateTutorialView();
             SetConfiguration(tutorialView.configuration);
         }
@@ -633,13 +632,6 @@ namespace DCL.Tutorial
                 hudController?.minimapHud?.SetVisibility(true);
                 hudController?.profileHud?.SetVisibility(true);
             }
-        }
-
-        public bool enabled { get; private set;  } = false;
-
-        public void Disable()
-        {
-            enabled = false;
         }
 
         public void OnGUI()

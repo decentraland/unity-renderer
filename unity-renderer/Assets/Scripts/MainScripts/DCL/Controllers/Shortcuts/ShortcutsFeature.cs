@@ -5,17 +5,13 @@ public class ShortcutsFeature : IPlugin
 {
     internal ShortcutsController shortcutsController;
 
-    public bool enabled { get; private set;  } = false;
-
-    public void Initialize()
+    public ShortcutsFeature ()
     {
-        enabled = true;
         shortcutsController = new ShortcutsController();
     }
 
-    public void Disable()
+    public void Initialize()
     {
-        enabled = false;
     }
 
     public void OnGUI()

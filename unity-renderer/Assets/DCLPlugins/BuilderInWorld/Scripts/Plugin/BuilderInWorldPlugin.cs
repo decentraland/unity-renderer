@@ -49,11 +49,8 @@ public class BuilderInWorldPlugin : IPlugin
 
     public BuilderInWorldPlugin(IContext context) { this.context = context; }
 
-    public bool enabled { get; private set; } = false;
-
     public void Initialize()
     {
-        enabled = true;
         //We init the lands so we don't have a null reference
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
 
@@ -72,11 +69,6 @@ public class BuilderInWorldPlugin : IPlugin
             HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
         else
             HUDController.i.OnTaskbarCreation += TaskBarCreated;
-    }
-
-    public void Disable()
-    {
-        enabled = false;
     }
 
     private void TaskBarCreated()
