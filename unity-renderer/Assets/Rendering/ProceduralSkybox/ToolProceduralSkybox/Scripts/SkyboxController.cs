@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using DCL.ServerTime;
 
 namespace DCL.Skybox
 {
@@ -11,6 +12,8 @@ namespace DCL.Skybox
     /// </summary>
     public class SkyboxController : PluginFeature
     {
+        public event SkyboxConfiguration.TimelineEvents OnTimelineEvent;
+
         public static SkyboxController i { get; private set; }
 
         public const string DEFAULT_SKYBOX_ID = "Generic Skybox";
@@ -46,7 +49,9 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
-            timeOfTheDay = 0;
+            // Get current time from the server
+            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+            WorldTimer.i.OnTimeChanged += GetTimeFromTheServer;
 
             // Update config whenever skybox config changed in data store. Can be used for both testing and runtime
             DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
@@ -146,8 +151,23 @@ namespace DCL.Skybox
 
             // Convert minutes in seconds and then normalize with cycle time
             timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
-
             return true;
+        }
+
+        void GetTimeFromTheServer(DateTime serverTime)
+        {
+            // Convert miliseconds to seconds
+            float seconds = serverTime.Second + ((float)serverTime.Millisecond / 1000);
+            // Convert seconds to minutes
+            float minutes = serverTime.Minute + (seconds / 60);
+            // Convert minutes to hour (in float format)
+            float hours = serverTime.Hour + (minutes / 60);
+            // divide by lifecycleDuration.... + 1 as hour is from 0 to 23
+            float timeInCycle = (hours / (lifecycleDuration / 60)) + 1;
+            // get percentage part for converting to skybox time
+            float percentageSkyboxtime = timeInCycle - (int)timeInCycle;
+
+            timeOfTheDay = percentageSkyboxtime * cycleTime;
         }
 
         /// <summary>
@@ -170,31 +190,36 @@ namespace DCL.Skybox
                 return tempConfigLoaded;
             }
 
-            configuration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+            SkyboxConfiguration newConfiguration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
 
-            if (configuration == null)
+            if (newConfiguration == null)
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.LogError(configToLoad + " configuration not found in Resources. Trying to load Default config: " + DEFAULT_SKYBOX_ID + "(Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
 #endif
                 // Try to load default config
                 configToLoad = DEFAULT_SKYBOX_ID;
-                configuration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
+                newConfiguration = Resources.Load<SkyboxConfiguration>("Skybox Configurations/" + configToLoad);
 
-                if (configuration == null)
+                if (newConfiguration == null)
                 {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     Debug.LogError("Default configuration not found in Resources. Shifting to old skybox. (Default path through tool is Assets/Scripts/Resources/Skybox Configurations)");
 #endif
-
-
                     tempConfigLoaded = false;
                     return tempConfigLoaded;
                 }
             }
 
+            // Register to timelineEvents
+            if (configuration != null)
+            {
+                configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
+            }
+            newConfiguration.OnTimelineEvent += Configuration_OnTimelineEvent;
+            configuration = newConfiguration;
+
             // Apply material as per number of Slots.
-            //TODO: Change shader on same material instead of having multiple material.
             MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(configuration.slots.Count);
             if (matLayer == null)
             {
@@ -212,6 +237,12 @@ namespace DCL.Skybox
             return tempConfigLoaded;
         }
 
+        private void Configuration_OnTimelineEvent(string tag, bool enable, bool trigger)
+        {
+            Debug.Log("Timeline Events: " + tag + ", state: " + enable + ", trigger: " + trigger);
+            OnTimelineEvent?.Invoke(tag, enable, trigger);
+        }
+
         // Update is called once per frame
         public override void Update()
         {
@@ -225,18 +256,21 @@ namespace DCL.Skybox
 
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), directionalLight);
 
+            // Cycle resets
             if (timeOfTheDay >= cycleTime)
             {
                 timeOfTheDay = 0.01f;
+                configuration.CycleResets();
             }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            // set skyboxConfig to true
+            // set skyboxConfig to false
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
+            configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
         }
 
         public void PauseTime() { isPaused = true; }
@@ -262,6 +296,10 @@ namespace DCL.Skybox
 
             return tTime;
         }
+
+        public SkyboxConfiguration GetCurrentConfiguration() { return configuration; }
+
+        public float GetCurrentTimeOfTheDay() { return timeOfTheDay; }
 
     }
 }

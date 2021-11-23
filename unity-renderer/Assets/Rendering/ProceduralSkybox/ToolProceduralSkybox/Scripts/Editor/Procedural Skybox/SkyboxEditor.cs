@@ -17,7 +17,7 @@ namespace DCL.Skybox
 
         public bool isPaused;
         public float timeOfTheDay;
-        public float lifecycleDuration;
+        public float lifecycleDuration = 1;
 
         private Material selectedMat;
         private Vector2 panelScrollPos;
@@ -30,6 +30,7 @@ namespace DCL.Skybox
         private bool showFogLayer;
         private bool showDLLayer;
         private bool showAvatarLayer;
+        private bool showTimelineTags;
         private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
         public static SkyboxEditorWindow instance { get { return GetWindow<SkyboxEditorWindow>(); } }
@@ -66,6 +67,8 @@ namespace DCL.Skybox
                 if (SkyboxController.i != null)
                 {
                     isPaused = SkyboxController.i.IsPaused();
+                    lifecycleDuration = SkyboxController.i.lifecycleDuration;
+                    selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
                 }
             }
             EnsureDependencies();
@@ -137,13 +140,32 @@ namespace DCL.Skybox
 
             GUILayout.Space(32);
 
+            showTimelineTags = EditorGUILayout.Foldout(showTimelineTags, "Timeline Tags", true);
+
+            if (showTimelineTags)
+            {
+                //EditorGUILayout.BeginHorizontal();
+                //EditorGUILayout.Space(20);
+                //EditorGUILayout.BeginVertical("Box");
+                EditorGUI.indentLevel++;
+                RenderTimelineTags();
+                EditorGUI.indentLevel--;
+                //EditorGUILayout.EndVertical();
+                //EditorGUILayout.EndHorizontal();
+            }
+
+
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Space(32);
+
             // Render Slots
             RenderSlots();
 
             GUILayout.Space(300);
             EditorGUILayout.EndScrollView();
             GUILayout.EndArea();
-            if (GUI.changed)
+
+            if (GUI.changed && !Application.isPlaying)
             {
                 ApplyOnMaterial();
             }
@@ -158,6 +180,13 @@ namespace DCL.Skybox
 
             if (isPaused)
             {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
+                Repaint();
                 return;
             }
 
@@ -400,6 +429,8 @@ namespace DCL.Skybox
             }
         }
 
+        #region Render Base Layeyrs
+
         void RenderBackgroundColorLayer()
         {
             RenderColorGradientField(selectedConfiguration.skyColor, "Sky Color", 0, 24);
@@ -517,6 +548,61 @@ namespace DCL.Skybox
         }
 
         private Quaternion GetDLDirection() { return directionalLight.transform.rotation; }
+
+        private void RenderTimelineTags()
+        {
+            if (selectedConfiguration.timelineTags == null)
+            {
+                selectedConfiguration.timelineTags = new List<TimelineTagsDuration>();
+            }
+
+            for (int i = 0; i < selectedConfiguration.timelineTags.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+
+                // Text field for name of event
+                EditorGUILayout.LabelField("Name: ", GUILayout.Width(50));
+                selectedConfiguration.timelineTags[i].tag = EditorGUILayout.TextField(selectedConfiguration.timelineTags[i].tag, GUILayout.Width(70));
+
+                // Start time
+                EditorGUILayout.LabelField("Start", GUILayout.Width(45));
+                GUILayout.Space(0);
+                selectedConfiguration.timelineTags[i].startTime = EditorGUILayout.FloatField(selectedConfiguration.timelineTags[i].startTime, GUILayout.Width(50));
+
+                // End time
+                if (!selectedConfiguration.timelineTags[i].isTrigger)
+                {
+                    EditorGUILayout.LabelField("End", GUILayout.Width(40));
+                    GUILayout.Space(0);
+                    selectedConfiguration.timelineTags[i].endTime = EditorGUILayout.FloatField(selectedConfiguration.timelineTags[i].endTime, GUILayout.Width(50));
+                }
+                else
+                {
+                    GUILayout.Space(97);
+                }
+
+                // no end time
+                selectedConfiguration.timelineTags[i].isTrigger = EditorGUILayout.ToggleLeft("Trigger", selectedConfiguration.timelineTags[i].isTrigger, GUILayout.Width(80));
+
+                // Remove Button
+                if (GUILayout.Button("-", GUILayout.Width(30)))
+                {
+                    selectedConfiguration.timelineTags.RemoveAt(i);
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(20);
+            if (GUILayout.Button("+", GUILayout.Width(30)))
+            {
+                selectedConfiguration.timelineTags.Add(new TimelineTagsDuration());
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        #endregion
 
         #region Render Slots and Layers
 

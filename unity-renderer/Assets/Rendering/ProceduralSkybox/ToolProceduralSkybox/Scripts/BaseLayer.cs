@@ -110,6 +110,17 @@ namespace DCL.Skybox
     }
 
     [System.Serializable]
+    public class TimelineTagsDuration
+    {
+        public string tag;
+        public float startTime = 0;
+        public float endTime = 0;
+        public bool isTrigger = false;              // If true, this event is trigger event
+        [System.NonSerialized]
+        public bool startEventExecuted;             // Also works for trigger events
+    }
+
+    [System.Serializable]
     public class TransitioningFloat
     {
         public float percentage;

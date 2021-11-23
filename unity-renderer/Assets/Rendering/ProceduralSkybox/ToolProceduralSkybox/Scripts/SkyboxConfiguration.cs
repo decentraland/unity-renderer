@@ -8,6 +8,9 @@ namespace DCL.Skybox
     //[CreateAssetMenu(fileName = "Skybox Configuration", menuName = "ScriptableObjects/SkyboxConfiguration", order = 1)]
     public class SkyboxConfiguration : ScriptableObject
     {
+        public delegate void TimelineEvents(string tag, bool enable, bool trigger);
+        public event TimelineEvents OnTimelineEvent;
+
         // ID
         public string skyboxID;
 
@@ -52,10 +55,12 @@ namespace DCL.Skybox
         // Slots
         public List<SkyboxSlots> slots = new List<SkyboxSlots>();
 
-        public void AddSlots(int slotID) { slots.Add(new SkyboxSlots(slotID)); }
+        // Timeline Tags
+        public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
-        // Texture Layer Properties
-        public List<TextureLayer> textureLayers = new List<TextureLayer>();
+        private float cycleTime = 24;
+
+        public void AddSlots(int slotID) { slots.Add(new SkyboxSlots(slotID)); }
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, Light directionalLightGO = null, float cycleTime = 24)
         {
@@ -158,6 +163,9 @@ namespace DCL.Skybox
                 directionalLightGO.gameObject.SetActive(false);
             }
 
+            // Check and Fire timeline events
+            CheckAndFireTimelineEvents(dayTime);
+
             ApplyAllSlots(selectedMat, dayTime, normalizedDayTime, cycleTime);
         }
 
@@ -182,6 +190,82 @@ namespace DCL.Skybox
                 ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, layer, cycleTime);
             }
         }
+
+        #region Timeline Events
+
+        /// <summary>
+        /// Check if any event has to be fired
+        /// TODO:: Can be optimised.
+        /// </summary>
+        /// <param name="dayTime">Current day time</param>
+        private void CheckAndFireTimelineEvents(float dayTime)
+        {
+            float endTimeEdited = 0;
+            float dayTimeEdited = dayTime;
+            for (int i = 0; i < timelineTags.Count; i++)
+            {
+                // If current event is a trigger event, fire trigger event. It's boolean will be disable when cycle resets
+                if (timelineTags[i].isTrigger)
+                {
+                    if (dayTime > timelineTags[i].startTime && !timelineTags[i].startEventExecuted)
+                    {
+                        OnTimelineEvent?.Invoke(timelineTags[i].tag, true, true);
+                        timelineTags[i].startEventExecuted = true;
+                    }
+                    continue;
+                }
+
+
+                endTimeEdited = timelineTags[i].endTime;
+                dayTimeEdited = dayTime;
+
+                // Change time if this is over a day scenario
+                if (timelineTags[i].endTime < timelineTags[i].startTime)
+                {
+                    endTimeEdited = cycleTime + timelineTags[i].endTime;
+
+                    if (dayTime < timelineTags[i].startTime)
+                    {
+                        dayTimeEdited = cycleTime + dayTime;
+                    }
+                }
+
+                // If current time is between start and end time and start event is not executed, Fire start event
+                if (dayTimeEdited >= timelineTags[i].startTime && dayTimeEdited < endTimeEdited && !timelineTags[i].startEventExecuted)
+                {
+                    OnTimelineEvent?.Invoke(timelineTags[i].tag, true, false);
+                    timelineTags[i].startEventExecuted = true;
+                }
+
+                // If current time is greater than end time and start event is executed, fire end event
+                if (dayTimeEdited >= endTimeEdited && timelineTags[i].startEventExecuted)
+                {
+                    OnTimelineEvent?.Invoke(timelineTags[i].tag, false, false);
+                    timelineTags[i].startEventExecuted = false;
+                }
+
+            }
+        }
+
+        public void CycleResets()
+        {
+            // Resets all timeline triggers and normal flow events
+            for (int i = 0; i < timelineTags.Count; i++)
+            {
+                if (timelineTags[i].isTrigger)
+                {
+                    timelineTags[i].startEventExecuted = false;
+                    continue;
+                }
+
+                if (timelineTags[i].endTime > timelineTags[i].startTime)
+                {
+                    timelineTags[i].startEventExecuted = false;
+                }
+            }
+        }
+
+        #endregion
 
         #region Directional Light
 
