@@ -29,6 +29,7 @@ public class PluginSystemShould
         pluginSystem.SetFeatureFlagsData(flagData);
 
         Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.True);
+        pluginSystem.Dispose();
     }
 
     [Test]
@@ -49,6 +50,7 @@ public class PluginSystemShould
         flagData.Set(newFF);
 
         Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.True);
+        pluginSystem.Dispose();
     }
 
     [Test]
@@ -59,6 +61,7 @@ public class PluginSystemShould
 
         pluginSystem.Register(pluginBuilder);
         Assert.That(pluginSystem.IsEnabled(pluginBuilder), Is.True);
+        pluginSystem.Dispose();
     }
 
     [Test]
@@ -100,17 +103,33 @@ public class PluginSystemShould
         Assert.That(pluginSystem.IsEnabled(pluginBuilder4), Is.True);
         Assert.That(pluginSystem.IsEnabled(pluginBuilder5), Is.True);
         Assert.That(pluginSystem.IsEnabled(pluginBuilder6), Is.True);
+        pluginSystem.Dispose();
+    }
+
+    [Test]
+    public void NotCrashWhenAnUnconfiguredFlagIsSet()
+    {
+        var featureFlags = new FeatureFlag();
+        featureFlags.flags.Add("this-flag-is-not-bound-to-a-plugin", true);
+
+        var flagData = new BaseVariable<FeatureFlag>(featureFlags);
+
+        var pluginSystem = new PluginSystem();
+        pluginSystem.SetFeatureFlagsData(flagData);
+        pluginSystem.Dispose();
     }
 
     [Test]
     public void CreateAndDisposePluginWhenApplicable()
     {
         var pluginSystem = new PluginSystem();
+        pluginSystem.Dispose();
     }
 
     [Test]
     public void BeDisposedProperly()
     {
         var pluginSystem = new PluginSystem();
+        pluginSystem.Dispose();
     }
 }

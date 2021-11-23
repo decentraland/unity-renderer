@@ -56,7 +56,7 @@ namespace DCL
         public void RegisterWithFlag(PluginBuilder pluginBuilder, string featureFlag)
         {
             Register(pluginBuilder, false);
-            ConfigureFlag(pluginBuilder, featureFlag);
+            BindFlag(pluginBuilder, featureFlag);
         }
 
         public void Register(PluginBuilder pluginBuilder, bool enable = true)
@@ -85,16 +85,13 @@ namespace DCL
             pluginGroupByFlag[flag].Remove(plugin);
         }
 
-        public void ConfigureFlag(PluginBuilder plugin, string featureFlag)
+        public void BindFlag(PluginBuilder plugin, string featureFlag)
         {
             Assert.IsNotNull(plugin);
-            //Assert.IsTrue(allPlugins.plugins.Contains(plugin), $"Plugin for {featureFlag} should be registered first!");
-            //Assert.IsFalse(flagByPlugin.ContainsKey(plugin), $"Plugin flag was already configured! ({featureFlag})");
 
             if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
                 pluginGroupByFlag.Add(featureFlag, new PluginGroup());
 
-            //flagByPlugin.Add(plugin, featureFlag);
             pluginGroupByFlag[featureFlag].Add(plugin, allPlugins.plugins[plugin]);
         }
 
@@ -108,6 +105,9 @@ namespace DCL
 
         public void EnableFlag(string featureFlag)
         {
+            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
+                return;
+
             PluginGroup pluginGroup = pluginGroupByFlag[featureFlag];
 
             foreach ( var feature in pluginGroup.plugins )
@@ -125,6 +125,9 @@ namespace DCL
 
         public void DisableFlag(string featureFlag)
         {
+            if ( !pluginGroupByFlag.ContainsKey(featureFlag) )
+                return;
+
             PluginGroup pluginGroup = pluginGroupByFlag[featureFlag];
 
             foreach ( var feature in pluginGroup.plugins )

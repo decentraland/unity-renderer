@@ -43,7 +43,7 @@ namespace DCL
                 SetupEnvironment();
             }
 
-            pluginSystem = PluginSystemFactory.Create();
+            SetupPlugins();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -63,6 +63,11 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
+        }
+
+        protected virtual void SetupPlugins()
+        {
+            pluginSystem = PluginSystemFactory.Create();
         }
 
         protected virtual void SetupEnvironment()
