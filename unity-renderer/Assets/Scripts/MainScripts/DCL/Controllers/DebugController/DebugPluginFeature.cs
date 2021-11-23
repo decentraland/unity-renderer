@@ -10,22 +10,10 @@ namespace DCL
         private DebugBridge debugBridge;
         private Promise<KernelConfigModel> kernelConfigPromise;
 
-        public void Initialize()
+        public DebugPluginFeature ()
         {
             SetupSystems();
             SetupKernelConfig();
-        }
-
-        public void OnGUI()
-        {
-        }
-
-        public void Update()
-        {
-        }
-
-        public void LateUpdate()
-        {
         }
 
         private void SetupSystems()

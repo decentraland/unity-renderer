@@ -39,8 +39,8 @@ public class BuilderInWorldShould
     [Test]
     public void InitializePartsCorrectly()
     {
-        //Act
-        builderInWorld.Initialize();
+        //Arrange
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
 
         //Assert
         builderInWorld.editor.Received(1).Initialize(builderInWorld.context);

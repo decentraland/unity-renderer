@@ -10,21 +10,5 @@ public class ShortcutsFeature : IPlugin
         shortcutsController = new ShortcutsController();
     }
 
-    public void Initialize()
-    {
-    }
-
-    public void OnGUI()
-    {
-    }
-
-    public void Update()
-    {
-    }
-
-    public void LateUpdate()
-    {
-    }
-
     public void Dispose() { shortcutsController?.Dispose(); }
 }

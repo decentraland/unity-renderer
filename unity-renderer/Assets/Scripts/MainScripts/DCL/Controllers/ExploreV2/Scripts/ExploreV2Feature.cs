@@ -5,22 +5,10 @@ public class ExploreV2Feature : IPlugin
 {
     public IExploreV2MenuComponentController exploreV2MenuComponentController;
 
-    public void Initialize()
+    public ExploreV2Feature ()
     {
         exploreV2MenuComponentController = CreateController();
         exploreV2MenuComponentController.Initialize();
-    }
-
-    public void OnGUI()
-    {
-    }
-
-    public void Update()
-    {
-    }
-
-    public void LateUpdate()
-    {
     }
 
     internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController();

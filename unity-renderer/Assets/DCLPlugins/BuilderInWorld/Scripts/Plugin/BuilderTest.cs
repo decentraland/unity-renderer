@@ -15,7 +15,6 @@ namespace DCL.Builder
             DataStore.i.builderInWorld.isDevBuild.Set(true);
 
             plugin = new BuilderInWorldPlugin();
-            plugin.Initialize();
             plugin.panelController.SetVisibility(true);
 
             if (EventSystem.current == null)

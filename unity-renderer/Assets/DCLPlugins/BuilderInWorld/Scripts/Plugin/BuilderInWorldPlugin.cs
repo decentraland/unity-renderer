@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -45,11 +46,21 @@ public class BuilderInWorldPlugin : IPlugin
             new BIWRaycastController(),
             new BIWGizmosController(),
             SceneReferences.i);
+
+        Initialize();
     }
 
-    public BuilderInWorldPlugin(IContext context) { this.context = context; }
+    public BuilderInWorldPlugin(IContext context)
+    {
+        this.context = context;
+        panelController = context.panelHUD;
+        editor = context.editor;
+        builderAPIController = context.builderAPIController;
 
-    public void Initialize()
+        Initialize();
+    }
+
+    private void Initialize()
     {
         //We init the lands so we don't have a null reference
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
@@ -69,7 +80,12 @@ public class BuilderInWorldPlugin : IPlugin
             HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
         else
             HUDController.i.OnTaskbarCreation += TaskBarCreated;
+
+        DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
+
 
     private void TaskBarCreated()
     {
@@ -87,6 +103,10 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Dispose();
         cameraController.Dispose();
         context.Dispose();
+
+        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
 
     public void Update()

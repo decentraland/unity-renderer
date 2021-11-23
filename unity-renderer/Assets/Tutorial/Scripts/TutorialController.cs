@@ -73,7 +73,7 @@ namespace DCL.Tutorial
 
         internal bool userAlreadyDidTheTutorial { get; set; }
 
-        public void Initialize()
+        public TutorialController ()
         {
             tutorialView = CreateTutorialView();
             SetConfiguration(tutorialView.configuration);
@@ -632,18 +632,6 @@ namespace DCL.Tutorial
                 hudController?.minimapHud?.SetVisibility(true);
                 hudController?.profileHud?.SetVisibility(true);
             }
-        }
-
-        public void OnGUI()
-        {
-        }
-
-        public void Update()
-        {
-        }
-
-        public void LateUpdate()
-        {
         }
     }
 }
