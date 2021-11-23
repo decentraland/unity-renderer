@@ -5,8 +5,4 @@ using System;
 /// </summary>
 public interface IPlugin : IDisposable
 {
-    void Initialize();
-    void OnGUI();
-    void Update();
-    void LateUpdate();
 }

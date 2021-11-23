@@ -70,7 +70,6 @@ namespace DCL
             {
                 pluginInfo.enabled = true;
                 pluginInfo.instance = pluginInfo.builder.Invoke();
-                pluginInfo.instance.Initialize();
             }
         }
 
@@ -119,7 +118,6 @@ namespace DCL
 
                 info.enabled = true;
                 info.instance = info.builder.Invoke();
-                info.instance.Initialize();
             }
         }
 
@@ -176,33 +174,6 @@ namespace DCL
 
             if ( featureFlagsDataSource != null )
                 featureFlagsDataSource.OnChange -= OnFeatureFlagsChange;
-        }
-
-        public void Update()
-        {
-            foreach ( var kvp in allPlugins.plugins )
-            {
-                if (kvp.Value.enabled)
-                    kvp.Value.instance.Update();
-            }
-        }
-
-        public void LateUpdate()
-        {
-            foreach ( var kvp in allPlugins.plugins )
-            {
-                if (kvp.Value.enabled)
-                    kvp.Value.instance.LateUpdate();
-            }
-        }
-
-        public void OnGUI()
-        {
-            foreach ( var kvp in allPlugins.plugins )
-            {
-                if (kvp.Value.enabled)
-                    kvp.Value.instance.OnGUI();
-            }
         }
     }
 }

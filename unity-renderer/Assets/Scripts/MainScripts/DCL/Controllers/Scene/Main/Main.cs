@@ -106,13 +106,11 @@ namespace DCL
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-            pluginSystem?.Update();
         }
 
         protected virtual void LateUpdate()
         {
             Environment.i.world.sceneController.LateUpdate();
-            pluginSystem?.LateUpdate();
         }
 
         protected virtual void OnDestroy()
@@ -122,8 +120,6 @@ namespace DCL
             pluginSystem?.Dispose();
             kernelCommunication?.Dispose();
         }
-
-        private void OnGUI() { pluginSystem?.OnGUI(); }
 
         protected virtual void InitializeSceneDependencies()
         {
