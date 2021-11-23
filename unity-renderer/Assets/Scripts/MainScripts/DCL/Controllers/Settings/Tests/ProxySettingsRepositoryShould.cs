@@ -82,8 +82,9 @@ namespace DCL.SettingsCommon.Tests
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.VERIFIED_ONLY
             };
             var settingsByKey = GivenDataStoredInPrefs(latestEditedSettings);
-            GivenMissingBoolAttribute(settingsByKey, "profanityChatFiltering");
-            GivenMissingFloatAttribute(settingsByKey, "scenesLoadRadius");
+            
+            GivenMissingBoolAttribute(settingsByKey, PlayerPrefsGeneralSettingsRepository.PROFANITY_CHAT_FILTERING);
+            GivenMissingFloatAttribute(settingsByKey, PlayerPrefsGeneralSettingsRepository.SCENES_LOAD_RADIUS);
             var defaultSettings = GetDefaultSettings();
             var latestRepository = new PlayerPrefsGeneralSettingsRepository(
                 settingsByKey, defaultSettings);
@@ -144,16 +145,24 @@ namespace DCL.SettingsCommon.Tests
         private IPlayerPrefsSettingsByKey GivenDataStoredInPrefs(GeneralSettings settings)
         {
             var prefsByKey = Substitute.For<IPlayerPrefsSettingsByKey>();
-            prefsByKey.GetBool("autoqualityOn", Arg.Any<bool>()).Returns(settings.autoqualityOn);
-            prefsByKey.GetBool("profanityChatFiltering", Arg.Any<bool>()).Returns(settings.profanityChatFiltering);
-            prefsByKey.GetFloat("mouseSensitivity", Arg.Any<float>()).Returns(settings.mouseSensitivity);
-            prefsByKey.GetFloat("namesOpacity", Arg.Any<float>()).Returns(settings.namesOpacity);
-            prefsByKey.GetFloat("scenesLoadRadius", Arg.Any<float>()).Returns(settings.scenesLoadRadius);
-            prefsByKey.GetFloat("voiceChatVolume", Arg.Any<float>()).Returns(settings.voiceChatVolume);
-            prefsByKey.GetFloat("avatarsLODDistance", Arg.Any<float>()).Returns(settings.avatarsLODDistance);
-            prefsByKey.GetFloat("maxNonLODAvatars", Arg.Any<float>()).Returns(settings.maxNonLODAvatars);
-            prefsByKey.GetEnum("voiceChatAllow", Arg.Any<GeneralSettings.VoiceChatAllow>())
-                .Returns(settings.voiceChatAllow);
+            prefsByKey.GetBool(PlayerPrefsGeneralSettingsRepository.AUTO_QUALITY_ON,
+                Arg.Any<bool>()).Returns(settings.autoqualityOn);
+            prefsByKey.GetBool(PlayerPrefsGeneralSettingsRepository.PROFANITY_CHAT_FILTERING,
+                Arg.Any<bool>()).Returns(settings.profanityChatFiltering);
+            prefsByKey.GetFloat(PlayerPrefsGeneralSettingsRepository.MOUSE_SENSITIVITY,
+                Arg.Any<float>()).Returns(settings.mouseSensitivity);
+            prefsByKey.GetFloat(PlayerPrefsGeneralSettingsRepository.NAMES_OPACITY,
+                Arg.Any<float>()).Returns(settings.namesOpacity);
+            prefsByKey.GetFloat(PlayerPrefsGeneralSettingsRepository.SCENES_LOAD_RADIUS,
+                Arg.Any<float>()).Returns(settings.scenesLoadRadius);
+            prefsByKey.GetFloat(PlayerPrefsGeneralSettingsRepository.VOICE_CHAT_VOLUME,
+                Arg.Any<float>()).Returns(settings.voiceChatVolume);
+            prefsByKey.GetFloat(PlayerPrefsGeneralSettingsRepository.AVATARS_LOD_DISTANCE,
+                Arg.Any<float>()).Returns(settings.avatarsLODDistance);
+            prefsByKey.GetFloat(PlayerPrefsGeneralSettingsRepository.MAX_NON_LOAD_AVATARS,
+                Arg.Any<float>()).Returns(settings.maxNonLODAvatars);
+            prefsByKey.GetEnum(PlayerPrefsGeneralSettingsRepository.VOICE_CHAT_ALLOW,
+                    Arg.Any<GeneralSettings.VoiceChatAllow>()).Returns(settings.voiceChatAllow);
             return prefsByKey;
         }
 

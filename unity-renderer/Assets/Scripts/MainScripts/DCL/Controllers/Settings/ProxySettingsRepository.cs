@@ -5,7 +5,7 @@ namespace DCL.SettingsCommon
     public class ProxySettingsRepository<T> : ISettingsRepository<T> where T : struct
     {
         private readonly ISettingsRepository<T> latestRepository;
-        private readonly ISettingsRepository<T> fallbackRepository;
+        private readonly ISettingsRepository<T> recoveryRepository;
 
         public event Action<T> OnChanged
         {
@@ -17,17 +17,17 @@ namespace DCL.SettingsCommon
         {
             get
             {
-                if (!latestRepository.HasAnyData() && fallbackRepository.HasAnyData())
-                    latestRepository.Apply(fallbackRepository.Data);
+                if (!latestRepository.HasAnyData() && recoveryRepository.HasAnyData())
+                    latestRepository.Apply(recoveryRepository.Data);
                 return latestRepository.Data;
             }
         }
 
         public ProxySettingsRepository(ISettingsRepository<T> latestRepository,
-            ISettingsRepository<T> fallbackRepository)
+            ISettingsRepository<T> recoveryRepository)
         {
             this.latestRepository = latestRepository;
-            this.fallbackRepository = fallbackRepository;
+            this.recoveryRepository = recoveryRepository;
         }
 
         public void Apply(T settings) => latestRepository.Apply(settings);

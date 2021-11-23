@@ -5,6 +5,14 @@ namespace DCL.SettingsCommon
 {
     public class PlayerPrefsAudioSettingsRepository : ISettingsRepository<AudioSettings>
     {
+        private const string CHAT_SFX_ENABLED = "chatSFXEnabled";
+        private const string MASTER_VOLUME = "masterVolume";
+        private const string MUSIC_VOLUME = "musicVolume";
+        private const string VOICE_CHAT_VOLUME = "voiceChatVolume";
+        private const string AVATAR_SFX_VOLUME = "avatarSFXVolume";
+        private const string SCENE_SFX_VOLUME = "sceneSFXVolume";
+        private const string UI_SFX_VOLUME = "uiSFXVolume";
+
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly AudioSettings defaultSettings;
         private AudioSettings currentSettings;
@@ -36,13 +44,13 @@ namespace DCL.SettingsCommon
 
         public void Save()
         {
-            settingsByKey.SetBool("chatSFXEnabled", currentSettings.chatSFXEnabled);
-            settingsByKey.SetFloat("masterVolume", currentSettings.masterVolume);
-            settingsByKey.SetFloat("musicVolume", currentSettings.musicVolume);
-            settingsByKey.SetFloat("voiceChatVolume", currentSettings.voiceChatVolume);
-            settingsByKey.SetFloat("avatarSFXVolume", currentSettings.avatarSFXVolume);
-            settingsByKey.SetFloat("sceneSFXVolume", currentSettings.sceneSFXVolume);
-            settingsByKey.SetFloat("uiSFXVolume", currentSettings.uiSFXVolume);
+            settingsByKey.SetBool(CHAT_SFX_ENABLED, currentSettings.chatSFXEnabled);
+            settingsByKey.SetFloat(MASTER_VOLUME, currentSettings.masterVolume);
+            settingsByKey.SetFloat(MUSIC_VOLUME, currentSettings.musicVolume);
+            settingsByKey.SetFloat(VOICE_CHAT_VOLUME, currentSettings.voiceChatVolume);
+            settingsByKey.SetFloat(AVATAR_SFX_VOLUME, currentSettings.avatarSFXVolume);
+            settingsByKey.SetFloat(SCENE_SFX_VOLUME, currentSettings.sceneSFXVolume);
+            settingsByKey.SetFloat(UI_SFX_VOLUME, currentSettings.uiSFXVolume);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -53,13 +61,13 @@ namespace DCL.SettingsCommon
             
             try
             {
-                settings.chatSFXEnabled = settingsByKey.GetBool("chatSFXEnabled", defaultSettings.chatSFXEnabled);
-                settings.masterVolume = settingsByKey.GetFloat("masterVolume", defaultSettings.masterVolume);
-                settings.musicVolume = settingsByKey.GetFloat("musicVolume", defaultSettings.musicVolume);
-                settings.voiceChatVolume = settingsByKey.GetFloat("voiceChatVolume", defaultSettings.voiceChatVolume);
-                settings.avatarSFXVolume = settingsByKey.GetFloat("avatarSFXVolume", defaultSettings.avatarSFXVolume);
-                settings.sceneSFXVolume = settingsByKey.GetFloat("sceneSFXVolume", defaultSettings.sceneSFXVolume);
-                settings.uiSFXVolume = settingsByKey.GetFloat("uiSFXVolume", defaultSettings.uiSFXVolume);
+                settings.chatSFXEnabled = settingsByKey.GetBool(CHAT_SFX_ENABLED, defaultSettings.chatSFXEnabled);
+                settings.masterVolume = settingsByKey.GetFloat(MASTER_VOLUME, defaultSettings.masterVolume);
+                settings.musicVolume = settingsByKey.GetFloat(MUSIC_VOLUME, defaultSettings.musicVolume);
+                settings.voiceChatVolume = settingsByKey.GetFloat(VOICE_CHAT_VOLUME, defaultSettings.voiceChatVolume);
+                settings.avatarSFXVolume = settingsByKey.GetFloat(AVATAR_SFX_VOLUME, defaultSettings.avatarSFXVolume);
+                settings.sceneSFXVolume = settingsByKey.GetFloat(SCENE_SFX_VOLUME, defaultSettings.sceneSFXVolume);
+                settings.uiSFXVolume = settingsByKey.GetFloat(UI_SFX_VOLUME, defaultSettings.uiSFXVolume);
             }
             catch (Exception e)
             {
