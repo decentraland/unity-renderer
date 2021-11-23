@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: SkyboxMaterialData
   m_EditorClassIdentifier: 
   materials:
-  - numberOfSlots: 0
+  - numberOfSlots: 5
     material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
-  - numberOfSlots: 0
+  - numberOfSlots: 5
     material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
-  - numberOfSlots: 0
+  - numberOfSlots: 5
     material: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}

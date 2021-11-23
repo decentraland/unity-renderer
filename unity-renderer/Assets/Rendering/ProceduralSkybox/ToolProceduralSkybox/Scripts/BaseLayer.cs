@@ -7,6 +7,8 @@ namespace DCL.Skybox
     [System.Serializable]
     public class TextureLayer
     {
+        public int slotID;                              // Slot ID
+        public LayerRenderType renderType;
         public LayerType layerType;
         public bool enabled;
         public string nameInEditor;
@@ -101,6 +103,14 @@ namespace DCL.Skybox
         Satellite = 2,
         Particles = 3,
         Cubemap = 4,
+    }
+
+    public enum LayerRenderType
+    {
+        Rendering,
+        NotRendering,
+        Conflict_Playing,
+        Conflict_NotPlaying
     }
 
     public enum MovementType

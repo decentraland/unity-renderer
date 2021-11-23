@@ -159,7 +159,10 @@ namespace DCL.Skybox
             GUILayout.Space(32);
 
             // Render Slots
-            RenderSlots();
+            //RenderSlots();
+
+            // Render Layers
+            RenderTextureLayers(selectedConfiguration.layers);
 
             GUILayout.Space(300);
             EditorGUILayout.EndScrollView();
@@ -624,7 +627,7 @@ namespace DCL.Skybox
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.Space(10);
                     EditorGUILayout.BeginVertical("box");
-                    RenderTextureLayers(selectedConfiguration.slots[i]);
+                    //RenderTextureLayers(selectedConfiguration.slots[i]);
                     EditorGUILayout.EndVertical();
                     EditorGUILayout.EndHorizontal();
                 }
@@ -634,88 +637,80 @@ namespace DCL.Skybox
             }
         }
 
-        void RenderTextureLayers(SkyboxSlots slot)
+        void RenderTextureLayers(List<TextureLayer> layers)
         {
             GUIStyle style = new GUIStyle(EditorStyles.foldout);
             style.fixedWidth = 20;
-            for (int i = 0; i < slot.layers.Count; i++)
+            for (int i = 0; i < layers.Count; i++)
             {
                 // Name and buttons
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-                slot.layers[i].enabled = EditorGUILayout.Toggle(slot.layers[i].enabled, GUILayout.Width(20), GUILayout.Height(10));
+                layers[i].enabled = EditorGUILayout.Toggle(layers[i].enabled, GUILayout.Width(20), GUILayout.Height(10));
                 GUILayout.Space(10);
-                slot.layers[i].expandedInEditor = EditorGUILayout.Foldout(slot.layers[i].expandedInEditor, "Layer ", true, style);
-                slot.layers[i].nameInEditor = EditorGUILayout.TextField(slot.layers[i].nameInEditor, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+                layers[i].expandedInEditor = EditorGUILayout.Foldout(layers[i].expandedInEditor, "Layer ", true, style);
+                layers[i].nameInEditor = EditorGUILayout.TextField(layers[i].nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
 
-                if (GUILayout.Button("Remove", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
-                {
-                    slot.layers.RemoveAt(i);
-                    break;
-                }
+                // Slot ID
+                layers[i].slotID = EditorGUILayout.IntField(layers[i].slotID, GUILayout.Width(40), GUILayout.ExpandWidth(false));
 
-                if (i == 0 && slot.slotID == 0)
+                if (i == 0)
                 {
                     GUI.enabled = false;
                 }
 
-                if (GUILayout.Button("Move Up", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Up", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     TextureLayer temp = null;
 
                     if (i >= 1)
                     {
-                        temp = slot.layers[i - 1];
-                        slot.layers[i - 1] = slot.layers[i];
-                        slot.layers[i] = temp;
+                        temp = layers[i - 1];
+                        layers[i - 1] = layers[i];
+                        layers[i] = temp;
                     }
-                    else if (slot.slotID >= 1)
-                    {
-                        selectedConfiguration.slots[slot.slotID - 1].AddNewLayer(slot.layers[i]);
-                        slot.layers.RemoveAt(i);
-                    }
-                    break;
                 }
 
                 GUI.enabled = true;
 
-                if (i == slot.layers.Count - 1 && slot.slotID == selectedConfiguration.slots.Count - 1)
+                if (i == layers.Count - 1)
                 {
                     GUI.enabled = false;
                 }
 
-                if (GUILayout.Button("Move down", GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Down", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     TextureLayer temp = null;
-                    if (i < (slot.layers.Count - 1))
+                    if (i < (layers.Count - 1))
                     {
-                        temp = slot.layers[i + 1];
-                        slot.layers[i + 1] = slot.layers[i];
-                        slot.layers[i] = temp;
+                        temp = layers[i + 1];
+                        layers[i + 1] = layers[i];
+                        layers[i] = temp;
                     }
-                    else if (slot.slotID < (selectedConfiguration.slots.Count - 1))
-                    {
-                        selectedConfiguration.slots[slot.slotID + 1].AddNewLayer(slot.layers[i], true);
-                        slot.layers.RemoveAt(i);
-                    }
-
                     break;
                 }
 
-                EditorGUILayout.EndHorizontal();
-
                 GUI.enabled = true;
 
-                if (slot.layers[i].expandedInEditor)
+                if (GUILayout.Button(" - ", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                {
+                    layers.RemoveAt(i);
+                    break;
+                }
+
+                EditorGUILayout.EnumPopup(layers[i].renderType, GUILayout.Width(100));
+
+                EditorGUILayout.EndHorizontal();
+
+                if (layers[i].expandedInEditor)
                 {
                     EditorGUILayout.Separator();
                     EditorGUI.indentLevel++;
-                    RenderTextureLayer(slot.layers[i]);
+                    RenderTextureLayer(layers[i]);
 
                     EditorGUI.indentLevel--;
                 }
 
                 EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
 
                 GUILayout.Space(32);
             }
@@ -724,7 +719,7 @@ namespace DCL.Skybox
 
             if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
             {
-                slot.layers.Add(new TextureLayer("Tex Layer " + (slot.layers.Count + 1)));
+                layers.Add(new TextureLayer("Tex Layer " + (layers.Count + 1)));
             }
         }
 
@@ -1404,7 +1399,7 @@ namespace DCL.Skybox
         private void ApplyOnMaterial()
         {
             EnsureDependencies();
-            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), directionalLight);
+            selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), matLayer.numberOfSlots, directionalLight);
         }
 
         private float GetNormalizedDayTime()

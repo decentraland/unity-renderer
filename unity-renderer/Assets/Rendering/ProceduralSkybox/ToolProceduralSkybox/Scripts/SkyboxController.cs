@@ -31,6 +31,7 @@ namespace DCL.Skybox
         private string overrideSkyboxID;
         private bool isPaused;
         private float timeNormalizationFactor;
+        private int slotCount;
 
         public override void Initialize()
         {
@@ -228,6 +229,7 @@ namespace DCL.Skybox
 
             configuration.ResetMaterial(matLayer.material, matLayer.numberOfSlots);
             selectedMat = matLayer.material;
+            slotCount = matLayer.numberOfSlots;
 
             if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {
@@ -254,7 +256,7 @@ namespace DCL.Skybox
             timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
 
-            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), directionalLight);
+            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
 
             // Cycle resets
             if (timeOfTheDay >= cycleTime)

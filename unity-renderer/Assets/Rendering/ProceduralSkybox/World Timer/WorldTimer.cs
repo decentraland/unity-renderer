@@ -6,68 +6,52 @@ using UnityEngine.Networking;
 
 namespace DCL.ServerTime
 {
-    public class WorldTimer : MonoBehaviour
+    public class WorldTimer : Singleton<WorldTimer>
     {
         public delegate void OnTimeUpdated(DateTime serverTime);
         public event OnTimeUpdated OnTimeChanged;
 
-        public static WorldTimer i;
         public float serverHitFrequency;
         public string serverURL = "http://worldtimeapi.org/api/timezone/Etc/UTC";
 
+        private bool initialized = false;
         private DateTime lastTimeFromServer;
         private DateTime lastTimeFromSystem = DateTime.UtcNow;
+        private TimeSpan timeOffset;
         private bool stopTimer = false;
+        UnityWebRequest webRequest;
 
-        private void Awake()
+        public WorldTimer() { GetTimeFromServer(); }
+
+        void GetTimeFromServer()
         {
-            if (i == null)
-            {
-                i = this;
-            }
-            else
-            {
-                DestroyImmediate(this);
-                return;
-            }
-            StartCoroutine(GetTimeFromServer());
+            webRequest = UnityWebRequest.Get(serverURL);
+            UnityWebRequestAsyncOperation temp = webRequest.SendWebRequest();
+            temp.completed += WebRequestCompleted;
         }
 
-        void OnApplicationFocus(bool hasFocus)
+        private void WebRequestCompleted(AsyncOperation obj)
         {
-            StopAllCoroutines();
-            StartCoroutine(GetTimeFromServer());
-        }
-
-        IEnumerator GetTimeFromServer()
-        {
-            while (!stopTimer)
+            switch (webRequest.result)
             {
-                using (UnityWebRequest webRequest = UnityWebRequest.Get(serverURL))
-                {
-                    yield return webRequest.SendWebRequest();
-
-                    switch (webRequest.result)
-                    {
-                        case UnityWebRequest.Result.InProgress:
-                            break;
-                        case UnityWebRequest.Result.Success:
-                            TimerSchema res = JsonUtility.FromJson<TimerSchema>(webRequest.downloadHandler.text);
-                            UpdateTimeWithServerTime(res.datetime);
-                            break;
-                        case UnityWebRequest.Result.ConnectionError:
-                            break;
-                        case UnityWebRequest.Result.ProtocolError:
-                            break;
-                        case UnityWebRequest.Result.DataProcessingError:
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                yield return new WaitForSecondsRealtime(serverHitFrequency);
+                case UnityWebRequest.Result.InProgress:
+                    break;
+                case UnityWebRequest.Result.Success:
+                    TimerSchema res = JsonUtility.FromJson<TimerSchema>(webRequest.downloadHandler.text);
+                    UpdateTimeWithServerTime(res.datetime);
+                    initialized = true;
+                    break;
+                case UnityWebRequest.Result.ConnectionError:
+                    break;
+                case UnityWebRequest.Result.ProtocolError:
+                    break;
+                case UnityWebRequest.Result.DataProcessingError:
+                    break;
+                default:
+                    break;
             }
 
+            webRequest.Dispose();
         }
 
         void UpdateTimeWithServerTime(string datetime)
@@ -80,6 +64,8 @@ namespace DCL.ServerTime
                 // Update current time from the system
                 lastTimeFromSystem = DateTime.UtcNow;
 
+                timeOffset = lastTimeFromServer - lastTimeFromSystem;
+
                 // Fire Event
                 OnTimeChanged?.Invoke(lastTimeFromServer);
             }
@@ -87,7 +73,7 @@ namespace DCL.ServerTime
 
         public DateTime GetCurrentTime()
         {
-            DateTime currentTime = lastTimeFromServer.Add(DateTime.UtcNow - lastTimeFromSystem);
+            DateTime currentTime = DateTime.UtcNow.Add(timeOffset);
             return currentTime;
         }
     }

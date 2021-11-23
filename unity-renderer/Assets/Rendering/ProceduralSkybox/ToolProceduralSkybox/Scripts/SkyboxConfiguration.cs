@@ -55,14 +55,30 @@ namespace DCL.Skybox
         // Slots
         public List<SkyboxSlots> slots = new List<SkyboxSlots>();
 
+        // Layers
+        public List<TextureLayer> layers = new List<TextureLayer>();
+
         // Timeline Tags
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
         private float cycleTime = 24;
 
+        [ContextMenu("Fill layers array")]
+        public void FillTextureLayersWithSlotValues()
+        {
+            for (int i = 0; i < slots.Count; i++)
+            {
+                for (int j = 0; j < slots[i].layers.Count; j++)
+                {
+                    TextureLayer temp = slots[i].layers[j];
+                    layers.Add(temp);
+                }
+            }
+        }
+
         public void AddSlots(int slotID) { slots.Add(new SkyboxSlots(slotID)); }
 
-        public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, Light directionalLightGO = null, float cycleTime = 24)
+        public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)
         {
             float percentage = normalizedDayTime * 100;
 
@@ -166,20 +182,14 @@ namespace DCL.Skybox
             // Check and Fire timeline events
             CheckAndFireTimelineEvents(dayTime);
 
-            ApplyAllSlots(selectedMat, dayTime, normalizedDayTime, cycleTime);
+            ApplyAllSlots(selectedMat, dayTime, normalizedDayTime, slotCount, cycleTime);
         }
 
-        void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime, float cycleTime = 24)
+        void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, float cycleTime = 24)
         {
-            for (int i = 0; i < slots.Count; i++)
+            for (int i = 0; i < slotCount; i++)
             {
-                if (!slots[i].enabled)
-                {
-                    ResetSlot(selectedMat, i);
-                    continue;
-                }
-
-                TextureLayer layer = slots[i].GetActiveLayer(dayTime);
+                TextureLayer layer = GetActiveLayer(dayTime, i);
 
                 if (layer == null || !layer.enabled)
                 {
@@ -189,6 +199,59 @@ namespace DCL.Skybox
 
                 ApplyTextureLayer(selectedMat, dayTime, normalizedDayTime, i, layer, cycleTime);
             }
+        }
+
+        public TextureLayer GetActiveLayer(float currentTime, int slotID)
+        {
+            TextureLayer temp = null;
+
+            for (int i = 0; i < layers.Count; i++)
+            {
+                if (layers[i].slotID != slotID)
+                {
+                    continue;
+                }
+
+                float endTimeEdited = layers[i].timeSpan_End;
+                float dayTimeEdited = currentTime;
+
+                if (layers[i].timeSpan_End < layers[i].timeSpan_start)
+                {
+                    endTimeEdited = cycleTime + layers[i].timeSpan_End;
+                    if (currentTime < layers[i].timeSpan_start)
+                    {
+                        dayTimeEdited = cycleTime + currentTime;
+                    }
+                }
+
+                if (dayTimeEdited >= layers[i].timeSpan_start && dayTimeEdited <= endTimeEdited)
+                {
+                    if (layers[i].enabled)
+                    {
+                        if (temp == null)
+                        {
+                            layers[i].renderType = LayerRenderType.Rendering;
+                            temp = layers[i];
+                        }
+                        else
+                        {
+                            temp.renderType = LayerRenderType.Conflict_Playing;
+                            layers[i].renderType = LayerRenderType.Conflict_NotPlaying;
+                        }
+                    }
+                    else
+                    {
+                        layers[i].renderType = LayerRenderType.NotRendering;
+                    }
+                }
+                else
+                {
+                    layers[i].renderType = LayerRenderType.NotRendering;
+                }
+
+
+            }
+            return temp;
         }
 
         #region Timeline Events
