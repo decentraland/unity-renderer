@@ -87,7 +87,7 @@ namespace DCL
 
         protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
 
-        private void Start()
+        protected virtual void Start()
         {
             // this event should be the last one to be executed after initialization
             // it is used by the kernel to signal "EngineReady" or something like that

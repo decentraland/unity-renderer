@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Random = UnityEngine.Random;
 
 namespace DCL
 {
     public class WebRequestController : IWebRequestController
     {
+        public static event Action<string> OnWebRequestFailed;
+        
         private IWebRequest genericWebRequest;
         private IWebRequestAssetBundle assetBundleWebRequest;
         private IWebRequestTexture textureWebRequest;
         private IWebRequestAudio audioClipWebRequest;
-        private List<WebRequestAsyncOperation> ongoingWebRequests = new List<WebRequestAsyncOperation>();
+        protected static List<WebRequestAsyncOperation> ongoingWebRequests = new List<WebRequestAsyncOperation>();
 
         public static WebRequestController Create()
         {
@@ -140,6 +143,16 @@ namespace DCL
             ongoingWebRequests.Add(resultOp);
 
             UnityWebRequestAsyncOperation requestOp = resultOp.webRequest.SendWebRequest();
+            
+            if (Random.Range(0, 10) > 8)
+            {
+                Debug.LogError("Failed by chance");
+                OnFail?.Invoke(resultOp);
+                resultOp.SetAsCompleted(false);
+                OnWebRequestFailed?.Invoke(url);
+                return resultOp;
+            }
+
             requestOp.completed += (asyncOp) =>
             {
                 if (!resultOp.isDisposed)
@@ -162,12 +175,14 @@ namespace DCL
                         {
                             OnFail?.Invoke(resultOp);
                             resultOp.SetAsCompleted(false);
+                            OnWebRequestFailed?.Invoke(url);
                         }
                     }
                     else
                     {
                         OnFail?.Invoke(resultOp);
                         resultOp.SetAsCompleted(false);
+                        OnWebRequestFailed?.Invoke(url);
                     }
                 }
 
