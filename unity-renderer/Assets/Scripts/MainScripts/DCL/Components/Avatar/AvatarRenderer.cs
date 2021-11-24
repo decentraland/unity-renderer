@@ -243,7 +243,7 @@ namespace DCL
             //              without being afraid of the gameObject active state.
             yield return new WaitUntil(() => gameObject.activeSelf);
 
-            var loadSoftFailed = false;
+            bool loadSoftFailed = false;
             WearableItem resolvedBody = null;
             Exception bodyShapeError = null;
 
@@ -435,14 +435,22 @@ namespace DCL
             Action<Exception> error,
             Action<List<WearableItem>> completed)
         {
-            var wearedAndReplacedCategories = wearables.SelectMany(wearable =>
-                {
-                    var replacedByWearable = wearable.GetReplacesList(model.bodyShape) ?? new string[0];
-                    return new[] {wearable.data.category}.Concat(replacedByWearable);
-                })
-                .Distinct();
-            var missingClothesReplacements = new [] {Categories.LOWER_BODY, Categories.UPPER_BODY}
-                .Except(wearedAndReplacedCategories)
+            var missingClothesCategories = new List<string>(new[] {Categories.LOWER_BODY, Categories.UPPER_BODY});
+            
+            foreach (var wearable in wearables)
+            {
+                missingClothesCategories.Remove(wearable.data.category);
+                var wearableReplacements = wearable.GetReplacesList(model.bodyShape);
+                if (wearableReplacements == null) continue;
+                foreach (var wearableReplacementCategory in wearableReplacements)
+                    missingClothesCategories.Remove(wearableReplacementCategory);
+            }
+            
+            if (missingClothesCategories.Count == 0) yield break;
+            
+            Debug.LogWarning($"Avatar {model.name} is missing wearables for {string.Join(",", missingClothesCategories)}. Replacing with a default wearable");
+
+            var missingClothesReplacements = missingClothesCategories
                 .Select(RequestWearableReplacement);
 
             yield return LoadWearables(missingClothesReplacements, error, completed);
