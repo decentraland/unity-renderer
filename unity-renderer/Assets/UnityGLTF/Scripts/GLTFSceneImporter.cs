@@ -1805,14 +1805,6 @@ namespace UnityGLTF
             }
         }
 
-        // static protected bool ShouldYieldOnTimeout() { return ((Time.realtimeSinceStartup - _timeAtLastYield) > (budgetPerFrameInMilliseconds / 1000f / (float) GLTFComponent.downloadingCount)); }
-
-        // static protected IEnumerator YieldOnTimeout()
-        // {
-        //     yield return null;
-        //     _timeAtLastYield = Time.realtimeSinceStartup;
-        // }
-
         protected UnityMeshData ConvertAccessorsToUnityTypes(MeshConstructionData meshConstructionData)
         {
             // todo optimize: There are multiple copies being performed to turn the buffer data into mesh data. Look into reducing them
