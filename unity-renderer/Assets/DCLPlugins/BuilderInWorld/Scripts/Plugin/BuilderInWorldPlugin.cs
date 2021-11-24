@@ -50,9 +50,10 @@ public class BuilderInWorldPlugin : IPlugin
         Initialize();
     }
 
-    public BuilderInWorldPlugin(IContext context)
+    public BuilderInWorldPlugin(IContext context, ISceneManager sceneManager)
     {
         this.context = context;
+        this.sceneManager = sceneManager;
         panelController = context.panelHUD;
         editor = context.editor;
         builderAPIController = context.builderAPIController;
@@ -73,13 +74,13 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Initialize(context);
         cameraController.Initialize(context);
 
-        if (HUDController.i == null)
-            return;
-
-        if (HUDController.i.taskbarHud != null)
-            HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
-        else
-            HUDController.i.OnTaskbarCreation += TaskBarCreated;
+        if (HUDController.i != null)
+        {
+            if (HUDController.i.taskbarHud != null)
+                HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
+            else
+                HUDController.i.OnTaskbarCreation += TaskBarCreated;
+        }
 
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);

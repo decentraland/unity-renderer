@@ -4,30 +4,31 @@ using DCL;
 using DCL.Builder;
 using NSubstitute;
 using NUnit.Framework;
+using Tests;
 using UnityEngine;
 
-public class BuilderInWorldShould
+public class BuilderInWorldShould : IntegrationTestSuite
 {
     private BuilderInWorldPlugin builderInWorld;
-    
-    [SetUp]
-    public void SetUp()
+
+    protected override PlatformContext CreatePlatformContext()
     {
-        //Arrange
-        builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
-        builderInWorld.editor = Substitute.For<IBIWEditor>();
-        builderInWorld.sceneManager = Substitute.For<ISceneManager>();
-        builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
-        builderInWorld.builderAPIController = Substitute.For<IBuilderAPIController>();
-        builderInWorld.cameraController = Substitute.For<ICameraController>();
+        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(new UpdateEventHandler());
     }
 
-    [TearDown]
-    public void TearDown()
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+        //Arrange
+        builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene(), Substitute.For<ISceneManager>());
+    }
+
+    protected override IEnumerator TearDown()
     {
         builderInWorld.Dispose();
+        yield return base.TearDown();
     }
-    
+
     [Test]
     public void CreateContextCorrectly()
     {
@@ -40,7 +41,7 @@ public class BuilderInWorldShould
     public void InitializePartsCorrectly()
     {
         //Arrange
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene(), Substitute.For<ISceneManager>());
 
         //Assert
         builderInWorld.editor.Received(1).Initialize(builderInWorld.context);
