@@ -30,7 +30,11 @@ namespace DCL
 
         public void Dispose()
         {
-            UnityEngine.Object.Destroy( dispatcher.gameObject );
+            if ( dispatcher != null )
+            {
+                UnityEngine.Object.Destroy( dispatcher.gameObject );
+                dispatcher = null;
+            }
         }
     }
 }
