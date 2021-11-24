@@ -120,7 +120,7 @@ public class BuilderAPIController : IBuilderAPIController
         {
             WWWForm form = new WWWForm();
             form.AddBinaryData("thumbnail",requestHeader.body);
-            
+
             www = UnityWebRequest.Post(BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, form );
         }
 
@@ -183,10 +183,11 @@ public class BuilderAPIController : IBuilderAPIController
     public Promise<bool> SetThumbnail(string id, Texture2D thumbnail)
     {
         Promise<bool> fullPromise = new Promise<bool>();
+
         byte[] myData = System.Text.Encoding.UTF8.GetBytes(Convert.ToBase64String(thumbnail.EncodeToJPG(90)));
 
         string endpoint = PROJECT_THUMBNAIL_ENDPOINT.Replace("{ID}", id);
-        var promise =  CallUrl(POST, endpoint,"",myData);
+        var promise =  CallUrl(POST, endpoint,"",myData,"image/png");
 
         promise.Then(result =>
         {
