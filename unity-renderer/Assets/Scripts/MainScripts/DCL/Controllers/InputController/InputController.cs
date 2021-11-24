@@ -26,6 +26,7 @@ public enum DCLAction_Trigger
     ToggleAvatarEditorHud = 128,
     ToggleQuestsPanelHud = 129,
     ToggleAvatarNamesHud = 130,
+    TogglePlacesAndEventsHud = 131,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -228,8 +229,10 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleExploreHud:
                     if (allUIHidden)
                         break;
-                    InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.TogglePlacesAndEventsHud:
+                    InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
                     InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput);

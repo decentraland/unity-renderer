@@ -1,3 +1,4 @@
+using DCL;
 using ExploreV2Analytics;
 using System;
 
@@ -23,6 +24,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IHighlightsSubSectionComponentController highlightsSubSectionComponentController;
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
+
+    internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
 
     public PlacesAndEventsSectionComponentController(IPlacesAndEventsSectionComponentView view, IExploreV2Analytics exploreV2Analytics)
     {
@@ -60,6 +63,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         highlightsSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
         placesSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
         eventsSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
+
+        placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
+        PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
     }
 
     internal void RequestExploreV2Closing() { OnCloseExploreV2?.Invoke(); }
@@ -84,5 +90,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         eventsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         eventsSubSectionComponentController.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
         eventsSubSectionComponentController.Dispose();
+
+        placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
     }
+
+    internal void PlacesAndEventsVisibleChanged(bool current, bool previous) { view.SetActive(current); }
 }

@@ -27,6 +27,12 @@ public interface IPlacesAndEventsSectionComponentView
     /// </summary>
     /// <param name="subSectionIndex">Sub-section index.</param>
     void GoToSubsection(int subSectionIndex);
+
+    /// <summary>
+    /// Activates/deactivates the section.
+    /// </summary>
+    /// <param name="isActive"></param>
+    void SetActive(bool isActive);
 }
 
 public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
@@ -112,4 +118,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     }
 
     public void GoToSubsection(int subSectionIndex) { subSectionSelector.GetSection(subSectionIndex)?.SelectToggle(true); }
+
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 }

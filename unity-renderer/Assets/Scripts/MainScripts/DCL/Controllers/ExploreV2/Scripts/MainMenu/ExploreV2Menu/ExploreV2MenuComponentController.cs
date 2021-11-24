@@ -19,6 +19,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
+    internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     internal BaseVariable<bool> isNavmapVisibleInitialized => DataStore.i.HUDs.isNavMapInitialized;
@@ -51,6 +52,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
+
+        placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
+        PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
 
         isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
         IsAvatarEditorInitializedChanged(isAvatarEditorInitialized.Get(), false);
@@ -96,6 +100,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         currentOpenSection = section;
 
+        placesAndEventsVisible.Set(currentOpenSection == ExploreSection.Explore);
         avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
         navmapVisible.Set(currentOpenSection == ExploreSection.Map);
         builderVisible.Set(currentOpenSection == ExploreSection.Builder);
@@ -110,6 +115,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
+        placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
         isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
         avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
         isNavmapVisibleInitialized.OnChange -= IsNavMapInitializedChanged;
@@ -157,6 +163,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             AudioScriptableObjects.dialogClose.Play(true);
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+            placesAndEventsVisible.Set(false);
             avatarEditorVisible.Set(false);
             profileCardIsOpen.Set(false);
             navmapVisible.Set(false);
@@ -169,7 +176,20 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.SetVisible(visible);
     }
 
-    private void IsAvatarEditorInitializedChanged(bool current, bool previous)
+    internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
+    {
+        if (current)
+        {
+            SetVisibility(true);
+            view.GoToSection(ExploreSection.Explore);
+        }
+        else if (currentOpenSection == ExploreSection.Explore)
+        {
+            SetVisibility(false);
+        }
+    }
+
+    internal void IsAvatarEditorInitializedChanged(bool current, bool previous)
     {
         view.ConfigureEncapsulatedSection(
             ExploreSection.Backpack,
@@ -193,7 +213,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    private void IsNavMapInitializedChanged(bool current, bool previous)
+    internal void IsNavMapInitializedChanged(bool current, bool previous)
     {
         view.ConfigureEncapsulatedSection(
             ExploreSection.Map,

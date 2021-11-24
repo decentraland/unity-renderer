@@ -12,6 +12,7 @@ public class ShortcutsController : IDisposable
     internal InputAction_Trigger toggleExplore;
     internal InputAction_Trigger toggleExpressionsHUD;
     internal InputAction_Trigger toggleNavMap;
+    internal InputAction_Trigger togglePlacesAndEvents;
 
     public ShortcutsController()
     {
@@ -22,6 +23,7 @@ public class ShortcutsController : IDisposable
         toggleExplore = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
         toggleExpressionsHUD = Resources.Load<InputAction_Trigger>("OpenExpressions");
         toggleNavMap = Resources.Load<InputAction_Trigger>("ToggleNavMap");
+        togglePlacesAndEvents = Resources.Load<InputAction_Trigger>("TogglePlacesAndEventsHud");
 
         Subscribe();
     }
@@ -36,6 +38,7 @@ public class ShortcutsController : IDisposable
         toggleExplore.OnTriggered += ToggleExploreTriggered;
         toggleExpressionsHUD.OnTriggered += ToggleExpressionsTriggered;
         toggleNavMap.OnTriggered += ToggleNavMapTriggered;
+        togglePlacesAndEvents.OnTriggered += TogglePlacesAndEventsTriggered;
     }
 
     internal void Unsubscribe()
@@ -47,6 +50,7 @@ public class ShortcutsController : IDisposable
         toggleExplore.OnTriggered -= ToggleExploreTriggered;
         toggleExpressionsHUD.OnTriggered -= ToggleExpressionsTriggered;
         toggleNavMap.OnTriggered -= ToggleNavMapTriggered;
+        togglePlacesAndEvents.OnTriggered -= TogglePlacesAndEventsTriggered;
     }
 
     private void ToggleControlsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.controlsVisible.Set(!DataStore.i.HUDs.controlsVisible.Get()); }
@@ -68,6 +72,7 @@ public class ShortcutsController : IDisposable
 
     private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }
     private void ToggleNavMapTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.navmapVisible.Set(!DataStore.i.HUDs.navmapVisible.Get()); }
+    private void TogglePlacesAndEventsTriggered(DCLAction_Trigger action) { DataStore.i.exploreV2.placesAndEventsVisible.Set(!DataStore.i.exploreV2.placesAndEventsVisible.Get()); }
 
     public void Dispose() { Unsubscribe(); }
 

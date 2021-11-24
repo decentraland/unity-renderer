@@ -1,4 +1,3 @@
-using DCL;
 using System;
 using UnityEngine;
 
@@ -119,7 +118,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         else
         {
             Hide();
-            placesAndEventsSection.gameObject.SetActive(false);
         }
     }
 
@@ -162,8 +160,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection((int)ExploreSection.Explore)
                        ?.onSelect.AddListener((isOn) =>
                        {
-                           placesAndEventsSection.gameObject.SetActive(isOn);
-
                            if (isOn)
                            {
                                currentSectionIndex = ExploreSection.Explore;
