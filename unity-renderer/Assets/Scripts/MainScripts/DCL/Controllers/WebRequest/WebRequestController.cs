@@ -143,15 +143,6 @@ namespace DCL
             ongoingWebRequests.Add(resultOp);
 
             UnityWebRequestAsyncOperation requestOp = resultOp.webRequest.SendWebRequest();
-            
-            if (Random.Range(0, 10) > 8)
-            {
-                Debug.LogError("Failed by chance");
-                OnFail?.Invoke(resultOp);
-                resultOp.SetAsCompleted(false);
-                OnWebRequestFailed?.Invoke(url);
-                return resultOp;
-            }
 
             requestOp.completed += (asyncOp) =>
             {
