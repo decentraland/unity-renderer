@@ -29,7 +29,7 @@ namespace DCL.Builder
         }
 
         internal State currentState = State.IDLE;
-        internal ISceneManager.SceneType sceneType = ISceneManager.SceneType.PROJECT;
+        public ISceneManager.SceneType sceneType = ISceneManager.SceneType.PROJECT;
 
         private InputAction_Trigger editModeChangeInputAction;
 
@@ -155,7 +155,7 @@ namespace DCL.Builder
         {
             DataStore.i.HUDs.loadingHUD.visible.Set(true);
             //We set the position of the character in the 0,0 to move the world along it
-            DCLCharacterController.i.SetPosition(Vector3.zero);
+            //DCLCharacterController.i.SetPosition(Vector3.zero);
             
             //We set the manifest for future saves
             context.editorContext.saveController.SetManifest(manifest);
@@ -407,7 +407,8 @@ namespace DCL.Builder
             Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
             Environment.i.world.blockersController.SetEnabled(false);
 
-            builderInWorldBridge.StartKernelEditMode(sceneToEdit);
+            if(sceneType == ISceneManager.SceneType.DEPLOYED)
+                builderInWorldBridge.StartKernelEditMode(sceneToEdit);
         }
 
         internal void ActivateLandAccessBackgroundChecker()
