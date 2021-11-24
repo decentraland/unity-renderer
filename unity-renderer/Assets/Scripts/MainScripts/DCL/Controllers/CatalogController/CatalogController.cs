@@ -235,6 +235,18 @@ public class CatalogController : MonoBehaviour
         }
     }
 
+    public static void AddWearableUsage(string wearableId)
+    {
+        if (!wearablesInUseCounters.ContainsKey(wearableId))
+            wearablesInUseCounters.Add(wearableId, 0);
+        wearablesInUseCounters[wearableId]++;
+    }
+
+    public static void OverrideWearableRequestResult(string wearableId, Promise<WearableItem> promise)
+    {
+        awaitingWearablePromises[wearableId] = promise;
+    }
+
     private void ResolvePendingWearablePromise(string wearableId, WearableItem newWearableAddedIntoCatalog = null, string errorMessage = "")
     {
         if (awaitingWearablePromises.TryGetValue(wearableId, out Promise<WearableItem> promise))

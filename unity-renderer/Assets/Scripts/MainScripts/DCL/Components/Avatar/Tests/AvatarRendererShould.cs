@@ -4,6 +4,8 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -263,6 +265,87 @@ namespace AvatarShape_Tests
             wearableController = avatarRenderer.wearableControllers.Values.FirstOrDefault(x => x.id == wearableId);
             Assert.NotNull(wearableController);
             Assert.AreEqual("Feet_XmasSockets.glb" , wearableController.lastMainFileLoaded);
+        }
+
+        [UnityTest]
+        public IEnumerator AddMissingWearablesForUpperAndLowerBodyWhenAvatarHasNoWearables()
+        {
+            avatarModel.wearables = new List<string>();
+            var success = false;
+            var failed = false;
+            
+            avatarRenderer.ApplyModel(avatarModel, () => success = true, () => failed = true);
+            yield return new DCL.WaitUntil(() => success | failed);
+            
+            Assert.IsTrue(success);
+            Assert.IsFalse(failed);
+            ThenAvatarHasWearables(new[]
+                {WearableLiterals.Categories.LOWER_BODY, WearableLiterals.Categories.UPPER_BODY});
+        }
+        
+        [UnityTest]
+        public IEnumerator AddMissingWearablesForUpperAndLowerBodyWhenWearablesFailToLoad()
+        {
+            const string wearable1Id = "werr1";
+            const string wearable2Id = "werr2";
+            const string errorMessage = "wearable fetch error";
+            LogAssert.Expect(LogType.Exception, new Regex($"{errorMessage}"));
+            LogAssert.ignoreFailingMessages = true;
+
+            var wearableErrorPromise = new Promise<WearableItem>();
+            wearableErrorPromise.Reject(errorMessage);
+            
+            CatalogController.OverrideWearableRequestResult(wearable1Id, wearableErrorPromise);
+            CatalogController.OverrideWearableRequestResult(wearable2Id, wearableErrorPromise);
+            
+            avatarModel.wearables = new List<string>{wearable1Id, wearable2Id};
+            var success = false;
+            var failed = false;
+            
+            avatarRenderer.ApplyModel(avatarModel, () => success = true, () => failed = true);
+            yield return new DCL.WaitUntil(() => success | failed);
+            
+            Assert.IsFalse(success);
+            Assert.IsTrue(failed);
+
+            ThenAvatarHasWearables(new[]
+                {WearableLiterals.Categories.LOWER_BODY, WearableLiterals.Categories.UPPER_BODY});
+
+            LogAssert.ignoreFailingMessages = false;
+        }
+
+        [UnityTest]
+        public IEnumerator DoNotReplaceUpperOrLowerBodyWhenWearablesAreLoadedCorrectly()
+        {
+            var wearables = new List<string>
+            {
+                "urn:decentraland:off-chain:base-avatars:f_sweater",
+                "urn:decentraland:off-chain:base-avatars:f_jeans"
+            };
+            avatarModel.wearables = wearables;
+            
+            var success = false;
+            var failed = false;
+            
+            avatarRenderer.ApplyModel(avatarModel, () => success = true, () => failed = true);
+            yield return new DCL.WaitUntil(() => success | failed);
+            
+            Assert.IsTrue(success);
+            Assert.IsFalse(failed);
+            ThenAvatarHasWearable(wearables[0]);
+            ThenAvatarHasWearable(wearables[1]);
+        }
+
+        private void ThenAvatarHasWearable(string wearableId)
+        {
+            Assert.IsTrue(avatarRenderer.wearableControllers.Any(pair => pair.Key.id == wearableId));
+        }
+
+        private void ThenAvatarHasWearables(string[] categories)
+        {
+            var onlyHasLowerAndUpperBody = categories.All(category =>
+                avatarRenderer.wearableControllers.Any(pair => pair.Key.data.category == category));
+            Assert.IsTrue(onlyHasLowerAndUpperBody);
         }
 
         private void CleanWearableHidesAndReplaces(string id)

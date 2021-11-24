@@ -41,6 +41,7 @@ public static class AvatarAssetsTestHelpers
         foreach (var item in dummyWereables)
         {
             CatalogController.wearableCatalog.Add(item.Key, item.Value);
+            CatalogController.AddWearableUsage(item.Key);
         }
 
         return CatalogController.wearableCatalog;
