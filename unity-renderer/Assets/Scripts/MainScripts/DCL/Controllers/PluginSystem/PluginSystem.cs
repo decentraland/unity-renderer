@@ -7,37 +7,6 @@ namespace DCL
 {
     public delegate IPlugin PluginBuilder();
 
-    public class PluginInfo
-    {
-        public bool enabled;
-        public string flag;
-        public PluginBuilder builder;
-        public IPlugin instance;
-    }
-
-    public class PluginGroup
-    {
-        public Dictionary<PluginBuilder, PluginInfo> plugins = new Dictionary<PluginBuilder, PluginInfo>();
-
-        public bool Add(PluginBuilder plugin, PluginInfo pluginInfo)
-        {
-            if ( plugins.ContainsKey(plugin) )
-                return false;
-
-            plugins.Add(plugin, pluginInfo);
-            return true;
-        }
-
-        public bool Remove(PluginBuilder plugin)
-        {
-            if ( !plugins.ContainsKey(plugin))
-                return false;
-
-            plugins.Remove(plugin);
-            return true;
-        }
-    }
-
     /// <summary>
     /// This class implements a plugin system pattern.
     /// 
@@ -66,7 +35,7 @@ namespace DCL
             if (!allPlugins.plugins.ContainsKey(pluginBuilder))
                 return false;
 
-            return allPlugins.plugins[pluginBuilder].enabled;
+            return allPlugins.plugins[pluginBuilder].isEnabled;
         }
 
         /// <summary>
@@ -89,14 +58,11 @@ namespace DCL
         {
             Assert.IsNotNull(pluginBuilder);
 
-            PluginInfo pluginInfo = new PluginInfo() { builder = pluginBuilder, enabled = false };
+            PluginInfo pluginInfo = new PluginInfo() { builder = pluginBuilder };
             allPlugins.Add(pluginBuilder, pluginInfo);
 
             if (enable)
-            {
-                pluginInfo.enabled = true;
-                pluginInfo.instance = pluginInfo.builder.Invoke();
-            }
+                pluginInfo.Enable();
         }
 
         /// <summary>
@@ -108,12 +74,10 @@ namespace DCL
             if ( !allPlugins.plugins.ContainsKey(plugin))
                 return;
 
-            IPlugin pluginInstance = allPlugins.plugins[plugin].instance;
+            PluginInfo info = allPlugins.plugins[plugin];
+            info.Disable();
 
-            if ( pluginInstance != null )
-                pluginInstance.Dispose();
-
-            string flag = allPlugins.plugins[plugin].flag;
+            string flag = info.flag;
 
             allPlugins.Remove(plugin);
             pluginGroupByFlag[flag].Remove(plugin);
@@ -163,12 +127,7 @@ namespace DCL
             foreach ( var feature in pluginGroup.plugins )
             {
                 PluginInfo info = feature.Value;
-
-                if ( info.enabled )
-                    continue;
-
-                info.enabled = true;
-                info.instance = info.builder.Invoke();
+                info.Enable();
             }
         }
 
@@ -187,12 +146,7 @@ namespace DCL
             foreach ( var feature in pluginGroup.plugins )
             {
                 PluginInfo info = feature.Value;
-
-                if ( !info.enabled )
-                    continue;
-
-                info.enabled = false;
-                info.instance.Dispose();
+                info.Disable();
             }
         }
 
@@ -228,11 +182,7 @@ namespace DCL
             foreach ( var kvp in allPlugins.plugins )
             {
                 PluginInfo info = kvp.Value;
-
-                if ( !info.enabled )
-                    continue;
-
-                info.instance.Dispose();
+                info.Disable();
             }
 
             if ( featureFlagsDataSource != null )
