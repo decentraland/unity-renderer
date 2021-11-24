@@ -29,6 +29,7 @@ namespace DCL.Builder
         }
 
         internal State currentState = State.IDLE;
+        internal ISceneManager.SceneType sceneType = ISceneManager.SceneType.PROJECT;
 
         private InputAction_Trigger editModeChangeInputAction;
 
@@ -152,13 +153,14 @@ namespace DCL.Builder
 
         public void StartEditorFromManifest(Manifest.Manifest manifest)
         {
+            DataStore.i.HUDs.loadingHUD.visible.Set(true);
             //We set the position of the character in the 0,0 to move the world along it
             DCLCharacterController.i.SetPosition(Vector3.zero);
             
             //We set the manifest for future saves
             context.editorContext.saveController.SetManifest(manifest);
             ParcelScene convertedScene = ManifestTranslator.TranslateManifestToScene(manifest);
-            StartFlow(convertedScene,SOURCE_BUILDER_PANEl);
+            StartFlow(convertedScene,SOURCE_BUILDER_PANEl, ISceneManager.SceneType.PROJECT);
         }
 
         public IParcelScene FindSceneToEdit()
@@ -202,19 +204,24 @@ namespace DCL.Builder
             NextState();
         }
 
-        internal void StartFlow(IParcelScene targetScene, string source)
+        internal void StartFlow(IParcelScene targetScene, string source, ISceneManager.SceneType sceneType)
         {
             if (currentState != State.IDLE || targetScene == null)
                 return;
             
             sceneToEdit = targetScene;
+            this.sceneType = sceneType;
 
             NotificationsController.i.allowNotifications = false;
             CommonScriptableObjects.allUIHidden.Set(true);
             NotificationsController.i.allowNotifications = true;
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
+            
+            //We configure the loading part
+            initialLoadingController.SetLoadingType(sceneType);
             initialLoadingController.Show();
             initialLoadingController.SetPercentage(0f);
+            
             DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             BIWAnalytics.StartEditorFlow(source);
@@ -328,6 +335,9 @@ namespace DCL.Builder
 
         internal void EnterEditMode()
         {
+            if (sceneType == ISceneManager.SceneType.DEPLOYED)
+                DataStore.i.HUDs.loadingHUD.visible.Set(false);
+            
             initialLoadingController.SetPercentage(100f);
             initialLoadingController.Hide(true, onHideAction: () =>
             {
@@ -382,7 +392,7 @@ namespace DCL.Builder
                 return;
             }
             
-            StartFlow(targetScene, source);
+            StartFlow(targetScene, source, ISceneManager.SceneType.DEPLOYED);
         }
 
         private void LoadScene()

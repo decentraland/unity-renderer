@@ -6,6 +6,12 @@ namespace DCL.Builder
 {
     public interface ISceneManager
     {
+        public enum SceneType
+        {
+            PROJECT = 0,
+            DEPLOYED = 1,
+        }
+        
         /// <summary>
         /// Initialize the system
         /// </summary>
