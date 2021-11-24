@@ -169,7 +169,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.SetVisible(visible);
     }
 
-    private void IsAvatarEditorInitializedChanged(bool current, bool previous) { view.ConfigureBackpackSection(current); }
+    private void IsAvatarEditorInitializedChanged(bool current, bool previous)
+    {
+        view.ConfigureEncapsulatedSection(
+            ExploreSection.Backpack,
+            DataStore.i.exploreV2.configureBackpackInFullscreenMenu,
+            current);
+    }
 
     internal void AvatarEditorVisibleChanged(bool current, bool previous)
     {
@@ -187,7 +193,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    private void IsNavMapInitializedChanged(bool current, bool previous) { view.ConfigureMapSection(true); }
+    private void IsNavMapInitializedChanged(bool current, bool previous)
+    {
+        view.ConfigureEncapsulatedSection(
+            ExploreSection.Map,
+            DataStore.i.exploreV2.configureMapInFullscreenMenu,
+            current);
+    }
 
     internal void NavmapVisibleChanged(bool current, bool previous)
     {
@@ -202,7 +214,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    internal void IsBuilderInitializedChanged(bool current, bool previous) { view.ConfigureBuilderSection(current); }
+    internal void IsBuilderInitializedChanged(bool current, bool previous)
+    {
+        view.ConfigureEncapsulatedSection(
+            ExploreSection.Builder,
+            DataStore.i.exploreV2.configureBuilderInFullscreenMenu,
+            current);
+    }
 
     internal void BuilderVisibleChanged(bool current, bool previous)
     {
@@ -217,7 +235,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    internal void IsQuestInitializedChanged(bool current, bool previous) { view.ConfigureQuestSection(current); }
+    internal void IsQuestInitializedChanged(bool current, bool previous)
+    {
+        view.ConfigureEncapsulatedSection(
+            ExploreSection.Quest,
+            DataStore.i.exploreV2.configureQuestInFullscreenMenu,
+            current);
+    }
 
     internal void QuestVisibleChanged(bool current, bool previous)
     {
@@ -232,7 +256,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
     }
 
-    internal void IsSettingsPanelInitializedChanged(bool current, bool previous) { view.ConfigureSettingsSection(current); }
+    internal void IsSettingsPanelInitializedChanged(bool current, bool previous)
+    {
+        view.ConfigureEncapsulatedSection(
+            ExploreSection.Settings,
+            DataStore.i.exploreV2.configureSettingsInFullscreenMenu,
+            current);
+    }
 
     internal void SettingsVisibleChanged(bool current, bool previous)
     {

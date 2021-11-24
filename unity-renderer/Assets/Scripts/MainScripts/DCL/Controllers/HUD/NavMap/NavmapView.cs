@@ -109,8 +109,6 @@ namespace DCL
 
                 // Set shorter interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.FOREGROUND);
-
-                CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
             }
             else
             {
@@ -129,8 +127,6 @@ namespace DCL
 
                 // Set longer interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
-
-                CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
             }
 
             OnToggle?.Invoke(visible);

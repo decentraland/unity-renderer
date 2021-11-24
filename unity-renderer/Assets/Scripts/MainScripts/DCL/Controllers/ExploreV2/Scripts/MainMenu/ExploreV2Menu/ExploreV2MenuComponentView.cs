@@ -47,34 +47,12 @@ public interface IExploreV2MenuComponentView : IDisposable
     void GoToSection(ExploreSection section);
 
     /// <summary>
-    /// Configures the backpack section.
+    /// Configures a encapsulated section.
     /// </summary>
+    /// <param name="section">Section to configure.</param>
+    /// <param name="featureConfiguratorFlag">Flag used to configurates the feature.</param>
     /// <param name="isActive">Indicates if the section is active or not.</param>
-    void ConfigureBackpackSection(bool isActive);
-
-    /// <summary>
-    /// Configures the map section.
-    /// </summary>
-    /// <param name="isActive">Indicates if the section is active or not.</param>
-    void ConfigureMapSection(bool isActive);
-
-    /// <summary>
-    /// Configures the builder section.
-    /// </summary>
-    /// <param name="isActive">Indicates if the section is active or not.</param>
-    void ConfigureBuilderSection(bool isActive);
-
-    /// <summary>
-    /// Configures the quest section.
-    /// </summary>
-    /// <param name="isActive">Indicates if the section is active or not.</param>
-    void ConfigureQuestSection(bool isActive);
-
-    /// <summary>
-    /// Configures the settings section.
-    /// </summary>
-    /// <param name="isActive">Indicates if the section is active or not.</param>
-    void ConfigureSettingsSection(bool isActive);
+    void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag, bool isActive);
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -88,11 +66,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
-    [SerializeField] internal BackpackSectionComponentView backpackSection;
-    [SerializeField] internal MapSectionComponentView mapSection;
-    [SerializeField] internal BuilderSectionComponentView builderSection;
-    [SerializeField] internal QuestSectionComponentView questSection;
-    [SerializeField] internal SettingsSectionComponentView settingsSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView backpackSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView mapSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView builderSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView questSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
@@ -151,44 +129,32 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection((int)section)?.SelectToggle(true);
     }
 
-    public void ConfigureBackpackSection(bool isActive)
+    public void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag, bool isActive)
     {
-        sectionSelector.GetSection((int)ExploreSection.Backpack).SetActive(isActive);
+        FeatureEncapsulatorComponentView sectionView = null;
+        switch (section)
+        {
+            case ExploreSection.Backpack:
+                sectionView = backpackSection;
+                break;
+            case ExploreSection.Map:
+                sectionView = mapSection;
+                break;
+            case ExploreSection.Builder:
+                sectionView = builderSection;
+                break;
+            case ExploreSection.Quest:
+                sectionView = questSection;
+                break;
+            case ExploreSection.Settings:
+                sectionView = settingsSection;
+                break;
+        }
+
+        sectionSelector.GetSection((int)section).SetActive(isActive);
 
         if (isActive)
-            backpackSection.ConfigureBackpack();
-    }
-
-    public void ConfigureMapSection(bool isActive)
-    {
-        sectionSelector.GetSection((int)ExploreSection.Map).SetActive(isActive);
-
-        if (isActive)
-            mapSection.ConfigureMap();
-    }
-
-    public void ConfigureBuilderSection(bool isActive)
-    {
-        sectionSelector.GetSection((int)ExploreSection.Builder).SetActive(isActive);
-
-        if (isActive)
-            builderSection.ConfigureBuilder();
-    }
-
-    public void ConfigureQuestSection(bool isActive)
-    {
-        sectionSelector.GetSection((int)ExploreSection.Quest).SetActive(isActive);
-
-        if (isActive)
-            questSection.ConfigureQuest();
-    }
-
-    public void ConfigureSettingsSection(bool isActive)
-    {
-        sectionSelector.GetSection((int)ExploreSection.Settings).SetActive(isActive);
-
-        if (isActive)
-            settingsSection.ConfigureSettings();
+            sectionView?.EncapsulateFeature(featureConfiguratorFlag);
     }
 
     internal void CreateSectionSelectorMappings()
