@@ -2,6 +2,7 @@ using DCL;
 using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using ExploreV2Analytics;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -14,10 +15,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal IExploreV2MenuComponentView view;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
-    internal InputAction_Trigger toggleExploreTrigger;
+    internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
+    internal IExploreV2Analytics exploreV2Analytics;
+    internal ExploreSection currentOpenSection;
 
     public void Initialize()
     {
+        exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
         SetVisibility(false);
 
@@ -28,64 +32,79 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         UpdateProfileInfo(ownUserProfile);
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
-        DataStore.i.taskbar.isExploreV2Enabled.OnChange += OnActivateFromTaskbar;
         DataStore.i.exploreV2.isInitialized.Set(true);
 
         view.OnInitialized += CreateControllers;
+        view.OnSectionOpen += OnSectionOpen;
 
-        toggleExploreTrigger = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
-        toggleExploreTrigger.OnTriggered += OnToggleActionTriggered;
+        isOpen.OnChange += IsOpenChanged;
+        IsOpenChanged(isOpen.Get(), false);
     }
 
     internal void CreateControllers()
     {
-        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection);
+        placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics);
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
+        placesAndEventsSectionController.OnAnyActionExecuted += OnAnyActionExecuted;
+    }
+
+    internal void OnSectionOpen(ExploreSection section)
+    {
+        if (section != currentOpenSection)
+        {
+            exploreV2Analytics.SendExploreSectionVisibility(currentOpenSection, false);
+            exploreV2Analytics.SendExploreSectionVisibility(section, true);
+            exploreV2Analytics.anyActionExecutedFromLastOpen = true;
+        }
+
+        currentOpenSection = section;
     }
 
     public void Dispose()
     {
         DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
+        isOpen.OnChange -= IsOpenChanged;
 
         if (view != null)
         {
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
             view.OnInitialized -= CreateControllers;
+            view.OnSectionOpen -= OnSectionOpen;
             view.Dispose();
         }
-
-        DataStore.i.taskbar.isExploreV2Enabled.OnChange -= OnActivateFromTaskbar;
 
         if (placesAndEventsSectionController != null)
         {
             placesAndEventsSectionController.OnCloseExploreV2 -= OnCloseButtonPressed;
+            placesAndEventsSectionController.OnAnyActionExecuted -= OnAnyActionExecuted;
             placesAndEventsSectionController.Dispose();
         }
-
-        toggleExploreTrigger.OnTriggered -= OnToggleActionTriggered;
     }
 
-    public void SetVisibility(bool visible)
+    public void SetVisibility(bool visible) { isOpen.Set(visible); }
+
+    private void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+
+    internal void SetVisibility_Internal(bool visible)
     {
         if (view == null)
             return;
 
-        if (visible != DataStore.i.exploreV2.isOpen.Get())
+        if (visible)
         {
-            if (visible)
-            {
-                Utils.UnlockCursor();
-                AudioScriptableObjects.dialogOpen.Play(true);
-                AudioScriptableObjects.listItemAppear.ResetPitch();
-            }
-            else
-            {
-                AudioScriptableObjects.dialogClose.Play(true);
-            }
+            Utils.UnlockCursor();
+            AudioScriptableObjects.dialogOpen.Play(true);
+            AudioScriptableObjects.listItemAppear.ResetPitch();
+        }
+        else
+        {
+            AudioScriptableObjects.dialogClose.Play(true);
         }
 
-        DataStore.i.exploreV2.isOpen.Set(visible);
+        if (!visible)
+            exploreV2Analytics.anyActionExecutedFromLastOpen = false;
+
         view.SetVisible(visible);
     }
 
@@ -119,11 +138,16 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
     }
 
-    internal void OnCloseButtonPressed() { SetVisibility(false); }
+    internal void OnCloseButtonPressed()
+    {
+        if (DataStore.i.exploreV2.isOpen.Get())
+            exploreV2Analytics.SendExploreMainMenuVisibility(false, ExploreUIVisibilityMethod.FromClick);
+        SetVisibility(false);
+    }
 
-    internal void OnToggleActionTriggered(DCLAction_Trigger action) { SetVisibility(!DataStore.i.exploreV2.isOpen.Get()); }
+    internal void OnAnyActionExecuted() { exploreV2Analytics.anyActionExecutedFromLastOpen = true; }
 
-    internal void OnActivateFromTaskbar(bool current, bool previous) { SetVisibility(current); }
+    internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();
 
     internal virtual IExploreV2MenuComponentView CreateView() => ExploreV2MenuComponentView.Create();
 }

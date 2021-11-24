@@ -133,7 +133,7 @@ namespace UnityGLTF
 
             this.fileToHashConverter = fileToHashConverter;
 
-            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(settings), OnFail_Internal);
+            loadingRoutine = DCL.CoroutineUtils.StartThrowingCoroutine(this, LoadAssetCoroutine(settings), OnFail_Internal);
         }
 
         void ApplySettings(Settings settings)
@@ -162,8 +162,8 @@ namespace UnityGLTF
                 return;
 
             state = State.FAILED;
-            
-            CoroutineStarter.Stop(loadingRoutine);   
+
+            CoroutineStarter.Stop(loadingRoutine);
             loadingRoutine = null;
 
             DecrementDownloadCount();

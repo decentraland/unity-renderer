@@ -1,3 +1,4 @@
+﻿using DCL.Builder;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -33,11 +34,9 @@ namespace DCL
         public readonly DataStore_WSCommunication wsCommunication = new DataStore_WSCommunication();
         public readonly DataStore_WorldObjects sceneWorldObjects = new DataStore_WorldObjects();
         public readonly DataStore_ExploreV2 exploreV2 = new DataStore_ExploreV2();
-        public readonly DataStore_Taskbar taskbar = new DataStore_Taskbar();
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
         public readonly DataStore_Camera camera = new DataStore_Camera();
         public readonly DataStore_Settings settings = new DataStore_Settings();
-        public readonly DataStore_SkyboxConfig skyboxConfig = new DataStore_SkyboxConfig();
 
         public class DataStore_Settings
         {
@@ -64,6 +63,8 @@ namespace DCL
             public readonly BaseVariable<bool> showTaskBar = new BaseVariable<bool>();
             public readonly BaseVariable<bool> isDevBuild = new BaseVariable<bool>();
             public readonly BaseVariable<LandWithAccess[]> landsWithAccess = new BaseVariable<LandWithAccess[]>();
+            public readonly BaseVariable<ProjectData[]> projectData = new BaseVariable<ProjectData[]>();
+            public readonly BaseVariable<Scene[]> scenesData = new BaseVariable<Scene[]>();
         }
 
         public class DataStore_Quests
@@ -77,6 +78,11 @@ namespace DCL
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> controlsVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> avatarEditorVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> emotesVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> navmapVisible = new BaseVariable<bool>(false);
+
             public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
             public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
             public readonly LoadingHUD loadingHUD = new LoadingHUD();
@@ -141,11 +147,6 @@ namespace DCL
             public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
         }
 
-        public class DataStore_Taskbar
-        {
-            public readonly BaseVariable<bool> isExploreV2Enabled = new BaseVariable<bool>(false);
-        }
-
         public class DataStore_FeatureFlag
         {
             public readonly BaseVariable<FeatureFlag> flags = new BaseVariable<FeatureFlag>(new FeatureFlag());
@@ -153,18 +154,7 @@ namespace DCL
 
         public class DataStore_Camera
         {
-            public readonly BaseVariable<Quaternion> rotation = new BaseVariable<Quaternion>();
-        }
-
-        public class DataStore_SkyboxConfig
-        {
-            public BaseVariable<bool> objectUpdated = new BaseVariable<bool>(false);
-            public BaseVariable<bool> useProceduralSkybox = new BaseVariable<bool>(false);
-            public BaseVariable<string> configToLoad = new BaseVariable<string>("Generic Skybox");
-            public BaseVariable<float> lifecycleDuration = new BaseVariable<float>(60);
-            public BaseVariable<bool> pauseTime = new BaseVariable<bool>(false);
-            public bool jumpTime = false;
-            public BaseVariable<float> jumpToTime = new BaseVariable<float>(0);
+            public readonly BaseVariable<Quaternion> rotation =  new BaseVariable<Quaternion>();
         }
     }
 }

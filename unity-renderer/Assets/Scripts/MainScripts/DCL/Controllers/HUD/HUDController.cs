@@ -55,8 +55,8 @@ public class HUDController : IHUDController
 
     public SettingsPanelHUDController settingsPanelHud => GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
-    public ExpressionsHUDController expressionsHud =>
-        GetHUDElement(HUDElementID.EXPRESSIONS) as ExpressionsHUDController;
+    public EmotesHUDController emotesHUD =>
+        GetHUDElement(HUDElementID.EMOTES) as EmotesHUDController;
 
     public PlayerInfoCardHUDController playerInfoCardHud =>
         GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;
@@ -92,7 +92,6 @@ public class HUDController : IHUDController
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
-    public BuilderMainPanelController BuilderMainPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderMainPanelController;
     public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
@@ -114,7 +113,7 @@ public class HUDController : IHUDController
         if (anyInputFieldIsSelected ||
             settingsPanelHud.view.isOpen ||
             avatarEditorHud.view.isOpen ||
-            DCL.NavmapView.isOpen ||
+            DataStore.i.HUDs.navmapVisible.Get() ||
             CommonScriptableObjects.tutorialActive)
             return;
 
@@ -177,6 +176,7 @@ public class HUDController : IHUDController
                     settingsPanelHud.Initialize();
                 break;
             case HUDElementID.EXPRESSIONS:
+            case HUDElementID.EMOTES:
                 CreateHudElement(configuration, hudElementId);
                 break;
             case HUDElementID.PLAYER_INFO_CARD:
@@ -195,7 +195,7 @@ public class HUDController : IHUDController
 
                     if (worldChatWindowHud != null)
                     {
-                        worldChatWindowHud.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.data?.mouseCatcher);
+                        worldChatWindowHud.Initialize(ChatController.i, SceneReferences.i.mouseCatcher);
                         worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
                         worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
                         worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
@@ -255,7 +255,7 @@ public class HUDController : IHUDController
                     if (taskbarHud != null)
                     {
                         taskbarHud.Initialize(
-                            InitialSceneReferences.i?.data?.mouseCatcher,
+                            SceneReferences.i.mouseCatcher,
                             ChatController.i,
                             FriendsController.i,
                             DCL.Environment.i.world.sceneController,

@@ -1,4 +1,5 @@
 using DCL;
+using ExploreV2Analytics;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -9,13 +10,16 @@ public class ExploreV2MenuComponentControllerTests
 {
     private ExploreV2MenuComponentController exploreV2MenuController;
     private IExploreV2MenuComponentView exploreV2MenuView;
+    private IExploreV2Analytics exploreV2Analytics;
 
     [SetUp]
     public void SetUp()
     {
         exploreV2MenuView = Substitute.For<IExploreV2MenuComponentView>();
+        exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>();
         exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
+        exploreV2MenuController.Configure().CreateAnalyticsController().Returns(info => exploreV2Analytics);
         exploreV2MenuController.Initialize();
     }
 
@@ -26,10 +30,10 @@ public class ExploreV2MenuComponentControllerTests
     public void InitializeCorrectly()
     {
         // Assert
+        Assert.AreEqual(exploreV2Analytics, exploreV2MenuController.exploreV2Analytics);
         Assert.AreEqual(exploreV2MenuView, exploreV2MenuController.view);
         exploreV2MenuView.Received().SetVisible(false);
         Assert.IsTrue(DataStore.i.exploreV2.isInitialized.Get());
-        Assert.IsNotNull(exploreV2MenuController.toggleExploreTrigger);
     }
 
     [Test]
@@ -43,6 +47,26 @@ public class ExploreV2MenuComponentControllerTests
 
         // Assert
         Assert.IsNotNull(exploreV2MenuController.placesAndEventsSectionController);
+    }
+
+    [Test]
+    [TestCase(ExploreSection.Explore)]
+    [TestCase(ExploreSection.Quest)]
+    [TestCase(ExploreSection.Backpack)]
+    public void RaiseOnSectionOpenCorrectly(ExploreSection section)
+    {
+        // Arrange
+        exploreV2MenuController.currentOpenSection = ExploreSection.Settings;
+        exploreV2Analytics.anyActionExecutedFromLastOpen = false;
+
+        // Act
+        exploreV2MenuController.OnSectionOpen(section);
+
+        // Assert
+        exploreV2Analytics.Received().SendExploreSectionVisibility(Arg.Any<ExploreSection>(), false);
+        exploreV2Analytics.Received().SendExploreSectionVisibility(Arg.Any<ExploreSection>(), true);
+        Assert.IsTrue(exploreV2Analytics.anyActionExecutedFromLastOpen);
+        Assert.AreEqual(section, exploreV2MenuController.currentOpenSection);
     }
 
     [Test]
@@ -109,34 +133,28 @@ public class ExploreV2MenuComponentControllerTests
     [Test]
     public void ClickOnCloseButtonCorrectly()
     {
+        // Arrange
+        DataStore.i.exploreV2.isOpen.Set(true);
+
         // Act
         exploreV2MenuController.OnCloseButtonPressed();
 
         // Assert
+        exploreV2Analytics.Received().SendExploreMainMenuVisibility(false, ExploreUIVisibilityMethod.FromClick);
         Assert.IsFalse(DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(false);
     }
 
     [Test]
-    public void RaiseOnToggleActionTriggeredCorrectly()
+    public void RaiseOnAnyActionExecutedCorrectly()
     {
+        // Arrange
+        exploreV2Analytics.anyActionExecutedFromLastOpen = false;
+
         // Act
-        exploreV2MenuController.OnToggleActionTriggered(new DCLAction_Trigger());
+        exploreV2MenuController.OnAnyActionExecuted();
 
         // Assert
-        exploreV2MenuView.Received().SetVisible(!DataStore.i.exploreV2.isOpen.Get());
-    }
-
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void ActivateFromTaskbarCorrectly(bool isActive)
-    {
-        // Act
-        exploreV2MenuController.OnActivateFromTaskbar(isActive, !isActive);
-
-        // Assert
-        Assert.AreEqual(isActive, DataStore.i.exploreV2.isOpen.Get());
-        exploreV2MenuView.Received().SetVisible(isActive);
+        Assert.IsTrue(exploreV2Analytics.anyActionExecutedFromLastOpen);
     }
 }

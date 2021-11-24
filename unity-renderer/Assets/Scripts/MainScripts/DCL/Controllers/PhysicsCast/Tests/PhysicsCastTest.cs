@@ -66,12 +66,12 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
 
         for (int i = 0; i < ENTITIES_COUNT; i++)
         {
-            BoxShape shape = TestHelpers.CreateEntityWithBoxShape(scene, pos);
+            BoxShape shape = TestUtils.CreateEntityWithBoxShape(scene, pos);
             yield return shape.routine;
 
             IDCLEntity entity = shape.attachedEntities.First();
 
-            TestHelpers.SetEntityTransform(scene, entity, pos, Quaternion.identity, new Vector3(5, 10, 1));
+            TestUtils.SetEntityTransform(scene, entity, pos, Quaternion.identity, new Vector3(5, 10, 1));
             yield return null;
 
             DCL.CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, true, false, entity);
@@ -132,12 +132,12 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
 
         for (int i = 0; i < ENTITIES_COUNT; i++)
         {
-            BoxShape shape = TestHelpers.CreateEntityWithBoxShape(scene, pos);
+            BoxShape shape = TestUtils.CreateEntityWithBoxShape(scene, pos);
             yield return shape.routine;
 
             IDCLEntity entity = shape.attachedEntities.First();
 
-            TestHelpers.SetEntityTransform(scene, entity, pos, Quaternion.identity, new Vector3(5, 10, 1));
+            TestUtils.SetEntityTransform(scene, entity, pos, Quaternion.identity, new Vector3(5, 10, 1));
             yield return null;
 
             DCL.CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, true, false, entity);
@@ -232,7 +232,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
         sceneEvent.payload = response;
         sceneEvent.eventType = "raycastResponse";
 
-        yield return TestHelpers.ExpectMessageToKernel(
+        yield return TestUtils.ExpectMessageToKernel(
             targetEventType,
             sceneEvent,
             () =>

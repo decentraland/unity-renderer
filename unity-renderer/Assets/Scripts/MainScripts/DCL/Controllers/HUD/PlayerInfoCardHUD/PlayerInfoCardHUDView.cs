@@ -1,15 +1,13 @@
 using System;
-using DCL.Helpers;
 using System.Collections.Generic;
+using System.Linq;
 using DCL;
-using DCL.Configuration;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Linq;
 
 public class PlayerInfoCardHUDView : MonoBehaviour
 {
@@ -22,7 +20,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         Block
     }
 
-    [System.Serializable]
+    [Serializable]
     internal class TabsMapping
     {
         public GameObject container;
@@ -119,9 +117,9 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         FriendsController.i.OnUpdateFriendship -= OnFriendStatusUpdated;
         FriendsController.i.OnUpdateFriendship += OnFriendStatusUpdated;
 
-        if (InitialSceneReferences.i != null)
+        if (SceneReferences.i != null)
         {
-            var mouseCatcher = DCL.InitialSceneReferences.i.data.mouseCatcher;
+            var mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
 
             if (mouseCatcher != null)
             {
@@ -168,9 +166,9 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     public void SetUserProfile(UserProfile userProfile)
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
-
-        name.text = userProfile.userName;
-        description.text = userProfile.description;
+        
+        name.text = FilterName(userProfile);
+        description.text = FilterDescription(userProfile);
 
         ClearCollectibles();
 
@@ -212,6 +210,20 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         currentUserProfile = userProfile;
 
         UpdateFriendButton();
+    }
+
+    private string FilterName(UserProfile userProfile)
+    {
+        return DataStore.i.settings.profanityChatFilteringEnabled.Get()
+            ? ProfanityFilterSharedInstances.regexFilter.Filter(userProfile.userName)
+            : userProfile.userName;
+    }
+    
+    private string FilterDescription(UserProfile userProfile)
+    {
+        return DataStore.i.settings.profanityChatFilteringEnabled.Get()
+            ? ProfanityFilterSharedInstances.regexFilter.Filter(userProfile.description)
+            : userProfile.description;
     }
 
     private void UpdateFriendButton()

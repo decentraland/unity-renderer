@@ -27,7 +27,7 @@ namespace Builder
 
             groundPlane = new Plane(Vector3.up, Vector3.zero);
             if (builderCamera == null)
-                builderCamera = InitialSceneReferences.i.mainCamera;
+                builderCamera = SceneReferences.i.mainCamera;
         }
 
         public void SetEntityHitPlane(float height) { entityHitPlane = new Plane(Vector3.up, new Vector3(0, height, 0)); }

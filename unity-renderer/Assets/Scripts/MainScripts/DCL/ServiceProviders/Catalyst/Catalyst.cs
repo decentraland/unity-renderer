@@ -172,10 +172,10 @@ public class Catalyst : ICatalyst
 
         DCL.Environment.i.platform.webRequest.Get(url, null, request =>
         {
-            promise.Resolve(request.downloadHandler.text);
+            promise.Resolve(request.webRequest.downloadHandler.text);
         }, request =>
         {
-            promise.Reject($"{request.error} {request.downloadHandler.text} at url {url}");
+            promise.Reject($"{request.webRequest.error} {request.webRequest.downloadHandler.text} at url {url}");
         });
 
         return promise;

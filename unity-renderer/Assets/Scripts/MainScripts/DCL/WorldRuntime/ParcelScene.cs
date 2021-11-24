@@ -41,8 +41,6 @@ namespace DCL.Controllers
         [System.NonSerialized]
         public bool unloadWithDistance = true;
 
-        bool isEditModeActive = false;
-
         SceneDebugPlane sceneDebugPlane = null;
 
         public SceneLifecycleHandler sceneLifecycleHandler;
@@ -71,10 +69,6 @@ namespace DCL.Controllers
         }
 
         protected virtual string prettyName => sceneData.basePosition.ToString();
-
-        public void SetEditMode(bool isActive) { isEditModeActive = isActive; }
-
-        public bool IsEditModeActive() { return isEditModeActive; }
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {

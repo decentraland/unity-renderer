@@ -1,3 +1,4 @@
+using DCL;
 using UnityEngine;
 using DCL.Helpers;
 
@@ -10,13 +11,17 @@ public class ControlsHUDController : IHUD
     public event System.Action OnControlsOpened;
     public event System.Action OnControlsClosed;
 
+    public BaseVariable<bool> controlsVisible => DataStore.i.HUDs.controlsVisible;
+
     public ControlsHUDController()
     {
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ControlsHUD")).GetComponent<ControlsHUDView>();
         view.name = "_ControlsHUD";
         view.gameObject.SetActive(false);
 
-        view.onToggleActionTriggered += ToggleVisibility;
+        controlsVisible.OnChange += OnControlsVisibleChanged;
+        OnControlsVisibleChanged(controlsVisible.Get(), false);
+
         view.onCloseActionTriggered += Hide;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -26,7 +31,11 @@ public class ControlsHUDController : IHUD
         }
     }
 
-    public void SetVisibility(bool visible)
+    public void SetVisibility(bool visible) { controlsVisible.Set(visible); }
+
+    private void OnControlsVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+
+    private void SetVisibility_Internal(bool visible)
     {
         if (!view)
             return;
@@ -56,6 +65,7 @@ public class ControlsHUDController : IHUD
 
     public void Dispose()
     {
+        controlsVisible.OnChange -= OnControlsVisibleChanged;
         if (view)
         {
             Object.Destroy(view.gameObject);
@@ -66,8 +76,6 @@ public class ControlsHUDController : IHUD
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
     }
-
-    public void ToggleVisibility() { SetVisibility(!IsVisible()); }
 
     public bool IsVisible()
     {
@@ -81,7 +89,7 @@ public class ControlsHUDController : IHUD
     {
         if (!restorePointerLockStatus)
             prevMouseLockState = false;
-        SetVisibility(false);
+        controlsVisible.Set(false);
     }
 
     private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)

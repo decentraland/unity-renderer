@@ -28,6 +28,7 @@ public class AvatarEditorHUDController : IHUD
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool isPlayerRendererLoaded => DataStore.i.isPlayerRendererLoaded.Get();
+    BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
@@ -54,7 +55,8 @@ public class AvatarEditorHUDController : IHUD
 
         view = AvatarEditorHUDView.Create(this);
 
-        view.OnToggleActionTriggered += ToggleVisibility;
+        avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
+        OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
         view.OnCloseActionTriggered += DiscardAndClose;
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
@@ -531,7 +533,11 @@ public class AvatarEditorHUDController : IHUD
     private float prevRenderScale = 1.0f;
     private Camera mainCamera;
 
-    public void SetVisibility(bool visible)
+    public void SetVisibility(bool visible) { avatarEditorVisible.Set(visible); }
+
+    private void OnAvatarEditorVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+
+    public void SetVisibility_Internal(bool visible)
     {
         var currentRenderProfile = DCL.RenderProfileManifest.i.currentProfile;
 
@@ -583,7 +589,7 @@ public class AvatarEditorHUDController : IHUD
 
     public void Dispose()
     {
-        view.OnToggleActionTriggered -= ToggleVisibility;
+        avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
 

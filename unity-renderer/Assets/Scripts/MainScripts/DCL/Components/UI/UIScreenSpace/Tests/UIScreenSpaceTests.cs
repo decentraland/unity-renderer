@@ -18,7 +18,7 @@ namespace Tests
             scene.isPersistent = false;
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
@@ -30,7 +30,7 @@ namespace Tests
                 "When the character is inside the scene, the UIScreenSpaceShape should be visible");
 
             // Update canvas visibility value manually
-            yield return TestHelpers.SharedComponentUpdate(screenSpaceShape,
+            yield return TestUtils.SharedComponentUpdate(screenSpaceShape,
                 new UIScreenSpace.Model
                 {
                     visible = false
@@ -41,13 +41,13 @@ namespace Tests
                 "When the UIScreenSpaceShape is explicitly updated as 'invisible', its canvas shouldn't be visible");
 
             // Re-enable visibility
-            yield return TestHelpers.SharedComponentUpdate(screenSpaceShape,
+            yield return TestUtils.SharedComponentUpdate(screenSpaceShape,
                 new UIScreenSpace.Model
                 {
                     visible = true
                 });
 
-            TestHelpers.SetCharacterPosition(Vector3.zero);
+            TestUtils.SetCharacterPosition(Vector3.zero);
 
             yield return screenSpaceShape.routine;
 
@@ -56,7 +56,7 @@ namespace Tests
                 "When the UIScreenSpaceShape is explicitly updated as 'visible', its canvas should be visible");
 
             // Position character outside parcel
-            TestHelpers.SetCharacterPosition(new Vector3(100, 3f, 100f));
+            TestUtils.SetCharacterPosition(new Vector3(100, 3f, 100f));
 
             yield return null;
 
@@ -75,13 +75,13 @@ namespace Tests
         public IEnumerator TestScaleWhenCharacterIsElsewhere()
         {
             // Position character outside parcel
-            TestHelpers.SetCharacterPosition(new Vector3(50f, 3f, 50f));
+            TestUtils.SetCharacterPosition(new Vector3(50f, 3f, 50f));
 
             yield return null;
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
@@ -103,7 +103,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScreenSpace.Model, UIScreenSpace>(scene,
+            yield return TestUtils.TestSharedComponentDefaultsOnUpdate<UIScreenSpace.Model, UIScreenSpace>(scene,
                 CLASS_ID.UI_SCREEN_SPACE_SHAPE);
         }
 
@@ -116,7 +116,7 @@ namespace Tests
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
-                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
