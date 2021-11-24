@@ -47,7 +47,6 @@ namespace DCL.Builder
         internal BuilderInWorldBridge builderInWorldBridge;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
-        internal ICameraController cameraController;
 
         internal bool catalogLoaded = false;
 
@@ -61,9 +60,6 @@ namespace DCL.Builder
             builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
             userProfile = UserProfile.GetOwnUserProfile();
 
-            cameraController = new CameraController();
-            cameraController.Initialize(context);
-
             context.editorContext.editorHUD.OnLogoutAction += ExitEditMode;
 
             BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
@@ -76,8 +72,7 @@ namespace DCL.Builder
         {
             if (context.editorContext.editorHUD != null)
                 context.editorContext.editorHUD.OnLogoutAction -= ExitEditMode;
-
-            cameraController.Dispose();
+            
             sceneMetricsAnalyticsHelper?.Dispose();
 
             initialLoadingController?.Dispose();
@@ -157,6 +152,11 @@ namespace DCL.Builder
 
         public void StartEditorFromManifest(Manifest.Manifest manifest)
         {
+            //We set the position of the character in the 0,0 to move the world along it
+            DCLCharacterController.i.SetPosition(Vector3.zero);
+            
+            //We set the manifest for future saves
+            context.editorContext.saveController.SetManifest(manifest);
             ParcelScene convertedScene = ManifestTranslator.TranslateManifestToScene(manifest);
             StartFlow(convertedScene,SOURCE_BUILDER_PANEl);
         }
@@ -220,7 +220,7 @@ namespace DCL.Builder
             BIWAnalytics.StartEditorFlow(source);
             beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
-            cameraController.ActivateCamera(sceneToEdit);
+            context.cameraController.ActivateCamera(sceneToEdit);
 
             NextState();
         }
@@ -349,7 +349,7 @@ namespace DCL.Builder
             initialLoadingController.Hide(true);
             inputController.inputTypeMode = InputTypeMode.GENERAL;
             CommonScriptableObjects.allUIHidden.Set(false);
-            cameraController.DeactivateCamera();
+            context.cameraController.DeactivateCamera();
             context.editor.ExitEditMode();
 
             DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
@@ -360,11 +360,10 @@ namespace DCL.Builder
             if (!builderInWorldBridge.builderProject.isNewEmptyProject)
                 return;
 
-            cameraController.TakeSceneScreenshot((sceneSnapshot) =>
+            context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
             {
                 context.editorContext.editorHUD?.NewProjectStart(sceneSnapshot);
             });
-
         }
 
         public void StartFlowWithPermission(IParcelScene targetScene, string source)

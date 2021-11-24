@@ -56,6 +56,7 @@ public static class BIWTestUtils
             Substitute.For<IBuilderMainPanelController>(),
             Substitute.For<IBuilderAPIController>(),
             Substitute.For<ISceneManager>(),
+            Substitute.For<ICameraController>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -81,6 +82,7 @@ public static class BIWTestUtils
             Substitute.For<IBuilderMainPanelController>(),
             Substitute.For<IBuilderAPIController>(),
             Substitute.For<ISceneManager>(),
+            Substitute.For<ICameraController>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -106,6 +108,7 @@ public static class BIWTestUtils
         IBuilderMainPanelController panelHUD = Substitute.For<IBuilderMainPanelController>();
         IBuilderEditorHUDController editorHUD = Substitute.For<IBuilderEditorHUDController>();
         ISceneManager sceneManager = Substitute.For<ISceneManager>();
+        ICameraController cameraController = Substitute.For<ICameraController>();
 
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
         IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
@@ -136,6 +139,9 @@ public static class BIWTestUtils
                     break;
                 case ISceneManager ism:
                     sceneManager = ism;
+                    break;
+                case ICameraController icc:
+                    cameraController = icc;
                     break;
                 case IBuilderEditorHUDController ehc:
                     editorHUD = ehc;
@@ -186,6 +192,7 @@ public static class BIWTestUtils
             panelHUD,
             apiController,
             sceneManager,
+            cameraController,
             editorHUD,
             outliner,
             inputHandler,

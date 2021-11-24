@@ -4,25 +4,6 @@ using UnityEngine;
 
 namespace DCL.Camera
 {
-    public interface IFreeCameraMovement
-    {
-        GameObject gameObject { get; }
-        delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
-        void FocusOnEntities(List<BIWEntity> entitiesToFocus);
-        void SmoothLookAt(Vector3 position);
-        void StartDectectingMovement();
-        void StopDetectingMovement();
-        bool HasBeenMovement();
-        void SetCameraCanMove(bool canMove);
-        void SetPosition(Vector3 position);
-        void LookAt(Transform transformToLookAt);
-        void LookAt(Vector3 pointToLookAt);
-        void SetResetConfiguration(Vector3 position, Transform lookAt);
-        void ResetCameraPosition();
-        void TakeSceneScreenshot(OnSnapshotsReady onSuccess);
-        void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess);
-    }
-
     public class FreeCameraMovement : CameraStateBase, IFreeCameraMovement
     {
         private const float CAMERA_ANGLE_THRESHOLD = 0.01f;
@@ -591,7 +572,7 @@ namespace DCL.Camera
             direction = Vector3.zero;
         }
 
-        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
+        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = CoroutineStarter.Start(TakeSceneScreenshotCoroutine(onSuccess)); }
 
         private IEnumerator TakeSceneScreenshotCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
         {

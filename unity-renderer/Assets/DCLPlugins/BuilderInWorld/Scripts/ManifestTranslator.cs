@@ -14,11 +14,8 @@ namespace DCL.Builder
 {
     public static class ManifestTranslator
     {
-        public static Manifest.Manifest TranslateSceneToManifest(ProjectData data, ParcelScene scene)
+        public static BuilderScene TranslateSceneToManifest(ParcelScene scene)
         {
-            Manifest.Manifest manifest = new Manifest.Manifest();
-            manifest.project = data;
-            
             BuilderScene builderScene = new BuilderScene();
             builderScene.id = Guid.NewGuid().ToString();
             
@@ -41,6 +38,15 @@ namespace DCL.Builder
                     {
                         case CLASS_ID_COMPONENT.TRANSFORM:
                             componentType = "Transform";
+                            
+                            // We can't serialize the quaternions from Unity since newton serializes have recursive problems so we add this model
+                            ProtocolV2.TransformComponent entityTransformComponentModel = new ProtocolV2.TransformComponent();
+                            entityTransformComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+                            entityTransformComponentModel.rotation = new ProtocolV2.QuaternionRepresentation(entity.gameObject.transform.rotation);
+                            entityTransformComponentModel.scale = entity.gameObject.transform.lossyScale;
+
+                            builderComponent.data = entityTransformComponentModel;
+                            
                             break; 
                         case CLASS_ID_COMPONENT.SMART_ITEM:
                             componentType = "Script";
@@ -50,10 +56,15 @@ namespace DCL.Builder
                     // We generate a new uuid for the component since there is no uuid for components in the stateful scheme
                     builderComponent.id = Guid.NewGuid().ToString();
                     builderComponent.type = componentType;
-                    builderComponent.data = JsonConvert.ToString(entityComponent.Value.GetModel());
+                    
+                    // Since the transform model data is different from the others, we set it in the switch instead of here
+                    if(builderComponent.type != "Transform")
+                        builderComponent.data = JsonConvert.SerializeObject(entityComponent.Value.GetModel());
                     
                     builderEntity.components.Add(builderComponent.id);
-                    builderScene.components.Add(builderComponent.id,builderComponent);
+                    
+                    if(!builderScene.components.ContainsKey(builderComponent.id))
+                        builderScene.components.Add(builderComponent.id,builderComponent);
                 }
                 
                 // Iterate the entity shared components to transform them to the builder format
@@ -62,9 +73,9 @@ namespace DCL.Builder
                     BuilderComponent builderComponent = new BuilderComponent();
                     // We generate a new uuid for the component since there is no uuid for components in the stateful scheme
                     builderComponent.id = Guid.NewGuid().ToString();
-                    builderComponent.data = JsonConvert.ToString(sharedEntityComponent.Value.GetModel());
+                    builderComponent.data = JsonConvert.SerializeObject(sharedEntityComponent.Value.GetModel());
                     
-                    if (sharedEntityComponent.Key == typeof(GLTFShape))
+                    if (sharedEntityComponent.Value is GLTFShape)
                     {
                         componentType = "GLTFShape";
                         
@@ -72,7 +83,8 @@ namespace DCL.Builder
                         
                         //We get the associated asset to the GLFTShape and add it to the scene 
                         var asset = AssetCatalogBridge.i.sceneObjectCatalog.Get(gltfModel.assetId);
-                        builderScene.assets.Add(asset.id,asset);
+                        if(!builderScene.assets.ContainsKey(asset.id))
+                            builderScene.assets.Add(asset.id,asset);
                         
                         // This is a special case. The builder needs the ground separated from the rest of the components so we search for it.
                         // Since all the grounds have the same asset, we assign it and disable the gizmos in the builder
@@ -85,14 +97,14 @@ namespace DCL.Builder
                      
                         entityName = asset.name;
                     }
-                    else if (sharedEntityComponent.Key == typeof(NFTShape))
+                    else if (sharedEntityComponent.Value is NFTShape)
                     {
                         componentType = "NFTShape";
                         
                         // This is a special case where we are assigning the builder url field for NFTs because builder model data is different
                         NFTShapeBuilderRepresentantion representantion;
                         representantion.url = JsonConvert.DeserializeObject<NFTShape.Model>(builderComponent.data.ToString()).src;
-                        builderComponent.data = JsonConvert.ToString(representantion);
+                        builderComponent.data = JsonConvert.SerializeObject(representantion);
                         
                         //This is the name format that is used by builder, we will have a different name in unity due to DCLName component
                         entityName = "nft";
@@ -100,6 +112,7 @@ namespace DCL.Builder
                     else if (sharedEntityComponent.Key == typeof(DCLName))
                     {
                         componentType = "Name";
+                        entityName = ((DCLName.Model) sharedEntityComponent.Value.GetModel()).value;
                     }
                     else if (sharedEntityComponent.Key == typeof(DCLLockedOnEdit))
                     {
@@ -109,34 +122,32 @@ namespace DCL.Builder
                     builderComponent.type = componentType;
                     
                     builderEntity.components.Add(builderComponent.id);
-                    builderScene.components.Add(builderComponent.id,builderComponent);
+                    if(!builderScene.components.ContainsKey(builderComponent.id))
+                        builderScene.components.Add(builderComponent.id,builderComponent);
                 }
                 
                 // We need to give to each entity a unique name so we search for a unique name there
                 // Also, since the name of the entity will be used in the code, we need to ensure that the it doesn't have special characters or spaces
                 builderEntity.name = GetCleanUniqueName(namesList,entityName);
-                manifest.scene.entities.Add(builderEntity.id,builderEntity);
+                
+                if(!builderScene.entities.ContainsKey(builderEntity.id))
+                    builderScene.entities.Add(builderEntity.id,builderEntity);
             }
 
             //We add the limits to the scene, the current metrics are calculated in the builder
             builderScene.limits = BIWUtils.GetSceneMetricsLimits(scene.parcels.Count);
             builderScene.ground = ground;
             
-            manifest.scene = builderScene;
-            return manifest;
+            return builderScene;
         }
 
         private static string GetCleanUniqueName(List<string> namesList, string currentName)
         {
             //We clean the name to don't include special characters
-            var regex = new Regex(@"/[A-Za-z]+/g");
-            var result = regex.Matches(currentName);
-            string newName = "";
-            foreach (Match match in result)
-            {
-                newName += match.Value + "_";
-            }
-            newName = newName.Remove(newName.Length - 1, 1);
+            Regex r = new Regex("(?:[^a-z]|(?<=['\"])s)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+            
+            string newName = r.Replace(currentName, String.Empty);
+            newName = newName.ToLower();
 
             //We get a unique name
             bool uniqueName = false;
@@ -171,13 +182,17 @@ namespace DCL.Builder
             LoadParcelScenesMessage.UnityParcelScene parcelData = new LoadParcelScenesMessage.UnityParcelScene();
             parcelData.id = manifest.scene.id;
             
-            //This scene doesn't exist in the world, so we set it in the 0,0 coordinate
-            parcelData.basePosition =  new Vector2Int(0, 0);
-            
-            //We set the parcels as the first one is in the 0,0, the first one will be in the bottom-left corner 
-            parcelData.parcels =  new Vector2Int[manifest.project.rows * manifest.project.cols];
+            //We set the current scene in the 0,0
             int x = 0;
             int y = 0;
+            // int y = CommonScriptableObjects.playerCoords.Get().y;
+            
+            parcelData.basePosition =  new Vector2Int(x, y);
+            
+            //We set the parcels as the first one is in the base position, the first one will be in the bottom-left corner 
+            parcelData.parcels =  new Vector2Int[manifest.project.rows * manifest.project.cols];
+            
+            //We assign the parcels position
             for (int index = 0; index == parcelData.parcels.Length; index++)
             {
                 parcelData.parcels[index] = new Vector2Int(x, y);
@@ -185,7 +200,7 @@ namespace DCL.Builder
                 if (y == manifest.project.rows)
                 {
                     x++;
-                    y = 0;
+                    y = CommonScriptableObjects.playerCoords.Get().y;
                 }
             }
 

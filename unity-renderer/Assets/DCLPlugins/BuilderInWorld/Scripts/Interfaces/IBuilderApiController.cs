@@ -4,6 +4,7 @@ using DCL;
 using DCL.Builder;
 using DCL.Builder.Manifest;
 using DCL.Helpers;
+using UnityEngine;
 
 public interface IBuilderAPIController
 {
@@ -34,9 +35,23 @@ public interface IBuilderAPIController
     /// <summary>
     /// This will get the manifest from the project data
     /// </summary>
-    /// <param name="projectData">Project data that we will use to recover the manifest associated</param>
+    /// <param name="id">Id that we will use to recover the manifest associated</param>
     /// <returns></returns>
-    Promise<Manifest> GetManifestById(string id);
+    Promise<Manifest> GetManifestById(string id);  
+    
+    /// <summary>
+    /// Set the manifest in the builder API, this will save the manifest
+    /// </summary>
+    /// <param name="manifest"></param>
+    /// <returns></returns>
+    Promise<bool> SetManifest(Manifest manifest);
+    
+    /// <summary>
+    /// Set the thumbnail of the project in the builder API
+    /// </summary>
+    /// <param name="manifest"></param>
+    /// <returns></returns>
+    Promise<bool> SetThumbnail(string id, Texture2D thumbnail);
     
     /// <summary>
     /// Create a new project and return a promise if it has been created correctly

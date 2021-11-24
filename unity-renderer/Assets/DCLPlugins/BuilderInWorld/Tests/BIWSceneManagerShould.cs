@@ -35,7 +35,6 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void OpenNewProjectDetails()
     {
         //Arrange
-        mainController.cameraController = Substitute.For<ICameraController>();
         GameObject dummyGO = new GameObject("DummyGO");
         mainController.builderInWorldBridge.builderProjectPayload.isNewEmptyProject = true;
         
@@ -43,7 +42,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.OpenNewProjectDetails();
 
         //Assert
-        mainController.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+        mainController.context.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
 
     [Test]

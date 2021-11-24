@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using DCL;
 using DCL.Builder;
 using DCL.Builder.Manifest;
@@ -21,11 +22,13 @@ public class BuilderAPIController : IBuilderAPIController
     internal const string ASSETS_ENDPOINT = "/assets?";
     internal const string GET_PROJECTS_ENDPOINT = "/projects";
     internal const string PROJECT_MANIFEST_ENDPOINT = "/projects/{ID}/manifest";
+    internal const string PROJECT_THUMBNAIL_ENDPOINT = "/projects/{ID}/media";
 
     internal const string API_KO_RESPONSE_ERROR = "API response is KO";
 
     internal const string GET = "get";
     internal const string PUT = "put";
+    internal const string POST = "post";
 
     public event Action<IWebRequestAsyncOperation> OnWebRequestCreated;
 
@@ -81,7 +84,7 @@ public class BuilderAPIController : IBuilderAPIController
             headersRequests.Remove(keyToRemove);
     }
 
-    internal Promise<string> CallUrl(string method, string endpoint, string callParams = "", byte[] body = null)
+    internal Promise<string> CallUrl(string method, string endpoint, string callParams = "", byte[] body = null, string contentType = "")
     {
         Promise<string> resultPromise = new Promise<string>();
         Promise<RequestHeader> headersPromise = AskHeadersToKernel(method, endpoint);
@@ -95,39 +98,111 @@ public class BuilderAPIController : IBuilderAPIController
                     break;
                 case PUT:
                     request.body = body;
-                    CoroutineStarter.Start(CallPUT(request,resultPromise));
+                    CoroutineStarter.Start(CallWeb(request,resultPromise,contentType));
+                    break;
+                case POST:
+                    request.body = body;
+                    CoroutineStarter.Start(CallWeb(request,resultPromise,contentType,false));
                     break;
             }
         });
 
         return resultPromise;
     }
-
-    //This will dissapear when we implement the signed fetch call
-    IEnumerator CallPUT (RequestHeader requestHeader, Promise<string> resultPromise)
+    
+    //This will disappear when we implement the signed fetch call
+    IEnumerator CallWeb (RequestHeader requestHeader, Promise<string> resultPromise, string contentType, bool isPut = true)
     {
-        using (UnityWebRequest www = UnityWebRequest.Put (BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, requestHeader.body))
+        UnityWebRequest www = null;
+        if(isPut)
+            www = UnityWebRequest.Put (BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, requestHeader.body);
+        else
         {
-            www.SetRequestHeader("Content-Type", "application/json");
+            WWWForm form = new WWWForm();
+            form.AddBinaryData("thumbnail",requestHeader.body);
             
-            foreach (var header in requestHeader.headers)
-            {
-                www.SetRequestHeader(header.Key,header.Value);
-            }
-     
-            yield return www.SendWebRequest();
-
-            if (www.result != UnityWebRequest.Result.Success)
-            {
-                resultPromise.Reject(www.error);
-            }
-            else
-            {
-                byte[] byteArray = www.downloadHandler.data;
-                string result = System.Text.Encoding.UTF8.GetString(byteArray);
-                resultPromise.Resolve(result);
-            }
+            www = UnityWebRequest.Post(BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, form );
         }
+
+        if (!string.IsNullOrEmpty(contentType))
+            www.SetRequestHeader("Content-Type", contentType);
+
+        foreach (var header in requestHeader.headers)
+        {
+            www.SetRequestHeader(header.Key, header.Value);
+        }
+
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            resultPromise.Reject(www.error);
+        }
+        else
+        {
+            byte[] byteArray = www.downloadHandler.data;
+            string result = System.Text.Encoding.UTF8.GetString(byteArray);
+            resultPromise.Resolve(result);
+        }
+
+    }
+
+    public Promise<bool> SetManifest(Manifest manifest)
+    {
+        Promise<bool> fullPromise = new Promise<bool>(); 
+        
+        JsonSerializerSettings dateFormatSettings = new JsonSerializerSettings
+        {
+            DateFormatString = API_DATEFORMAT,
+        };
+        
+        string jsonManifest =JsonConvert.SerializeObject(manifest, dateFormatSettings);
+        
+        byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
+
+        string endpoint = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", manifest.project.id);
+        var promise =  CallUrl(PUT, endpoint,"",myData,"application/json");
+
+        promise.Then(result =>
+        {
+            var apiResponse = apiResponseResolver.GetResponseFromCall(result);
+            if (apiResponse.ok)
+                fullPromise.Resolve(true);
+            else
+                fullPromise.Reject(apiResponse.error);
+        });
+        
+        promise.Catch(error =>
+        {
+            fullPromise.Reject(error);
+        });
+
+        return fullPromise;
+    }
+
+    public Promise<bool> SetThumbnail(string id, Texture2D thumbnail)
+    {
+        Promise<bool> fullPromise = new Promise<bool>();
+        byte[] myData = System.Text.Encoding.UTF8.GetBytes(Convert.ToBase64String(thumbnail.EncodeToJPG(90)));
+
+        string endpoint = PROJECT_THUMBNAIL_ENDPOINT.Replace("{ID}", id);
+        var promise =  CallUrl(POST, endpoint,"",myData);
+
+        promise.Then(result =>
+        {
+            var apiResponse = apiResponseResolver.GetResponseFromCall(result);
+            if (apiResponse.ok)
+                fullPromise.Resolve(true);
+            else
+                fullPromise.Reject(apiResponse.error);
+        });
+        
+        promise.Catch(error =>
+        {
+            fullPromise.Reject(error);
+        });
+
+        return fullPromise;
     }
 
     public Promise<Manifest> GetManifestById(string idProject)
@@ -174,7 +249,7 @@ public class BuilderAPIController : IBuilderAPIController
         byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
 
         string endpoint = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", newProject.id);
-        var promise =  CallUrl(PUT, endpoint,"",myData);
+        var promise =  CallUrl(PUT, endpoint,"",myData, "application/json");
 
         promise.Then(result =>
         {
