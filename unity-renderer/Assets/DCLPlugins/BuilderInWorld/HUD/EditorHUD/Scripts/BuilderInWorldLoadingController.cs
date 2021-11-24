@@ -28,7 +28,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
     internal IBuilderInWorldLoadingView initialLoadingView;
 
     private const string VIEW_PATH = "BuilderInWorldLoadingView";
-    private ISceneManager.SceneType sceneType;
+    private ISceneManager.SceneType sceneType = ISceneManager.SceneType.DEPLOYED;
     
     public void Initialize() { AssignMainView(CreateView()); }
 
