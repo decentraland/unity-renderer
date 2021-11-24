@@ -19,7 +19,7 @@ namespace DCL
         public PoolableComponentFactory componentFactory;
 
         private PerformanceMetricsController performanceMetricsController;
-        private IKernelCommunication kernelCommunication;
+        protected IKernelCommunication kernelCommunication;
 
         private PluginSystem pluginSystem;
 
