@@ -82,16 +82,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void AddSettingsWindowProperly()
-    {
-        settingsPanelHudController = new SettingsPanelHUDController();
-        settingsPanelHudController.Initialize();
-        controller.AddSettingsWindow(settingsPanelHudController);
-
-        Assert.IsTrue(settingsPanelHudController.view.gameObject.activeSelf, "Settings window is disabled!");
-    }
-
-    [Test]
     public void AddHelpAndSupportWindowProperly()
     {
         helpAndSupportHUDController = new HelpAndSupportHUDController();
@@ -154,7 +144,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(8, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(7, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
         Assert.IsTrue(buttonList[2] is ChatHeadButton);

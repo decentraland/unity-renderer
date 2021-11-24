@@ -40,6 +40,8 @@ namespace DCL
 
         public class DataStore_Settings
         {
+            public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> settingsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> profanityChatFilteringEnabled = new BaseVariable<bool>();
         }
 
@@ -152,6 +154,7 @@ namespace DCL
             public readonly BaseVariable<Transform> configureBackpackInFullscreenMenu = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> configureMapInFullscreenMenu = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> configureBuilderInFullscreenMenu = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> configureSettingsInFullscreenMenu = new BaseVariable<Transform>(null);
         }
 
         public class DataStore_FeatureFlag

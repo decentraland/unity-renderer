@@ -606,9 +606,9 @@ public class AvatarEditorHUDController : IHUD
     public void Dispose()
     {
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
+        configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
-        configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
 
         CleanUp();
     }

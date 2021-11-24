@@ -274,7 +274,6 @@ public class HUDController : IHUDController
                             taskbarHud.SetQuestsPanelStatus(config.enableQuestPanel);
                         }
 
-                        taskbarHud.AddSettingsWindow(settingsPanelHud);
                         OnTaskbarCreation?.Invoke();
                     }
                 }

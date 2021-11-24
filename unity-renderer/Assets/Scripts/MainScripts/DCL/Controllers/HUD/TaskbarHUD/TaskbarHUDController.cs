@@ -3,7 +3,6 @@ using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Helpers;
 using DCL.Interface;
-using DCL.SettingsPanelHUD;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -24,7 +23,6 @@ public class TaskbarHUDController : IHUD
     public WorldChatWindowHUDController worldChatWindowHud;
     public PrivateChatWindowHUDController privateChatWindowHud;
     public FriendsHUDController friendsHud;
-    public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
     public IExploreV2MenuComponentController exploreV2Hud;
     public HelpAndSupportHUDController helpAndSupportHud;
@@ -84,8 +82,6 @@ public class TaskbarHUDController : IHUD
         view.OnChatToggleOn += View_OnChatToggleOn;
         view.OnFriendsToggleOff += View_OnFriendsToggleOff;
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
-        view.OnSettingsToggleOff += View_OnSettingsToggleOff;
-        view.OnSettingsToggleOn += View_OnSettingsToggleOn;
         view.OnExploreToggleOff += View_OnExploreToggleOff;
         view.OnExploreToggleOn += View_OnExploreToggleOn;
         view.OnExploreV2ToggleOff += View_OnExploreV2ToggleOff;
@@ -208,14 +204,6 @@ public class TaskbarHUDController : IHUD
 
         OpenPrivateChatWindow(head.profile.userId);
     }
-
-    private void View_OnSettingsToggleOn()
-    {
-        settingsPanelHud.SetVisibility(true);
-        OnAnyTaskbarButtonClicked?.Invoke();
-    }
-
-    private void View_OnSettingsToggleOff() { settingsPanelHud.SetVisibility(false); }
 
     private void View_OnExploreToggleOn()
     {
@@ -370,29 +358,6 @@ public class TaskbarHUDController : IHUD
         friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
-    public void AddSettingsWindow(SettingsPanelHUDController controller)
-    {
-        if (controller == null)
-        {
-            Debug.LogWarning("AddSettingsWindow >>> Settings window doesn't exist yet!");
-            return;
-        }
-
-        settingsPanelHud = controller;
-        view.OnAddSettingsWindow();
-        settingsPanelHud.OnOpen += () =>
-        {
-            view.settingsButton.SetToggleState(true, false);
-            view.exploreButton.SetToggleState(false);
-            view.exploreV2Button.SetToggleState(false);
-        };
-        settingsPanelHud.OnClose += () =>
-        {
-            view.settingsButton.SetToggleState(false, false);
-            MarkWorldChatAsReadIfOtherWindowIsOpen();
-        };
-    }
-
     public void AddExploreWindow(ExploreHUDController controller)
     {
         if (controller == null)
@@ -406,7 +371,6 @@ public class TaskbarHUDController : IHUD
         exploreHud.OnOpen += () =>
         {
             view.exploreButton.SetToggleState(true, false);
-            view.settingsButton.SetToggleState(false);
         };
         exploreHud.OnClose += () =>
         {
@@ -439,7 +403,6 @@ public class TaskbarHUDController : IHUD
         if (current)
         {
             view.exploreV2Button.SetToggleState(true, false);
-            view.settingsButton.SetToggleState(false);
         }
         else
         {
@@ -490,8 +453,6 @@ public class TaskbarHUDController : IHUD
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
-            view.OnSettingsToggleOff -= View_OnSettingsToggleOff;
-            view.OnSettingsToggleOn -= View_OnSettingsToggleOn;
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
             view.OnExploreV2ToggleOff -= View_OnExploreV2ToggleOff;

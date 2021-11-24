@@ -144,6 +144,23 @@ namespace DCL.SettingsPanelHUD
             isOpen = visible;
         }
 
+        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        {
+            if (parentTransform == null)
+                return;
+
+            transform.SetParent(parentTransform);
+            transform.localScale = Vector3.one;
+
+            RectTransform rectTransform = transform as RectTransform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.localPosition = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+        }
+
         private void OpenAction_OnTriggered(DCLAction_Trigger action)
         {
             Utils.UnlockCursor();

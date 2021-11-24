@@ -25,6 +25,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
     internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized;
     internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
+    internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
+    internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
 
     public void Initialize()
     {
@@ -62,6 +64,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         IsBuilderInitializedChanged(isBuilderInitialized.Get(), false);
         builderVisible.OnChange += BuilderVisibleChanged;
         BuilderVisibleChanged(builderVisible.Get(), false);
+
+        isSettingsPanelInitialized.OnChange += IsSettingsPanelInitializedChanged;
+        IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
+        settingsVisible.OnChange += SettingsVisibleChanged;
+        SettingsVisibleChanged(settingsVisible.Get(), false);
     }
 
     internal void CreateControllers()
@@ -85,6 +92,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
         navmapVisible.Set(currentOpenSection == ExploreSection.Map);
         builderVisible.Set(currentOpenSection == ExploreSection.Builder);
+        settingsVisible.Set(currentOpenSection == ExploreSection.Settings);
         profileCardIsOpen.Set(false);
     }
 
@@ -100,6 +108,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         navmapVisible.OnChange -= NavmapVisibleChanged;
         isBuilderInitialized.OnChange -= IsBuilderInitializedChanged;
         builderVisible.OnChange -= BuilderVisibleChanged;
+        isSettingsPanelInitialized.OnChange -= IsSettingsPanelInitializedChanged;
+        settingsVisible.OnChange -= SettingsVisibleChanged;
 
         if (view != null)
         {
@@ -141,6 +151,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             profileCardIsOpen.Set(false);
             navmapVisible.Set(false);
             builderVisible.Set(false);
+            settingsVisible.Set(false);
             exploreV2Analytics.anyActionExecutedFromLastOpen = false;
         }
 
@@ -190,6 +201,21 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.GoToSection(ExploreSection.Builder);
         }
         else if (currentOpenSection == ExploreSection.Builder)
+        {
+            SetVisibility(false);
+        }
+    }
+
+    internal void IsSettingsPanelInitializedChanged(bool current, bool previous) { view.ConfigureSettingsSection(current); }
+
+    internal void SettingsVisibleChanged(bool current, bool previous)
+    {
+        if (current)
+        {
+            SetVisibility(true);
+            view.GoToSection(ExploreSection.Settings);
+        }
+        else if (currentOpenSection == ExploreSection.Settings)
         {
             SetVisibility(false);
         }

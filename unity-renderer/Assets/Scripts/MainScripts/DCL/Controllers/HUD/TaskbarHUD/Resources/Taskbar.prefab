@@ -1619,10 +1619,8 @@ MonoBehaviour:
   friendsButton: {fileID: 4603229045924843475}
   chatHeadsGroup: {fileID: 1163524797233769629}
   rightButtonsHorizontalLayout: {fileID: 7859633553351928332}
-  settingsButton: {fileID: 4865086671617019908}
   exploreButton: {fileID: 5044388401507377088}
   exploreV2Button: {fileID: 5745922429468737046}
-  builderInWorldButton: {fileID: 1673153149211633687}
   portableExperiencesDiv: {fileID: 2487175484081554518}
   portableExperienceItem: {fileID: 7008230418994466216, guid: 5e5c6fb3a6d05c6449ad00f42ca5036b,
     type: 3}
@@ -4713,7 +4711,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 203.03333, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1163524797233769629
@@ -9063,7 +9061,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &610814278169517605
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9079,10 +9077,10 @@ RectTransform:
   m_Father: {fileID: 1160326602607001640}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 36, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 528.9366, y: -25}
+  m_SizeDelta: {x: 36, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8235107838626915787
 GameObject:

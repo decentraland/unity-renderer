@@ -25,7 +25,6 @@ public class TaskbarHUDView : MonoBehaviour
     [Header("Right Side Config")]
     [SerializeField] internal HorizontalLayoutGroup rightButtonsHorizontalLayout;
 
-    [SerializeField] internal TaskbarButton settingsButton;
     [SerializeField] internal TaskbarButton exploreButton;
     [SerializeField] internal TaskbarButton exploreV2Button;
     [SerializeField] internal GameObject portableExperiencesDiv;
@@ -59,8 +58,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnChatToggleOff;
     public event System.Action OnFriendsToggleOn;
     public event System.Action OnFriendsToggleOff;
-    public event System.Action OnSettingsToggleOn;
-    public event System.Action OnSettingsToggleOff;
     public event System.Action OnExploreToggleOn;
     public event System.Action OnExploreToggleOff;
     public event System.Action OnExploreV2ToggleOn;
@@ -75,7 +72,6 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
-        taskbarButtonList.Add(settingsButton);
         taskbarButtonList.Add(exploreButton);
         taskbarButtonList.Add(exploreV2Button);
         taskbarButtonList.Add(moreButton);
@@ -108,7 +104,6 @@ public class TaskbarHUDView : MonoBehaviour
         ShowBar(true, true);
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
-        settingsButton.transform.parent.gameObject.SetActive(false);
         exploreButton.transform.parent.gameObject.SetActive(false);
         exploreV2Button.transform.parent.gameObject.SetActive(false);
         voiceChatButtonPlaceholder.SetActive(false);
@@ -121,7 +116,6 @@ public class TaskbarHUDView : MonoBehaviour
         chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
-        settingsButton.Initialize();
         exploreButton.Initialize();
         exploreV2Button.Initialize();
         moreButton.Initialize();
@@ -135,9 +129,6 @@ public class TaskbarHUDView : MonoBehaviour
 
         friendsButton.OnToggleOn += OnWindowToggleOn;
         friendsButton.OnToggleOff += OnWindowToggleOff;
-
-        settingsButton.OnToggleOn += OnWindowToggleOn;
-        settingsButton.OnToggleOff += OnWindowToggleOff;
 
         exploreButton.OnToggleOn += OnWindowToggleOn;
         exploreButton.OnToggleOff += OnWindowToggleOff;
@@ -174,8 +165,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOff?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOff?.Invoke();
-        else if (obj == settingsButton)
-            OnSettingsToggleOff?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOff?.Invoke();
         else if (obj == exploreV2Button)
@@ -227,8 +216,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOn?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOn?.Invoke();
-        else if (obj == settingsButton)
-            OnSettingsToggleOn?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOn?.Invoke();
         else if (obj == exploreV2Button)
@@ -276,12 +263,6 @@ public class TaskbarHUDView : MonoBehaviour
     internal void OnAddChatWindow() { chatButton.transform.parent.gameObject.SetActive(true); }
 
     internal void OnAddFriendsWindow() { friendsButton.transform.parent.gameObject.SetActive(true); }
-
-    internal void OnAddSettingsWindow()
-    {
-        settingsButton.transform.parent.gameObject.SetActive(true);
-        AdjustRightButtonsLayoutWidth();
-    }
 
     internal void OnAddExploreWindow()
     {
@@ -335,12 +316,6 @@ public class TaskbarHUDView : MonoBehaviour
         {
             friendsButton.OnToggleOn -= OnWindowToggleOn;
             friendsButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (settingsButton != null)
-        {
-            settingsButton.OnToggleOn -= OnWindowToggleOn;
-            settingsButton.OnToggleOff -= OnWindowToggleOff;
         }
 
         if (exploreButton != null)

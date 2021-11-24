@@ -2,6 +2,7 @@ using DCL.SettingsPanelHUD.Sections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.SettingsCommon;
+using UnityEngine;
 
 namespace DCL.SettingsPanelHUD
 {
@@ -72,23 +73,38 @@ namespace DCL.SettingsPanelHUD
 
         private List<SettingsButtonEntry> menuButtons = new List<SettingsButtonEntry>();
 
+        BaseVariable<bool> settingsPanelVisible => DataStore.i.settings.settingsPanelVisible;
+        BaseVariable<Transform> configureSettingsInFullscreenMenu => DataStore.i.exploreV2.configureSettingsInFullscreenMenu;
+
         public void Initialize()
         {
             view = CreateView();
             view.Initialize(this, this);
+
+            settingsPanelVisible.OnChange += OnSettingsPanelVisibleChanged;
+            OnSettingsPanelVisibleChanged(settingsPanelVisible.Get(), false);
+
+            configureSettingsInFullscreenMenu.OnChange += ConfigureSettingsInFullscreenMenuChanged;
+            ConfigureSettingsInFullscreenMenuChanged(configureSettingsInFullscreenMenu.Get(), null);
+
+            DataStore.i.settings.isInitialized.Set(true);
         }
-        protected virtual SettingsPanelHUDView CreateView()
-        {
-            return SettingsPanelHUDView.Create();
-        }
+        protected virtual SettingsPanelHUDView CreateView() { return SettingsPanelHUDView.Create(); }
 
         public void Dispose()
         {
+            settingsPanelVisible.OnChange -= OnSettingsPanelVisibleChanged;
+            configureSettingsInFullscreenMenu.OnChange -= ConfigureSettingsInFullscreenMenuChanged;
+
             if (view != null)
                 UnityEngine.Object.Destroy(view.gameObject);
         }
 
-        public void SetVisibility(bool visible)
+        public void SetVisibility(bool visible) { settingsPanelVisible.Set(visible); }
+
+        private void OnSettingsPanelVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
+
+        public void SetVisibility_Internal(bool visible)
         {
             if (!visible && view.isOpen)
             {
@@ -157,5 +173,7 @@ namespace DCL.SettingsPanelHUD
         public virtual void SaveSettings() { Settings.i.SaveSettings(); }
 
         public void ResetAllSettings() { Settings.i.ResetAllSettings(); }
+
+        private void ConfigureSettingsInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
     }
 }
