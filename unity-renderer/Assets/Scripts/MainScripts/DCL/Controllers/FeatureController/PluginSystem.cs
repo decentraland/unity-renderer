@@ -67,10 +67,11 @@ public class PluginSystem
         HandleFeature<TutorialController>(featureFlag.IsFeatureEnabled("tutorial"));
         HandleFeature<ExploreV2Feature>(featureFlag.IsFeatureEnabled("explorev2"));
         HandleFeature<ShortcutsFeature>(true);
+        HandleFeature<DCL.Skybox.SkyboxController>(true);
         currentConfig = featureFlag;
     }
 
-    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new ()
+    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new()
     {
         if (isActive)
             InitializeFeature<T>();
@@ -78,7 +79,7 @@ public class PluginSystem
             RemoveFeature<T>();
     }
 
-    private void InitializeFeature<T>() where T : PluginFeature, new ()
+    private void InitializeFeature<T>() where T : PluginFeature, new()
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {

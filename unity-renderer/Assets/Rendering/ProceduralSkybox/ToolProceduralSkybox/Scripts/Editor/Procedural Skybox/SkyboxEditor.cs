@@ -220,6 +220,15 @@ namespace DCL.Skybox
 
             // Cache directional light reference
             directionalLight = GameObject.FindObjectsOfType<Light>(true).Where(s => s.type == LightType.Directional).FirstOrDefault();
+
+            // Make a directional light object if can't find
+            if (directionalLight == null)
+            {
+                GameObject temp = new GameObject("The Sun_Temp");
+                // Add the light component
+                directionalLight = temp.AddComponent<Light>();
+                directionalLight.type = LightType.Directional;
+            }
         }
 
         void InitializeMaterial()

@@ -39,6 +39,13 @@ namespace DCL.Skybox
 
             i = this;
 
+            // Find and delete test directional light obj if any
+            Light[] testDirectionalLight = GameObject.FindObjectsOfType<Light>().Where(s => s.name == "The Sun_Temp").ToArray();
+            for (int i = 0; i < testDirectionalLight.Length; i++)
+            {
+                GameObject.DestroyImmediate(testDirectionalLight[i].gameObject);
+            }
+
             // Get or Create new Directional Light Object
             directionalLight = GameObject.FindObjectsOfType<Light>().Where(s => s.type == LightType.Directional).FirstOrDefault();
 
