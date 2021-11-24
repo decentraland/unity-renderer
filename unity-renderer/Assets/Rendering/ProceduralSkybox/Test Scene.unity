@@ -32,13 +32,13 @@ RenderSettings:
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 64
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.03584632, g: 0.021386044, b: 0.097166, a: 1}
+  m_IndirectSpecularColor: {r: 0.036941674, g: 0.022581633, b: 0.09929731, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5864,6 +5864,7 @@ GameObject:
   m_Component:
   - component: {fileID: 947487857}
   - component: {fileID: 947487856}
+  - component: {fileID: 947487858}
   m_Layer: 0
   m_Name: Reflection Probe
   m_TagString: Untagged
@@ -5881,18 +5882,18 @@ ReflectionProbe:
   m_Enabled: 1
   serializedVersion: 2
   m_Type: 0
-  m_Mode: 0
-  m_RefreshMode: 0
-  m_TimeSlicingMode: 0
+  m_Mode: 1
+  m_RefreshMode: 2
+  m_TimeSlicingMode: 2
   m_Resolution: 128
   m_UpdateFrequency: 0
-  m_BoxSize: {x: 10, y: 10, z: 10}
+  m_BoxSize: {x: 500, y: 500, z: 500}
   m_BoxOffset: {x: 0, y: 0, z: 0}
-  m_NearClip: 0.3
+  m_NearClip: 0.05
   m_FarClip: 1000
   m_ShadowDistance: 100
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 1}
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 0
@@ -5900,10 +5901,11 @@ ReflectionProbe:
   m_BlendDistance: 1
   m_HDR: 1
   m_BoxProjection: 0
-  m_RenderDynamicObjects: 0
+  m_RenderDynamicObjects: 1
   m_UseOcclusionCulling: 1
   m_Importance: 1
-  m_CustomBakedTexture: {fileID: 0}
+  m_CustomBakedTexture: {fileID: 8900000, guid: 5254d03e7f7fe054e8ca57a6991f8cb6,
+    type: 3}
 --- !u!4 &947487857
 Transform:
   m_ObjectHideFlags: 0
@@ -5912,12 +5914,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 947487855}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.6220006, y: 2.9138227, z: 0.057502747}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &947487858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947487855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d31a66c14817d464a9f9ff99238203dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  refreshTime: 2
 --- !u!1 &957977619
 GameObject:
   m_ObjectHideFlags: 0
