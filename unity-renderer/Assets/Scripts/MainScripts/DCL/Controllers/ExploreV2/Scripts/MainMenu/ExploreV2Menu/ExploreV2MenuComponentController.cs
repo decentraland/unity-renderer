@@ -25,6 +25,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
     internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized;
     internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
+    internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
+    internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
 
@@ -65,6 +67,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         builderVisible.OnChange += BuilderVisibleChanged;
         BuilderVisibleChanged(builderVisible.Get(), false);
 
+        isQuestInitialized.OnChange += IsQuestInitializedChanged;
+        IsQuestInitializedChanged(isQuestInitialized.Get(), false);
+        questVisible.OnChange += QuestVisibleChanged;
+        QuestVisibleChanged(questVisible.Get(), false);
+
         isSettingsPanelInitialized.OnChange += IsSettingsPanelInitializedChanged;
         IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
         settingsVisible.OnChange += SettingsVisibleChanged;
@@ -92,6 +99,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         avatarEditorVisible.Set(currentOpenSection == ExploreSection.Backpack);
         navmapVisible.Set(currentOpenSection == ExploreSection.Map);
         builderVisible.Set(currentOpenSection == ExploreSection.Builder);
+        questVisible.Set(currentOpenSection == ExploreSection.Quest);
         settingsVisible.Set(currentOpenSection == ExploreSection.Settings);
         profileCardIsOpen.Set(false);
     }
@@ -108,6 +116,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         navmapVisible.OnChange -= NavmapVisibleChanged;
         isBuilderInitialized.OnChange -= IsBuilderInitializedChanged;
         builderVisible.OnChange -= BuilderVisibleChanged;
+        isQuestInitialized.OnChange -= IsQuestInitializedChanged;
+        questVisible.OnChange -= QuestVisibleChanged;
         isSettingsPanelInitialized.OnChange -= IsSettingsPanelInitializedChanged;
         settingsVisible.OnChange -= SettingsVisibleChanged;
 
@@ -151,6 +161,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             profileCardIsOpen.Set(false);
             navmapVisible.Set(false);
             builderVisible.Set(false);
+            questVisible.Set(false);
             settingsVisible.Set(false);
             exploreV2Analytics.anyActionExecutedFromLastOpen = false;
         }
@@ -201,6 +212,21 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.GoToSection(ExploreSection.Builder);
         }
         else if (currentOpenSection == ExploreSection.Builder)
+        {
+            SetVisibility(false);
+        }
+    }
+
+    internal void IsQuestInitializedChanged(bool current, bool previous) { view.ConfigureQuestSection(current); }
+
+    internal void QuestVisibleChanged(bool current, bool previous)
+    {
+        if (current)
+        {
+            SetVisibility(true);
+            view.GoToSection(ExploreSection.Quest);
+        }
+        else if (currentOpenSection == ExploreSection.Quest)
         {
             SetVisibility(false);
         }

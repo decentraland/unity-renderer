@@ -120,11 +120,6 @@ namespace DCL.SettingsPanelHUD
 
         public void SetVisibility(bool visible)
         {
-            if (visible && !isOpen)
-                AudioScriptableObjects.dialogOpen.Play(true);
-            else if (isOpen)
-                AudioScriptableObjects.dialogClose.Play(true);
-
             closeAction.OnTriggered -= CloseAction_OnTriggered;
             if (visible)
             {

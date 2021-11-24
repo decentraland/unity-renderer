@@ -110,8 +110,6 @@ namespace DCL
                 // Set shorter interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.FOREGROUND);
 
-                AudioScriptableObjects.dialogOpen.Play(true);
-
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
             }
             else
@@ -132,7 +130,6 @@ namespace DCL
                 // Set longer interval of time for populated scenes markers fetch
                 MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
 
-                AudioScriptableObjects.dialogClose.Play(true);
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
             }
 

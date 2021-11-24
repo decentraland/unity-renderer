@@ -72,6 +72,8 @@ namespace DCL.Huds.QuestsPanel
                     recipient = string.Empty,
                     body = $"/goto {incompletedTask.coordinates}",
                 });
+
+                DataStore.i.HUDs.questsPanelVisible.Set(false);
             };
 
             readMoreDelegate = () => OnReadMoreClicked?.Invoke(quest.id);

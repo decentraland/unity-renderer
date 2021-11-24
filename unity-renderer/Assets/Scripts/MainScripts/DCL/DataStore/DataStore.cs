@@ -72,6 +72,7 @@ namespace DCL
 
         public class DataStore_Quests
         {
+            public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
             public readonly BaseDictionary<string, QuestModel> quests = new BaseDictionary<string, QuestModel>();
             public readonly BaseCollection<string> pinnedQuests = new BaseCollection<string>();
         }
@@ -154,6 +155,7 @@ namespace DCL
             public readonly BaseVariable<Transform> configureBackpackInFullscreenMenu = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> configureMapInFullscreenMenu = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> configureBuilderInFullscreenMenu = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> configureQuestInFullscreenMenu = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> configureSettingsInFullscreenMenu = new BaseVariable<Transform>(null);
         }
 

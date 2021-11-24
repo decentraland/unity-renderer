@@ -65,6 +65,12 @@ public interface IExploreV2MenuComponentView : IDisposable
     void ConfigureBuilderSection(bool isActive);
 
     /// <summary>
+    /// Configures the quest section.
+    /// </summary>
+    /// <param name="isActive">Indicates if the section is active or not.</param>
+    void ConfigureQuestSection(bool isActive);
+
+    /// <summary>
     /// Configures the settings section.
     /// </summary>
     /// <param name="isActive">Indicates if the section is active or not.</param>
@@ -85,6 +91,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal BackpackSectionComponentView backpackSection;
     [SerializeField] internal MapSectionComponentView mapSection;
     [SerializeField] internal BuilderSectionComponentView builderSection;
+    [SerializeField] internal QuestSectionComponentView questSection;
     [SerializeField] internal SettingsSectionComponentView settingsSection;
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
@@ -111,6 +118,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         backpackSection.RefreshControl();
         mapSection.RefreshControl();
         builderSection.RefreshControl();
+        questSection.RefreshControl();
         settingsSection.RefreshControl();
     }
 
@@ -165,6 +173,14 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         if (isActive)
             builderSection.ConfigureBuilder();
+    }
+
+    public void ConfigureQuestSection(bool isActive)
+    {
+        sectionSelector.GetSection((int)ExploreSection.Quest).SetActive(isActive);
+
+        if (isActive)
+            questSection.ConfigureQuest();
     }
 
     public void ConfigureSettingsSection(bool isActive)
@@ -226,6 +242,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            }
                            else
                                builderSection.Hide();
+                       });
+
+        sectionSelector.GetSection((int)ExploreSection.Quest)
+                       ?.onSelect.AddListener((isOn) =>
+                       {
+                           if (isOn)
+                           {
+                               questSection.Show();
+                               currentSectionIndex = ExploreSection.Quest;
+                               OnSectionOpen?.Invoke(currentSectionIndex);
+                           }
+                           else
+                               questSection.Hide();
                        });
 
         sectionSelector.GetSection((int)ExploreSection.Settings)

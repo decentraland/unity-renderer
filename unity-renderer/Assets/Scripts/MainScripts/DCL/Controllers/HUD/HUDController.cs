@@ -270,8 +270,6 @@ public class HUDController : IHUDController
                             {
                                 taskbarHud.OnAddVoiceChat();
                             }
-
-                            taskbarHud.SetQuestsPanelStatus(config.enableQuestPanel);
                         }
 
                         OnTaskbarCreation?.Invoke();

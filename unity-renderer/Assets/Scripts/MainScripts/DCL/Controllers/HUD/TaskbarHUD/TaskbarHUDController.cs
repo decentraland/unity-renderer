@@ -86,8 +86,6 @@ public class TaskbarHUDController : IHUD
         view.OnExploreToggleOn += View_OnExploreToggleOn;
         view.OnExploreV2ToggleOff += View_OnExploreV2ToggleOff;
         view.OnExploreV2ToggleOn += View_OnExploreV2ToggleOn;
-        view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
-        view.OnQuestPanelToggled += View_OnQuestPanelToggled;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -100,9 +98,6 @@ public class TaskbarHUDController : IHUD
         toggleWorldChatTrigger = Resources.Load<InputAction_Trigger>("ToggleWorldChat");
         toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
         toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
-
-        DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
-        DataStore.i.HUDs.questsPanelVisible.OnChange += OnToggleQuestsPanelTriggered;
 
         if (chatController != null)
         {
@@ -130,12 +125,6 @@ public class TaskbarHUDController : IHUD
         ConfigureExploreV2Feature();
     }
 
-    private void View_OnQuestPanelToggled(bool value)
-    {
-        QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "taskbar");
-        DataStore.i.HUDs.questsPanelVisible.Set(value);
-    }
-
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
 
     private void View_OnFriendsToggleOn()
@@ -155,21 +144,6 @@ public class TaskbarHUDController : IHUD
     }
 
     private void ToggleWorldChatTrigger_OnTriggered(DCLAction_Trigger action) { OnWorldChatToggleInputPress(); }
-
-    private void OnToggleQuestsPanelTriggered(bool current, bool previous)
-    {
-        bool anyInputFieldIsSelected = EventSystem.current != null &&
-                                       EventSystem.current.currentSelectedGameObject != null &&
-                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-                                       (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
-
-        if (anyInputFieldIsSelected)
-            return;
-
-        view.questPanelButton.SetToggleState(current, false);
-        if (current)
-            view.SelectButton(view.questPanelButton);
-    }
 
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action) { OnCloseWindowToggleInputPress(); }
 
@@ -254,8 +228,6 @@ public class TaskbarHUDController : IHUD
 
         MarkWorldChatAsReadIfOtherWindowIsOpen();
     }
-
-    public void SetQuestsPanelStatus(bool isActive) { view.SetQuestsPanelStatus(isActive); }
 
     public void AddWorldChatWindow(WorldChatWindowHUDController controller)
     {
@@ -457,7 +429,6 @@ public class TaskbarHUDController : IHUD
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
             view.OnExploreV2ToggleOff -= View_OnExploreV2ToggleOff;
             view.OnExploreV2ToggleOn -= View_OnExploreV2ToggleOn;
-            view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
 
             CoroutineStarter.Stop(view.moreMenu.moreMenuAnimationsCoroutine);
             UnityEngine.Object.Destroy(view.gameObject);
@@ -487,7 +458,6 @@ public class TaskbarHUDController : IHUD
             sceneController.OnNewPortableExperienceSceneRemoved -= SceneController_OnNewPortableExperienceSceneRemoved;
         }
 
-        DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
         DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
         DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;

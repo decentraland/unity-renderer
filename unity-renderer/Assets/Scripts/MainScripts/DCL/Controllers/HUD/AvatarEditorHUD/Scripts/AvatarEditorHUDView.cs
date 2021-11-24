@@ -377,15 +377,9 @@ public class AvatarEditorHUDView : MonoBehaviour
         avatarEditorCanvasGroup.blocksRaycasts = visible;
 
         if (visible && !isOpen)
-        {
-            AudioScriptableObjects.dialogOpen.Play(true);
             OnSetVisibility?.Invoke(visible);
-        }
         else if (!visible && isOpen)
-        {
-            AudioScriptableObjects.dialogClose.Play(true);
             OnSetVisibility?.Invoke(visible);
-        }
 
         isOpen = visible;
     }

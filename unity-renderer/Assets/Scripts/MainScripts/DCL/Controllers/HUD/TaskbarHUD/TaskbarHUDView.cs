@@ -29,7 +29,6 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal TaskbarButton exploreV2Button;
     [SerializeField] internal GameObject portableExperiencesDiv;
     [SerializeField] internal PortableExperienceTaskbarItem portableExperienceItem;
-    [SerializeField] internal TaskbarButton questPanelButton;
 
     [Header("More Button Config")]
     [SerializeField] internal TaskbarButton moreButton;
@@ -64,7 +63,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnExploreV2ToggleOff;
     public event System.Action OnMoreToggleOn;
     public event System.Action OnMoreToggleOff;
-    public event System.Action<bool> OnQuestPanelToggled;
 
     internal List<TaskbarButton> GetButtonList()
     {
@@ -75,7 +73,6 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.Add(exploreButton);
         taskbarButtonList.Add(exploreV2Button);
         taskbarButtonList.Add(moreButton);
-        taskbarButtonList.Add(questPanelButton);
 
         using (var iterator = activePortableExperienceItems.GetEnumerator())
         {
@@ -119,7 +116,6 @@ public class TaskbarHUDView : MonoBehaviour
         exploreButton.Initialize();
         exploreV2Button.Initialize();
         moreButton.Initialize();
-        questPanelButton.Initialize();
 
         chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
         chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
@@ -139,11 +135,6 @@ public class TaskbarHUDView : MonoBehaviour
         moreButton.OnToggleOn += OnWindowToggleOn;
         moreButton.OnToggleOff += OnWindowToggleOff;
 
-        questPanelButton.OnToggleOn -= OnWindowToggleOn;
-        questPanelButton.OnToggleOff -= OnWindowToggleOff;
-        questPanelButton.OnToggleOn += OnWindowToggleOn;
-        questPanelButton.OnToggleOff += OnWindowToggleOff;
-
         portableExperiencesDiv.SetActive(false);
 
         portableExperiencesPool = PoolManager.i.AddPool(
@@ -157,8 +148,6 @@ public class TaskbarHUDView : MonoBehaviour
         AdjustRightButtonsLayoutWidth();
     }
 
-    public void SetQuestsPanelStatus(bool isActive) { questPanelButton.transform.parent.gameObject.SetActive(isActive); }
-
     private void OnWindowToggleOff(TaskbarButton obj)
     {
         if (obj == friendsButton)
@@ -171,8 +160,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnExploreV2ToggleOff?.Invoke();
         else if (obj == moreButton)
             moreMenu.ShowMoreMenu(false);
-        else if (obj == questPanelButton)
-            OnQuestPanelToggled?.Invoke(false);
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -222,8 +209,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnExploreV2ToggleOn?.Invoke();
         else if (obj == moreButton)
             moreMenu.ShowMoreMenu(true);
-        else if (obj == questPanelButton)
-            OnQuestPanelToggled?.Invoke(true);
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -334,12 +319,6 @@ public class TaskbarHUDView : MonoBehaviour
         {
             moreButton.OnToggleOn -= OnWindowToggleOn;
             moreButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (questPanelButton != null)
-        {
-            questPanelButton.OnToggleOn -= OnWindowToggleOn;
-            questPanelButton.OnToggleOff -= OnWindowToggleOff;
         }
     }
 
