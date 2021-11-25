@@ -17,8 +17,8 @@ public class ProjectControllerShould
     public void SetUp()
     {
         const string prefabAssetPath =
-            "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/Projects/ProjectCardView.prefab";
-        var prefab = AssetDatabase.LoadAssetAtPath<ProjectCardView>(prefabAssetPath);
+            "Projects/ProjectCardView";
+        var prefab = Resources.Load<ProjectCardView>(prefabAssetPath);
         controller = new ProjectsController(prefab);
     }
 
