@@ -472,5 +472,20 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "nightMode stored value mismatch");
         }
+
+        [Test]
+        public void ChangeHideUICorrectly()
+        {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<HideUIControlController>();
+            settingController.Initialize();
+
+            // Act
+            bool newValue = true;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "hideUI stored value mismatch");
+        }
     }
 }

@@ -99,7 +99,8 @@ namespace DCL.SettingsCommon
                 autoqualityOn = false,
                 namesOpacity = 0.5f,
                 profanityChatFiltering = true,
-                nightMode = false
+                nightMode = false,
+                hideUI = false
             };
         }
 

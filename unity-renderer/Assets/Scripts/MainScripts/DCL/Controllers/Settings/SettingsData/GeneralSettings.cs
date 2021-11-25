@@ -17,5 +17,6 @@ namespace DCL.SettingsCommon
         public float namesOpacity;
         public bool profanityChatFiltering;
         public bool nightMode;
+        public bool hideUI;
     }
 }

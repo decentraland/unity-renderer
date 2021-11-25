@@ -1,4 +1,3 @@
-using DCL;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using UnityEngine;
 
@@ -31,6 +30,10 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             RenderProfileManifest.i.OnChangeProfile -= OnChangeProfile;
         }
 
-        private void OnChangeProfile(RenderProfileWorld profile) { currentGeneralSettings.nightMode = profile == RenderProfileManifest.i.nightProfile; }
+        private void OnChangeProfile(RenderProfileWorld profile)
+        {
+            currentGeneralSettings.nightMode = profile == RenderProfileManifest.i.nightProfile;
+            ApplySettings();
+        }
     }
 }
