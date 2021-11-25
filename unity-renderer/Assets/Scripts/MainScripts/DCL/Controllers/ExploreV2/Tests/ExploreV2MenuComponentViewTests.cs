@@ -31,7 +31,7 @@ public class ExploreV2MenuComponentViewTests
         exploreV2MenuComponent.SetVisible(isVisible);
 
         // Assert
-        Assert.AreEqual(isVisible, exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf, "placesAndEventsSection active property does not match.");
+        Assert.AreEqual(isVisible, exploreV2MenuComponent.isVisible, "exploreV2MenuComponent isVisible property does not match.");
     }
 
     [Test]
@@ -45,19 +45,16 @@ public class ExploreV2MenuComponentViewTests
     {
         // Arrange
         exploreV2MenuComponent.sectionSelector.RefreshControl();
-        exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
+        ExploreSection sectionSelected = sectionIndex == 0 ? ExploreSection.Backpack : ExploreSection.Explore;
+        exploreV2MenuComponent.OnSectionOpen += (section) => sectionSelected = section;
 
         // Act
         exploreV2MenuComponent.CreateSectionSelectorMappings();
         exploreV2MenuComponent.sectionSelector.GetSection(sectionIndex).onSelect.Invoke(true);
 
         // Assert
-        switch (sectionIndex)
-        {
-            case 0:
-                Assert.IsTrue(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf);
-                break;
-        }
+        Assert.AreEqual(sectionIndex, (int)exploreV2MenuComponent.currentSectionIndex);
+        Assert.AreEqual(sectionIndex, (int)sectionSelected);
     }
 
     [Test]
