@@ -120,10 +120,10 @@ namespace DCL.Configuration
         public static KeyCode RightButtonKeyCodeAlt = KeyCode.RightArrow;
         public static KeyCode JumpButtonKeyCode = KeyCode.Space;
         public static KeyCode WalkButtonKeyCode = KeyCode.LeftShift;
-        public static KeyCode OneButtonKeyCode = KeyCode.Alpha1;
-        public static KeyCode TwoButtonKeyCode = KeyCode.Alpha2;
-        public static KeyCode ThreeButtonKeyCode = KeyCode.Alpha3;
-        public static KeyCode FourButtonKeyCode = KeyCode.Alpha4;
+        public static KeyCode ActionButton3Keycode = KeyCode.Alpha1;
+        public static KeyCode ActionButton4Keycode = KeyCode.Alpha2;
+        public static KeyCode ActionButton5Keycode = KeyCode.Alpha3;
+        public static KeyCode ActionButton6Keycode = KeyCode.Alpha4;
     }
 
     public static class PlayerSettings
