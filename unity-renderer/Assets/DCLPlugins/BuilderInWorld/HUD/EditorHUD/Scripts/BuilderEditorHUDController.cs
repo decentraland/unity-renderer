@@ -3,7 +3,9 @@ using DCL.Controllers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 using DCL;
+using DCL.Builder;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -54,9 +56,11 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     private Coroutine publishProgressCoroutine = null;
     private float timeFromLastClickOnExtraButtons = 0f;
-
-    public void Initialize()
+    internal IContext context;
+    
+    public void Initialize(IContext context)
     {
+        this.context = context;
         CreateBuildModeControllers();
         CreateMainView();
         ConfigureSceneCatalogController();
@@ -232,7 +236,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     public void SaveSceneInfo()
     {
-        Texture2D newSceneScreenshotTexture = controllers.newProjectDetailsController.GetSceneScreenshotTexture();
+        Texture2D newSceneScreenshotTexture = context.cameraController.GetLastScreenshot();
         string newSceneName = controllers.newProjectDetailsController.GetSceneName();
         string newSceneDescription = controllers.newProjectDetailsController.GetSceneDescription();
 
