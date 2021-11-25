@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Reflection;
 using Cinemachine;
 using DCL.Rendering;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsCommon.SettingsControllers.SpecificControllers;
 using NUnit.Framework;
+using System.Collections;
+using System.Reflection;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -456,6 +456,21 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
 
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "UI SFX Volume stored value mismatch");
+        }
+
+        [Test]
+        public void ChangeNightModeCorrectly()
+        {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<NightModeControlController>();
+            settingController.Initialize();
+
+            // Act
+            bool newValue = true;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "nightMode stored value mismatch");
         }
     }
 }
