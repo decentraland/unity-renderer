@@ -67,14 +67,22 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
             initialLoadingView.Show();
     }
 
-    public void SetLoadingType(ISceneManager.SceneType sceneType) { this.sceneType = sceneType;}
+    public void SetLoadingType(ISceneManager.SceneType sceneType)
+    {
+        this.sceneType = sceneType;
+    }
 
     public void Hide(bool forzeHidding = false, Action onHideAction = null)
     {
-        if(sceneType == ISceneManager.SceneType.PROJECT)
+        if (sceneType == ISceneManager.SceneType.PROJECT)
+        {
             DataStore.i.HUDs.loadingHUD.visible.Set(false);
+            onHideAction?.Invoke();
+        }
         else
+        {
             initialLoadingView.Hide(forzeHidding, onHideAction);
+        }
     }
 
     public void SetPercentage(float newValue)

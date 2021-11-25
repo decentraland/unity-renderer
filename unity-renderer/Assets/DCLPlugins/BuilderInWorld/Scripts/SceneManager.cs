@@ -50,6 +50,7 @@ namespace DCL.Builder
         private float beginStartFlowTimeStamp = 0;
 
         internal bool catalogLoaded = false;
+        internal Manifest.Manifest currentManifest;
 
         public void Initialize(IContext context)
         {
@@ -58,9 +59,13 @@ namespace DCL.Builder
             editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
             inputController = context.sceneReferences.inputController;
 
+            
             builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
             userProfile = UserProfile.GetOwnUserProfile();
 
+            
+            context.editorContext.editorHUD.OnPublishAction += TakeSceneScreenshotForPublish;
+            context.editorContext.editorHUD.OnStartExitAction += StartExitMode;
             context.editorContext.editorHUD.OnLogoutAction += ExitEditMode;
 
             BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
@@ -72,8 +77,12 @@ namespace DCL.Builder
         public void Dispose()
         {
             if (context.editorContext.editorHUD != null)
+            {
+                context.editorContext.editorHUD.OnPublishAction -= TakeSceneScreenshotForPublish;
+                context.editorContext.editorHUD.OnStartExitAction -= StartExitMode;
                 context.editorContext.editorHUD.OnLogoutAction -= ExitEditMode;
-            
+            }
+
             sceneMetricsAnalyticsHelper?.Dispose();
 
             initialLoadingController?.Dispose();
@@ -154,13 +163,52 @@ namespace DCL.Builder
         public void StartEditorFromManifest(Manifest.Manifest manifest)
         {
             DataStore.i.HUDs.loadingHUD.visible.Set(true);
-            //We set the position of the character in the 0,0 to move the world along it
-            //DCLCharacterController.i.SetPosition(Vector3.zero);
-            
+
             //We set the manifest for future saves
+            currentManifest = manifest;
             context.editorContext.saveController.SetManifest(manifest);
+            
             ParcelScene convertedScene = ManifestTranslator.TranslateManifestToScene(manifest);
             StartFlow(convertedScene,SOURCE_BUILDER_PANEl, ISceneManager.SceneType.PROJECT);
+        }
+        
+        internal void TakeSceneScreenshotForPublish()
+        {
+            context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
+            {
+                context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
+            });
+        }
+        
+        public void StartExitMode()
+        {
+            if (context.editorContext.saveController.GetSaveTimes() > 0)
+            {
+                context.cameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
+                {
+                    if (sceneSnapshot != null)
+                    {
+                        //This should dissapear when we migrate completely the scene lifecycle to unity 
+                        context.editorContext.editorHUD?.SaveSceneInfo();
+                        context.builderAPIController.SetThumbnail(currentManifest.project.id, sceneSnapshot);
+                    }
+                });
+
+                if (context.editorContext.editorHUD != null)
+                    context.editorContext.editorHUD.ConfigureConfirmationModal(
+                        BIWSettings.EXIT_MODAL_TITLE,
+                        BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
+                        BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
+                        BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
+            }
+            else
+            {
+                context.editorContext.editorHUD.ConfigureConfirmationModal(
+                    BIWSettings.EXIT_MODAL_TITLE,
+                    BIWSettings.EXIT_MODAL_SUBTITLE,
+                    BIWSettings.EXIT_MODAL_CANCEL_BUTTON,
+                    BIWSettings.EXIT_MODAL_CONFIRM_BUTTON);
+            }
         }
 
         public IParcelScene FindSceneToEdit()

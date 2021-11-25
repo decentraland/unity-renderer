@@ -38,5 +38,4 @@ public interface IBIWModeController : IBIWController
 
     bool ShouldCancelUndoAction();
     void MouseClickDetected();
-    void TakeSceneScreenshotForExit();
 }

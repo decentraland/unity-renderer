@@ -74,7 +74,14 @@ namespace DCL.Camera
         /// </summary>
         /// <param name="position"></param>
         /// <param name="lookAt"></param>
-        void SetResetConfiguration(Vector3 position, Transform lookAt);
+        void SetResetConfiguration(Vector3 position, Transform lookAt);  
+        
+        /// <summary>
+        /// Set the initial configuration to apply you reset the camera
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="lookAt"></param>
+        void SetResetConfiguration(Vector3 position, Vector3 pointToLook);
         
         /// <summary>
         /// Reset the camera to the initial state

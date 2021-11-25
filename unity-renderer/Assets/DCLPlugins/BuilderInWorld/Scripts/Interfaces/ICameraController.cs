@@ -18,6 +18,12 @@ namespace DCL.Builder
         void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess);
 
         /// <summary>
+        /// Take screenshot from the initial position
+        /// </summary>
+        /// <param name="onSuccess"></param>
+        void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess);
+        
+        /// <summary>
         /// Activate the camera in the eagle mode to have a more editor feel
         /// </summary>
         /// <param name="parcelScene"></param>
@@ -27,5 +33,11 @@ namespace DCL.Builder
         /// Go back to the last camera used before entering the builder
         /// </summary>
         void DeactivateCamera();
+
+        /// <summary>
+        /// Get the last screenshot made by the camera
+        /// </summary>
+        /// <returns></returns>
+        Texture2D GetLastScreenshot();
     }
 }

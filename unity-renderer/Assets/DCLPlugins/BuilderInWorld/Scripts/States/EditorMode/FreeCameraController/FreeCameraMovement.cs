@@ -108,7 +108,7 @@ namespace DCL.Camera
 
         private Vector3 nextTranslation;
         internal Vector3 originalCameraPosition;
-        internal Transform originalCameraLookAt;
+        internal Vector3 originalCameraPointToLookAt;
         private Vector3 cameraVelocity = Vector3.zero;
 
         private float lastMouseWheelTime;
@@ -561,14 +561,19 @@ namespace DCL.Camera
 
         public void SetResetConfiguration(Vector3 position, Transform lookAt)
         {
+            SetResetConfiguration(position,lookAt.position);
+        }
+        
+        public void SetResetConfiguration(Vector3 position, Vector3 pointToLook)
+        {
             originalCameraPosition = position;
-            originalCameraLookAt = lookAt;
+            originalCameraPointToLookAt = pointToLook;
         }
 
         public void ResetCameraPosition()
         {
             SetPosition(originalCameraPosition);
-            LookAt(originalCameraLookAt);
+            LookAt(originalCameraPointToLookAt);
             direction = Vector3.zero;
         }
 
@@ -598,7 +603,7 @@ namespace DCL.Camera
             Vector3 currentPos = transform.position;
             Vector3 currentLookAt = transform.forward;
             SetPosition(originalCameraPosition);
-            transform.LookAt(originalCameraLookAt);
+            transform.LookAt(originalCameraPointToLookAt);
 
             var current = camera.targetTexture;
             camera.targetTexture = null;

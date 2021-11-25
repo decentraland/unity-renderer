@@ -63,8 +63,6 @@ public class BIWSaveController : BIWController, IBIWSaveController
         if (numberOfSaves > 0)
         {
             ForceSave();
-
-            context.editorContext.editorHUD?.SaveSceneInfo();
             ResetNumberOfSaves();
         }
 
@@ -93,12 +91,6 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
         if (DataStore.i.builderInWorld.isDevBuild.Get() && sceneManifest != null)
         {
-            context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
-            {
-                if(sceneSnapshot != null)
-                    context.builderAPIController.SetThumbnail(sceneManifest.project.id, sceneSnapshot);
-            });
-            
             sceneManifest.scene = ManifestTranslator.TranslateSceneToManifest(sceneToEdit);
             context.builderAPIController.SetManifest(sceneManifest);
         }

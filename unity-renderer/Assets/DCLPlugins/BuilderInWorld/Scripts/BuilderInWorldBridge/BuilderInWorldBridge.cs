@@ -277,8 +277,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         sceneEvent.sceneId = sceneId;
         sceneEvent.eventType = BIWSettings.STATE_EVENT_NAME;
         sceneEvent.payload = addEntityEvent;
-
-
+        
         //Note(Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
         string message = JsonConvert.SerializeObject(sceneEvent);
         WebInterface.BuilderInWorldMessage(BIWSettings.SCENE_EVENT_NAME, message);

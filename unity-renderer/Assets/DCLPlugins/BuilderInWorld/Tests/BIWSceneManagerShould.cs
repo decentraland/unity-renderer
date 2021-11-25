@@ -44,6 +44,20 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         //Assert
         mainController.context.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
+    
+    [Test]
+    public void StartExitModeScreenShot()
+    {
+        // Arrange
+        mainController.context.editorContext.saveController.Configure().GetSaveTimes().Returns(2);
+
+        // Act
+        mainController.StartExitMode();
+
+        // Assert
+        mainController.context.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+    }
+    
 
     [Test]
     public void SetFlagProperlyWhenBuilderInWorldIsEntered()
