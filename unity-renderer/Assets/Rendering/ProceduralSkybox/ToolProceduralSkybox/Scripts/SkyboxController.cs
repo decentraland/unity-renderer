@@ -32,6 +32,7 @@ namespace DCL.Skybox
         private bool isPaused;
         private float timeNormalizationFactor;
         private int slotCount;
+        private bool overrideByEditor = false;
 
         public override void Initialize()
         {
@@ -76,6 +77,10 @@ namespace DCL.Skybox
 
         private void KernelConfig_OnChange(KernelConfigModel current, KernelConfigModel previous)
         {
+            if (overrideByEditor)
+            {
+                return;
+            }
             // set skyboxConfig to true
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
             DataStore.i.skyboxConfig.configToLoad.Set(current.proceduralSkyboxConfig.configToLoad);
@@ -92,6 +97,11 @@ namespace DCL.Skybox
         /// <param name="previous"></param>
         public void UpdateConfig(bool current = true, bool previous = false)
         {
+            if (overrideByEditor)
+            {
+                return;
+            }
+
             if (loadedConfig != DataStore.i.skyboxConfig.configToLoad.Get())
             {
                 // Apply configuration
@@ -141,6 +151,11 @@ namespace DCL.Skybox
         /// </summary>
         bool ApplyConfig()
         {
+            if (overrideByEditor)
+            {
+                return false;
+            }
+
             if (!SelectSkyboxConfiguration())
             {
                 return false;
@@ -184,7 +199,13 @@ namespace DCL.Skybox
         private bool SelectSkyboxConfiguration()
         {
             bool tempConfigLoaded = true;
-            string configToLoad = DEFAULT_SKYBOX_ID;
+
+            string configToLoad = loadedConfig;
+            if (string.IsNullOrEmpty(loadedConfig))
+            {
+                configToLoad = DEFAULT_SKYBOX_ID;
+            }
+
 
             if (overrideDefaultSkybox)
             {
@@ -243,6 +264,9 @@ namespace DCL.Skybox
                 RenderSettings.skybox = selectedMat;
             }
 
+            // Update loaded config
+            loadedConfig = configToLoad;
+
             return tempConfigLoaded;
         }
 
@@ -256,6 +280,12 @@ namespace DCL.Skybox
         public override void Update()
         {
             if (configuration == null || isPaused || !DataStore.i.skyboxConfig.useProceduralSkybox.Get())
+            {
+                return;
+            }
+
+            // Control is in editor tool
+            if (overrideByEditor)
             {
                 return;
             }
@@ -280,9 +310,17 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
             configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
+            KernelConfig.i.OnChange -= KernelConfig_OnChange;
         }
 
-        public void PauseTime() { isPaused = true; }
+        public void PauseTime(bool overrideTime = false, float newTime = 0)
+        {
+            isPaused = true;
+            if (overrideTime)
+            {
+                timeOfTheDay = newTime;
+            }
+        }
 
         public void ResumeTime(bool overrideTime = false, float newTime = 0)
         {
@@ -309,6 +347,41 @@ namespace DCL.Skybox
         public SkyboxConfiguration GetCurrentConfiguration() { return configuration; }
 
         public float GetCurrentTimeOfTheDay() { return timeOfTheDay; }
+
+        public bool SetOverrideController(bool editorOveride)
+        {
+            overrideByEditor = editorOveride;
+            return overrideByEditor;
+        }
+
+        // Whenever Skybox editor closed at runtime control returns back to controller with the values in the editor
+        public bool GetControlBackFromEditor(string currentConfig, float timeOfTheday, float lifecycleDuration, bool isPaused)
+        {
+            overrideByEditor = false;
+
+            DataStore.i.skyboxConfig.configToLoad.Set(currentConfig);
+            DataStore.i.skyboxConfig.lifecycleDuration.Set(lifecycleDuration);
+
+            if (isPaused)
+            {
+                PauseTime(true, timeOfTheday);
+            }
+            else
+            {
+                ResumeTime(true, timeOfTheday);
+            }
+
+            // Call update on skybox config which will call Update config in this class.
+            DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
+
+            return overrideByEditor;
+        }
+
+        public void UpdateConfigurationTimelineEvent(SkyboxConfiguration newConfig)
+        {
+            configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
+            newConfig.OnTimelineEvent += Configuration_OnTimelineEvent;
+        }
 
     }
 }

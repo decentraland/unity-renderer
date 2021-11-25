@@ -65,13 +65,13 @@ namespace DCL
         public bool soloScene = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
-        [Header("Skybox Settings")]
-        public bool useProceduralSkybox;
-        public string configToLoad = "Generic Skybox";
-        public float lifecycleDuration = 1;
-        public bool pauseTime;
-        public bool jumpTime;
-        public float jumpToTime;
+        //[Header("Skybox Settings")]
+        //public bool useProceduralSkybox;
+        //public string configToLoad = "Generic Skybox";
+        //public float lifecycleDuration = 1;
+        //public bool pauseTime;
+        //public bool jumpTime;
+        //public float jumpToTime;
 
         private void Awake()
         {
@@ -96,7 +96,7 @@ namespace DCL
             }
 
             // Get changes of skybox config
-            DataStore.i.skyboxConfig.objectUpdated.OnChange += SkyboxConfigChanged;
+            //DataStore.i.skyboxConfig.objectUpdated.OnChange += SkyboxConfigChanged;
         }
 
         private void OnCommunicationReadyChangedValue(bool newState, bool prevState)
@@ -201,35 +201,35 @@ namespace DCL
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
 
-        private void SkyboxConfigChanged(bool current, bool previous)
-        {
-            useProceduralSkybox = DataStore.i.skyboxConfig.useProceduralSkybox.Get();
-            configToLoad = DataStore.i.skyboxConfig.configToLoad.Get();
-            lifecycleDuration = DataStore.i.skyboxConfig.lifecycleDuration.Get();
-        }
+        //private void SkyboxConfigChanged(bool current, bool previous)
+        //{
+        //    useProceduralSkybox = DataStore.i.skyboxConfig.useProceduralSkybox.Get();
+        //    configToLoad = DataStore.i.skyboxConfig.configToLoad.Get();
+        //    lifecycleDuration = DataStore.i.skyboxConfig.lifecycleDuration.Get();
+        //}
 
-        private void ApplySkyboxConfig()
-        {
-            DataStore.i.skyboxConfig.useProceduralSkybox.Set(useProceduralSkybox);
-            DataStore.i.skyboxConfig.configToLoad.Set(configToLoad);
-            DataStore.i.skyboxConfig.lifecycleDuration.Set(lifecycleDuration);
-            DataStore.i.skyboxConfig.pauseTime.Set(pauseTime);
-            if (jumpTime)
-            {
-                DataStore.i.skyboxConfig.jumpTime = true;
-                DataStore.i.skyboxConfig.jumpToTime.Set(jumpToTime);
-                jumpTime = false;
-            }
-            DataStore.i.skyboxConfig.objectUpdated.Set(true);
-        }
+        //private void ApplySkyboxConfig()
+        //{
+        //    DataStore.i.skyboxConfig.useProceduralSkybox.Set(useProceduralSkybox);
+        //    DataStore.i.skyboxConfig.configToLoad.Set(configToLoad);
+        //    DataStore.i.skyboxConfig.lifecycleDuration.Set(lifecycleDuration);
+        //    DataStore.i.skyboxConfig.pauseTime.Set(pauseTime);
+        //    if (jumpTime)
+        //    {
+        //        DataStore.i.skyboxConfig.jumpTime = true;
+        //        DataStore.i.skyboxConfig.jumpToTime.Set(jumpToTime);
+        //        jumpTime = false;
+        //    }
+        //    DataStore.i.skyboxConfig.objectUpdated.Set(true);
+        //}
 
-        private void OnValidate()
-        {
-            // Changes to be applied while in editor
-            if (Application.isPlaying)
-            {
-                ApplySkyboxConfig();
-            }
-        }
+        //private void OnValidate()
+        //{
+        //    // Changes to be applied while in editor
+        //    if (Application.isPlaying)
+        //    {
+        //        ApplySkyboxConfig();
+        //    }
+        //}
     }
 }
