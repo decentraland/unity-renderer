@@ -35,9 +35,7 @@ namespace DCL.Components.Video.Plugin
             switch (plugin.GetState(videoPlayerId))
             {
                 case VideoState.ERROR:
-                    #if !UNITY_EDITOR
                     Debug.LogError(plugin.GetError(videoPlayerId));
-                    #endif
                     break;
                 case VideoState.READY:
                     if (!isReady)
