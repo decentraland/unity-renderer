@@ -18,5 +18,6 @@ namespace DCL.SettingsCommon
         public bool profanityChatFiltering;
         public bool nightMode;
         public bool hideUI;
+        public bool showAvatarNames;
     }
 }

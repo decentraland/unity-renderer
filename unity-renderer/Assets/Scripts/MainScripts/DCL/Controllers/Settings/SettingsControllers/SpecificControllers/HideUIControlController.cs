@@ -10,7 +10,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             base.Initialize();
 
-            CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
+            CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenChanged;
+            AllUIHiddenChanged(CommonScriptableObjects.allUIHidden.Get(), false);
         }
 
         public override object GetStoredValue() { return currentGeneralSettings.hideUI; }
@@ -25,10 +26,10 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             base.OnDestroy();
 
-            CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
+            CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
         }
 
-        private void AllUIHidden_OnChange(bool current, bool previous)
+        private void AllUIHiddenChanged(bool current, bool previous)
         {
             currentGeneralSettings.hideUI = current;
             ApplySettings();

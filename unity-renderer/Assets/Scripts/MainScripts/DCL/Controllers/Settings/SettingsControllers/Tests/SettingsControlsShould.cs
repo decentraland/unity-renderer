@@ -487,5 +487,20 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "hideUI stored value mismatch");
         }
+
+        [Test]
+        public void ChangeShowAvatarNamesCorrectly()
+        {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<ShowAvatarNamesControlController>();
+            settingController.Initialize();
+
+            // Act
+            bool newValue = true;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "showAvatarNames stored value mismatch");
+        }
     }
 }

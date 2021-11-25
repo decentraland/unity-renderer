@@ -100,7 +100,8 @@ namespace DCL.SettingsCommon
                 namesOpacity = 0.5f,
                 profanityChatFiltering = true,
                 nightMode = false,
-                hideUI = false
+                hideUI = false,
+                showAvatarNames = true
             };
         }
 
