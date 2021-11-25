@@ -23,6 +23,7 @@ namespace UnityGLTF.Cache
         /// <param name="uri">The relative or local uri of the image</param>
         /// <param name="idSuffix">A global identifier to prevent collisions in case the local uri between different loaded images is the same</param>
         /// <param name="texture">The texture to cached image</param>
+        /// <param name="linear">Is the texture in linear color space</param>
         public static RefCountedTextureData AddImage(string uri, string idSuffix, Texture2D texture)
         {
             var key = GetCacheId(uri, idSuffix);
@@ -34,9 +35,10 @@ namespace UnityGLTF.Cache
         /// </summary>
         /// <param name="fullId">The relative or local uri of the image</param>
         /// <param name="texture">The texture to cached image</param>
-        public static RefCountedTextureData AddImage(string fullId, Texture2D texture)
+        /// <param name="linear">Is the texture in linear color space</param>
+        public static RefCountedTextureData AddImage(string fullId, Texture2D texture, bool linear = false)
         {
-            var refCountedTextureData = new RefCountedTextureData(fullId, texture);
+            var refCountedTextureData = new RefCountedTextureData(fullId, texture, linear);
             ImageCacheByUri[fullId] = refCountedTextureData;
             return refCountedTextureData;
         }

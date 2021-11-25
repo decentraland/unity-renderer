@@ -757,7 +757,7 @@ namespace UnityGLTF
                 //NOTE(Brian): This breaks importing in editor mode
                 texture.Compress(false);
             }
-
+            
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
@@ -2385,11 +2385,16 @@ namespace UnityGLTF
                 source = PersistentAssetCache.GetImage(imageId);
                 source.IncreaseRefCount();
 
+                if (source.linear != linear)
+                {
+                    Debug.LogError($"GLTF IMPORTER WARNING: using same texture as linear and srgb will lead to visual artifacts. If '{image.Uri}' is being used as a normal map or metallic map, make sure it's only used in those material properties on every model.");
+                }
+                
                 _assetCache.ImageCache[sourceId] = source.Texture;
 
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
-                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {sourceId} / {image.Uri} / {id}, applying invalid-tex texture...");
+                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {image.Uri} / {id}, applying invalid-tex texture...");
                     _assetCache.ImageCache[sourceId] = Texture2D.redTexture;
                 }
             }
@@ -2399,17 +2404,17 @@ namespace UnityGLTF
 
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
-                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {sourceId} / {image.Uri} / {id}, applying invalid-tex texture...");
+                    Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {image.Uri} / {id}, applying invalid-tex texture...");
                     _assetCache.ImageCache[sourceId] = Texture2D.redTexture;
                 }
 
                 if (addImagesToPersistentCaching)
                 {
-                    source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId]);
+                    source = PersistentAssetCache.AddImage(imageId, _assetCache.ImageCache[sourceId], linear);
                 }
                 else
                 {
-                    source = new RefCountedTextureData(imageId, _assetCache.ImageCache[sourceId]);
+                    source = new RefCountedTextureData(imageId, _assetCache.ImageCache[sourceId], linear);
                 }
 
                 source.IncreaseRefCount();
@@ -2486,7 +2491,6 @@ namespace UnityGLTF
 
         string TextureSettingsToId(TextureCreationSettings textureSettings)
         {
-            // We don't care about anything else.
             return "W" + textureSettings.wrapMode;
         }
 
