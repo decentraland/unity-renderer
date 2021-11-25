@@ -17,8 +17,8 @@ namespace UnityGLTF
 
         public double budgetPerFrameInMilliseconds
         {
-            get => throttlingCounter.evaluationTimeElapsedCap;
-            set => throttlingCounter.evaluationTimeElapsedCap = value;
+            get => throttlingCounter.budgetPerFrame * 1000;
+            set => throttlingCounter.budgetPerFrame = value / 1000.0;
         }
 
         public bool EvaluateTimeBudget(double elapsedTime)

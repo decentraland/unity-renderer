@@ -203,6 +203,7 @@ namespace UnityGLTF
         {
             _loader = externalDataLoader;
             this.asyncCoroutineHelper = asyncCoroutineHelper;
+            skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
         }
 
         public void Dispose()

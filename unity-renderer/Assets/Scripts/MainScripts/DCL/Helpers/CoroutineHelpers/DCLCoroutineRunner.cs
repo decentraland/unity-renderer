@@ -79,7 +79,9 @@ namespace DCL
                 // But this means that yield return null; will no longer skip a frame unless the time budget
                 // is exceeded. If the user wanted to skip the frame explicitly this detail would change
                 // the intended behaviour and introduce bugs.
-                bool handleTimeBudget = timeBudgetCounter != null && currentYieldedObject is SkipFrameIfDepletedTimeBudget;
+                bool handleTimeBudget = timeBudgetCounter != null
+                                        && currentYieldedObject != null
+                                        && currentYieldedObject is SkipFrameIfDepletedTimeBudget;
 
                 if ( handleTimeBudget )
                 {
