@@ -55,14 +55,14 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     [SerializeField] internal Button unblockPlayerButton;
 
     internal readonly List<PlayerInfoCollectibleItem> playerInfoCollectibles = new List<PlayerInfoCollectibleItem>(10);
-    internal UserProfile currentUserProfile;
     private UnityAction<bool> toggleChangedDelegate => (x) => UpdateTabs();
-    private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
 
     private MouseCatcher mouseCatcher;
-    private List<string> loadedWearables = new List<string>();
 
-    public static PlayerInfoCardHUDView CreateView() { return Instantiate(Resources.Load<GameObject>(PREFAB_PATH)).GetComponent<PlayerInfoCardHUDView>(); }
+    public static PlayerInfoCardHUDView CreateView()
+    {
+        return Instantiate(Resources.Load<GameObject>(PREFAB_PATH)).GetComponent<PlayerInfoCardHUDView>();
+    }
 
     public void Initialize(UnityAction cardClosedCallback,
         UnityAction reportPlayerCallback,
@@ -113,10 +113,6 @@ public class PlayerInfoCardHUDView : MonoBehaviour
             }
         }
 
-
-        FriendsController.i.OnUpdateFriendship -= OnFriendStatusUpdated;
-        FriendsController.i.OnUpdateFriendship += OnFriendStatusUpdated;
-
         if (SceneReferences.i != null)
         {
             var mouseCatcher = DCL.SceneReferences.i.mouseCatcher;
@@ -129,24 +125,11 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         }
     }
 
-    private void OnFriendStatusUpdated(string userId, FriendshipAction action)
-    {
-        if (currentUserProfile == null)
-            return;
-
-        UpdateFriendButton();
-    }
-
     public void SetCardActive(bool active)
     {
         if (active && mouseCatcher != null)
         {
             mouseCatcher.UnlockCursor();
-        }
-        else if (!active)
-        {
-            CatalogController.RemoveWearablesInUse(loadedWearables);
-            loadedWearables.Clear();
         }
 
         cardCanvas.enabled = active;
@@ -161,74 +144,27 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         }
     }
 
-    public void SetFaceSnapshot(Texture2D texture) { avatarPicture.texture = texture; }
-
-    public void SetUserProfile(UserProfile userProfile)
+    public void SetFaceSnapshot(Texture2D texture)
     {
-        Assert.IsTrue(userProfile != null, "userProfile can't be null");
-        
-        name.text = FilterName(userProfile);
-        description.text = FilterDescription(userProfile);
-
-        ClearCollectibles();
-
-        CatalogController.RequestOwnedWearables(userProfile.userId)
-                         .Then((ownedWearables) =>
-                         {
-                             userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                             loadedWearables.AddRange(ownedWearables.Select(x => x.id));
-
-                             var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
-                             for (int index = 0; index < collectiblesIds.Length; index++)
-                             {
-                                 string collectibleId = collectiblesIds[index];
-                                 CatalogController.wearableCatalog.TryGetValue(collectibleId, out WearableItem collectible);
-                                 if (collectible == null)
-                                     continue;
-
-                                 var playerInfoCollectible =
-                                     collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(collectible.rarity,
-                                         wearablesContainer.transform);
-                                 if (playerInfoCollectible == null)
-                                     continue;
-                                 playerInfoCollectibles.Add(playerInfoCollectible);
-                                 playerInfoCollectible.Initialize(collectible);
-                             }
-
-                             emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
-                         })
-                         .Catch((error) => Debug.Log(error));
-
-        SetIsBlocked(IsBlocked(userProfile.userId));
-
-        // Remove old profile listener and set the new one
-        if ( currentUserProfile != null )
-            currentUserProfile.snapshotObserver.RemoveListener(SetFaceSnapshot);
-
-        userProfile.snapshotObserver.AddListener(SetFaceSnapshot);
-
-        currentUserProfile = userProfile;
-
-        UpdateFriendButton();
+        avatarPicture.texture = texture;
     }
 
-    private string FilterName(UserProfile userProfile)
+    public void SetName(string name) => this.name.text = name;
+
+    public void SetDescription(string description) => this.description.text = description;
+
+    public void HideFriendshipInteraction()
     {
-        return DataStore.i.settings.profanityChatFilteringEnabled.Get()
-            ? ProfanityFilterSharedInstances.regexFilter.Filter(userProfile.userName)
-            : userProfile.userName;
-    }
-    
-    private string FilterDescription(UserProfile userProfile)
-    {
-        return DataStore.i.settings.profanityChatFilteringEnabled.Get()
-            ? ProfanityFilterSharedInstances.regexFilter.Filter(userProfile.description)
-            : userProfile.description;
+        requestReceivedContainer.SetActive(false);
+        addFriendButton.gameObject.SetActive(false);
+        alreadyFriendsContainer.SetActive(false);
+        requestSentButton.gameObject.SetActive(false);
     }
 
-    private void UpdateFriendButton()
+    public void UpdateFriendshipInteraction(bool canUseFriendButton,
+        FriendsController.UserStatus status)
     {
-        if (currentUserProfile == null)
+        if (status == null)
         {
             requestReceivedContainer.SetActive(false);
             addFriendButton.gameObject.SetActive(false);
@@ -236,8 +172,6 @@ public class PlayerInfoCardHUDView : MonoBehaviour
             requestSentButton.gameObject.SetActive(false);
             return;
         }
-
-        bool canUseFriendButton = FriendsController.i != null && FriendsController.i.isInitialized && currentUserProfile.hasConnectedWeb3;
 
         friendStatusContainer.SetActive(canUseFriendButton);
 
@@ -249,8 +183,6 @@ public class PlayerInfoCardHUDView : MonoBehaviour
             return;
         }
 
-        var status = FriendsController.i.GetUserStatus(currentUserProfile.userId);
-
         addFriendButton.gameObject.SetActive(false);
         alreadyFriendsContainer.SetActive(false);
         requestReceivedContainer.SetActive(false);
@@ -258,7 +190,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
         switch (status.friendshipStatus)
         {
-            case FriendshipStatus.NONE:
+            case FriendshipStatus.NOT_FRIEND:
                 addFriendButton.gameObject.SetActive(true);
                 break;
             case FriendshipStatus.FRIEND:
@@ -283,22 +215,20 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     {
         if (gameObject.activeSelf != visible)
         {
-            if ( visible )
+            if (visible)
             {
                 AudioScriptableObjects.dialogOpen.Play(true);
-                currentUserProfile.snapshotObserver.AddListener(SetFaceSnapshot);
             }
             else
             {
                 AudioScriptableObjects.dialogClose.Play(true);
-                currentUserProfile.snapshotObserver.RemoveListener(SetFaceSnapshot);
             }
         }
 
         gameObject.SetActive(visible);
     }
 
-    private void ClearCollectibles()
+    public void ClearCollectibles()
     {
         for (var i = playerInfoCollectibles.Count - 1; i >= 0; i--)
         {
@@ -308,27 +238,31 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         }
     }
 
-    internal bool IsBlocked(string userId)
+    public void SetWearables(IEnumerable<WearableItem> wearables)
     {
-        if (ownUserProfile == null || ownUserProfile.blocked == null)
-            return false;
+        var emptyWearables = true;
 
-        for (int i = 0; i < ownUserProfile.blocked.Count; i++)
+        foreach (var wearable in wearables)
         {
-            if (ownUserProfile.blocked[i] == userId)
-                return true;
+            emptyWearables = false;
+            var playerInfoCollectible =
+                collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(wearable.rarity,
+                    wearablesContainer.transform);
+            if (playerInfoCollectible == null) continue;
+            playerInfoCollectibles.Add(playerInfoCollectible);
+            playerInfoCollectible.Initialize(wearable);
         }
 
-        return false;
+        emptyCollectiblesImage.SetActive(emptyWearables);
     }
 
-    private void OnPointerDown() { hideCardButton.onClick.Invoke(); }
+    private void OnPointerDown()
+    {
+        hideCardButton.onClick.Invoke();
+    }
 
     private void OnDestroy()
     {
-        if ( currentUserProfile != null )
-            currentUserProfile.snapshotObserver.RemoveListener(SetFaceSnapshot);
-
         if (mouseCatcher != null)
             mouseCatcher.OnMouseDown -= OnPointerDown;
     }
