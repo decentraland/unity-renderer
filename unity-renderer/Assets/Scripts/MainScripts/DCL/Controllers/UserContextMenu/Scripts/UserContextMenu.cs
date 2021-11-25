@@ -307,7 +307,7 @@ public class UserContextMenu : MonoBehaviour
             }
             else
             {
-                SetupFriendship(FriendshipStatus.NONE);
+                SetupFriendship(FriendshipStatus.NOT_FRIEND);
             }
             FriendsController.i.OnUpdateFriendship -= OnFriendActionUpdate;
             FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
@@ -347,7 +347,7 @@ public class UserContextMenu : MonoBehaviour
                 messageButton.gameObject.SetActive(false);
             }
         }
-        else if (friendshipStatus == FriendshipStatus.NONE)
+        else if (friendshipStatus == FriendshipStatus.NOT_FRIEND)
         {
             if (friendshipEnabled)
             {
@@ -394,7 +394,7 @@ public class UserContextMenu : MonoBehaviour
         }
         else if (action == FriendshipAction.DELETED || action == FriendshipAction.CANCELLED || action == FriendshipAction.REJECTED)
         {
-            SetupFriendship(FriendshipStatus.NONE);
+            SetupFriendship(FriendshipStatus.NOT_FRIEND);
         }
     }
 

@@ -30,7 +30,7 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
     [Header("Configuration")]
     [SerializeField] internal ModalComponentModel model;
 
-    private GameObject content;
+    internal GameObject content;
 
     public override void Start()
     {
