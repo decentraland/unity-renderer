@@ -58,10 +58,12 @@ namespace DCL
             if (current)
             {
                 Debug.unityLogger.logEnabled = true;
+                Debug.Log("Client logging ENABLED");
                 ShowFPSPanel();
             }
             else
             {
+                Debug.Log("Client logging DISABLED");
                 Debug.unityLogger.logEnabled = false;
                 HideFPSPanel();
             }
