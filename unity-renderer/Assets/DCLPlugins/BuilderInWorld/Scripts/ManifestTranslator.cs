@@ -14,6 +14,57 @@ namespace DCL.Builder
 {
     public static class ManifestTranslator
     {
+        private static readonly Dictionary<string, int> idToHumanReadableDictionary = new Dictionary<string,int>() {
+            
+            {"Transform", (int) CLASS_ID_COMPONENT.TRANSFORM},
+            
+            {"GLTFShape",(int) CLASS_ID.GLTF_SHAPE},
+            
+            {"NFTShape",(int) CLASS_ID.NFT_SHAPE},
+            
+            {"Name", (int)CLASS_ID.NAME},
+            
+            { "LockedOnEdit", (int)CLASS_ID.LOCKED_ON_EDIT},
+            
+            {"VisibleOnEdit", (int)CLASS_ID.VISIBLE_ON_EDIT},
+            
+            {"Script",(int) CLASS_ID_COMPONENT.SMART_ITEM}
+        };
+
+        public static StatelessManifest SceneToStatelessManifest(ParcelScene scene)
+        {
+            
+            StatelessManifest manifest = new StatelessManifest();
+            manifest.schemaVersion = 1;
+            
+            foreach (var entity in scene.entities.Values)
+            {
+                Entity statlesEntity = new Entity();
+                statlesEntity.id = entity.entityId;
+                
+                foreach (KeyValuePair<CLASS_ID_COMPONENT,IEntityComponent> entityComponent in entity.components)
+                {
+                    Component statelesComponent = new Component();
+                    statelesComponent.type = idToHumanReadableDictionary.FirstOrDefault( x => x.Value == (int)entityComponent.Key).Key;
+                    statelesComponent.value = entityComponent.Value.GetModel();
+                    statlesEntity.components.Add(statelesComponent);
+                }
+                
+                foreach (KeyValuePair<Type, ISharedComponent> entitySharedComponent in entity.sharedComponents)
+                {
+                    Component statelesComponent = new Component();
+                    statelesComponent.type = idToHumanReadableDictionary.FirstOrDefault( x => x.Value == (int)entitySharedComponent.Value.GetClassId()).Key;
+                    statelesComponent.value = entitySharedComponent.Value.GetModel();
+                    statlesEntity.components.Add(statelesComponent);
+                }
+                
+                manifest.entities.Add(statlesEntity);
+            }
+
+            return manifest;
+        }
+        
+        
         public static BuilderScene TranslateSceneToManifest(ParcelScene scene)
         {
             BuilderScene builderScene = new BuilderScene();
