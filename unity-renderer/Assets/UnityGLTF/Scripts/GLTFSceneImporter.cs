@@ -2104,17 +2104,10 @@ namespace UnityGLTF
                 yield return YieldOnTimeout();
             }
 
-            if (AreMeshTrianglesValid(unityMeshData.Triangles, vertexCount)) // Some scenes contain broken meshes that can trigger a fatal error
+            mesh.triangles = unityMeshData.Triangles;
+            if (ShouldYieldOnTimeout())
             {
-                mesh.triangles = unityMeshData.Triangles;
-                if (ShouldYieldOnTimeout())
-                {
-                    yield return YieldOnTimeout();
-                }
-            }
-            else
-            {
-                Debug.Log("GLTFSceneImporter - ERROR - ConstructUnityMesh - Couldn't assign triangles to mesh as there are indices pointing to vertices out of bounds");
+                yield return YieldOnTimeout();
             }
 
             mesh.tangents = unityMeshData.Tangents;
