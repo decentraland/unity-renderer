@@ -21,6 +21,7 @@ namespace DCL
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         internal IPlayerName playerName;
+        internal IAvatarReporterController avatarReporterController = new AvatarReporterController();
 
         private StringVariable currentPlayerInfoCardId;
 
@@ -125,6 +126,8 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+            
+            avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
 
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
@@ -176,6 +179,7 @@ namespace DCL
             {
                 player.worldPosition = entity.gameObject.transform.position;
                 player.forwardDirection = entity.gameObject.transform.forward;
+                avatarReporterController.ReportAvatarPosition(player.worldPosition);
             }
         }
 
@@ -242,6 +246,7 @@ namespace DCL
                 entity.OnTransformChange = null;
                 entity = null;
             }
+            avatarReporterController.ReportAvatarRemoved();
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }

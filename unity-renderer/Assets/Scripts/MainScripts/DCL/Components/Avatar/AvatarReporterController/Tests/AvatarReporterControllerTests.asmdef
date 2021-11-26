@@ -1,0 +1,23 @@
+{
+    "name": "AvatarReporterControllerTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ea4afedd0e40c43fb98d130cd4f3ea0f",
+        "GUID:770fb68e03ebf490f8d0ea1ef46f406e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

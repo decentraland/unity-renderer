@@ -1,0 +1,17 @@
+{
+    "name": "AvatarReporterController",
+    "rootNamespace": "",
+    "references": [
+        "GUID:770fb68e03ebf490f8d0ea1ef46f406e",
+        "GUID:4973650d2444c4561a15d50f24d91cd9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
