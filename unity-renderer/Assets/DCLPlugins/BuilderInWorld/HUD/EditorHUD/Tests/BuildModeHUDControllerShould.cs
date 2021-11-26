@@ -37,7 +37,7 @@ namespace Tests.BuildModeHUDControllers
 
             builderEditorHudController = Substitute.ForPartsOf<BuilderEditorHUDController>();
             builderEditorHudController.Configure().CreateView().Returns(info => Substitute.For<IBuildModeHUDView>());
-            builderEditorHudController.Initialize(testControllers);
+            builderEditorHudController.Initialize(testControllers, BIWTestUtils.CreateMockedContext());
         }
 
         [TearDown]
@@ -135,9 +135,8 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetPublicationScreenshot(testScreenshot);
-
             // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
-            //buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(true);
+            //builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetActive(true);
         }
 
         [Test]
@@ -149,12 +148,12 @@ namespace Tests.BuildModeHUDControllers
             {
                 newProjectDetailsConfirmed = true;
             };
+            builderEditorHudController.context.cameraController.Configure().GetLastScreenshot().Returns(new Texture2D(120,120));
 
             // Act
             builderEditorHudController.SaveSceneInfo();
 
             // Assert
-            builderEditorHudController.controllers.newProjectDetailsController.Received(1).GetSceneScreenshotTexture();
             builderEditorHudController.controllers.newProjectDetailsController.Received(1).GetSceneName();
             builderEditorHudController.controllers.newProjectDetailsController.Received(1).GetSceneDescription();
             builderEditorHudController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(Arg.Any<string>(), Arg.Any<string>());

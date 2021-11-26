@@ -79,8 +79,9 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
         ConfigureQuickBarController();
     }
 
-    public void Initialize(BuildModeHUDInitializationModel controllers)
+    public void Initialize(BuildModeHUDInitializationModel controllers,IContext context)
     {
+        this.context = context;
         this.controllers = controllers;
 
         CreateMainView();

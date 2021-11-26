@@ -473,12 +473,15 @@ namespace DCL.Camera
 
         public void LookAt(Transform transformToLookAt)
         {
-            transform.LookAt(transformToLookAt);
+            LookAt(transformToLookAt.position);
+        }
+
+        public void LookAt(Vector3 pointToLookAt)
+        {
+            transform.LookAt(pointToLookAt);
             yaw = transform.eulerAngles.y;
             pitch = transform.eulerAngles.x;
         }
-
-        public void LookAt(Vector3 pointToLookAt) { transform.LookAt(pointToLookAt); }
 
         public void SmoothLookAt(Transform transformToLookAt) { SmoothLookAt(transformToLookAt.position); }
 
