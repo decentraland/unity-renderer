@@ -4,6 +4,7 @@ To set up the CI, you will need:
 
 - Setup your project in CircleCI
 - Create the Environment Variable for the Unity License and an AWS S3 Bucket
+- `Performance Plan` in CircleCI because you need an `XLarge` computer to build Unity
 
 ## Setup your project in CircleCI
 
