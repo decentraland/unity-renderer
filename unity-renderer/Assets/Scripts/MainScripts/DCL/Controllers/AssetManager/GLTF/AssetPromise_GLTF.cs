@@ -73,6 +73,7 @@ namespace DCL
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
+            gltfComponent.throttlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;
             gltfComponent.Initialize(webRequestController);
 
             GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()

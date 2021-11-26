@@ -5,8 +5,6 @@ namespace UnityGLTF
 {
     public class GLTFThrottlingCounter
     {
-        public static GLTFThrottlingCounter i { get; } = new GLTFThrottlingCounter();
-
         private ThrottlingCounter throttlingCounter = new ThrottlingCounter();
 
         public GLTFThrottlingCounter ()
