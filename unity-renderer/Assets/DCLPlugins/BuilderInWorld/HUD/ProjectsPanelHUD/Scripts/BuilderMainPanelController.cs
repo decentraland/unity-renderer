@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DCL;
 using DCL.Builder;
 using DCL.Builder.Manifest;
 using DCL.Helpers;
 using DCL.Interface;
+using System;
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using Variables.RealmsInfo;
 using Environment = DCL.Environment;
@@ -55,12 +54,17 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal IContext context;
 
+    BaseVariable<Transform> configureBuilderInFullscreenMenu => DataStore.i.exploreV2.configureBuilderInFullscreenMenu;
+
     public BuilderMainPanelController()
     {
         if (DataStore.i.builderInWorld.isDevBuild.Get())
             SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH_DEV)));
         else
             SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
+
+        configureBuilderInFullscreenMenu.OnChange += ConfigureBuilderInFullscreenMenuChanged;
+        ConfigureBuilderInFullscreenMenuChanged(configureBuilderInFullscreenMenu.Get(), null);
     }
 
     internal void SetView(IBuilderMainPanelView view)
@@ -115,6 +119,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         scenesViewController?.Dispose();
 
         newProjectFlowController?.Dispose();
+
+        configureBuilderInFullscreenMenu.OnChange -= ConfigureBuilderInFullscreenMenuChanged;
 
         view.Dispose();
     }
@@ -432,4 +438,6 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             FetchPanelInfo(CACHE_TIME_LAND, 0);
         }
     }
+
+    private void ConfigureBuilderInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
 }
