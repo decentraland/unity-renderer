@@ -16,7 +16,7 @@ async function main() {
   }
 
   if (!process.env.GITLAB_TOKEN) {
-    console.log("GITLAB_STATIC_PIPELINE_TOKEN not present. Skipping CDN pipeline trigger")
+    console.log("GITLAB_TOKEN not present. Skipping CDN pipeline trigger")
     return;
   }
 
@@ -54,6 +54,9 @@ async function getPackageJson(workingDirectory: string) {
 }
 
 async function triggerPipeline(packageName: string, packageVersion: string) {
+  const GITLAB_STATIC_PIPELINE_TOKEN = process.env.GITLAB_TOKEN!
+  const GITLAB_STATIC_PIPELINE_URL = process.env.GITLAB_PIPELINE_URL!
+
   const body = new FormData()
   body.append("token", GITLAB_STATIC_PIPELINE_TOKEN)
   body.append("ref", "master")
