@@ -14,6 +14,8 @@ namespace DCL.Builder
 {
     public static class ManifestTranslator
     {
+        private const string NFT_ETHEREUM_PROTOCOL = "ethereum://";
+
         private static readonly Dictionary<string, int> idToHumanReadableDictionary = new Dictionary<string, int>()
         {
 
@@ -235,7 +237,6 @@ namespace DCL.Builder
             //We set the current scene in the 0,0
             int x = 0;
             int y = 0;
-            // int y = CommonScriptableObjects.playerCoords.Get().y;
 
             parcelData.basePosition =  new Vector2Int(x, y);
 
@@ -303,7 +304,7 @@ namespace DCL.Builder
                         case "NFTShape":
                             //Builder use a different way to load the NFT so we convert it to our system
                             string url = JsonConvert.DeserializeObject<string>(component.data.ToString());
-                            string assedId = url.Replace("ethereum://", "");
+                            string assedId = url.Replace(NFT_ETHEREUM_PROTOCOL, "");
                             int index = assedId.IndexOf("/", StringComparison.Ordinal);
                             string partToremove = assedId.Substring(index);
                             assedId = assedId.Replace(partToremove, "");
@@ -345,5 +346,6 @@ namespace DCL.Builder
 
             return scene;
         }
+
     }
 }
