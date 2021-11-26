@@ -59,11 +59,11 @@ namespace DCL.Builder
             editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
             inputController = context.sceneReferences.inputController;
 
-            
+
             builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
             userProfile = UserProfile.GetOwnUserProfile();
 
-            
+
             context.editorContext.editorHUD.OnPublishAction += TakeSceneScreenshotForPublish;
             context.editorContext.editorHUD.OnStartExitAction += StartExitMode;
             context.editorContext.editorHUD.OnLogoutAction += ExitEditMode;
@@ -94,7 +94,7 @@ namespace DCL.Builder
 
             if (sceneToEdit != null)
                 sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
-            
+
             editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
             context.builderAPIController.OnWebRequestCreated -= WebRequestCreated;
 
@@ -157,7 +157,7 @@ namespace DCL.Builder
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
                                          .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
-            StartFlowWithPermission(targetScene,SOURCE_BUILDER_PANEl);
+            StartFlowWithPermission(targetScene, SOURCE_BUILDER_PANEl);
         }
 
         public void StartEditorFromManifest(Manifest.Manifest manifest)
@@ -167,11 +167,11 @@ namespace DCL.Builder
             //We set the manifest for future saves
             currentManifest = manifest;
             context.editorContext.saveController.SetManifest(manifest);
-            
+
             ParcelScene convertedScene = ManifestTranslator.TranslateManifestToScene(manifest);
-            StartFlow(convertedScene,SOURCE_BUILDER_PANEl, ISceneManager.SceneType.PROJECT);
+            StartFlow(convertedScene, SOURCE_BUILDER_PANEl, ISceneManager.SceneType.PROJECT);
         }
-        
+
         internal void TakeSceneScreenshotForPublish()
         {
             context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
@@ -179,7 +179,7 @@ namespace DCL.Builder
                 context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
             });
         }
-        
+
         public void StartExitMode()
         {
             if (context.editorContext.saveController.GetSaveTimes() > 0)
@@ -190,7 +190,8 @@ namespace DCL.Builder
                     {
                         //This should dissapear when we migrate completely the scene lifecycle to unity 
                         context.editorContext.editorHUD?.SaveSceneInfo();
-                        context.builderAPIController.SetThumbnail(currentManifest.project.id, sceneSnapshot);
+                        if (currentManifest != null)
+                            context.builderAPIController.SetThumbnail(currentManifest.project.id, sceneSnapshot);
                     }
                 });
 
@@ -256,7 +257,7 @@ namespace DCL.Builder
         {
             if (currentState != State.IDLE || targetScene == null)
                 return;
-            
+
             sceneToEdit = targetScene;
             this.sceneType = sceneType;
 
@@ -264,12 +265,12 @@ namespace DCL.Builder
             CommonScriptableObjects.allUIHidden.Set(true);
             NotificationsController.i.allowNotifications = true;
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
-            
+
             //We configure the loading part
             initialLoadingController.SetLoadingType(sceneType);
             initialLoadingController.Show();
             initialLoadingController.SetPercentage(0f);
-            
+
             DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             BIWAnalytics.StartEditorFlow(source);
@@ -385,7 +386,7 @@ namespace DCL.Builder
         {
             if (sceneType == ISceneManager.SceneType.DEPLOYED)
                 DataStore.i.HUDs.loadingHUD.visible.Set(false);
-            
+
             initialLoadingController.SetPercentage(100f);
             initialLoadingController.Hide(true, onHideAction: () =>
             {
@@ -439,7 +440,7 @@ namespace DCL.Builder
                 BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
                 return;
             }
-            
+
             StartFlow(targetScene, source, ISceneManager.SceneType.DEPLOYED);
         }
 
@@ -455,7 +456,7 @@ namespace DCL.Builder
             Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
             Environment.i.world.blockersController.SetEnabled(false);
 
-            if(sceneType == ISceneManager.SceneType.DEPLOYED)
+            if (sceneType == ISceneManager.SceneType.DEPLOYED)
                 builderInWorldBridge.StartKernelEditMode(sceneToEdit);
         }
 
