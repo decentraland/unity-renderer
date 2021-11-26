@@ -6,19 +6,15 @@ namespace DCL
     /// <summary>
     /// Context related to all the systems involved in the execution of decentraland scenes.
     /// </summary>
-    public class HUDContext : System.IDisposable
+    public class HUDContext
     {
-        public readonly IHUDFactory factory = null;
-        public readonly IHUDController controller = null;
-        public HUDContext(IHUDFactory hudFactory, IHUDController hudController)
-        {
-            this.factory = hudFactory;
-            this.controller = hudController;
-        }
+        private ServiceLocator serviceLocator;
+        public IHUDFactory factory => serviceLocator.Get<IHUDFactory>();
+        public IHUDController controller => serviceLocator.Get<IHUDController>();
 
-        public void Dispose()
+        public HUDContext (ServiceLocator serviceLocator)
         {
-            controller?.Dispose();
+            this.serviceLocator = serviceLocator;
         }
     }
 }

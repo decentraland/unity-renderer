@@ -1,6 +1,7 @@
-﻿using DCL.Helpers;
+﻿using System;
+using DCL.Helpers;
 
-public interface IClipboard
+public interface IClipboard : IDisposable
 {
     /// <summary>
     /// Push a string value to the clipboard

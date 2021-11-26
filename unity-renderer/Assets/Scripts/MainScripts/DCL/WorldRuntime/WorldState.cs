@@ -7,14 +7,14 @@ namespace DCL
 {
     public class WorldState : IWorldState
     {
-        public HashSet<string> readyScenes { get; set; } = new HashSet<string>();
-        public Dictionary<string, IParcelScene> loadedScenes { get; set; } = new Dictionary<string, IParcelScene>();
-        public List<IParcelScene> scenesSortedByDistance { get; set; } = new List<IParcelScene>();
+        public HashSet<string> readyScenes { get; set; }
+        public Dictionary<string, IParcelScene> loadedScenes { get; set; }
+        public List<IParcelScene> scenesSortedByDistance { get; set; }
 
         public List<string> globalSceneIds { get; set; }
         public string currentSceneId { get; set; }
 
-        public void Initialize()
+        public WorldState ()
         {
             globalSceneIds = new List<string>();
             currentSceneId = null;
@@ -81,6 +81,10 @@ namespace DCL
             }
 
             return allLoadedParcelCoords;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

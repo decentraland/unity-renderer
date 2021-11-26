@@ -41,7 +41,7 @@ namespace DCL
         private MessagingController globalController = null;
         private MessagingController currentSceneController = null;
 
-        public void Initialize(IMessageProcessHandler messageHandler)
+        public MessagingControllersManager (IMessageProcessHandler messageHandler)
         {
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(messageHandler, GLOBAL_MESSAGING_CONTROLLER);
 

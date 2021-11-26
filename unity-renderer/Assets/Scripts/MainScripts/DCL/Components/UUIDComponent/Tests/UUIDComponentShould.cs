@@ -21,21 +21,12 @@ namespace Tests
     {
         private ParcelScene scene;
 
-        protected override WorldRuntimeContext CreateRuntimeContext()
+        protected override void InitializeServices(ServiceLocator serviceLocator)
         {
-            return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
-            (
-                sceneController: new SceneController(),
-                state: new WorldState(),
-                componentFactory: new RuntimeComponentFactory()
-            );
-        }
-
-        protected override PlatformContext CreatePlatformContext()
-        {
-            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
-                WebRequestController.Create()
-            );
+            serviceLocator.Set<ISceneController>(new SceneController());
+            serviceLocator.Set<IWorldState>(new WorldState());
+            serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory());
+            serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
         }
 
         [UnitySetUp]

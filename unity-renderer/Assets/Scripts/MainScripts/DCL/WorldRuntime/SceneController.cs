@@ -31,7 +31,7 @@ namespace DCL
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
             if (deferredMessagesDecoding) // We should be able to delete this code
-                deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecoding()); //
+                deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecoding());
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
 
@@ -46,6 +46,22 @@ namespace DCL
 
             DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+            
+            if (prewarmSceneMessagesPool)
+            {
+                for (int i = 0; i < 100000; i++)
+                {
+                    sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
+                }
+            }
+
+            if (prewarmEntitiesPool)
+            {
+                PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
+            }
+
+            // Warmup some shader variants
+            Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
         }
 
         private void OnDebugModeSet(bool current, bool previous)
@@ -63,19 +79,18 @@ namespace DCL
             }
         }
 
-        public void Start()
+        private void OnDebugModeSet(bool current, bool previous)
         {
-            if (prewarmSceneMessagesPool)
-            {
-                for (int i = 0; i < 100000; i++)
-                {
-                    sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
-                }
-            }
+            if (current == previous)
+                return;
 
-            if (prewarmEntitiesPool)
+            if (current)
             {
-                PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
+                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
+            }
+            else
+            {
+                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
             }
         }
 

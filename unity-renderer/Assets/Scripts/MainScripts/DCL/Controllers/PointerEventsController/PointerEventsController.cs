@@ -37,7 +37,7 @@ namespace DCL
         List<RaycastResult> uiGraphicRaycastResults = new List<RaycastResult>();
         GraphicRaycaster uiGraphicRaycaster;
 
-        public void Initialize()
+        public PointerEventsController ()
         {
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {
@@ -257,7 +257,7 @@ namespace DCL
             lastHoveredObject = null;
         }
 
-        public void Cleanup()
+        public void Dispose()
         {
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {

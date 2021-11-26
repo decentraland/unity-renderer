@@ -13,6 +13,10 @@ namespace DCL
         private IWebRequestAudio audioClipWebRequest;
         private List<WebRequestAsyncOperation> ongoingWebRequests = new List<WebRequestAsyncOperation>();
 
+        private WebRequestController ()
+        {
+        }
+
         public static WebRequestController Create()
         {
             WebRequestController newWebRequestController = new WebRequestController();

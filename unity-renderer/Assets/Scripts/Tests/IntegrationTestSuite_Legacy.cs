@@ -33,13 +33,7 @@ public class IntegrationTestSuite_Legacy
 
         RenderProfileManifest.i.Initialize();
 
-        Environment.SetupWithBuilders
-        (
-            CreateMessagingContext,
-            CreatePlatformContext,
-            CreateRuntimeContext,
-            HUDContextFactory.CreateDefault
-        );
+        Environment.Setup(ServiceLocatorFactory.CreateDefault());
 
         SetUp_SceneController();
 
@@ -50,15 +44,7 @@ public class IntegrationTestSuite_Legacy
         AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
         yield break;
     }
-
-    protected virtual WorldRuntimeContext CreateRuntimeContext() { return WorldRuntimeContextFactory.CreateDefault(); }
-
-    protected virtual PlatformContext CreatePlatformContext() { return PlatformContextFactory.CreateDefault(); }
-
-    protected virtual MessagingContext CreateMessagingContext()
-    {
-        return MessagingContextFactory.CreateDefault();
-    }
+   
 
     protected virtual List<GameObject> SetUp_LegacySystems()
     {

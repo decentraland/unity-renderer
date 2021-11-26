@@ -3,12 +3,14 @@
     /// <summary>
     /// Context related to enqueueing and processing of world runtime scene messages.
     /// </summary>
-    public class MessagingContext : System.IDisposable
+    public class MessagingContext
     {
-        public readonly IMessagingControllersManager manager;
+        private ServiceLocator serviceLocator;
+        public IMessagingControllersManager manager => serviceLocator.Get<IMessagingControllersManager>();
 
-        public MessagingContext(IMessagingControllersManager manager) { this.manager = manager; }
-
-        public void Dispose() { manager.Dispose(); }
+        public MessagingContext (ServiceLocator serviceLocator)
+        {
+            this.serviceLocator = serviceLocator;
+        }
     }
 }

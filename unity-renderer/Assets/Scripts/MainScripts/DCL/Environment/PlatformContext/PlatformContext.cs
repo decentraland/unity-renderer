@@ -7,61 +7,29 @@ namespace DCL
     /// Context related to specific platform handling.
     /// Memory, rendering, input, IO and debug systems belong here.
     /// </summary>
-    public class PlatformContext : System.IDisposable
+    public class PlatformContext
     {
-        public readonly IMemoryManager memoryManager;
-        public readonly ICullingController cullingController;
-        public readonly IParcelScenesCleaner parcelScenesCleaner;
-        public readonly IClipboard clipboard;
-        public readonly IPhysicsSyncController physicsSyncController;
-        public readonly IWebRequestController webRequest;
-        public readonly IServiceProviders serviceProviders;
-        public readonly IIdleChecker idleChecker;
-        public readonly IAvatarsLODController avatarsLODController;
-        public readonly IFeatureFlagController featureFlagController;
-        public readonly IUpdateEventHandler updateEventHandler;
+        public ServiceLocator serviceLocator;
+        public IMemoryManager memoryManager => serviceLocator.Get<IMemoryManager>();
+        public ICullingController cullingController  => serviceLocator.Get<ICullingController>();
+        public IParcelScenesCleaner parcelScenesCleaner  => serviceLocator.Get<IParcelScenesCleaner>();
+        public IClipboard clipboard  => serviceLocator.Get<IClipboard>();
+        public IPhysicsSyncController physicsSyncController  => serviceLocator.Get<IPhysicsSyncController>();
+        public IWebRequestController webRequest => serviceLocator.Get<IWebRequestController>();
+        public IServiceProviders serviceProviders => serviceLocator.Get<IServiceProviders>();
+        public IIdleChecker idleChecker => serviceLocator.Get<IIdleChecker>();
+        public IAvatarsLODController avatarsLODController => serviceLocator.Get<IAvatarsLODController>();
+        public IFeatureFlagController featureFlagController => serviceLocator.Get<IFeatureFlagController>();
 
-        public PlatformContext(IMemoryManager memoryManager,
-            ICullingController cullingController,
-            IClipboard clipboard,
-            IPhysicsSyncController physicsSyncController,
-            IParcelScenesCleaner parcelScenesCleaner,
-            IWebRequestController webRequest,
-            IServiceProviders serviceProviders,
-            IIdleChecker idleChecker,
-            IAvatarsLODController avatarsLODController,
-            IFeatureFlagController featureFlagController,
-            IUpdateEventHandler updateEventHandler)
+        public PlatformContext (ServiceLocator serviceLocator)
         {
-            this.memoryManager = memoryManager;
-            this.cullingController = cullingController;
-            this.clipboard = clipboard;
-            this.physicsSyncController = physicsSyncController;
-            this.parcelScenesCleaner = parcelScenesCleaner;
-            this.webRequest = webRequest;
-            this.serviceProviders = serviceProviders;
-            this.idleChecker = idleChecker;
-            this.avatarsLODController = avatarsLODController;
-            this.featureFlagController = featureFlagController;
-            this.updateEventHandler = updateEventHandler;
+            this.serviceLocator = serviceLocator;
         }
 
         public void Update()
         {
             idleChecker.Update();
             avatarsLODController.Update();
-        }
-
-        public void Dispose()
-        {
-            memoryManager.Dispose();
-            parcelScenesCleaner.Dispose();
-            cullingController.Dispose();
-            webRequest.Dispose();
-            serviceProviders.Dispose();
-            avatarsLODController.Dispose();
-            featureFlagController.Dispose();
-            updateEventHandler.Dispose();
         }
     }
 }

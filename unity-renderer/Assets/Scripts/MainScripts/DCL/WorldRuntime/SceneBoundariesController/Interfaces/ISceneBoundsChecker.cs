@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL.Controllers
 {
-    public interface ISceneBoundsChecker
+    public interface ISceneBoundsChecker : IDisposable
     {
         event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
 

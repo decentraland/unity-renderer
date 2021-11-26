@@ -1,10 +1,10 @@
-﻿using DCL.Components;
+﻿using System;
+using DCL.Components;
 
 namespace DCL
 {
-    public interface IRuntimeComponentFactory
+    public interface IRuntimeComponentFactory : IDisposable
     {
         IComponent CreateComponent(int classId);
-        void Initialize();
     }
 }

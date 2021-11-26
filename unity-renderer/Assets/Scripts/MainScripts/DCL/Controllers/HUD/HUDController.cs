@@ -29,7 +29,7 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public void Initialize(IHUDFactory hudFactory)
+    public HUDController (IHUDFactory hudFactory)
     {
         i = this;
         this.hudFactory = hudFactory;
@@ -320,6 +320,7 @@ public class HUDController : IHUDController
                     //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
                     signupHUD.Initialize(avatarEditorHud);
                 }
+
                 break;
             case HUDElementID.LOADING:
                 CreateHudElement(configuration, hudElementId);
@@ -368,6 +369,7 @@ public class HUDController : IHUDController
 
         hudElements[id].SetVisibility(config.visible);
     }
+
     public void Cleanup()
     {
         toggleUIVisibilityTrigger.OnTriggered -= ToggleUIVisibility_OnTriggered;

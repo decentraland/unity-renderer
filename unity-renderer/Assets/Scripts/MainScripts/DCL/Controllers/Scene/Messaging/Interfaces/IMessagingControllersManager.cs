@@ -8,7 +8,6 @@ namespace DCL
         bool hasPendingMessages { get; }
         bool isRunning { get; }
         bool paused { get; set; }
-        void Initialize(IMessageProcessHandler messageHandler);
         void MarkBusesDirty();
         void PopulateBusesToBeProcessed();
         bool ContainsController(string sceneId);

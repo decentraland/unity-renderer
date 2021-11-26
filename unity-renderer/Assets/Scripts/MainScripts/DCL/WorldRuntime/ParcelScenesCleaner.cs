@@ -44,12 +44,6 @@ namespace DCL
         public ParcelScenesCleaner ()
         {
             removeEntitiesCoroutine = CoroutineStarter.Start(CleanupEntitiesCoroutine());
-            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
-        }
-
-        public void Initialize()
-        {
-            Environment.i.platform.memoryManager.OnCriticalMemory += CleanMarkedEntities;
         }
 
         private void OnRendererStateChange(bool isEnable, bool prevState)
@@ -153,6 +147,9 @@ namespace DCL
 
         IEnumerator CleanupEntitiesCoroutine()
         {
+            yield return null;
+            Environment.i.platform.memoryManager.OnCriticalMemory += CleanMarkedEntities;
+
             while (true)
             {
                 yield return CleanMarkedEntitiesAsync();

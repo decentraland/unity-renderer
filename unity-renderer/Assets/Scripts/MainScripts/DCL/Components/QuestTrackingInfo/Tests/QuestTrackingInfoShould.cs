@@ -14,14 +14,11 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     private ParcelScene scene;
     private IQuestsController mockQuestController;
 
-    protected override WorldRuntimeContext CreateRuntimeContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
-        (
-            sceneController: new SceneController(),
-            state: new WorldState(),
-            componentFactory: new RuntimeComponentFactory()
-        );
+        serviceLocator.Set<ISceneController>(new SceneController());
+        serviceLocator.Set<IWorldState>(new WorldState());
+        serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory());
     }
 
     [UnitySetUp]

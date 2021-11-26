@@ -12,32 +12,13 @@ using UnityEngine.TestTools;
 
 public class SceneBoundarieCheckerFeedbackStyleShould : IntegrationTestSuite
 {
-    protected override PlatformContext CreatePlatformContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        WebRequestController webRequestController = new WebRequestController();
-        webRequestController.Initialize(
-            genericWebRequest: new WebRequest(),
-            assetBundleWebRequest: new WebRequestAssetBundle(),
-            textureWebRequest: new WebRequestTexture(),
-            null);
-
-        var context = DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
-        (
-            webRequestController
-        );
-
-        return context;
-    }
-
-    protected override WorldRuntimeContext CreateRuntimeContext()
-    {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
-        (
-            sceneController: new SceneController(),
-            state: new WorldState(),
-            componentFactory: new RuntimeComponentFactory(),
-            sceneBoundsChecker: new SceneBoundsChecker(new SceneBoundsFeedbackStyle_Simple())
-        );
+        serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
+        serviceLocator.Set<ISceneController>(new SceneController());
+        serviceLocator.Set<IWorldState>(new WorldState());
+        serviceLocator.Set<ISceneBoundsChecker>(new SceneBoundsChecker(new SceneBoundsFeedbackStyle_Simple()));
+        serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory());
     }
 
     [Test]

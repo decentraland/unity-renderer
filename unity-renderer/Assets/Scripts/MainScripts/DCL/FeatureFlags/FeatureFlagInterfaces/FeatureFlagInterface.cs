@@ -1,4 +1,5 @@
-public interface IFeatureFlagController
+using System;
+
+public interface IFeatureFlagController : IDisposable
 {
-    void Dispose();
 }

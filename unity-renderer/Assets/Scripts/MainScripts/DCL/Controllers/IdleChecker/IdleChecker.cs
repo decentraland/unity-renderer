@@ -57,5 +57,7 @@ namespace DCL
         private bool IdleCheck() { return Time.time - lastActivityTime > maxTime; }
 
         public bool isIdle() { return idle; }
+
+        public void Dispose() { }
     }
 }

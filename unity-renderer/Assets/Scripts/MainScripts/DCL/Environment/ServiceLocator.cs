@@ -9,7 +9,7 @@ namespace DCL
     {
         private Dictionary<Type, IDisposable> services = new Dictionary<Type, IDisposable>();
 
-        public void Set<T>(T data) where T : IDisposable
+        public T Set<T>(T data) where T : IDisposable
         {
             Assert.IsTrue( typeof(T).IsInterface, "ServiceLocator's generic type should be an interface." );
 
@@ -18,10 +18,11 @@ namespace DCL
                 Debug.Log($"Overwriting service for {typeof(T).FullName}");
                 services[typeof(T)].Dispose();
                 services[typeof(T)] = data;
-                return;
+                return data;
             }
 
             services.Add(typeof(T), data);
+            return data;
         }
 
         public T Get<T>() where T : class, IDisposable

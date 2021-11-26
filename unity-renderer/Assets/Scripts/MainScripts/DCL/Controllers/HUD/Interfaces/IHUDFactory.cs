@@ -35,6 +35,7 @@ public enum HUDElementID
 
     USERS_AROUND_LIST_HUD = 22,
     GRAPHIC_CARD_WARNING = 23,
+
     [Obsolete("Deprecated HUD Element")]
     BUILDER_IN_WORLD_MAIN = 24,
 
@@ -43,6 +44,7 @@ public enum HUDElementID
 
     QUESTS_PANEL = 26,
     QUESTS_TRACKER = 27,
+
     [Obsolete("Deprecated HUD Element")]
     BUILDER_PROJECTS_PANEL = 28,
     SIGNUP = 29,
@@ -56,7 +58,7 @@ public enum HUDElementID
     COUNT = 33
 }
 
-public interface IHUDFactory
+public interface IHUDFactory : IDisposable
 {
     IHUD CreateHUD(HUDElementID elementID);
 }

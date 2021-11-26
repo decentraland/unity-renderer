@@ -60,4 +60,8 @@ public class Clipboard : IClipboard
             }
         }
     }
+
+    public void Dispose()
+    {
+    }
 }

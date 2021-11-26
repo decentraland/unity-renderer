@@ -106,4 +106,8 @@ public class HUDFactory : IHUDFactory
 
         return hudElement;
     }
+
+    public void Dispose()
+    {
+    }
 }

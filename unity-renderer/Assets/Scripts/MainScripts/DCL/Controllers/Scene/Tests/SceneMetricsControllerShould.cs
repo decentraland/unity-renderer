@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections;
 using DCL;
 using DCL.Components;
@@ -8,27 +9,20 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 
 public class SceneMetricsControllerShould : IntegrationTestSuite
 {
     private ParcelScene scene;
 
-    protected override WorldRuntimeContext CreateRuntimeContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
-        (
-            new SceneController(),
-            new WorldState(),
-            new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory),
-            new SceneBoundsChecker() // Only used for GetOriginalMaterials(). We should remove this dependency on the future.
-        );
-    }
-
-    protected override PlatformContext CreatePlatformContext()
-    {
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
-            WebRequestController.Create(),
-            new ServiceProviders());
+        serviceLocator.Set<ISceneController>(new SceneController());
+        serviceLocator.Set<IWorldState>(new WorldState());
+        serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Set<ISceneBoundsChecker>(new SceneBoundsChecker());
+        serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
+        serviceLocator.Set<IServiceProviders>(new ServiceProviders());
     }
 
     [UnitySetUp]

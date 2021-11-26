@@ -44,9 +44,9 @@ namespace DCL.Rendering
             );
         }
 
-        public CullingController() { }
+        private CullingController() { }
 
-        public CullingController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
+        private CullingController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
         {
             if (cullingObjectsTracker == null)
                 objectsTracker = new CullingObjectsTracker();
@@ -57,6 +57,8 @@ namespace DCL.Rendering
 
             this.urpAsset = urpAsset;
             this.settings = settings;
+
+            Start();
         }
 
         /// <summary>

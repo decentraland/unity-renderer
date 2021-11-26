@@ -1,12 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DCL
 {
-    public interface IPointerEventsController
+    public interface IPointerEventsController : IDisposable
     {
-        void Initialize();
         void Update();
-        void Cleanup();
         Ray GetRayFromCamera();
     }
 }

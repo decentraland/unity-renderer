@@ -23,11 +23,9 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     private string baseURL;
     private GameObject gameObjectToDestroy;
 
-    protected override PlatformContext CreatePlatformContext()
+    protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        mockedRequestController =  Substitute.For<IWebRequestController>();
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks( mockedRequestController
-        );
+        serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
     }
 
     [UnitySetUp]
@@ -140,14 +138,14 @@ public class BIWBuilderApiShould : IntegrationTestSuite
 
         bool result = false;
         List<SceneObject> list = new List<SceneObject>();
-        list.Add(new SceneObject(){id ="test id"});
-        
+        list.Add(new SceneObject() { id = "test id" });
+
         string jsonData = JsonConvert.SerializeObject(list);
-        TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
-        
+        TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController, 2);
+
         apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
         apiController.apiResponseResolver.Configure().GetArrayFromCall<SceneObject>(Arg.Any<string>()).Returns(list.ToArray());
-        
+
         //Act
         var promise = apiController.GetAssets(new List<string>());
         promise.Then( data =>
