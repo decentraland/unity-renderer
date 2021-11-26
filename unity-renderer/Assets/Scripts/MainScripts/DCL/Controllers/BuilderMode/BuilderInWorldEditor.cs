@@ -59,7 +59,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
         BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
-        InitHUD();
+        InitHUD(context);
 
         InitControllers();
 
@@ -86,21 +86,17 @@ public class BuilderInWorldEditor : IBIWEditor
         skyBoxMaterial = context.projectReferencesAsset.skyBoxMaterial;
     }
 
-    private void InitHUD()
+    private void InitHUD(IContext context)
     {
-        context.editorContext.editorHUD.Initialize();
-
-        context.editorContext.editorHUD.OnStartExitAction += StartExitMode;
+        context.editorContext.editorHUD.Initialize(context);
         context.editorContext.editorHUD.OnTutorialAction += StartTutorial;
     }
 
     public void Dispose()
     {
-        if ( context.editorContext.editorHUD != null)
-        {
-            context.editorContext.editorHUD.OnStartExitAction -= StartExitMode;
+        if (context.editorContext.editorHUD != null)
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
-        }
+        
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
 
@@ -129,7 +125,6 @@ public class BuilderInWorldEditor : IBIWEditor
 
     public void Update()
     {
-
         if (!isBuilderInWorldActivated)
             return;
 
@@ -241,29 +236,6 @@ public class BuilderInWorldEditor : IBIWEditor
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
         BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
-    }
-
-    public void StartExitMode()
-    {
-        if (saveController.GetSaveTimes() > 0)
-        {
-            modeController.TakeSceneScreenshotForExit();
-
-            if (  context.editorContext.editorHUD != null)
-                context.editorContext.editorHUD.ConfigureConfirmationModal(
-                    BIWSettings.EXIT_MODAL_TITLE,
-                    BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
-                    BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
-                    BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
-        }
-        else
-        {
-            context.editorContext.editorHUD.ConfigureConfirmationModal(
-                BIWSettings.EXIT_MODAL_TITLE,
-                BIWSettings.EXIT_MODAL_SUBTITLE,
-                BIWSettings.EXIT_MODAL_CANCEL_BUTTON,
-                BIWSettings.EXIT_MODAL_CONFIRM_BUTTON);
-        }
     }
 
     public void ExitEditMode()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Builder;
+using DCL.Builder.Manifest;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -14,6 +15,7 @@ using Object = UnityEngine.Object;
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
+    private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
@@ -70,7 +72,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void OnBack()
     {
-        if(newProjectFlowController.IsActive())
+        if (newProjectFlowController.IsActive())
             newProjectFlowController.Hide();
         else
             OnClose();
@@ -84,14 +86,16 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestGoToCoords -= GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords -= OnGoToEditScene;
         sectionsController.OnCreateProjectRequest -= newProjectFlowController.NewProject;
-        
+
         scenesViewController.OnJumpInPressed -= GoToCoords;
         scenesViewController.OnRequestOpenUrl -= OpenUrl;
         scenesViewController.OnEditorPressed -= OnGoToEditScene;
+        projectsController.OnEditorPressed -= GetManifestToEdit;
+
         newProjectFlowController.OnNewProjectCrated -= CreateNewProject;
 
         view.OnCreateProjectPressed -= newProjectFlowController.NewProject;
-        
+
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
@@ -162,39 +166,45 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.OnRequestGoToCoords += GoToCoords;
         sectionsController.OnRequestEditSceneAtCoords += OnGoToEditScene;
         sectionsController.OnCreateProjectRequest += newProjectFlowController.NewProject;
-        
+
         scenesViewController.OnJumpInPressed += GoToCoords;
         scenesViewController.OnRequestOpenUrl += OpenUrl;
         scenesViewController.OnEditorPressed += OnGoToEditScene;
         newProjectFlowController.OnNewProjectCrated += CreateNewProject;
 
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
+        this.projectsController.OnEditorPressed += GetManifestToEdit;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
+    private void GetManifestToEdit(ProjectData data)
+    {
+        Promise<Manifest> manifestPromise = context.builderAPIController.GetManifestById(data.id);
+        manifestPromise.Then( OpenEditorFromManifest);
+
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(OBTAIN_PROJECT_ERROR + errorString);
+        });
+    }
+
     private void CreateNewProject(ProjectData project)
     {
-        Promise<APIResponse> projectPromise = context.builderAPIController.CreateNewProject(project);
+        Promise<Manifest> projectPromise = context.builderAPIController.CreateNewProject(project);
 
-        projectPromise.Then( apiResponse =>
-        {
-            //TODO: If it is ok, Start the editor
-            if (!apiResponse.ok)
-                BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+apiResponse.error);
-        });
-        
+        projectPromise.Then( OpenEditorFromManifest);
+
         projectPromise.Catch( errorString =>
         {
-            BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR+errorString);
+            BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
     }
 
-    public void SetVisibility(bool visible)
-    {
-        DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible);
-    }
+    private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartEditorFromManifest(manifest); }
+
+    public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
 
     private void OnVisibilityChanged(bool isVisible, bool prev)
     {
@@ -322,15 +332,15 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
     {
         isFetchingProjects = false;
         sectionsController.SetFetchingDataEnd<SectionProjectController>();
-        projectsController.SetProjects(new ProjectData[]{ });
+        projectsController.SetProjects(new ProjectData[] { });
         BIWUtils.ShowGenericNotification(error);
     }
 
     private void UpdateProjectsDeploymentStatus()
     {
-        if(isFetchingLands || isFetchingProjects)
+        if (isFetchingLands || isFetchingProjects)
             return;
-        
+
         projectsController.UpdateDeploymentStatus();
     }
 
@@ -350,13 +360,13 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         sectionsController.SetFetchingDataEnd<SectionLandController>();
         isFetchingLands = false;
         UpdateProjectsDeploymentStatus();
-        
+
         try
         {
             ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                                     .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                                     .Aggregate((i, j) => i.Concat(j))
-                                     .ToArray();
+                                       .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                                       .Aggregate((i, j) => i.Concat(j))
+                                       .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);

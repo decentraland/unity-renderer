@@ -126,28 +126,6 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void StartExitModeScreenShot()
-    {
-        // Arrange
-        mainController.Dispose();
-        mainController = new BuilderInWorldEditor();
-        mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(new BIWModeController(),
-            new BIWSaveController(), SceneReferences.i));
-
-        BIWModeController modeController = (BIWModeController)mainController.modeController;
-        BIWSaveController saveController = (BIWSaveController)mainController.saveController;
-
-        modeController.godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
-        saveController.numberOfSaves = 1;
-
-        // Act
-        mainController.StartExitMode();
-
-        // Assert
-        modeController.godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
-    }
-
-    [Test]
     public void SetupNewScene()
     {
         // Arrange

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
+using DCL.Builder;
 using DCL.Controllers;
 using UnityEngine;
 
@@ -34,7 +36,7 @@ public interface IBuilderEditorHUDController
     event Action OnResumeInput;
     event Action<string, string, string> OnConfirmPublishAction;
     event Action<string, string, string> OnSaveSceneInfoAction;
-    void Initialize();
+    void Initialize(IContext context);
     void Dispose();
     void RefreshCatalogAssetPack();
     void RefreshCatalogContent();

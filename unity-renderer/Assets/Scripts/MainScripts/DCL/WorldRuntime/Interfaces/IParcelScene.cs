@@ -17,6 +17,8 @@ namespace DCL.Controllers
         Dictionary<string, ISharedComponent> disposableComponents { get; }
         T GetSharedComponent<T>() where T : class;
         ISharedComponent GetSharedComponent(string id);
+        ISharedComponent SharedComponentCreate(string id, int classId);
+        void SharedComponentAttach(string entityId, string id);
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }

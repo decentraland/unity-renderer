@@ -17,15 +17,7 @@ public static class BIWUrlUtils
         resolvedUrl = resolvedUrl.Replace("{id}", projectId) +filename;
         return resolvedUrl;
     }
-
-    public static string GetUrlCatalog(string ethAddress)
-    {
-        string paramToAdd = "default";
-        if (!string.IsNullOrEmpty(ethAddress))
-            paramToAdd = ethAddress;
-        return GetResolvedEnviromentUrl(BIWSettings.BASE_URL_CATALOG) + paramToAdd;
-    }
-
+    
     public static string GetUrlAssetPackContent() { return GetResolvedEnviromentUrl(BIWSettings.BASE_URL_ASSETS_PACK_CONTENT); }
 
     private static string GetResolvedEnviromentUrl(string url)

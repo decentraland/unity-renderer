@@ -101,8 +101,6 @@ public class BIWModeController : BIWController, IBIWModeController
         GameObject.Destroy(freeMovementGO);
     }
 
-    public void TakeSceneScreenshotForExit() { godMode.TakeSceneScreenshotForExit(); }
-
     private void SetEditorGameObjects()
     {
         godMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, entityHandler.GetSelectedEntityList());
