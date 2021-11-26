@@ -46,12 +46,18 @@ public interface IExploreV2MenuComponentView : IDisposable
     void GoToSection(ExploreSection section);
 
     /// <summary>
+    /// Activates/Deactivates a section in the selector.
+    /// </summary>
+    /// <param name="section">Section to activate/deactivate.</param>
+    /// <param name="isActive">True for activating.</param>
+    void SetSectionActive(ExploreSection section, bool isActive);
+
+    /// <summary>
     /// Configures a encapsulated section.
     /// </summary>
     /// <param name="section">Section to configure.</param>
     /// <param name="featureConfiguratorFlag">Flag used to configurates the feature.</param>
-    /// <param name="isActive">Indicates if the section is active or not.</param>
-    void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag, bool isActive);
+    void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag);
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -127,7 +133,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection((int)section)?.SelectToggle(true);
     }
 
-    public void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag, bool isActive)
+    public void SetSectionActive(ExploreSection section, bool isActive) { sectionSelector.GetSection((int)section).SetActive(isActive); }
+
+    public void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag)
     {
         FeatureEncapsulatorComponentView sectionView = null;
         switch (section)
@@ -149,10 +157,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                 break;
         }
 
-        sectionSelector.GetSection((int)section).SetActive(isActive);
-
-        if (isActive)
-            sectionView?.EncapsulateFeature(featureConfiguratorFlag);
+        sectionView?.EncapsulateFeature(featureConfiguratorFlag);
     }
 
     internal void CreateSectionSelectorMappings()
