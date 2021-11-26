@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 namespace DCL.Builder
 {
+    //TODO: this class is in process to be made
     public class PublishView : BaseComponentView
     {
 
@@ -29,10 +30,7 @@ namespace DCL.Builder
         private const string VIEW_PATH = "Common/PublicationDetailsView";
 
         public string currentSceneName => sceneNameInput.text;
-        
-        public override void RefreshControl()
-        {
-          
-        }
+
+        public override void RefreshControl() { }
     }
 }

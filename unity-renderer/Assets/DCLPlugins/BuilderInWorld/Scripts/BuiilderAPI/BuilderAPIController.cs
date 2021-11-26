@@ -98,28 +98,28 @@ public class BuilderAPIController : IBuilderAPIController
                     break;
                 case PUT:
                     request.body = body;
-                    CoroutineStarter.Start(CallWeb(request,resultPromise,contentType));
+                    CoroutineStarter.Start(CallWeb(request, resultPromise, contentType));
                     break;
                 case POST:
                     request.body = body;
-                    CoroutineStarter.Start(CallWeb(request,resultPromise,contentType,false));
+                    CoroutineStarter.Start(CallWeb(request, resultPromise, contentType, false));
                     break;
             }
         });
 
         return resultPromise;
     }
-    
+
     //This will disappear when we implement the signed fetch call
     IEnumerator CallWeb (RequestHeader requestHeader, Promise<string> resultPromise, string contentType, bool isPut = true)
     {
         UnityWebRequest www = null;
-        if(isPut)
+        if (isPut)
             www = UnityWebRequest.Put (BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, requestHeader.body);
         else
         {
             WWWForm form = new WWWForm();
-            form.AddBinaryData("thumbnail",requestHeader.body);
+            form.AddBinaryData("thumbnail", requestHeader.body);
             www = UnityWebRequest.Post(BIWUrlUtils.GetBuilderAPIBaseUrl() + requestHeader.endpoint, form );
         }
 
@@ -148,19 +148,19 @@ public class BuilderAPIController : IBuilderAPIController
 
     public Promise<bool> SetManifest(Manifest manifest)
     {
-        Promise<bool> fullPromise = new Promise<bool>(); 
-        
+        Promise<bool> fullPromise = new Promise<bool>();
+
         JsonSerializerSettings dateFormatSettings = new JsonSerializerSettings
         {
             DateFormatString = API_DATEFORMAT,
         };
-        
-        string jsonManifest =JsonConvert.SerializeObject(manifest, dateFormatSettings);
-        
+
+        string jsonManifest = JsonConvert.SerializeObject(manifest, dateFormatSettings);
+
         byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
 
         string endpoint = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", manifest.project.id);
-        var promise =  CallUrl(PUT, endpoint,"",myData,"application/json");
+        var promise =  CallUrl(PUT, endpoint, "", myData, "application/json");
 
         promise.Then(result =>
         {
@@ -170,7 +170,7 @@ public class BuilderAPIController : IBuilderAPIController
             else
                 fullPromise.Reject(apiResponse.error);
         });
-        
+
         promise.Catch(error =>
         {
             fullPromise.Reject(error);
@@ -186,7 +186,7 @@ public class BuilderAPIController : IBuilderAPIController
         byte[] myData = thumbnail.EncodeToPNG();
 
         string endpoint = PROJECT_THUMBNAIL_ENDPOINT.Replace("{ID}", id);
-        var promise =  CallUrl(POST, endpoint,"",myData);
+        var promise =  CallUrl(POST, endpoint, "", myData);
 
         promise.Then(result =>
         {
@@ -196,7 +196,7 @@ public class BuilderAPIController : IBuilderAPIController
             else
                 fullPromise.Reject(apiResponse.error);
         });
-        
+
         promise.Catch(error =>
         {
             fullPromise.Reject(error);
@@ -215,7 +215,7 @@ public class BuilderAPIController : IBuilderAPIController
         promise.Then(result =>
         {
             Manifest manifest = null;
-            
+
             try
             {
                 manifest = JsonConvert.DeserializeObject<Manifest>(result);
@@ -225,7 +225,7 @@ public class BuilderAPIController : IBuilderAPIController
                 fullNewProjectPromise.Reject(e.Message);
                 return;
             }
-            
+
             fullNewProjectPromise.Resolve(manifest);
         });
         promise.Catch(error =>
@@ -239,17 +239,17 @@ public class BuilderAPIController : IBuilderAPIController
     {
         Promise<Manifest> fullNewProjectPromise = new Promise<Manifest>();
         Manifest builderManifest = BIWUtils.CreateManifestFromProject(newProject);
-        
+
         JsonSerializerSettings dateFormatSettings = new JsonSerializerSettings
         {
             DateFormatString = API_DATEFORMAT,
         };
-        
-        string jsonManifest =JsonConvert.SerializeObject(builderManifest, dateFormatSettings);
+
+        string jsonManifest = JsonConvert.SerializeObject(builderManifest, dateFormatSettings);
         byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
 
         string endpoint = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", newProject.id);
-        var promise =  CallUrl(PUT, endpoint,"",myData, "application/json");
+        var promise =  CallUrl(PUT, endpoint, "", myData, "application/json");
 
         promise.Then(result =>
         {
@@ -259,7 +259,7 @@ public class BuilderAPIController : IBuilderAPIController
             else
                 fullNewProjectPromise.Reject(apiResponse.error);
         });
-        
+
         promise.Catch(error =>
         {
             fullNewProjectPromise.Reject(error);
@@ -296,7 +296,7 @@ public class BuilderAPIController : IBuilderAPIController
             if (amountOfCatalogReceived >= 2)
                 fullCatalogPromise.Resolve(true);
         });
-        
+
         promiseOwnedCatalog.Reject("Unable to get owned catalog");
 
         return fullCatalogPromise;
