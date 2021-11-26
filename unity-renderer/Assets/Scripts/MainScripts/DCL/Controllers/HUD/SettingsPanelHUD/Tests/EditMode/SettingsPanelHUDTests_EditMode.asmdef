@@ -8,7 +8,8 @@
         "SettingsPanelHUD",
         "ScriptableObjects",
         "SettingsControllers",
-        "DataStore"
+        "DataStore",
+        "HelpAndSupportHUD"
     ],
     "includePlatforms": [
         "Editor"

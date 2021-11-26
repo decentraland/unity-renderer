@@ -333,7 +333,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.tutorialReset = false;
 
             // Act
-            tutorialController.MoreMenu_OnRestartTutorial();
+            tutorialController.OnRestartTutorial();
 
             // Assert
             //Assert.IsTrue(tutorialController.tutorialReset);

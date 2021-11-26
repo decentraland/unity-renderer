@@ -309,7 +309,7 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.HELP_AND_SUPPORT_HUD:
                 CreateHudElement(configuration, hudElementId);
-                taskbarHud?.AddHelpAndSupportWindow(helpAndSupportHud);
+                settingsPanelHud?.AddHelpAndSupportWindow(helpAndSupportHud);
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 CreateHudElement(configuration, hudElementId);

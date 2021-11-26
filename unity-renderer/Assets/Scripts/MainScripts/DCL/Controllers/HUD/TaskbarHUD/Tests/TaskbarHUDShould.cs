@@ -18,7 +18,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
     private SettingsPanelHUDController settingsPanelHudController;
-    private HelpAndSupportHUDController helpAndSupportHUDController;
     private ExploreHUDController exploreHUDController;
 
     protected override bool justSceneSetUp => true;
@@ -48,7 +47,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
         settingsPanelHudController?.Dispose();
-        helpAndSupportHUDController?.Dispose();
         exploreHUDController?.Dispose();
 
         controller.Dispose();
@@ -79,15 +77,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(friendsHudController.view.transform.parent == view.leftWindowContainer,
             "Friends window isn't inside taskbar window container!");
         Assert.IsTrue(friendsHudController.view.gameObject.activeSelf, "Friends window is disabled!");
-    }
-
-    [Test]
-    public void AddHelpAndSupportWindowProperly()
-    {
-        helpAndSupportHUDController = new HelpAndSupportHUDController();
-        controller.AddHelpAndSupportWindow(helpAndSupportHUDController);
-
-        Assert.IsTrue(helpAndSupportHUDController.view.gameObject.activeSelf, "Help and Support window is disabled!");
     }
 
     [Test]

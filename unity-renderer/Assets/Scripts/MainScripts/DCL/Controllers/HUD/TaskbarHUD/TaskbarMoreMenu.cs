@@ -18,16 +18,12 @@ public class TaskbarMoreMenu : MonoBehaviour
     [Header("Other Buttons Config")]
     [SerializeField] internal TaskbarMoreMenuButton controlsButton;
     [SerializeField] internal InputAction_Trigger controlsToggleAction;
-    [SerializeField] internal TaskbarMoreMenuButton helpAndSupportButton;
-    [SerializeField] internal TaskbarMoreMenuButton tutorialButton;
-    [SerializeField] internal TaskbarMoreMenuButton reportBugButton;
 
     private TaskbarHUDView view;
     protected internal List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
     internal Coroutine moreMenuAnimationsCoroutine;
 
     public event System.Action<bool> OnMoreMenuOpened;
-    public event System.Action OnRestartTutorial;
 
     public virtual void Initialize(TaskbarHUDView view)
     {
@@ -37,23 +33,15 @@ public class TaskbarMoreMenu : MonoBehaviour
 
         collapseBarButton.gameObject.SetActive(true);
         controlsButton.gameObject.SetActive(false);
-        helpAndSupportButton.gameObject.SetActive(false);
-        tutorialButton.gameObject.SetActive(true);
-        reportBugButton.gameObject.SetActive(true);
 
         SortButtonsAnimations();
 
         collapseBarButton.mainButton.onClick.AddListener(ToggleCollapseBar);
-
-        tutorialButton.mainButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
     }
 
     protected void SortButtonsAnimations()
     {
-        sortedButtonsAnimations.Add(helpAndSupportButton);
-        sortedButtonsAnimations.Add(reportBugButton);
         sortedButtonsAnimations.Add(controlsButton);
-        sortedButtonsAnimations.Add(tutorialButton);
         sortedButtonsAnimations.Add(collapseBarButton);
     }
 
@@ -68,17 +56,6 @@ public class TaskbarMoreMenu : MonoBehaviour
         controlsButton.mainButton.onClick.AddListener(() =>
         {
             controlsToggleAction.RaiseOnTriggered();
-            view.moreButton.SetToggleState(false);
-        });
-    }
-
-    internal void ActivateHelpAndSupportButton()
-    {
-        helpAndSupportButton.gameObject.SetActive(true);
-
-        helpAndSupportButton.mainButton.onClick.AddListener(() =>
-        {
-            view.controller.helpAndSupportHud.SetVisibility(true);
             view.moreButton.SetToggleState(false);
         });
     }
@@ -128,8 +105,6 @@ public class TaskbarMoreMenu : MonoBehaviour
             moreMenuAnimator.Hide(instant);
         }
     }
-
-    internal void ShowTutorialButton(bool visible) { tutorialButton.gameObject.SetActive(visible); }
 
     private void ToggleCollapseBar()
     {

@@ -261,8 +261,6 @@ public class TaskbarHUDView : MonoBehaviour
         AdjustRightButtonsLayoutWidth();
     }
 
-    internal void OnAddHelpAndSupportWindow() { moreMenu.ActivateHelpAndSupportButton(); }
-
     internal void OnAddControlsMoreOption() { moreMenu.ActivateControlsButton(); }
 
     internal void OnAddVoiceChat()

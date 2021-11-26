@@ -383,19 +383,6 @@ public class TaskbarHUDController : IHUD
         }
     }
 
-    public void AddHelpAndSupportWindow(HelpAndSupportHUDController controller)
-    {
-        if (controller == null || controller.view == null)
-        {
-            Debug.LogWarning("AddHelpAndSupportWindow >>> Help and Support window doesn't exist yet!");
-            return;
-        }
-
-        helpAndSupportHud = controller;
-        view.OnAddHelpAndSupportWindow();
-        helpAndSupportHud.view.OnClose += () => { MarkWorldChatAsReadIfOtherWindowIsOpen(); };
-    }
-
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
 
     public void AddControlsMoreOption() { view.OnAddControlsMoreOption(); }
@@ -533,12 +520,6 @@ public class TaskbarHUDController : IHUD
     {
         if (!AnyWindowsDifferentThanChatIsOpen())
             worldChatWindowHud.MarkWorldChatMessagesAsRead();
-    }
-
-    public void ShowTutorialOption(bool isActive)
-    {
-        if (view != null && view.moreMenu != null)
-            view.moreMenu.ShowTutorialButton(isActive);
     }
 
     private void SceneController_OnNewPortableExperienceSceneAdded(IParcelScene scene)

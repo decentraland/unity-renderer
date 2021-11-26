@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.SettingsCommon;
 using UnityEngine;
+using DCL.HelpAndSupportHUD;
 
 namespace DCL.SettingsPanelHUD
 {
@@ -11,6 +12,8 @@ namespace DCL.SettingsPanelHUD
     /// </summary>
     public interface ISettingsPanelHUDController
     {
+        event System.Action OnRestartTutorial;
+
         /// <summary>
         /// List of all SECTIONS added to the main settings panel.
         /// </summary>
@@ -57,6 +60,12 @@ namespace DCL.SettingsPanelHUD
         /// Reset all the current settings to their default values.
         /// </summary>
         void ResetAllSettings();
+
+        /// <summary>
+        /// Set the tutorial button as enabled/disabled.
+        /// </summary>
+        /// <param name="isEnabled">True for set it as enabled.</param>
+        void SetTutorialButtonEnabled(bool isEnabled);
     }
 
     /// <summary>
@@ -72,14 +81,25 @@ namespace DCL.SettingsPanelHUD
         public List<ISettingsSectionView> sections { get; } = new List<ISettingsSectionView>();
 
         private List<SettingsButtonEntry> menuButtons = new List<SettingsButtonEntry>();
+        private HelpAndSupportHUDController helpAndSupportHud;
 
         BaseVariable<bool> settingsPanelVisible => DataStore.i.settings.settingsPanelVisible;
         BaseVariable<Transform> configureSettingsInFullscreenMenu => DataStore.i.exploreV2.configureSettingsInFullscreenMenu;
+
+        public event System.Action OnRestartTutorial;
 
         public void Initialize()
         {
             view = CreateView();
             view.Initialize(this, this);
+
+            view.OnRestartTutorial += () =>
+            {
+                OnRestartTutorial?.Invoke();
+                DataStore.i.exploreV2.isOpen.Set(false);
+            };
+
+            view.OnHelpAndSupportClicked += () => helpAndSupportHud.SetVisibility(true);
 
             settingsPanelVisible.OnChange += OnSettingsPanelVisibleChanged;
             OnSettingsPanelVisibleChanged(settingsPanelVisible.Get(), false);
@@ -173,6 +193,20 @@ namespace DCL.SettingsPanelHUD
         public virtual void SaveSettings() { Settings.i.SaveSettings(); }
 
         public void ResetAllSettings() { Settings.i.ResetAllSettings(); }
+
+        public void SetTutorialButtonEnabled(bool isEnabled) { view.SetTutorialButtonEnabled(isEnabled); }
+
+        public void AddHelpAndSupportWindow(HelpAndSupportHUDController controller)
+        {
+            if (controller == null || controller.view == null)
+            {
+                Debug.LogWarning("AddHelpAndSupportWindow >>> Help and Support window doesn't exist yet!");
+                return;
+            }
+
+            helpAndSupportHud = controller;
+            view.OnAddHelpAndSupportWindow();
+        }
 
         private void ConfigureSettingsInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
     }

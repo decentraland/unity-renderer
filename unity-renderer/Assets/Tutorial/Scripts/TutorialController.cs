@@ -98,10 +98,10 @@ namespace DCL.Tutorial
             i = this;
             ShowTeacher3DModel(false);
 
-            if (CommonScriptableObjects.isTaskbarHUDInitialized.Get())
-                IsTaskbarHUDInitialized_OnChange(true, false);
+            if (DataStore.i.settings.isInitialized.Get())
+                IsSettingsHUDInitialized_OnChange(true, false);
             else
-                CommonScriptableObjects.isTaskbarHUDInitialized.OnChange += IsTaskbarHUDInitialized_OnChange;
+                DataStore.i.settings.isInitialized.OnChange += IsSettingsHUDInitialized_OnChange;
 
             if (configuration.debugRunTutorial)
             {
@@ -119,12 +119,12 @@ namespace DCL.Tutorial
 
             SetTutorialDisabled();
 
-            CommonScriptableObjects.isTaskbarHUDInitialized.OnChange -= IsTaskbarHUDInitialized_OnChange;
+            DataStore.i.settings.isInitialized.OnChange -= IsSettingsHUDInitialized_OnChange;
 
             if (hudController != null &&
-                hudController.taskbarHud != null)
+                hudController.settingsPanelHud != null)
             {
-                hudController.taskbarHud.moreMenu.OnRestartTutorial -= MoreMenu_OnRestartTutorial;
+                hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
             }
 
             NotificationsController.disableWelcomeNotification = false;
@@ -175,7 +175,7 @@ namespace DCL.Tutorial
             openedFromDeepLink = Convert.ToBoolean(fromDeepLink);
             this.tutorialType = tutorialType;
 
-            hudController?.taskbarHud?.ShowTutorialOption(false);
+            hudController?.settingsPanelHud?.SetTutorialButtonEnabled(false);
             hudController?.profileHud?.HideProfileMenu();
 
             NotificationsController.disableWelcomeNotification = true;
@@ -222,7 +222,7 @@ namespace DCL.Tutorial
 
             NotificationsController.disableWelcomeNotification = false;
 
-            hudController?.taskbarHud?.ShowTutorialOption(true);
+            hudController?.settingsPanelHud?.SetTutorialButtonEnabled(true);
 
             CommonScriptableObjects.tutorialActive.Set(false);
 
@@ -525,18 +525,18 @@ namespace DCL.Tutorial
             }
         }
 
-        private void IsTaskbarHUDInitialized_OnChange(bool current, bool previous)
+        private void IsSettingsHUDInitialized_OnChange(bool current, bool previous)
         {
             if (current &&
                 hudController != null &&
-                hudController.taskbarHud != null)
+                hudController.settingsPanelHud != null)
             {
-                hudController.taskbarHud.moreMenu.OnRestartTutorial -= MoreMenu_OnRestartTutorial;
-                hudController.taskbarHud.moreMenu.OnRestartTutorial += MoreMenu_OnRestartTutorial;
+                hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
+                hudController.settingsPanelHud.OnRestartTutorial += OnRestartTutorial;
             }
         }
 
-        internal void MoreMenu_OnRestartTutorial()
+        internal void OnRestartTutorial()
         {
             SetTutorialDisabled();
             tutorialReset = true;
