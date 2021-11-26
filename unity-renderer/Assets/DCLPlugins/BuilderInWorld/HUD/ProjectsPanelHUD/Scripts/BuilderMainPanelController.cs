@@ -1,10 +1,12 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using DCL;
 using DCL.Builder;
+using DCL.Builder.Manifest;
 using DCL.Helpers;
 using DCL.Interface;
-using System;
-using System.Collections;
-using System.Linq;
 using UnityEngine;
 using Variables.RealmsInfo;
 using Environment = DCL.Environment;
@@ -13,6 +15,7 @@ using Object = UnityEngine.Object;
 public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
+    private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
@@ -52,17 +55,12 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     internal IContext context;
 
-    BaseVariable<Transform> configureBuilderInFullscreenMenu => DataStore.i.exploreV2.configureBuilderInFullscreenMenu;
-
     public BuilderMainPanelController()
     {
         if (DataStore.i.builderInWorld.isDevBuild.Get())
             SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH_DEV)));
         else
             SetView(Object.Instantiate(Resources.Load<BuilderMainPanelView>(VIEW_PREFAB_PATH)));
-
-        configureBuilderInFullscreenMenu.OnChange += ConfigureBuilderInFullscreenMenuChanged;
-        ConfigureBuilderInFullscreenMenuChanged(configureBuilderInFullscreenMenu.Get(), null);
     }
 
     internal void SetView(IBuilderMainPanelView view)
@@ -92,6 +90,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         scenesViewController.OnJumpInPressed -= GoToCoords;
         scenesViewController.OnRequestOpenUrl -= OpenUrl;
         scenesViewController.OnEditorPressed -= OnGoToEditScene;
+        projectsController.OnEditorPressed -= GetManifestToEdit;
+
         newProjectFlowController.OnNewProjectCrated -= CreateNewProject;
 
         view.OnCreateProjectPressed -= newProjectFlowController.NewProject;
@@ -100,8 +100,6 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
         view.OnBackPressed -= OnBack;
-
-        configureBuilderInFullscreenMenu.OnChange -= ConfigureBuilderInFullscreenMenuChanged;
 
         unpublishPopupController?.Dispose();
 
@@ -175,27 +173,36 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         newProjectFlowController.OnNewProjectCrated += CreateNewProject;
 
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
+        this.projectsController.OnEditorPressed += GetManifestToEdit;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
+    private void GetManifestToEdit(ProjectData data)
+    {
+        Promise<Manifest> manifestPromise = context.builderAPIController.GetManifestById(data.id);
+        manifestPromise.Then( OpenEditorFromManifest);
+
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(OBTAIN_PROJECT_ERROR + errorString);
+        });
+    }
+
     private void CreateNewProject(ProjectData project)
     {
-        Promise<APIResponse> projectPromise = context.builderAPIController.CreateNewProject(project);
+        Promise<Manifest> projectPromise = context.builderAPIController.CreateNewProject(project);
 
-        projectPromise.Then( apiResponse =>
-        {
-            //TODO: If it is ok, Start the editor
-            if (!apiResponse.ok)
-                BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + apiResponse.error);
-        });
+        projectPromise.Then( OpenEditorFromManifest);
 
         projectPromise.Catch( errorString =>
         {
             BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
     }
+
+    private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartEditorFromManifest(manifest); }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
 
@@ -425,6 +432,4 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             FetchPanelInfo(CACHE_TIME_LAND, 0);
         }
     }
-
-    internal void ConfigureBuilderInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
 }

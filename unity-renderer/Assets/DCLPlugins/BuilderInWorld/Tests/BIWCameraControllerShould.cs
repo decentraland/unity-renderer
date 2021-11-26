@@ -57,6 +57,18 @@ namespace DCL.Builder
             //Assert
             cameraController.freeCameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
         }
+        
+        [Test]
+        public void AskedForScreenshotFromResetPositionCorrectly()
+        {
+            //Act
+            cameraController.TakeSceneScreenshotFromResetPosition(
+                (x) => { }
+            );
+
+            //Assert
+            cameraController.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+        }
     }
 
 }

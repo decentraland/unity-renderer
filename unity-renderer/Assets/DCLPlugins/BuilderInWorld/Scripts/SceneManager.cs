@@ -29,6 +29,7 @@ namespace DCL.Builder
         }
 
         internal State currentState = State.IDLE;
+        public ISceneManager.SceneType sceneType = ISceneManager.SceneType.PROJECT;
 
         private InputAction_Trigger editModeChangeInputAction;
 
@@ -47,9 +48,9 @@ namespace DCL.Builder
         internal BuilderInWorldBridge builderInWorldBridge;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
-        internal ICameraController cameraController;
 
         internal bool catalogLoaded = false;
+        internal Manifest.Manifest currentManifest;
 
         public void Initialize(IContext context)
         {
@@ -58,12 +59,13 @@ namespace DCL.Builder
             editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
             inputController = context.sceneReferences.inputController;
 
+
             builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
             userProfile = UserProfile.GetOwnUserProfile();
 
-            cameraController = new CameraController();
-            cameraController.Initialize(context);
 
+            context.editorContext.editorHUD.OnPublishAction += TakeSceneScreenshotForPublish;
+            context.editorContext.editorHUD.OnStartExitAction += StartExitMode;
             context.editorContext.editorHUD.OnLogoutAction += ExitEditMode;
 
             BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
@@ -75,9 +77,12 @@ namespace DCL.Builder
         public void Dispose()
         {
             if (context.editorContext.editorHUD != null)
+            {
+                context.editorContext.editorHUD.OnPublishAction -= TakeSceneScreenshotForPublish;
+                context.editorContext.editorHUD.OnStartExitAction -= StartExitMode;
                 context.editorContext.editorHUD.OnLogoutAction -= ExitEditMode;
+            }
 
-            cameraController.Dispose();
             sceneMetricsAnalyticsHelper?.Dispose();
 
             initialLoadingController?.Dispose();
@@ -89,7 +94,7 @@ namespace DCL.Builder
 
             if (sceneToEdit != null)
                 sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
-            
+
             editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
             context.builderAPIController.OnWebRequestCreated -= WebRequestCreated;
 
@@ -152,7 +157,59 @@ namespace DCL.Builder
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
                                          .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
-            TryStartFlow(targetScene,SOURCE_BUILDER_PANEl);
+            StartFlowWithPermission(targetScene, SOURCE_BUILDER_PANEl);
+        }
+
+        public void StartEditorFromManifest(Manifest.Manifest manifest)
+        {
+            DataStore.i.HUDs.loadingHUD.visible.Set(true);
+
+            //We set the manifest for future saves
+            currentManifest = manifest;
+            context.editorContext.saveController.SetManifest(manifest);
+
+            ParcelScene convertedScene = ManifestTranslator.TranslateManifestToScene(manifest);
+            StartFlow(convertedScene, SOURCE_BUILDER_PANEl, ISceneManager.SceneType.PROJECT);
+        }
+
+        internal void TakeSceneScreenshotForPublish()
+        {
+            context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
+            {
+                context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
+            });
+        }
+
+        public void StartExitMode()
+        {
+            if (context.editorContext.saveController.GetSaveTimes() > 0)
+            {
+                context.cameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
+                {
+                    if (sceneSnapshot != null)
+                    {
+                        //This should dissapear when we migrate completely the scene lifecycle to unity 
+                        context.editorContext.editorHUD?.SaveSceneInfo();
+                        if (currentManifest != null)
+                            context.builderAPIController.SetThumbnail(currentManifest.project.id, sceneSnapshot);
+                    }
+                });
+
+                if (context.editorContext.editorHUD != null)
+                    context.editorContext.editorHUD.ConfigureConfirmationModal(
+                        BIWSettings.EXIT_MODAL_TITLE,
+                        BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
+                        BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
+                        BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
+            }
+            else
+            {
+                context.editorContext.editorHUD.ConfigureConfirmationModal(
+                    BIWSettings.EXIT_MODAL_TITLE,
+                    BIWSettings.EXIT_MODAL_SUBTITLE,
+                    BIWSettings.EXIT_MODAL_CANCEL_BUTTON,
+                    BIWSettings.EXIT_MODAL_CONFIRM_BUTTON);
+            }
         }
 
         public IParcelScene FindSceneToEdit()
@@ -196,23 +253,30 @@ namespace DCL.Builder
             NextState();
         }
 
-        internal void StartFlow(string source)
+        internal void StartFlow(IParcelScene targetScene, string source, ISceneManager.SceneType sceneType)
         {
-            if (currentState != State.IDLE)
+            if (currentState != State.IDLE || targetScene == null)
                 return;
+
+            sceneToEdit = targetScene;
+            this.sceneType = sceneType;
 
             NotificationsController.i.allowNotifications = false;
             CommonScriptableObjects.allUIHidden.Set(true);
             NotificationsController.i.allowNotifications = true;
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
+
+            //We configure the loading part
+            initialLoadingController.SetLoadingType(sceneType);
             initialLoadingController.Show();
             initialLoadingController.SetPercentage(0f);
+
             DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             BIWAnalytics.StartEditorFlow(source);
             beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
-            cameraController.ActivateCamera(sceneToEdit);
+            context.cameraController.ActivateCamera(sceneToEdit);
 
             NextState();
         }
@@ -258,7 +322,7 @@ namespace DCL.Builder
         internal void CheckSceneToEditByShorcut()
         {
             var scene = FindSceneToEdit();
-            TryStartFlow(scene, SOURCE_SHORTCUT);
+            StartFlowWithPermission(scene, SOURCE_SHORTCUT);
         }
 
         internal void NewSceneAdded(IParcelScene newScene)
@@ -320,6 +384,9 @@ namespace DCL.Builder
 
         internal void EnterEditMode()
         {
+            if (sceneType == ISceneManager.SceneType.DEPLOYED)
+                DataStore.i.HUDs.loadingHUD.visible.Set(false);
+
             initialLoadingController.SetPercentage(100f);
             initialLoadingController.Hide(true, onHideAction: () =>
             {
@@ -341,7 +408,7 @@ namespace DCL.Builder
             initialLoadingController.Hide(true);
             inputController.inputTypeMode = InputTypeMode.GENERAL;
             CommonScriptableObjects.allUIHidden.Set(false);
-            cameraController.DeactivateCamera();
+            context.cameraController.DeactivateCamera();
             context.editor.ExitEditMode();
 
             DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
@@ -352,14 +419,13 @@ namespace DCL.Builder
             if (!builderInWorldBridge.builderProject.isNewEmptyProject)
                 return;
 
-            cameraController.TakeSceneScreenshot((sceneSnapshot) =>
+            context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
             {
                 context.editorContext.editorHUD?.NewProjectStart(sceneSnapshot);
             });
-
         }
 
-        public void TryStartFlow(IParcelScene targetScene, string source)
+        public void StartFlowWithPermission(IParcelScene targetScene, string source)
         {
             if (currentState != State.IDLE || targetScene == null)
                 return;
@@ -374,9 +440,8 @@ namespace DCL.Builder
                 BIWUtils.ShowGenericNotification(BIWSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
                 return;
             }
-            
-            sceneToEdit = targetScene;
-            StartFlow(source);
+
+            StartFlow(targetScene, source, ISceneManager.SceneType.DEPLOYED);
         }
 
         private void LoadScene()
@@ -391,7 +456,8 @@ namespace DCL.Builder
             Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
             Environment.i.world.blockersController.SetEnabled(false);
 
-            builderInWorldBridge.StartKernelEditMode(sceneToEdit);
+            if (sceneType == ISceneManager.SceneType.DEPLOYED)
+                builderInWorldBridge.StartKernelEditMode(sceneToEdit);
         }
 
         internal void ActivateLandAccessBackgroundChecker()

@@ -59,11 +59,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     public void AddAssets(string payload)
     {
         //We remove the old assets to they don't collide with the new ones
-        foreach (var catalogItem in DataStore.i.builderInWorld.currentSceneCatalogItemDict.GetValues())
-        {
-            AssetCatalogBridge.i.RemoveSceneObjectToSceneCatalog(catalogItem.id);
-        }
-        DataStore.i.builderInWorld.currentSceneCatalogItemDict.Clear();
+        BIWUtils.RemoveAssetsFromCurrentScene();
 
         AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(payload);
     }
@@ -281,8 +277,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         sceneEvent.sceneId = sceneId;
         sceneEvent.eventType = BIWSettings.STATE_EVENT_NAME;
         sceneEvent.payload = addEntityEvent;
-
-
+        
         //Note(Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
         string message = JsonConvert.SerializeObject(sceneEvent);
         WebInterface.BuilderInWorldMessage(BIWSettings.SCENE_EVENT_NAME, message);

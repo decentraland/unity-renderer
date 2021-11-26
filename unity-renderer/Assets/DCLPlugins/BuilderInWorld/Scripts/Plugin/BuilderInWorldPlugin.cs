@@ -8,6 +8,7 @@ public class BuilderInWorldPlugin : PluginFeature
     internal IBuilderMainPanelController panelController;
     internal IBuilderAPIController builderAPIController;
     internal ISceneManager sceneManager;
+    internal ICameraController cameraController;
 
     internal IContext context;
 
@@ -20,10 +21,13 @@ public class BuilderInWorldPlugin : PluginFeature
         editor = new BuilderInWorldEditor();
         builderAPIController = new BuilderAPIController();
         sceneManager = new SceneManager();
+        cameraController = new CameraController();
 
         context = new Context(editor,
             panelController,
             builderAPIController,
+            sceneManager,
+            cameraController,
             new BuilderEditorHUDController(),
             new BIWOutlinerController(),
             new BIWInputHandler(),
@@ -55,6 +59,7 @@ public class BuilderInWorldPlugin : PluginFeature
         editor.Initialize(context);
         builderAPIController.Initialize(context);
         sceneManager.Initialize(context);
+        cameraController.Initialize(context);
 
         DataStore.i.builderInWorld.isInitialized.Set(true);
     }
@@ -66,6 +71,7 @@ public class BuilderInWorldPlugin : PluginFeature
         editor.Dispose();
         panelController.Dispose();
         sceneManager.Dispose();
+        cameraController.Dispose();
         context.Dispose();
     }
 

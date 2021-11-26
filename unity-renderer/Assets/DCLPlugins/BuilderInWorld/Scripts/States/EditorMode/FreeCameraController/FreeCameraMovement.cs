@@ -4,25 +4,6 @@ using UnityEngine;
 
 namespace DCL.Camera
 {
-    public interface IFreeCameraMovement
-    {
-        GameObject gameObject { get; }
-        delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
-        void FocusOnEntities(List<BIWEntity> entitiesToFocus);
-        void SmoothLookAt(Vector3 position);
-        void StartDectectingMovement();
-        void StopDetectingMovement();
-        bool HasBeenMovement();
-        void SetCameraCanMove(bool canMove);
-        void SetPosition(Vector3 position);
-        void LookAt(Transform transformToLookAt);
-        void LookAt(Vector3 pointToLookAt);
-        void SetResetConfiguration(Vector3 position, Transform lookAt);
-        void ResetCameraPosition();
-        void TakeSceneScreenshot(OnSnapshotsReady onSuccess);
-        void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess);
-    }
-
     public class FreeCameraMovement : CameraStateBase, IFreeCameraMovement
     {
         private const float CAMERA_ANGLE_THRESHOLD = 0.01f;
@@ -127,7 +108,7 @@ namespace DCL.Camera
 
         private Vector3 nextTranslation;
         internal Vector3 originalCameraPosition;
-        internal Transform originalCameraLookAt;
+        internal Vector3 originalCameraPointToLookAt;
         private Vector3 cameraVelocity = Vector3.zero;
 
         private float lastMouseWheelTime;
@@ -492,12 +473,15 @@ namespace DCL.Camera
 
         public void LookAt(Transform transformToLookAt)
         {
-            transform.LookAt(transformToLookAt);
+            LookAt(transformToLookAt.position);
+        }
+
+        public void LookAt(Vector3 pointToLookAt)
+        {
+            transform.LookAt(pointToLookAt);
             yaw = transform.eulerAngles.y;
             pitch = transform.eulerAngles.x;
         }
-
-        public void LookAt(Vector3 pointToLookAt) { transform.LookAt(pointToLookAt); }
 
         public void SmoothLookAt(Transform transformToLookAt) { SmoothLookAt(transformToLookAt.position); }
 
@@ -580,18 +564,23 @@ namespace DCL.Camera
 
         public void SetResetConfiguration(Vector3 position, Transform lookAt)
         {
+            SetResetConfiguration(position,lookAt.position);
+        }
+        
+        public void SetResetConfiguration(Vector3 position, Vector3 pointToLook)
+        {
             originalCameraPosition = position;
-            originalCameraLookAt = lookAt;
+            originalCameraPointToLookAt = pointToLook;
         }
 
         public void ResetCameraPosition()
         {
             SetPosition(originalCameraPosition);
-            LookAt(originalCameraLookAt);
+            LookAt(originalCameraPointToLookAt);
             direction = Vector3.zero;
         }
 
-        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
+        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = CoroutineStarter.Start(TakeSceneScreenshotCoroutine(onSuccess)); }
 
         private IEnumerator TakeSceneScreenshotCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
         {
@@ -617,7 +606,7 @@ namespace DCL.Camera
             Vector3 currentPos = transform.position;
             Vector3 currentLookAt = transform.forward;
             SetPosition(originalCameraPosition);
-            transform.LookAt(originalCameraLookAt);
+            transform.LookAt(originalCameraPointToLookAt);
 
             var current = camera.targetTexture;
             camera.targetTexture = null;

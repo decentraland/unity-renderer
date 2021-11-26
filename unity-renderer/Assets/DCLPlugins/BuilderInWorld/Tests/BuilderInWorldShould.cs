@@ -19,6 +19,7 @@ public class BuilderInWorldShould
         builderInWorld.sceneManager = Substitute.For<ISceneManager>();
         builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
         builderInWorld.builderAPIController = Substitute.For<IBuilderAPIController>();
+        builderInWorld.cameraController = Substitute.For<ICameraController>();
     }
 
     [TearDown]
