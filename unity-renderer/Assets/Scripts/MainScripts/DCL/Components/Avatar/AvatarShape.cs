@@ -127,8 +127,6 @@ namespace DCL
 
             EnablePassport();
             
-            avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
-
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
@@ -168,7 +166,11 @@ namespace DCL
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
                 otherPlayers.Add(player.id, player);
+                avatarReporterController.ReportAvatarRemoved();
             }
+            
+            avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
         }
