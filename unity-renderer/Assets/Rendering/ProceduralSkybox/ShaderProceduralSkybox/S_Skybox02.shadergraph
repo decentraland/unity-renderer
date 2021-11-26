@@ -4597,10 +4597,10 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": 0.0,
-    "m_FloatType": 0,
+    "m_FloatType": 1,
     "m_RangeValues": {
-        "x": 0.0,
-        "y": 1.0
+        "x": -1.0099999904632569,
+        "y": 0.0
     }
 }
 
@@ -5466,8 +5466,8 @@
     "m_ObjectId": "2ea65bae5eb443f5ab9a5a75b178fb06",
     "m_Title": "HorizonPlane",
     "m_Position": {
-        "x": -1911.0001220703125,
-        "y": -946.0
+        "x": -1851.000244140625,
+        "y": -979.0
     }
 }
 
@@ -8249,7 +8249,7 @@
     "m_ActiveSubTarget": {
         "m_Id": "2387208d1f15458a9f13d922c8dc1a7a"
     },
-    "m_SurfaceType": 1,
+    "m_SurfaceType": 0,
     "m_AlphaMode": 0,
     "m_TwoSided": true,
     "m_AlphaClip": false,

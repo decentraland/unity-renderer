@@ -405,7 +405,7 @@ Material:
     - Vector4_0cf559245b2d4be8a1deafca41d5f1d6: {r: 1, g: 1, b: 0, a: 0}
     - Vector4_1: {r: 0.1, g: 0.1, b: 0.5, a: 0}
     - Vector4_2: {r: 1, g: 1, b: 0.5, a: 0.5}
-    - _HorizonPlaneColor: {r: 0.22641507, g: 0.21552151, b: 0.20825914, a: 0}
+    - _HorizonPlaneColor: {r: 0.22641495, g: 0.2155214, b: 0.20825902, a: 0}
     - _color00: {r: 1, g: 1, b: 1, a: 1}
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
