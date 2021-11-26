@@ -1492,7 +1492,7 @@ namespace DCL.Interface
             avatarPositionPayload.entityId = entityId;
             avatarPositionPayload.avatarShapeId = avatarId;
             avatarPositionPayload.position = position;
-            SendMessage("ReportAvatarState", avatarStatePayload);
+            SendMessage("ReportAvatarState", avatarPositionPayload);
         }
     }
 }
