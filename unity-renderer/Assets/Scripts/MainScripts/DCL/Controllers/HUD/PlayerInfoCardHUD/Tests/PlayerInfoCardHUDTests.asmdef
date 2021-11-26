@@ -1,5 +1,6 @@
 {
     "name": "PlayerInfoCardHUDTests",
+    "rootNamespace": "",
     "references": [
         "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
         "GUID:5e5747cdf4de86842a62bc04488d762d",
@@ -12,14 +13,20 @@
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0acc523941302664db1f4e527237feb3",
         "GUID:a1e1473c53889c2489c0822a9dd5fa33",
-        "GUID:28f74c468a54948bfa9f625c5d428f56"
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:ba9b721ce33233c4da7ff4ef30d25b59",
+        "GUID:f3f5ae3d35fe73e44bb48a1aa2b25915",
+        "GUID:faaad46a7200be44786dc614001b0d5f",
+        "GUID:e99faafecbf8dd74d8130597511b9b27"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

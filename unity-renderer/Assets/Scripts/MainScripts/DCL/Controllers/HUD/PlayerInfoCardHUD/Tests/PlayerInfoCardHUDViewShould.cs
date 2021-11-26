@@ -116,62 +116,6 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         }
     }
 
-    [Test]
-    public void UpdateProfileDataProperly()
-    {
-        view.SetUserProfile(userProfile);
-
-        Assert.AreEqual(userProfile, view.currentUserProfile);
-        Assert.AreEqual(userProfile.userName, view.name.text);
-        Assert.AreEqual(userProfile.description, view.description.text);
-    }
-
-    [Test]
-    [Ignore("This test never worked as it should be. Another test was overwriting the userProfile with an empty inventory, so failed when run individually but passed when run all. TODO refactor: requesting wearables behaviour should be mocked")]
-    public void CreateCollectibles()
-    {
-        view.SetUserProfile(userProfile);
-
-        Assert.AreEqual(userProfile.inventory.Count, view.playerInfoCollectibles.Count);
-        foreach (var keyValuePair in userProfile.inventory)
-        {
-            var wearable = CatalogController.wearableCatalog.Get(keyValuePair.Key);
-            Assert.IsTrue(view.playerInfoCollectibles.Any(x => x.collectible == wearable));
-        }
-    }
-
-    [TestCase("fucker123", "****er123")]
-    [TestCase("holyshit", "holy****")]
-    public void FilterProfanityName(string originalName, string filteredName)
-    {
-        userProfile.UpdateData(new UserProfileModel
-        {
-            userId = "userId",
-            name = originalName,
-            description = "description"
-        });
-
-        view.SetUserProfile(userProfile);
-
-        Assert.AreEqual(filteredName, view.name.text);
-    }
-    
-    [TestCase("fuckerrrrr", "****errrrr")]
-    [TestCase("shit bro thats some nonsense", "**** bro thats some nonsense")]
-    public void FilterProfanityDescription(string originalDescription, string filteredDescription)
-    {
-        userProfile.UpdateData(new UserProfileModel
-        {
-            userId = "userId",
-            name = "test",
-            description = originalDescription
-        });
-
-        view.SetUserProfile(userProfile);
-
-        Assert.AreEqual(filteredDescription, view.description.text);
-    }
-
     private PlayerInfoCardHUDView.TabsMapping GetTabMapping(PlayerInfoCardHUDView.Tabs tab)
     {
         return view.tabsMapping.First(x => x.tab == tab);
