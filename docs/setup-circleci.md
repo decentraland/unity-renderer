@@ -7,7 +7,9 @@ To set up the CI, you will need:
 
 ## Setup your project in CircleCI
 
-Log in with your user in CircleCI.
+Log in with your GitHub user in CircleCI.
+
+Set up the `unity-renderer` project.
 
 ## Unity License Environment Variable
 
@@ -21,14 +23,17 @@ And then you must use that file to apply your Unity License (https://license.uni
 
 CircleCI uses the same Hardware ID for every run, so you can use the pre-created file: [resources/circleci-unity-activation-file-v2020.3.0f1.alf](resources/circleci-unity-activation-file-v2020.3.0f1.alf)
 
-### Create Activation File
+### Create Activation File in CircleCI
 
-(TODO: Change the pipeline to detect when the UNITY LICENSE is empty and create this activation file)
-Execute in a CircleCI Machine the following command:
+If you can not use the pre-created activation file, you should follow this step.
+
+Execute in a CircleCI Machine (Use `Rerun with SSH` in CircleCI) the following command:
 
 ```
 bash -c '$UNITY_PATH/Editor/Unity -quit -nographics -logFile /tmp/unity-createManualActivationFile.log -batchmode -createManualActivationFile'
 ```
+
+And the generated file it's the activation file for the following step.
 
 ### Generate Unity License Content
 
@@ -54,8 +59,8 @@ And you will be able to build with CircleCI.
 
 ## AWS S3 Bucket
 
-Create a AWS S3 Bucket (Public)
-Create a IAM User with `Access key - Programmatic access` and the following policy:
+Create an AWS S3 Bucket (with all public access, or you can use CloudFront)
+Create an IAM User with `Access key - Programmatic access` and the following policy:
 
 ```
 {
@@ -75,9 +80,10 @@ Create a IAM User with `Access key - Programmatic access` and the following poli
     ]
 }
 ```
+(replace YOUR_BUCKET with your bucket name)
 
 Set up the following Environment Variables in CircleCI with the credentials generated above:
 
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `S3_BUCKET`
+- `AWS_ACCESS_KEY_ID`=IAM User generated key id
+- `AWS_SECRET_ACCESS_KEY`=IAM User generated secret access key
+- `S3_BUCKET`=S3 Bucket name
