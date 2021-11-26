@@ -32,6 +32,8 @@ namespace DCL
 
             OnKernelConfigChanged(KernelConfig.i.Get(), null);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
+
+            debugConfig.isDebugMode.OnChange += OnToggleDebugMode;
         }
 
         private void OnFPSPanelToggle(bool current, bool previous)
@@ -56,10 +58,12 @@ namespace DCL
             if (current)
             {
                 Debug.unityLogger.logEnabled = true;
+                Debug.Log("Client logging ENABLED");
                 ShowFPSPanel();
             }
             else
             {
+                Debug.Log("Client logging DISABLED");
                 Debug.unityLogger.logEnabled = false;
                 HideFPSPanel();
             }
@@ -142,6 +146,7 @@ namespace DCL
         {
             positionTracker.Dispose();
             previewSceneLimitsWarning?.Dispose();
+            debugConfig.isDebugMode.OnChange -= OnToggleDebugMode;
             isFPSPanelVisible.OnChange -= OnFPSPanelToggle;
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
 

@@ -8,29 +8,6 @@ using UnityEngine;
 
 namespace DCL.Builder
 {
-    public interface ICameraController
-    {
-        void Initialize(IContext context);
-        void Dispose();
-
-        /// <summary>
-        /// Take screenshot from the initial position of the camera
-        /// </summary>
-        /// <param name="onSuccess"></param>
-        void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess);
-        
-        /// <summary>
-        /// Activate the camera in the eagle mode to have a more editor feel
-        /// </summary>
-        /// <param name="parcelScene"></param>
-        void ActivateCamera(IParcelScene parcelScene);
-        
-        /// <summary>
-        /// Go back to the last camera used before entering the builder
-        /// </summary>
-        void DeactivateCamera();
-    }
-    
     public class CameraController : ICameraController
     {
         private float initialEagleCameraHeight = 10f;
@@ -39,9 +16,12 @@ namespace DCL.Builder
         private CameraMode.ModeId avatarCameraModeBeforeEditing;
         private Camera.CameraController cameraController;
         internal IFreeCameraMovement freeCameraController;
+        internal IContext context;
+        internal Texture2D lastScreenshot;
 
         public void Initialize(IContext context)
         {
+            this.context = context;
             if (context.sceneReferences.cameraController != null)
             {
                 if(context.sceneReferences.cameraController.GetComponent<Camera.CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
@@ -58,8 +38,22 @@ namespace DCL.Builder
 
         public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess)
         {
+            //We deselect the entities to take better photos
+            context.editorContext.entityHandler.DeselectEntities();
             freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
             {
+                lastScreenshot = sceneSnapshot;
+                onSuccess?.Invoke(sceneSnapshot);
+            });
+        }
+        
+        public void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess)
+        {
+            //We deselect the entities to take better photos
+            context.editorContext.entityHandler.DeselectEntities();
+            freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
+            {
+                lastScreenshot = sceneSnapshot;
                 onSuccess?.Invoke(sceneSnapshot);
             });
         }
@@ -71,7 +65,8 @@ namespace DCL.Builder
             Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
             freeCameraController.SetPosition(cameraPosition);
             freeCameraController.LookAt(pointToLookAt);
-
+            freeCameraController.SetResetConfiguration(cameraPosition, pointToLookAt);
+            
             if (cameraController != null && cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
                 avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
 
@@ -79,6 +74,8 @@ namespace DCL.Builder
         }
 
         public void DeactivateCamera() { cameraController?.SetCameraMode(avatarCameraModeBeforeEditing); }
+
+        public Texture2D GetLastScreenshot() { return lastScreenshot;}
 
         internal Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
         {

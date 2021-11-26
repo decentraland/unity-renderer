@@ -35,7 +35,6 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void OpenNewProjectDetails()
     {
         //Arrange
-        mainController.cameraController = Substitute.For<ICameraController>();
         GameObject dummyGO = new GameObject("DummyGO");
         mainController.builderInWorldBridge.builderProjectPayload.isNewEmptyProject = true;
         
@@ -43,8 +42,22 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.OpenNewProjectDetails();
 
         //Assert
-        mainController.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+        mainController.context.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
+    
+    [Test]
+    public void StartExitModeScreenShot()
+    {
+        // Arrange
+        mainController.context.editorContext.saveController.Configure().GetSaveTimes().Returns(2);
+
+        // Act
+        mainController.StartExitMode();
+
+        // Assert
+        mainController.context.cameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+    }
+    
 
     [Test]
     public void SetFlagProperlyWhenBuilderInWorldIsEntered()
@@ -55,7 +68,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         // Act
-        mainController.TryStartFlow(scene, "Test");
+        mainController.StartFlowWithPermission(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
@@ -72,7 +85,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
-        mainController.TryStartFlow(scene, "Test");
+        mainController.StartFlowWithPermission(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);

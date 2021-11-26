@@ -17,8 +17,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath ="SearchBar/SearchBarView";
-            var prefab =  Resources.Load<SearchBarView>(prefabAssetPath);
+            var prefab = Resources.Load<SearchBarView>("SearchBar/SearchBarView");
             view = Object.Instantiate(prefab);
         }
 

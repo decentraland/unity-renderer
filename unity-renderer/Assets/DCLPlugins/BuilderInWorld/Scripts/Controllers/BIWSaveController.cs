@@ -1,6 +1,7 @@
 using System;
 using DCL;
 using DCL.Builder;
+using DCL.Builder.Manifest;
 using DCL.Controllers;
 using UnityEngine;
 
@@ -11,7 +12,8 @@ public class BIWSaveController : BIWController, IBIWSaveController
     public int numberOfSaves { get; set; } = 0;
 
     private BuilderInWorldBridge bridge;
-
+    private Manifest sceneManifest;
+    
     private float nextTimeToSave;
     private bool canActivateSave = true;
     public int GetSaveTimes() { return numberOfSaves; }
@@ -61,8 +63,6 @@ public class BIWSaveController : BIWController, IBIWSaveController
         if (numberOfSaves > 0)
         {
             ForceSave();
-
-            context.editorContext.editorHUD?.SaveSceneInfo();
             ResetNumberOfSaves();
         }
 
@@ -89,10 +89,24 @@ public class BIWSaveController : BIWController, IBIWSaveController
         if (!isEditModeActive || !canActivateSave)
             return;
 
-        bridge.SaveSceneState(sceneToEdit);
+        if (DataStore.i.builderInWorld.isDevBuild.Get() && sceneManifest != null)
+        {
+            sceneManifest.scene = ManifestTranslator.TranslateSceneToManifest(sceneToEdit);
+            context.builderAPIController.SetManifest(sceneManifest);
+        }
+        else
+        {
+            bridge.SaveSceneState(sceneToEdit);
+        }
+        
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         context.editorContext.editorHUD?.SceneSaved();
         numberOfSaves++;
+    }
+
+    public void SetManifest(Manifest manifest)
+    {
+        sceneManifest = manifest;
     }
 
     public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { bridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }

@@ -12,8 +12,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath ="SceneCardView";
-            var prefab =  Resources.Load<SceneCardView>(prefabAssetPath);
+            var prefab = Resources.Load<SceneCardView>("SceneCardView");
             cardView = UnityEngine.Object.Instantiate(prefab);
         }
 

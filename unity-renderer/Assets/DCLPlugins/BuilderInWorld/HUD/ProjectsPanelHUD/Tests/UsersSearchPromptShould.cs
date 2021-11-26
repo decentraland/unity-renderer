@@ -12,10 +12,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath = "UsersSearchPrompt/UsersSearchPromptView";
-      
-            var prefab =  Resources.Load<UsersSearchPromptView>(prefabAssetPath);
-            promptView = Object.Instantiate(prefab);
+            var viewPrefab = Resources.Load<UsersSearchPromptView>("UsersSearchPrompt/UsersSearchPromptView");
+            promptView = Object.Instantiate(viewPrefab);
         }
 
         [TearDown]

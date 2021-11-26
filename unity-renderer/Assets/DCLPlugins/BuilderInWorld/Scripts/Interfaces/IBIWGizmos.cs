@@ -8,7 +8,7 @@ namespace DCL.Builder
 
         bool initialized { get; }
         GameObject currentGameObject { get; }
-        void Initialize(Camera camera, Transform cameraHolderTransform);
+        void Initialize(UnityEngine.Camera camera, Transform cameraHolderTransform);
         Vector3 GetActiveAxisVector();
         void OnEndDrag();
         void ForceRelativeScaleRatio();

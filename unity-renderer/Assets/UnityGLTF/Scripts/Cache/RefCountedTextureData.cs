@@ -6,12 +6,14 @@ namespace UnityGLTF.Cache
     public class RefCountedTextureData : RefCountedBase
     {
         public Texture2D Texture;
+        public bool linear;
         private string id;
 
-        public RefCountedTextureData(string id, Texture2D texture)
+        public RefCountedTextureData(string id, Texture2D texture, bool linear)
         {
             this.id = id;
             this.Texture = texture;
+            this.linear = linear;
         }
 
         protected override void OnDestroyCachedData()

@@ -515,10 +515,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         if (data.transformComponent != null)
         {
-            DCLTransform.model.position = data.transformComponent.position;
-            DCLTransform.model.rotation = Quaternion.Euler(data.transformComponent.rotation);
-            DCLTransform.model.scale = data.transformComponent.scale;
-            sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, CLASS_ID_COMPONENT.TRANSFORM, DCLTransform.model);
+            DCLTransform.Model model = new DCLTransform.Model();
+            model.position = data.transformComponent.position;
+            model.rotation = Quaternion.Euler(data.transformComponent.rotation);
+            model.scale = data.transformComponent.scale;
+            
+            EntityComponentsUtils.AddTransformComponent(sceneToEdit, newEntity, model);
         }
 
         foreach (ProtocolV2.GenericComponent component in data.components)
@@ -533,13 +535,12 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         if (data.nftComponent != null)
         {
-            NFTShape nftShape = (NFTShape) sceneToEdit.SharedComponentCreate(data.nftComponent.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
-            nftShape.model = new NFTShape.Model();
-            nftShape.model.color = data.nftComponent.color.ToColor();
-            nftShape.model.src = data.nftComponent.src;
-            nftShape.model.assetId = data.nftComponent.assetId;
+            NFTShape.Model model = new NFTShape.Model();
+            model.color = data.nftComponent.color.ToColor();
+            model.src = data.nftComponent.src;
+            model.assetId = data.nftComponent.assetId;
 
-            sceneToEdit.SharedComponentAttach(newEntity.entityId, nftShape.id);
+            EntityComponentsUtils.AddNFTShapeComponent(sceneToEdit, newEntity, model, data.nftComponent.id);
         }
 
         var convertedEntity = SetupEntityToEdit(newEntity, true);
@@ -560,17 +561,17 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     public BIWEntity CreateEmptyEntity(IParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
         IDCLEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
-
-        DCLTransform.model.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
+        DCLTransform.Model transformModel = new DCLTransform.Model();
+        transformModel.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
 
         Vector3 pointToLookAt = Camera.main.transform.position;
         pointToLookAt.y = editionGOPosition.y;
         Quaternion lookOnLook = Quaternion.LookRotation(editionGOPosition - pointToLookAt);
 
-        DCLTransform.model.rotation = lookOnLook;
-        DCLTransform.model.scale = newEntity.gameObject.transform.lossyScale;
+        transformModel.rotation = lookOnLook;
+        transformModel.scale = newEntity.gameObject.transform.lossyScale;
 
-        parcelScene.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, CLASS_ID_COMPONENT.TRANSFORM, DCLTransform.model);
+        EntityComponentsUtils.AddTransformComponent(parcelScene, newEntity, transformModel);
 
         BIWEntity convertedEntity = SetupEntityToEdit(newEntity, true);
         hudController?.UpdateSceneLimitInfo();
