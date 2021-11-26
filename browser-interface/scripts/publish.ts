@@ -11,7 +11,23 @@ async function main() {
   await checkFiles()
 
   if (!process.env.GITLAB_PIPELINE_URL) {
-    throw new Error("GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger")
+    console.log("GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger")
+    return;
+  }
+
+  if (!process.env.GITLAB_TOKEN) {
+    console.log("GITLAB_STATIC_PIPELINE_TOKEN not present. Skipping CDN pipeline trigger")
+    return;
+  }
+
+  if (!process.env.CIRCLE_SHA1) {
+    console.log("CIRCLE_SHA1 not present. Skipping CDN pipeline trigger")
+    return;
+  }
+
+  if (!process.env.NPM_TOKEN) {
+    console.log("NPM_TOKEN not present. Skipping CDN pipeline trigger")
+    return;
   }
 
   const { version, name } = await getPackageJson(DIST_ROOT)
@@ -38,21 +54,6 @@ async function getPackageJson(workingDirectory: string) {
 }
 
 async function triggerPipeline(packageName: string, packageVersion: string) {
-  const GITLAB_STATIC_PIPELINE_TOKEN = process.env.GITLAB_TOKEN
-  const GITLAB_STATIC_PIPELINE_URL = process.env.GITLAB_PIPELINE_URL
-
-  if (!GITLAB_STATIC_PIPELINE_URL) {
-    throw new Error("GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger")
-  }
-
-  if (!GITLAB_STATIC_PIPELINE_TOKEN) {
-    throw new Error("GITLAB_STATIC_PIPELINE_TOKEN not present. Skipping CDN pipeline trigger")
-  }
-
-  if (!process.env.CIRCLE_SHA1) {
-    throw new Error("CIRCLE_SHA1 not present. Skipping CDN pipeline trigger")
-  }
-
   const body = new FormData()
   body.append("token", GITLAB_STATIC_PIPELINE_TOKEN)
   body.append("ref", "master")
