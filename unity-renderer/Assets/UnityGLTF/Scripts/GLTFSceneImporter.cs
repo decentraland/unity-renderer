@@ -2058,10 +2058,14 @@ namespace UnityGLTF
             yield return skipFrameIfDepletedTimeBudget;
             mesh.colors = unityMeshData.Colors;
 
-            mesh.triangles = unityMeshData.Triangles;
-            if (ShouldYieldOnTimeout())
+            if (AreMeshTrianglesValid(unityMeshData.Triangles, vertexCount)) // Some scenes contain broken meshes that can trigger a fatal error
             {
-                yield return YieldOnTimeout();
+                mesh.triangles = unityMeshData.Triangles;
+                yield return skipFrameIfDepletedTimeBudget;
+            }
+            else
+            {
+                Debug.Log("GLTFSceneImporter - ERROR - ConstructUnityMesh - Couldn't assign triangles to mesh as there are indices pointing to vertices out of bounds");
             }
 
             mesh.tangents = unityMeshData.Tangents;
@@ -2089,7 +2093,7 @@ namespace UnityGLTF
         private bool AreMeshTrianglesValid(int[] triangles, int vertexCount)
         {
             bool areValid = true;
-            
+
             for (var i = 0; i < triangles.Length; i++)
             {
                 if (triangles[i] > vertexCount)
@@ -2350,7 +2354,7 @@ namespace UnityGLTF
             else
             {
                 yield return ConstructImage(settings, image, sourceId);
-                
+
                 if (_assetCache.ImageCache[sourceId] == null)
                 {
                     Debug.Log($"GLTFSceneImporter - ConstructTexture - null tex detected for {image.Uri} / {id}, applying invalid-tex texture...");
