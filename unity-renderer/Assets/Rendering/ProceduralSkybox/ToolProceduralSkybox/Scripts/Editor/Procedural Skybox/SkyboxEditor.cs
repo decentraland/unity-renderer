@@ -34,6 +34,11 @@ namespace DCL.Skybox
         private bool showTimelineTags;
         private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
+        private GUIStyle foldoutStyle;
+        private GUIStyle renderingMarkerStyle;
+        private GUIStyle configurationStyle;
+        private GUIStyle percentagePartStyle;
+
         public static SkyboxEditorWindow instance { get { return GetWindow<SkyboxEditorWindow>(); } }
 
         #region Unity Callbacks
@@ -67,8 +72,20 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Space(12);
 
-            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos);
+            showTimelineTags = EditorGUILayout.Foldout(showTimelineTags, "Timeline Tags", true);
+
+            if (showTimelineTags)
+            {
+                EditorGUI.indentLevel++;
+                RenderTimelineTags();
+                EditorGUI.indentLevel--;
+            }
+
+
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Space(32);
+
+            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos);
             showBackgroundLayer = EditorGUILayout.Foldout(showBackgroundLayer, "BG Layer", true);
             if (showBackgroundLayer)
             {
@@ -120,18 +137,6 @@ namespace DCL.Skybox
 
             GUILayout.Space(32);
 
-            showTimelineTags = EditorGUILayout.Foldout(showTimelineTags, "Timeline Tags", true);
-
-            if (showTimelineTags)
-            {
-                EditorGUI.indentLevel++;
-                RenderTimelineTags();
-                EditorGUI.indentLevel--;
-            }
-
-
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            GUILayout.Space(32);
 
             // Render Layers
             RenderTextureLayers(selectedConfiguration.layers);
@@ -208,6 +213,8 @@ namespace DCL.Skybox
                 UpdateMaterial();
             }
 
+            CheckAndAssignAllStyles();
+
             EditorUtility.SetDirty(selectedConfiguration);
 
             if (directionalLight != null)
@@ -225,6 +232,34 @@ namespace DCL.Skybox
                 // Add the light component
                 directionalLight = temp.AddComponent<Light>();
                 directionalLight.type = LightType.Directional;
+            }
+        }
+
+        private void CheckAndAssignAllStyles()
+        {
+            if (foldoutStyle == null)
+            {
+                foldoutStyle = new GUIStyle(EditorStyles.foldout);
+                foldoutStyle.fixedWidth = 2;
+            }
+
+            if (renderingMarkerStyle == null)
+            {
+                renderingMarkerStyle = new GUIStyle(EditorStyles.label);
+                renderingMarkerStyle.fontSize = 18;
+            }
+
+            if (configurationStyle == null)
+            {
+                configurationStyle = new GUIStyle();
+                configurationStyle.alignment = TextAnchor.MiddleCenter;
+                configurationStyle.margin = new RectOffset(150, 200, 0, 0);
+            }
+
+            if (percentagePartStyle == null)
+            {
+                percentagePartStyle = new GUIStyle();
+                percentagePartStyle.alignment = TextAnchor.MiddleCenter;
             }
         }
 
@@ -281,11 +316,9 @@ namespace DCL.Skybox
         {
             GUILayout.Label("Configurations", EditorStyles.boldLabel);
 
-            GUIStyle tStyle = new GUIStyle();
-            tStyle.alignment = TextAnchor.MiddleCenter;
-            tStyle.margin = new RectOffset(150, 200, 0, 0);
+
             GUILayout.Label("Loaded: " + selectedConfiguration.skyboxID);
-            GUILayout.BeginHorizontal(tStyle);
+            GUILayout.BeginHorizontal(configurationStyle);
 
             if (creatingNewConfig)
             {
@@ -625,15 +658,14 @@ namespace DCL.Skybox
 
         void RenderTextureLayers(List<TextureLayer> layers)
         {
-            GUIStyle style = new GUIStyle(EditorStyles.foldout);
-            style.fixedWidth = 2;
+
             for (int i = 0; i < layers.Count; i++)
             {
                 // Name and buttons
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
                 layers[i].enabled = EditorGUILayout.Toggle(layers[i].enabled, GUILayout.Width(20), GUILayout.Height(10));
                 GUILayout.Space(10);
-                layers[i].expandedInEditor = EditorGUILayout.Foldout(layers[i].expandedInEditor, GUIContent.none, true, style);
+                layers[i].expandedInEditor = EditorGUILayout.Foldout(layers[i].expandedInEditor, GUIContent.none, true, foldoutStyle);
                 layers[i].nameInEditor = EditorGUILayout.TextField(layers[i].nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
 
                 // Slot ID
@@ -643,8 +675,7 @@ namespace DCL.Skybox
                 {
                     GUI.enabled = false;
                 }
-
-                if (GUILayout.Button("Up", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(('\u25B2').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     TextureLayer temp = null;
 
@@ -663,7 +694,7 @@ namespace DCL.Skybox
                     GUI.enabled = false;
                 }
 
-                if (GUILayout.Button("Down", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(('\u25BC').ToString(), GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     TextureLayer temp = null;
                     if (i < (layers.Count - 1))
@@ -677,13 +708,37 @@ namespace DCL.Skybox
 
                 GUI.enabled = true;
 
-                if (GUILayout.Button(" - ", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("-", GUILayout.Width(50), GUILayout.ExpandWidth(false)))
                 {
                     layers.RemoveAt(i);
                     break;
                 }
 
-                EditorGUILayout.EnumPopup(layers[i].renderType, GUILayout.Width(100));
+                Color circleColor = Color.green;
+                switch (layers[i].renderType)
+                {
+                    case LayerRenderType.Rendering:
+                        circleColor = Color.green;
+                        break;
+                    case LayerRenderType.NotRendering:
+                        circleColor = Color.gray;
+                        break;
+                    case LayerRenderType.Conflict_Playing:
+                        circleColor = Color.yellow;
+                        break;
+                    case LayerRenderType.Conflict_NotPlaying:
+                        circleColor = Color.red;
+                        break;
+                    default:
+                        break;
+                }
+
+                Color normalContentColor = GUI.color;
+                GUI.color = circleColor;
+
+                EditorGUILayout.LabelField(('\u29BF').ToString(), renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
+
+                GUI.color = normalContentColor;
 
                 EditorGUILayout.EndHorizontal();
 
@@ -1368,10 +1423,7 @@ namespace DCL.Skybox
         {
             GUILayout.Label(layerStartTime + "Hr", GUILayout.Width(35), GUILayout.ExpandWidth(false));
 
-            GUIStyle style = new GUIStyle();
-            style.alignment = TextAnchor.MiddleCenter;
-
-            GUILayout.BeginVertical(style, GUILayout.ExpandWidth(false), GUILayout.Width(150));
+            GUILayout.BeginVertical(percentagePartStyle, GUILayout.ExpandWidth(false), GUILayout.Width(150));
             float time = GetDayTimeForLayerNormalizedTime(layerStartTime, layerEndTime, percentage / 100);
             GUILayout.Label(time.ToString("f2") + " Hr", GUILayout.ExpandWidth(false));
             percentage = EditorGUILayout.Slider(percentage, 0, 100, GUILayout.Width(150), GUILayout.ExpandWidth(false));
