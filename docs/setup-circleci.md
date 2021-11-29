@@ -47,17 +47,6 @@ After having the `circleci-unity-activation-file-v2020.3.0f1.alf` you must activ
 
 And you will be able to build with CircleCI.
 
-### Generate Unity License Content
-
-After having the `circleci-unity-activation-file-v2020.3.0f1.alf` you must activate it with the following steps:
-- Enter https://license.unity3d.com/manual with your Unity Credentials
-- Upload the `circleci-unity-activation-file-v2020.3.0f1.alf`
-- Download the `Unity_v2020.x.ulf`
-- Convert to base64, suggested command: `cat Unity_v2020.x.ulf | base64`
-- Create a CircleCI Environment Variable with the name of `DEVELOPERS_UNITY_LICENSE_CONTENT_2020_3_BASE64` and the base64 output
-
-And you will be able to build with CircleCI.
-
 ## AWS S3 Bucket
 
 Create an AWS S3 Bucket (with all public access, or you can use CloudFront)
