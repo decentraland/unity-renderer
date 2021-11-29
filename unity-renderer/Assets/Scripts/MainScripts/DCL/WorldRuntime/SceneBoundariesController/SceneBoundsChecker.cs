@@ -28,10 +28,14 @@ namespace DCL.Controllers
 
         private ISceneBoundsFeedbackStyle feedbackStyle;
 
+        public void Initialize()
+        {
+            Start();
+        }
+
         public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null)
         {
             this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple();
-            Start();
         }
 
         public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle)

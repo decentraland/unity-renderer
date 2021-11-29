@@ -4,7 +4,7 @@ using DCL.Models;
 
 namespace DCL
 {
-    public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler, IDisposable
+    public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler, IService
     {
         bool enabled { get; set; }
         bool deferredMessagesDecoding { get; set; }

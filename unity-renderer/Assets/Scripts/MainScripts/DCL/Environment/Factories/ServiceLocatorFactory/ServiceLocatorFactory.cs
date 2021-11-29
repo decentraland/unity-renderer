@@ -28,7 +28,7 @@ namespace DCL
             var state = result.Set<IWorldState>(new WorldState());
             var pointerEventsController = result.Set<IPointerEventsController>(new PointerEventsController());
             var sceneBoundsChecker = result.Set<ISceneBoundsChecker>(new SceneBoundsChecker());
-            var worldBlockersController = result.Set<IWorldBlockersController>(WorldBlockersController.CreateWithDefaultDependencies(state, cullingController));
+            var worldBlockersController = result.Set<IWorldBlockersController>(new WorldBlockersController());
             var runtimeComponentFactory = result.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory());
 
             var messagingControllersManager = result.Set<IMessagingControllersManager>(new MessagingControllersManager(sceneController));

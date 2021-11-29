@@ -437,4 +437,8 @@ public class HUDController : IHUDController
     }
 #endif
     public void Dispose() { Cleanup(); }
+
+    public void Initialize()
+    {
+    }
 }

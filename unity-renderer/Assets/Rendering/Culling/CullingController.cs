@@ -57,8 +57,6 @@ namespace DCL.Rendering
 
             this.urpAsset = urpAsset;
             this.settings = settings;
-
-            Start();
         }
 
         /// <summary>
@@ -345,6 +343,11 @@ namespace DCL.Rendering
         {
             objectsTracker.Dispose();
             Stop();
+        }
+
+        public void Initialize()
+        {
+            Start();
         }
 
         /// <summary>

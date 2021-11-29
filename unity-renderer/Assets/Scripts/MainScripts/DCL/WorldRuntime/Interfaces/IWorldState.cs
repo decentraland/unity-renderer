@@ -4,7 +4,7 @@ using DCL.Controllers;
 
 namespace DCL
 {
-    public interface IWorldState : ISceneHandler, IDisposable
+    public interface IWorldState : ISceneHandler, IService
     {
         HashSet<string> readyScenes { get; set; }
         Dictionary<string, IParcelScene> loadedScenes { get; set; }

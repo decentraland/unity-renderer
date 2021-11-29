@@ -41,7 +41,7 @@ namespace DCL
 
         Coroutine removeEntitiesCoroutine;
 
-        public ParcelScenesCleaner ()
+        public void Initialize ()
         {
             removeEntitiesCoroutine = CoroutineStarter.Start(CleanupEntitiesCoroutine());
         }

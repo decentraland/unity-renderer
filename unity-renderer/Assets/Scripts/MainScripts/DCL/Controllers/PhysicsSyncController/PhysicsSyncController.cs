@@ -32,5 +32,9 @@ namespace DCL
         {
             PoolManager.i.OnGet -= MarkDirty;
         }
+
+        public void Initialize()
+        {
+        }
     }
 }

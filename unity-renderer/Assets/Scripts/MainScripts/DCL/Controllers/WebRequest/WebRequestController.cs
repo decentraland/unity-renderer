@@ -17,6 +17,10 @@ namespace DCL
         {
         }
 
+        public void Initialize()
+        {
+        }
+
         public static WebRequestController Create()
         {
             WebRequestController newWebRequestController = new WebRequestController();

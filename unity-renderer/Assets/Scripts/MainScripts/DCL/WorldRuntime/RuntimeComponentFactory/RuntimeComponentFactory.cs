@@ -17,6 +17,11 @@ namespace DCL
 
         public IPoolableComponentFactory poolableComponentFactory { get; private set; }
 
+        public void Initialize()
+        {
+            CoroutineStarter.Start(InitializeCoroutine());
+        }
+
         IEnumerator InitializeCoroutine()
         {
             yield return null;

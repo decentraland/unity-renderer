@@ -2,7 +2,7 @@
 
 namespace DCL
 {
-    public interface IPhysicsSyncController : IDisposable
+    public interface IPhysicsSyncController : IService
     {
         bool isDirty { get; }
         void MarkDirty();

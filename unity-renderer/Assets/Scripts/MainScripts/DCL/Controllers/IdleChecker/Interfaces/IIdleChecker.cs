@@ -2,7 +2,7 @@
 
 namespace DCL
 {
-    public interface IIdleChecker : IDisposable
+    public interface IIdleChecker : IService
     {
         void Initialize();
         void SetMaxTime(int time);

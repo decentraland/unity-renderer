@@ -3,7 +3,7 @@ using DCL.Components;
 
 namespace DCL
 {
-    public interface IRuntimeComponentFactory : IDisposable
+    public interface IRuntimeComponentFactory : IService
     {
         IComponent CreateComponent(int classId);
     }

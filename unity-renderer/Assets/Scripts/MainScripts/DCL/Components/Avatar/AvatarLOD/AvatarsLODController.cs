@@ -26,7 +26,7 @@ namespace DCL
         internal bool enabled;
         private UnityEngine.Camera mainCamera;
 
-        public AvatarsLODController()
+        public void Initialize()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
             DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagChanged;

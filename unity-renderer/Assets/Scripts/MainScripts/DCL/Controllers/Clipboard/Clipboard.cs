@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL;
 using DCL.Helpers;
 
 public class Clipboard : IClipboard
@@ -62,6 +63,10 @@ public class Clipboard : IClipboard
     }
 
     public void Dispose()
+    {
+    }
+
+    public void Initialize()
     {
     }
 }

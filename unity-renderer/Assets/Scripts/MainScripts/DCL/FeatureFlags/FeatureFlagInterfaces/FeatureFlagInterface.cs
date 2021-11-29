@@ -1,5 +1,8 @@
 using System;
 
-public interface IFeatureFlagController : IDisposable
+namespace DCL
 {
+    public interface IFeatureFlagController : IService
+    {
+    }
 }

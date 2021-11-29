@@ -15,6 +15,7 @@ namespace DCL
         public static void Setup(ServiceLocator serviceLocator)
         {
             i = new Model(serviceLocator);
+            serviceLocator.Initialize();
         }
 
         /// <summary>

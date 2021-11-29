@@ -8,7 +8,7 @@ namespace DCL
     /// <summary>
     /// This class manage all our custom WebRequests types.
     /// </summary>
-    public interface IWebRequestController : IDisposable
+    public interface IWebRequestController : IService
     {
         /// <summary>
         /// Initialize the controller with all the request types injected.

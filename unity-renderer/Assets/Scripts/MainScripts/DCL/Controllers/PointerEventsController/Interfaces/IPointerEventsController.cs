@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public interface IPointerEventsController : IDisposable
+    public interface IPointerEventsController : IService
     {
         void Update();
         Ray GetRayFromCamera();

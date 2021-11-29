@@ -6,7 +6,7 @@ using DCL.Models;
 
 namespace DCL
 {
-    public interface IParcelScenesCleaner : IDisposable
+    public interface IParcelScenesCleaner : IService
     {
         void MarkForCleanup(IDCLEntity entity);
         void MarkRootEntityForCleanup(IParcelScene scene, IDCLEntity entity);
