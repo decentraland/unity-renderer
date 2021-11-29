@@ -21,7 +21,7 @@ namespace DCL
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         internal IPlayerName playerName;
-        internal IAvatarReporterController avatarReporterController = new AvatarReporterController();
+        internal IAvatarReporterController avatarReporterController;
 
         private StringVariable currentPlayerInfoCardId;
 
@@ -40,6 +40,11 @@ namespace DCL
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+            
+            if (avatarReporterController == null)
+            {
+                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
+            }
         }
 
         private void Start()

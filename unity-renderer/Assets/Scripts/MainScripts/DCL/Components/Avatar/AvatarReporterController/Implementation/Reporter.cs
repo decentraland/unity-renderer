@@ -1,11 +1,10 @@
 using DCL.Interface;
-using UnityEngine;
 
 internal class Reporter : IReporter
 {
-    void IReporter.ReportAvatarPosition(string entityId, string avatarId, Vector3 position)
+    void IReporter.ReportAvatarSceneChange(string entityId, string avatarId, string sceneId)
     {
-        WebInterface.ReportAvatarPosition(entityId, avatarId, position);
+        WebInterface.ReportAvatarSceneChanged(entityId, avatarId, sceneId);
     }
     void IReporter.ReportAvatarRemoved(string entityId, string avatarId)
     {

@@ -645,9 +645,9 @@ namespace DCL.Interface
         }
         
         [System.Serializable]
-        public class AvatarStatePosition : AvatarStateBase
+        public class AvatarStateSceneChanged : AvatarStateBase
         {
-            public Vector3 position;
+            public string sceneId;
         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -768,7 +768,7 @@ namespace DCL.Interface
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
         private static HeadersPayload headersPayload = new HeadersPayload();
         private static AvatarStateBase avatarStatePayload = new AvatarStateBase();
-        private static AvatarStatePosition avatarPositionPayload = new AvatarStatePosition();
+        private static AvatarStateSceneChanged avatarSceneChangedPayload = new AvatarStateSceneChanged();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1486,13 +1486,13 @@ namespace DCL.Interface
             avatarStatePayload.avatarShapeId = avatarId;
             SendMessage("ReportAvatarState", avatarStatePayload);
         }
-        public static void ReportAvatarPosition(string entityId, string avatarId, Vector3 position)
+        public static void ReportAvatarSceneChanged(string entityId, string avatarId, string sceneId)
         {
-            avatarPositionPayload.type = "Position";
-            avatarPositionPayload.entityId = entityId;
-            avatarPositionPayload.avatarShapeId = avatarId;
-            avatarPositionPayload.position = position;
-            SendMessage("ReportAvatarState", avatarPositionPayload);
+            avatarSceneChangedPayload.type = "SceneChanged";
+            avatarSceneChangedPayload.entityId = entityId;
+            avatarSceneChangedPayload.avatarShapeId = avatarId;
+            avatarSceneChangedPayload.sceneId = sceneId;
+            SendMessage("ReportAvatarState", avatarSceneChangedPayload);
         }
     }
 }

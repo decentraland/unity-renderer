@@ -1,7 +1,5 @@
-using UnityEngine;
-
 internal interface IReporter
 {
-    void ReportAvatarPosition(string entityId, string avatarId, Vector3 position);
+    void ReportAvatarSceneChange(string entityId, string avatarId, string sceneId);
     void ReportAvatarRemoved(string entityId, string avatarId);
 }
