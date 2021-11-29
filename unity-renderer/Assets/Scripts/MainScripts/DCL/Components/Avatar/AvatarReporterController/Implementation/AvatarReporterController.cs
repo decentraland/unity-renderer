@@ -52,7 +52,8 @@ public class AvatarReporterController : IAvatarReporterController
             return;
         }
 
-        var scenePair = worldState.loadedScenes.FirstOrDefault(pair => pair.Value.sceneData.parcels.Contains(coords));
+        var scenePair = worldState.loadedScenes
+                                  .FirstOrDefault(pair => pair.Value.sceneData.parcels != null && pair.Value.sceneData.parcels.Contains(coords));
 
         string currentSceneId = scenePair.Key;
 
