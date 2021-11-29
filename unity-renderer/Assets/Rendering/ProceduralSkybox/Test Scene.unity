@@ -34,7 +34,7 @@ RenderSettings:
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
   m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 64
-  m_ReflectionBounces: 1
+  m_ReflectionBounces: 2
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
@@ -443,7 +443,6 @@ GameObject:
   m_Component:
   - component: {fileID: 352166559}
   - component: {fileID: 352166562}
-  - component: {fileID: 352166561}
   - component: {fileID: 352166560}
   m_Layer: 0
   m_Name: Skybox Cam
@@ -498,14 +497,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!81 &352166561
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 352166558}
-  m_Enabled: 1
 --- !u!20 &352166562
 Camera:
   m_ObjectHideFlags: 0
@@ -5896,7 +5887,7 @@ ReflectionProbe:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 1}
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   m_IntensityMultiplier: 1
   m_BlendDistance: 1
   m_HDR: 1
@@ -5904,7 +5895,7 @@ ReflectionProbe:
   m_RenderDynamicObjects: 1
   m_UseOcclusionCulling: 1
   m_Importance: 1
-  m_CustomBakedTexture: {fileID: 8900000, guid: 5254d03e7f7fe054e8ca57a6991f8cb6,
+  m_CustomBakedTexture: {fileID: 8900000, guid: b23c5789d389a4346a606a679051d463,
     type: 3}
 --- !u!4 &947487857
 Transform:
@@ -11282,7 +11273,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1809182571}
   - component: {fileID: 1809182570}
-  - component: {fileID: 1809182569}
   - component: {fileID: 1809182568}
   m_Layer: 0
   m_Name: 3D Layer Cam
@@ -11323,14 +11313,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!81 &1809182569
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809182567}
-  m_Enabled: 1
 --- !u!20 &1809182570
 Camera:
   m_ObjectHideFlags: 0
@@ -25976,7 +25958,7 @@ GameObject:
   - component: {fileID: 2145745466}
   - component: {fileID: 2145745465}
   - component: {fileID: 2145745464}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26015,7 +25997,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 63e4a3af853c7db40982b74af36cfde7, type: 2}
+  - {fileID: 2100000, guid: b86f742743972e1419cde237d904626c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -26053,7 +26035,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2145745463}
   m_LocalRotation: {x: -0, y: -0.37041295, z: -0, w: 0.9288672}
-  m_LocalPosition: {x: -5.4, y: 1.57, z: 19.56}
+  m_LocalPosition: {x: -1.6, y: 1.57, z: 7.14}
   m_LocalScale: {x: 2.4093542, y: 2.409354, z: 2.4093542}
   m_Children: []
   m_Father: {fileID: 937070802}
