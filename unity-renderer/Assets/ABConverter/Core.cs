@@ -680,15 +680,21 @@ namespace DCL.ABConverter
 
             env.assetDatabase.MoveAsset(finalDownloadedPath, Config.DOWNLOADED_PATH_ROOT);
 
+            // 1. Convert flagged folders to asset bundles only to automatically get dependencies for the depmap
             manifest = env.buildPipeline.BuildAssetBundles(settings.finalAssetBundlePath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
-
+            
             if (manifest == null)
             {
                 log.Error("Error generating asset bundle!");
                 return false;
             }
+            
+            // 2. Create depmap and store in the target folders to be converted again later with the depmap inside
+            DependencyMapBuilder.Generate(env.file, finalDownloadedPath, hashLowercaseToHashProper, manifest, MAIN_SHADER_AB_NAME);
 
-            DependencyMapBuilder.Generate(env.file, settings.finalAssetBundlePath, hashLowercaseToHashProper, manifest, MAIN_SHADER_AB_NAME);
+            // 3. Convert flagged folders to asset bundles again but this time they have the depmaps inside
+            manifest = env.buildPipeline.BuildAssetBundles(settings.finalAssetBundlePath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
+
             logBuffer += $"Generating asset bundles at path: {settings.finalAssetBundlePath}\n";
 
             string[] assetBundles = manifest.GetAllAssetBundles();

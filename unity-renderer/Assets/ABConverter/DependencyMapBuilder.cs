@@ -54,7 +54,7 @@ namespace DCL.ABConverter
 
                 if (!string.IsNullOrEmpty(finalFilename))
                 {
-                    file.WriteAllText(path + finalFilename + ".depmap", json);
+                    file.WriteAllText(path + $"/{finalFilename}/" + finalFilename + ".depmap", json);
                 }
             }
         }
