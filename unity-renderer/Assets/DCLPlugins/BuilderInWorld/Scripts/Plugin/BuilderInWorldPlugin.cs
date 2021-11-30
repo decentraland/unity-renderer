@@ -74,14 +74,6 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Initialize(context);
         cameraController.Initialize(context);
 
-        if (HUDController.i != null)
-        {
-            if (HUDController.i.taskbarHud != null)
-                HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
-            else
-                HUDController.i.OnTaskbarCreation += TaskBarCreated;
-        }
-
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
@@ -89,18 +81,8 @@ public class BuilderInWorldPlugin : IPlugin
         DataStore.i.builderInWorld.isInitialized.Set(true);
     }
 
-
-    private void TaskBarCreated()
-    {
-        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
-        HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
-    }
-
     public void Dispose()
     {
-        if (HUDController.i != null)
-            HUDController.i.OnTaskbarCreation -= TaskBarCreated;
-
         editor.Dispose();
         panelController.Dispose();
         sceneManager.Dispose();
@@ -118,13 +100,7 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Update();
     }
 
-    public void LateUpdate()
-    {
-        editor.LateUpdate();
-    }
+    public void LateUpdate() { editor.LateUpdate(); }
 
-    public void OnGUI()
-    {
-        editor.OnGUI();
-    }
+    public void OnGUI() { editor.OnGUI(); }
 }
