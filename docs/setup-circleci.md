@@ -33,7 +33,26 @@ The system will now generate an `.ulf` file containing your license. The content
 ## 3) Setting up AWS S3 Bucket
 You will need to create a bucket in S3 with public privileges in order to upload the CI content. For that:
 1) Create an AWS S3 Bucket, with all public access.
-2) Create a new policy with the following content:
+2) Set the following CORS Policy to the AWS S3 Bucket
+	```
+	[
+		{
+			"AllowedHeaders": [
+				"*"
+			],
+			"AllowedMethods": [
+				"GET",
+				"HEAD"
+			],
+			"AllowedOrigins": [
+				"*"
+			],
+			"ExposeHeaders": [],
+			"MaxAgeSeconds": 3000
+		}
+	]
+	```
+3) Create a new policy with the following content:
 	```
 	{
 	    "Version": "2012-10-17",
@@ -52,7 +71,7 @@ You will need to create a bucket in S3 with public privileges in order to upload
 	    ]
 	}
 	```
-3) Create an IAM User with `Access key - Programmatic access` and attach the policy created before.
+4) Create an IAM User with `Access key - Programmatic access` and attach the policy created before.
 
 Set up the following Environment Variables in CircleCI with the credentials generated above:
 
