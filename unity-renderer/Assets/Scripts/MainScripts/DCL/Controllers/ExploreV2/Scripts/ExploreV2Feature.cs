@@ -15,5 +15,6 @@ public class ExploreV2Feature : IPlugin
 
     public void Dispose()
     {
+        exploreV2MenuComponentController.Dispose();
     }
 }
