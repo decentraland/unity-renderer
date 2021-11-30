@@ -213,10 +213,7 @@ namespace DCL.Helpers
         public static WebRequestAsyncOperation FetchTexture(string textureURL, bool isReadable, Action<Texture2D> OnSuccess, Action<IWebRequestAsyncOperation> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
-            void SuccessInternal(IWebRequestAsyncOperation request)
-            {
-                OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest));
-            }
+            void SuccessInternal(IWebRequestAsyncOperation request) { OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest)); }
 
             var asyncOp = DCL.Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
@@ -530,5 +527,12 @@ namespace DCL.Helpers
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>
         public static float ToAudioMixerGroupVolume(float volume) { return (ToVolumeCurve(volume) * 80f) - 80f; }
+
+        public static string GetHierarchyPath(this Transform transform)
+        {
+            if (transform.parent == null)
+                return transform.name;
+            return $"{transform.parent.GetHierarchyPath()}/{transform.name}";
+        }
     }
 }
