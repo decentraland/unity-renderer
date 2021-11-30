@@ -296,7 +296,6 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.CONTROLS_HUD:
                 CreateHudElement(configuration, hudElementId);
-                taskbarHud?.AddControlsMoreOption();
                 break;
             case HUDElementID.EXPLORE_HUD:
                 CreateHudElement(configuration, hudElementId);

@@ -30,15 +30,9 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal GameObject portableExperiencesDiv;
     [SerializeField] internal PortableExperienceTaskbarItem portableExperienceItem;
 
-    [Header("More Button Config")]
-    [SerializeField] internal TaskbarButton moreButton;
-
-    [SerializeField] internal TaskbarMoreMenu moreMenu;
-
     [Header("Tutorial Config")]
     [SerializeField] internal RectTransform exploreTooltipReference;
 
-    [SerializeField] internal RectTransform moreTooltipReference;
     [SerializeField] internal RectTransform socialTooltipReference;
 
     [Header("Old TaskbarCompatibility (temporal)")]
@@ -61,8 +55,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnExploreToggleOff;
     public event System.Action OnExploreV2ToggleOn;
     public event System.Action OnExploreV2ToggleOff;
-    public event System.Action OnMoreToggleOn;
-    public event System.Action OnMoreToggleOff;
 
     internal List<TaskbarButton> GetButtonList()
     {
@@ -72,7 +64,6 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
         taskbarButtonList.Add(exploreButton);
         taskbarButtonList.Add(exploreV2Button);
-        taskbarButtonList.Add(moreButton);
 
         using (var iterator = activePortableExperienceItems.GetEnumerator())
         {
@@ -106,16 +97,11 @@ public class TaskbarHUDView : MonoBehaviour
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
 
-        moreButton.gameObject.SetActive(true);
-        moreMenu.Initialize(this);
-        moreMenu.ShowMoreMenu(false, true);
-
         chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
         exploreButton.Initialize();
         exploreV2Button.Initialize();
-        moreButton.Initialize();
 
         chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
         chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
@@ -131,9 +117,6 @@ public class TaskbarHUDView : MonoBehaviour
 
         exploreV2Button.OnToggleOn += OnWindowToggleOn;
         exploreV2Button.OnToggleOff += OnWindowToggleOff;
-
-        moreButton.OnToggleOn += OnWindowToggleOn;
-        moreButton.OnToggleOff += OnWindowToggleOff;
 
         portableExperiencesDiv.SetActive(false);
 
@@ -158,8 +141,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnExploreToggleOff?.Invoke();
         else if (obj == exploreV2Button)
             OnExploreV2ToggleOff?.Invoke();
-        else if (obj == moreButton)
-            moreMenu.ShowMoreMenu(false);
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -207,8 +188,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnExploreToggleOn?.Invoke();
         else if (obj == exploreV2Button)
             OnExploreV2ToggleOn?.Invoke();
-        else if (obj == moreButton)
-            moreMenu.ShowMoreMenu(true);
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -261,8 +240,6 @@ public class TaskbarHUDView : MonoBehaviour
         AdjustRightButtonsLayoutWidth();
     }
 
-    internal void OnAddControlsMoreOption() { moreMenu.ActivateControlsButton(); }
-
     internal void OnAddVoiceChat()
     {
         voiceChatButtonPlaceholder.SetActive(true);
@@ -311,12 +288,6 @@ public class TaskbarHUDView : MonoBehaviour
         {
             exploreV2Button.OnToggleOn -= OnWindowToggleOn;
             exploreV2Button.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (moreButton != null)
-        {
-            moreButton.OnToggleOn -= OnWindowToggleOn;
-            moreButton.OnToggleOff -= OnWindowToggleOff;
         }
     }
 

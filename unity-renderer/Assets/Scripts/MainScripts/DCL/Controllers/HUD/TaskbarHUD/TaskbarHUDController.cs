@@ -1,14 +1,14 @@
-using System;
 using DCL;
+using DCL.Controllers;
 using DCL.HelpAndSupportHUD;
 using DCL.Helpers;
 using DCL.Interface;
+using ExploreV2Analytics;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
-using DCL.Controllers;
-using ExploreV2Analytics;
 
 public class TaskbarHUDController : IHUD
 {
@@ -39,13 +39,9 @@ public class TaskbarHUDController : IHUD
 
     public event System.Action OnAnyTaskbarButtonClicked;
 
-    public RectTransform tutorialTooltipReference { get => view.moreTooltipReference; }
-
     public RectTransform exploreTooltipReference { get => view.exploreTooltipReference; }
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
-
-    public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
 
     protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
 
@@ -385,8 +381,6 @@ public class TaskbarHUDController : IHUD
 
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
 
-    public void AddControlsMoreOption() { view.OnAddControlsMoreOption(); }
-
     public void DisableFriendsWindow()
     {
         view.friendsButton.gameObject.SetActive(false);
@@ -417,7 +411,6 @@ public class TaskbarHUDController : IHUD
             view.OnExploreV2ToggleOff -= View_OnExploreV2ToggleOff;
             view.OnExploreV2ToggleOn -= View_OnExploreV2ToggleOn;
 
-            CoroutineStarter.Stop(view.moreMenu.moreMenuAnimationsCoroutine);
             UnityEngine.Object.Destroy(view.gameObject);
         }
 

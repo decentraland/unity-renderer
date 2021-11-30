@@ -1,9 +1,7 @@
-using DCL.HelpAndSupportHUD;
 using DCL.SettingsPanelHUD;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 {
@@ -35,7 +33,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view = controller.view;
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
-        Assert.IsTrue(view.moreButton.gameObject.activeSelf, "More button is not actived?");
+        //Assert.IsTrue(view.moreButton.gameObject.activeSelf, "More button is not actived?");
         Assert.IsTrue(CommonScriptableObjects.isTaskbarHUDInitialized, "Taskbar controller is not initialized?");
     }
 
@@ -89,13 +87,13 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(exploreHUDController.view.gameObject.activeSelf, "Explore window is disabled!");
     }
 
-    [Test]
-    public void AddControlsMoreButtonProperly()
-    {
-        controller.AddControlsMoreOption();
+    //[Test]
+    //public void AddControlsMoreButtonProperly()
+    //{
+    //    controller.AddControlsMoreOption();
 
-        Assert.IsTrue(view.moreMenu.controlsButton.mainButton.IsActive(), "Controls more button is disabled!");
-    }
+    //    Assert.IsTrue(view.moreMenu.controlsButton.mainButton.IsActive(), "Controls more button is disabled!");
+    //}
 
     [Test]
     public void ToggleWindowsProperly()
@@ -133,7 +131,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(6, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(5, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
         Assert.IsTrue(buttonList[2] is ChatHeadButton);
@@ -172,26 +170,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(controller.worldChatWindowHud.view.gameObject.activeInHierarchy);
         Assert.IsFalse(controller.friendsHud.view.gameObject.activeInHierarchy);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
-    }
-
-    [Test]
-    public void ToggleBarVisibilityProperly()
-    {
-        view.moreMenu.collapseBarButton.mainButton.onClick.Invoke();
-
-        Assert.IsFalse(view.isBarVisible, "The bar should not be visible!");
-        Assert.IsFalse(view.moreMenu.collapseIcon.activeSelf, "The collapse icon should not be actived!");
-        Assert.IsFalse(view.moreMenu.collapseText.activeSelf, "The collapse text should not be actived!");
-        Assert.IsTrue(view.moreMenu.expandIcon.activeSelf, "The expand icon should be actived!");
-        Assert.IsTrue(view.moreMenu.expandText.activeSelf, "The expand text should be actived!");
-
-        view.moreMenu.collapseBarButton.mainButton.onClick.Invoke();
-
-        Assert.IsTrue(view.isBarVisible, "The bar should be visible!");
-        Assert.IsTrue(view.moreMenu.collapseIcon.activeSelf, "The collapse icon should be actived!");
-        Assert.IsTrue(view.moreMenu.collapseText.activeSelf, "The collapse text should be actived!");
-        Assert.IsFalse(view.moreMenu.expandIcon.activeSelf, "The expand icon should not be actived!");
-        Assert.IsFalse(view.moreMenu.expandText.activeSelf, "The expand text should not be actived!");
     }
 
     [Test]

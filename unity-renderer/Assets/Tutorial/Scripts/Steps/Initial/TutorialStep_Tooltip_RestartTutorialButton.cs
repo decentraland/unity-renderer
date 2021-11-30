@@ -5,48 +5,48 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_Tooltip_RestartTutorialButton : TutorialStep_Tooltip
     {
-        public override void OnStepStart()
-        {
-            base.OnStepStart();
+        //public override void OnStepStart()
+        //{
+        //    base.OnStepStart();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.taskbarHud != null)
-            {
-                tutorialController.hudController.taskbarHud.moreMenu.OnMoreMenuOpened += MoreMenu_OnMoreMenuOpened;
-            }
-        }
+        //    if (tutorialController != null &&
+        //        tutorialController.hudController != null &&
+        //        tutorialController.hudController.taskbarHud != null)
+        //    {
+        //        tutorialController.hudController.taskbarHud.moreMenu.OnMoreMenuOpened += MoreMenu_OnMoreMenuOpened;
+        //    }
+        //}
 
-        public override void OnStepFinished()
-        {
-            base.OnStepFinished();
+        //public override void OnStepFinished()
+        //{
+        //    base.OnStepFinished();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.taskbarHud != null)
-            {
-                tutorialController.hudController.taskbarHud.moreMenu.OnMoreMenuOpened -= MoreMenu_OnMoreMenuOpened;
-            }
-        }
+        //    if (tutorialController != null &&
+        //        tutorialController.hudController != null &&
+        //        tutorialController.hudController.taskbarHud != null)
+        //    {
+        //        tutorialController.hudController.taskbarHud.moreMenu.OnMoreMenuOpened -= MoreMenu_OnMoreMenuOpened;
+        //    }
+        //}
 
-        protected override void SetTooltipPosition()
-        {
-            base.SetTooltipPosition();
+        //protected override void SetTooltipPosition()
+        //{
+        //    base.SetTooltipPosition();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.taskbarHud != null &&
-                tutorialController.hudController.taskbarHud.tutorialTooltipReference)
-            {
-                tooltipTransform.position = tutorialController.hudController.taskbarHud.tutorialTooltipReference.position;
-            }
-        }
+        //    if (tutorialController != null &&
+        //        tutorialController.hudController != null &&
+        //        tutorialController.hudController.taskbarHud != null &&
+        //        tutorialController.hudController.taskbarHud.tutorialTooltipReference)
+        //    {
+        //        tooltipTransform.position = tutorialController.hudController.taskbarHud.tutorialTooltipReference.position;
+        //    }
+        //}
 
-        internal void MoreMenu_OnMoreMenuOpened(bool isVisible)
-        {
-            stepIsFinished = true;
-            isRelatedFeatureActived = false;
-            tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
-        }
+        //internal void MoreMenu_OnMoreMenuOpened(bool isVisible)
+        //{
+        //    stepIsFinished = true;
+        //    isRelatedFeatureActived = false;
+        //    tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
+        //}
     }
 }

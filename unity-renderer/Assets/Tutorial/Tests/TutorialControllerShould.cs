@@ -327,19 +327,6 @@ namespace DCL.Tutorial_Tests
         }
 
         [Test]
-        public void MoreMenuRestartTutorialCorrectly()
-        {
-            // Arrange
-            tutorialController.tutorialReset = false;
-
-            // Act
-            tutorialController.OnRestartTutorial();
-
-            // Assert
-            //Assert.IsTrue(tutorialController.tutorialReset);
-        }
-
-        [Test]
         public void RotateEagleEyeCameraCorrectly()
         {
             // Arrange
@@ -454,27 +441,6 @@ namespace DCL.Tutorial_Tests
                 TutorialStep_Tooltip_ExploreButton step = (TutorialStep_Tooltip_ExploreButton)tutorialController.runningStep;
                 step.ExploreHud_OnOpen();
                 step.ExploreHud_OnClose();
-            });
-        }
-
-        [UnityTest]
-        public IEnumerator ExecuteTooltipTaskbarMoreButtonStepCorrectly()
-        {
-            yield return ExecuteAvatarSpecificTutorialStep(10, () =>
-            {
-                TutorialStep_Tooltip_TaskbarMoreButton step = (TutorialStep_Tooltip_TaskbarMoreButton)tutorialController.runningStep;
-                step.MoreMenu_OnMoreMenuOpened(true);
-                step.MoreMenu_OnMoreMenuOpened(false);
-            });
-        }
-
-        [UnityTest]
-        public IEnumerator ExecuteTooltipRestartTutorialButtonStepCorrectly()
-        {
-            yield return ExecuteAvatarSpecificTutorialStep(11, () =>
-            {
-                TutorialStep_Tooltip_RestartTutorialButton step = (TutorialStep_Tooltip_RestartTutorialButton)tutorialController.runningStep;
-                step.MoreMenu_OnMoreMenuOpened(true);
             });
         }
 
