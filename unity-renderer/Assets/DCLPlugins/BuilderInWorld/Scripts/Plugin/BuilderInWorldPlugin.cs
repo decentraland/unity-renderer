@@ -50,13 +50,14 @@ public class BuilderInWorldPlugin : IPlugin
         Initialize();
     }
 
-    public BuilderInWorldPlugin(IContext context, ISceneManager sceneManager)
+    public BuilderInWorldPlugin(IContext context)
     {
         this.context = context;
-        this.sceneManager = sceneManager;
+        this.sceneManager = context.sceneManager;
         panelController = context.panelHUD;
         editor = context.editor;
         builderAPIController = context.builderAPIController;
+        cameraController = context.cameraController;
 
         Initialize();
     }

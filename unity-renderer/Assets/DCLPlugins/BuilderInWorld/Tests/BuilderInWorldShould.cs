@@ -20,7 +20,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     {
         yield return base.SetUp();
         //Arrange
-        builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene(), Substitute.For<ISceneManager>());
+        builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
     }
 
     protected override IEnumerator TearDown()
@@ -41,7 +41,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
     public void InitializePartsCorrectly()
     {
         //Arrange
-        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene(), Substitute.For<ISceneManager>());
+        BuilderInWorldPlugin builderInWorld = new BuilderInWorldPlugin(BIWTestUtils.CreateMockedContextForTestScene());
 
         //Assert
         builderInWorld.editor.Received(1).Initialize(builderInWorld.context);
