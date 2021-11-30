@@ -439,8 +439,8 @@ namespace DCL.Tutorial_Tests
             yield return ExecuteAvatarSpecificTutorialStep(9, () =>
             {
                 TutorialStep_Tooltip_ExploreButton step = (TutorialStep_Tooltip_ExploreButton)tutorialController.runningStep;
-                step.ExploreHud_OnOpen();
-                step.ExploreHud_OnClose();
+                step.ExploreV2IsOpenChanged(true, false);
+                step.ExploreV2IsOpenChanged(false, true);
             });
         }
 

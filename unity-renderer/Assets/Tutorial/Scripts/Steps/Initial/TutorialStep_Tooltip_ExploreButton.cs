@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace DCL.Tutorial
 {
     /// <summary>
@@ -11,26 +9,14 @@ namespace DCL.Tutorial
         {
             base.OnStepStart();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.exploreHud != null)
-            {
-                tutorialController.hudController.exploreHud.OnOpen += ExploreHud_OnOpen;
-                tutorialController.hudController.exploreHud.OnClose += ExploreHud_OnClose;
-            }
+            DataStore.i.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
         }
 
         public override void OnStepFinished()
         {
             base.OnStepFinished();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.exploreHud != null)
-            {
-                tutorialController.hudController.exploreHud.OnOpen -= ExploreHud_OnOpen;
-                tutorialController.hudController.exploreHud.OnClose -= ExploreHud_OnClose;
-            }
+            DataStore.i.exploreV2.isOpen.OnChange -= ExploreV2IsOpenChanged;
         }
 
         protected override void SetTooltipPosition()
@@ -46,17 +32,18 @@ namespace DCL.Tutorial
             }
         }
 
-        internal void ExploreHud_OnOpen()
+        internal void ExploreV2IsOpenChanged(bool current, bool previous)
         {
-            isRelatedFeatureActived = true;
-            stepIsFinished = true;
-            tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
-        }
-
-        internal void ExploreHud_OnClose()
-        {
-            if (isRelatedFeatureActived)
+            if (current)
+            {
+                isRelatedFeatureActived = true;
+                stepIsFinished = true;
+                tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
+            }
+            else if (isRelatedFeatureActived)
+            {
                 isRelatedFeatureActived = false;
+            }
         }
     }
 }
