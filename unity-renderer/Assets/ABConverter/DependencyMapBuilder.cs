@@ -48,13 +48,13 @@ namespace DCL.ABConverter
                 }
 
                 string json = JsonUtility.ToJson(depMap);
-                string finalFilename = assetBundles[i];
+                string assetHashName = assetBundles[i];
 
-                hashLowercaseToHashProper.TryGetValue(assetBundles[i], out finalFilename);
+                hashLowercaseToHashProper.TryGetValue(assetBundles[i], out assetHashName);
 
-                if (!string.IsNullOrEmpty(finalFilename))
+                if (!string.IsNullOrEmpty(assetHashName))
                 {
-                    file.WriteAllText(path + $"/{finalFilename}/" + finalFilename + ".depmap", json);
+                    file.WriteAllText(path + $"/{assetHashName}/depmap.json", json);
                 }
             }
         }

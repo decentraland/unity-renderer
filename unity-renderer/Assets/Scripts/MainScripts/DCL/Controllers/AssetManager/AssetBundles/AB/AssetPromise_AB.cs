@@ -104,25 +104,7 @@ namespace DCL
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, disposeOnCompleted: false);
 #endif
 
-            if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
-                CoroutineStarter.Start(DependencyMapLoadHelper.GetDepMap(baseUrl, hash));
-
-            yield return DependencyMapLoadHelper.WaitUntilDepMapIsResolved(hash);
-
-            if (DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
-            {
-                using (var it = DependencyMapLoadHelper.dependenciesMap[hash].GetEnumerator())
-                {
-                    while (it.MoveNext())
-                    {
-                        var dep = it.Current;
-                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform);
-                        AssetPromiseKeeper_AB.i.Keep(promise);
-                        dependencyPromises.Add(promise);
-                    }
-                }
-            }
-
+            // 1. Download asset bundle, but don't load its objects yet
             yield return asyncOp;
 
             if (asyncOp.isDisposed)
@@ -140,14 +122,7 @@ namespace DCL
                 asyncOp.Dispose();
                 yield break;
             }
-
-            UnregisterConcurrentRequest();
-
-            foreach (var promise in dependencyPromises)
-            {
-                yield return promise;
-            }
-
+            
             AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
             asyncOp.Dispose();
 
@@ -161,6 +136,46 @@ namespace DCL
 
             asset.ownerAssetBundle = assetBundle;
             asset.assetBundleAssetName = assetBundle.name;
+            
+            // 2. Check internal depmaps text asset with assetbundle.LoadAsset() looking for that file
+            const string DEPMAP_FILENAME = "depmap.json";
+            TextAsset internalDepmap = assetBundle.LoadAsset<TextAsset>(DEPMAP_FILENAME);
+            
+            if (internalDepmap != null)
+            {
+                Debug.Log(hash + ": LOADING INTERNAL DEPMAP!");
+                DependencyMapLoadHelper.LoadDepMapFromString(internalDepmap.text, hash);
+            }
+            else // 3. If no internal depmap found, fetch the external one
+            {
+                Debug.Log(hash + ": LOADING EXTERNAL DEPMAP!");
+                if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
+                    CoroutineStarter.Start(DependencyMapLoadHelper.GetDepMap(baseUrl, hash));
+
+                yield return DependencyMapLoadHelper.WaitUntilDepMapIsResolved(hash);
+            }
+            
+            // 4. Resolve dependencies
+            if (DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
+            {
+                using (var it = DependencyMapLoadHelper.dependenciesMap[hash].GetEnumerator())
+                {
+                    while (it.MoveNext())
+                    {
+                        var dep = it.Current;
+                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform);
+                        AssetPromiseKeeper_AB.i.Keep(promise);
+                        dependencyPromises.Add(promise);
+                    }
+                }
+            }
+
+            UnregisterConcurrentRequest();
+
+            foreach (var promise in dependencyPromises)
+            {
+                yield return promise;
+            }
 
             assetBundlesLoader.MarkAssetBundleForLoad(asset, assetBundle, containerTransform, OnSuccess, OnFail);
         }

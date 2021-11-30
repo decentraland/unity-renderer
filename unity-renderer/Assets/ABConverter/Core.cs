@@ -692,6 +692,9 @@ namespace DCL.ABConverter
             // 2. Create depmap and store in the target folders to be converted again later with the depmap inside
             DependencyMapBuilder.Generate(env.file, finalDownloadedPath, hashLowercaseToHashProper, manifest, MAIN_SHADER_AB_NAME);
 
+            env.assetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
+            env.assetDatabase.SaveAssets();
+            
             // 3. Convert flagged folders to asset bundles again but this time they have the depmaps inside
             manifest = env.buildPipeline.BuildAssetBundles(settings.finalAssetBundlePath, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
 
