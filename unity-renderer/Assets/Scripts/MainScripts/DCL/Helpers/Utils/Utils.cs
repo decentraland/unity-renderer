@@ -527,5 +527,12 @@ namespace DCL.Helpers
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>
         public static float ToAudioMixerGroupVolume(float volume) { return (ToVolumeCurve(volume) * 80f) - 80f; }
+
+        public static string GetHierarchyPath(this Transform transform)
+        {
+            if (transform.parent == null)
+                return transform.name;
+            return $"{transform.parent.GetHierarchyPath()}/{transform.name}";
+        }
     }
 }
