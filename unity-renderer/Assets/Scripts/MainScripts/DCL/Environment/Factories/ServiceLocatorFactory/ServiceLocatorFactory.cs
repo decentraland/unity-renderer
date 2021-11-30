@@ -1,6 +1,5 @@
 ﻿using DCL.Controllers;
 using DCL.Rendering;
-using NSubstitute;
 using UnityEngine;
 
 namespace DCL
@@ -36,25 +35,6 @@ namespace DCL
             // HUD
             var factory = result.Set<IHUDFactory>(new HUDFactory());
             var hudController = result.Set<IHUDController>(new HUDController(factory));
-
-            //     // Messaging systems
-            //     model.messaging.manager.Initialize(i.world.sceneController);
-            //
-            //     // Platform systems
-            //     model.platform.cullingController.Start();
-            //     model.platform.parcelScenesCleaner.Initialize();
-            //
-            //     // World context systems
-            //     model.world.sceneController.Initialize();
-            //     model.world.pointerEventsController.Initialize();
-            //     model.world.state.Initialize();
-            //     model.world.blockersController.InitializeWithDefaultDependencies(
-            //         model.world.state, model.platform.cullingController);
-            //     model.world.sceneBoundsChecker.Start();
-            //     model.world.componentFactory.Initialize();
-            //
-            //     // HUD context system
-            //     model.hud.controller.Initialize(model.hud.factory);
 
             return result;
         }
