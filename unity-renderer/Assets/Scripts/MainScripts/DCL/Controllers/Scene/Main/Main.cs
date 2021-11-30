@@ -43,7 +43,7 @@ namespace DCL
                 SetupEnvironment();
             }
 
-            pluginSystem = new PluginSystem();
+            SetupPlugins();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -63,6 +63,11 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
+        }
+
+        protected virtual void SetupPlugins()
+        {
+            pluginSystem = PluginSystemFactory.Create();
         }
 
         protected virtual void SetupEnvironment()
@@ -101,24 +106,21 @@ namespace DCL
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-            pluginSystem?.Update();
         }
 
         protected virtual void LateUpdate()
         {
             Environment.i.world.sceneController.LateUpdate();
-            pluginSystem?.LateUpdate();
         }
 
         protected virtual void OnDestroy()
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.OnDestroy();
+            pluginSystem?.Dispose();
             kernelCommunication?.Dispose();
         }
 
-        private void OnGUI() { pluginSystem?.OnGUI(); }
         protected virtual void InitializeSceneDependencies()
         {
             var bridges = Init("Bridges");

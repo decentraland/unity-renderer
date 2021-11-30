@@ -24,7 +24,9 @@ public class FeatureFlagBridge : MonoBehaviour
 
     public void SetFeatureFlagConfiguration(FeatureFlag config)
     {
-        if (config != null)
-            DataStore.i.featureFlags.flags.Set(config);
+        if (config == null)
+            return;
+
+        DataStore.i.featureFlags.flags.Set(config);
     }
 }

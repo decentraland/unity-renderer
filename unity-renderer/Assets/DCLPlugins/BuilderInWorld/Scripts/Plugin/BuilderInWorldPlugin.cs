@@ -1,7 +1,10 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
 
-public class BuilderInWorldPlugin : PluginFeature
+public class BuilderInWorldPlugin : IPlugin
 {
     private const string DEV_FLAG_NAME = "builder-dev";
     internal IBIWEditor editor;
@@ -42,14 +45,24 @@ public class BuilderInWorldPlugin : PluginFeature
             new BIWRaycastController(),
             new BIWGizmosController(),
             SceneReferences.i);
+
+        Initialize();
     }
 
-    public BuilderInWorldPlugin(IContext context) { this.context = context; }
-
-    public override void Initialize()
+    public BuilderInWorldPlugin(IContext context)
     {
-        base.Initialize();
+        this.context = context;
+        this.sceneManager = context.sceneManager;
+        panelController = context.panelHUD;
+        editor = context.editor;
+        builderAPIController = context.builderAPIController;
+        cameraController = context.cameraController;
 
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         //We init the lands so we don't have a null reference
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
 
@@ -61,36 +74,57 @@ public class BuilderInWorldPlugin : PluginFeature
         sceneManager.Initialize(context);
         cameraController.Initialize(context);
 
+        if (HUDController.i != null)
+        {
+            if (HUDController.i.taskbarHud != null)
+                HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
+            else
+                HUDController.i.OnTaskbarCreation += TaskBarCreated;
+        }
+
+        DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
+
         DataStore.i.builderInWorld.isInitialized.Set(true);
     }
 
-    public override void Dispose()
+
+    private void TaskBarCreated()
     {
-        base.Dispose();
+        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
+        HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
+    }
+
+    public void Dispose()
+    {
+        if (HUDController.i != null)
+            HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
         editor.Dispose();
         panelController.Dispose();
         sceneManager.Dispose();
         cameraController.Dispose();
         context.Dispose();
+
+        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
 
-    public override void Update()
+    public void Update()
     {
-        base.Update();
         editor.Update();
         sceneManager.Update();
     }
 
-    public override void LateUpdate()
+    public void LateUpdate()
     {
-        base.LateUpdate();
         editor.LateUpdate();
     }
 
-    public override void OnGUI()
+    public void OnGUI()
     {
-        base.OnGUI();
         editor.OnGUI();
     }
 }
