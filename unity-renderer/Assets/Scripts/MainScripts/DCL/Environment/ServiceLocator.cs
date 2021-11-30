@@ -11,31 +11,33 @@ namespace DCL
 
         public T Set<T>(T data) where T : IService
         {
-            Assert.IsTrue( typeof(T).IsInterface, "ServiceLocator's generic type should be an interface." );
+            Type type = typeof(T);
+            Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );
 
-            if (services.ContainsKey(typeof(T)))
+            if (services.ContainsKey(type))
             {
-                Debug.Log($"Overwriting service for {typeof(T).FullName}");
-                services[typeof(T)].Dispose();
-                services[typeof(T)] = data;
+                Debug.Log($"Overwriting service for {type.FullName}");
+                services[type].Dispose();
+                services[type] = data;
                 return data;
             }
 
-            services.Add(typeof(T), data);
+            services.Add(type, data);
             return data;
         }
 
         public T Get<T>() where T : class, IService
         {
-            Assert.IsTrue( typeof(T).IsInterface, "ServiceLocator's generic type should be an interface." );
+            Type type = typeof(T);
+            Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );
 
-            if (!services.ContainsKey(typeof(T)))
+            if (!services.ContainsKey(type))
             {
-                Debug.LogWarning($"Not registered! use Set<T> to set the type first. type: {typeof(T).FullName}");
+                Debug.LogWarning($"Not registered! use Set<T> to set the type first. type: {type.FullName}");
                 return null;
             }
 
-            return services[typeof(T)] as T;
+            return services[type] as T;
         }
 
         public void Initialize()
