@@ -57,6 +57,7 @@ public static class BIWTestUtils
             Substitute.For<IBuilderAPIController>(),
             Substitute.For<ISceneManager>(),
             Substitute.For<ICameraController>(),
+            Substitute.For<IPublisher>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -83,6 +84,7 @@ public static class BIWTestUtils
             Substitute.For<IBuilderAPIController>(),
             Substitute.For<ISceneManager>(),
             Substitute.For<ICameraController>(),
+            Substitute.For<IPublisher>(),
             Substitute.For<IBuilderEditorHUDController>(),
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
@@ -109,6 +111,7 @@ public static class BIWTestUtils
         IBuilderEditorHUDController editorHUD = Substitute.For<IBuilderEditorHUDController>();
         ISceneManager sceneManager = Substitute.For<ISceneManager>();
         ICameraController cameraController = Substitute.For<ICameraController>();
+        IPublisher publisher =  Substitute.For<IPublisher>();
 
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
         IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
@@ -142,6 +145,9 @@ public static class BIWTestUtils
                     break;
                 case ICameraController icc:
                     cameraController = icc;
+                    break;
+                case IPublisher ip:
+                    publisher = ip;
                     break;
                 case IBuilderEditorHUDController ehc:
                     editorHUD = ehc;
@@ -193,6 +199,7 @@ public static class BIWTestUtils
             apiController,
             sceneManager,
             cameraController,
+            publisher,
             editorHUD,
             outliner,
             inputHandler,

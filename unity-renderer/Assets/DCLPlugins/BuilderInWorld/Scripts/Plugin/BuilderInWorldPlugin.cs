@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
 using UnityEngine;
@@ -12,6 +10,7 @@ public class BuilderInWorldPlugin : PluginFeature
     internal IBuilderAPIController builderAPIController;
     internal ISceneManager sceneManager;
     internal ICameraController cameraController;
+    internal IPublisher publisher;
 
     internal IContext context;
 
@@ -25,12 +24,14 @@ public class BuilderInWorldPlugin : PluginFeature
         builderAPIController = new BuilderAPIController();
         sceneManager = new SceneManager();
         cameraController = new CameraController();
+        publisher = new Publisher();
 
         context = new Context(editor,
             panelController,
             builderAPIController,
             sceneManager,
             cameraController,
+            publisher,
             new BuilderEditorHUDController(),
             new BIWOutlinerController(),
             new BIWInputHandler(),
@@ -63,6 +64,7 @@ public class BuilderInWorldPlugin : PluginFeature
         builderAPIController.Initialize(context);
         sceneManager.Initialize(context);
         cameraController.Initialize(context);
+        publisher.Initialize();
 
         if (HUDController.i == null)
             return;
@@ -90,6 +92,7 @@ public class BuilderInWorldPlugin : PluginFeature
         panelController.Dispose();
         sceneManager.Dispose();
         cameraController.Dispose();
+        publisher.Dipose();
         context.Dispose();
     }
 

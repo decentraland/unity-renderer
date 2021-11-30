@@ -71,6 +71,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     internal ShowHideAnimator showHideAnimator;
 
     public bool isVisible { get; private set; }
+    private bool isDestroyed = false;
 
     public virtual void Awake()
     {
@@ -108,13 +109,22 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void OnScreenSizeChanged() { }
 
-    public virtual void Dispose() { DataStore.i.screen.size.OnChange -= OnScreenSizeModified; }
+    public virtual void Dispose()
+    {
+        DataStore.i.screen.size.OnChange -= OnScreenSizeModified;
+        if (!isDestroyed)
+            Destroy(gameObject);
+    }
 
     public void OnPointerEnter(PointerEventData eventData) { OnFocus(); }
 
     public void OnPointerExit(PointerEventData eventData) { OnLoseFocus(); }
 
-    private void OnDestroy() { Dispose(); }
+    private void OnDestroy()
+    {
+        isDestroyed = true;
+        Dispose();
+    }
 
     internal void OnScreenSizeModified(Vector2Int current, Vector2Int previous)
     {

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace DCL.Builder.Manifest
 {
     [Serializable]
-    public class BuilderScene
+    public class WebBuilderScene
     {
         public string id;
         public Dictionary<string, BuilderEntity> entities = new Dictionary<string, BuilderEntity>();
