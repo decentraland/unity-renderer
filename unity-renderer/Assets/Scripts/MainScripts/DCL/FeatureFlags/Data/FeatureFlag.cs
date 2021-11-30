@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FeatureFlag
@@ -15,6 +16,18 @@ public class FeatureFlag
             return flags[featureName];
 
         return false;
+    }
+
+    public string ToString()
+    {
+        string result = "";
+
+        foreach ( var flag in flags )
+        {
+            result += $"{flag.Key}: {flag.Value}\n";
+        }
+
+        return result;
     }
 }
 
