@@ -19,6 +19,7 @@ namespace DCL.Tests
             IIdleChecker idleChecker = Substitute.For<IIdleChecker>();
             IAvatarsLODController avatarsLODController = Substitute.For<IAvatarsLODController>();
             IFeatureFlagController featureFlagController = Substitute.For<IFeatureFlagController>();
+            IUpdateEventHandler updateEventHandler = Substitute.For<IUpdateEventHandler>();
 
             foreach (var mock in mocks)
             {
@@ -54,6 +55,9 @@ namespace DCL.Tests
                     case IFeatureFlagController iffc:
                         featureFlagController = iffc;
                         break;
+                    case IUpdateEventHandler ueh:
+                        updateEventHandler = ueh;
+                        break;
                 }
             }
 
@@ -67,7 +71,8 @@ namespace DCL.Tests
                 serviceProviders,
                 idleChecker,
                 avatarsLODController,
-                featureFlagController);
+                featureFlagController,
+                updateEventHandler);
         }
 
         public static PlatformContext CreateWithCustomMocks(
@@ -80,7 +85,8 @@ namespace DCL.Tests
             IServiceProviders serviceProviders = null,
             IIdleChecker idleChecker = null,
             IAvatarsLODController avatarsLODController = null,
-            IFeatureFlagController featureFlagController = null)
+            IFeatureFlagController featureFlagController = null,
+            IUpdateEventHandler updateEventHandler = null)
         {
             return new PlatformContext(
                 memoryManager: memoryManager ?? Substitute.For<IMemoryManager>(),
@@ -92,7 +98,8 @@ namespace DCL.Tests
                 serviceProviders: serviceProviders ?? GetServiceProvidersMock(),
                 idleChecker: idleChecker ?? Substitute.For<IIdleChecker>(),
                 avatarsLODController: avatarsLODController ?? Substitute.For<IAvatarsLODController>(),
-                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>() );
+                featureFlagController: featureFlagController ?? Substitute.For<IFeatureFlagController>(),
+                updateEventHandler: updateEventHandler ?? Substitute.For<IUpdateEventHandler>());
         }
 
         private static IWebRequestController GetWebRequestControllerMock()

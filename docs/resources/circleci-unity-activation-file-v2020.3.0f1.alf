@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <SystemInfo>
+        <IsoCode>C.UTF</IsoCode>
+        <UserName>(unset)</UserName>
+        <OperatingSystem>Linux 4.15 Ubuntu 18.04 64bit</OperatingSystem>
+        <OperatingSystemNumeric>415</OperatingSystemNumeric>
+        <ProcessorType>Intel(R) Xeon(R) Platinum 8124M CPU @ 3.00GHz</ProcessorType>
+        <ProcessorSpeed>3399</ProcessorSpeed>
+        <ProcessorCount>36</ProcessorCount>
+        <ProcessorCores>36</ProcessorCores>
+        <PhysicalMemoryMB>70340</PhysicalMemoryMB>
+        <ComputerName>45da78058f43</ComputerName>
+        <ComputerModel>PC</ComputerModel>
+        <UnityVersion>2020.3.0f1</UnityVersion>
+        <SupportedLicenseVersion>6.x</SupportedLicenseVersion>
+    </SystemInfo>
+    <License id="Terms">
+        <MachineID Value="D7nTUnjNAmtsUMcnoyrqkgIbYdM=" />
+        <MachineBindings>
+            <Binding Key="1" Value="576562626572264761624c65526f7578" />
+            <Binding Key="2" Value="576562626572264761624c65526f7578" />
+        </MachineBindings>
+        <UnityVersion Value="2020.3.0f1" />
+    </License>
+</root>
