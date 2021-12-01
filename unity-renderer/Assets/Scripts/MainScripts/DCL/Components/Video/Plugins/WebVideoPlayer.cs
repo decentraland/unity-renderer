@@ -41,7 +41,7 @@ namespace DCL.Components.Video.Plugin
 
                     if ( newError != lastError )
                     {
-                        lastError = plugin.GetError(videoPlayerId);
+                        lastError = newError;
                         Debug.LogError(lastError);
                     }
 
