@@ -34,6 +34,41 @@ public interface IExploreV2MenuComponentView : IDisposable
     IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection { get; }
 
     /// <summary>
+    /// Transform used to positionate the top menu tooltips.
+    /// </summary>
+    RectTransform currentTopMenuTooltipReference { get; }
+
+    /// <summary>
+    /// Transform used to positionate the places and events section tooltips.
+    /// </summary>
+    RectTransform currentPlacesAndEventsTooltipReference { get; }
+
+    /// <summary>
+    /// Transform used to positionate the backpack section tooltips.
+    /// </summary>
+    RectTransform currentBackpackTooltipReference { get; }
+
+    /// <summary>
+    /// Transform used to positionate the map section tooltips.
+    /// </summary>
+    RectTransform currentMapTooltipReference { get; }
+
+    /// <summary>
+    /// Transform used to positionate the builder section tooltips.
+    /// </summary>
+    RectTransform currentBuilderTooltipReference { get; }
+
+    /// <summary>
+    /// Transform used to positionate the quest section tooltips.
+    /// </summary>
+    RectTransform currentQuestTooltipReference { get; }
+
+    /// <summary>
+    /// Transform used to positionate the settings section tooltips.
+    /// </summary>
+    RectTransform currentSettingsTooltipReference { get; }
+
+    /// <summary>
     /// Shows/Hides the game object of the explore menu.
     /// </summary>
     /// <param name="isActive">True to show it.</param>
@@ -77,9 +112,25 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
 
+    [Header("Tutorial Config")]
+    [SerializeField] internal RectTransform topMenuTooltipReference;
+    [SerializeField] internal RectTransform placesAndEventsTooltipReference;
+    [SerializeField] internal RectTransform backpackTooltipReference;
+    [SerializeField] internal RectTransform mapTooltipReference;
+    [SerializeField] internal RectTransform builderTooltipReference;
+    [SerializeField] internal RectTransform questTooltipReference;
+    [SerializeField] internal RectTransform settingsTooltipReference;
+
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
+    public RectTransform currentTopMenuTooltipReference => topMenuTooltipReference;
+    public RectTransform currentPlacesAndEventsTooltipReference => placesAndEventsTooltipReference;
+    public RectTransform currentBackpackTooltipReference => backpackTooltipReference;
+    public RectTransform currentMapTooltipReference => mapTooltipReference;
+    public RectTransform currentBuilderTooltipReference => builderTooltipReference;
+    public RectTransform currentQuestTooltipReference => questTooltipReference;
+    public RectTransform currentSettingsTooltipReference => settingsTooltipReference;
 
     public event Action OnInitialized;
     public event Action OnCloseButtonPressed;

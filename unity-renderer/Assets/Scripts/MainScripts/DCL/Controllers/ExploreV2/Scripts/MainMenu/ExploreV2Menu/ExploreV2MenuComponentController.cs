@@ -3,6 +3,7 @@ using DCL.Helpers;
 using ExploreV2Analytics;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 /// <summary>
@@ -11,6 +12,13 @@ using Variables.RealmsInfo;
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
+    internal RectTransform topMenuTooltipReference { get => view.currentTopMenuTooltipReference; }
+    internal RectTransform placesAndEventsTooltipReference { get => view.currentPlacesAndEventsTooltipReference; }
+    internal RectTransform backpackTooltipReference { get => view.currentBackpackTooltipReference; }
+    internal RectTransform mapTooltipReference { get => view.currentMapTooltipReference; }
+    internal RectTransform builderTooltipReference { get => view.currentBuilderTooltipReference; }
+    internal RectTransform questTooltipReference { get => view.currentQuestTooltipReference; }
+    internal RectTransform settingsTooltipReference { get => view.currentSettingsTooltipReference; }
 
     internal IExploreV2MenuComponentView view;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
@@ -46,6 +54,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         DataStore.i.exploreV2.isInitialized.Set(true);
+        DataStore.i.exploreV2.topMenuTooltipReference.Set(topMenuTooltipReference);
+        DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
+        DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
+        DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
+        DataStore.i.exploreV2.builderTooltipReference.Set(builderTooltipReference);
+        DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
+        DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
 
         view.OnInitialized += CreateControllers;
         view.OnSectionOpen += OnSectionOpen;

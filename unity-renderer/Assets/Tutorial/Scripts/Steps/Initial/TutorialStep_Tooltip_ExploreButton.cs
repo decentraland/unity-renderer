@@ -10,6 +10,8 @@ namespace DCL.Tutorial
             base.OnStepStart();
 
             DataStore.i.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
+
+            tutorialController.SetNextSkippedSteps(7);
         }
 
         public override void OnStepFinished()
@@ -36,13 +38,9 @@ namespace DCL.Tutorial
         {
             if (current)
             {
-                isRelatedFeatureActived = true;
+                tutorialController.SetNextSkippedSteps(0);
                 stepIsFinished = true;
-                tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
-            }
-            else if (isRelatedFeatureActived)
-            {
-                isRelatedFeatureActived = false;
+                tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.StepCompleted);
             }
         }
     }

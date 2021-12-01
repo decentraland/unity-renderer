@@ -158,6 +158,13 @@ namespace DCL
             public readonly BaseVariable<Transform> configureBuilderInFullscreenMenu = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> configureQuestInFullscreenMenu = new BaseVariable<Transform>(null);
             public readonly BaseVariable<Transform> configureSettingsInFullscreenMenu = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> topMenuTooltipReference = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> placesAndEventsTooltipReference = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> backpackTooltipReference = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> mapTooltipReference = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> builderTooltipReference = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> questTooltipReference = new BaseVariable<Transform>(null);
+            public readonly BaseVariable<Transform> settingsTooltipReference = new BaseVariable<Transform>(null);
         }
 
         public class DataStore_FeatureFlag

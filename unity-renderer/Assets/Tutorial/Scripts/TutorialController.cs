@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL.Helpers;
+using System.Linq;
 
 namespace DCL.Tutorial
 {
@@ -66,6 +67,7 @@ namespace DCL.Tutorial
         internal TutorialPath currentPath;
         internal int currentStepNumber;
         internal TutorialType tutorialType = TutorialType.Initial;
+        internal int nextStepsToSkip = 0;
 
         private Coroutine executeStepsCoroutine;
         private Coroutine teacherMovementCoroutine;
@@ -358,6 +360,51 @@ namespace DCL.Tutorial
         }
 
         /// <summary>
+        /// Jump to a specific step.
+        /// </summary>
+        /// <param name="stepIndex">Step to jump.</param>
+        public void GoToSpecificStep(string stepName)
+        {
+            int stepIndex = 0;
+            switch (tutorialType)
+            {
+                case TutorialType.Initial:
+                    if (userAlreadyDidTheTutorial)
+                    {
+                        stepIndex = configuration.stepsFromUserThatAlreadyDidTheTutorial.FindIndex(x => x.name == stepName);
+                    }
+                    else if (playerIsInGenesisPlaza || tutorialReset)
+                    {
+                        if (tutorialReset)
+                        {
+                            stepIndex = configuration.stepsFromReset.FindIndex(x => x.name == stepName);
+                        }
+                        else
+                        {
+                            stepIndex = configuration.stepsOnGenesisPlaza.FindIndex(x => x.name == stepName);
+                        }
+                    }
+                    else if (openedFromDeepLink)
+                    {
+                        stepIndex = configuration.stepsFromDeepLink.FindIndex(x => x.name == stepName);
+                    }
+                    break;
+                case TutorialType.BuilderInWorld:
+                    stepIndex = configuration.stepsFromBuilderInWorld.FindIndex(x => x.name == stepName);
+                    break;
+            }
+
+            nextStepsToSkip = 0;
+            CoroutineStarter.Start(StartTutorialFromStep(stepIndex));
+        }
+
+        /// <summary>
+        /// Set the number of steps that will be skipped in the next iteration.
+        /// </summary>
+        /// <param name="skippedSteps">Number of steps to skip.</param>
+        public void SetNextSkippedSteps(int skippedSteps) { nextStepsToSkip = skippedSteps; }
+
+        /// <summary>
         /// Activate/deactivate the eagle eye camera.
         /// </summary>
         /// <param name="isActive">True for activate the eagle eye camera.</param>
@@ -426,6 +473,12 @@ namespace DCL.Tutorial
             elapsedTimeInCurrentStep = 0f;
             for (int i = startingStepIndex; i < steps.Count; i++)
             {
+                if (nextStepsToSkip > 0)
+                {
+                    nextStepsToSkip--;
+                    continue;
+                }
+
                 var stepPrefab = steps[i];
 
                 // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
@@ -438,6 +491,7 @@ namespace DCL.Tutorial
                 else
                     runningStep = steps[i];
 
+                runningStep.gameObject.name = runningStep.gameObject.name.Replace("(Clone)", "");
                 currentStepIndex = i;
 
                 elapsedTimeInCurrentStep = Time.realtimeSinceStartup;

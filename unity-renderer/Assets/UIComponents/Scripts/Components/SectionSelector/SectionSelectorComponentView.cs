@@ -26,6 +26,8 @@ public interface ISectionSelectorComponentView
 
 public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorComponentView, IComponentModelConfig
 {
+    private const string TOOLTIP_REF_MARK = "TooltipRef";
+
     [Header("Prefab References")]
     [SerializeField] internal SectionToggle sectionToggleTemplate;
 
@@ -96,7 +98,8 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
     {
         foreach (Transform child in transform)
         {
-            if (child.gameObject == sectionToggleTemplate.gameObject)
+            if (child.gameObject == sectionToggleTemplate.gameObject ||
+                child.gameObject.name.Contains(TOOLTIP_REF_MARK))
                 continue;
 
             if (Application.isPlaying)
