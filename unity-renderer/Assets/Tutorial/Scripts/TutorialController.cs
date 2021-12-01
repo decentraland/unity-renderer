@@ -355,7 +355,6 @@ namespace DCL.Tutorial
             CoroutineStarter.Start(StartTutorialFromStep(skipIndex));
 
             hudController?.taskbarHud?.SetVisibility(true);
-            hudController?.profileHud?.SetBackpackButtonVisibility(true);
         }
 
         /// <summary>

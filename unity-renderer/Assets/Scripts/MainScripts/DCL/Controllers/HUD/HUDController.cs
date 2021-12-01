@@ -151,12 +151,6 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.PROFILE_HUD:
                 CreateHudElement(configuration, hudElementId);
-                if (profileHud != null)
-                {
-                    //TODO This coupling might introduce a race condition if kernel configures this HUD before AvatarEditorHUD
-                    profileHud?.AddBackpackWindow(avatarEditorHud);
-                }
-
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement(configuration, hudElementId);

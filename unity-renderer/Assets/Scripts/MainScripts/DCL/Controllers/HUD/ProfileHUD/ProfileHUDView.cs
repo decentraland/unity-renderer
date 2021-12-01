@@ -69,9 +69,6 @@ internal class ProfileHUDView : MonoBehaviour
     internal Button buttonClaimName;
 
     [SerializeField]
-    internal Button buttonBackpack;
-
-    [SerializeField]
     internal Button buttonCopyAddress;
 
     [SerializeField]
@@ -113,7 +110,7 @@ internal class ProfileHUDView : MonoBehaviour
 
     [Header("Tutorial Config")]
     [SerializeField]
-    internal RectTransform backpackTooltipReference;
+    internal RectTransform tutorialTooltipReference;
 
     [Header("Description")]
     [SerializeField]
@@ -309,14 +306,6 @@ internal class ProfileHUDView : MonoBehaviour
     private void OnEnable() { closeAction.OnTriggered += closeActionDelegate; }
 
     private void OnDisable() { closeAction.OnTriggered -= closeActionDelegate; }
-
-    internal void SetBackpackButtonVisibility(bool visible)
-    {
-        if (visible && !buttonBackpack.gameObject.activeSelf)
-            buttonBackpack.gameObject.SetActive(true);
-        else if (!visible && buttonBackpack.gameObject.activeSelf)
-            buttonBackpack.gameObject.SetActive(false);
-    }
 
     internal void ActivateProfileNameEditionMode(bool activate)
     {

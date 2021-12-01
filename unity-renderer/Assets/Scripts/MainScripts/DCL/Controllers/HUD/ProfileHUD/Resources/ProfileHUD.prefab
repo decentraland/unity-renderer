@@ -1605,7 +1605,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5306103856117468479}
   m_Layer: 5
-  m_Name: BackpackTooltipRef
+  m_Name: TutorialTooltipRef
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3883,7 +3883,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7411221637582746834
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3900,10 +3900,10 @@ RectTransform:
   m_Father: {fileID: 8561555336122711878}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 50}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 141, y: -256}
+  m_SizeDelta: {x: 282, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &9005442559345185683
 CanvasRenderer:
@@ -5486,7 +5486,6 @@ MonoBehaviour:
   textPostfix: {fileID: 4239755973591999985}
   textAddress: {fileID: 8507228843591293394}
   buttonClaimName: {fileID: 2457515400162479628}
-  buttonBackpack: {fileID: 3852572813664170873}
   buttonCopyAddress: {fileID: 579196943523515688}
   buttonLogOut: {fileID: 2439665739510493948}
   buttonSignUp: {fileID: 3277634955613374390}
@@ -5500,7 +5499,7 @@ MonoBehaviour:
   textCharLimit: {fileID: 3324023416775003328}
   manaCounterView: {fileID: 8482192270054604325}
   polygonManaCounterView: {fileID: 3172344094352289467}
-  backpackTooltipReference: {fileID: 5306103856117468479}
+  tutorialTooltipReference: {fileID: 5306103856117468479}
   descriptionPreviewInput: {fileID: 3342182611059737052}
   descriptionEditionInput: {fileID: 3034082306534631928}
   charLimitDescriptionContainer: {fileID: 1199217350257904732}
