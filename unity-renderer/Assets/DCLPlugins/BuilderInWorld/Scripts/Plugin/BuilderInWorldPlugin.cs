@@ -53,11 +53,12 @@ public class BuilderInWorldPlugin : IPlugin
     public BuilderInWorldPlugin(IContext context)
     {
         this.context = context;
-        this.sceneManager = context.sceneManager;
+        sceneManager = context.sceneManager;
         panelController = context.panelHUD;
         editor = context.editor;
         builderAPIController = context.builderAPIController;
         cameraController = context.cameraController;
+        publisher = context.publisher;
 
         Initialize();
     }
@@ -89,7 +90,6 @@ public class BuilderInWorldPlugin : IPlugin
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
 
-
     private void TaskBarCreated()
     {
         HUDController.i.OnTaskbarCreation -= TaskBarCreated;
@@ -119,13 +119,7 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Update();
     }
 
-    public void LateUpdate()
-    {
-        editor.LateUpdate();
-    }
+    public void LateUpdate() { editor.LateUpdate(); }
 
-    public void OnGUI()
-    {
-        editor.OnGUI();
-    }
+    public void OnGUI() { editor.OnGUI(); }
 }
