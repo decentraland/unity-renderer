@@ -19,7 +19,7 @@ public static class DependencyMapLoadHelper
         public string[] dependencies;
     }
 
-    public static IEnumerator WaitUntilDepMapIsResolved(string hash)
+    public static IEnumerator WaitUntilExternalDepMapIsResolved(string hash)
     {
         while (true)
         {
@@ -33,7 +33,7 @@ public static class DependencyMapLoadHelper
         }
     }
 
-    public static IEnumerator GetDepMap(string baseUrl, string hash)
+    public static IEnumerator GetExternalDepMap(string baseUrl, string hash)
     {
         if (dependenciesMap.ContainsKey(hash))
             yield break;
@@ -43,7 +43,7 @@ public static class DependencyMapLoadHelper
 
         if (downloadingDepmap.Contains(hash))
         {
-            yield return WaitUntilDepMapIsResolved(hash);
+            yield return WaitUntilExternalDepMapIsResolved(hash);
             yield break;
         }
         

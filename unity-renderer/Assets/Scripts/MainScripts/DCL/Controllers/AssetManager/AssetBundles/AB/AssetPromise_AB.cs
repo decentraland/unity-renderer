@@ -8,6 +8,8 @@ namespace DCL
 {
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
+        const string INTERNAL_DEPMAP_FILENAME = "depmap.json";
+        
         public static bool VERBOSE = false;
         public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
 
@@ -137,25 +139,22 @@ namespace DCL
             asset.ownerAssetBundle = assetBundle;
             asset.assetBundleAssetName = assetBundle.name;
             
-            // 2. Check internal depmaps text asset with assetbundle.LoadAsset() looking for that file
-            const string DEPMAP_FILENAME = "depmap.json";
-            TextAsset internalDepmap = assetBundle.LoadAsset<TextAsset>(DEPMAP_FILENAME);
+            // 2. Check internal depmaps and if it doesn't exist, fetch the external one (old way of handling ABs dependencies)
+            TextAsset internalDepmap = assetBundle.LoadAsset<TextAsset>(INTERNAL_DEPMAP_FILENAME);
             
             if (internalDepmap != null)
             {
-                Debug.Log(hash + ": LOADING INTERNAL DEPMAP!");
                 DependencyMapLoadHelper.LoadDepMapFromString(internalDepmap.text, hash);
             }
-            else // 3. If no internal depmap found, fetch the external one
+            else
             {
-                Debug.Log(hash + ": LOADING EXTERNAL DEPMAP!");
                 if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
-                    CoroutineStarter.Start(DependencyMapLoadHelper.GetDepMap(baseUrl, hash));
+                    CoroutineStarter.Start(DependencyMapLoadHelper.GetExternalDepMap(baseUrl, hash));
 
-                yield return DependencyMapLoadHelper.WaitUntilDepMapIsResolved(hash);
+                yield return DependencyMapLoadHelper.WaitUntilExternalDepMapIsResolved(hash);
             }
             
-            // 4. Resolve dependencies
+            // 3. Resolve dependencies
             if (DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
             {
                 using (var it = DependencyMapLoadHelper.dependenciesMap[hash].GetEnumerator())
