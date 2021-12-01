@@ -17,14 +17,4 @@ public class ExploreV2FeatureTests
 
     [TearDown]
     public void TearDown() { exploreV2Feature.Dispose(); }
-
-    [Test]
-    public void InitializeCorrectly()
-    {
-        // Act
-        exploreV2Feature.Initialize();
-
-        // Assert
-        exploreV2MenuComponentController.Received().Initialize();
-    }
 }
