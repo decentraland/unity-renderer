@@ -39,6 +39,8 @@ namespace DCL.Skybox
         private GUIStyle configurationStyle;
         private GUIStyle percentagePartStyle;
 
+        private List<string> renderingOrderList;
+
         public static SkyboxEditorWindow instance { get { return GetWindow<SkyboxEditorWindow>(); } }
 
         #region Unity Callbacks
@@ -69,7 +71,6 @@ namespace DCL.Skybox
 
             GUILayout.Space(32);
             RenderTimePanel();
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Space(12);
 
             showTimelineTags = EditorGUILayout.Foldout(showTimelineTags, "Timeline Tags", true);
@@ -81,11 +82,13 @@ namespace DCL.Skybox
                 EditorGUI.indentLevel--;
             }
 
-
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            GUILayout.Space(32);
+            GUILayout.Space(5);
 
-            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos);
+            panelScrollPos = EditorGUILayout.BeginScrollView(panelScrollPos, "box");
+
+            GUILayout.Space(10);
+
             showBackgroundLayer = EditorGUILayout.Foldout(showBackgroundLayer, "BG Layer", true);
             if (showBackgroundLayer)
             {
@@ -141,8 +144,9 @@ namespace DCL.Skybox
             // Render Layers
             RenderTextureLayers(selectedConfiguration.layers);
 
-            GUILayout.Space(300);
+            //GUILayout.Space(300);
             EditorGUILayout.EndScrollView();
+            GUILayout.Space(10);
             GUILayout.EndArea();
 
             if (GUI.changed)
@@ -216,6 +220,17 @@ namespace DCL.Skybox
             CheckAndAssignAllStyles();
 
             EditorUtility.SetDirty(selectedConfiguration);
+
+            // Fill rendering order array
+            if (renderingOrderList == null)
+            {
+                renderingOrderList = new List<string>();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    renderingOrderList.Add((i + 1).ToString());
+                }
+            }
 
             if (directionalLight != null)
             {
@@ -669,7 +684,7 @@ namespace DCL.Skybox
                 layers[i].nameInEditor = EditorGUILayout.TextField(layers[i].nameInEditor, GUILayout.Width(100), GUILayout.ExpandWidth(false));
 
                 // Slot ID
-                layers[i].slotID = EditorGUILayout.IntField(layers[i].slotID, GUILayout.Width(40), GUILayout.ExpandWidth(false));
+                layers[i].slotID = EditorGUILayout.Popup(layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(50));
 
                 if (i == 0)
                 {
