@@ -4,6 +4,7 @@ using System.Linq;
 using AvatarSystem;
 using UnityEngine;
 
+//TODO REMOVE THIS TESTING CLASS, IF YOU SEE THIS IN A REVIEW, HIT ME
 public class TestAvatarSystem : MonoBehaviour
 {
 
