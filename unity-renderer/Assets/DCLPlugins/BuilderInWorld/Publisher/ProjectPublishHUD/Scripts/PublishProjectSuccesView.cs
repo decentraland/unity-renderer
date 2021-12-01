@@ -33,6 +33,8 @@ namespace DCL.Builder
 
     public class PublishProjectSuccesView : BaseComponentView, IPublishProjectSuccesView
     {
+        private const string SUB_TITLE_TEXT =  @"{0} is now a live place in {1},{2} ready to be visited!";
+
         public event Action OnViewClose;
 
         [SerializeField] internal Button okButton;
@@ -82,7 +84,7 @@ namespace DCL.Builder
             string posX = scene.scene.sceneData.basePosition.x.ToString();
             string posY = scene.scene.sceneData.basePosition.y.ToString();
 
-            return title + " is now a live place in " + posX + "," + posY + " ready to be visited!";
+            return string.Format(SUB_TITLE_TEXT, title, posX, posY);
         }
     }
 }
