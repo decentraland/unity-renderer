@@ -9,38 +9,60 @@ namespace DCL.Builder
 {
     public interface IPublishProjectDetailView
     {
+        /// <summary>
+        /// If the publish is canceled this action will be called
+        /// </summary>
         public event Action OnCancel;
-        public event Action OnPublish;
+
+        /// <summary>
+        /// If the publish button is pressed this action will be called
+        /// </summary>
+        public event Action OnPublishButtonPressed;
 
         /// <summary>
         /// Set the project to publish
         /// </summary>
         /// <param name="scene"></param>
-        void SetBuilderScene(BuilderScene scene);
+        void SetProjectToPublish(BuilderScene scene);
 
+        /// <summary>
+        /// This will show the detail modal 
+        /// </summary>
+        void Show();
+
+        /// <summary>
+        /// This will hide the detail modal
+        /// </summary>
         void Hide();
 
+        /// <summary>
+        /// Dispose the view
+        /// </summary>
         void Dispose();
     }
 
     public class PublishProjectDetailView : BaseComponentView, IPublishProjectDetailView
     {
+        private const string SCREENSHOT_TEXT =  @"{0} parcel = {1}x{2}m";
+
+        //TODO: This will be implemented in the future
         public event Action OnProjectRotate;
         public event Action OnCancel;
-        public event Action OnPublish;
+        public event Action OnPublishButtonPressed;
 
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button publishButton;
 
+        //TODO: This functionality will be implemented in the future
         [SerializeField] internal Button rotateLeftButton;
         [SerializeField] internal Button rotateRightButton;
 
         [SerializeField] internal Button zoomInButton;
         [SerializeField] internal Button zoomOutButton;
         [SerializeField] internal Button resetToLandButton;
+        [SerializeField] internal Image mapImage;
 
         [SerializeField] internal RawImage sceneScreenshotImage;
-        [SerializeField] internal Image mapImage;
 
         [SerializeField] internal ModalComponentView modal;
 
@@ -59,27 +81,32 @@ namespace DCL.Builder
             if (scene == null)
                 return;
 
-            SetBuilderScene(scene);
+            SetProjectToPublish(scene);
         }
 
         public override void Awake()
         {
             base.Awake();
-            cancelButton.onClick.AddListener(Cancel);
-            publishButton.onClick.AddListener(Publish);
+            modal.OnCloseAction += CancelPublish;
+
+            cancelButton.onClick.AddListener(CancelButtonPressed);
+            publishButton.onClick.AddListener(PublishButtonPressed);
         }
 
         public override void Dispose()
         {
             base.Dispose();
+
+            modal.OnCloseAction -= CancelPublish;
+
             cancelButton.onClick.RemoveAllListeners();
             publishButton.onClick.RemoveAllListeners();
         }
 
-        public void SetBuilderScene(BuilderScene scene)
+        public void SetProjectToPublish(BuilderScene scene)
         {
             this.scene = scene;
-            modal.Show();
+
             //We set the screenshot
             sceneScreenshotImage.texture = scene.sceneScreenshotTexture;
 
@@ -87,14 +114,15 @@ namespace DCL.Builder
             nameInputField.SetText(scene.manifest.project.title);
             descriptionInputField.SetText(scene.manifest.project.description);
             sceneScreenshotParcelText.text = GetScreenshotText(scene.scene.sceneData.parcels);
-            FillLandDropDown();
 
+            //We fill the land drop down
+            FillLandDropDown();
         }
 
         private string GetScreenshotText(Vector2Int[] parcels)
         {
             Vector2Int sceneSize = BIWUtils.GetSceneSize(parcels);
-            return parcels.Length + " parcel = " + sceneSize.x * DCL.Configuration.ParcelSettings.PARCEL_SIZE + "x" + DCL.Configuration.ParcelSettings.PARCEL_SIZE * sceneSize.y;
+            return string.Format(SCREENSHOT_TEXT, parcels.Length, sceneSize.x * DCL.Configuration.ParcelSettings.PARCEL_SIZE,  DCL.Configuration.ParcelSettings.PARCEL_SIZE * sceneSize.y);
         }
 
         private void FillLandDropDown()
@@ -114,18 +142,22 @@ namespace DCL.Builder
             landsDropDown.options = landsOption;
         }
 
+        public void Show() { modal.Show(); }
+
         public void Hide() { modal.Hide(); }
 
-        private void Publish()
+        private void PublishButtonPressed()
         {
             modal.Hide();
-            OnPublish?.Invoke();
+            OnPublishButtonPressed?.Invoke();
         }
 
-        private void Cancel()
+        private void CancelPublish() { OnCancel?.Invoke(); }
+
+        private void CancelButtonPressed()
         {
             modal.Hide();
-            OnCancel?.Invoke();
+            CancelPublish();
         }
 
     }

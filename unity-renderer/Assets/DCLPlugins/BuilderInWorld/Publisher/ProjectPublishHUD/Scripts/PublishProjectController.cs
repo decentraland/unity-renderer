@@ -7,20 +7,26 @@ namespace DCL.Builder
 {
     public interface IPublishProjectController
     {
+        /// <summary>
+        /// Start the publish flow for a project
+        /// </summary>
+        /// <param name="builderScene"></param>
         void StartPublishFlow(IBuilderScene builderScene);
     }
 
     public class PublishProjectController : IPublishProjectController
     {
-        private const string DETAIL_PREFAB_PATH = "BuilderProjectsPanel";
-        private const string PROGRESS_PREFAB_PATH = "BuilderProjectsPanel";
-        private const string SUCCESS_PREFAB_PATH = "BuilderProjectsPanel";
+        private const string DETAIL_PREFAB_PATH = "PublishDetailView";
+        private const string PROGRESS_PREFAB_PATH = "PublishProgressView";
+        private const string SUCCESS_PREFAB_PATH = "PublishSuccessView";
+
+        private const string GENERIC_DEPLOY_ERROR = "Error deploying the scene";
 
         public enum ProjectPublishState
         {
             IDLE = 0,
             PUBLISH_CONFIRM = 1,
-            PUBLISH_DEPLOYING = 2,
+            PUBLISH_IN_PROGRESS = 2,
             PUBLISH_END = 3
         }
 
@@ -28,7 +34,7 @@ namespace DCL.Builder
         internal IPublishProjectProgressView progressView;
         internal IPublishProjectSuccesView succesView;
 
-        private ProjectPublishState projectPublishState = ProjectPublishState.IDLE;
+        internal ProjectPublishState projectPublishState = ProjectPublishState.IDLE;
         internal BuilderScene sceneToPublish;
 
         public PublishProjectController()
@@ -41,24 +47,24 @@ namespace DCL.Builder
 
         public void Initialize()
         {
-            detailView.OnCancel += Close;
-            detailView.OnPublish += PublishButtonPressed;
+            detailView.OnCancel += ViewClosed;
+            detailView.OnPublishButtonPressed += PublishButtonPressedButtonPressed;
 
-            progressView.OnClose += Close;
-            progressView.OnPublishConfirm += Publish;
+            progressView.OnViewClosed += ViewClosed;
+            progressView.OnPublishConfirmButtonPressed += StartPublish;
 
-            succesView.OnClose += Close;
+            succesView.OnViewClose += ViewClosed;
         }
 
         public void Dipose()
         {
-            detailView.OnCancel -= Close;
-            detailView.OnPublish -= PublishButtonPressed;
+            detailView.OnCancel -= ViewClosed;
+            detailView.OnPublishButtonPressed -= PublishButtonPressedButtonPressed;
 
-            progressView.OnClose -= Close;
-            progressView.OnPublishConfirm -= Publish;
+            progressView.OnViewClosed -= ViewClosed;
+            progressView.OnPublishConfirmButtonPressed -= StartPublish;
 
-            succesView.OnClose -= Close;
+            succesView.OnViewClose -= ViewClosed;
 
             detailView.Dispose();
             progressView.Dispose();
@@ -70,12 +76,15 @@ namespace DCL.Builder
             if (projectPublishState != ProjectPublishState.IDLE)
                 return;
 
+            //Note: in a future PR we will use IBuilderScene directly
             sceneToPublish = (BuilderScene) builderScene;
             projectPublishState = ProjectPublishState.PUBLISH_CONFIRM;
-            detailView.SetBuilderScene(sceneToPublish);
+
+            detailView.SetProjectToPublish(sceneToPublish);
+            detailView.Show();
         }
 
-        private void Close()
+        private void ViewClosed()
         {
             projectPublishState = ProjectPublishState.IDLE;
 
@@ -84,13 +93,13 @@ namespace DCL.Builder
             succesView.Hide();
         }
 
-        private void PublishButtonPressed() { progressView.ShowConfirmPopUp(); }
+        private void PublishButtonPressedButtonPressed() { progressView.ShowConfirmPopUp(); }
 
-        private void Publish()
+        private void StartPublish()
         {
-            projectPublishState = ProjectPublishState.PUBLISH_DEPLOYING;
+            projectPublishState = ProjectPublishState.PUBLISH_IN_PROGRESS;
 
-            progressView.PublishStart();
+            progressView.PublishStarted();
 
             Promise<bool> deploymentPromise = DeployScene(sceneToPublish);
             deploymentPromise.Then(success =>
@@ -98,7 +107,7 @@ namespace DCL.Builder
                 if (success)
                     DeploySuccess();
                 else
-                    DeployError("Error deploying the scene");
+                    DeployError(GENERIC_DEPLOY_ERROR);
             });
             deploymentPromise.Catch(DeployError);
         }
@@ -106,23 +115,26 @@ namespace DCL.Builder
         private void DeploySuccess()
         {
             projectPublishState = ProjectPublishState.PUBLISH_END;
-            progressView.PublishEnd(false, "");
+            progressView.Hide();
             succesView.ProjectPublished(sceneToPublish);
         }
 
         private void DeployError(string error)
         {
             projectPublishState = ProjectPublishState.PUBLISH_END;
-            progressView.PublishEnd(false, error);
+            progressView.PublishError(error);
         }
 
         Promise<bool> DeployScene(BuilderScene scene)
         {
             Promise<bool> scenePromise = new Promise<bool>();
+
+            //TODO: We need to implement the deployment functionality, for now we just mocked a delay to test the functionality 
             CoroutineStarter.Start(MockedDelay(scenePromise));
             return scenePromise;
         }
 
+        // This will be deleted in the future, this just simulate a deploy after 3 seconds to test functionality
         IEnumerator MockedDelay(Promise<bool> promise)
         {
             yield return new WaitForSeconds(3f);

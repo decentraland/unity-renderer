@@ -9,23 +9,47 @@ namespace DCL.Builder
 {
     public interface IPublishProjectProgressView
     {
-        event Action OnPublishConfirm;
-        event Action OnClose;
+        /// <summary>
+        /// This action will be called when the confirm button is pressed
+        /// </summary>
+        event Action OnPublishConfirmButtonPressed;
 
+        /// <summary>
+        /// This action will be called when the view is closed
+        /// </summary>
+        event Action OnViewClosed;
+
+        /// <summary>
+        /// Show the confirm publish pop up
+        /// </summary>
         void ShowConfirmPopUp();
-        void PublishStart();
 
+        /// <summary>
+        /// Call this function when the publish start
+        /// </summary>
+        void PublishStarted();
+
+        /// <summary>
+        /// Hide the view
+        /// </summary>
         void Hide();
 
-        public void PublishEnd(bool isOk, string message);
+        /// <summary>
+        /// Shows the errors passes in a pop up
+        /// </summary>
+        /// <param name="message"></param>
+        void PublishError(string message);
 
+        /// <summary>
+        /// Dispose the view
+        /// </summary>
         void Dispose();
     }
 
     public class PublishProjectProgressView : BaseComponentView, IPublishProjectProgressView
     {
-        public event Action OnPublishConfirm;
-        public event Action OnClose;
+        public event Action OnPublishConfirmButtonPressed;
+        public event Action OnViewClosed;
 
         [SerializeField] internal Button closeButton;
         [SerializeField] internal Button cancelButton;
@@ -76,12 +100,12 @@ namespace DCL.Builder
         public void Close()
         {
             modal.Hide();
-            OnClose?.Invoke();
+            OnViewClosed?.Invoke();
         }
 
-        public void ConfirmPublish() { OnPublishConfirm?.Invoke(); }
+        public void ConfirmPublish() { OnPublishConfirmButtonPressed?.Invoke(); }
 
-        public void PublishStart()
+        public void PublishStarted()
         {
             currentProgress = 0;
 
@@ -97,20 +121,13 @@ namespace DCL.Builder
 
         public void Hide() { modal.Hide(); }
 
-        public void PublishEnd(bool isOk, string message)
+        public void PublishError(string message)
         {
-            if (isOk)
-            {
-                Hide();
-            }
-            else
-            {
-                loadingBar.SetActive(false);
-                errorGameObject.SetActive(true);
-                confirmGameObject.SetActive(false);
+            loadingBar.SetActive(false);
+            errorGameObject.SetActive(true);
+            confirmGameObject.SetActive(false);
 
-                errorTextView.text = message;
-            }
+            errorTextView.text = message;
         }
 
         public void SetPercentage(float newValue) { loadingBar.SetPercentage(newValue); }

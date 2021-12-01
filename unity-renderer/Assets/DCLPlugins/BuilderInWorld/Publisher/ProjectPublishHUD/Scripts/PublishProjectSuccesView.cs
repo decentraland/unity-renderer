@@ -9,15 +9,31 @@ namespace DCL.Builder
 {
     public interface IPublishProjectSuccesView
     {
-        event Action OnClose;
+        /// <summary>
+        /// Called when view is closed
+        /// </summary>
+        event Action OnViewClose;
+
+        /// <summary>
+        /// Hide the view
+        /// </summary>
         void Hide();
+
+        /// <summary>
+        /// Shows the view with the project data
+        /// </summary>
+        /// <param name="publishedProject"></param>
         void ProjectPublished(BuilderScene publishedProject);
+
+        /// <summary>
+        /// Dispose the view
+        /// </summary>
         void Dispose();
     }
 
     public class PublishProjectSuccesView : BaseComponentView, IPublishProjectSuccesView
     {
-        public event Action OnClose;
+        public event Action OnViewClose;
 
         [SerializeField] internal Button okButton;
         [SerializeField] internal TMP_Text subTitleTextView;
@@ -48,7 +64,7 @@ namespace DCL.Builder
             Close();
         }
 
-        public void Close() { OnClose?.Invoke(); }
+        public void Close() { OnViewClose?.Invoke(); }
 
         public void ProjectPublished(BuilderScene publishedProject)
         {
