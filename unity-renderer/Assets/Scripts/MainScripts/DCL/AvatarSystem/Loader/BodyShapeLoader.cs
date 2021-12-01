@@ -70,19 +70,19 @@ namespace AvatarSystem
 
             var (eyesResult, eyebrowsResult, mouthResult) = await (eyesTask, eyebrowsTask, mouthTask);
 
-            eyesRenderer.material = Resources.Load<Material>("Eye Material");
+            eyesRenderer.material = new Material(Resources.Load<Material>("Eye Material"));
             eyesRenderer.material.SetTexture(AvatarSystemUtils._EyesTexture, eyesResult.main);
             if (eyesResult.mask != null)
                 eyesRenderer.material.SetTexture(AvatarSystemUtils._IrisMask, eyesResult.mask);
             eyesRenderer.material.SetColor(AvatarSystemUtils._EyeTint, avatarSettings.eyeColor);
 
-            eyebrowsRenderer.material = Resources.Load<Material>("Eyebrow Material");
+            eyebrowsRenderer.material = new Material(Resources.Load<Material>("Eyebrow Material"));
             eyebrowsRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, eyebrowsResult.main);
             if (eyebrowsResult.mask != null)
                 eyebrowsRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, eyebrowsResult.mask);
             eyebrowsRenderer.material.SetColor(AvatarSystemUtils._BaseColor, avatarSettings.hairColor);
 
-            mouthRenderer.material = Resources.Load<Material>("Mouth Material");
+            mouthRenderer.material = new Material(Resources.Load<Material>("Mouth Material"));
             mouthRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, mouthResult.main);
             if (mouthResult.mask != null)
                 mouthRenderer.material.SetTexture(AvatarSystemUtils._TintMask, mouthResult.mask);
@@ -133,10 +133,20 @@ namespace AvatarSystem
             eyebrowsRetriever?.Dispose();
             mouthRetriever?.Dispose();
 
+            if (eyesRenderer != null)
+                Object.Destroy(eyesRenderer.material);
+            if (eyebrowsRenderer != null)
+                Object.Destroy(eyebrowsRenderer.material);
+            if (mouthRenderer != null)
+                Object.Destroy(mouthRenderer.material);
+
             upperBodyRenderer = null;
             lowerBodyRenderer = null;
             feetRenderer = null;
             headRenderer = null;
+            eyesRenderer = null;
+            eyebrowsRenderer = null;
+            mouthRenderer = null;
         }
     }
 }

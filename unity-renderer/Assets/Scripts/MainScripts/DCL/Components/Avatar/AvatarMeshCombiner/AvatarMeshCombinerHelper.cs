@@ -34,6 +34,19 @@ namespace DCL
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
         /// After the avatar is combined, it will generate a new GameObject with a SkinnedMeshRenderer that contains
         /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
+        ///
+        /// Uses a predefined Material ready for the Avatar
+        /// 
+        /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
+        /// </summary>
+        /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
+        /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine) { return Combine(bonesContainer, renderersToCombine, Resources.Load<Material>("Avatar Material")); }
+
+        /// <summary>
+        /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
+        /// After the avatar is combined, it will generate a new GameObject with a SkinnedMeshRenderer that contains
+        /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
         /// 
         /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
         /// </summary>

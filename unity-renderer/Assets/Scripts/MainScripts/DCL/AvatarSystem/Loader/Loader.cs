@@ -62,23 +62,20 @@ namespace AvatarSystem
 
             AvatarSystemUtils.CopyBones((SkinnedMeshRenderer)bodyshapeLoader.rendereable.renderers.First(), loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
 
-            //TODO Combine Renderer
-            MergeAvatar(container.GetComponentsInChildren<SkinnedMeshRenderer>());
+            if (!MergeAvatar(container.GetComponentsInChildren<SkinnedMeshRenderer>()))
+                status = ILoader.Status.Failed_Mayor;
+            else
+                status = ILoader.Status.Succeeded;
         }
 
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
         {
-
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             var avatarMeshCombiner = new AvatarMeshCombinerHelper();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
 
-            bool success = avatarMeshCombiner.Combine(
-                bodyshapeLoader.upperBodyRenderer,
-                renderersToCombine.ToArray(),
-                Resources.Load<Material>("Avatar Material"));
-
+            bool success = avatarMeshCombiner.Combine(bodyshapeLoader.upperBodyRenderer, renderersToCombine.ToArray());
             if (!success)
                 return false;
 

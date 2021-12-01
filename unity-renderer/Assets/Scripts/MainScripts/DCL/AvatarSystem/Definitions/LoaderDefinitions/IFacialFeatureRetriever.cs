@@ -8,4 +8,6 @@ namespace AvatarSystem
     {
         UniTask<(Texture main, Texture mask)> Retrieve(string mainTextureUrl, string maskTextureUrl);
     }
+
+    public interface IAvatarCombiner { }
 }
