@@ -9,19 +9,12 @@ using UnityEngine;
 
 namespace DCL.ABConverter
 {
-    public static class DependencyMapBuilder
+    public static class AssetBundleMetadataBuilder
     {
-        [System.Serializable]
-        public class AssetDependencyMap
-        {
-            public string[] dependencies;
-        }
-
         /// <summary>
-        /// This dumps .depmap files
+        /// Creates the asset bundle metadata file (dependencies, version, timestamp) 
         /// </summary>
-        /// <param name="manifest"></param>
-        public static void Generate(IFile file, string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest, string exceptions = null)
+        public static void Generate(IFile file, string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest, float version = 1f, string exceptions = null)
         {
             string[] assetBundles = manifest.GetAllAssetBundles();
 
@@ -30,14 +23,14 @@ namespace DCL.ABConverter
                 if (string.IsNullOrEmpty(assetBundles[i]))
                     continue;
 
-                var depMap = new AssetDependencyMap();
+                var metadata = new AssetBundleMetadata { version = version, timestamp = DateTime.UtcNow.Ticks };
                 string[] deps = manifest.GetAllDependencies(assetBundles[i]);
 
                 if (deps.Length > 0)
                 {
                     deps = deps.Where(s => s != exceptions).ToArray();
 
-                    depMap.dependencies = deps.Select((x) =>
+                    metadata.dependencies = deps.Select((x) =>
                                               {
                                                   if (hashLowercaseToHashProper.ContainsKey(x))
                                                       return hashLowercaseToHashProper[x];
@@ -47,14 +40,14 @@ namespace DCL.ABConverter
                                               .ToArray();
                 }
 
-                string json = JsonUtility.ToJson(depMap);
+                string json = JsonUtility.ToJson(metadata);
                 string assetHashName = assetBundles[i];
 
                 hashLowercaseToHashProper.TryGetValue(assetBundles[i], out assetHashName);
 
                 if (!string.IsNullOrEmpty(assetHashName))
                 {
-                    file.WriteAllText(path + $"/{assetHashName}/depmap.json", json);
+                    file.WriteAllText(path + $"/{assetHashName}/metadata.json", json);
                 }
             }
         }

@@ -8,7 +8,7 @@ namespace DCL
 {
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
-        const string INTERNAL_DEPMAP_FILENAME = "depmap.json";
+        const string METADATA_FILENAME = "metadata.json";
         
         public static bool VERBOSE = false;
         public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
@@ -139,25 +139,25 @@ namespace DCL
             asset.ownerAssetBundle = assetBundle;
             asset.assetBundleAssetName = assetBundle.name;
             
-            // 2. Check internal depmaps and if it doesn't exist, fetch the external one (old way of handling ABs dependencies)
-            TextAsset internalDepmap = assetBundle.LoadAsset<TextAsset>(INTERNAL_DEPMAP_FILENAME);
+            // 2. Check internal metadata file (dependencies, version, timestamp) and if it doesn't exist, fetch the external depmap file (old way of handling ABs dependencies)
+            TextAsset metadata = assetBundle.LoadAsset<TextAsset>(METADATA_FILENAME);
             
-            if (internalDepmap != null)
+            if (metadata != null)
             {
-                DependencyMapLoadHelper.LoadDepMapFromString(internalDepmap.text, hash);
+                AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash);
             }
             else
             {
-                if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
-                    CoroutineStarter.Start(DependencyMapLoadHelper.GetExternalDepMap(baseUrl, hash));
+                if (!AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
+                    CoroutineStarter.Start(AssetBundleDepMapLoadHelper.LoadExternalDepMap(baseUrl, hash));
 
-                yield return DependencyMapLoadHelper.WaitUntilExternalDepMapIsResolved(hash);
+                yield return AssetBundleDepMapLoadHelper.WaitUntilExternalDepMapIsResolved(hash);
             }
             
             // 3. Resolve dependencies
-            if (DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
+            if (AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
             {
-                using (var it = DependencyMapLoadHelper.dependenciesMap[hash].GetEnumerator())
+                using (var it = AssetBundleDepMapLoadHelper.dependenciesMap[hash].GetEnumerator())
                 {
                     while (it.MoveNext())
                     {
