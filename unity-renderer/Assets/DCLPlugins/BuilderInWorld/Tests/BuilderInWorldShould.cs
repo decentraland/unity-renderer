@@ -9,7 +9,7 @@ using UnityEngine;
 public class BuilderInWorldShould
 {
     private BuilderInWorldPlugin builderInWorld;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -20,14 +20,12 @@ public class BuilderInWorldShould
         builderInWorld.panelController = Substitute.For<IBuilderMainPanelController>();
         builderInWorld.builderAPIController = Substitute.For<IBuilderAPIController>();
         builderInWorld.cameraController = Substitute.For<ICameraController>();
+        builderInWorld.publisher = Substitute.For<IPublisher>();
     }
 
     [TearDown]
-    public void TearDown()
-    {
-        builderInWorld.Dispose();
-    }
-    
+    public void TearDown() { builderInWorld.Dispose(); }
+
     [Test]
     public void CreateContextCorrectly()
     {
