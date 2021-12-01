@@ -68,5 +68,85 @@ namespace AvatarSystem
                 }
             }
         }
+
+        public static (WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables) SplitWearables(IEnumerable<WearableItem> wearables)
+        {
+            WearableItem bodyshape = null;
+            WearableItem eyes = null;
+            WearableItem eyebrows = null;
+            WearableItem mouth = null;
+            List<WearableItem> resultWearables = new List<WearableItem>();
+            foreach (WearableItem wearable in wearables)
+            {
+                switch (wearable.data.category)
+                {
+                    case WearableLiterals.Categories.BODY_SHAPE:
+                        bodyshape = wearable;
+                        break;
+                    case WearableLiterals.Categories.EYES:
+                        eyes = wearable;
+                        break;
+                    case WearableLiterals.Categories.EYEBROWS:
+                        eyebrows = wearable;
+                        break;
+                    case WearableLiterals.Categories.MOUTH:
+                        mouth = wearable;
+                        break;
+                    default:
+                        resultWearables.Add(wearable);
+                        break;
+                }
+            }
+            return (bodyshape, eyes, eyebrows, mouth, resultWearables);
+        }
+
+        /// <summary>
+        /// Extract bodyparts of a Rendereable.
+        ///
+        /// Using this on a Rendereable that doesn't comes from a bodyshape might result in unexpected result
+        /// </summary>
+        /// <param name="rendereable"></param>
+        /// <returns></returns>
+        public static (
+            SkinnedMeshRenderer head,
+            SkinnedMeshRenderer upperBody,
+            SkinnedMeshRenderer lowerBody,
+            SkinnedMeshRenderer feet,
+            SkinnedMeshRenderer eyes,
+            SkinnedMeshRenderer eyebrows,
+            SkinnedMeshRenderer mouth
+            ) ExtractBodyshapeParts(Rendereable rendereable)
+        {
+            SkinnedMeshRenderer head = null;
+            SkinnedMeshRenderer upperBody = null;
+            SkinnedMeshRenderer lowerBody = null;
+            SkinnedMeshRenderer feet = null;
+            SkinnedMeshRenderer eyes = null;
+            SkinnedMeshRenderer eyebrows = null;
+            SkinnedMeshRenderer mouth = null;
+            for (int i = 0; i < rendereable.renderers.Count; i++)
+            {
+                if (!(rendereable.renderers[i] is SkinnedMeshRenderer renderer))
+                    continue;
+
+                string parentName = renderer.transform.parent.name.ToLower();
+
+                if (parentName.Contains("head"))
+                    head = renderer;
+                else if (parentName.Contains("ubody"))
+                    upperBody = renderer;
+                else if (parentName.Contains("lbody"))
+                    lowerBody = renderer;
+                else if (parentName.Contains("feet"))
+                    feet = renderer;
+                else if (parentName.Contains("eyes"))
+                    eyes = renderer;
+                else if (parentName.Contains("eyebrows"))
+                    eyebrows = renderer;
+                else if (parentName.Contains("mouth"))
+                    mouth = renderer;
+            }
+            return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);
+        }
     }
 }

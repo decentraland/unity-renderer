@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCL;
 using UnityEngine;
@@ -13,14 +14,13 @@ namespace AvatarSystem
         public WearableItem eyes { get; }
         public WearableItem eyebrows { get; }
         public WearableItem mouth { get; }
+        public SkinnedMeshRenderer eyesRenderer { get; private set; }
+        public SkinnedMeshRenderer eyebrowsRenderer { get; private set; }
+        public SkinnedMeshRenderer mouthRenderer { get; private set; }
         public SkinnedMeshRenderer headRenderer { get; private set; }
         public SkinnedMeshRenderer feetRenderer { get; private set; }
         public SkinnedMeshRenderer upperBodyRenderer { get; private set; }
         public SkinnedMeshRenderer lowerBodyRenderer { get; private set; }
-
-        public SkinnedMeshRenderer eyesRenderer { get; private set; }
-        public SkinnedMeshRenderer eyebrowsRenderer { get; private set; }
-        public SkinnedMeshRenderer mouthRenderer { get; private set; }
 
         private readonly IWearableRetriever bodyshapeRetriever;
         private readonly IFacialFeatureRetriever eyesRetriever;
@@ -57,7 +57,15 @@ namespace AvatarSystem
                 return;
             }
 
-            PrepareBodyParts(bodyshapeRetriever.rendereable.container.GetComponentsInChildren<SkinnedMeshRenderer>());
+            (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
+            headRenderer.enabled = avatarSettings.headVisible;
+            lowerBodyRenderer.enabled = avatarSettings.lowerbodyVisible;
+            upperBodyRenderer.enabled = avatarSettings.upperbodyVisible;
+            feetRenderer.enabled = avatarSettings.feetVisible;
+            eyesRenderer.enabled = true;
+            eyebrowsRenderer.enabled = true;
+            mouthRenderer.enabled = true;
+
             AvatarSystemUtils.PrepareMaterialColors(rendereable, avatarSettings.skinColor, avatarSettings.hairColor);
 
             (string eyesMainTextureUrl, string eyesMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, eyes);
@@ -74,7 +82,7 @@ namespace AvatarSystem
             eyesRenderer.material.SetTexture(AvatarSystemUtils._EyesTexture, eyesResult.main);
             if (eyesResult.mask != null)
                 eyesRenderer.material.SetTexture(AvatarSystemUtils._IrisMask, eyesResult.mask);
-            eyesRenderer.material.SetColor(AvatarSystemUtils._EyeTint, avatarSettings.eyeColor);
+            eyesRenderer.material.SetColor(AvatarSystemUtils._EyeTint, avatarSettings.eyesColor);
 
             eyebrowsRenderer.material = new Material(Resources.Load<Material>("Eyebrow Material"));
             eyebrowsRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, eyebrowsResult.main);
@@ -89,30 +97,6 @@ namespace AvatarSystem
             mouthRenderer.material.SetColor(AvatarSystemUtils._BaseColor, avatarSettings.skinColor);
         }
 
-        private void PrepareBodyParts(SkinnedMeshRenderer[] renderers)
-        {
-            for (var i = 0; i < renderers.Length; i++)
-            {
-                SkinnedMeshRenderer renderer = renderers[i];
-                string parentName = renderer.transform.parent.name.ToLower();
-
-                if (parentName.Contains("ubody"))
-                    upperBodyRenderer = renderer;
-                else if (parentName.Contains("lbody"))
-                    lowerBodyRenderer = renderer;
-                else if (parentName.Contains("feet"))
-                    feetRenderer = renderer;
-                else if (parentName.Contains("head"))
-                    headRenderer = renderer;
-                else if (parentName.Contains("eyes"))
-                    eyesRenderer = renderer;
-                else if (parentName.Contains("eyebrows"))
-                    eyebrowsRenderer = renderer;
-                else if (parentName.Contains("mouth"))
-                    mouthRenderer = renderer;
-            }
-        }
-
         private async UniTask<Rendereable> LoadWearable(GameObject container)
         {
             bodyshapeRetriever.Dispose();
@@ -124,6 +108,20 @@ namespace AvatarSystem
                 return null;
             }
             return await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile);
+        }
+
+        public List<SkinnedMeshRenderer> GetEnabledBodyparts()
+        {
+            List<SkinnedMeshRenderer> result = new List<SkinnedMeshRenderer>();
+            if (headRenderer.enabled)
+                result.Add(headRenderer);
+            if (upperBodyRenderer.enabled)
+                result.Add(upperBodyRenderer);
+            if (lowerBodyRenderer.enabled)
+                result.Add(lowerBodyRenderer);
+            if (feetRenderer.enabled)
+                result.Add(feetRenderer);
+            return result;
         }
 
         public void Dispose()

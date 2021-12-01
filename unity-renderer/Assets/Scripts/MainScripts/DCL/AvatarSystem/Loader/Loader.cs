@@ -9,8 +9,10 @@ namespace AvatarSystem
 {
     public class Loader : ILoader
     {
-        public GameObject combinedAvatar { get; }
-        public GameObject[] facialFeatures { get; }
+        public Renderer combinedRenderer { get; private set; }
+        public Renderer eyesRenderer { get; private set; }
+        public Renderer eyebrowsRenderer { get; private set; }
+        public Renderer mouthRenderer { get; private set; }
 
         private readonly IWearableLoaderFactory wearableLoaderFactory;
         private readonly GameObject container;
@@ -26,7 +28,7 @@ namespace AvatarSystem
             this.container = container;
         }
 
-        public async UniTaskVoid Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, WearableItem[] wearables, AvatarSettings settings)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings)
         {
             // TODO: Add cancellation token
 
@@ -36,7 +38,7 @@ namespace AvatarSystem
 
             // Get new loaders
             bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
-            for (int i = 0; i < wearables.Length; i++)
+            for (int i = 0; i < wearables.Count; i++)
             {
                 WearableItem wearable = wearables[i];
                 loaders.Add(wearable.data.category, wearableLoaderFactory.GetWearableLoader(wearable));
@@ -56,20 +58,28 @@ namespace AvatarSystem
 
             if (status == ILoader.Status.Failed_Mayor)
             {
-                ClearLoaders();
+                //TODO Dispose properly
                 return;
             }
 
-            AvatarSystemUtils.CopyBones((SkinnedMeshRenderer)bodyshapeLoader.rendereable.renderers.First(), loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
+            AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
 
-            if (!MergeAvatar(container.GetComponentsInChildren<SkinnedMeshRenderer>()))
+            if (!MergeAvatar(bodyshapeLoader.GetEnabledBodyparts().Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out Renderer combinedRenderer))
+            {
                 status = ILoader.Status.Failed_Mayor;
-            else
-                status = ILoader.Status.Succeeded;
+                //TODO Dispose properly
+                return;
+            }
+
+            this.combinedRenderer = combinedRenderer;
+            eyesRenderer = bodyshapeLoader.eyesRenderer;
+            eyebrowsRenderer = bodyshapeLoader.eyebrowsRenderer;
+            mouthRenderer = bodyshapeLoader.mouthRenderer;
         }
 
-        private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers)
+        private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers, out Renderer renderer)
         {
+            renderer = null;
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             var avatarMeshCombiner = new AvatarMeshCombinerHelper();
@@ -82,6 +92,7 @@ namespace AvatarSystem
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
 
+            renderer = avatarMeshCombiner.renderer;
             return true;
         }
 

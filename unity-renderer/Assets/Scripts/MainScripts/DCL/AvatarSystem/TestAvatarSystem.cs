@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AvatarSystem;
 using UnityEngine;
+using Avatar = AvatarSystem.Avatar;
 
 //TODO REMOVE THIS TESTING CLASS, IF YOU SEE THIS IN A REVIEW, HIT ME
 public class TestAvatarSystem : MonoBehaviour
@@ -19,15 +20,15 @@ public class TestAvatarSystem : MonoBehaviour
 
     public IEnumerator MyLoad()
     {
-        var avatar = JsonUtility.FromJson<AvatarModel>(testAvatar.text);
+        var avatarModel = JsonUtility.FromJson<AvatarModel>(testAvatar.text);
 
         Dictionary<string, WearableItem> wearables = new Dictionary<string, WearableItem>();
         WearableItem bodyshape = null;
         WearableItem eyes = null;
         WearableItem eyebrows = null;
         WearableItem mouth = null;
-        yield return CatalogController.RequestWearable(avatar.bodyShape).Then(x => bodyshape = x);
-        foreach (string wearable in avatar.wearables)
+        yield return CatalogController.RequestWearable(avatarModel.bodyShape).Then(x => bodyshape = x);
+        foreach (string wearable in avatarModel.wearables)
         {
             var promise = CatalogController.RequestWearable(wearable)
                                            .Then(x =>
@@ -53,12 +54,17 @@ public class TestAvatarSystem : MonoBehaviour
         }
 
         Loader loader = new Loader(new WearableLoaderFactory(), gameObject);
-        yield return loader.Load(bodyshape, eyes, eyebrows, mouth, wearables.Values.ToArray(), new AvatarSettings
+        Avatar avatar = new Avatar(loader);
+        yield return loader.Load(bodyshape, eyes, eyebrows, mouth, wearables.Values.ToList(), new AvatarSettings
         {
-            bodyshapeId = avatar.bodyShape,
-            eyeColor = avatar.eyeColor,
-            hairColor = avatar.hairColor,
-            skinColor = avatar.skinColor
+            bodyshapeId = avatarModel.bodyShape,
+            eyesColor = avatarModel.eyeColor,
+            hairColor = avatarModel.hairColor,
+            skinColor = avatarModel.skinColor,
+            headVisible = true,
+            upperbodyVisible = true,
+            lowerbodyVisible = true,
+            feetVisible = true
         });
     }
 }

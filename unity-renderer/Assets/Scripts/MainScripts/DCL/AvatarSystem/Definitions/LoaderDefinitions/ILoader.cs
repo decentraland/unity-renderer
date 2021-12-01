@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -15,9 +16,11 @@ namespace AvatarSystem
             Failed_Minor
         }
 
-        GameObject combinedAvatar { get; }
-        GameObject[] facialFeatures { get; }
+        Renderer combinedRenderer { get; }
+        Renderer eyesRenderer { get; }
+        Renderer eyebrowsRenderer { get; }
+        Renderer mouthRenderer { get; }
         Status status { get; }
-        UniTaskVoid Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, WearableItem[] wearables, AvatarSettings settings);
+        UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings);
     }
 }

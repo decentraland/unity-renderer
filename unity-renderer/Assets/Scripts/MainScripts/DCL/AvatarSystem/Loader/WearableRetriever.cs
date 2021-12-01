@@ -22,8 +22,7 @@ namespace AvatarSystem
             loaderAssetHelper.settings.forceNewInstance = false;
             loaderAssetHelper.settings.initialLocalPosition = Vector3.up * 0.75f;
             loaderAssetHelper.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
-            //TODO set as invisible
-            loaderAssetHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
+            loaderAssetHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
             loaderAssetHelper.settings.parent = container.transform;
             loaderAssetHelper.settings.layer = container.layer;
 
