@@ -47,7 +47,11 @@ namespace DCL
             asset.Show(OnSuccess);
         }
 
-        protected override void OnAfterLoadOrReuse() { settings.ApplyAfterLoad(asset.container.transform); }
+        protected override void OnAfterLoadOrReuse()
+        {
+            asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
+            settings.ApplyAfterLoad(asset.container.transform);
+        }
 
         protected override void OnBeforeLoadOrReuse()
         {
