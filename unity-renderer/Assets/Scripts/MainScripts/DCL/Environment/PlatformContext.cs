@@ -20,6 +20,7 @@ namespace DCL
         public IIdleChecker idleChecker => serviceLocator.Get<IIdleChecker>();
         public IAvatarsLODController avatarsLODController => serviceLocator.Get<IAvatarsLODController>();
         public IFeatureFlagController featureFlagController => serviceLocator.Get<IFeatureFlagController>();
+        public IUpdateEventHandler updateEventHandler => serviceLocator.Get<IUpdateEventHandler>();
 
         public PlatformContext (ServiceLocator serviceLocator)
         {
