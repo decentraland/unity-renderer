@@ -13,7 +13,6 @@ namespace Tests.LoadingHUD
         private BaseVariable<bool> visible => DataStore.i.HUDs.loadingHUD.visible;
         private BaseVariable<string> message => DataStore.i.HUDs.loadingHUD.message;
         private BaseVariable<float> percentage => DataStore.i.HUDs.loadingHUD.percentage;
-        private BaseVariable<bool> showWalletPrompt => DataStore.i.HUDs.loadingHUD.showWalletPrompt;
         private BaseVariable<bool> showTips => DataStore.i.HUDs.loadingHUD.showTips;
 
         [SetUp]
@@ -57,13 +56,6 @@ namespace Tests.LoadingHUD
         {
             percentage.Set(0.7f, true); //Force event notification
             hudView.Received().SetPercentage(0.7f / 100);
-        }
-
-        [Test]
-        public void ReactToShowWalletPromptChanged()
-        {
-            showWalletPrompt.Set(false, true); //Force event notification
-            hudView.Received().SetWalletPrompt(false);
         }
 
         [Test]
