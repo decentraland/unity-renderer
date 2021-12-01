@@ -800,8 +800,20 @@ namespace DCL.Interface
 
         public static void ReportCameraChanged(CameraMode.ModeId cameraMode)
         {
+            ReportCameraChanged(cameraMode, null);
+        }
+        
+        public static void ReportCameraChanged(CameraMode.ModeId cameraMode, string targetSceneId)
+        {
             cameraModePayload.cameraMode = cameraMode;
-            SendAllScenesEvent("cameraModeChanged", cameraModePayload);
+            if (!string.IsNullOrEmpty(targetSceneId))
+            {
+                SendSceneEvent(targetSceneId, "cameraModeChanged", cameraModePayload);
+            }
+            else
+            {
+                SendAllScenesEvent("cameraModeChanged", cameraModePayload);
+            }
         }
 
         public static void ReportIdleStateChanged(bool isIdle)
