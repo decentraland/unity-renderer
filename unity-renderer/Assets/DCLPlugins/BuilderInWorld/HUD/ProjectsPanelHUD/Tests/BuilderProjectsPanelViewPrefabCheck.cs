@@ -12,8 +12,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath ="BuilderProjectsPanel";
-            prefab =  Resources.Load<BuilderMainPanelView>(prefabAssetPath);
+            prefab = Resources.Load<BuilderMainPanelView>("BuilderProjectsPanel");
         }
 
         [Test]

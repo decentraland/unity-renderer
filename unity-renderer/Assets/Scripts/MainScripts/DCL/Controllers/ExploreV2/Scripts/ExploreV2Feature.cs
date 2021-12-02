@@ -1,17 +1,20 @@
 /// <summary>
 /// Plugin feature that initialize the ExploreV2 feature.
 /// </summary>
-public class ExploreV2Feature : PluginFeature
+public class ExploreV2Feature : IPlugin
 {
     public IExploreV2MenuComponentController exploreV2MenuComponentController;
 
-    public override void Initialize()
+    public ExploreV2Feature ()
     {
-        base.Initialize();
-
         exploreV2MenuComponentController = CreateController();
         exploreV2MenuComponentController.Initialize();
     }
 
     internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController();
+
+    public void Dispose()
+    {
+        exploreV2MenuComponentController.Dispose();
+    }
 }

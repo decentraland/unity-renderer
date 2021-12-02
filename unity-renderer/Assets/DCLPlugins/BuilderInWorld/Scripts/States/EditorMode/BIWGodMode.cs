@@ -70,7 +70,6 @@ public class BIWGodMode : BIWMode
             context.editorContext.editorHUD.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             context.editorContext.editorHUD.OnSelectedObjectScaleChange += UpdateSelectionScale;
             context.editorContext.editorHUD.OnResetCameraAction += ResetCamera;
-            context.editorContext.editorHUD.OnPublishAction += TakeSceneScreenshotForPublish;
         }
 
         if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
@@ -128,7 +127,6 @@ public class BIWGodMode : BIWMode
         context.editorContext.editorHUD.OnRotateSelectedAction -= RotateMode;
         context.editorContext.editorHUD.OnScaleSelectedAction -= ScaleMode;
         context.editorContext.editorHUD.OnResetCameraAction -= ResetCamera;
-        context.editorContext.editorHUD.OnPublishAction -= TakeSceneScreenshotForPublish;
     }
 
     public override void Update()
@@ -774,24 +772,4 @@ public class BIWGodMode : BIWMode
     }
 
     internal void ResetCamera() { freeCameraController.ResetCameraPosition(); }
-
-    internal void TakeSceneScreenshotForPublish()
-    {
-        entityHandler.DeselectEntities();
-
-        freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
-        {
-            context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
-        });
-    }
-
-    public void TakeSceneScreenshotForExit()
-    {
-        entityHandler.DeselectEntities();
-
-        freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
-        {
-            context.editorContext.editorHUD?.SetBuilderProjectScreenshot(sceneSnapshot);
-        });
-    }
 }

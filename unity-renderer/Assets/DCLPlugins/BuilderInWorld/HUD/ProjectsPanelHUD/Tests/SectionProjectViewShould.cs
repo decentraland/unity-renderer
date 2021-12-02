@@ -25,9 +25,7 @@ namespace Tests
         [Category("Explicit")]
         public void ShowCardsInCorrectSortOrder()
         {
-            const string prefabAssetPath =
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/ProjectCardView.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
+            var prefab = Resources.Load<SceneCardView>("ProjectCardView");
 
             Dictionary<string, IProjectCardView> cardViews = new Dictionary<string, IProjectCardView>();
             const int cardsCount = 10;

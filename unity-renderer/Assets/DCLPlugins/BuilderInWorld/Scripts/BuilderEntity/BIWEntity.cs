@@ -6,6 +6,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 
 public class BIWEntity
@@ -355,10 +356,10 @@ public class BIWEntity
 
         if (!foundComponent)
         {
-            ParcelScene scene = rootEntity.scene as ParcelScene;
-            DCLLockedOnEdit entityLocked = (DCLLockedOnEdit) scene.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
-            entityLocked.SetIsLocked(isLocked);
-            scene.SharedComponentAttach(rootEntity.entityId, entityLocked.id);
+            DCLLockedOnEdit.Model model = new DCLLockedOnEdit.Model();
+            model.isLocked = isLocked;
+            
+            EntityComponentsUtils.AddLockedOnEditComponent(rootEntity.scene , rootEntity, model, Guid.NewGuid().ToString());
         }
     }
 
@@ -374,10 +375,9 @@ public class BIWEntity
         }
         else
         {
-            ParcelScene scene = rootEntity.scene as ParcelScene;
-            DCLName name = (DCLName) scene.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
-            name.SetNewName(newName);
-            scene.SharedComponentAttach(rootEntity.entityId, name.id);
+            DCLName.Model model = new DCLName.Model();
+            model.value = newName;
+            EntityComponentsUtils.AddNameComponent(rootEntity.scene , rootEntity,model, Guid.NewGuid().ToString());
         }
 
         OnStatusUpdate?.Invoke(this);

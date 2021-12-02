@@ -16,8 +16,9 @@ public class ProjectControllerShould
     [SetUp]
     public void SetUp()
     {
-        const string prefabAssetPath ="Projects/ProjectCardView";
-        var prefab =  Resources.Load<ProjectCardView>(prefabAssetPath);
+        const string prefabAssetPath =
+            "Projects/ProjectCardView";
+        var prefab = Resources.Load<ProjectCardView>(prefabAssetPath);
         controller = new ProjectsController(prefab);
     }
 

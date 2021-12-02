@@ -179,10 +179,10 @@ namespace DCL.Builder
                 return null;
 
             IsInsideTheLimits(catalogItem);
-
-            //Note (Adrian): This is a workaround until the mapping is handle by kernel
-            AddSceneMappings(catalogItem);
-
+            
+            BIWUtils.AddSceneMappings(catalogItem.contents, BIWUrlUtils.GetUrlSceneObjectContent(), sceneToEdit.sceneData);
+            DCL.Environment.i.world.sceneController.UpdateParcelScenesExecute(sceneToEdit.sceneData);
+            
             Vector3 editionPosition = modeController.GetCurrentEditionPosition();
 
             BIWEntity entity = entityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition, false);
@@ -284,43 +284,36 @@ namespace DCL.Builder
 
         private void AddEntityNameComponent(CatalogItem catalogItem, BIWEntity entity)
         {
-            DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
-            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
             entityHandler.SetEntityName(entity, catalogItem.name, false);
         }
 
         private void AddLockedComponent(BIWEntity entity)
         {
-            DCLLockedOnEdit entityLocked = (DCLLockedOnEdit) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
-            if (entity.isFloor)
-                entityLocked.SetIsLocked(true);
-            else
-                entityLocked.SetIsLocked(false);
-
-            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, entityLocked.id);
+            DCLLockedOnEdit.Model model = new DCLLockedOnEdit.Model();
+            model.isLocked = entity.isFloor;
+            
+            EntityComponentsUtils.AddLockedOnEditComponent(sceneToEdit, entity.rootEntity, model, Guid.NewGuid().ToString());
         }
 
         private void AddShape(CatalogItem catalogItem, BIWEntity entity)
         {
             if (catalogItem.IsNFT())
             {
-                NFTShape nftShape = (NFTShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
-                nftShape.model = new NFTShape.Model();
-                nftShape.model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
-                nftShape.model.src = catalogItem.model;
-                nftShape.model.assetId = catalogItem.id;
-                sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, nftShape.id);
-
+                NFTShape.Model model = new NFTShape.Model();
+                model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
+                model.src = catalogItem.model;
+                model.assetId = catalogItem.id;
+                
+                NFTShape nftShape = EntityComponentsUtils.AddNFTShapeComponent(sceneToEdit, entity.rootEntity, model, catalogItem.id);
                 nftShape.CallWhenReady(entity.ShapeLoadFinish);
             }
             else
             {
-                GLTFShape gltfComponent = (GLTFShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
-                gltfComponent.model = new LoadableShape.Model();
-                gltfComponent.model.src = catalogItem.model;
-                gltfComponent.model.assetId = catalogItem.id;
-                sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, gltfComponent.id);
-
+                LoadableShape.Model model = new LoadableShape.Model();
+                model.src = catalogItem.model;
+                model.assetId = catalogItem.id;
+                
+                GLTFShape gltfComponent = EntityComponentsUtils.AddGLTFComponent(sceneToEdit, entity.rootEntity, model, catalogItem.id);
                 gltfComponent.CallWhenReady(entity.ShapeLoadFinish);
             }
         }

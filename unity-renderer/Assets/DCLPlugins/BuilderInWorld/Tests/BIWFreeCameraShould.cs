@@ -161,7 +161,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
 
         //Assert
         Assert.AreEqual(freeCameraMovement.originalCameraPosition, Vector3.one);
-        Assert.AreSame(freeCameraMovement.originalCameraLookAt, mockedGameObject.transform);
+        Assert.AreEqual(freeCameraMovement.originalCameraPointToLookAt, mockedGameObject.transform.position);
     }
 
     [Test]

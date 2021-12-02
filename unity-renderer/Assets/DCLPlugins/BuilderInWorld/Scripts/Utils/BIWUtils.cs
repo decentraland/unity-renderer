@@ -25,6 +25,46 @@ using UnityEngine.Events;
 public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    public static LoadParcelScenesMessage.UnityParcelScene AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
+    {
+        if (data == null)
+            data = new LoadParcelScenesMessage.UnityParcelScene();
+        
+        data.baseUrl = baseUrl;
+        if (data.contents == null)
+            data.contents = new List<ContentServerUtils.MappingPair>();
+        
+        foreach (KeyValuePair<string, string> content in contents)
+        {
+            ContentServerUtils.MappingPair mappingPair = new ContentServerUtils.MappingPair();
+            mappingPair.file = content.Key;
+            mappingPair.hash = content.Value;
+            bool found = false;
+            foreach (ContentServerUtils.MappingPair mappingPairToCheck in data.contents)
+            {
+                if (mappingPairToCheck.file == mappingPair.file)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                data.contents.Add(mappingPair);
+        }
+        return data;
+    }
+    
+    public static void RemoveAssetsFromCurrentScene()
+    {
+        //We remove the old assets to they don't collide with the new ones
+        foreach (var catalogItem in DataStore.i.builderInWorld.currentSceneCatalogItemDict.GetValues())
+        {
+            AssetCatalogBridge.i.RemoveSceneObjectToSceneCatalog(catalogItem.id);
+        }
+        DataStore.i.builderInWorld.currentSceneCatalogItemDict.Clear();
+    }
     
     public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {

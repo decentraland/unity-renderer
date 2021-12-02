@@ -12,8 +12,9 @@ public class ProjectSceneCardViewShould
     [SetUp]
     public void SetUp()
     {
-        const string prefabAssetPath = "Projects/ProjectSceneCardView";
-        var prefab =  Resources.Load<ProjectSceneCardView>(prefabAssetPath);
+        const string prefabAssetPath =
+            "Projects/ProjectSceneCardView";
+        var prefab = Resources.Load<ProjectSceneCardView>(prefabAssetPath);
         cardView = UnityEngine.Object.Instantiate(prefab);
     }
 

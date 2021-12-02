@@ -2,13 +2,19 @@
 
 public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
-    public void SaveUnverifiedName(string name)
+    public void SaveUnverifiedName(string name) => WebInterface.SendSaveUserUnverifiedName(name);
+
+    public void SaveDescription(string description) => WebInterface.SendSaveUserDescription(description);
+
+    public UserProfile GetOwn() => UserProfile.GetOwnUserProfile();
+    
+    public void AddUserProfileToCatalog(UserProfileModel userProfileModel)
     {
-        WebInterface.SendSaveUserUnverifiedName(name);
+        UserProfileController.i.AddUserProfileToCatalog(userProfileModel);
     }
 
-    public void SaveDescription(string description)
+    public UserProfile Get(string userId)
     {
-        WebInterface.SendSaveUserDescription(description);
+        return UserProfileController.userProfilesCatalog.Get(userId);
     }
 }

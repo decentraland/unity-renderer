@@ -11,8 +11,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath ="LandElementView";
-            var prefab =  Resources.Load<LandElementView>(prefabAssetPath);
+            var prefab = Resources.Load<LandElementView>("LandElementView");
             view = Object.Instantiate(prefab);
         }
 

@@ -84,15 +84,6 @@ namespace DCL.ABConverter
                 go.SetActive(false);
             }
 
-            foreach (GameObject go in gltfs)
-            {
-                go.SetActive(true);
-
-                yield return TakeObjectSnapshot(go, $"ABConverter_{go.name}.png");
-
-                go.SetActive(false);
-            }
-
             AssetBundlesVisualTestHelpers.generateBaseline = false;
 
             var abs = LoadAndInstantiateAllAssetBundles();

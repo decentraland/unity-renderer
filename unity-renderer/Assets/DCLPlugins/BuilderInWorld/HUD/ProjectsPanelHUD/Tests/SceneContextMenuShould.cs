@@ -11,8 +11,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            const string prefabAssetPath ="SceneCardViewContextMenu";
-            var prefab =  Resources.Load<SceneCardViewContextMenu>(prefabAssetPath);
+            var prefab = Resources.Load<SceneCardViewContextMenu>("SceneCardViewContextMenu");
             contextMenu = UnityEngine.Object.Instantiate(prefab);
         }
 

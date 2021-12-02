@@ -13,7 +13,11 @@ npx @dcl/cdn-uploader@next \
   --local-folder "/tmp/workspace/unity-renderer/browser-interface/dist" \
   --bucket-folder "branch/${CIRCLE_BRANCH}"
 
-# Invalidate cache
-aws configure set preview.cloudfront true
-aws configure set preview.create-invalidation true
-aws cloudfront create-invalidation --distribution-id "${CLOUDFRONT_DISTRIBUTION}" --paths "/branch/${CIRCLE_BRANCH}/*"
+set +u # unbound variables
+
+if [ -n "${CLOUDFRONT_DISTRIBUTION}" ]; then
+  # Invalidate cache
+  aws configure set preview.cloudfront true
+  aws configure set preview.create-invalidation true
+  aws cloudfront create-invalidation --distribution-id "${CLOUDFRONT_DISTRIBUTION}" --paths "/branch/${CIRCLE_BRANCH}/*"
+fi

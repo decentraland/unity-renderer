@@ -32,7 +32,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
             context.editorContext.editorHUD.OnConfirmPublishAction += StartPublishScene;
         }
 
-        builderInWorldBridge = context.sceneReferences.bridgeGameObject.GetComponent<BuilderInWorldBridge>();
+        builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
 
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnPublishEnd += PublishEnd;

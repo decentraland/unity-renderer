@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using UnityEditor.Experimental;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
@@ -23,7 +24,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
         yield return gltfShape.routine;
 
         yield return new WaitForAllMessagesProcessed();
-        yield return new WaitUntil(() => GLTFComponent.downloadingCount == 0);
+        yield return new DCL.WaitUntil(() => GLTFComponent.downloadingCount == 0);
 
         if (OnFinishLoading != null)
         {

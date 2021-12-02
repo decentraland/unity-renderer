@@ -21,6 +21,8 @@ namespace DCL.Components.Video.Plugin
         private bool playWhenReady = false;
         private float playStartTime = -1;
 
+        private string lastError = "";
+
         public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
@@ -35,7 +37,14 @@ namespace DCL.Components.Video.Plugin
             switch (plugin.GetState(videoPlayerId))
             {
                 case VideoState.ERROR:
-                    Debug.LogError(plugin.GetError(videoPlayerId));
+                    string newError = plugin.GetError(videoPlayerId);
+
+                    if ( newError != lastError )
+                    {
+                        lastError = newError;
+                        Debug.LogError(lastError);
+                    }
+
                     break;
                 case VideoState.READY:
                     if (!isReady)
