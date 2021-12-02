@@ -96,7 +96,7 @@ public class NFTShape_Tests : IntegrationTestSuite
         yield return null;
 
         // Create shape component
-        var shapeModel = new LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model();
+        var shapeModel = new LoadableShape.Model();
         shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
 
         var shapeComponent = TestUtils.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
@@ -105,7 +105,7 @@ public class NFTShape_Tests : IntegrationTestSuite
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
         var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
-        yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
+        yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestUtils.TestShapeCollision(shapeComponent, shapeModel, entity);
     }
@@ -121,7 +121,7 @@ public class NFTShape_Tests : IntegrationTestSuite
         yield return null;
 
         // Create shape component
-        var shapeModel = new LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model();
+        var shapeModel = new LoadableShape.Model();
         shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
 
         var shapeComponent = TestUtils.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
@@ -130,7 +130,7 @@ public class NFTShape_Tests : IntegrationTestSuite
         TestUtils.SharedComponentAttach(shapeComponent, entity);
 
         var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
-        yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
+        yield return new DCL.WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestUtils.TestShapeVisibility(shapeComponent, shapeModel, entity);
     }

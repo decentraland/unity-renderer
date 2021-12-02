@@ -1,9 +1,12 @@
 ﻿using GLTF.Extensions;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DCL;
+using UnityEngine;
 
 namespace GLTF.Schema
 {
@@ -266,6 +269,108 @@ namespace GLTF.Schema
             return null;
         }
 
+        public static IEnumerator DeserializeDelayed(GLTFRoot root, TextReader textReader)
+        {
+            var jsonReader = new JsonTextReader(textReader);
+
+            if (jsonReader.Read() && jsonReader.TokenType != JsonToken.StartObject)
+            {
+                throw new Exception("gltf json must be an object");
+            }
+
+            SkipFrameIfDepletedTimeBudget skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
+
+            while (jsonReader.Read() && jsonReader.TokenType == JsonToken.PropertyName)
+            {
+                var curProp = jsonReader.Value.ToString();
+
+                switch (curProp)
+                {
+                    case "extensionsUsed":
+                        root.ExtensionsUsed = jsonReader.ReadStringList();
+                        break;
+                    case "extensionsRequired":
+                        root.ExtensionsRequired = jsonReader.ReadStringList();
+                        break;
+                    case "accessors":
+                        yield return jsonReader.ReadListDelayed(
+                            () => Accessor.Deserialize(root, jsonReader),
+                            (x) => root.Accessors = x);
+                        break;
+                    case "animations":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFAnimation.Deserialize(root, jsonReader),
+                            (x) => root.Animations = x);
+                        break;
+                    case "asset":
+                        root.Asset = Asset.Deserialize(root, jsonReader);
+                        break;
+                    case "buffers":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFBuffer.Deserialize(root, jsonReader),
+                            (x) => root.Buffers = x);
+                        break;
+                    case "bufferViews":
+                        yield return jsonReader.ReadListDelayed(
+                            () => BufferView.Deserialize(root, jsonReader),
+                            (x) => root.BufferViews = x);
+                        break;
+                    case "cameras":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFCamera.Deserialize(root, jsonReader),
+                            (x) => root.Cameras = x);
+                        break;
+                    case "images":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFImage.Deserialize(root, jsonReader),
+                            (x) => root.Images = x);
+                        break;
+                    case "materials":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFMaterial.Deserialize(root, jsonReader),
+                            (x) => root.Materials = x);
+                        break;
+                    case "meshes":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFMesh.Deserialize(root, jsonReader),
+                            (x) => root.Meshes = x);
+                        break;
+                    case "nodes":
+                        yield return jsonReader.ReadListDelayed(
+                            () => Node.Deserialize(root, jsonReader),
+                            x => root.Nodes = x);
+                        break;
+                    case "samplers":
+                        yield return jsonReader.ReadListDelayed(
+                            () => Sampler.Deserialize(root, jsonReader),
+                            x => root.Samplers = x);
+                        break;
+                    case "scene":
+                        root.Scene =
+                            SceneId.Deserialize(root, jsonReader);
+                        break;
+                    case "scenes":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFScene.Deserialize(root, jsonReader),
+                            x => root.Scenes = x);
+                        break;
+                    case "skins":
+                        yield return jsonReader.ReadListDelayed(
+                            () => Skin.Deserialize(root, jsonReader),
+                            x => root.Skins = x);
+                        break;
+                    case "textures":
+                        yield return jsonReader.ReadListDelayed(
+                            () => GLTFTexture.Deserialize(root, jsonReader),
+                            x => root.Textures = x);
+                        break;
+                    default:
+                        root.DefaultPropertyDeserializer(root, jsonReader);
+                        break;
+                }
+            }
+        }
+
         public static GLTFRoot Deserialize(TextReader textReader)
         {
             var jsonReader = new JsonTextReader(textReader);
@@ -364,6 +469,7 @@ namespace GLTF.Schema
                 {
                     jsonWriter.WriteValue(extension);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -375,6 +481,7 @@ namespace GLTF.Schema
                 {
                     jsonWriter.WriteValue(extension);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -386,6 +493,7 @@ namespace GLTF.Schema
                 {
                     accessor.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -397,6 +505,7 @@ namespace GLTF.Schema
                 {
                     animation.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -411,6 +520,7 @@ namespace GLTF.Schema
                 {
                     buffer.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -422,6 +532,7 @@ namespace GLTF.Schema
                 {
                     bufferView.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -433,6 +544,7 @@ namespace GLTF.Schema
                 {
                     camera.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -444,6 +556,7 @@ namespace GLTF.Schema
                 {
                     image.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -455,6 +568,7 @@ namespace GLTF.Schema
                 {
                     material.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -466,6 +580,7 @@ namespace GLTF.Schema
                 {
                     mesh.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -477,6 +592,7 @@ namespace GLTF.Schema
                 {
                     node.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -488,6 +604,7 @@ namespace GLTF.Schema
                 {
                     sampler.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -505,6 +622,7 @@ namespace GLTF.Schema
                 {
                     scene.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -516,6 +634,7 @@ namespace GLTF.Schema
                 {
                     skin.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 
@@ -527,6 +646,7 @@ namespace GLTF.Schema
                 {
                     texture.Serialize(jsonWriter);
                 }
+
                 jsonWriter.WriteEndArray();
             }
 

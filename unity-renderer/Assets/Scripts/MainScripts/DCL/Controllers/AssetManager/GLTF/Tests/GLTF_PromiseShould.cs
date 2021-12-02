@@ -70,5 +70,30 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Assert.AreEqual(1, pool.objectsCount);
             keeper.Cleanup();
         }
+
+        [UnityTest]
+        public IEnumerator RefreshRenderers()
+        {
+            AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
+            IWebRequestController webRequestController = WebRequestController.Create();
+
+            string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
+            ContentProvider_Dummy provider = new ContentProvider_Dummy();
+
+            AssetPromise_GLTF promise = new AssetPromise_GLTF(provider, url, webRequestController);
+            GameObject holder1 = new GameObject("Test1");
+            promise.settings.parent = holder1.transform;
+            keeper.Keep(promise);
+
+            yield return promise;
+
+            Renderer[] renderers = promise.asset.container.GetComponentsInChildren<Renderer>(true);
+            Assert.AreEqual(renderers.Length, promise.asset.renderers.Count);
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Assert.AreEqual(renderers[i], promise.asset.renderers[i]);
+            }
+            Object.Destroy(holder1);
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace DCL
     public class MemoryManager : IMemoryManager
     {
         private const long MAX_USED_MEMORY = 1300 * 1024 * 1024; // 1.3GB
-        private const float TIME_FOR_NEW_MEMORY_CHECK = 1.0f; // Each second
+        private const float TIME_FOR_NEW_MEMORY_CHECK = 60.0f;
 
         private Coroutine autoCleanupCoroutine;
 
