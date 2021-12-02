@@ -10,7 +10,7 @@ namespace DCL.Skybox
     /// Load and assign material to the Skybox.
     /// This will mostly increment the time cycle and apply values from configuration to the material.
     /// </summary>
-    public class SkyboxController : PluginFeature
+    public class SkyboxController : IPlugin
     {
         public event SkyboxConfiguration.TimelineEvents OnTimelineEvent;
 
@@ -34,10 +34,8 @@ namespace DCL.Skybox
         private int slotCount;
         private bool overrideByEditor = false;
 
-        public override void Initialize()
+        public SkyboxController()
         {
-            base.Initialize();
-
             i = this;
 
             // Find and delete test directional light obj if any
@@ -73,6 +71,8 @@ namespace DCL.Skybox
                         });
 
             KernelConfig.i.OnChange += KernelConfig_OnChange;
+
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         private void KernelConfig_OnChange(KernelConfigModel current, KernelConfigModel previous)
@@ -270,14 +270,10 @@ namespace DCL.Skybox
             return tempConfigLoaded;
         }
 
-        private void Configuration_OnTimelineEvent(string tag, bool enable, bool trigger)
-        {
-            Debug.Log("Timeline Events: " + tag + ", state: " + enable + ", trigger: " + trigger);
-            OnTimelineEvent?.Invoke(tag, enable, trigger);
-        }
+        private void Configuration_OnTimelineEvent(string tag, bool enable, bool trigger) { OnTimelineEvent?.Invoke(tag, enable, trigger); }
 
         // Update is called once per frame
-        public override void Update()
+        public void Update()
         {
             if (configuration == null || isPaused || !DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {
@@ -303,14 +299,14 @@ namespace DCL.Skybox
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
-            base.Dispose();
             // set skyboxConfig to false
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
             configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
             KernelConfig.i.OnChange -= KernelConfig_OnChange;
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         public void PauseTime(bool overrideTime = false, float newTime = 0)
