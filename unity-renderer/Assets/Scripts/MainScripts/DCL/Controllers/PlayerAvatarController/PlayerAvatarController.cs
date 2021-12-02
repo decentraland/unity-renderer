@@ -18,10 +18,12 @@ public class PlayerAvatarController : MonoBehaviour
     private Camera mainCamera;
     private bool avatarWereablesErrors = false;
     private bool baseWereablesErrors = false;
+    private ReportAvatarExpressionToAnalytics reportAvatarExpressionToAnalytics;
 
     private void Start()
     {
         DataStore.i.isPlayerRendererLoaded.Set(false);
+        reportAvatarExpressionToAnalytics = new ReportAvatarExpressionToAnalytics(Analytics.i, CommonScriptableObjects.playerCoords);
 
         //NOTE(Brian): We must wait for loading to finish before deactivating the renderer, or the GLTF Loader won't finish.
         avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
@@ -108,7 +110,11 @@ public class PlayerAvatarController : MonoBehaviour
         userProfile.OnAvatarExpressionSet += OnAvatarExpression;
     }
 
-    private void OnAvatarExpression(string id, long timestamp) { avatarRenderer.SetExpression(id, timestamp); }
+    private void OnAvatarExpression(string id, long timestamp)
+    {
+        avatarRenderer.SetExpression(id, timestamp);
+        reportAvatarExpressionToAnalytics.Report(id);
+    }
 
     private void OnUserProfileOnUpdate(UserProfile profile) { avatarRenderer.ApplyModel(profile.avatar, null, null); }
 
