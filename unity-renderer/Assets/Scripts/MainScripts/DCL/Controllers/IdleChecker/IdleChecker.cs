@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace DCL
@@ -14,7 +15,11 @@ namespace DCL
 
         public void Unsubscribe(IIdleChecker.ChangeStatus callback) { OnChangeStatus -= callback; }
 
-        public void Initialize() { lastActivityTime = Time.time; }
+        public void Initialize()
+        {
+            lastActivityTime = Time.time;
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        }
 
         public void SetMaxTime(int time) { maxTime = time; }
 
@@ -58,6 +63,9 @@ namespace DCL
 
         public bool isIdle() { return idle; }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        }
     }
 }
