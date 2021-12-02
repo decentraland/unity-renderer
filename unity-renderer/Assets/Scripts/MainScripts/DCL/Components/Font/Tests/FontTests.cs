@@ -19,9 +19,9 @@ namespace Tests
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
-            serviceLocator.Set<ISceneController>(new SceneController());
-            serviceLocator.Set<IWorldState>(new WorldState());
-            serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory());
+            serviceLocator.Register<ISceneController>(() => new SceneController());
+            serviceLocator.Register<IWorldState>(() => new WorldState());
+            serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         }
 
         [UnitySetUp]

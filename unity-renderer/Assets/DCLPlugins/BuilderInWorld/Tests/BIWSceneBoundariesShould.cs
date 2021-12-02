@@ -15,11 +15,11 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
 {
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        serviceLocator.Set<ISceneController>(new SceneController());
-        serviceLocator.Set<IWorldState>(new WorldState());
-        serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory());
-        serviceLocator.Set<ISceneBoundsChecker>(new SceneBoundsChecker());
-        serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
+        serviceLocator.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
     }
 
     [Test]

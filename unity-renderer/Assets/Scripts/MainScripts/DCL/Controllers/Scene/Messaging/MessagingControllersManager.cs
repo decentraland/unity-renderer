@@ -43,13 +43,16 @@ namespace DCL
 
         private IMessageProcessHandler messageHandler;
 
-        public MessagingControllersManager (IMessageProcessHandler messageHandler)
+        public MessagingControllersManager (IMessageProcessHandler messageHandler = null)
         {
             this.messageHandler = messageHandler;
         }
 
         public void Initialize()
         {
+            if ( messageHandler == null )
+                messageHandler = Environment.i.world.sceneController;
+
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(this, messageHandler, GLOBAL_MESSAGING_CONTROLLER);
 
             if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))

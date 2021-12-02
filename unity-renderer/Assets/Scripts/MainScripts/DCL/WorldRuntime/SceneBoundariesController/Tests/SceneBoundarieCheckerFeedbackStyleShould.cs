@@ -14,11 +14,11 @@ public class SceneBoundarieCheckerFeedbackStyleShould : IntegrationTestSuite
 {
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
-        serviceLocator.Set<ISceneController>(new SceneController());
-        serviceLocator.Set<IWorldState>(new WorldState());
-        serviceLocator.Set<ISceneBoundsChecker>(new SceneBoundsChecker(new SceneBoundsFeedbackStyle_Simple()));
-        serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory());
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker(new SceneBoundsFeedbackStyle_Simple()));
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
     }
 
     [Test]

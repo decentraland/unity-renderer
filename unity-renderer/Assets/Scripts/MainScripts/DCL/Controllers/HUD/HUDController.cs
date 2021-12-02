@@ -10,6 +10,7 @@ using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Environment = System.Environment;
 
 public class HUDController : IHUDController
 {
@@ -29,10 +30,21 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
+    public HUDController ()
+    {
+    }
+
     public HUDController (IHUDFactory hudFactory)
     {
-        i = this;
         this.hudFactory = hudFactory;
+    }
+
+    public void Initialize()
+    {
+        i = this;
+
+        if ( this.hudFactory == null )
+            this.hudFactory = DCL.Environment.i.hud.factory;
 
         toggleUIVisibilityTrigger = Resources.Load<InputAction_Trigger>(TOGGLE_UI_VISIBILITY_ASSET_NAME);
         toggleUIVisibilityTrigger.OnTriggered += ToggleUIVisibility_OnTriggered;
@@ -40,6 +52,7 @@ public class HUDController : IHUDController
         CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenOnOnChange;
         UserContextMenu.OnOpenPrivateChatRequest += OpenPrivateChatWindow;
     }
+
 
     public event Action OnTaskbarCreation;
 
@@ -437,8 +450,4 @@ public class HUDController : IHUDController
     }
 #endif
     public void Dispose() { Cleanup(); }
-
-    public void Initialize()
-    {
-    }
 }

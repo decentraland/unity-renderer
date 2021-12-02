@@ -15,10 +15,10 @@ public class NFTShape_Tests : IntegrationTestSuite
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        serviceLocator.Set<ISceneController>(new SceneController());
-        serviceLocator.Set<IWorldState>(new WorldState());
-        serviceLocator.Set<IRuntimeComponentFactory>(new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
-        serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
+        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<IWorldState>(() => new WorldState());
+        serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory(Resources.Load ("RuntimeComponentFactory") as IPoolableComponentFactory));
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
     }
 
     [UnitySetUp]

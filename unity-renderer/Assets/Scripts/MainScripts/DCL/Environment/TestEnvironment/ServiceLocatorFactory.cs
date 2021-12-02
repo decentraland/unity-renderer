@@ -11,29 +11,29 @@ namespace DCL.Tests
             var result = new ServiceLocator();
 
             // Platform
-            result.Set<IMemoryManager>(Substitute.For<IMemoryManager>());
-            result.Set<ICullingController>(Substitute.For<ICullingController>());
-            result.Set<IParcelScenesCleaner>(Substitute.For<IParcelScenesCleaner>());
-            result.Set<IClipboard>(Substitute.For<IClipboard>());
-            result.Set<IPhysicsSyncController>(Substitute.For<IPhysicsSyncController>());
-            result.Set<IWebRequestController>(Substitute.For<IWebRequestController>());
-            result.Set<IServiceProviders>(Substitute.For<IServiceProviders>());
+            result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
+            result.Register<ICullingController>(() => Substitute.For<ICullingController>());
+            result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
+            result.Register<IClipboard>(() => Substitute.For<IClipboard>());
+            result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
+            result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
+            result.Register<IServiceProviders>(() => Substitute.For<IServiceProviders>());
 
             // World runtime
-            result.Set<IIdleChecker>(Substitute.For<IIdleChecker>());
-            result.Set<IAvatarsLODController>(Substitute.For<IAvatarsLODController>());
-            result.Set<IFeatureFlagController>(Substitute.For<IFeatureFlagController>());
-            result.Set<IMessagingControllersManager>(Substitute.For<IMessagingControllersManager>());
-            result.Set<IWorldState>(Substitute.For<IWorldState>());
-            result.Set<ISceneController>(Substitute.For<ISceneController>());
-            result.Set<IPointerEventsController>(Substitute.For<IPointerEventsController>());
-            result.Set<ISceneBoundsChecker>(Substitute.For<ISceneBoundsChecker>());
-            result.Set<IWorldBlockersController>(Substitute.For<IWorldBlockersController>());
-            result.Set<IRuntimeComponentFactory>(Substitute.For<IRuntimeComponentFactory>());
+            result.Register<IIdleChecker>(() => Substitute.For<IIdleChecker>());
+            result.Register<IAvatarsLODController>(() => Substitute.For<IAvatarsLODController>());
+            result.Register<IFeatureFlagController>(() => Substitute.For<IFeatureFlagController>());
+            result.Register<IMessagingControllersManager>(() => Substitute.For<IMessagingControllersManager>());
+            result.Register<IWorldState>(() => Substitute.For<IWorldState>());
+            result.Register<ISceneController>(() => Substitute.For<ISceneController>());
+            result.Register<IPointerEventsController>(() => Substitute.For<IPointerEventsController>());
+            result.Register<ISceneBoundsChecker>(() => Substitute.For<ISceneBoundsChecker>());
+            result.Register<IWorldBlockersController>(() => Substitute.For<IWorldBlockersController>());
+            result.Register<IRuntimeComponentFactory>(() => Substitute.For<IRuntimeComponentFactory>());
 
             // HUD
-            result.Set<IHUDFactory>(Substitute.For<IHUDFactory>());
-            result.Set<IHUDController>(Substitute.For<IHUDController>());
+            result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());
+            result.Register<IHUDController>(() => Substitute.For<IHUDController>());
 
             return result;
         }

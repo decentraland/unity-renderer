@@ -13,7 +13,7 @@ namespace AssetPromiseKeeper_AudioClip_Tests
         protected override IEnumerator SetUp()
         {
             ServiceLocator serviceLocator = DCL.Tests.ServiceLocatorFactory.CreateMocked();
-            serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
+            serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
             Environment.Setup(serviceLocator);
             return base.SetUp();
         }

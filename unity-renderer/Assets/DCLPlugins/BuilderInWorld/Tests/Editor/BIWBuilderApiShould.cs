@@ -25,7 +25,7 @@ public class BIWBuilderApiShould : IntegrationTestSuite
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        serviceLocator.Set<IWebRequestController>(WebRequestController.Create());
+        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
     }
 
     [UnitySetUp]

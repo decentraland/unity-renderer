@@ -5,24 +5,39 @@ using UnityEngine.Assertions;
 
 namespace DCL
 {
+    public delegate IService ServiceBuilder();
+
     public class ServiceLocator : IDisposable
     {
         private Dictionary<Type, IService> services = new Dictionary<Type, IService>();
+        private Dictionary<Type, ServiceBuilder> serviceBuilders = new Dictionary<Type, ServiceBuilder>();
 
-        public T Set<T>(T data) where T : IService
+        public void Unregister<T>(ServiceBuilder data) where T : IService
         {
             Type type = typeof(T);
             Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );
 
-            if (services.ContainsKey(type))
+            if (!serviceBuilders.ContainsKey(type))
             {
-                Debug.Log($"Overwriting service for {type.FullName}");
-                services[type].Dispose();
-                services[type] = data;
+                Debug.LogWarning($"Trying to unregister non-existent type! type: {type.FullName}");
+                return;
+            }
+
+            serviceBuilders.Remove(type);
+        }
+
+        public ServiceBuilder Register<T>(ServiceBuilder data) where T : IService
+        {
+            Type type = typeof(T);
+            Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );
+
+            if (serviceBuilders.ContainsKey(type))
+            {
+                serviceBuilders[type] = data;
                 return data;
             }
 
-            services.Add(type, data);
+            serviceBuilders.Add(type, data);
             return data;
         }
 
@@ -42,6 +57,15 @@ namespace DCL
 
         public void Initialize()
         {
+            Dispose();
+
+            services.Clear();
+
+            foreach ( var builder in serviceBuilders )
+            {
+                services.Add( builder.Key, builder.Value.Invoke() );
+            }
+
             foreach ( var service in services )
             {
                 service.Value.Initialize();

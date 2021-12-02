@@ -13,7 +13,7 @@ public class BuilderInWorldShould : IntegrationTestSuite
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        serviceLocator.Set<IUpdateEventHandler>(new UpdateEventHandler());
+        serviceLocator.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
     }
 
     protected override IEnumerator SetUp()
