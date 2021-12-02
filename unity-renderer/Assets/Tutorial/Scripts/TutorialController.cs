@@ -338,9 +338,9 @@ namespace DCL.Tutorial
         /// <summary>
         /// Finishes the current running step, skips all the next ones and completes the tutorial.
         /// </summary>
-        public void SkipTutorial()
+        public void SkipTutorial(bool ignoreStatsSending = false)
         {
-            if (!configuration.debugRunTutorial && configuration.sendStats)
+            if (!ignoreStatsSending && !configuration.debugRunTutorial && configuration.sendStats)
             {
                 SendSkipTutorialSegmentStats(
                     configuration.tutorialVersion,
@@ -394,7 +394,11 @@ namespace DCL.Tutorial
             }
 
             nextStepsToSkip = 0;
-            CoroutineStarter.Start(StartTutorialFromStep(stepIndex));
+
+            if (stepIndex >= 0)
+                CoroutineStarter.Start(StartTutorialFromStep(stepIndex));
+            else
+                SkipTutorial(true);
         }
 
         /// <summary>
