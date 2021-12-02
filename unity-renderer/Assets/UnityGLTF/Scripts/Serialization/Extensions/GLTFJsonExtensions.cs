@@ -71,6 +71,8 @@ namespace GLTF.Extensions
 
             var list = new List<T>();
             var skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
+            int throttlingCheckCounter = 0;
+            const int throttlingInterval = 1000;
 
             while (reader.Read() && reader.TokenType != JsonToken.EndArray)
             {
@@ -82,7 +84,11 @@ namespace GLTF.Extensions
                     break;
                 }
 
-                yield return skipFrameIfDepletedTimeBudget;
+                if ( ++throttlingCheckCounter > throttlingInterval )
+                {
+                    throttlingCheckCounter = 0;
+                    yield return skipFrameIfDepletedTimeBudget;
+                }
             }
 
             onComplete.Invoke(list);
