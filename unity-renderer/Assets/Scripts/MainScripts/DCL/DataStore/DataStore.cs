@@ -164,9 +164,7 @@ namespace DCL
             public BaseVariable<bool> useProceduralSkybox = new BaseVariable<bool>(false);
             public BaseVariable<string> configToLoad = new BaseVariable<string>("Generic Skybox");
             public BaseVariable<float> lifecycleDuration = new BaseVariable<float>(60);
-            public BaseVariable<bool> pauseTime = new BaseVariable<bool>(false);
-            public bool jumpTime = false;
-            public BaseVariable<float> jumpToTime = new BaseVariable<float>(0);
+            public BaseVariable<float> jumpToTime = new BaseVariable<float>(-1);
         }
     }
 }

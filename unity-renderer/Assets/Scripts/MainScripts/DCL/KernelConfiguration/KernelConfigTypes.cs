@@ -127,11 +127,13 @@ namespace KernelConfigurationTypes
     {
         public string configToLoad = "Generic_Skybox";
         public float lifecycleDuration = 120;
+        public float fixedTime = -1;
 
         public bool Equals(ProceduralSkybox other)
         {
             return configToLoad == other?.configToLoad &&
-                   lifecycleDuration == other?.lifecycleDuration;
+                   lifecycleDuration == other?.lifecycleDuration &&
+                    fixedTime == other?.fixedTime;
         }
 
         public ProceduralSkybox Clone()

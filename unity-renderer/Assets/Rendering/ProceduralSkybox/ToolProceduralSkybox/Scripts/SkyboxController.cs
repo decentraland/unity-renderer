@@ -85,6 +85,7 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(true);
             DataStore.i.skyboxConfig.configToLoad.Set(current.proceduralSkyboxConfig.configToLoad);
             DataStore.i.skyboxConfig.lifecycleDuration.Set(current.proceduralSkyboxConfig.lifecycleDuration);
+            DataStore.i.skyboxConfig.jumpToTime.Set(current.proceduralSkyboxConfig.fixedTime);
 
             // Call update on skybox config which will call Update config in this class.
             DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
@@ -112,24 +113,6 @@ namespace DCL.Skybox
             // Apply time
             lifecycleDuration = DataStore.i.skyboxConfig.lifecycleDuration.Get();
 
-            // if Paused
-            if (DataStore.i.skyboxConfig.pauseTime.Get())
-            {
-                PauseTime();
-            }
-            else
-            {
-                ResumeTime();
-            }
-
-            // Jump to time
-            if (DataStore.i.skyboxConfig.jumpTime)
-            {
-                float jumpToTime = DataStore.i.skyboxConfig.jumpToTime.Get();
-                timeOfTheDay = Mathf.Clamp(jumpToTime, 0, cycleTime);
-                DataStore.i.skyboxConfig.jumpTime = false;
-            }
-
             if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {
                 if (!ApplyConfig())
@@ -144,6 +127,16 @@ namespace DCL.Skybox
 
             // Reset Object Update value without notifying
             DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
+
+            // if Paused
+            if (DataStore.i.skyboxConfig.jumpToTime.Get() > 0)
+            {
+                PauseTime(true, DataStore.i.skyboxConfig.jumpToTime.Get());
+            }
+            else
+            {
+                ResumeTime();
+            }
         }
 
         /// <summary>
@@ -304,6 +297,8 @@ namespace DCL.Skybox
             // set skyboxConfig to false
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
+
+            WorldTimer.i.OnTimeChanged -= GetTimeFromTheServer;
             configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
             KernelConfig.i.OnChange -= KernelConfig_OnChange;
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
@@ -314,7 +309,8 @@ namespace DCL.Skybox
             isPaused = true;
             if (overrideTime)
             {
-                timeOfTheDay = newTime;
+                timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
+                configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
             }
         }
 
