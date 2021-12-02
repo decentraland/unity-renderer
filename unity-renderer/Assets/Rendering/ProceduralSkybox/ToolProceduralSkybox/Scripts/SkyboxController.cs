@@ -16,7 +16,7 @@ namespace DCL.Skybox
 
         public static SkyboxController i { get; private set; }
 
-        public const string DEFAULT_SKYBOX_ID = "Generic Skybox";
+        public const string DEFAULT_SKYBOX_ID = "Generic_Skybox";
 
         public string loadedConfig;
         //Time for one complete circle. In Hours. default 24
