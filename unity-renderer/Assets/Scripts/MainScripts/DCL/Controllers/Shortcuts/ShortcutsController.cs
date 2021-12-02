@@ -66,8 +66,16 @@ public class ShortcutsController : IDisposable
     private void ToggleExploreTriggered(DCLAction_Trigger action)
     {
         bool value = !DataStore.i.exploreV2.isOpen.Get();
-        SendExploreToggledAnalytics(value);
-        DataStore.i.exploreV2.isOpen.Set(value);
+
+        if (value)
+        {
+            SendExploreToggledAnalytics(value);
+            DataStore.i.exploreV2.isOpen.Set(value);
+        }
+        else
+        {
+            DataStore.i.exploreV2.currentSectionIndex.Set(DataStore.i.exploreV2.currentSectionIndex.Get() + 1);
+        }
     }
 
     private void ToggleExpressionsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.emotesVisible.Set(!DataStore.i.HUDs.emotesVisible.Get()); }

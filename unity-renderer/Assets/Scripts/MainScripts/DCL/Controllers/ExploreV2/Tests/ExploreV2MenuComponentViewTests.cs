@@ -1,3 +1,4 @@
+using DCL;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -53,7 +54,7 @@ public class ExploreV2MenuComponentViewTests
         exploreV2MenuComponent.sectionSelector.GetSection(sectionIndex).onSelect.Invoke(true);
 
         // Assert
-        Assert.AreEqual(sectionIndex, (int)exploreV2MenuComponent.currentSectionIndex);
+        Assert.AreEqual(sectionIndex, (int)DataStore.i.exploreV2.currentSectionIndex.Get());
         Assert.AreEqual(sectionIndex, (int)sectionSelected);
     }
 

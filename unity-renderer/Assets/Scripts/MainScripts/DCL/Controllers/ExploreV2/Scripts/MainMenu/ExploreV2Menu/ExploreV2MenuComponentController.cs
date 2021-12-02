@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Helpers;
 using ExploreV2Analytics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,7 +27,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal ExploreSection currentOpenSection;
 
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
+    internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
+    internal BaseVariable<bool> isInitialized => DataStore.i.exploreV2.isInitialized;
     internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
@@ -51,9 +54,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
-
         view.OnCloseButtonPressed += OnCloseButtonPressed;
-        DataStore.i.exploreV2.isInitialized.Set(true);
+
         DataStore.i.exploreV2.topMenuTooltipReference.Set(topMenuTooltipReference);
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
         DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
@@ -67,6 +69,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         isOpen.OnChange += IsOpenChanged;
         IsOpenChanged(isOpen.Get(), false);
+
+        currentSectionIndex.OnChange += CurrentSectionIndexChanged;
+        CurrentSectionIndexChanged(currentSectionIndex.Get(), 0);
 
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
@@ -95,6 +100,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
         settingsVisible.OnChange += SettingsVisibleChanged;
         SettingsVisibleChanged(settingsVisible.Get(), false);
+
+        isInitialized.Set(true);
     }
 
     internal void CreateControllers()
@@ -137,6 +144,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
+        currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
         isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
         avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
@@ -169,6 +177,19 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void IsOpenChanged(bool current, bool previous) { SetVisibility_Internal(current); }
 
+    internal void CurrentSectionIndexChanged(int current, int previous)
+    {
+        if (Enum.IsDefined(typeof(ExploreSection), current))
+        {
+            if (!view.IsSectionActive((ExploreSection)current))
+                CurrentSectionIndexChanged(current + 1, current);
+            else
+                view.GoToSection((ExploreSection)current);
+        }
+        else
+            view.GoToSection(0);
+    }
+
     internal void SetVisibility_Internal(bool visible)
     {
         if (view == null)
@@ -200,6 +221,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
     {
+        if (!isInitialized.Get())
+            return;
+
         if (current)
         {
             SetVisibility(true);
@@ -215,7 +239,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void AvatarEditorVisibleChanged(bool current, bool previous)
     {
-        if (DataStore.i.isSignUpFlow.Get())
+        if (!isAvatarEditorInitialized.Get() || DataStore.i.isSignUpFlow.Get())
             return;
 
         if (current)
@@ -239,6 +263,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void NavmapVisibleChanged(bool current, bool previous)
     {
+        if (!isNavmapVisibleInitialized.Get())
+            return;
+
         if (current)
         {
             SetVisibility(true);
@@ -260,6 +287,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void BuilderVisibleChanged(bool current, bool previous)
     {
+        if (!isBuilderInitialized.Get())
+            return;
+
         if (current)
         {
             SetVisibility(true);
@@ -281,6 +311,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void QuestVisibleChanged(bool current, bool previous)
     {
+        if (!isQuestInitialized.Get())
+            return;
+
         if (current)
         {
             SetVisibility(true);
@@ -302,6 +335,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void SettingsVisibleChanged(bool current, bool previous)
     {
+        if (!isSettingsPanelInitialized.Get())
+            return;
+
         if (current)
         {
             SetVisibility(true);

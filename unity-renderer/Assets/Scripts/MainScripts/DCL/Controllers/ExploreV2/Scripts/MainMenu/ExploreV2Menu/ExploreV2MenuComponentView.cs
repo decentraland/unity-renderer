@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using UnityEngine;
 
@@ -88,6 +89,13 @@ public interface IExploreV2MenuComponentView : IDisposable
     void SetSectionActive(ExploreSection section, bool isActive);
 
     /// <summary>
+    /// Check if a section is actived or not.
+    /// </summary>
+    /// <param name="section">Section to check.</param>
+    /// <returns></returns>
+    bool IsSectionActive(ExploreSection section);
+
+    /// <summary>
     /// Configures a encapsulated section.
     /// </summary>
     /// <param name="section">Section to configure.</param>
@@ -121,6 +129,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal RectTransform questTooltipReference;
     [SerializeField] internal RectTransform settingsTooltipReference;
 
+    internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
+
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
@@ -136,10 +146,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action OnCloseButtonPressed;
     public event Action<ExploreSection> OnSectionOpen;
 
-    internal ExploreSection currentSectionIndex = ExploreSection.Explore;
-
     public override void Start()
     {
+        DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
+
         CreateSectionSelectorMappings();
         ConfigureCloseButton();
 
@@ -170,7 +180,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         if (isActive)
         {
             Show();
-            GoToSection(currentSectionIndex);
+            GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
         }
         else
         {
@@ -180,11 +190,15 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public void GoToSection(ExploreSection section)
     {
-        currentSectionIndex = section;
+        if (DataStore.i.exploreV2.currentSectionIndex.Get() != (int)section)
+            DataStore.i.exploreV2.currentSectionIndex.Set((int)section);
+
         sectionSelector.GetSection((int)section)?.SelectToggle(true);
     }
 
     public void SetSectionActive(ExploreSection section, bool isActive) { sectionSelector.GetSection((int)section).SetActive(isActive); }
+
+    public bool IsSectionActive(ExploreSection section) { return sectionSelector.GetSection((int)section).IsActive(); }
 
     public void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag)
     {
@@ -218,8 +232,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                        {
                            if (isOn)
                            {
-                               currentSectionIndex = ExploreSection.Explore;
-                               OnSectionOpen?.Invoke(currentSectionIndex);
+                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Explore, false);
+                               OnSectionOpen?.Invoke(ExploreSection.Explore);
                            }
                        });
 
@@ -229,8 +243,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            if (isOn)
                            {
                                backpackSection.Show();
-                               currentSectionIndex = ExploreSection.Backpack;
-                               OnSectionOpen?.Invoke(currentSectionIndex);
+                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack, false);
+                               OnSectionOpen?.Invoke(ExploreSection.Backpack);
                            }
                            else
                                backpackSection.Hide();
@@ -242,8 +256,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            if (isOn)
                            {
                                mapSection.Show();
-                               currentSectionIndex = ExploreSection.Map;
-                               OnSectionOpen?.Invoke(currentSectionIndex);
+                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Map, false);
+                               OnSectionOpen?.Invoke(ExploreSection.Map);
                            }
                            else
                                mapSection.Hide();
@@ -255,8 +269,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            if (isOn)
                            {
                                builderSection.Show();
-                               currentSectionIndex = ExploreSection.Builder;
-                               OnSectionOpen?.Invoke(currentSectionIndex);
+                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder, false);
+                               OnSectionOpen?.Invoke(ExploreSection.Builder);
                            }
                            else
                                builderSection.Hide();
@@ -268,8 +282,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            if (isOn)
                            {
                                questSection.Show();
-                               currentSectionIndex = ExploreSection.Quest;
-                               OnSectionOpen?.Invoke(currentSectionIndex);
+                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Quest, false);
+                               OnSectionOpen?.Invoke(ExploreSection.Quest);
                            }
                            else
                                questSection.Hide();
@@ -281,8 +295,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                            if (isOn)
                            {
                                settingsSection.Show();
-                               currentSectionIndex = ExploreSection.Settings;
-                               OnSectionOpen?.Invoke(currentSectionIndex);
+                               DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Settings, false);
+                               OnSectionOpen?.Invoke(ExploreSection.Settings);
                            }
                            else
                                settingsSection.Hide();

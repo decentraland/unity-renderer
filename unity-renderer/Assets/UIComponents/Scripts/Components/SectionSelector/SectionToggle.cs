@@ -44,6 +44,12 @@ public interface ISectionToggle
     /// </summary>
     /// <param name="isActive">Tru for activating.</param>
     void SetActive(bool isActive);
+
+    /// <summary>
+    /// Check if the toggle is active or not.
+    /// </summary>
+    /// <returns>True if it is actived.</returns>
+    bool IsActive();
 }
 
 public class SectionToggle : MonoBehaviour, ISectionToggle
@@ -128,6 +134,8 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
+
+    public bool IsActive() { return gameObject.activeSelf; }
 
     internal void ConfigureDefaultOnSelectAction()
     {
