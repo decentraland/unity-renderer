@@ -1,11 +1,10 @@
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Helpers;
-using System.Linq;
 
 namespace DCL.Tutorial
 {
@@ -53,7 +52,7 @@ namespace DCL.Tutorial
         public event Action OnTutorialEnabled;
         public event Action OnTutorialDisabled;
 
-        private const string PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED = "VoiceChatFeatureShowed";
+        private const string PLAYER_PREFS_START_MENU_SHOWED = "StartMenuFeatureShowed";
 
         internal TutorialSettings configuration;
         internal TutorialView tutorialView;
@@ -142,7 +141,7 @@ namespace DCL.Tutorial
             TutorialInitializationMessage msg = JsonUtility.FromJson<TutorialInitializationMessage>(json);
 
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
-            if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED) == 1)
+            if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_START_MENU_SHOWED) == 1)
                 return;
 
             SetupTutorial(false.ToString(), msg.enableNewTutorialCamera, TutorialType.Initial, true);
@@ -482,8 +481,8 @@ namespace DCL.Tutorial
                 var stepPrefab = steps[i];
 
                 // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
-                if (stepPrefab is TutorialStep_Tooltip_UsersAround &&
-                    CommonScriptableObjects.voiceChatDisabled.Get())
+                if (stepPrefab is TutorialStep_Tooltip_ExploreButton &&
+                    !DataStore.i.exploreV2.isInitialized.Get())
                     continue;
 
                 if (stepPrefab.letInstantiation)
@@ -504,12 +503,6 @@ namespace DCL.Tutorial
                         tutorialPath,
                         i + 1,
                         runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""));
-                }
-
-                if (tutorialPath == TutorialPath.FromUserThatAlreadyDidTheTutorial &&
-                    runningStep is TutorialStep_Tooltip)
-                {
-                    ((TutorialStep_Tooltip) runningStep).OverrideSetMaxTimeToHide(true);
                 }
 
                 runningStep.OnStepStart();
