@@ -138,14 +138,14 @@ namespace UnityGLTF
             {
                 loadingRoutine = this.StartThrottledCoroutine(
                     enumerator: LoadAssetCoroutine(settings),
-                    onFinish: OnFail_Internal,
+                    onException: OnFail_Internal,
                     timeBudgetCounter: throttlingCounter.EvaluateTimeBudget);
             }
             else
             {
                 loadingRoutine = this.StartThrowingCoroutine(
                     enumerator: LoadAssetCoroutine(settings),
-                    onFinish: OnFail_Internal);
+                    onException: OnFail_Internal);
             }
         }
 

@@ -71,8 +71,8 @@ namespace GLTF.Extensions
 
             var list = new List<T>();
             var skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
-            int throttlingCheckCounter = 0;
-            const int throttlingInterval = 1000;
+            int throttlingCounter = 0;
+            const int throttlingCounterInterval = 100;
 
             while (reader.Read() && reader.TokenType != JsonToken.EndArray)
             {
@@ -80,18 +80,18 @@ namespace GLTF.Extensions
 
                 // deserializerFunc can advance to EndArray. We need to check for this case as well. 
                 if (reader.TokenType == JsonToken.EndArray)
-                {
                     break;
-                }
 
-                if ( ++throttlingCheckCounter > throttlingInterval )
+                throttlingCounter++;
+                if ( throttlingCounter > throttlingCounterInterval )
                 {
-                    throttlingCheckCounter = 0;
                     yield return skipFrameIfDepletedTimeBudget;
+                    throttlingCounter = 0;
                 }
             }
 
             onComplete.Invoke(list);
+            yield break;
         }
 
         public static List<T> ReadList<T>(this JsonReader reader, Func<T> deserializerFunc)

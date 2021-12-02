@@ -288,11 +288,6 @@ namespace UnityGLTF
 
                 if (PROFILING_ENABLED)
                 {
-                    if (VERBOSE)
-                    {
-                        Debug.Log($"{_gltfFileName} >>> Load will start");
-                    }
-
                     profiling = Time.realtimeSinceStartup;
                     frames = Time.frameCount;
                 }
@@ -752,7 +747,7 @@ namespace UnityGLTF
                 //NOTE(Brian): This breaks importing in editor mode
                 texture.Compress(false);
             }
-            
+
             texture.wrapMode = settings.wrapMode;
             texture.filterMode = settings.filterMode;
             texture.Apply(settings.generateMipmaps, settings.uploadToGpu);
@@ -2058,14 +2053,21 @@ namespace UnityGLTF
             yield return skipFrameIfDepletedTimeBudget;
             mesh.colors = unityMeshData.Colors;
 
-            if (AreMeshTrianglesValid(unityMeshData.Triangles, vertexCount)) // Some scenes contain broken meshes that can trigger a fatal error
+            if ( !Application.isPlaying )
             {
-                mesh.triangles = unityMeshData.Triangles;
-                yield return skipFrameIfDepletedTimeBudget;
+                if (AreMeshTrianglesValid(unityMeshData.Triangles, vertexCount)) // Some scenes contain broken meshes that can trigger a fatal error
+                {
+                    mesh.triangles = unityMeshData.Triangles;
+                }
+                else
+                {
+                    Debug.Log("GLTFSceneImporter - ERROR - ConstructUnityMesh - Couldn't assign triangles to mesh as there are indices pointing to vertices out of bounds");
+                }
             }
             else
             {
-                Debug.Log("GLTFSceneImporter - ERROR - ConstructUnityMesh - Couldn't assign triangles to mesh as there are indices pointing to vertices out of bounds");
+                mesh.triangles = unityMeshData.Triangles;
+                yield return skipFrameIfDepletedTimeBudget;
             }
 
             mesh.tangents = unityMeshData.Tangents;
@@ -2076,9 +2078,8 @@ namespace UnityGLTF
             if (!hasNormals)
                 mesh.RecalculateNormals();
 
-            yield return skipFrameIfDepletedTimeBudget;
-            mesh.Optimize();
-            yield return skipFrameIfDepletedTimeBudget;
+            if ( !Application.isPlaying )
+                mesh.Optimize();
 
             OnMeshCreated?.Invoke(mesh);
 
@@ -2342,7 +2343,7 @@ namespace UnityGLTF
                 {
                     Debug.LogError($"GLTF IMPORTER WARNING: using same texture as linear and srgb will lead to visual artifacts. If '{image.Uri}' is being used as a normal map or metallic map, make sure it's only used in those material properties on every model.");
                 }
-                
+
                 _assetCache.ImageCache[sourceId] = source.Texture;
 
                 if (_assetCache.ImageCache[sourceId] == null)

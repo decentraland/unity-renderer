@@ -17,7 +17,7 @@ namespace DCL
         /// if it does or null if it finishes without throwing an exception.
         /// </summary>
         /// <param name="enumerator">Iterator function to run</param>
-        /// <param name="done">Callback to call when the iterator has thrown an exception or finished.
+        /// <param name="onException">Callback to call when the iterator has thrown an exception or finished.
         /// The thrown exception or null is passed as the parameter.</param>
         /// <param name="timeBudgetCounter">A func that takes elapsed time as parameter, and returns a bool
         /// indicating if a frame should be skipped or not. Use this in combination with ThrottlingCounter.EvaluateTimeBudget().
@@ -25,7 +25,7 @@ namespace DCL
         /// <returns>An enumerator that runs the given enumerator</returns>
         public static IEnumerator Run(
             IEnumerator enumerator,
-            Action<Exception> done,
+            Action<Exception> onException,
             Func<double, bool> timeBudgetCounter = null
         )
         {
@@ -64,7 +64,7 @@ namespace DCL
                 catch (Exception ex)
                 {
                     // this part is the whole point of this method!
-                    done(ex);
+                    onException(ex);
                     yield break;
                 }
 

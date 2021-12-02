@@ -5,9 +5,6 @@ namespace DCL
 {
     public class ThrottlingCounter
     {
-        public static bool VERBOSE = false;
-        public DCL.Logger logger = new DCL.Logger("ThrottlingCounter") { verboseEnabled = VERBOSE };
-
         public bool enabled = true;
         public double budgetPerFrame { get => enabled ? budgetPerFrameValue : double.MaxValue; set => budgetPerFrameValue = value; }
         private double budgetPerFrameValue = 2 / 1000.0;
@@ -29,11 +26,9 @@ namespace DCL
             if ( timeBudgetCounter > budgetPerFrame )
             {
                 timeBudgetCounter = 0;
-                logger.Verbose($"Elapsed: {elapsedTime * 1000} - Counter: {timeBudgetCounter * 1000} - Total: {budgetPerFrame * 1000} - (Skipping frame)");
                 return true;
             }
 
-            logger.Verbose($"Elapsed: {elapsedTime * 1000} - Counter: {timeBudgetCounter * 1000} - Total: {budgetPerFrame * 1000} - (Not skipping frame)");
             return false;
         }
 
