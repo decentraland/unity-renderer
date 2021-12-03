@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 
-public class ReportAvatarExpressionToAnalytics
+public class PlayerAvatarAnalytics
 {
     private readonly IAnalytics analytics;
     private readonly Vector2IntVariable playerCoords;
 
-    public ReportAvatarExpressionToAnalytics(IAnalytics analytics,
+    public PlayerAvatarAnalytics(IAnalytics analytics,
         Vector2IntVariable playerCoords)
     {
         this.analytics = analytics;
         this.playerCoords = playerCoords;
     }
 
-    public void Report(string expressionId)
+    public void ReportExpression(string expressionId)
     {
         var location = playerCoords.Get();
         analytics.SendAnalytic("used_emote", new Dictionary<string, string>
