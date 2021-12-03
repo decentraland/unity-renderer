@@ -21,7 +21,7 @@ namespace DCL
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
-        public DataStore.DataStore_WorldObjects.SceneData sceneData { get; private set; }
+        public DataStore_WorldObjects.SceneData sceneData { get; private set; }
         public event Action<Rendereable> OnWillAddRendereable;
         public event Action<Rendereable> OnWillRemoveRendereable;
 
@@ -41,17 +41,17 @@ namespace DCL
             dataStore.sceneWorldObjects.sceneData.OnRemoved += OnSceneRemoved;
         }
 
-        private void OnSceneRemoved(string sceneId, DataStore.DataStore_WorldObjects.SceneData arg2)
+        private void OnSceneRemoved(string sceneId, DataStore_WorldObjects.SceneData arg2)
         {
             if ( sceneId != this.sceneId )
                 return;
 
             // Set dummy scene data so null reference exceptions are avoided.
             logger.Log($"Scene {sceneId} was removed! Using dummy scene data.");
-            SetSceneData( new DataStore.DataStore_WorldObjects.SceneData() );
+            SetSceneData( new DataStore_WorldObjects.SceneData() );
         }
 
-        private void OnSceneAdded(string sceneId, DataStore.DataStore_WorldObjects.SceneData sceneData)
+        private void OnSceneAdded(string sceneId, DataStore_WorldObjects.SceneData sceneData)
         {
             if ( sceneId != this.sceneId )
                 return;
@@ -60,7 +60,7 @@ namespace DCL
             SetSceneData( sceneData );
         }
 
-        private void SetSceneData(DataStore.DataStore_WorldObjects.SceneData sceneData)
+        private void SetSceneData(DataStore_WorldObjects.SceneData sceneData)
         {
             Assert.IsNotNull(sceneData, "sceneData should never be null!");
 

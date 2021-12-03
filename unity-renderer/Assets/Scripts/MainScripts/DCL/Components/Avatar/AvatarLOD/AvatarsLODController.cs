@@ -49,12 +49,14 @@ namespace DCL
             {
                 lodController.Dispose();
             }
+
             lodControllers.Clear();
 
             foreach (var keyValuePair in otherPlayers.Get())
             {
                 RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
             }
+
             otherPlayers.OnAdded += RegisterAvatar;
             otherPlayers.OnRemoved += UnregisterAvatar;
         }
@@ -107,7 +109,7 @@ namespace DCL
             }
         }
 
-        internal void UpdateAllLODs(int maxAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
+        internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
             if (mainCamera == null)
                 mainCamera = UnityEngine.Camera.main;
@@ -162,7 +164,7 @@ namespace DCL
         private bool IsInInvisibleDistance(float distance)
         {
             bool firstPersonCamera = CommonScriptableObjects.cameraMode.Get() == CameraMode.ModeId.FirstPerson;
-            
+
             return firstPersonCamera ? distance < AVATARS_INVISIBILITY_DISTANCE : distance < 0f; // < 0 is behind camera
         }
 
