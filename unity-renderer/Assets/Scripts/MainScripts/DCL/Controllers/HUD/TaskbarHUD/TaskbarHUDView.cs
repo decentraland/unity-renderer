@@ -296,7 +296,7 @@ public class TaskbarHUDView : MonoBehaviour
         if (portableExperiencesPool == null)
             return;
 
-        portableExperiencesDiv.SetActive(true);
+        //portableExperiencesDiv.SetActive(true);
 
         PoolableObject newPEPoolable = portableExperiencesPool.Get();
         newPEPoolable.gameObject.name = $"PortableExperienceItem ({id})";

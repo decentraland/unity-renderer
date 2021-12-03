@@ -1,4 +1,6 @@
+using DCL;
 using DCL.Interface;
+using ExploreV2Analytics;
 using UnityEngine;
 
 public class MinimapHUDController : IHUD
@@ -10,8 +12,7 @@ public class MinimapHUDController : IHUD
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
-    public RectTransform minimapTooltipReference { get => view.minimapTooltipReference; }
-    public RectTransform usersAroundTooltipReference { get => view.usersAroundTooltipReference; }
+    public RectTransform startMenuTooltipReference { get => view.startMenuTooltipReference; }
 
     public MinimapHUDController() : this(new MinimapHUDModel()) { }
 
@@ -23,6 +24,9 @@ public class MinimapHUDController : IHUD
 
         view = MinimapHUDView.Create(this);
         UpdateData(model);
+
+        DataStore.i.exploreV2.isInitialized.OnChange += ExploreV2Changed;
+        ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
     }
 
     public void Dispose()
@@ -33,6 +37,7 @@ public class MinimapHUDController : IHUD
         CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
         MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= OnOnSceneInfoUpdated;
+        DataStore.i.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
     }
 
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
@@ -111,6 +116,18 @@ public class MinimapHUDController : IHUD
         KernelConfig.i.EnsureConfigInitialized().Then(kc => controller.ToggleUsersCount(kc.features.enablePeopleCounter));
     }
 
+    public void OpenStartMenu()
+    {
+        if (!DataStore.i.exploreV2.isOpen.Get())
+        {
+            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+            exploreV2Analytics.SendExploreMainMenuVisibility(
+                true,
+                ExploreUIVisibilityMethod.FromClick);
+        }
+        DataStore.i.exploreV2.isOpen.Set(true);
+    }
+
     private void OnOnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
     {
         if (sceneInfo.parcels.Contains(CommonScriptableObjects.playerCoords.Get()))
@@ -119,4 +136,6 @@ public class MinimapHUDController : IHUD
             UpdateSceneName(sceneInfo.name);
         }
     }
+
+    private void ExploreV2Changed(bool current, bool previous) { view.SetStartMenuButtonActive(current); }
 }

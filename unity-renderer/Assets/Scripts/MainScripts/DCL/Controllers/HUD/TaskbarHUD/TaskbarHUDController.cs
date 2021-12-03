@@ -118,7 +118,7 @@ public class TaskbarHUDController : IHUD
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
         DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
 
-        ConfigureExploreV2Feature();
+        //ConfigureExploreV2Feature();
     }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }

@@ -182,7 +182,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.AddPortableExperienceElement(testPEId, "Test PE", "");
 
         // Assert
-        Assert.IsTrue(view.portableExperiencesDiv.activeSelf, "The Portable Experiences Div should be actived!");
         var newPE = view.rightButtonsContainer.GetComponentInChildren<PortableExperienceTaskbarItem>();
         Assert.IsNotNull(newPE, "There should exists a PortableExperienceTaskbarItem as child!");
         Assert.AreEqual(0, newPE.gameObject.transform.GetSiblingIndex(), "The sibling index for the new Portable Experience should be 0!");

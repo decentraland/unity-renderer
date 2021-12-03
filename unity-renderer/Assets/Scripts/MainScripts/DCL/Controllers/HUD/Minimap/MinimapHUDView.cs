@@ -18,6 +18,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private Button addBookmarkButton;
     [SerializeField] private Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
+    [SerializeField] internal ButtonComponentView startMenuButton;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
@@ -29,8 +30,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
 
     [Header("Tutorial Configuration")]
-    [SerializeField] internal RectTransform minimapTooltipReference;
-    [SerializeField] internal RectTransform usersAroundTooltipReference;
+    [SerializeField] internal RectTransform startMenuTooltipReference;
 
     private void Initialize(MinimapHUDController controller)
     {
@@ -41,6 +41,7 @@ public class MinimapHUDView : MonoBehaviour
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
+        startMenuButton.onClick.AddListener(controller.OpenStartMenu);
 
         var renderer = MapRenderer.i;
 
@@ -75,4 +76,6 @@ public class MinimapHUDView : MonoBehaviour
         else if (!visible && mainShowHideAnimator.isVisible)
             mainShowHideAnimator.Hide();
     }
+
+    public void SetStartMenuButtonActive(bool isActive) { startMenuButton.gameObject.SetActive(isActive); }
 }

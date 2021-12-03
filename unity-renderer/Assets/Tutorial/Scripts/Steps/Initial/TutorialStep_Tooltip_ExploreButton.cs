@@ -8,6 +8,9 @@ namespace DCL.Tutorial
     public class TutorialStep_Tooltip_ExploreButton : TutorialStep_Tooltip
     {
         private const string PLAYER_PREFS_START_MENU_SHOWED = "StartMenuFeatureShowed";
+        private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
+
+        private int defaultTeacherCanvasSortOrder;
 
         public override void OnStepStart()
         {
@@ -15,12 +18,18 @@ namespace DCL.Tutorial
 
             DataStore.i.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
 
+            if (tutorialController.configuration.teacherCanvas != null)
+                defaultTeacherCanvasSortOrder = tutorialController.configuration.teacherCanvas.sortingOrder;
+
+            tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
             tutorialController.SetNextSkippedSteps(7);
         }
 
         public override void OnStepFinished()
         {
             base.OnStepFinished();
+
+            tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
 
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
             PlayerPrefsUtils.SetInt(PLAYER_PREFS_START_MENU_SHOWED, 1);
@@ -34,10 +43,10 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.taskbarHud != null &&
-                tutorialController.hudController.taskbarHud.exploreTooltipReference)
+                tutorialController.hudController.minimapHud != null &&
+                tutorialController.hudController.minimapHud.startMenuTooltipReference)
             {
-                tooltipTransform.position = tutorialController.hudController.taskbarHud.exploreTooltipReference.position;
+                tooltipTransform.position = tutorialController.hudController.minimapHud.startMenuTooltipReference.position;
             }
         }
 
