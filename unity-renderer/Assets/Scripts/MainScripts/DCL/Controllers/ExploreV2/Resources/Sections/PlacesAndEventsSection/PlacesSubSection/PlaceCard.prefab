@@ -207,8 +207,9 @@ MonoBehaviour:
   cardSelectionFrame: {fileID: 755781203522913821}
   contentVerticalLayout: {fileID: 0}
   infoVerticalLayout: {fileID: 0}
+  defaultPicture: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61, type: 3}
   model:
-    placePictureSprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+    placePictureSprite: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
       type: 3}
     placePictureTexture: {fileID: 0}
     placePictureUri: 
@@ -2358,7 +2359,7 @@ PrefabInstance:
         type: 3}
       propertyPath: model.sprite
       value: 
-      objectReference: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+      objectReference: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
         type: 3}
     - target: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
@@ -2374,7 +2375,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+      objectReference: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
         type: 3}
     - target: {fileID: 5317768593788952491, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
@@ -2429,12 +2430,12 @@ PrefabInstance:
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 285
+      value: 228
       objectReference: {fileID: 0}
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 285
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}

@@ -126,9 +126,6 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     public void SetImage(string uri)
     {
-        if (model.uri == uri)
-            return;
-
         model.uri = uri;
 
         if (!Application.isPlaying)

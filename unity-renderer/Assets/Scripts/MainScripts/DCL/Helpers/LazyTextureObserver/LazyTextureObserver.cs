@@ -153,7 +153,7 @@ namespace DCL.Helpers
 
         public void RefreshWithUri(string uri)
         {
-            if (string.IsNullOrEmpty(uri) || uri == this.uri)
+            if (string.IsNullOrEmpty(uri))
                 return;
 
             this.uri = uri;

@@ -130,8 +130,9 @@ MonoBehaviour:
   cardSelectionFrame: {fileID: 0}
   contentVerticalLayout: {fileID: 0}
   infoVerticalLayout: {fileID: 0}
+  defaultPicture: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61, type: 3}
   model:
-    placePictureSprite: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+    placePictureSprite: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
       type: 3}
     placePictureTexture: {fileID: 0}
     placePictureUri: 
@@ -1023,8 +1024,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lorem ipsum dolor sit amet, ferri semper omnium cum an, magna omnesque
-    inimicus eam eu, mel primis alterum constituto eu.
+  m_text: Test description...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -2247,7 +2247,7 @@ PrefabInstance:
         type: 3}
       propertyPath: model.sprite
       value: 
-      objectReference: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+      objectReference: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
         type: 3}
     - target: {fileID: 4618068140710309132, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
@@ -2263,7 +2263,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
+      objectReference: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
         type: 3}
     - target: {fileID: 5317768593788952491, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
@@ -2318,12 +2318,12 @@ PrefabInstance:
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 932
+      value: 930
       objectReference: {fileID: 0}
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 932
+      value: 652.6316
       objectReference: {fileID: 0}
     - target: {fileID: 6044329464138306421, guid: 7c46860097fdafb4abd62085d2045ad9,
         type: 3}
