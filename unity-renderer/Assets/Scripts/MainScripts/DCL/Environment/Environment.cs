@@ -19,36 +19,6 @@ namespace DCL
         }
 
         /// <summary>
-        /// Wire the system dependencies. We should improve this approach later.
-        /// </summary>
-        // private static void Initialize()
-        // {
-        //     Model model = i;
-        //
-        //     //TODO(Brian): We can move to a RAII scheme + promises later to make this
-        //     //             more scalable.
-        //
-        //     // Messaging systems
-        //     model.messaging.manager.Initialize(i.world.sceneController);
-        //
-        //     // Platform systems
-        //     model.platform.cullingController.Start();
-        //     model.platform.parcelScenesCleaner.Initialize();
-        //
-        //     // World context systems
-        //     model.world.sceneController.Initialize();
-        //     model.world.pointerEventsController.Initialize();
-        //     model.world.state.Initialize();
-        //     model.world.blockersController.InitializeWithDefaultDependencies(
-        //         model.world.state, model.platform.cullingController);
-        //     model.world.sceneBoundsChecker.Start();
-        //     model.world.componentFactory.Initialize();
-        //
-        //     // HUD context system
-        //     model.hud.controller.Initialize(model.hud.factory);
-        // }
-
-        /// <summary>
         /// Dispose() and Setup() using the current environment configuration.
         /// </summary>
         public static void Reset()

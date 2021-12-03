@@ -11,30 +11,31 @@ namespace DCL
             var result = new ServiceLocator();
 
             // Platform
-            var memoryManager = result.Register<IMemoryManager>(() => new MemoryManager());
-            var cullingController = result.Register<ICullingController>(CullingController.Create);
-            var parcelScenesCleaner = result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
-            var clipboard = result.Register<IClipboard>(Clipboard.Create);
-            var physicsSyncController = result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
-            var webRequestController = result.Register<IWebRequestController>(WebRequestController.Create);
-            var serviceProviders = result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<IMemoryManager>(() => new MemoryManager());
+            result.Register<ICullingController>(CullingController.Create);
+            result.Register<IParcelScenesCleaner>(() => new ParcelScenesCleaner());
+            result.Register<IClipboard>(Clipboard.Create);
+            result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
+            result.Register<IWebRequestController>(WebRequestController.Create);
+            result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
 
             // World runtime
-            var idleChecker = result.Register<IIdleChecker>(() => new IdleChecker());
-            var avatarsLODController = result.Register<IAvatarsLODController>(() => new AvatarsLODController());
-            var featureFlagController = result.Register<IFeatureFlagController>(() => new FeatureFlagController());
-            var sceneController = result.Register<ISceneController>(() => new SceneController());
-            var state = result.Register<IWorldState>(() => new WorldState());
-            var pointerEventsController = result.Register<IPointerEventsController>(() => new PointerEventsController());
-            var sceneBoundsChecker = result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
-            var worldBlockersController = result.Register<IWorldBlockersController>(() => new WorldBlockersController());
-            var runtimeComponentFactory = result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
+            result.Register<IIdleChecker>(() => new IdleChecker());
+            result.Register<IAvatarsLODController>(() => new AvatarsLODController());
+            result.Register<IFeatureFlagController>(() => new FeatureFlagController());
+            result.Register<ISceneController>(() => new SceneController());
+            result.Register<IWorldState>(() => new WorldState());
+            result.Register<IPointerEventsController>(() => new PointerEventsController());
+            result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
+            result.Register<IWorldBlockersController>(() => new WorldBlockersController());
+            result.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
 
-            var messagingControllersManager = result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
+            result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
 
             // HUD
-            var factory = result.Register<IHUDFactory>(() => new HUDFactory());
-            var hudController = result.Register<IHUDController>(() => new HUDController());
+            result.Register<IHUDFactory>(() => new HUDFactory());
+            result.Register<IHUDController>(() => new HUDController());
 
             return result;
         }

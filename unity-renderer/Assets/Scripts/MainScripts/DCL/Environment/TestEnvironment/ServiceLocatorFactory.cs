@@ -18,6 +18,7 @@ namespace DCL.Tests
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
             result.Register<IServiceProviders>(() => Substitute.For<IServiceProviders>());
+            result.Register<IUpdateEventHandler>(() => Substitute.For<IUpdateEventHandler>());
 
             // World runtime
             result.Register<IIdleChecker>(() => Substitute.For<IIdleChecker>());

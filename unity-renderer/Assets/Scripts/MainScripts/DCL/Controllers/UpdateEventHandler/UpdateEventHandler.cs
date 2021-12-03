@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using NSubstitute.Exceptions;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -18,7 +19,7 @@ namespace DCL
 
         public void AddListener( IUpdateEventHandler.EventType eventType, Action action )
         {
-            Assert.IsTrue( dispatcher != null, "Dispatcher is null! This should never happen!");
+            Assert.IsTrue( dispatcher != null, $"Dispatcher is null! Listener for event {eventType} couldn't be added!");
             dispatcher.eventCollections[eventType].Add(action);
         }
 
