@@ -60,11 +60,9 @@ namespace DCL.ServerTime
             if (DateTime.TryParse(datetime, out serverTime))
             {
                 // Update last server time
-                lastTimeFromServer = serverTime;
+                lastTimeFromServer = serverTime.ToUniversalTime();
                 // Update current time from the system
-                lastTimeFromSystem = DateTime.UtcNow;
-
-                timeOffset = lastTimeFromServer - lastTimeFromSystem;
+                lastTimeFromSystem = DateTime.Now;
 
                 // Fire Event
                 OnTimeChanged?.Invoke(lastTimeFromServer);
@@ -73,8 +71,9 @@ namespace DCL.ServerTime
 
         public DateTime GetCurrentTime()
         {
-            DateTime currentTime = DateTime.UtcNow.Add(timeOffset);
-            return currentTime;
+            TimeSpan systemTimeOffset = DateTime.Now - lastTimeFromSystem;
+
+            return lastTimeFromServer.Add(systemTimeOffset);
         }
     }
 

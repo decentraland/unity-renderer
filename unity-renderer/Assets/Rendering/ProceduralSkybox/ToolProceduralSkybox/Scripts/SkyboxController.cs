@@ -21,7 +21,7 @@ namespace DCL.Skybox
         public string loadedConfig;
         //Time for one complete circle. In Hours. default 24
         public float cycleTime = 24;
-        public float lifecycleDuration = 1;
+        public float lifecycleDuration = 2;
 
         private float timeOfTheDay;                            // (Nishant.K) Time will be provided from outside, So remove this variable
         private Light directionalLight;
@@ -167,6 +167,9 @@ namespace DCL.Skybox
 
             // Convert minutes in seconds and then normalize with cycle time
             timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
+
+            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+
             return true;
         }
 
@@ -177,9 +180,9 @@ namespace DCL.Skybox
             // Convert seconds to minutes
             float minutes = serverTime.Minute + (seconds / 60);
             // Convert minutes to hour (in float format)
-            float hours = serverTime.Hour + (minutes / 60);
-            // divide by lifecycleDuration.... + 1 as hour is from 0 to 23
-            float timeInCycle = (hours / (lifecycleDuration / 60)) + 1;
+            float totalTimeInMins = serverTime.Hour * 60 + minutes;
+            // divide by lifecycleDuration.... + 1 as time is from 0
+            float timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
             // get percentage part for converting to skybox time
             float percentageSkyboxtime = timeInCycle - (int)timeInCycle;
 
