@@ -447,7 +447,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteTooltipSocialFeaturesByOpeningWorldChatStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(10, () =>
             {
                 TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
                 step.WorldChatWindowHud_OnOpen();
@@ -457,7 +457,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteTooltipSocialFeaturesByOpeningFriendsStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(10, () =>
             {
                 TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
                 step.FriendsHud_OnFriendsOpened();
@@ -468,7 +468,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteTooltipSocialFeaturesByStartingVoiceChatStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(10, () =>
             {
                 TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
                 step.VoiceChatAction_OnStarted(DCLAction_Hold.VoiceChatRecording);
@@ -481,7 +481,7 @@ namespace DCL.Tutorial_Tests
         {
             CommonScriptableObjects.voiceChatDisabled.Set(false);
 
-            yield return ExecuteAvatarSpecificTutorialStep(13, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(11, () =>
             {
                 TutorialStep_Tooltip_UsersAround step = (TutorialStep_Tooltip_UsersAround)tutorialController.runningStep;
                 step.UsersAroundListHud_OnOpen();
@@ -492,7 +492,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteTutorialCompletedStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(14, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
             {
                 TutorialStep_TutorialCompleted step = (TutorialStep_TutorialCompleted)tutorialController.runningStep;
                 step.OnShowAnimationFinish();
@@ -503,7 +503,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteWelcomeStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(15, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(13, () =>
             {
                 TutorialStep_Welcome step = (TutorialStep_Welcome)tutorialController.runningStep;
                 step.confirmInputAction.RaiseOnStarted();
@@ -513,7 +513,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteLockTheCursorCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(16, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(14, () =>
             {
                 TutorialStep_LockTheCursor step = (TutorialStep_LockTheCursor)tutorialController.runningStep;
                 step.mouseCatcher = null;
@@ -735,6 +735,7 @@ namespace DCL.Tutorial_Tests
         private IEnumerator ExecuteAvatarSpecificTutorialStep(int stepIndex, Action actionToFinishStep)
         {
             // Arrange
+            DataStore.i.exploreV2.isInitialized.Set(true);
             TutorialStep stepToTest = tutorialController.configuration.stepsOnGenesisPlaza[stepIndex];
             ClearCurrentSteps();
             tutorialController.configuration.teacherRawImage = null;
