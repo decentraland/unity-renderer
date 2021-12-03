@@ -26,11 +26,5 @@ namespace DCL
         {
             this.serviceLocator = serviceLocator;
         }
-
-        public void Update()
-        {
-            idleChecker.Update();
-            avatarsLODController.Update();
-        }
     }
 }

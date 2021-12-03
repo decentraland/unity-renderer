@@ -55,6 +55,9 @@ namespace DCL
                 PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
             }
 
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+
             // Warmup some shader variants
             Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
         }
@@ -99,6 +102,9 @@ namespace DCL
 
         public void Dispose()
         {
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+
             PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;

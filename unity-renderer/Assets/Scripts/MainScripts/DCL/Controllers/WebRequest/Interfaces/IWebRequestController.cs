@@ -116,10 +116,5 @@ namespace DCL
             int requestAttemps = 3,
             int timeout = 0,
             bool disposeOnCompleted = true);
-
-        /// <summary>
-        /// Abort and clean all the ongoing web requests.
-        /// </summary>
-        void Dispose();
     }
 }

@@ -30,6 +30,7 @@ namespace DCL
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
             DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagChanged;
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         private void OnFeatureFlagChanged(FeatureFlag current, FeatureFlag previous)
@@ -200,6 +201,7 @@ namespace DCL
 
             otherPlayers.OnAdded -= RegisterAvatar;
             otherPlayers.OnRemoved -= UnregisterAvatar;
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
     }
 }

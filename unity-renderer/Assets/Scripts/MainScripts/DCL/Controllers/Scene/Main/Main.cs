@@ -110,7 +110,6 @@ namespace DCL
 
         protected virtual void Update()
         {
-            Environment.i.platform.Update();
             performanceMetricsController?.Update();
         }
 
@@ -124,7 +123,7 @@ namespace DCL
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            
+            pluginSystem?.Dispose();
             kernelCommunication?.Dispose();
         }
 

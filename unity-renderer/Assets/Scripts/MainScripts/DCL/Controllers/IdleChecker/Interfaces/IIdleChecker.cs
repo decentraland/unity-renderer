@@ -4,11 +4,9 @@ namespace DCL
 {
     public interface IIdleChecker : IService
     {
-        void Initialize();
         void SetMaxTime(int time);
         int GetMaxTime();
         bool isIdle();
-        void Update();
 
         delegate void ChangeStatus(bool isIdle);
 

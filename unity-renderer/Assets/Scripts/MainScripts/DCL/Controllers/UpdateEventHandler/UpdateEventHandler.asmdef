@@ -1,5 +1,5 @@
 {
-  "name": "UpdateController",
+  "name": "UpdateEventHandler",
   "rootNamespace": "",
   "references": [
     "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
