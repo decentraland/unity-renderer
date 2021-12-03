@@ -37,6 +37,7 @@ namespace DCL
         public readonly DataStore_FeatureFlag featureFlags = new DataStore_FeatureFlag();
         public readonly DataStore_Camera camera = new DataStore_Camera();
         public readonly DataStore_Settings settings = new DataStore_Settings();
+        public readonly BaseVariable<bool> isTutorialRunning = new BaseVariable<bool>(false);
 
         public class DataStore_Settings
         {

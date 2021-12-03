@@ -198,13 +198,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (visible)
         {
             Utils.UnlockCursor();
-            AudioScriptableObjects.dialogOpen.Play(true);
-            AudioScriptableObjects.listItemAppear.ResetPitch();
             CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
+
+            if (DataStore.i.isTutorialRunning.Get())
+                view.GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
         }
         else
         {
-            AudioScriptableObjects.dialogClose.Play(true);
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
             placesAndEventsVisible.Set(false);
             avatarEditorVisible.Set(false);

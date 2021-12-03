@@ -185,6 +185,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         else
         {
             Hide();
+            AudioScriptableObjects.dialogClose.Play(true);
         }
     }
 
@@ -194,6 +195,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             DataStore.i.exploreV2.currentSectionIndex.Set((int)section);
 
         sectionSelector.GetSection((int)section)?.SelectToggle(true);
+
+        AudioScriptableObjects.dialogOpen.Play(true);
+        AudioScriptableObjects.listItemAppear.ResetPitch();
     }
 
     public void SetSectionActive(ExploreSection section, bool isActive) { sectionSelector.GetSection((int)section).SetActive(isActive); }

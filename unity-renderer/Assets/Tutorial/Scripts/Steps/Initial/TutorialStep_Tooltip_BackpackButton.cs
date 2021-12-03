@@ -1,3 +1,5 @@
+using UnityEngine.EventSystems;
+
 namespace DCL.Tutorial
 {
     /// <summary>
@@ -14,7 +16,6 @@ namespace DCL.Tutorial
                 tutorialController.hudController.profileHud != null)
             {
                 tutorialController.hudController.profileHud.OnOpen += ProfileHud_OnOpen;
-                tutorialController.hudController.profileHud.OnClose += ProfileHud_OnClose;
             }
         }
 
@@ -27,7 +28,6 @@ namespace DCL.Tutorial
                 tutorialController.hudController.profileHud != null)
             {
                 tutorialController.hudController.profileHud.OnOpen -= ProfileHud_OnOpen;
-                tutorialController.hudController.profileHud.OnClose -= ProfileHud_OnClose;
             }
         }
 
@@ -44,17 +44,17 @@ namespace DCL.Tutorial
             }
         }
 
-        internal void ProfileHud_OnOpen()
+        public override void OnPointerDown(PointerEventData eventData)
         {
-            isRelatedFeatureActived = true;
-            stepIsFinished = true;
+            base.OnPointerDown(eventData);
+
             tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
 
-        internal void ProfileHud_OnClose()
+        internal void ProfileHud_OnOpen()
         {
-            if (isRelatedFeatureActived)
-                isRelatedFeatureActived = false;
+            stepIsFinished = true;
+            tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
     }
 }
