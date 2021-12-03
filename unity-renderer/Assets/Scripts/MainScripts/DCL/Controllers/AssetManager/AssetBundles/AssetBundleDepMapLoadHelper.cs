@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public static class DependencyMapLoadHelper
+public static class AssetBundleDepMapLoadHelper
 {
     static bool VERBOSE = false;
     private const string MAIN_SHADER_FILENAME = "mainshader";
@@ -13,13 +14,7 @@ public static class DependencyMapLoadHelper
     static HashSet<string> failedRequests = new HashSet<string>();
     static HashSet<string> downloadingDepmap = new HashSet<string>();
 
-    [System.Serializable]
-    public class AssetDependencyMap
-    {
-        public string[] dependencies;
-    }
-
-    public static IEnumerator WaitUntilDepMapIsResolved(string hash)
+    public static IEnumerator WaitUntilExternalDepMapIsResolved(string hash)
     {
         while (true)
         {
@@ -33,7 +28,7 @@ public static class DependencyMapLoadHelper
         }
     }
 
-    public static IEnumerator GetDepMap(string baseUrl, string hash)
+    public static IEnumerator LoadExternalDepMap(string baseUrl, string hash)
     {
         if (dependenciesMap.ContainsKey(hash))
             yield break;
@@ -43,7 +38,7 @@ public static class DependencyMapLoadHelper
 
         if (downloadingDepmap.Contains(hash))
         {
-            yield return WaitUntilDepMapIsResolved(hash);
+            yield return WaitUntilExternalDepMapIsResolved(hash);
             yield break;
         }
         
@@ -54,10 +49,7 @@ public static class DependencyMapLoadHelper
             url: url,
             OnSuccess: (depmapRequest) =>
             {
-                AssetDependencyMap map = JsonUtility.FromJson<AssetDependencyMap>(depmapRequest.webRequest.downloadHandler.text);
-                map.dependencies = map.dependencies.Where(x => !x.Contains(MAIN_SHADER_FILENAME)).ToArray();
-
-                dependenciesMap.Add(hash, new List<string>(map.dependencies));
+                LoadDepMapFromJSON(depmapRequest.webRequest.downloadHandler.text, hash);
 
                 downloadingDepmap.Remove(hash);
             },
@@ -66,5 +58,20 @@ public static class DependencyMapLoadHelper
                 failedRequests.Add(hash);
                 downloadingDepmap.Remove(hash);
             });
+    }
+
+    public static void LoadDepMapFromJSON(string metadataJSON, string hash)
+    {
+        AssetBundleMetadata metadata = JsonUtility.FromJson<AssetBundleMetadata>(metadataJSON);
+
+        if (VERBOSE)
+        {
+            Debug.Log($"DependencyMapLoadHelper: {hash} asset bundle version: " + metadata.version);
+            Debug.Log($"DependencyMapLoadHelper: {hash} asset bundle timestamp: " + (metadata.timestamp > 0 ? new DateTime(metadata.timestamp).ToString() : metadata.timestamp.ToString()));
+        }
+        
+        metadata.dependencies = metadata.dependencies.Where(x => !x.Contains(MAIN_SHADER_FILENAME)).ToArray();
+
+        dependenciesMap.Add(hash, new List<string>(metadata.dependencies));
     }
 }
