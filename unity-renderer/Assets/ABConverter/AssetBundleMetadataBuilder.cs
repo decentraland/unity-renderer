@@ -14,7 +14,7 @@ namespace DCL.ABConverter
         /// <summary>
         /// Creates the asset bundle metadata file (dependencies, version, timestamp) 
         /// </summary>
-        public static void Generate(IFile file, string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest, float version = 1f, string exceptions = null)
+        public static void Generate(IFile file, string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest, string version = "1.0", string exceptions = null)
         {
             string[] assetBundles = manifest.GetAllAssetBundles();
 

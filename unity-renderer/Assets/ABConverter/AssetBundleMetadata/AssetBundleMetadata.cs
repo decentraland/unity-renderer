@@ -3,6 +3,6 @@
 public class AssetBundleMetadata
 {
     public long timestamp = -1;
-    public float version = 1.0f;
+    public string version = "1.0";
     public string[] dependencies;
 }

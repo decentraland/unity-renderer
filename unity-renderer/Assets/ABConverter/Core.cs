@@ -44,7 +44,7 @@ namespace DCL.ABConverter
 
         private const string MAIN_SHADER_AB_NAME = "MainShader_Delete_Me";
         private const float MAX_TEXTURE_SIZE = 512f;
-        private const float VERSION = 2.0f;
+        private const string VERSION = "2.0";
 
         internal readonly string finalDownloadedPath;
         internal readonly string finalDownloadedAssetDbPath;
