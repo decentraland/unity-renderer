@@ -12,11 +12,11 @@ namespace DCL.ServerTime
         public event OnTimeUpdated OnTimeChanged;
 
         public float serverHitFrequency;
-        public string serverURL = "http://worldtimeapi.org/api/timezone/Etc/UTC";
+        public string serverURL = "https://worldtimeapi.org/api/timezone/Etc/UTC";
 
         private bool initialized = false;
-        private DateTime lastTimeFromServer;
-        private DateTime lastTimeFromSystem = DateTime.UtcNow;
+        private DateTime lastTimeFromServer = DateTime.Now.ToUniversalTime();
+        private DateTime lastTimeFromSystem = DateTime.Now;
         private TimeSpan timeOffset;
         private bool stopTimer = false;
         UnityWebRequest webRequest;
