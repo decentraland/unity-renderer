@@ -34,6 +34,12 @@ namespace DCL.Skybox
         private int slotCount;
         private bool overrideByEditor = false;
 
+        // Reflection probe
+        private ReflectionProbe skyboxProbe;
+        bool probeParented = false;
+        private float reflectionUpdateTime = 1;                                 // In Mins
+        private ReflectionProbeRuntime runtimeReflectionObj;
+
         public SkyboxController()
         {
             i = this;
@@ -56,6 +62,8 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
+            GetOrCreateEnvironmentProbe();
+
             // Get current time from the server
             GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
             WorldTimer.i.OnTimeChanged += GetTimeFromTheServer;
@@ -75,6 +83,67 @@ namespace DCL.Skybox
             DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
+        private void GetOrCreateEnvironmentProbe()
+        {
+            // Get Reflection Probe Object
+            skyboxProbe = GameObject.FindObjectsOfType<ReflectionProbe>().Where(s => s.name == "SkyboxProbe").FirstOrDefault();
+
+            if (DataStore.i.skyboxConfig.disableReflection.Get())
+            {
+                if (skyboxProbe != null)
+                {
+                    skyboxProbe.gameObject.SetActive(false);
+                }
+
+                RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Skybox;
+                RenderSettings.customReflection = null;
+                return;
+            }
+
+            if (skyboxProbe == null)
+            {
+                // Instantiate new probe from the resources
+                GameObject temp = Resources.Load<GameObject>("SkyboxReflectionProbe/SkyboxProbe");
+                GameObject probe = GameObject.Instantiate<GameObject>(temp);
+                probe.name = "SkyboxProbe";
+                skyboxProbe = probe.GetComponent<ReflectionProbe>();
+
+                // make probe a child of main camera
+                ParentProbeWithCamera();
+            }
+
+            // Update time in Reflection Probe
+            runtimeReflectionObj = skyboxProbe.GetComponent<ReflectionProbeRuntime>();
+            if (runtimeReflectionObj == null)
+            {
+                runtimeReflectionObj = skyboxProbe.gameObject.AddComponent<ReflectionProbeRuntime>();
+            }
+            // Assign as seconds
+            runtimeReflectionObj.updateAfter = reflectionUpdateTime * 60;
+
+            RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Custom;
+            RenderSettings.customReflection = null;
+        }
+
+        private void ParentProbeWithCamera()
+        {
+            if (skyboxProbe == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("Cannot parent the probe as probe is not instantiated");
+#endif
+                return;
+            }
+
+            // make probe a child of main camera
+            if (Camera.main != null)
+            {
+                GameObject mainCam = Camera.main.gameObject;
+                skyboxProbe.transform.parent = mainCam.transform;
+                probeParented = true;
+            }
+        }
+
         private void KernelConfig_OnChange(KernelConfigModel current, KernelConfigModel previous)
         {
             if (overrideByEditor)
@@ -86,6 +155,8 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.configToLoad.Set(current.proceduralSkyboxConfig.configToLoad);
             DataStore.i.skyboxConfig.lifecycleDuration.Set(current.proceduralSkyboxConfig.lifecycleDuration);
             DataStore.i.skyboxConfig.jumpToTime.Set(current.proceduralSkyboxConfig.fixedTime);
+            DataStore.i.skyboxConfig.updateReflectionTime.Set(current.proceduralSkyboxConfig.updateReflectionTime);
+            DataStore.i.skyboxConfig.disableReflection.Set(current.proceduralSkyboxConfig.disablereflection);
 
             // Call update on skybox config which will call Update config in this class.
             DataStore.i.skyboxConfig.objectUpdated.Set(true, true);
@@ -129,13 +200,43 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
 
             // if Paused
-            if (DataStore.i.skyboxConfig.jumpToTime.Get() > 0)
+            if (DataStore.i.skyboxConfig.jumpToTime.Get() >= 0)
             {
                 PauseTime(true, DataStore.i.skyboxConfig.jumpToTime.Get());
             }
             else
             {
                 ResumeTime();
+            }
+
+            // Update reflection time
+            if (DataStore.i.skyboxConfig.disableReflection.Get())
+            {
+                if (skyboxProbe != null)
+                {
+                    skyboxProbe.gameObject.SetActive(false);
+                }
+
+                RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Custom;
+                RenderSettings.customReflection = null;
+            }
+            else if (runtimeReflectionObj != null)
+            {
+                // If reflection update time is -1 then calculate time based on the cycle time, else assign same
+                if (DataStore.i.skyboxConfig.updateReflectionTime.Get() >= 0)
+                {
+                    reflectionUpdateTime = DataStore.i.skyboxConfig.updateReflectionTime.Get();
+                }
+                else
+                {
+                    // Evaluate with the cycle time
+                    reflectionUpdateTime = 1;               // Default for an hour is 1 min
+                    // get cycle time in hours
+                    reflectionUpdateTime = (DataStore.i.skyboxConfig.lifecycleDuration.Get() / 60);
+
+                }
+
+                runtimeReflectionObj.updateAfter = Mathf.Clamp(reflectionUpdateTime * 60, 5, 86400);
             }
         }
 
@@ -271,6 +372,11 @@ namespace DCL.Skybox
         // Update is called once per frame
         public void Update()
         {
+            if (!DataStore.i.skyboxConfig.disableReflection.Get() && skyboxProbe != null && !probeParented)
+            {
+                ParentProbeWithCamera();
+            }
+
             if (configuration == null || isPaused || !DataStore.i.skyboxConfig.useProceduralSkybox.Get())
             {
                 return;

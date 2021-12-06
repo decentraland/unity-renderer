@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b94406dff7b8c418ade5811c705270, type: 3}
-  m_Name: Variation_1
+  m_Name: Generic_Skybox
   m_EditorClassIdentifier: 
-  skyboxID: Variation_1
+  skyboxID: Generic_Skybox
   skyColor:
     serializedVersion: 2
     key0: {r: 0.13432328, g: 0, b: 0.2830189, a: 1}
@@ -1047,7 +1047,7 @@ MonoBehaviour:
     layers: []
   layers:
   - slotID: 0
-    renderType: 0
+    renderType: 1
     layerType: 1
     enabled: 1
     nameInEditor: Stars
@@ -1127,7 +1127,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 1
+    renderType: 0
     layerType: 2
     enabled: 1
     nameInEditor: Big Sun
@@ -1215,7 +1215,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 1
-    renderType: 1
+    renderType: 0
     layerType: 2
     enabled: 1
     nameInEditor: Second Sun
@@ -1383,7 +1383,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 1
   - slotID: 2
-    renderType: 1
+    renderType: 0
     layerType: 4
     enabled: 1
     nameInEditor: Near Clouds Day
@@ -1463,7 +1463,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 2
-    renderType: 0
+    renderType: 1
     layerType: 4
     enabled: 1
     nameInEditor: Top Clouds Night
@@ -1543,7 +1543,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 3
-    renderType: 0
+    renderType: 1
     layerType: 4
     enabled: 1
     nameInEditor: Near Clouds Night
@@ -1617,7 +1617,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 3
-    renderType: 1
+    renderType: 0
     layerType: 0
     enabled: 1
     nameInEditor: Top Clouds Day
@@ -1719,3 +1719,5 @@ MonoBehaviour:
     startTime: 20.7
     endTime: 8
     isTrigger: 0
+  timeToCreateCubemap: 0
+  useCustomReflection: 0

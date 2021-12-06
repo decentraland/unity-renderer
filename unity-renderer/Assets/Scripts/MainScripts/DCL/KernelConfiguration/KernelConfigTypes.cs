@@ -128,12 +128,14 @@ namespace KernelConfigurationTypes
         public string configToLoad = "Generic_Skybox";
         public float lifecycleDuration = 120;
         public float fixedTime = -1;
+        public bool disablereflection = false;
+        public float updateReflectionTime = -1;     // in mins
 
         public bool Equals(ProceduralSkybox other)
         {
             return configToLoad == other?.configToLoad &&
                    lifecycleDuration == other?.lifecycleDuration &&
-                    fixedTime == other?.fixedTime;
+                   fixedTime == other?.fixedTime;
         }
 
         public ProceduralSkybox Clone()

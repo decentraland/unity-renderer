@@ -165,6 +165,8 @@ namespace DCL
             public BaseVariable<string> configToLoad = new BaseVariable<string>("Generic Skybox");
             public BaseVariable<float> lifecycleDuration = new BaseVariable<float>(60);
             public BaseVariable<float> jumpToTime = new BaseVariable<float>(-1);
+            public BaseVariable<float> updateReflectionTime = new BaseVariable<float>(-1);
+            public BaseVariable<bool> disableReflection = new BaseVariable<bool>(false);
         }
     }
 }

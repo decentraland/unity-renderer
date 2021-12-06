@@ -82,13 +82,13 @@ public class RenderProfileWorld : ScriptableObject
 
     public void Apply(bool verbose = false)
     {
-        RenderSettings.customReflection = reflectionCubemap;
 
         if (DataStore.i.skyboxConfig.useProceduralSkybox.Get())
         {
             return;
         }
 
+        RenderSettings.customReflection = reflectionCubemap;
         RenderSettings.ambientMode = AmbientMode.Trilight;
 
         RenderSettings.skybox = skyboxMaterial;

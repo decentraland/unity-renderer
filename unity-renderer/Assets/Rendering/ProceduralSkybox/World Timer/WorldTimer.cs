@@ -73,7 +73,7 @@ namespace DCL.ServerTime
         {
             TimeSpan systemTimeOffset = DateTime.Now - lastTimeFromSystem;
 
-            return lastTimeFromServer.Add(systemTimeOffset);
+            return lastTimeFromServer.ToUniversalTime().Add(systemTimeOffset);
         }
     }
 
