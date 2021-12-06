@@ -16,7 +16,8 @@ namespace AssetPromiseKeeper_Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
+            Environment.Setup(serviceLocator);
             keeper = new APKType();
             yield break;
         }

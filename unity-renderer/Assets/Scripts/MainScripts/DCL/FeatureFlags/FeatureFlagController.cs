@@ -4,6 +4,7 @@ using UnityEngine;
 public class FeatureFlagController : IFeatureFlagController
 {
     internal FeatureFlagBridge featureFlagBridgeComponent;
+    internal GameObject bridgeGameObject;
 
     public FeatureFlagController(GameObject bridgeGameObject = null)
     {
@@ -12,6 +13,11 @@ public class FeatureFlagController : IFeatureFlagController
             if (SceneReferences.i != null)
                 bridgeGameObject = SceneReferences.i.bridgeGameObject;
         }
+
+        this.bridgeGameObject = bridgeGameObject;
+
+        if (bridgeGameObject == null)
+            return;
 
         AddBridgeComponent(bridgeGameObject);
     }
@@ -29,8 +35,8 @@ public class FeatureFlagController : IFeatureFlagController
 
     public void Dispose()
     {
-        Object.Destroy(featureFlagBridgeComponent);
-        featureFlagBridgeComponent = null;
+        Object.Destroy(bridgeGameObject);
+        bridgeGameObject = null;
     }
 
     public void Initialize()
