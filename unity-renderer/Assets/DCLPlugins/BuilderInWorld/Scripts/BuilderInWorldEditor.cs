@@ -96,7 +96,7 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         if (context.editorContext.editorHUD != null)
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
-        
+
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
 
@@ -275,7 +275,7 @@ public class BuilderInWorldEditor : IBIWEditor
 
         if (biwAudioHandler.gameObject != null)
             biwAudioHandler.gameObject.SetActive(false);
-        DataStore.i.appMode.Set(AppMode.DEFAULT);
+        DataStore.i.common.appMode.Set(AppMode.DEFAULT);
         DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }

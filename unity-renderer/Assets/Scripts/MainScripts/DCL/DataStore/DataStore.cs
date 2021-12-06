@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Variables.RealmsInfo;
 
 namespace DCL
 {
@@ -36,14 +35,8 @@ namespace DCL
 
         public static void Clear() => instance = new DataStore();
 
-        public readonly BaseVariable<bool> isSignUpFlow = new BaseVariable<bool>();
-        public readonly BaseDictionary<string, WearableItem> wearables = new BaseDictionary<string, WearableItem>();
-        public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
-        public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
-        public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
-
-        public CurrentRealmVariable playerRealm => i.Get<CurrentRealmVariable>();
-        public RealmsVariable realmsInfo => i.Get<RealmsVariable>();
+        public DataStore_Common common => i.Get<DataStore_Common>();
+        public DataStore_Realm realm => i.Get<DataStore_Realm>();
         public DebugConfig debugConfig => i.Get<DebugConfig>();
         public DataStore_BuilderInWorld builderInWorld => i.Get<DataStore_BuilderInWorld>();
         public DataStore_Quests Quests => i.Get<DataStore_Quests>();
