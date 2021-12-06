@@ -277,7 +277,7 @@ namespace DCL.Skybox
             timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
 
             GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
-
+            Debug.Log("Procedural Skybox :: Returning time: " + WorldTimer.i.GetCurrentTime() + " : timeOfTheDay: " + timeOfTheDay);
             return true;
         }
 
@@ -395,7 +395,8 @@ namespace DCL.Skybox
                 return;
             }
 
-            timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
+            //timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
+            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
 
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
