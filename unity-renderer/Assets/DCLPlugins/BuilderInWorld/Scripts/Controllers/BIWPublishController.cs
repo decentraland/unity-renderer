@@ -23,6 +23,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         base.Initialize(context);
 
+
         entityHandler = context.editorContext.entityHandler;
         creatorController = context.editorContext.creatorController;
 
@@ -111,14 +112,25 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if (!CanPublish())
             return;
 
-        if (DataStore.i.builderInWorld.isDevBuild.Get())
+        TakeSceneScreenshotForPublish();
+
+        if (builderScene.sceneType == IBuilderScene.SceneType.LAND)
         {
-            //TODO: Implement project publish
+            context.editorContext.editorHUD.PublishStart(builderScene);
         }
         else
         {
-            context.editorContext.editorHUD.PublishStart();
+            //TODO: Implement project publish
         }
+
+    }
+
+    internal void TakeSceneScreenshotForPublish()
+    {
+        context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
+        {
+            builderScene.sceneScreenshotTexture = sceneSnapshot;
+        });
     }
 
     private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)

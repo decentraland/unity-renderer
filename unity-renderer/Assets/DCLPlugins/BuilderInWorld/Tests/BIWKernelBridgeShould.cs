@@ -21,7 +21,9 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
-        entityHandler.EnterEditMode(scene);
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+
+        entityHandler.EnterEditMode(builderScene);
 
         dummyGameObject = new GameObject();
         biwBridge = Utils.GetOrCreateComponent<BuilderInWorldBridge>(dummyGameObject);

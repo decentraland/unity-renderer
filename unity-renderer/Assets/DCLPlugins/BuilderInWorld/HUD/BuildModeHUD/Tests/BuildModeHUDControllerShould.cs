@@ -3,6 +3,7 @@ using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 
 namespace Tests.BuildModeHUDControllers
@@ -101,37 +102,13 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        [TestCase("")]
-        [TestCase("Test name")]
-        public void SetBuilderProjectInfoCorrectly(string projectName)
-        {
-            // Arrange
-            string testDesc = "Test name";
-
-            // Act
-            builderEditorHudController.SetBuilderProjectInfo(projectName, testDesc);
-
-            // Assert
-            if (!string.IsNullOrEmpty(projectName))
-            {
-                builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetCustomPublicationInfo(projectName, testDesc);
-                builderEditorHudController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(projectName, testDesc);
-            }
-            else
-            {
-                builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetDefaultPublicationInfo();
-                builderEditorHudController.controllers.publicationDetailsController.Received(1).SetDefaultPublicationInfo();
-            }
-        }
-
-        [Test]
         public void StartNewProjectFlowCorrectly()
         {
             // Arrange
             Texture2D testScreenshot = new Texture2D(10, 10);
 
             // Act
-            builderEditorHudController.NewProjectStart(testScreenshot);
+            builderEditorHudController.NewSceneForLand(Substitute.For<IBuilderScene>());
 
             // Assert
             builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetPublicationScreenshot(testScreenshot);
@@ -142,16 +119,17 @@ namespace Tests.BuildModeHUDControllers
         [Test]
         public void ConfirmNewProjectDetailsCorrectly()
         {
+            //TODO: Implement when the welcome panel has been implemented
             // Arrange
             bool newProjectDetailsConfirmed = false;
-            builderEditorHudController.OnSaveSceneInfoAction += (name, desc, image) =>
-            {
-                newProjectDetailsConfirmed = true;
-            };
-            builderEditorHudController.context.cameraController.Configure().GetLastScreenshot().Returns(new Texture2D(120,120));
+            // builderEditorHudController.OnSaveSceneInfoAction += (name, desc, image) =>
+            // {
+            //     newProjectDetailsConfirmed = true;
+            // };
+            builderEditorHudController.context.cameraController.Configure().GetLastScreenshot().Returns(new Texture2D(120, 120));
 
             // Act
-            builderEditorHudController.SaveSceneInfo();
+            // builderEditorHudController.SaveSceneInfo();
 
             // Assert
             builderEditorHudController.controllers.newProjectDetailsController.Received(1).GetSceneName();
@@ -175,7 +153,7 @@ namespace Tests.BuildModeHUDControllers
         public void PublishStartCorrectly()
         {
             // Act
-            builderEditorHudController.PublishStart();
+            builderEditorHudController.PublishStart(Substitute.For<IBuilderScene>());
 
             // Assert
             builderEditorHudController.controllers.publicationDetailsController.Received(1).SetActive(true);

@@ -16,13 +16,11 @@ using Environment = DCL.Environment;
 /// </summary>
 public class BuilderInWorldBridge : MonoBehaviour
 {
-    public BuilderProjectPayload builderProject { get => builderProjectPayload; }
 
     //Note Adrian: OnKernelUpdated in not called in the update of the transform, since it will give a lot of 
     //events and probably dont need to get called with that frecuency
     public event Action OnKernelUpdated;
     public event Action<bool, string> OnPublishEnd;
-    public event Action<string, string> OnBuilderProjectInfo;
     public event Action<RequestHeader> OnHeadersReceived;
 
     //This is done for optimization purposes, recreating new objects can increase garbage collection
@@ -65,12 +63,6 @@ public class BuilderInWorldBridge : MonoBehaviour
     }
 
     public void RequestedHeaders(string payload) { OnHeadersReceived?.Invoke(JsonConvert.DeserializeObject<RequestHeader>(payload)); }
-
-    public void BuilderProjectInfo(string payload)
-    {
-        builderProjectPayload = JsonUtility.FromJson<BuilderProjectPayload>(payload);
-        OnBuilderProjectInfo?.Invoke(builderProjectPayload.title, builderProjectPayload.description);
-    }
 
     #endregion
 
@@ -277,7 +269,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         sceneEvent.sceneId = sceneId;
         sceneEvent.eventType = BIWSettings.STATE_EVENT_NAME;
         sceneEvent.payload = addEntityEvent;
-        
+
         //Note(Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
         string message = JsonConvert.SerializeObject(sceneEvent);
         WebInterface.BuilderInWorldMessage(BIWSettings.SCENE_EVENT_NAME, message);

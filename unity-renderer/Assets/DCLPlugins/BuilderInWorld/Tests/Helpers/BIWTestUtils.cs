@@ -20,6 +20,13 @@ using Object = UnityEngine.Object;
 
 public static class BIWTestUtils
 {
+    public static IBuilderScene CreateBuilderSceneFromParcelScene(ParcelScene scene)
+    {
+        IBuilderScene builderScene = Substitute.For<IBuilderScene>();
+        builderScene.Configure().scene.Returns(scene);
+        return builderScene;
+    }
+
     public static ISceneReferences CreateMocekdInitialSceneReference()
     {
         ISceneReferences sceneReferences = SceneReferences.i;

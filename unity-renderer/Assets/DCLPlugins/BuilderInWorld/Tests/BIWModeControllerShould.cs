@@ -24,11 +24,13 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
             SceneReferences.i
         );
 
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+
         biwModeController.Initialize(context);
         actionController.Initialize(context);
 
-        biwModeController.EnterEditMode(scene);
-        actionController.EnterEditMode(scene);
+        biwModeController.EnterEditMode(builderScene);
+        actionController.EnterEditMode(builderScene);
     }
 
     [Test]

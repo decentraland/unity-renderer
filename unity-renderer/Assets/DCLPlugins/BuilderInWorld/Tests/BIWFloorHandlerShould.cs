@@ -16,6 +16,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private BIWFloorHandler biwFloorHandler;
     private BIWCreatorController biwCreatorController;
+    private IBuilderScene builderScene;
 
     protected override IEnumerator SetUp()
     {
@@ -34,10 +35,11 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwCreatorController.Initialize(referencesController);
         biwFloorHandler.Initialize(referencesController);
         entityHandler.Initialize(referencesController);
+        builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
-        entityHandler.EnterEditMode(scene);
-        biwFloorHandler.EnterEditMode(scene);
-        entityHandler.EnterEditMode(scene);
+        entityHandler.EnterEditMode(builderScene);
+        biwFloorHandler.EnterEditMode(builderScene);
+        entityHandler.EnterEditMode(builderScene);
     }
 
     [Test]
@@ -48,8 +50,8 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
         CatalogItem floorItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
-        biwCreatorController.EnterEditMode(scene);
-        biwFloorHandler.EnterEditMode(scene);
+        biwCreatorController.EnterEditMode(builderScene);
+        biwFloorHandler.EnterEditMode(builderScene);
 
         //Act
         biwFloorHandler.CreateFloor(floorItem);
@@ -90,8 +92,8 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
 
-        biwCreatorController.EnterEditMode(scene);
-        biwFloorHandler.EnterEditMode(scene);
+        biwCreatorController.EnterEditMode(builderScene);
+        biwFloorHandler.EnterEditMode(builderScene);
 
         //Act
         biwFloorHandler.CreateFloor(oldFloor);

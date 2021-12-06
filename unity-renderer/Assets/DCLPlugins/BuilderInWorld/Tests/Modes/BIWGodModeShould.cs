@@ -26,6 +26,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     private IContext context;
     private GameObject mockedGameObject, entityGameObject;
     private List<BIWEntity> selectedEntities;
+    private IBuilderScene builderScene;
 
     protected override IEnumerator SetUp()
     {
@@ -41,15 +42,16 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
             gizmosController,
             SceneReferences.i
         );
+        builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
 
         mockedGameObject = new GameObject("MockedGameObject");
         entityGameObject = new GameObject("EntityGameObject");
         modeController.Initialize(context);
         raycastController.Initialize(context);
         gizmosController.Initialize(context);
-        modeController.EnterEditMode(scene);
-        raycastController.EnterEditMode(scene);
-        gizmosController.EnterEditMode(scene);
+        modeController.EnterEditMode(builderScene);
+        raycastController.EnterEditMode(builderScene);
+        gizmosController.EnterEditMode(builderScene);
 
         godMode =  (BIWGodMode) modeController.GetCurrentMode();
         godMode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);
@@ -230,7 +232,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.selectedEntities = selectedEntities;
         modeController.SetSnapActive(false);
         selectedEntities.Add(new BIWEntity());
-        
+
         //Act
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 

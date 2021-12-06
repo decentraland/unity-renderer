@@ -26,7 +26,7 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    public static LoadParcelScenesMessage.UnityParcelScene AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
+    public static void AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
     {
         if (data == null)
             data = new LoadParcelScenesMessage.UnityParcelScene();
@@ -53,7 +53,6 @@ public static partial class BIWUtils
             if (!found)
                 data.contents.Add(mappingPair);
         }
-        return data;
     }
 
     public static void RemoveAssetsFromCurrentScene()
@@ -106,7 +105,7 @@ public static partial class BIWUtils
     public static Manifest CreateManifestFromProject(ProjectData projectData)
     {
         Manifest manifest = new Manifest();
-        manifest.version = 10;
+        manifest.version = BIWSettings.MANIFEST_VERSION;
         manifest.project = projectData;
         manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.cols);
 
@@ -132,9 +131,27 @@ public static partial class BIWUtils
         return scene;
     }
 
-    public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
+    public static Manifest CreateEmptyDefaultBuilderManifest(Vector2Int size, string landCoordinates)
     {
         Manifest manifest = new Manifest();
+        manifest.version = BIWSettings.MANIFEST_VERSION;
+
+        //We create a new project data for the scene
+        ProjectData projectData = new ProjectData();
+        projectData.id = Guid.NewGuid().ToString();
+        projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
+        projectData.title = "Builder " + landCoordinates;
+        projectData.description = "Scene created from the explorer builder";
+        projectData.creation_coords = landCoordinates;
+        projectData.rows = size.x;
+        projectData.cols = size.y;
+        projectData.updated_at = DateTime.Now;
+        projectData.created_at = DateTime.Now;
+
+        manifest.project = projectData;
+
+        //We create an empty scene
+        manifest.scene = CreateEmtpyBuilderScene(size.x + size.y);
         return manifest;
     }
 
@@ -505,8 +522,18 @@ public static partial class BIWUtils
             },
             OnFail: (webRequestResult) =>
             {
-                Debug.Log(webRequestResult.webRequest.error);
-                callPromise.Reject(webRequestResult.webRequest.error);
+                try
+                {
+                    byte[] byteArray = webRequestResult.GetResultData();
+                    string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
+                    callPromise?.Resolve(result);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(webRequestResult.webRequest.error);
+                    callPromise.Reject(webRequestResult.webRequest.error);
+                }
             },
             headers: headers);
 

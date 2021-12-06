@@ -18,6 +18,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
 {
     private SceneManager mainController;
     private IBuilderAPIController apiSubstitute;
+    private IBuilderScene builderScene;
 
     protected override IEnumerator SetUp()
     {
@@ -29,22 +30,10 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.initialLoadingController.Dispose();
         mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
         mainController.initialLoadingController.Configure().isActive.Returns(true);
+
+        builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
     }
 
-    [Test]
-    public void OpenNewProjectDetails()
-    {
-        //Arrange
-        GameObject dummyGO = new GameObject("DummyGO");
-        mainController.builderInWorldBridge.builderProjectPayload.isNewEmptyProject = true;
-        
-        //Act
-        mainController.OpenNewProjectDetails();
-
-        //Assert
-        mainController.context.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
-    }
-    
     [Test]
     public void StartExitModeScreenShot()
     {
@@ -57,18 +46,17 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Assert
         mainController.context.cameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
-    
 
     [Test]
     public void SetFlagProperlyWhenBuilderInWorldIsEntered()
     {
         // Arrange
-        mainController.sceneToEdit = scene;
+        mainController.sceneToEdit = builderScene;
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
         // Act
-        mainController.StartFlowWithPermission(scene, "Test");
+        mainController.StartFlowFromLandWithPermission(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
@@ -81,11 +69,11 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void SetFlagProperlyWhenBuilderInWorldIsExited()
     {
         // Arrange
-        mainController.sceneToEdit = scene;
+        mainController.sceneToEdit = builderScene;
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
 
-        mainController.StartFlowWithPermission(scene, "Test");
+        mainController.StartFlowFromLandWithPermission(scene, "Test");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
@@ -135,8 +123,8 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
-        mainController.sceneToEdit = scene;
-        
+        mainController.sceneToEdit = builderScene;
+
         // Act
         mainController.GetCatalog();
         resultOkPromise.Resolve(true);
@@ -159,6 +147,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void NewSceneAdded()
     {
         // Arrange
+        mainController.sceneToEdit = builderScene;
         var mockedScene = Substitute.For<IParcelScene>();
         mockedScene.Configure().sceneData.Returns(scene.sceneData);
         mainController.sceneToEditId = scene.sceneData.id;
@@ -167,7 +156,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.NewSceneAdded(mockedScene);
 
         // Assert
-        Assert.AreSame(mainController.sceneToEdit, base.scene);
+        Assert.AreSame(mainController.sceneToEdit.scene, base.scene);
     }
 
     [Test]
@@ -221,9 +210,9 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
-        mainController.sceneToEdit = Substitute.For<IParcelScene>();
-        mainController.sceneToEdit.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene{id = "Test id"});
-        
+        mainController.sceneToEdit = Substitute.For<IBuilderScene>();
+        mainController.sceneToEdit.scene.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene { id = "Test id" });
+
         // Act
         mainController.GetCatalog();
         resultOkPromise.Resolve(true);
@@ -237,7 +226,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     {
         // Arrange
         mainController.currentState = SceneManager.State.IDLE;
-        mainController.sceneToEdit = scene;
+        mainController.sceneToEdit = builderScene;
         AddSceneToPermissions();
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
@@ -250,12 +239,12 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Assert
         Assert.AreNotEqual(mainController.currentState, SceneManager.State.IDLE);
     }
-    
+
     [Test]
     public void ExitAfterTeleport()
     {
         // Arrange
-        mainController.sceneToEdit = scene;
+        mainController.sceneToEdit = builderScene;
         mainController.currentState = SceneManager.State.EDITING;
 
         // Act

@@ -186,7 +186,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void SetMultiSelectionActive(bool isActive) { isMultiSelectionActive = isActive; }
 
-    public override void EnterEditMode(IParcelScene scene)
+    public override void EnterEditMode(IBuilderScene scene)
     {
         base.EnterEditMode(scene);
 
@@ -519,7 +519,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             model.position = data.transformComponent.position;
             model.rotation = Quaternion.Euler(data.transformComponent.rotation);
             model.scale = data.transformComponent.scale;
-            
+
             EntityComponentsUtils.AddTransformComponent(sceneToEdit, newEntity, model);
         }
 

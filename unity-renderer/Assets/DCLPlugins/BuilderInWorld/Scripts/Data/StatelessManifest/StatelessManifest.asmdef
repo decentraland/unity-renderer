@@ -1,10 +1,7 @@
 {
-    "name": "CatalystInterfaces",
+    "name": "StatelessManifest",
     "rootNamespace": "",
-    "references": [
-        "GUID:e99faafecbf8dd74d8130597511b9b27",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

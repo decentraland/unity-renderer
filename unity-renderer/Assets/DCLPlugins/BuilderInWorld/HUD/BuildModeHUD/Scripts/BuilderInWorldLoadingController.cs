@@ -10,13 +10,13 @@ public interface IBuilderInWorldLoadingController
     void Initialize();
     void Dispose();
     void Show();
-    
+
     /// <summary>
     /// This will change the way the builder is loaded, this should be called before show or hide to work properly
     /// </summary>
     /// <param name="sceneType"></param>
-    void SetLoadingType(ISceneManager.SceneType sceneType);
-    
+    void SetLoadingType(IBuilderScene.SceneType sceneType);
+
     void Hide(bool forzeHidding = false, Action onHideAction = null);
     void SetPercentage(float newValue);
 }
@@ -28,8 +28,8 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
     internal IBuilderInWorldLoadingView initialLoadingView;
 
     private const string VIEW_PATH = "BuilderInWorldLoadingView";
-    private ISceneManager.SceneType sceneType = ISceneManager.SceneType.DEPLOYED;
-    
+    private IBuilderScene.SceneType sceneType = IBuilderScene.SceneType.LAND;
+
     public void Initialize() { AssignMainView(CreateView()); }
 
     public void Initialize(IBuilderInWorldLoadingView view) { AssignMainView(view); }
@@ -61,20 +61,17 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void Show()
     {
-        if(sceneType == ISceneManager.SceneType.PROJECT)
+        if (sceneType == IBuilderScene.SceneType.PROJECT)
             DataStore.i.HUDs.loadingHUD.visible.Set(true);
         else
             initialLoadingView.Show();
     }
 
-    public void SetLoadingType(ISceneManager.SceneType sceneType)
-    {
-        this.sceneType = sceneType;
-    }
+    public void SetLoadingType(IBuilderScene.SceneType sceneType) { this.sceneType = sceneType; }
 
     public void Hide(bool forzeHidding = false, Action onHideAction = null)
     {
-        if (sceneType == ISceneManager.SceneType.PROJECT)
+        if (sceneType == IBuilderScene.SceneType.PROJECT)
         {
             DataStore.i.HUDs.loadingHUD.visible.Set(false);
             onHideAction?.Invoke();
@@ -87,7 +84,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     public void SetPercentage(float newValue)
     {
-        if(sceneType == ISceneManager.SceneType.PROJECT)
+        if (sceneType == IBuilderScene.SceneType.PROJECT)
             DataStore.i.HUDs.loadingHUD.percentage.Set(newValue);
         else
             initialLoadingView.SetPercentage(newValue);

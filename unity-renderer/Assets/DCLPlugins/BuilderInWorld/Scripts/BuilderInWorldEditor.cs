@@ -41,7 +41,7 @@ public class BuilderInWorldEditor : IBIWEditor
     private Material previousSkyBoxMaterial;
 
     private float startEditorTimeStamp = 0;
-    internal IParcelScene sceneToEdit;
+    internal IBuilderScene sceneToEdit;
 
     public void Initialize(IContext context)
     {
@@ -53,9 +53,6 @@ public class BuilderInWorldEditor : IBIWEditor
         this.context = context;
 
         InitReferences(SceneReferences.i);
-
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnBuilderProjectInfo += BuilderProjectPanelInfo;
 
         BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
@@ -96,12 +93,11 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         if (context.editorContext.editorHUD != null)
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
-        
+
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
 
         BIWNFTController.i.Dispose();
-        builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
         CleanItems();
 
@@ -151,8 +147,6 @@ public class BuilderInWorldEditor : IBIWEditor
         context.editorContext.editorHUD.RefreshCatalogContent();
     }
 
-    private void BuilderProjectPanelInfo(string title, string description) {  context.editorContext.editorHUD.SetBuilderProjectInfo(title, description); }
-
     private void InitControllers()
     {
         InitController(entityHandler);
@@ -194,7 +188,7 @@ public class BuilderInWorldEditor : IBIWEditor
         creatorController?.CleanUp();
     }
 
-    public void EnterEditMode(IParcelScene sceneToEdit)
+    public void EnterEditMode(IBuilderScene sceneToEdit)
     {
         this.sceneToEdit = sceneToEdit;
 
@@ -207,11 +201,13 @@ public class BuilderInWorldEditor : IBIWEditor
 
         if ( context.editorContext.editorHUD != null)
         {
-            context.editorContext.editorHUD.SetParcelScene(sceneToEdit);
+            context.editorContext.editorHUD.SetParcelScene(sceneToEdit.scene);
             context.editorContext.editorHUD.RefreshCatalogContent();
             context.editorContext.editorHUD.RefreshCatalogAssetPack();
             context.editorContext.editorHUD.SetVisibilityOfCatalog(true);
             context.editorContext.editorHUD.SetVisibilityOfInspector(true);
+            if (sceneToEdit.HasBeenCreatedThisSession())
+                context.editorContext.editorHUD.NewSceneForLand(sceneToEdit);
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
@@ -235,7 +231,8 @@ public class BuilderInWorldEditor : IBIWEditor
 
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
-        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
+
+        BIWAnalytics.AddSceneInfo(sceneToEdit.scene.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit.scene).ToString(), BIWUtils.GetSceneSize(sceneToEdit.scene));
     }
 
     public void ExitEditMode()
@@ -280,7 +277,7 @@ public class BuilderInWorldEditor : IBIWEditor
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
 
-    public void InmediateExit() { builderInWorldBridge.ExitKernelEditMode(sceneToEdit); }
+    public void InmediateExit() { builderInWorldBridge.ExitKernelEditMode(sceneToEdit.scene); }
 
     public void EnterBiwControllers()
     {
@@ -290,7 +287,7 @@ public class BuilderInWorldEditor : IBIWEditor
         }
 
         //Note: This audio should inside the controllers, it is here because it is still a monobehaviour
-        biwAudioHandler.EnterEditMode(sceneToEdit);
+        biwAudioHandler.EnterEditMode(sceneToEdit.scene);
     }
 
     public void ExitBiwControllers()
@@ -304,7 +301,7 @@ public class BuilderInWorldEditor : IBIWEditor
             biwAudioHandler.ExitEditMode();
     }
 
-    public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
+    public bool IsNewScene() { return sceneToEdit.scene.entities.Count <= 0; }
 
     public void SetupNewScene() { floorHandler.CreateDefaultFloor(); }
 }

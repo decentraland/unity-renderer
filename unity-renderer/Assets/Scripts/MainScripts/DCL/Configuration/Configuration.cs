@@ -9,7 +9,7 @@ namespace DCL.Configuration
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks?owner=";
         public const string BASE_URL_BUILDER_API = "https://builder-api.decentraland.{ENV}/v1";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
-        
+
         public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-api.decentraland.{ENV}/v1/projects/{id}/media/";
 
         public static readonly LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
@@ -21,8 +21,6 @@ namespace DCL.Configuration
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
 
-        public const int PARCEL_SIZE_METERS = 16;
-
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
         public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";
         public const string FLOOR_CATEGORY = "ground";
@@ -30,6 +28,14 @@ namespace DCL.Configuration
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";
         public const string VOXEL_TAG = "Voxel";
         public const string CUSTOM_LAND = "CUSTOM LAND";
+
+        //Scene files
+        public const string BUILDER_SCENE_STATE_DEFINITION_FILE_NAME = "scene-state-definition.json";
+        public const string BUILDER_SCENE_ASSET_FILE_NAME = "scene-assets.json";
+
+        //Builder API
+        public const string PROJECT_NOT_FOUND = "Project doesn't exists";
+        public const int MANIFEST_VERSION = 10;
 
         //Inputs
         public static float MOUSE_THRESHOLD_FOR_DRAG = 15f;

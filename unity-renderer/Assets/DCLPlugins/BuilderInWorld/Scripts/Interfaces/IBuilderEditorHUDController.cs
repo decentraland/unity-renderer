@@ -10,7 +10,6 @@ public interface IBuilderEditorHUDController
 {
     event Action OnUndoAction;
     event Action OnRedoAction;
-    event Action OnCatalogOpen;
     event Action OnResetAction;
     event Action OnChangeModeAction;
     event Action OnChangeSnapModeAction;
@@ -35,12 +34,10 @@ public interface IBuilderEditorHUDController
     event Action OnStopInput;
     event Action OnResumeInput;
     event Action<string, string, string> OnConfirmPublishAction;
-    event Action<string, string, string> OnSaveSceneInfoAction;
     void Initialize(IContext context);
     void Dispose();
     void RefreshCatalogAssetPack();
     void RefreshCatalogContent();
-    void SetBuilderProjectInfo(string title, string description);
     void ExitStart();
     void SetParcelScene(IParcelScene sceneToEdit);
     void SetVisibilityOfCatalog(bool b);
@@ -51,22 +48,20 @@ public interface IBuilderEditorHUDController
     void ActivateGodModeUI();
     void SetActionsButtonsInteractable(bool areInteratable);
     void SetGizmosActive(string gizmos);
-    void SetBuilderProjectScreenshot(Texture2D sceneSnapshot);
-    void NewProjectStart(Texture2D sceneSnapshot);
     event Action<CatalogItem> OnCatalogItemSelected;
     event Action<CatalogItem> OnCatalogItemDropped;
     BuildModeCatalogSection GetCatalogSectionSelected();
     void HideExtraBtns();
     void ShowSceneLimitsPassed();
-    void SaveSceneInfo();
     void SceneSaved();
-    void PublishStart();
+    void PublishStart(IBuilderScene scene);
     void PublishEnd(bool isOk, string message);
     void SetPublishBtnAvailability(bool canPublish, string feedbackMessage);
     void SetRedoButtonInteractable(bool canRedoAction);
     void SetUndoButtonInteractable(bool canUndoAction);
     void UpdateEntitiesSelection(int selectedEntitiesCount);
     void SetEntityList(List<BIWEntity> getEntitiesInCurrentScene);
+    void NewSceneForLand(IBuilderScene scene);
     void HideEntityInformation();
     void UpdateSceneLimitInfo();
     void EntityInformationSetEntity(BIWEntity entityEditable, IParcelScene sceneToEdit);
