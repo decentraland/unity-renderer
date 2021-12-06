@@ -17,9 +17,15 @@ namespace Tests
         protected virtual IEnumerator SetUp()
         {
             ServiceLocator serviceLocator = DCL.Tests.ServiceLocatorFactory.CreateMocked();
-            Environment.Setup(serviceLocator);
             InitializeServices(serviceLocator);
+            Environment.Setup(serviceLocator);
+
             AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
+
+            var sceneController = serviceLocator.Get<ISceneController>();
+            sceneController.prewarmSceneMessagesPool = false;
+            sceneController.prewarmEntitiesPool = false;
+            sceneController.prewarmShaders = false;
 
             yield break;
         }

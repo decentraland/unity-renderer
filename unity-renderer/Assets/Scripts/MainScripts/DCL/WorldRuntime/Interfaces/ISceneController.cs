@@ -10,6 +10,7 @@ namespace DCL
         bool deferredMessagesDecoding { get; set; }
         bool prewarmSceneMessagesPool { get; set; }
         bool prewarmEntitiesPool { get; set; }
+        bool prewarmShaders { get; set; }
         void Update();
         void LateUpdate();
         void ParseQuery(object payload, string sceneId);

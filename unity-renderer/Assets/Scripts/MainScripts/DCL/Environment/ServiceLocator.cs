@@ -12,20 +12,6 @@ namespace DCL
         private Dictionary<Type, IService> services = new Dictionary<Type, IService>();
         private Dictionary<Type, ServiceBuilder> serviceBuilders = new Dictionary<Type, ServiceBuilder>();
 
-        public void Unregister<T>(ServiceBuilder data) where T : IService
-        {
-            Type type = typeof(T);
-            Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );
-
-            if (!serviceBuilders.ContainsKey(type))
-            {
-                Debug.LogWarning($"Trying to unregister non-existent type! type: {type.FullName}");
-                return;
-            }
-
-            serviceBuilders.Remove(type);
-        }
-
         public ServiceBuilder Register<T>(ServiceBuilder data) where T : IService
         {
             Type type = typeof(T);
@@ -41,14 +27,34 @@ namespace DCL
             return data;
         }
 
+        public void Unregister<T>(ServiceBuilder data) where T : IService
+        {
+            Type type = typeof(T);
+            Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );
+
+            if (!serviceBuilders.ContainsKey(type))
+            {
+                Debug.LogWarning($"Trying to unregister non-existent type! type: {type.FullName}");
+                return;
+            }
+
+            serviceBuilders.Remove(type);
+        }
+
         public T Get<T>() where T : class, IService
         {
             Type type = typeof(T);
             Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );
 
+            if (!serviceBuilders.ContainsKey(type))
+            {
+                Debug.LogWarning($"Not registered! use Register<T> to set the type builder first and then Initialize() to create it. type: {type.FullName}");
+                return null;
+            }
+
             if (!services.ContainsKey(type))
             {
-                Debug.LogWarning($"Not registered! use Set<T> to set the type first. type: {type.FullName}");
+                Debug.LogWarning($"Not initialized! use Initialize() to create this service. type: {type.FullName}");
                 return null;
             }
 
@@ -57,13 +63,18 @@ namespace DCL
 
         public void Initialize()
         {
-            Dispose();
+            foreach ( var service in services )
+            {
+                service.Value.Dispose();
+            }
 
             services.Clear();
 
-            foreach ( var builder in serviceBuilders )
+            foreach ( var kvp in serviceBuilders )
             {
-                services.Add( builder.Key, builder.Value.Invoke() );
+                var builderType = kvp.Key;
+                var builder = kvp.Value;
+                services.Add( builderType, builder.Invoke() );
             }
 
             foreach ( var service in services )
@@ -78,6 +89,9 @@ namespace DCL
             {
                 service.Value.Dispose();
             }
+
+            services.Clear();
+            serviceBuilders.Clear();
         }
     }
 }

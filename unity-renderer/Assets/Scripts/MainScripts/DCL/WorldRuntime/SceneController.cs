@@ -19,10 +19,15 @@ namespace DCL
 
         public bool enabled { get; set; } = true;
 
+        //TODO(Brian): Move to WorldRuntimePlugin later
+        private LoadingFeedbackController loadingFeedbackController;
+
         private Coroutine deferredDecodingCoroutine;
 
         public void Initialize()
         {
+            loadingFeedbackController = new LoadingFeedbackController();
+
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
             if (deferredMessagesDecoding) // We should be able to delete this code
@@ -32,16 +37,6 @@ namespace DCL
 
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
-            //TODO(Brian): Move those subscriptions elsewhere.
-            PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
-            PoolManager.i.OnGet += Environment.i.platform.physicsSyncController.MarkDirty;
-
-            PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
-            PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
-
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-            
             if (prewarmSceneMessagesPool)
             {
                 for (int i = 0; i < 100000; i++)
@@ -55,11 +50,11 @@ namespace DCL
                 PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
             }
 
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-
-            // Warmup some shader variants
-            Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
+            if ( prewarmShaders )
+            {
+                // Warmup some shader variants
+                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
+            }
         }
 
         public SceneController ()
@@ -102,6 +97,8 @@ namespace DCL
 
         public void Dispose()
         {
+            loadingFeedbackController.Dispose();
+
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -860,6 +857,7 @@ namespace DCL
 
         public bool prewarmSceneMessagesPool { get; set; } = true;
         public bool prewarmEntitiesPool { get; set; } = true;
+        public bool prewarmShaders { get; set; } = true;
 
         private bool sceneSortDirty = false;
         private bool positionDirty = true;

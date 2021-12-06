@@ -14,16 +14,9 @@ namespace DCL
         /// </summary>
         public static void Setup(ServiceLocator serviceLocator)
         {
+            i.Dispose();
             i = new Model(serviceLocator);
             serviceLocator.Initialize();
-        }
-
-        /// <summary>
-        /// Dispose() and Setup() using the current environment configuration.
-        /// </summary>
-        public static void Reset()
-        {
-            Dispose();
         }
 
         /// <summary>
