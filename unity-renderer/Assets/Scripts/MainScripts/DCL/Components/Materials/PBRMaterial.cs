@@ -17,7 +17,6 @@ namespace DCL.Components
 
             public Color albedoColor = Color.white;
             public string albedoTexture;
-            public Color ambientColor = Color.white;
             public float metallic = 0.5f;
             public float roughness = 0.5f;
             public float microSurface = 1f; // Glossiness
@@ -27,12 +26,9 @@ namespace DCL.Components
             public string emissiveTexture;
             public Color emissiveColor = Color.black;
             public float emissiveIntensity = 2f;
-            public Color reflectionColor = Color.white; // Specular color
             public Color reflectivityColor = Color.white;
             public float directIntensity = 1f;
-            public float environmentIntensity = 1f;
             public string bumpTexture;
-            public string refractionTexture;
             public bool castShadows = true;
 
             [Range(0, 4)]
