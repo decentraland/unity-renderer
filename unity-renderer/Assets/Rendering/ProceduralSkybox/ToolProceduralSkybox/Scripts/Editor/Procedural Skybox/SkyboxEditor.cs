@@ -313,7 +313,7 @@ namespace DCL.Skybox
             temp = ScriptableObject.CreateInstance<SkyboxConfiguration>();
             temp.skyboxID = name;
 
-            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/ToolProceduralSkybox/Scripts/Resources/Skybox Configurations/" + name + ".asset");
+            string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Rendering/ProceduralSkybox/Resources/Skybox Configurations/" + name + ".asset");
             AssetDatabase.CreateAsset(temp, path);
             AssetDatabase.SaveAssets();
 

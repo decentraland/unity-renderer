@@ -19,6 +19,7 @@ namespace DCL.Skybox
             {
                 timer = 0;
                 environmentProbe.RenderProbe();
+                Debug.Log("Procedural Skybox :: Render Probe");
             }
         }
     }

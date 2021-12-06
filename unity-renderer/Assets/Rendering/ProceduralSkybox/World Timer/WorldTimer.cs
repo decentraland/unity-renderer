@@ -32,6 +32,7 @@ namespace DCL.ServerTime
 
         private void WebRequestCompleted(AsyncOperation obj)
         {
+            Debug.Log("Procedural Skybox :: Timer request completed: " + webRequest.result);
             switch (webRequest.result)
             {
                 case UnityWebRequest.Result.InProgress:
@@ -72,7 +73,7 @@ namespace DCL.ServerTime
         public DateTime GetCurrentTime()
         {
             TimeSpan systemTimeOffset = DateTime.Now - lastTimeFromSystem;
-
+            Debug.Log("Procedural Skybox :: Returning time: " + lastTimeFromServer.ToUniversalTime().Add(systemTimeOffset));
             return lastTimeFromServer.ToUniversalTime().Add(systemTimeOffset);
         }
     }
