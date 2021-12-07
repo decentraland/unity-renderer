@@ -127,6 +127,7 @@ namespace DCL
 
         protected virtual void InitializeSceneDependencies()
         {
+            //TODO: sceneReferences.biwBridgeGameObject
             MainSceneFactory.CreateBridges();
             MainSceneFactory.CreateMouseCatcher();
             MainSceneFactory.CreatePlayerSystems();

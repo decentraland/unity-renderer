@@ -18,10 +18,12 @@ namespace Tests
         private ParcelScene scene;
         private ISceneController sceneController => DCL.Environment.i.world.sceneController;
 
+        [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
+            CommonScriptableObjects.rendererState.Set(true);
         }
 
         public DCLAudioClip CreateAudioClip(string url, bool loop, bool shouldTryToLoad, double volume)

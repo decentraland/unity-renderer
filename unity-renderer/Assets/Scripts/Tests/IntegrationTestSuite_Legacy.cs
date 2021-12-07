@@ -82,6 +82,8 @@ public class IntegrationTestSuite_Legacy
         //     yield break;
         // }
 
+        legacySystems = SetUp_LegacySystems();
+
         RenderProfileManifest.i.Initialize();
 
         Environment.SetupWithBuilders
@@ -93,8 +95,6 @@ public class IntegrationTestSuite_Legacy
         );
 
         SetUp_SceneController();
-
-        legacySystems = SetUp_LegacySystems();
 
         // SetUp_TestScene();
         //

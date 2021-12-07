@@ -17,6 +17,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     private IContext context;
     private ParcelScene scene;
 
+    [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
@@ -46,6 +47,8 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityHandler.EnterEditMode(scene);
         biwFloorHandler.EnterEditMode(scene);
         biwCreatorController.EnterEditMode(scene);
+
+        Debug.Log("SETUP");
     }
 
     [Test]

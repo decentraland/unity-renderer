@@ -47,7 +47,6 @@ namespace DCL.Builder
             IBIWGizmosController gizmosController,
             ISceneReferences sceneReferences)
         {
-
             projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
             inputsReferencesAsset = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
 
@@ -76,12 +75,13 @@ namespace DCL.Builder
                 gizmosController,
                 sceneReferences
             );
-
         }
 
         public void Dispose()
         {
+            Debug.Log("1");
             editorContext.Dispose();
+            Debug.Log("2");
             panelHUD.Dispose();
             projectReferencesAsset = null;
             inputsReferencesAsset = null;
@@ -90,7 +90,6 @@ namespace DCL.Builder
 
     public class EditorContext : IEditorContext
     {
-
         private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
         private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
 
@@ -158,22 +157,38 @@ namespace DCL.Builder
 
         public void Dispose()
         {
+            Debug.Log("a");
             editorHUD.Dispose();
 
+            Debug.Log("b");
             outlinerController.Dispose();
+            Debug.Log("c");
             inputHandler.Dispose();
+            Debug.Log("d");
             inputWrapper.Dispose();
+            Debug.Log("e");
             publishController.Dispose();
+            Debug.Log("f");
             creatorController.Dispose();
+            Debug.Log("g");
             modeController.Dispose();
+            Debug.Log("h");
             floorHandler.Dispose();
+            Debug.Log("j");
             entityHandler.Dispose();
+            Debug.Log("k");
             actionController.Dispose();
+            Debug.Log("l");
             saveController.Dispose();
+            Debug.Log("m");
             raycastController.Dispose();
+            Debug.Log("n");
             gizmosController.Dispose();
+            Debug.Log("o");
 
             sceneReferences.Dispose();
+            Debug.Log("p");
+
 
             godModeDynamicVariablesAssetReference = null;
             firstPersonDynamicVariablesAssetReference = null;
