@@ -84,8 +84,6 @@ public class HUDController : IHUDController
 
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
-    public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
-
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
 
     public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
@@ -290,14 +288,6 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.CONTROLS_HUD:
                 CreateHudElement(configuration, hudElementId);
-                break;
-            case HUDElementID.EXPLORE_HUD:
-                CreateHudElement(configuration, hudElementId);
-                if (exploreHud != null)
-                {
-                    exploreHud.Initialize(FriendsController.i);
-                }
-
                 break;
             case HUDElementID.HELP_AND_SUPPORT_HUD:
                 CreateHudElement(configuration, hudElementId);
