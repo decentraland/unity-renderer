@@ -9,20 +9,20 @@ namespace DCL
 {
     public class SceneReferences : Singleton<SceneReferences>, ISceneReferences
     {
-        public MouseCatcher mouseCatcher { get; private set; }
-        public GameObject groundVisual { get; private set; }
-        public GameObject biwCameraParent { get; private set; }
-        public InputController inputController { get; private set; }
-        public GameObject cursorCanvas { get; private set; }
-        public GameObject biwBridgeGameObject { get; private set; }
-        public PlayerAvatarController playerAvatarController { get; private set; }
-        public CameraController cameraController { get; private set; }
-        public UnityEngine.Camera mainCamera { get; private set; }
-        public GameObject bridgeGameObject { get; private set; }
-        public Light environmentLight { get; private set; }
-        public Volume postProcessVolume { get; private set; }
-        public CinemachineFreeLook thirdPersonCamera { get; private set; }
-        public CinemachineVirtualCamera firstPersonCamera { get; private set; }
+        public MouseCatcher mouseCatcher { get; internal set; }
+        public GameObject groundVisual { get; internal set; }
+        public GameObject biwCameraParent { get; internal set; }
+        public InputController inputController { get; internal set; }
+        public GameObject cursorCanvas { get; internal set; }
+        public GameObject biwBridgeGameObject { get; internal set; }
+        public PlayerAvatarController playerAvatarController { get; internal set; }
+        public CameraController cameraController { get; internal set; }
+        public UnityEngine.Camera mainCamera { get; internal set; }
+        public GameObject bridgeGameObject { get; internal set; }
+        public Light environmentLight { get; internal set; }
+        public Volume postProcessVolume { get; internal set; }
+        public CinemachineFreeLook thirdPersonCamera { get; internal set; }
+        public CinemachineVirtualCamera firstPersonCamera { get; internal set; }
         public void Dispose() {  }
 
         public void Initialize(MouseCatcher mouseCatcher,
@@ -56,5 +56,4 @@ namespace DCL
             this.firstPersonCamera = firstPersonCamera;
         }
     }
-
 }

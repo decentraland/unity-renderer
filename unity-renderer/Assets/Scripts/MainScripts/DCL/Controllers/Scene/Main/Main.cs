@@ -127,38 +127,14 @@ namespace DCL
 
         protected virtual void InitializeSceneDependencies()
         {
-            var bridges = Init("Bridges");
-            var mouseCatcher = Init("MouseCatcher").GetComponent<MouseCatcher>();
-            var environment = Init("Environment").GetComponent<EnvironmentReferences>();
-            var playerReferences = Init("Player").GetComponent<PlayerReferences>();
-
-            Init("HUDController");
-            Init("HUDAudioHandler");
-            Init("NavMap");
-            Init("SettingsController");
-
-            SceneReferences.i.Initialize(
-                mouseCatcher,
-                environment.ground,
-                playerReferences.biwCameraRoot,
-                playerReferences.inputController,
-                playerReferences.cursorCanvas,
-                gameObject,
-                playerReferences.avatarController,
-                playerReferences.cameraController,
-                playerReferences.mainCamera,
-                bridges,
-                environment.environmentLight,
-                environment.postProcessVolume,
-                playerReferences.thirdPersonCamera,
-                playerReferences.firstPersonCamera);
-        }
-
-        private static GameObject Init(string name)
-        {
-            GameObject instance = Instantiate(Resources.Load(name)) as GameObject;
-            instance.name = name;
-            return instance;
+            MainSceneFactory.CreateBridges();
+            MainSceneFactory.CreateMouseCatcher();
+            MainSceneFactory.CreatePlayer();
+            MainSceneFactory.CreateEnvironment();
+            MainSceneFactory.CreateAudioHandler();
+            MainSceneFactory.CreateHudController();
+            MainSceneFactory.CreateSettingsController();
+            MainSceneFactory.CreateNavMap();
         }
     }
 }
