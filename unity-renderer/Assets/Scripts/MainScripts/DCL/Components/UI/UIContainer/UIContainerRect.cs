@@ -15,8 +15,6 @@ namespace DCL.Components
         {
             public float thickness = 0f;
             public Color color = Color.clear;
-            public bool adaptWidth = false;
-            public bool adaptHeight = false;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }

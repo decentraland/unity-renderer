@@ -42,7 +42,6 @@ public class UITextVisualTests : UIVisualTestsBase
             outlineColor = Color.green,
             color = Color.red,
             fontSize = 100,
-            fontWeight = "normal",
             opacity = 1,
             value = "Hello World!",
             lineSpacing = 0,
