@@ -1,30 +1,37 @@
 using UnityEngine;
 
-public class StickersController : MonoBehaviour
+namespace DCL
 {
-    private StickersFactory stickersFactory;
-
-    private void Awake() { stickersFactory = Resources.Load<StickersFactory>("StickersFactory"); }
-
-    public void PlaySticker(string id)
+    public class StickersController : MonoBehaviour
     {
-        PlaySticker(id, transform.position, Vector3.zero, true);
-    }
+        private StickersFactory stickersFactory;
 
-    public void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform)
-    {
-        if (stickersFactory == null || !stickersFactory.TryGet(id, out GameObject prefab))
-            return;
+        private void Awake() { stickersFactory = Resources.Load<StickersFactory>("StickersFactory"); }
 
-        GameObject emoteGameObject = Instantiate(prefab);
-        emoteGameObject.transform.position += position;
-        emoteGameObject.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
-
-        if (followTransform)
+        public void PlaySticker(string id)
         {
-            FollowObject emoteFollow = emoteGameObject.AddComponent<FollowObject>();
-            emoteFollow.target = transform;
-            emoteFollow.offset = prefab.transform.position;
+            PlaySticker(id, transform.position, Vector3.zero, true);
+        }
+
+        public void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform)
+        {
+            if (stickersFactory == null || !stickersFactory.TryGet(id, out GameObject prefab))
+                return;
+
+            // TODO(Brian): Mock this system properly through our service locators or plugin system
+            if (DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
+                return;
+
+            GameObject emoteGameObject = Instantiate(prefab);
+            emoteGameObject.transform.position += position;
+            emoteGameObject.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
+
+            if (followTransform)
+            {
+                FollowObject emoteFollow = emoteGameObject.AddComponent<FollowObject>();
+                emoteFollow.target = transform;
+                emoteFollow.offset = prefab.transform.position;
+            }
         }
     }
 }
