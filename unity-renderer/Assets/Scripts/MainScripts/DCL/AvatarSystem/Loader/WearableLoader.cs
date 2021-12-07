@@ -1,3 +1,4 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using UnityEngine;
@@ -19,9 +20,14 @@ namespace AvatarSystem
             this.retriever = retriever;
         }
 
-        public async UniTask Load(GameObject container, AvatarSettings settings)
+        public async UniTask Load( GameObject container, AvatarSettings settings, CancellationToken ct = default)
         {
-            // TODO: Add cancellation token
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
+
             bool bodyshapeDirty = currentSettings.bodyshapeId != settings.bodyshapeId;
             currentSettings = settings;
             if (status == IWearableLoader.Status.Succeeded && !bodyshapeDirty)
@@ -37,11 +43,21 @@ namespace AvatarSystem
             {
                 status = IWearableLoader.Status.Failed;
                 if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
-                    await FallbackToDefault();
+                    await FallbackToDefault(ct);
+
+                if (ct.IsCancellationRequested)
+                {
+                    Dispose();
+                }
                 return;
             }
 
-            await retriever.Retrieve(container, wearable.GetContentProvider(settings.bodyshapeId), wearable.baseUrlBundles, representation.mainFile);
+            await retriever.Retrieve(container, wearable.GetContentProvider(settings.bodyshapeId), wearable.baseUrlBundles, representation.mainFile, ct);
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
 
             if (rendereable != null)
             {
@@ -53,10 +69,16 @@ namespace AvatarSystem
             status = IWearableLoader.Status.Failed;
 
             if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
-                await FallbackToDefault();
+            {
+                await FallbackToDefault(ct);
+                if (ct.IsCancellationRequested)
+                {
+                    Dispose();
+                }
+            }
         }
 
-        private async UniTask FallbackToDefault()
+        private async UniTask FallbackToDefault(CancellationToken ct)
         {
             status = IWearableLoader.Status.Failed;
             //TODO load a default wearable

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using UnityEngine;
@@ -45,12 +46,17 @@ namespace AvatarSystem
             mouthRetriever = retrieverFactory.GetFacialFeatureRetriever();
         }
 
-        public async UniTask Load(GameObject container, AvatarSettings avatarSettings)
+        public async UniTask Load( GameObject container, AvatarSettings avatarSettings, CancellationToken ct = default)
         {
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
+
             status = IWearableLoader.Status.Idle;
 
-            //TODO reuse bodyshape if succeeded
-            await LoadWearable(container);
+            await LoadWearable(container, ct);
             if (rendereable == null)
             {
                 status = IWearableLoader.Status.Failed;
@@ -58,13 +64,6 @@ namespace AvatarSystem
             }
 
             (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
-            headRenderer.enabled = avatarSettings.headVisible;
-            lowerBodyRenderer.enabled = avatarSettings.lowerbodyVisible;
-            upperBodyRenderer.enabled = avatarSettings.upperbodyVisible;
-            feetRenderer.enabled = avatarSettings.feetVisible;
-            eyesRenderer.enabled = true;
-            eyebrowsRenderer.enabled = true;
-            mouthRenderer.enabled = true;
 
             AvatarSystemUtils.PrepareMaterialColors(rendereable, avatarSettings.skinColor, avatarSettings.hairColor);
 
@@ -72,11 +71,16 @@ namespace AvatarSystem
             (string eyebrowsMainTextureUrl, string eyebrowsMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, eyebrows);
             (string mouthMainTextureUrl, string mouthMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, mouth);
 
-            UniTask<(Texture main, Texture mask)> eyesTask = eyesRetriever.Retrieve(eyesMainTextureUrl, eyesMaskTextureUrl);
-            UniTask<(Texture main, Texture mask)> eyebrowsTask = eyebrowsRetriever.Retrieve(eyebrowsMainTextureUrl, eyebrowsMaskTextureUrl);
-            UniTask<(Texture main, Texture mask)> mouthTask = mouthRetriever.Retrieve(mouthMainTextureUrl, mouthMaskTextureUrl);
+            UniTask<(Texture main, Texture mask)> eyesTask = eyesRetriever.Retrieve(eyesMainTextureUrl, eyesMaskTextureUrl, ct);
+            UniTask<(Texture main, Texture mask)> eyebrowsTask = eyebrowsRetriever.Retrieve(eyebrowsMainTextureUrl, eyebrowsMaskTextureUrl, ct);
+            UniTask<(Texture main, Texture mask)> mouthTask = mouthRetriever.Retrieve(mouthMainTextureUrl, mouthMaskTextureUrl, ct);
 
             var (eyesResult, eyebrowsResult, mouthResult) = await (eyesTask, eyebrowsTask, mouthTask);
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
 
             eyesRenderer.material = new Material(Resources.Load<Material>("Eye Material"));
             eyesRenderer.material.SetTexture(AvatarSystemUtils._EyesTexture, eyesResult.main);
@@ -97,35 +101,36 @@ namespace AvatarSystem
             mouthRenderer.material.SetColor(AvatarSystemUtils._BaseColor, avatarSettings.skinColor);
         }
 
-        private async UniTask<Rendereable> LoadWearable(GameObject container)
+        private async UniTask<Rendereable> LoadWearable(GameObject container, CancellationToken ct)
         {
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return null;
+            }
+
             bodyshapeRetriever.Dispose();
 
-            var representation = wearable.GetRepresentation(wearable.id);
+            WearableItem.Representation representation = wearable.GetRepresentation(wearable.id);
             if (representation == null)
             {
                 status = IWearableLoader.Status.Failed;
                 return null;
             }
-            return await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile);
-        }
 
-        public List<SkinnedMeshRenderer> GetEnabledBodyparts()
-        {
-            List<SkinnedMeshRenderer> result = new List<SkinnedMeshRenderer>();
-            if (headRenderer.enabled)
-                result.Add(headRenderer);
-            if (upperBodyRenderer.enabled)
-                result.Add(upperBodyRenderer);
-            if (lowerBodyRenderer.enabled)
-                result.Add(lowerBodyRenderer);
-            if (feetRenderer.enabled)
-                result.Add(feetRenderer);
-            return result;
+            Rendereable resultRendereable = await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile, ct);
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return null;
+            }
+
+            return resultRendereable;
         }
 
         public void Dispose()
         {
+            status = IWearableLoader.Status.Idle;
             bodyshapeRetriever?.Dispose();
             eyesRetriever?.Dispose();
             eyebrowsRetriever?.Dispose();

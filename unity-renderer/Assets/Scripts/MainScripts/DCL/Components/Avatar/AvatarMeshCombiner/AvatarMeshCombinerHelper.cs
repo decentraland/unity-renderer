@@ -63,7 +63,7 @@ namespace DCL
             SkinnedMeshRenderer[] renderers = renderersToCombine;
 
             // Sanitize renderers list
-            renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
+            renderers = renderers.Where( (x) => x != null && x.sharedMesh != null ).ToArray();
 
             if ( renderers.Length == 0 )
                 return false;

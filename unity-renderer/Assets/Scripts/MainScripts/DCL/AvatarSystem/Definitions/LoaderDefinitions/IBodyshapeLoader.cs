@@ -16,7 +16,5 @@ namespace AvatarSystem
         SkinnedMeshRenderer feetRenderer { get; }
         SkinnedMeshRenderer upperBodyRenderer { get; }
         SkinnedMeshRenderer lowerBodyRenderer { get; }
-
-        List<SkinnedMeshRenderer> GetEnabledBodyparts();
     }
 }

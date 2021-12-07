@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
@@ -9,6 +10,7 @@ namespace AvatarSystem
 {
     public class Loader : ILoader
     {
+        public GameObject bodyshapeContainer => bodyshapeLoader?.rendereable?.container;
         public Renderer combinedRenderer { get; private set; }
         public Renderer eyesRenderer { get; private set; }
         public Renderer eyebrowsRenderer { get; private set; }
@@ -28,9 +30,13 @@ namespace AvatarSystem
             this.container = container;
         }
 
-        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings)
+        public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
         {
-            // TODO: Add cancellation token
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
 
             status = ILoader.Status.Loading;
             // TODO Reuse loaders with wearables that are already loaded
@@ -44,14 +50,25 @@ namespace AvatarSystem
                 loaders.Add(wearable.data.category, wearableLoaderFactory.GetWearableLoader(wearable));
             }
 
-            await bodyshapeLoader.Load(container, settings);
+            await bodyshapeLoader.Load(container, settings, ct);
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
+
             if (bodyshapeLoader.status == IWearableLoader.Status.Failed)
             {
                 status = ILoader.Status.Failed_Mayor;
                 return;
             }
 
-            await loaders.Values.Select(x => x.Load(container, settings));
+            await UniTask.WhenAll(loaders.Values.Select(x => x.Load(container, settings, ct)));
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
 
             // Update Status accordingly
             status = ComposeStatus(loaders);
@@ -64,7 +81,7 @@ namespace AvatarSystem
 
             AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
 
-            if (!MergeAvatar(bodyshapeLoader.GetEnabledBodyparts().Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out Renderer combinedRenderer))
+            if (!MergeAvatar(AvatarSystemUtils.GetActiveBodyparts(bodyshapeLoader, settings).Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out Renderer combinedRenderer))
             {
                 status = ILoader.Status.Failed_Mayor;
                 //TODO Dispose properly
@@ -75,6 +92,12 @@ namespace AvatarSystem
             eyesRenderer = bodyshapeLoader.eyesRenderer;
             eyebrowsRenderer = bodyshapeLoader.eyebrowsRenderer;
             mouthRenderer = bodyshapeLoader.mouthRenderer;
+
+            this.combinedRenderer.enabled = true;
+            eyesRenderer.enabled = true;
+            eyebrowsRenderer.enabled = true;
+            mouthRenderer.enabled = true;
+            container.SetActive(false);
         }
 
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers, out Renderer renderer)
@@ -123,6 +146,10 @@ namespace AvatarSystem
             loaders.Clear();
         }
 
-        public void Dispose() { ClearLoaders(); }
+        public void Dispose()
+        {
+            status = ILoader.Status.Idle;
+            ClearLoaders();
+        }
     }
 }

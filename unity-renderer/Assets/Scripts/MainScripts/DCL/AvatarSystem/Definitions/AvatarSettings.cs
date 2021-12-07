@@ -44,4 +44,5 @@ namespace AvatarSystem
         /// </summary>
         public Color eyesColor;
     }
+
 }

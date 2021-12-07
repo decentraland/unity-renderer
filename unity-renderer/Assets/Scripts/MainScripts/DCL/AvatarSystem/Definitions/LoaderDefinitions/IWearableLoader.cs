@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using UnityEngine;
@@ -18,6 +19,6 @@ namespace AvatarSystem
         WearableItem wearable { get; }
         Rendereable rendereable { get; }
         Status status { get; }
-        UniTask Load(GameObject container, AvatarSettings avatarSettings);
+        UniTask Load(GameObject container, AvatarSettings avatarSettings, CancellationToken ct = default);
     }
 }

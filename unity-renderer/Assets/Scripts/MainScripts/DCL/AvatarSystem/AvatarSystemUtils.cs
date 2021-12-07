@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -17,6 +20,7 @@ namespace AvatarSystem
         public static int _TintMask = Shader.PropertyToID("_TintMask");
 
         public static bool IsCategoryRequired(string category) { return true; }
+
         public static bool UseAssetBundles()
         {
             var featureFlags = DataStore.i.featureFlags.flags.Get();
@@ -147,6 +151,20 @@ namespace AvatarSystem
                     mouth = renderer;
             }
             return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);
+        }
+
+        public static List<SkinnedMeshRenderer> GetActiveBodyparts(IBodyshapeLoader bodyshapeLoader, AvatarSettings settings)
+        {
+            List<SkinnedMeshRenderer> result = new List<SkinnedMeshRenderer>();
+            if (settings.headVisible)
+                result.Add(bodyshapeLoader.headRenderer);
+            if (settings.upperbodyVisible)
+                result.Add(bodyshapeLoader.upperBodyRenderer);
+            if (settings.lowerbodyVisible)
+                result.Add(bodyshapeLoader.lowerBodyRenderer);
+            if (settings.feetVisible)
+                result.Add(bodyshapeLoader.feetRenderer);
+            return result;
         }
     }
 }

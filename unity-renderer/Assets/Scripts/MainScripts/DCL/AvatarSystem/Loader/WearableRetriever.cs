@@ -1,3 +1,4 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
@@ -12,9 +13,14 @@ namespace AvatarSystem
 
         private RendereableAssetLoadHelper loaderAssetHelper;
 
-        public async UniTask<Rendereable> Retrieve(GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile)
+        public async UniTask<Rendereable> Retrieve(   GameObject container, ContentProvider contentProvider, string baseUrl, string mainFile, CancellationToken ct = default)
         {
-            // TODO: Add cancellation token
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return null;
+            }
+
             loaderAssetHelper?.Unload();
 
             loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl);
@@ -45,8 +51,13 @@ namespace AvatarSystem
             loaderAssetHelper.OnSuccessEvent += OnSuccessWrapper;
             loaderAssetHelper.OnFailEvent += OnFailEventWrapper;
             loaderAssetHelper.Load(mainFile, AvatarSystemUtils.UseAssetBundles() ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY);
-            await UniTask.WaitUntil(() => done);
-            return (rendereable);
+            await UniTask.WaitUntil(() => done, cancellationToken: ct);
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return null;
+            }
+            return rendereable;
         }
 
         public void Dispose() { loaderAssetHelper?.Unload(); }
