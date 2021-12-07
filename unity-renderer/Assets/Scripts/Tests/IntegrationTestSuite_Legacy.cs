@@ -118,6 +118,8 @@ public class IntegrationTestSuite_Legacy
         result.Add(MainSceneFactory.CreateHudController());
         result.Add(MainSceneFactory.CreateMouseCatcher());
         result.Add(MainSceneFactory.CreateSettingsController());
+        result.Add(MainSceneFactory.CreateEventSystem());
+        result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
         return result;
     }
 
@@ -137,10 +139,13 @@ public class IntegrationTestSuite_Legacy
     {
         yield return null;
 
+        Debug.Log("A");
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
+        Debug.Log("B");
         yield return TearDown_LegacySystems();
+        Debug.Log("C");
         // if (DCLCharacterController.i != null)
         // {
         //     DCLCharacterController.i.ResumeGravity();
@@ -152,7 +157,6 @@ public class IntegrationTestSuite_Legacy
 
         Environment.Dispose();
         DataStore.Clear();
-
         TearDown_Memory();
 
         if (MapRenderer.i != null)

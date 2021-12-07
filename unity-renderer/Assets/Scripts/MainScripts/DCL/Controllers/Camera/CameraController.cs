@@ -29,9 +29,11 @@ namespace DCL.Camera
         internal Dictionary<CameraMode.ModeId, CameraStateBase> cachedModeToVirtualCamera;
 
         public delegate void CameraBlendStarted();
+
         public event CameraBlendStarted onCameraBlendStarted;
 
         public delegate void CameraBlendFinished();
+
         public event CameraBlendFinished onCameraBlendFinished;
 
         private bool wasBlendingLastFrame;
@@ -62,7 +64,7 @@ namespace DCL.Camera
             {
                 while (iterator.MoveNext())
                 {
-                    iterator.Current.Value.Init(camera);
+                    iterator.Current.Value.Initialize(camera);
                 }
             }
 
@@ -98,6 +100,7 @@ namespace DCL.Camera
                     return true;
                 }
             }
+
             searchedCameraState = null;
             return false;
         }
@@ -184,6 +187,14 @@ namespace DCL.Camera
 
         private void OnDestroy()
         {
+            using (var iterator = cachedModeToVirtualCamera.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.Cleanup();
+                }
+            }
+
             worldOffset.OnChange -= OnWorldReposition;
             cameraChangeAction.OnTriggered -= OnCameraChangeAction;
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;

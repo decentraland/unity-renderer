@@ -136,6 +136,8 @@ namespace DCL
             MainSceneFactory.CreateHudController();
             MainSceneFactory.CreateSettingsController();
             MainSceneFactory.CreateNavMap();
+            MainSceneFactory.CreateEventSystem();
+            MainSceneFactory.CreateInteractionHoverCanvas();
         }
     }
 }

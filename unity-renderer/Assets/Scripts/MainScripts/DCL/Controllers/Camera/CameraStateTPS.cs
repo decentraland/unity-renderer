@@ -44,7 +44,7 @@ namespace DCL.Camera
 
         public CameraDampOnSprint cameraDampOnSprint;
 
-        public override void Init(UnityEngine.Camera camera)
+        public override void Initialize(UnityEngine.Camera camera)
         {
             freeLookTopRig = defaultVirtualCameraAsFreeLook.GetRig(0).GetCinemachineComponent<CinemachineTransposer>();
             freeLookTopRigOriginalBodyDamping = new Vector3(freeLookTopRig.m_XDamping, freeLookTopRig.m_YDamping, freeLookTopRig.m_ZDamping);
@@ -57,10 +57,18 @@ namespace DCL.Camera
             cameraDampOnGroundType = new CameraDampOnGroundType(cameraDampOnGroundTypeSettings, cameraTargetProbe);
             cameraFreefall = new CameraFreefall(cameraFreefallSettings, defaultVirtualCameraAsFreeLook);
 
-            base.Init(camera);
+            base.Initialize(camera);
         }
 
-        private void OnEnable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera; }
+        public override void Cleanup()
+        {
+            Destroy(cameraTargetProbe.gameObject);
+        }
+
+        private void OnEnable()
+        {
+            CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera;
+        }
 
         private void OnDisable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera; }
 
@@ -185,12 +193,6 @@ namespace DCL.Camera
         {
             base.OnBlock(blocked);
             defaultVirtualCameraAsFreeLook.enabled = !blocked;
-        }
-
-        void OnDestroy()
-        {
-            if ( cameraTargetProbe != null )
-                Destroy(cameraTargetProbe.gameObject);
         }
     }
 }

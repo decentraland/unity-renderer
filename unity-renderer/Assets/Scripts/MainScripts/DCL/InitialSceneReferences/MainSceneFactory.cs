@@ -39,29 +39,13 @@ namespace DCL
             return result;
         }
 
-        public static GameObject CreateHudController()
-        {
-            GameObject result = LoadAndInstantiate("HUDController");
-            return result;
-        }
+        public static GameObject CreateHudController() => LoadAndInstantiate("HUDController");
 
-        public static GameObject CreateAudioHandler()
-        {
-            GameObject result = LoadAndInstantiate("HUDAudioHandler");
-            return result;
-        }
+        public static GameObject CreateAudioHandler() => LoadAndInstantiate("HUDAudioHandler");
 
-        public static GameObject CreateNavMap()
-        {
-            GameObject result = LoadAndInstantiate("NavMap");
-            return result;
-        }
+        public static GameObject CreateNavMap() => LoadAndInstantiate("NavMap");
 
-        public static GameObject CreateSettingsController()
-        {
-            GameObject result = LoadAndInstantiate("SettingsController");
-            return result;
-        }
+        public static GameObject CreateSettingsController() => LoadAndInstantiate("SettingsController");
 
         public static GameObject CreateEnvironment()
         {
@@ -79,6 +63,10 @@ namespace DCL
             SceneReferences.i.bridgeGameObject = bridges;
             return bridges;
         }
+
+        public static GameObject CreateEventSystem() => LoadAndInstantiate("EventSystem");
+
+        public static GameObject CreateInteractionHoverCanvas() => LoadAndInstantiate("InteractionHoverCanvas");
 
         private static GameObject LoadAndInstantiate(string name)
         {
