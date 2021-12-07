@@ -92,7 +92,7 @@ public class ExploreV2MenuComponentViewTests
     {
         // Arrange
         bool closeButtonClicked = false;
-        exploreV2MenuComponent.OnCloseButtonPressed += () => closeButtonClicked = true;
+        exploreV2MenuComponent.OnCloseButtonPressed += (fromShortcut) => closeButtonClicked = true;
 
         // Act
         exploreV2MenuComponent.ConfigureCloseButton();

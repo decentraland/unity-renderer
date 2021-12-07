@@ -7,18 +7,12 @@ public interface IPlacesAndEventsSectionComponentController : IDisposable
     /// <summary>
     /// It will be triggered when the section want to request to close the ExploreV2 main menu.
     /// </summary>
-    event Action OnCloseExploreV2;
-
-    /// <summary>
-    /// It will be triggered when any action is executed inside the places and events section.
-    /// </summary>
-    event Action OnAnyActionExecuted;
+    event Action<bool> OnCloseExploreV2;
 }
 
 public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSectionComponentController
 {
-    public event Action OnCloseExploreV2;
-    public event Action OnAnyActionExecuted;
+    public event Action<bool> OnCloseExploreV2;
 
     internal IPlacesAndEventsSectionComponentView view;
     internal IHighlightsSubSectionComponentController highlightsSubSectionComponentController;
@@ -59,36 +53,24 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
-        view.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
-        highlightsSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
-        placesSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
-        eventsSubSectionComponentController.OnAnyActionExecuted += OnAnyActionExecutedInAnySubSection;
-
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
     }
 
-    internal void RequestExploreV2Closing() { OnCloseExploreV2?.Invoke(); }
-
-    internal void OnAnyActionExecutedInAnySubSection() { OnAnyActionExecuted?.Invoke(); }
+    internal void RequestExploreV2Closing() { OnCloseExploreV2?.Invoke(false); }
 
     internal void GoToEventsSubSection() { view.GoToSubsection(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX); }
 
     public void Dispose()
     {
-        view.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
-
         highlightsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
-        highlightsSubSectionComponentController.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
         highlightsSubSectionComponentController.OnGoToEventsSubSection -= GoToEventsSubSection;
         highlightsSubSectionComponentController.Dispose();
 
         placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
-        placesSubSectionComponentController.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
         placesSubSectionComponentController.Dispose();
 
         eventsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
-        eventsSubSectionComponentController.OnAnyActionExecuted -= OnAnyActionExecutedInAnySubSection;
         eventsSubSectionComponentController.Dispose();
 
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;

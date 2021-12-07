@@ -87,6 +87,6 @@ public class ShortcutsController : IDisposable
     // In the future the analytics will be received through DI in the shape of a service locator,
     // so we can remove these methods and mock the locator itself    
     internal virtual void SendQuestToggledAnalytic(bool value) { QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "input_action"); }
-    internal virtual void SendExploreToggledAnalytics(bool value) { new ExploreV2Analytics.ExploreV2Analytics().SendExploreMainMenuVisibility(value, ExploreUIVisibilityMethod.FromShortcut); }
+    internal virtual void SendExploreToggledAnalytics(bool value) { new ExploreV2Analytics.ExploreV2Analytics().SendStartMenuVisibility(value, ExploreUIVisibilityMethod.FromShortcut); }
 
 }

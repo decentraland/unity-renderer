@@ -15,11 +15,6 @@ public interface IHighlightsSubSectionComponentController : IDisposable
     event Action OnCloseExploreV2;
 
     /// <summary>
-    /// It will be triggered when any action is executed inside the highlights sub-section.
-    /// </summary>
-    event Action OnAnyActionExecuted;
-
-    /// <summary>
     /// It will be triggered when the sub-section want to request to go to the Events sub-section.
     /// </summary>
     event Action OnGoToEventsSubSection;
@@ -48,7 +43,6 @@ public interface IHighlightsSubSectionComponentController : IDisposable
 public class HighlightsSubSectionComponentController : IHighlightsSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
-    public event Action OnAnyActionExecuted;
     public event Action OnGoToEventsSubSection;
     internal event Action OnPlacesAndEventsFromAPIUpdated;
 
@@ -245,7 +239,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
     }
 
@@ -254,7 +247,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         ExplorePlacesHelpers.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 
@@ -263,7 +255,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
         view.ShowEventModal(eventModel);
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
     }
 
@@ -272,7 +263,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         ExploreEventsHelpers.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
@@ -293,8 +283,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
-
-        OnAnyActionExecuted?.Invoke();
     }
 
     internal void UnsubscribeToEvent(string eventId)
@@ -314,8 +302,6 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
-
-        OnAnyActionExecuted?.Invoke();
     }
 
     internal void GoToEventsSubSection() { OnGoToEventsSubSection?.Invoke(); }

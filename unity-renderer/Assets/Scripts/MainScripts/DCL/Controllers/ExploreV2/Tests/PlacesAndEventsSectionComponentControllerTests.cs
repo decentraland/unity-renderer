@@ -33,27 +33,13 @@ public class PlacesAndEventsSectionComponentControllerTests
     {
         // Arrange
         bool exploreClosed = false;
-        placesAndEventsSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
+        placesAndEventsSectionComponentController.OnCloseExploreV2 += (fromShortcut) => exploreClosed = true;
 
         // Act
         placesAndEventsSectionComponentController.RequestExploreV2Closing();
 
         // Assert
         Assert.IsTrue(exploreClosed);
-    }
-
-    [Test]
-    public void RaiseOnAnyActionExecutedInAnySubSectionCorrectly()
-    {
-        // Arrange
-        bool anyActionExecuted = false;
-        placesAndEventsSectionComponentController.OnAnyActionExecuted += () => anyActionExecuted = true;
-
-        // Act
-        placesAndEventsSectionComponentController.OnAnyActionExecutedInAnySubSection();
-
-        // Assert
-        Assert.IsTrue(anyActionExecuted);
     }
 
     [Test]

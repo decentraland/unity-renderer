@@ -57,15 +57,12 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         exploreV2MenuController.currentOpenSection = ExploreSection.Settings;
-        exploreV2Analytics.anyActionExecutedFromLastOpen = false;
 
         // Act
         exploreV2MenuController.OnSectionOpen(section);
 
         // Assert
-        exploreV2Analytics.Received().SendExploreSectionVisibility(Arg.Any<ExploreSection>(), false);
-        exploreV2Analytics.Received().SendExploreSectionVisibility(Arg.Any<ExploreSection>(), true);
-        Assert.IsTrue(exploreV2Analytics.anyActionExecutedFromLastOpen);
+        exploreV2Analytics.Received().SendStartMenuSectionVisibility(Arg.Any<ExploreSection>(), false);
         Assert.AreEqual(section, exploreV2MenuController.currentOpenSection);
     }
 
@@ -137,24 +134,11 @@ public class ExploreV2MenuComponentControllerTests
         DataStore.i.exploreV2.isOpen.Set(true);
 
         // Act
-        exploreV2MenuController.OnCloseButtonPressed();
+        exploreV2MenuController.OnCloseButtonPressed(false);
 
         // Assert
-        exploreV2Analytics.Received().SendExploreMainMenuVisibility(false, ExploreUIVisibilityMethod.FromClick);
+        exploreV2Analytics.Received().SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromClick);
         Assert.IsFalse(DataStore.i.exploreV2.isOpen.Get());
         exploreV2MenuView.Received().SetVisible(false);
-    }
-
-    [Test]
-    public void RaiseOnAnyActionExecutedCorrectly()
-    {
-        // Arrange
-        exploreV2Analytics.anyActionExecutedFromLastOpen = false;
-
-        // Act
-        exploreV2MenuController.OnAnyActionExecuted();
-
-        // Assert
-        Assert.IsTrue(exploreV2Analytics.anyActionExecutedFromLastOpen);
     }
 }

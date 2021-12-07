@@ -3,10 +3,6 @@ using UnityEngine;
 
 public interface IPlacesAndEventsSectionComponentView
 {
-    /// It will be triggered when any action is executed inside the places and events section.
-    /// </summary>
-    event Action OnAnyActionExecuted;
-
     /// <summary>
     /// Highlights sub-section component.
     /// </summary>
@@ -55,8 +51,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public IPlacesSubSectionComponentView currentPlacesSubSectionComponentView => placesSubSection;
     public IEventsSubSectionComponentView currentEventsSubSectionComponentView => eventsSubSection;
 
-    public event Action OnAnyActionExecuted;
-
     public override void Start() { CreateSubSectionSelectorMappings(); }
 
     public override void RefreshControl()
@@ -83,9 +77,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
                           {
                               highlightsSubSection.gameObject.SetActive(isOn);
 
-                              if (isDefaultSubSectionLoadedByFirstTime)
-                                  OnAnyActionExecuted?.Invoke();
-
                               isDefaultSubSectionLoadedByFirstTime = true;
                           });
 
@@ -93,18 +84,12 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
                           ?.onSelect.AddListener((isOn) =>
                           {
                               placesSubSection.gameObject.SetActive(isOn);
-
-                              if (isDefaultSubSectionLoadedByFirstTime)
-                                  OnAnyActionExecuted?.Invoke();
                           });
 
         subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)
                           ?.onSelect.AddListener((isOn) =>
                           {
                               eventsSubSection.gameObject.SetActive(isOn);
-
-                              if (isDefaultSubSectionLoadedByFirstTime)
-                                  OnAnyActionExecuted?.Invoke();
                           });
 
         subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(true);

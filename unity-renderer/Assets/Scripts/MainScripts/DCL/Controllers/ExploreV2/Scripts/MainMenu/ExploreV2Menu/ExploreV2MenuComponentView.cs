@@ -12,7 +12,7 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <summary>
     /// It will be triggered when the close button is clicked.
     /// </summary>
-    event Action OnCloseButtonPressed;
+    event Action<bool> OnCloseButtonPressed;
 
     /// <summary>
     /// It will be triggered when a section is open.
@@ -143,7 +143,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public RectTransform currentSettingsTooltipReference => settingsTooltipReference;
 
     public event Action OnInitialized;
-    public event Action OnCloseButtonPressed;
+    public event Action<bool> OnCloseButtonPressed;
     public event Action<ExploreSection> OnSectionOpen;
 
     public override void Start()
@@ -316,13 +316,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     internal void ConfigureCloseButton()
     {
-        closeMenuButton.onClick.AddListener(CloseMenu);
+        closeMenuButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke(false));
         closeAction.OnTriggered += OnCloseActionTriggered;
     }
 
-    internal void CloseMenu() { OnCloseButtonPressed?.Invoke(); }
-
-    internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseMenu(); }
+    internal void OnCloseActionTriggered(DCLAction_Trigger action) { OnCloseButtonPressed?.Invoke(true); }
 
     internal static ExploreV2MenuComponentView Create()
     {

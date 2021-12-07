@@ -14,11 +14,6 @@ public interface IEventsSubSectionComponentController : IDisposable
     event Action OnCloseExploreV2;
 
     /// <summary>
-    /// It will be triggered when any action is executed inside the events sub-section.
-    /// </summary>
-    event Action OnAnyActionExecuted;
-
-    /// <summary>
     /// Request all events from the API.
     /// </summary>
     void RequestAllEvents();
@@ -52,7 +47,6 @@ public interface IEventsSubSectionComponentController : IDisposable
 public class EventsSubSectionComponentController : IEventsSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
-    public event Action OnAnyActionExecuted;
     internal event Action OnEventsFromAPIUpdated;
 
     internal const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
@@ -215,8 +209,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             currentUpcomingEventsShowed = eventsFromAPI.Count;
 
         view.SetShowMoreUpcomingEventsButtonActive(currentUpcomingEventsShowed < eventsFromAPI.Count);
-
-        OnAnyActionExecuted?.Invoke();
     }
 
     public void LoadGoingEvents()
@@ -250,7 +242,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
         view.ShowEventModal(eventModel);
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
     }
 
@@ -259,7 +250,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         ExploreEventsHelpers.JumpInToEvent(eventFromAPI);
         view.HideEventModal();
         OnCloseExploreV2?.Invoke();
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
@@ -280,8 +270,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
-
-        OnAnyActionExecuted?.Invoke();
     }
 
     internal void UnsubscribeToEvent(string eventId)
@@ -301,7 +289,5 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         //    {
         //        Debug.LogError($"Error posting 'attend' message to the API: {error}");
         //    });
-
-        OnAnyActionExecuted?.Invoke();
     }
 }

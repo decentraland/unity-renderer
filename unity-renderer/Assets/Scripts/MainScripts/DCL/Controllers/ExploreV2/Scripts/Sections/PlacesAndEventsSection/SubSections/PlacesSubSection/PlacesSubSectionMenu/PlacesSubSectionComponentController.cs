@@ -14,11 +14,6 @@ public interface IPlacesSubSectionComponentController : IDisposable
     event Action OnCloseExploreV2;
 
     /// <summary>
-    /// It will be triggered when any action is executed inside the places sub-section.
-    /// </summary>
-    event Action OnAnyActionExecuted;
-
-    /// <summary>
     /// Request all places from the API.
     /// </summary>
     void RequestAllPlaces();
@@ -37,7 +32,6 @@ public interface IPlacesSubSectionComponentController : IDisposable
 public class PlacesSubSectionComponentController : IPlacesSubSectionComponentController
 {
     public event Action OnCloseExploreV2;
-    public event Action OnAnyActionExecuted;
     internal event Action OnPlacesFromAPIUpdated;
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
@@ -155,8 +149,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             currentPlacesShowed = placesFromAPI.Count;
 
         view.SetShowMorePlacesButtonActive(currentPlacesShowed < placesFromAPI.Count);
-
-        OnAnyActionExecuted?.Invoke();
     }
 
     public void Dispose()
@@ -174,7 +166,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
     {
         view.ShowPlaceModal(placeModel);
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.hotSceneInfo.id, placeModel.placeName);
     }
 
@@ -183,7 +174,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         ExplorePlacesHelpers.JumpInToPlace(placeFromAPI);
         view.HidePlaceModal();
         OnCloseExploreV2?.Invoke();
-        OnAnyActionExecuted?.Invoke();
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.name, placeFromAPI.baseCoords);
     }
 

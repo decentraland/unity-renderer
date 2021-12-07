@@ -121,7 +121,7 @@ public class MinimapHUDController : IHUD
         if (!DataStore.i.exploreV2.isOpen.Get())
         {
             var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
-            exploreV2Analytics.SendExploreMainMenuVisibility(
+            exploreV2Analytics.SendStartMenuVisibility(
                 true,
                 ExploreUIVisibilityMethod.FromClick);
         }
