@@ -11,7 +11,6 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             base.Initialize();
 
             DataStore.i.HUDs.avatarNamesVisible.OnChange += AvatarNamesVisibleChanged;
-            AvatarNamesVisibleChanged(DataStore.i.HUDs.avatarNamesVisible.Get(), false);
         }
 
         public override object GetStoredValue() { return currentGeneralSettings.showAvatarNames; }
