@@ -297,13 +297,13 @@ namespace DCL.Skybox
             float cycleMin = ((int)(totalTimeInMins / lifecycleDuration)) * lifecycleDuration;
             float cycleMax = cycleMin + (int)lifecycleDuration;
             float percentage = Mathf.InverseLerp(cycleMin, cycleMax, totalTimeInMins);
-            percentage = (float)(Mathf.Round(percentage * 100)) / 100f;
+            percentage = (float)(Mathf.Round(percentage * 1000)) / 1000f;
 
             timeOfTheDay = percentage * cycleTime;
 
-            Debug.Log("Procedural Skybox :: Current UTC time: " + WorldTimer.i.GetCurrentTime().ToString());
-            Debug.Log("Procedural Skybox :: Cycle Min: " + cycleMin + ", Cycle max: " + cycleMax);
-            Debug.Log("Procedural Skybox :: Calculated time of the day: " + timeOfTheDay);
+            //Debug.Log("Procedural Skybox :: Current UTC time: " + WorldTimer.i.GetCurrentTime().ToString());
+            //Debug.Log("Procedural Skybox :: Cycle Min: " + cycleMin + ", Cycle max: " + cycleMax);
+            //Debug.Log("Procedural Skybox :: Calculated time of the day: " + timeOfTheDay);
 
             //// divide by lifecycleDuration.... + 1 as time is from 0
             //float timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
@@ -412,8 +412,8 @@ namespace DCL.Skybox
             }
 
             //timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
-            //GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
-            //timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
+            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
 
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
