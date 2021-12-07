@@ -411,8 +411,8 @@ namespace DCL.Skybox
                 return;
             }
 
-            //timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
-            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+            timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
+            //GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
 
