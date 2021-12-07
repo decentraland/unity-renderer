@@ -16,9 +16,13 @@ public class SceneTests : IntegrationTestSuite_Legacy
 {
     protected override bool enableSceneIntegrityChecker => false;
 
+    private ParcelScene scene;
+    private ISceneController sceneController => DCL.Environment.i.world.sceneController;
+
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
         DataStore.i.debugConfig.isDebugMode.Set(true);
         DCL.Configuration.EnvironmentSettings.DEBUG = true;
     }
@@ -65,7 +69,6 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Test]
     public void ParcelScene_TrackDisposables_AfterInitDone()
     {
-        SetUp_TestScene();
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
@@ -78,7 +81,6 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Test]
     public void ParcelScene_TrackDisposables_Empty()
     {
-        SetUp_TestScene();
         Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
     }
 
@@ -233,7 +235,6 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator ParcelScene_TrackDisposables_OneGLTF()
     {
-        SetUp_TestScene();
         var entity = TestUtils.CreateSceneEntity(scene);
 
         TestUtils.AttachGLTFShape(entity, scene, Vector3.zero, new LoadableShape.Model()
@@ -253,7 +254,6 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public void ParcelScene_TrackDisposables_BeforeInitDone()
     {
-        SetUp_TestScene();
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
@@ -266,7 +266,6 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public IEnumerator ParcelScene_TrackDisposables_InstantReadyDisposable()
     {
-        SetUp_TestScene();
         var boxShape = TestUtils.CreateEntityWithBoxShape(scene, Vector3.zero, true);
         Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
         scene.sceneLifecycleHandler.SetInitMessagesDone();
@@ -278,7 +277,6 @@ public class SceneTests : IntegrationTestSuite_Legacy
     [Test]
     public void ParcelScene_SetEntityParent()
     {
-        SetUp_TestScene();
         var entityId = "entityId";
         var entity = TestUtils.CreateSceneEntity(scene, entityId);
 

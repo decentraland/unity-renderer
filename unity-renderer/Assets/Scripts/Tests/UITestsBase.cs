@@ -1,14 +1,18 @@
 using DCL.Helpers;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace Tests
 {
     public class UITestsBase : IntegrationTestSuite_Legacy
     {
+        protected ParcelScene scene;
+
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
             DCLCharacterController.i.PauseGravity();
             TestUtils.SetCharacterPosition(new Vector3(8f, 0f, 8f));
         }

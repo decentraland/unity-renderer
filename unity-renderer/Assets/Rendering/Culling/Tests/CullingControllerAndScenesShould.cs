@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Rendering;
 using UnityEngine;
@@ -12,9 +13,12 @@ namespace CullingControllerTests
 {
     public class CullingControllerAndScenesShould : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
 
             Assert.IsFalse(Environment.i.platform.cullingController.IsRunning());
 

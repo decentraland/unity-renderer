@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.ComponentModel;
 using System.Linq;
+using DCL;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -14,10 +15,13 @@ namespace Tests
 {
     public class AudioTests : IntegrationTestSuite_Legacy
     {
-        protected override IEnumerator TearDown()
+        private ParcelScene scene;
+        private ISceneController sceneController => DCL.Environment.i.world.sceneController;
+
+        protected override IEnumerator SetUp()
         {
-            sceneController.enabled = true;
-            return base.TearDown();
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
         }
 
         public DCLAudioClip CreateAudioClip(string url, bool loop, bool shouldTryToLoad, double volume)

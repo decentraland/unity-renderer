@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
+using DCL.Camera;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -8,6 +10,7 @@ namespace CameraController_Test
 {
     public class CameraControllerShould : IntegrationTestSuite_Legacy
     {
+        private CameraController cameraController => SceneReferences.i.cameraController;
         protected override bool enableSceneIntegrityChecker => false;
 
         [Test]

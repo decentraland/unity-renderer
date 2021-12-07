@@ -14,14 +14,14 @@ public class UIVisualTestsBase : VisualTestsBase
         VisualTestHelpers.snapshotIndex = 0;
         VisualTestHelpers.currentTestName = testName;
 
-        yield return InitScene();
+        //yield return InitScene();
 
         //NOTE(Brian): If we don't wait a frame, RenderingController.Awake sets the rendering state back to false.
         yield return null;
 
         RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
 
-        base.SetUp_Renderer();
+        CommonScriptableObjects.rendererState.Set(true);
 
         // Create UIScreenSpace
         UIScreenSpace screenSpace = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);

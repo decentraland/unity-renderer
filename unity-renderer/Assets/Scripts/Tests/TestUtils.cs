@@ -72,22 +72,22 @@ namespace DCL.Helpers
         /// <param name="mockedRequestController">Mocked request controller</param>
         /// <param name="successParamIndex"> The index of the "OnSucess" action when you call the Get method</param>
         /// <returns></returns>
-        public static IWebRequestAsyncOperation ConfigureMockedRequestController(string jsonData,IWebRequestController mockedRequestController, int successParamIndex = 3)
+        public static IWebRequestAsyncOperation ConfigureMockedRequestController(string jsonData, IWebRequestController mockedRequestController, int successParamIndex = 3)
         {
             IWebRequestAsyncOperation operation = Substitute.For<IWebRequestAsyncOperation>();
             operation.Configure().GetResultData().Returns(Encoding.ASCII.GetBytes(jsonData));
-            
+
             mockedRequestController.Configure()
-                                   .Get(Arg.Any<string>(),
-                                       Arg.Any<DownloadHandler>(),
-                                       Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
-                                       Arg.Any<Action<IWebRequestAsyncOperation>>(),
-                                       Arg.Any<int>(),
-                                       Arg.Any<int>(),
-                                       Arg.Any<bool>(),
-                                       Arg.Any<Dictionary<string, string>>())
-                                   .Returns(operation);
-        
+                .Get(Arg.Any<string>(),
+                    Arg.Any<DownloadHandler>(),
+                    Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
+                    Arg.Any<Action<IWebRequestAsyncOperation>>(),
+                    Arg.Any<int>(),
+                    Arg.Any<int>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<Dictionary<string, string>>())
+                .Returns(operation);
+
             mockedRequestController.When(x => x.Get(Arg.Any<string>(),
                 Arg.Any<DownloadHandler>(),
                 Arg.Any<System.Action<IWebRequestAsyncOperation>>(),
@@ -97,10 +97,10 @@ namespace DCL.Helpers
                 Arg.Any<bool>(),
                 Arg.Any<Dictionary<string, string>>())).Do(x => x.ArgAt<Action<IWebRequestAsyncOperation>>(successParamIndex).Invoke(operation));
 
-        
+
             return operation;
         }
-        
+
         public static FeatureFlag CreateFeatureFlag(List<string> enabledFlags = null)
         {
             FeatureFlag featureFlag = new FeatureFlag();
@@ -1274,6 +1274,11 @@ namespace DCL.Helpers
         {
             LoadWrapper_GLTF wrapper = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
             return new WaitUntil(() => wrapper.alreadyLoaded);
+        }
+
+        public static ParcelScene CreateTestScene()
+        {
+            return Environment.i.world.sceneController.CreateTestScene() as ParcelScene;
         }
     }
 }

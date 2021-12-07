@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -10,6 +11,14 @@ namespace Tests
 {
     public class TexturesTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
         // `yield return null;` to skip a frame.
         [UnityTest]

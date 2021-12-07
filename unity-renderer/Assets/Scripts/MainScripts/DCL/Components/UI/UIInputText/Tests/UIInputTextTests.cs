@@ -4,6 +4,7 @@ using DCL.Interface;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Color = UnityEngine.Color;
@@ -15,6 +16,14 @@ namespace Tests
         UIScreenSpace ssshape;
         UIInputText textInput;
         Camera mockCamera;
+
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
 
         public IEnumerator InputTextCreate()
         {

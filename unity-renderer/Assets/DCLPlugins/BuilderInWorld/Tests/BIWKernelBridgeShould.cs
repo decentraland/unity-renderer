@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using NUnit.Framework;
@@ -13,12 +14,17 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private GameObject dummyGameObject;
 
+    private ParcelScene scene;
+
     private bool messageReceived = false;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
+
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
         entityHandler.EnterEditMode(scene);

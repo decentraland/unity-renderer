@@ -4,6 +4,7 @@ using System.Linq;
 using DCL;
 using DCL.Builder;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -16,10 +17,13 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private BIWCreatorController biwCreatorController;
     private IContext context;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
 
         biwCreatorController = new BIWCreatorController();
         entityHandler = new BIWEntityHandler();

@@ -3,6 +3,8 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -16,12 +18,16 @@ namespace AvatarShape_Tests
         private AvatarModel avatarModel;
         private BaseDictionary<string, WearableItem> catalog;
         private AvatarShape avatarShape;
+        private ParcelScene scene;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
-            SetUp_SceneController();
-            yield return SetUp_CharacterController();
+            yield return base.SetUp();
+            // SetUp_SceneController();
+            // yield return SetUp_CharacterController();
+
+            scene = TestUtils.CreateTestScene();
 
             if (avatarShape == null)
             {
@@ -35,6 +41,7 @@ namespace AvatarShape_Tests
                     wearables = new List<string>()
                         { }
                 };
+
                 catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
                 avatarShape = AvatarShapeTestHelpers.CreateAvatarShape(scene, avatarModel);
 

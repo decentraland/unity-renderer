@@ -279,6 +279,7 @@ namespace Tests.BuildModeHUDControllers
             // Arrange
             BIWEntity testEntity = new BIWEntity();
 
+            ParcelScene scene = TestUtils.CreateTestScene();
             var entity = TestUtils.CreateSceneEntity(scene, "entityId");
             testEntity.Initialize(entity, null);
 

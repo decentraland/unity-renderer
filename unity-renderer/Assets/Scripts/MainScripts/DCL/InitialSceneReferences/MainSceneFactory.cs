@@ -1,32 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL
 {
     public static class MainSceneFactory
     {
-        // public static void CreateAllDependencies()
-        // {
-        //     SceneReferences.i.Initialize(
-        //         mouseCatcher,
-        //         environment.ground,
-        //         playerReferences.biwCameraRoot,
-        //         playerReferences.inputController,
-        //         playerReferences.cursorCanvas,
-        //         gameObject,
-        //         playerReferences.avatarController,
-        //         playerReferences.cameraController,
-        //         playerReferences.mainCamera,
-        //         bridges,
-        //         environment.environmentLight,
-        //         environment.postProcessVolume,
-        //         playerReferences.thirdPersonCamera,
-        //         playerReferences.firstPersonCamera);
-        // }
-
-        public static GameObject CreatePlayer()
+        public static List<GameObject> CreatePlayerSystems()
         {
-            GameObject result = LoadAndInstantiate("Player");
-            var playerReferences = LoadAndInstantiate("Player").GetComponent<PlayerReferences>();
+            List<GameObject> result = new List<GameObject>();
+            GameObject playerGo = LoadAndInstantiate("Player");
+            var playerReferences = playerGo.GetComponent<PlayerReferences>();
             SceneReferences.i.playerAvatarController = playerReferences.avatarController;
             SceneReferences.i.biwCameraParent = playerReferences.biwCameraRoot;
             SceneReferences.i.inputController = playerReferences.inputController;
@@ -35,6 +18,16 @@ namespace DCL
             SceneReferences.i.mainCamera = playerReferences.mainCamera;
             SceneReferences.i.thirdPersonCamera = playerReferences.thirdPersonCamera;
             SceneReferences.i.firstPersonCamera = playerReferences.firstPersonCamera;
+
+            // Why we don't just add the playerGo?
+            // This happens because the characterController reparents itself.
+            // (and any of our systems may do this as well).
+            result.Add( playerReferences.cursorCanvas.gameObject );
+            result.Add( playerReferences.cameraController.gameObject );
+            result.Add( playerReferences.inputController.gameObject );
+            result.Add( playerReferences.avatarController.gameObject );
+            result.Add( playerGo );
+
             return result;
         }
 

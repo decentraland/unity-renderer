@@ -129,7 +129,7 @@ namespace DCL
         {
             MainSceneFactory.CreateBridges();
             MainSceneFactory.CreateMouseCatcher();
-            MainSceneFactory.CreatePlayer();
+            MainSceneFactory.CreatePlayerSystems();
             MainSceneFactory.CreateEnvironment();
             MainSceneFactory.CreateAudioHandler();
             MainSceneFactory.CreateHudController();

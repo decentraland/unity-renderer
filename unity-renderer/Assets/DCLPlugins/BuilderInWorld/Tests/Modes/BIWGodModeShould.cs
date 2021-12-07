@@ -26,10 +26,13 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     private IContext context;
     private GameObject mockedGameObject, entityGameObject;
     private List<BIWEntity> selectedEntities;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
+
         modeController = new BIWModeController();
         raycastController = new BIWRaycastController();
         gizmosController = new BIWGizmosController();
@@ -230,7 +233,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.selectedEntities = selectedEntities;
         modeController.SetSnapActive(false);
         selectedEntities.Add(new BIWEntity());
-        
+
         //Act
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 

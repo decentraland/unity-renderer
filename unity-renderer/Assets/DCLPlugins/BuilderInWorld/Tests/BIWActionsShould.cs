@@ -15,10 +15,13 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
     private IContext context;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 

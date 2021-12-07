@@ -6,6 +6,8 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Camera;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -16,10 +18,15 @@ namespace Tests
     {
         protected override bool enableSceneIntegrityChecker => false;
 
+        private ParcelScene scene;
+
+        private CameraController cameraController => SceneReferences.i.cameraController;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
             Environment.i.world.sceneBoundsChecker.Stop();
 
             // Set character position and camera rotation

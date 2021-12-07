@@ -1,23 +1,27 @@
 ﻿using System.Collections;
 using UnityEngine;
 using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
 
 public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
-    protected override string TEST_SCENE_NAME => "MainVisualTest";
+    protected ParcelScene scene;
+
+    //protected override string TEST_SCENE_NAME => "MainVisualTest";
     protected override bool enableSceneIntegrityChecker => false;
 
     protected override IEnumerator SetUp()
     {
+        yield return base.SetUp();
         QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
         VisualTestHelpers.SetSSAOActive(false);
-        yield break;
+        scene = TestUtils.CreateTestScene();
     }
 
     public IEnumerator InitVisualTestsScene(string testName)
     {
-        yield return InitScene();
+        //yield return InitScene();
         yield return null;
 
         //TODO(Brian): This is to wait for SceneController.Awake(). We should remove this
@@ -27,7 +31,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         Environment.i.world.sceneBoundsChecker.Stop();
         Environment.i.world.blockersController.SetEnabled(false);
 
-        base.SetUp_Renderer();
+        //base.SetUp_Renderer();
 
         VisualTestHelpers.currentTestName = testName.Replace(".", "_");
         VisualTestHelpers.snapshotIndex = 0;

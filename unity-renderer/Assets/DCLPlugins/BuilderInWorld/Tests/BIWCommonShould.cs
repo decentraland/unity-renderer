@@ -18,6 +18,14 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
 {
     private GameObject mockedGameObject;
 
+    private ParcelScene scene;
+
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
+    }
+
     [Test]
     public void SettingsCorrectLayers()
     {

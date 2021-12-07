@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Helpers;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -11,11 +12,13 @@ namespace Tests
     {
         Billboard billboard;
         string entityId = "e1";
+        private ParcelScene scene;
 
         protected override IEnumerator SetUp()
         {
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
-            return base.SetUp();
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
         }
 
         [UnityTest]

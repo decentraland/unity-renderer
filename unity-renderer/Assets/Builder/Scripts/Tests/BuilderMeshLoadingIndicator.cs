@@ -2,6 +2,7 @@ using DCL.Components;
 using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -9,12 +10,15 @@ using UnityEngine.TestTools;
 public class BuilderMeshLoadingIndicator : IntegrationTestSuite_Legacy
 {
     protected override bool justSceneSetUp => true;
+    private ParcelScene scene;
 
     [UnityTest]
     public IEnumerator BuilderMeshLoadingIndicatorTest()
     {
         SetUp_SceneController();
         yield return SceneManager.LoadSceneAsync("BuilderScene", LoadSceneMode.Additive);
+
+        scene = TestUtils.CreateTestScene();
 
         var builderBridge = Object.FindObjectOfType<Builder.DCLBuilderBridge>();
         builderBridge.ResetBuilderScene();

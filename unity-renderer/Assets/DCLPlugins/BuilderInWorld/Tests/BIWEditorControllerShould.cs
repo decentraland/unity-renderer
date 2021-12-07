@@ -4,6 +4,7 @@ using DCL;
 using DCL.Builder;
 using DCL.Camera;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -14,11 +15,16 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
 {
     private BuilderInWorldEditor mainController;
     private IBuilderAPIController apiSubstitute;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
+
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
+
         mainController = new BuilderInWorldEditor();
         apiSubstitute = Substitute.For<IBuilderAPIController>();
         mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(apiSubstitute));
@@ -43,7 +49,7 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        
+
         // Act
         mainController.EnterEditMode(scene);
 

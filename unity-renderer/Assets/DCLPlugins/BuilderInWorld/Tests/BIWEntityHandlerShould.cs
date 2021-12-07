@@ -9,6 +9,7 @@ using DCL;
 using DCL.Builder;
 using DCL.Camera;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Models;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -25,6 +26,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private IContext context;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
@@ -32,6 +34,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         entityHandler = new BIWEntityHandler();
         context = BIWTestUtils.CreateMockedContextForTestScene();
         entityHandler.Initialize(context);
+
+        scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         entityHandler.EnterEditMode(scene);

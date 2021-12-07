@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -11,6 +12,14 @@ namespace Tests
 {
     public class MaterialTransitionControllerTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         [UnityTest]
         [Category("Explicit")]
         [Explicit("Test is too slow")]

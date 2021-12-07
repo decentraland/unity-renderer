@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DCL.Builder;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     private BIWPublishController biwPublishController;
     private BIWEntityHandler biwEntityHandler;
     private IContext context;
+    private ParcelScene scene;
 
     private const string entityId = "E1";
 
@@ -31,6 +33,8 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 
         biwPublishController.Initialize(context);
         biwEntityHandler.Initialize(context);
+
+        scene = TestUtils.CreateTestScene();
 
         biwPublishController.EnterEditMode(scene);
         biwEntityHandler.EnterEditMode(scene);

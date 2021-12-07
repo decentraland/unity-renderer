@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine.TestTools;
 
 /*
@@ -14,6 +15,15 @@ namespace Tests
 {
     public class EntityTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
+
         [Test]
         public void EntityCreation()
         {

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using DCL.Camera;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -15,11 +16,14 @@ namespace Tests
     {
         protected override bool enableSceneIntegrityChecker => false;
 
+        private CameraController cameraController => SceneReferences.i.cameraController;
+        private ParcelScene scene;
+
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             Environment.i.world.sceneController.SortScenesByDistance();
-            sceneInitialized = false;
+            scene = TestUtils.CreateTestScene();
         }
 
         [UnityTest]

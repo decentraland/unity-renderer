@@ -4,6 +4,7 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -12,6 +13,14 @@ namespace Tests
 {
     public class AvatarShapeTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         void AssertMaterialsAreCorrect(Transform root)
         {
             Renderer[] renderers = root.GetComponentsInChildren<Renderer>();
