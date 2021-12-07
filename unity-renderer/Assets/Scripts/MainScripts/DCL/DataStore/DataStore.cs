@@ -167,6 +167,7 @@ namespace DCL
             public BaseVariable<float> jumpToTime = new BaseVariable<float>(-1);
             public BaseVariable<float> updateReflectionTime = new BaseVariable<float>(-1);
             public BaseVariable<bool> disableReflection = new BaseVariable<bool>(false);
+            public BaseVariable<float> currentVirtualTime = new BaseVariable<float>();
         }
     }
 }

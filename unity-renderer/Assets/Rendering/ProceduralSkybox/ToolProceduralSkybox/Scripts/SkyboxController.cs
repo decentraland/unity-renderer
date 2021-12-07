@@ -398,6 +398,7 @@ namespace DCL.Skybox
             //timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
+            DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
 
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
 
