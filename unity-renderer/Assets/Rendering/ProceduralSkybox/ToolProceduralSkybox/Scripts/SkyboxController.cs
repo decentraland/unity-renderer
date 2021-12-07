@@ -285,17 +285,23 @@ namespace DCL.Skybox
         {
             // Convert miliseconds to seconds
             float seconds = serverTime.Second + ((float)serverTime.Millisecond / 1000);
+            seconds = (float)(Mathf.Round(seconds * 100)) / 100f;
             // Convert seconds to minutes
             float minutes = serverTime.Minute + (seconds / 60);
+            minutes = (float)(Mathf.Round(minutes * 100)) / 100f;
             // Convert minutes to hour (in float format)
             float totalTimeInMins = serverTime.Hour * 60 + minutes;
+            totalTimeInMins = (float)(Mathf.Round(totalTimeInMins * 100)) / 100f;
 
             // Get the cycle min and max
             float cycleMin = ((int)(totalTimeInMins / lifecycleDuration)) * lifecycleDuration;
             float cycleMax = cycleMin + (int)lifecycleDuration;
             float percentage = Mathf.InverseLerp(cycleMin, cycleMax, totalTimeInMins);
+            percentage = (float)(Mathf.Round(percentage * 100)) / 100f;
+
             timeOfTheDay = percentage * cycleTime;
 
+            Debug.Log("Procedural Skybox :: Current UTC time: " + WorldTimer.i.GetCurrentTime().ToString());
             Debug.Log("Procedural Skybox :: Cycle Min: " + cycleMin + ", Cycle max: " + cycleMax);
             Debug.Log("Procedural Skybox :: Calculated time of the day: " + timeOfTheDay);
 

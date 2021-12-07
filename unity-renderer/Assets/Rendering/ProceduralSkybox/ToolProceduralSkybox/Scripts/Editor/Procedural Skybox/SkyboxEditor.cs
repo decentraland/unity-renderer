@@ -457,13 +457,13 @@ namespace DCL.Skybox
 
             GUILayout.Label("Preview", EditorStyles.boldLabel);
 
-            GUILayout.BeginHorizontal(GUILayout.Width(400));
+            GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Time : " + timeOfTheDay.ToString("f2"), EditorStyles.label, GUILayout.Width(70));
 
             EditorGUILayout.Space(20);
 
             EditorGUILayout.BeginVertical();
-            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.Width(150));
+            timeOfTheDay = EditorGUILayout.Slider(timeOfTheDay, 0.01f, 24.00f, GUILayout.MinWidth(150));
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("cycle (minutes)", GUILayout.Width(95));
             lifecycleDuration = EditorGUILayout.FloatField(lifecycleDuration, GUILayout.Width(50));
