@@ -73,7 +73,6 @@ namespace DCL.ServerTime
         public DateTime GetCurrentTime()
         {
             TimeSpan systemTimeOffset = DateTime.Now - lastTimeFromSystem;
-            //Debug.Log("Procedural Skybox :: Returning time: " + lastTimeFromServer.ToUniversalTime().Add(systemTimeOffset));
             return lastTimeFromServer.ToUniversalTime().Add(systemTimeOffset);
         }
     }

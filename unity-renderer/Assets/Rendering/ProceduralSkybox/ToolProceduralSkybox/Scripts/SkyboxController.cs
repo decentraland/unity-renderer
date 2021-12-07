@@ -289,12 +289,22 @@ namespace DCL.Skybox
             float minutes = serverTime.Minute + (seconds / 60);
             // Convert minutes to hour (in float format)
             float totalTimeInMins = serverTime.Hour * 60 + minutes;
-            // divide by lifecycleDuration.... + 1 as time is from 0
-            float timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
-            // get percentage part for converting to skybox time
-            float percentageSkyboxtime = timeInCycle - (int)timeInCycle;
 
-            timeOfTheDay = percentageSkyboxtime * cycleTime;
+            // Get the cycle min and max
+            float cycleMin = ((int)(totalTimeInMins / lifecycleDuration)) * lifecycleDuration;
+            float cycleMax = cycleMin + (int)lifecycleDuration;
+            float percentage = Mathf.InverseLerp(cycleMin, cycleMax, totalTimeInMins);
+            timeOfTheDay = percentage * cycleTime;
+
+            Debug.Log("Procedural Skybox :: Cycle Min: " + cycleMin + ", Cycle max: " + cycleMax);
+            Debug.Log("Procedural Skybox :: Calculated time of the day: " + timeOfTheDay);
+
+            //// divide by lifecycleDuration.... + 1 as time is from 0
+            //float timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
+            //// get percentage part for converting to skybox time
+            //float percentageSkyboxtime = timeInCycle - (int)timeInCycle;
+
+            //timeOfTheDay = percentageSkyboxtime * cycleTime;
         }
 
         /// <summary>
@@ -396,8 +406,8 @@ namespace DCL.Skybox
             }
 
             //timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
-            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
-            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
+            //GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+            //timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
 
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);

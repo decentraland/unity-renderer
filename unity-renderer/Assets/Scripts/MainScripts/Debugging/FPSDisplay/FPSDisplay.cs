@@ -63,7 +63,8 @@ namespace DCL.FPSDisplay
             // Procedural Skybox debug
             targetText += $"Config: {DataStore.i.skyboxConfig.configToLoad.Get()}\n";
             targetText += $"Duration: {DataStore.i.skyboxConfig.lifecycleDuration.Get()}\n";
-            targetText += $"Time: {DataStore.i.skyboxConfig.currentVirtualTime.Get()}\n";
+            targetText += $"Game Time: {DataStore.i.skyboxConfig.currentVirtualTime.Get()}\n";
+            targetText += $"UTC Time: {DCL.ServerTime.WorldTimer.i.GetCurrentTime().ToString()}\n";
 
             targetText += $"Nearby players: {lastPlayerCount}\n";
             targetText += $"Hiccups in the last 1000 frames: {performanceData.Get().hiccupCount}\n";
