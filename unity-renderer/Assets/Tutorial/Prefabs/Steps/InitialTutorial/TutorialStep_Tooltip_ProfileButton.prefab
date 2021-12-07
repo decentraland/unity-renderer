@@ -84,7 +84,7 @@ GameObject:
   - component: {fileID: 4282299692103527186}
   - component: {fileID: 6847608553138329027}
   m_Layer: 0
-  m_Name: TutorialStep_TaskbarTooltip_ProfileButton
+  m_Name: TutorialStep_Tooltip_ProfileButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -211,7 +211,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Click on your avatar to manage your account and access your MANA.
+  m_text: Here is your profile, click on it to modify your public information and
+    access your MANA balance.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,

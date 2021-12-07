@@ -211,8 +211,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Get an overview of the metaverse. Red dots indicate players and stars are
-    highlighted scenes.
+  m_text: 'Helps you navigate the world, discover new places and teleport anywhere
+    with just one click!
+
+
+    <i>Remember, press ESC to return to the world.</i>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -240,7 +243,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 15.8
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1

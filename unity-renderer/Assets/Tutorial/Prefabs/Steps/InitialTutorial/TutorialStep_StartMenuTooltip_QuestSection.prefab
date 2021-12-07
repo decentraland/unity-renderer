@@ -211,7 +211,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Try to to overcome the available quests along the world.
+  m_text: 'If you''re looking for adventure, here''s your journal of available quests,
+    along with their rewards!
+
+
+    <i>Remember, press ESC to return to the world.</i>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -239,7 +243,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 15.8
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1

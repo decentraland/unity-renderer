@@ -211,8 +211,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Here you will be able to access to all features and settings. Click on
-    each section (or press TAB key) to navigate.
+  m_text: These are all the main features. Click on each of them if you want more
+    information, or press the ESC key to return to the world.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -320,7 +320,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 20, y: 108.6}
-  m_SizeDelta: {x: 447.5968, y: 123.37784}
+  m_SizeDelta: {x: 420, y: 123.37784}
   m_Pivot: {x: 1.04, y: 1.07}
 --- !u!222 &7491104538370866601
 CanvasRenderer:

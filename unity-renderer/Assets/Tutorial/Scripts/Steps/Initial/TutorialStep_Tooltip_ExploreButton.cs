@@ -10,16 +10,11 @@ namespace DCL.Tutorial
         private const string PLAYER_PREFS_START_MENU_SHOWED = "StartMenuFeatureShowed";
         private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
 
-        private int defaultTeacherCanvasSortOrder;
-
         public override void OnStepStart()
         {
             base.OnStepStart();
 
             DataStore.i.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
-
-            if (tutorialController.configuration.teacherCanvas != null)
-                defaultTeacherCanvasSortOrder = tutorialController.configuration.teacherCanvas.sortingOrder;
 
             tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
             tutorialController.SetNextSkippedSteps(7);
@@ -28,8 +23,6 @@ namespace DCL.Tutorial
         public override void OnStepFinished()
         {
             base.OnStepFinished();
-
-            tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
 
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
             PlayerPrefsUtils.SetInt(PLAYER_PREFS_START_MENU_SHOWED, 1);

@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 4282299692103527186}
   - component: {fileID: 7824453970545651471}
   m_Layer: 0
-  m_Name: TutorialStep_TaskbarTooltip_SocialFeatures
+  m_Name: TutorialStep_Tooltip_SocialFeatures
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,8 +176,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Use voice and text chat to talk to other players and make new friends.
-    Hold T while speaking into your mic to talk to players around you.
+  m_text: Here you can chat with the people around you, or with your friends in private
+    conversations. You can also press T to talk into your microphone.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -205,7 +205,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.45
+  m_fontSize: 18
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -284,7 +284,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -450.83997, y: 0}
-  m_SizeDelta: {x: 390, y: 100}
+  m_SizeDelta: {x: 390, y: 140}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &7491104538370866601
 CanvasRenderer:
