@@ -29,11 +29,11 @@ public class TaskbarMoreMenuButton : MonoBehaviour
         if (buttonText != null)
             originalTextColor = buttonText.color;
 
-        DataStore.i.appMode.OnChange += AppMode_OnChange;
-        AppMode_OnChange(DataStore.i.appMode.Get(), AppMode.DEFAULT);
+        DataStore.i.common.appMode.OnChange += AppMode_OnChange;
+        AppMode_OnChange(DataStore.i.common.appMode.Get(), AppMode.DEFAULT);
     }
 
-    private void OnDestroy() { DataStore.i.appMode.OnChange -= AppMode_OnChange; }
+    private void OnDestroy() { DataStore.i.common.appMode.OnChange -= AppMode_OnChange; }
 
     private void OnDisable() { lastPlayedAnimation = AnimationStatus.Hide; }
 

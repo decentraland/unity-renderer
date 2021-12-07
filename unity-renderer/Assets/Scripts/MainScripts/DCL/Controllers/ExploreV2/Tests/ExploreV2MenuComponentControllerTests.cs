@@ -91,7 +91,7 @@ public class ExploreV2MenuComponentControllerTests
         // Arrange
         string testRealmName = "TestName";
         string testRealmLayer = "TestLayer";
-        DataStore.i.playerRealm.Set(new CurrentRealmModel
+        DataStore.i.realm.playerRealm.Set(new CurrentRealmModel
         {
             serverName = testRealmName,
             layer = testRealmLayer
@@ -105,10 +105,10 @@ public class ExploreV2MenuComponentControllerTests
             layer = testRealmLayer,
             usersCount = testUsersCount
         });
-        DataStore.i.realmsInfo.Set(testRealmList.ToArray());
+        DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
 
         // Act
-        exploreV2MenuController.UpdateRealmInfo(DataStore.i.playerRealm.Get(), null);
+        exploreV2MenuController.UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
         //Assert
         exploreV2MenuView.currentRealmViewer.Received().SetRealm($"{testRealmName}-{testRealmLayer}");

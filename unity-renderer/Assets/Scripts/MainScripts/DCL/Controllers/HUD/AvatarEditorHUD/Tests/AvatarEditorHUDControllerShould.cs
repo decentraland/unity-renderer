@@ -41,7 +41,7 @@ namespace AvatarEditorHUD_Tests
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
             controller.SetVisibility(true);
-            DataStore.i.isPlayerRendererLoaded.Set(true);
+            DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
             userProfile.UpdateData(new UserProfileModel()
             {

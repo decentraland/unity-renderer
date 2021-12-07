@@ -89,7 +89,7 @@ namespace Tests.SignupHUD
             hudView.OnTermsOfServiceAgreed += Raise.Event<Action>();
             //TODO assert webinterface interaction
             Assert.IsFalse(signupVisible.Get());
-            Assert.IsFalse(DataStore.i.isSignUpFlow.Get());
+            Assert.IsFalse(DataStore.i.common.isSignUpFlow.Get());
         }
 
         [Test]

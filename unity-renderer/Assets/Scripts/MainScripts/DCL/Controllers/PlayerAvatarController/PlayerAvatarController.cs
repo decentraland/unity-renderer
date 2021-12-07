@@ -22,7 +22,7 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void Start()
     {
-        DataStore.i.isPlayerRendererLoaded.Set(false);
+        DataStore.i.common.isPlayerRendererLoaded.Set(false);
         playerAvatarAnalytics = new PlayerAvatarAnalytics(Analytics.i, CommonScriptableObjects.playerCoords);
 
         //NOTE(Brian): We must wait for loading to finish before deactivating the renderer, or the GLTF Loader won't finish.
@@ -49,7 +49,7 @@ public class PlayerAvatarController : MonoBehaviour
         CommonScriptableObjects.rendererState.RemoveLock(this);
         avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
         avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
-        DataStore.i.isPlayerRendererLoaded.Set(true);
+        DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
         if (avatarWereablesErrors || baseWereablesErrors)
             ShowWearablesWarning();

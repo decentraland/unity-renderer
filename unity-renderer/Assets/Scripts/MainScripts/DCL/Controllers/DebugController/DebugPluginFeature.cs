@@ -56,7 +56,7 @@ namespace DCL
             return !network.ToLower().Contains("mainnet");
         }
 
-        private static string GetRealmName() { return DataStore.i.playerRealm.Get()?.serverName; }
+        private static string GetRealmName() { return DataStore.i.realm.playerRealm.Get()?.serverName; }
 
         public void Dispose()
         {
