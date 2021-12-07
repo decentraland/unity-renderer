@@ -583,7 +583,7 @@ public class AvatarEditorHUDController : IHUD
 
             prevMouseLockState = Utils.isCursorLocked;
 
-            if (DataStore.i.isSignUpFlow.Get())
+            if (DataStore.i.isSignUpFlow.Get() || !DataStore.i.exploreV2.isInitialized.Get())
                 Utils.UnlockCursor();
 
             // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0

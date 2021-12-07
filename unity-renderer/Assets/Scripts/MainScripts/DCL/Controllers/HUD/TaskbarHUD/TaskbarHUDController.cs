@@ -3,7 +3,6 @@ using DCL.Controllers;
 using DCL.HelpAndSupportHUD;
 using DCL.Helpers;
 using DCL.Interface;
-using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +22,6 @@ public class TaskbarHUDController : IHUD
     public WorldChatWindowHUDController worldChatWindowHud;
     public PrivateChatWindowHUDController privateChatWindowHud;
     public FriendsHUDController friendsHud;
-    public ExploreHUDController exploreHud;
-    public IExploreV2MenuComponentController exploreV2Hud;
     public HelpAndSupportHUDController helpAndSupportHud;
 
     IMouseCatcher mouseCatcher;
@@ -38,8 +35,6 @@ public class TaskbarHUDController : IHUD
     private IWorldState worldState;
 
     public event System.Action OnAnyTaskbarButtonClicked;
-
-    public RectTransform exploreTooltipReference { get => view.exploreTooltipReference; }
 
     public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
 
@@ -78,10 +73,6 @@ public class TaskbarHUDController : IHUD
         view.OnChatToggleOn += View_OnChatToggleOn;
         view.OnFriendsToggleOff += View_OnFriendsToggleOff;
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
-        view.OnExploreToggleOff += View_OnExploreToggleOff;
-        view.OnExploreToggleOn += View_OnExploreToggleOn;
-        view.OnExploreV2ToggleOff += View_OnExploreV2ToggleOff;
-        view.OnExploreV2ToggleOn += View_OnExploreV2ToggleOn;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -117,8 +108,6 @@ public class TaskbarHUDController : IHUD
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
         DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
-
-        //ConfigureExploreV2Feature();
     }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
@@ -173,39 +162,6 @@ public class TaskbarHUDController : IHUD
             return;
 
         OpenPrivateChatWindow(head.profile.userId);
-    }
-
-    private void View_OnExploreToggleOn()
-    {
-        exploreHud.SetVisibility(true);
-        OnAnyTaskbarButtonClicked?.Invoke();
-    }
-
-    private void View_OnExploreToggleOff() { exploreHud.SetVisibility(false); }
-
-    private void View_OnExploreV2ToggleOn()
-    {
-        if (!DataStore.i.exploreV2.isOpen.Get())
-        {
-            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
-            exploreV2Analytics.SendExploreMainMenuVisibility(
-                true,
-                ExploreUIVisibilityMethod.FromClick);
-        }
-        DataStore.i.exploreV2.isOpen.Set(true, true);
-        OnAnyTaskbarButtonClicked?.Invoke();
-    }
-
-    private void View_OnExploreV2ToggleOff()
-    {
-        if (!DataStore.i.exploreV2.isOpen.Get())
-        {
-            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
-            exploreV2Analytics.SendExploreMainMenuVisibility(
-                false,
-                ExploreUIVisibilityMethod.FromClick);
-        }
-        DataStore.i.exploreV2.isOpen.Set(false);
     }
 
     private void MouseCatcher_OnMouseUnlock() { view.leftWindowContainerAnimator.Show(); }
@@ -326,59 +282,6 @@ public class TaskbarHUDController : IHUD
         friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
-    public void AddExploreWindow(ExploreHUDController controller)
-    {
-        if (controller == null)
-        {
-            Debug.LogWarning("AddExploreWindow >>> Explore window doesn't exist yet!");
-            return;
-        }
-
-        exploreHud = controller;
-        view.OnAddExploreWindow();
-        exploreHud.OnOpen += () =>
-        {
-            view.exploreButton.SetToggleState(true, false);
-        };
-        exploreHud.OnClose += () =>
-        {
-            view.exploreButton.SetToggleState(false, false);
-            MarkWorldChatAsReadIfOtherWindowIsOpen();
-        };
-    }
-
-    private void ConfigureExploreV2Feature()
-    {
-        bool isExploreV2AlreadyInitialized = DataStore.i.exploreV2.isInitialized.Get();
-        if (isExploreV2AlreadyInitialized)
-            OnExploreV2ControllerInitialized(true, false);
-        else
-            DataStore.i.exploreV2.isInitialized.OnChange += OnExploreV2ControllerInitialized;
-    }
-
-    private void OnExploreV2ControllerInitialized(bool current, bool previous)
-    {
-        if (!current)
-            return;
-
-        DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
-        DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
-        view.OnAddExploreV2Window();
-    }
-
-    private void OnExploreV2Open(bool current, bool previous)
-    {
-        if (current)
-        {
-            view.exploreV2Button.SetToggleState(true, false);
-        }
-        else
-        {
-            view.exploreV2Button.SetToggleState(false, false);
-            MarkWorldChatAsReadIfOtherWindowIsOpen();
-        }
-    }
-
     public void OnAddVoiceChat() { view.OnAddVoiceChat(); }
 
     public void DisableFriendsWindow()
@@ -406,10 +309,6 @@ public class TaskbarHUDController : IHUD
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
-            view.OnExploreToggleOff -= View_OnExploreToggleOff;
-            view.OnExploreToggleOn -= View_OnExploreToggleOn;
-            view.OnExploreV2ToggleOff -= View_OnExploreV2ToggleOff;
-            view.OnExploreV2ToggleOn -= View_OnExploreV2ToggleOn;
 
             UnityEngine.Object.Destroy(view.gameObject);
         }
@@ -439,8 +338,6 @@ public class TaskbarHUDController : IHUD
         }
 
         DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
-        DataStore.i.exploreV2.isInitialized.OnChange -= OnExploreV2ControllerInitialized;
-        DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }

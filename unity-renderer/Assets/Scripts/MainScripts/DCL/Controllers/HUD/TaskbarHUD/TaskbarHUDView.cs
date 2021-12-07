@@ -24,14 +24,7 @@ public class TaskbarHUDView : MonoBehaviour
 
     [Header("Right Side Config")]
     [SerializeField] internal HorizontalLayoutGroup rightButtonsHorizontalLayout;
-
-    [SerializeField] internal TaskbarButton exploreButton;
-    [SerializeField] internal TaskbarButton exploreV2Button;
-    [SerializeField] internal GameObject portableExperiencesDiv;
     [SerializeField] internal PortableExperienceTaskbarItem portableExperienceItem;
-
-    [Header("Tutorial Config")]
-    [SerializeField] internal RectTransform exploreTooltipReference;
 
     [SerializeField] internal RectTransform socialTooltipReference;
 
@@ -51,10 +44,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnChatToggleOff;
     public event System.Action OnFriendsToggleOn;
     public event System.Action OnFriendsToggleOff;
-    public event System.Action OnExploreToggleOn;
-    public event System.Action OnExploreToggleOff;
-    public event System.Action OnExploreV2ToggleOn;
-    public event System.Action OnExploreV2ToggleOff;
 
     internal List<TaskbarButton> GetButtonList()
     {
@@ -62,8 +51,6 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
-        taskbarButtonList.Add(exploreButton);
-        taskbarButtonList.Add(exploreV2Button);
 
         using (var iterator = activePortableExperienceItems.GetEnumerator())
         {
@@ -92,16 +79,12 @@ public class TaskbarHUDView : MonoBehaviour
         ShowBar(true, true);
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
-        exploreButton.transform.parent.gameObject.SetActive(false);
-        exploreV2Button.transform.parent.gameObject.SetActive(false);
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
 
         chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
-        exploreButton.Initialize();
-        exploreV2Button.Initialize();
 
         chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
         chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
@@ -111,14 +94,6 @@ public class TaskbarHUDView : MonoBehaviour
 
         friendsButton.OnToggleOn += OnWindowToggleOn;
         friendsButton.OnToggleOff += OnWindowToggleOff;
-
-        exploreButton.OnToggleOn += OnWindowToggleOn;
-        exploreButton.OnToggleOff += OnWindowToggleOff;
-
-        exploreV2Button.OnToggleOn += OnWindowToggleOn;
-        exploreV2Button.OnToggleOff += OnWindowToggleOff;
-
-        portableExperiencesDiv.SetActive(false);
 
         portableExperiencesPool = PoolManager.i.AddPool(
             PORTABLE_EXPERIENCE_ITEMS_POOL,
@@ -137,10 +112,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOff?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOff?.Invoke();
-        else if (obj == exploreButton)
-            OnExploreToggleOff?.Invoke();
-        else if (obj == exploreV2Button)
-            OnExploreV2ToggleOff?.Invoke();
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -184,10 +155,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOn?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOn?.Invoke();
-        else if (obj == exploreButton)
-            OnExploreToggleOn?.Invoke();
-        else if (obj == exploreV2Button)
-            OnExploreV2ToggleOn?.Invoke();
         else
         {
             using (var iterator = activePortableExperienceItems.GetEnumerator())
@@ -213,32 +180,13 @@ public class TaskbarHUDView : MonoBehaviour
         foreach (var btn in taskbarButtonList)
         {
             if (btn != obj)
-            {
-                // We let the use of the chat and friends windows while we are using the explore at the same time
-                if (((btn == exploreButton || btn == exploreV2Button) && (obj == chatButton || obj == friendsButton || obj is ChatHeadButton)) ||
-                    ((btn == chatButton || btn == friendsButton || btn is ChatHeadButton) && (obj == exploreButton || obj == exploreV2Button)))
-                    continue;
-
                 btn.SetToggleState(false, useCallback: true);
-            }
         }
     }
 
     internal void OnAddChatWindow() { chatButton.transform.parent.gameObject.SetActive(true); }
 
     internal void OnAddFriendsWindow() { friendsButton.transform.parent.gameObject.SetActive(true); }
-
-    internal void OnAddExploreWindow()
-    {
-        exploreButton.transform.parent.gameObject.SetActive(true);
-        AdjustRightButtonsLayoutWidth();
-    }
-
-    internal void OnAddExploreV2Window()
-    {
-        exploreV2Button.transform.parent.gameObject.SetActive(true);
-        AdjustRightButtonsLayoutWidth();
-    }
 
     internal void OnAddVoiceChat()
     {
@@ -277,26 +225,12 @@ public class TaskbarHUDView : MonoBehaviour
             friendsButton.OnToggleOn -= OnWindowToggleOn;
             friendsButton.OnToggleOff -= OnWindowToggleOff;
         }
-
-        if (exploreButton != null)
-        {
-            exploreButton.OnToggleOn -= OnWindowToggleOn;
-            exploreButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (exploreV2Button != null)
-        {
-            exploreV2Button.OnToggleOn -= OnWindowToggleOn;
-            exploreV2Button.OnToggleOff -= OnWindowToggleOff;
-        }
     }
 
     internal void AddPortableExperienceElement(string id, string name, string iconUrl)
     {
         if (portableExperiencesPool == null)
             return;
-
-        //portableExperiencesDiv.SetActive(true);
 
         PoolableObject newPEPoolable = portableExperiencesPool.Get();
         newPEPoolable.gameObject.name = $"PortableExperienceItem ({id})";
@@ -331,9 +265,6 @@ public class TaskbarHUDView : MonoBehaviour
             portableExperiencesPool.Release(activePortableExperiencesPoolables[id]);
             activePortableExperiencesPoolables.Remove(id);
         }
-
-        if (activePortableExperienceItems.Count == 0)
-            portableExperiencesDiv.SetActive(false);
 
         AdjustRightButtonsLayoutWidth();
     }

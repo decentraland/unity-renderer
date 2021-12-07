@@ -9,7 +9,7 @@ namespace DCL.Tutorial
     public class TutorialStep_Tooltip_StartMenu : TutorialStep_Tooltip
     {
         internal const int TEACHER_CANVAS_SORT_ORDER_START = 4;
-        internal const string PROFILE_STEP = "TutorialStep_TaskbarTooltip_ProfileButton";
+        internal const string PROFILE_STEP = "TutorialStep_Tooltip_ProfileButton";
         internal const string TOP_MENU_STEP = "TutorialStep_StartMenuTooltip_TopMenu";
         internal const string PLACES_AND_EVENTS_STEP = "TutorialStep_StartMenuTooltip_PlacesAndEventsSection";
         internal const string BACKPACK_STEP = "TutorialStep_StartMenuTooltip_BackpackSection";

@@ -91,6 +91,9 @@ namespace DCL
 
             if (visible)
             {
+                if (!DataStore.i.exploreV2.isInitialized.Get())
+                    Utils.UnlockCursor();
+
                 minimapViewport = MapRenderer.i.atlas.viewport;
                 mapRendererMinimapParent = MapRenderer.i.transform.parent;
                 atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;

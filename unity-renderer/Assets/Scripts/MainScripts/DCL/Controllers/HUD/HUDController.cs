@@ -296,7 +296,6 @@ public class HUDController : IHUDController
                 if (exploreHud != null)
                 {
                     exploreHud.Initialize(FriendsController.i);
-                    taskbarHud?.AddExploreWindow(exploreHud);
                 }
 
                 break;

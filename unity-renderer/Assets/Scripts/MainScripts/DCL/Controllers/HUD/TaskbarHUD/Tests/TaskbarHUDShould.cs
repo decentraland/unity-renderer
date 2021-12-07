@@ -33,7 +33,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view = controller.view;
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
-        //Assert.IsTrue(view.moreButton.gameObject.activeSelf, "More button is not actived?");
         Assert.IsTrue(CommonScriptableObjects.isTaskbarHUDInitialized, "Taskbar controller is not initialized?");
     }
 
@@ -78,24 +77,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void AddExploreWindowProperly()
-    {
-        exploreHUDController = new ExploreHUDController();
-        exploreHUDController.Initialize(friendsController);
-        controller.AddExploreWindow(exploreHUDController);
-
-        Assert.IsTrue(exploreHUDController.view.gameObject.activeSelf, "Explore window is disabled!");
-    }
-
-    //[Test]
-    //public void AddControlsMoreButtonProperly()
-    //{
-    //    controller.AddControlsMoreOption();
-
-    //    Assert.IsTrue(view.moreMenu.controlsButton.mainButton.IsActive(), "Controls more button is disabled!");
-    //}
-
-    [Test]
     public void ToggleWindowsProperly()
     {
         privateChatController = new PrivateChatWindowHUDController();
@@ -131,7 +112,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(5, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(3, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
         Assert.IsTrue(buttonList[2] is ChatHeadButton);
@@ -200,7 +181,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         view.RemovePortableExperienceElement(testPEId);
 
         // Assert
-        Assert.IsFalse(view.portableExperiencesDiv.activeSelf, "The Portable Experiences Div should not be actived!");
         var newPE = view.rightButtonsContainer.GetComponentInChildren<PortableExperienceTaskbarItem>();
         Assert.IsNull(newPE, "There should not exists a PortableExperienceTaskbarItem as child!");
         Assert.IsFalse(view.activePortableExperienceItems.ContainsKey(testPEId), "The activePortableExperienceItems dictionary should not contains the new PE added!");
