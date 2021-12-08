@@ -153,7 +153,7 @@ namespace DCL.Tutorial
         /// </summary>
         internal void SetupTutorial(string fromDeepLink, string enableNewTutorialCamera, TutorialType tutorialType, bool userAlreadyDidTheTutorial = false)
         {
-            if (DataStore.i.isTutorialRunning.Get())
+            if (DataStore.i.common.isTutorialRunning.Get())
                 return;
 
             if (Convert.ToBoolean(enableNewTutorialCamera))
@@ -163,7 +163,7 @@ namespace DCL.Tutorial
                 configuration.eagleCamRotationActived = false;
             }
 
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
             CommonScriptableObjects.allUIHidden.Set(false);
@@ -206,7 +206,7 @@ namespace DCL.Tutorial
             }
 
             tutorialReset = false;
-            DataStore.i.isTutorialRunning.Set(false);
+            DataStore.i.common.isTutorialRunning.Set(false);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
@@ -233,7 +233,7 @@ namespace DCL.Tutorial
         /// <param name="stepIndex">First step to be executed.</param>
         public IEnumerator StartTutorialFromStep(int stepIndex)
         {
-            if (!DataStore.i.isTutorialRunning.Get())
+            if (!DataStore.i.common.isTutorialRunning.Get())
                 yield break;
 
             if (runningStep != null)

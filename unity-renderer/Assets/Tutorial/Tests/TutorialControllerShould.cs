@@ -39,7 +39,7 @@ namespace DCL.Tutorial_Tests
             TutorialType tutorialType = TutorialType.Initial;
             bool userAlreadyDidTheTutorial = false;
 
-            DataStore.i.isTutorialRunning.Set(false);
+            DataStore.i.common.isTutorialRunning.Set(false);
             tutorialController.configuration.eagleCamRotationActived = true;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
             tutorialController.userAlreadyDidTheTutorial = true;
@@ -57,7 +57,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
 
             // Assert
-            Assert.IsTrue(DataStore.i.isTutorialRunning.Get());
+            Assert.IsTrue(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
             Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
@@ -76,7 +76,7 @@ namespace DCL.Tutorial_Tests
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             tutorialController.tutorialReset = true;
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             NotificationsController.disableWelcomeNotification = true;
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -91,7 +91,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(CommonScriptableObjects.featureKeyTriggersBlocked.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.AreEqual(1f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.IsFalse(NotificationsController.disableWelcomeNotification);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -108,7 +108,7 @@ namespace DCL.Tutorial_Tests
             yield return tutorialController.StartTutorialFromStep(0);
 
             // Assert
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromGenesisPlaza, tutorialController.currentPath);
@@ -121,7 +121,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -133,7 +133,7 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromDeepLink, tutorialController.currentPath);
@@ -146,7 +146,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -158,7 +158,7 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -172,7 +172,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -185,7 +185,7 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromUserThatAlreadyDidTheTutorial, tutorialController.currentPath);
@@ -198,7 +198,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -213,7 +213,7 @@ namespace DCL.Tutorial_Tests
             yield return tutorialController.StartTutorialFromStep(0);
 
             // Assert
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromBuilderInWorld, tutorialController.currentPath);
@@ -226,7 +226,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(DataStore.i.isTutorialRunning.Get());
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -581,7 +581,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
             tutorialController.tutorialReset = false;
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -603,7 +603,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.playerIsInGenesisPlaza = false;
             tutorialController.tutorialReset = false;
             tutorialController.openedFromDeepLink = true;
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -624,7 +624,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -643,7 +643,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = true;
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -661,7 +661,7 @@ namespace DCL.Tutorial_Tests
             currentSteps = tutorialController.configuration.stepsFromBuilderInWorld;
 
             tutorialController.tutorialType = TutorialType.BuilderInWorld;
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -701,7 +701,7 @@ namespace DCL.Tutorial_Tests
 
         private void CheckRunningStep()
         {
-            Assert.IsTrue(DataStore.i.isTutorialRunning.Get());
+            Assert.IsTrue(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNotNull(tutorialController.runningStep);
             Assert.IsTrue(currentSteps[currentStepIndex] == tutorialController.runningStep);
             Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
@@ -720,7 +720,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
             tutorialController.tutorialReset = false;
-            DataStore.i.isTutorialRunning.Set(true);
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = null;
 
             // Act

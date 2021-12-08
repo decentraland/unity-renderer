@@ -1,4 +1,4 @@
-﻿namespace DCL
+namespace DCL
 {
     public class DataStore_Common
     {
@@ -7,5 +7,6 @@
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
+        public readonly BaseVariable<bool> isTutorialRunning = new BaseVariable<bool>(false);
     }
 }

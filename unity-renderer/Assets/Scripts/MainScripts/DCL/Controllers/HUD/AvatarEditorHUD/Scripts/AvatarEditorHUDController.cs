@@ -549,13 +549,13 @@ public class AvatarEditorHUDController : IHUD
 
         if (!visible && view.isOpen)
         {
-            if (DataStore.i.isSignUpFlow.Get())
+            if (DataStore.i.common.isSignUpFlow.Get())
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
 
             DCL.Environment.i.messaging.manager.paused = false;
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.inWorld;
             currentRenderProfile.avatarProfile.Apply();
-            if (prevMouseLockState && DataStore.i.isSignUpFlow.Get())
+            if (prevMouseLockState && DataStore.i.common.isSignUpFlow.Get())
             {
                 Utils.LockCursor();
             }
@@ -564,7 +564,7 @@ public class AvatarEditorHUDController : IHUD
             var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
             asset.renderScale = prevRenderScale;
 
-            if (DataStore.i.isSignUpFlow.Get())
+            if (DataStore.i.common.isSignUpFlow.Get())
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
 
             DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
@@ -573,7 +573,7 @@ public class AvatarEditorHUDController : IHUD
         }
         else if (visible && !view.isOpen)
         {
-            if (DataStore.i.isSignUpFlow.Get())
+            if (DataStore.i.common.isSignUpFlow.Get())
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
 
             LoadOwnedWereables(userProfile);
@@ -583,7 +583,7 @@ public class AvatarEditorHUDController : IHUD
 
             prevMouseLockState = Utils.isCursorLocked;
 
-            if (DataStore.i.isSignUpFlow.Get() || !DataStore.i.exploreV2.isInitialized.Get())
+            if (DataStore.i.common.isSignUpFlow.Get() || !DataStore.i.exploreV2.isInitialized.Get())
                 Utils.UnlockCursor();
 
             // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
@@ -591,7 +591,7 @@ public class AvatarEditorHUDController : IHUD
             prevRenderScale = asset.renderScale;
             asset.renderScale = 1.0f;
 
-            if (DataStore.i.isSignUpFlow.Get())
+            if (DataStore.i.common.isSignUpFlow.Get())
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
             CommonScriptableObjects.isFullscreenHUDOpen.Set(true);

@@ -206,7 +206,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
 
         if (visible)
         {
-            if (DataStore.i.isSignUpFlow.Get())
+            if (DataStore.i.common.isSignUpFlow.Get())
             {
                 if (musicFadeOut != null)
                 {
@@ -225,7 +225,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
         }
         else
         {
-            if (DataStore.i.isSignUpFlow.Get())
+            if (DataStore.i.common.isSignUpFlow.Get())
             {
                 musicFadeOut = eventMusic.FadeOut(2f);
                 StartCoroutine(musicFadeOut);

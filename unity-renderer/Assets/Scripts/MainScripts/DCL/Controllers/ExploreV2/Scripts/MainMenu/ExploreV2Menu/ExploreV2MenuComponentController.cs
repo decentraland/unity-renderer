@@ -194,7 +194,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             Utils.UnlockCursor();
             CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
-            if (DataStore.i.isTutorialRunning.Get())
+            if (DataStore.i.common.isTutorialRunning.Get())
                 view.GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
         }
         else
@@ -234,7 +234,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void AvatarEditorVisibleChanged(bool current, bool previous)
     {
-        if (!isAvatarEditorInitialized.Get() || DataStore.i.isSignUpFlow.Get())
+        if (!isAvatarEditorInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (current)
