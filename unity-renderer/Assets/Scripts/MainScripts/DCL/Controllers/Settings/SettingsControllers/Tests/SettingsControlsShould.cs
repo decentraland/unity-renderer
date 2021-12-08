@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using Cinemachine;
 using DCL.Rendering;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
@@ -31,26 +34,31 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         private FieldInfo lwrpaShadowResolutionField = null;
         private FieldInfo lwrpaSoftShadowField = null;
 
-        [UnitySetUp]
-        public IEnumerator SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            yield return EditorSceneManager.LoadSceneAsyncInPlayMode($"{TEST_SCENE_PATH}/{TEST_SCENE_NAME}.unity", new LoadSceneParameters(LoadSceneMode.Additive));
-            yield return null;
             SetupReferences();
         }
 
-        [UnityTearDown]
-        public IEnumerator TearDown()
+        [TearDown]
+        public void TearDown()
         {
             Settings.i.LoadDefaultSettings();
 
-            ScriptableObject.Destroy(settingController);
-
-            yield return EditorSceneManager.UnloadSceneAsync(TEST_SCENE_NAME);
+            foreach ( var go in legacySystems )
+            {
+                Object.Destroy(go);
+            }
         }
+
+        private List<GameObject> legacySystems = new List<GameObject>();
 
         private void SetupReferences()
         {
+            legacySystems.Add(MainSceneFactory.CreateEnvironment());
+            legacySystems.Add(MainSceneFactory.CreateSettingsController());
+            legacySystems.AddRange(MainSceneFactory.CreatePlayerSystems());
+
             urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
             Assert.IsNotNull(urpAsset, "urpAsset is null!");
 

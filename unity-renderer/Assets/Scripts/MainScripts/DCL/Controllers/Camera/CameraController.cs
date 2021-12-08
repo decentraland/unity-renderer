@@ -187,11 +187,14 @@ namespace DCL.Camera
 
         private void OnDestroy()
         {
-            using (var iterator = cachedModeToVirtualCamera.GetEnumerator())
+            if (cachedModeToVirtualCamera != null)
             {
-                while (iterator.MoveNext())
+                using (var iterator = cachedModeToVirtualCamera.GetEnumerator())
                 {
-                    iterator.Current.Value.Cleanup();
+                    while (iterator.MoveNext())
+                    {
+                        iterator.Current.Value.Cleanup();
+                    }
                 }
             }
 

@@ -62,7 +62,8 @@ namespace DCL.Camera
 
         public override void Cleanup()
         {
-            Destroy(cameraTargetProbe.gameObject);
+            if (cameraTargetProbe != null)
+                Destroy(cameraTargetProbe.gameObject);
         }
 
         private void OnEnable()
