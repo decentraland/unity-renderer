@@ -26,6 +26,7 @@ public class PlacesAndEventsSectionComponentControllerTests
         Assert.AreEqual(placesAndEventsSectionComponentView, placesAndEventsSectionComponentController.view);
         Assert.IsNotNull(placesAndEventsSectionComponentController.placesSubSectionComponentController);
         Assert.IsNotNull(placesAndEventsSectionComponentController.eventsSubSectionComponentController);
+        Assert.IsNotNull(placesAndEventsSectionComponentController.highlightsSubSectionComponentController);
     }
 
     [Test]
@@ -50,5 +51,17 @@ public class PlacesAndEventsSectionComponentControllerTests
 
         // Assert
         placesAndEventsSectionComponentView.Received().GoToSubsection(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RaisePlacesAndEventsVisibleChangedCorrectly(bool isVisible)
+    {
+        // Act
+        placesAndEventsSectionComponentController.PlacesAndEventsVisibleChanged(isVisible, !isVisible);
+
+        // Arrange
+        placesAndEventsSectionComponentView.Received().SetActive(isVisible);
     }
 }

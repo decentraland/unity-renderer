@@ -33,7 +33,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
-    internal BaseVariable<bool> isNavmapVisibleInitialized => DataStore.i.HUDs.isNavMapInitialized;
+    internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
     internal BaseVariable<bool> isBuilderInitialized => DataStore.i.builderInWorld.isInitialized;
     internal BaseVariable<bool> builderVisible => DataStore.i.HUDs.builderProjectsPanelVisible;
@@ -81,8 +81,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         avatarEditorVisible.OnChange += AvatarEditorVisibleChanged;
         AvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
 
-        isNavmapVisibleInitialized.OnChange += IsNavMapInitializedChanged;
-        IsNavMapInitializedChanged(isNavmapVisibleInitialized.Get(), false);
+        isNavmapInitialized.OnChange += IsNavMapInitializedChanged;
+        IsNavMapInitializedChanged(isNavmapInitialized.Get(), false);
         navmapVisible.OnChange += NavmapVisibleChanged;
         NavmapVisibleChanged(navmapVisible.Get(), false);
 
@@ -143,7 +143,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
         isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
         avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
-        isNavmapVisibleInitialized.OnChange -= IsNavMapInitializedChanged;
+        isNavmapInitialized.OnChange -= IsNavMapInitializedChanged;
         navmapVisible.OnChange -= NavmapVisibleChanged;
         isBuilderInitialized.OnChange -= IsBuilderInitializedChanged;
         builderVisible.OnChange -= BuilderVisibleChanged;
@@ -260,7 +260,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void NavmapVisibleChanged(bool current, bool previous)
     {
-        if (!isNavmapVisibleInitialized.Get())
+        if (!isNavmapInitialized.Get())
             return;
 
         if (current)

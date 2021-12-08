@@ -312,6 +312,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         sectionSelector.GetSection((int)ExploreSection.Explore)?.onSelect.RemoveAllListeners();
         sectionSelector.GetSection((int)ExploreSection.Backpack)?.onSelect.RemoveAllListeners();
         sectionSelector.GetSection((int)ExploreSection.Map)?.onSelect.RemoveAllListeners();
+        sectionSelector.GetSection((int)ExploreSection.Builder)?.onSelect.RemoveAllListeners();
+        sectionSelector.GetSection((int)ExploreSection.Quest)?.onSelect.RemoveAllListeners();
+        sectionSelector.GetSection((int)ExploreSection.Settings)?.onSelect.RemoveAllListeners();
     }
 
     internal void ConfigureCloseButton()

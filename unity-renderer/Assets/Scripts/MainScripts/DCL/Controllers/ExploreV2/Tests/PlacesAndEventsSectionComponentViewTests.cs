@@ -104,4 +104,19 @@ public class PlacesAndEventsSectionComponentViewTests
                 break;
         }
     }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetActiveCorrectly(bool isActive)
+    {
+        // Arrange
+        placesAndEventsSectionComponent.gameObject.SetActive(!isActive);
+
+        // Act
+        placesAndEventsSectionComponent.SetActive(isActive);
+
+        // Assert
+        Assert.AreEqual(isActive, placesAndEventsSectionComponent.gameObject.activeSelf);
+    }
 }

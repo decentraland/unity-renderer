@@ -36,6 +36,69 @@ public class ExploreV2MenuComponentViewTests
     }
 
     [Test]
+    [TestCase(ExploreSection.Backpack)]
+    [TestCase(ExploreSection.Builder)]
+    [TestCase(ExploreSection.Explore)]
+    [TestCase(ExploreSection.Map)]
+    [TestCase(ExploreSection.Quest)]
+    [TestCase(ExploreSection.Settings)]
+    public void GoToSectionCorrectly(ExploreSection section)
+    {
+        // Arrange
+        if (section == ExploreSection.Backpack)
+            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Builder);
+        else
+            DataStore.i.exploreV2.currentSectionIndex.Set((int)ExploreSection.Backpack);
+
+        // Act
+        exploreV2MenuComponent.GoToSection(section);
+
+        // Assert
+        Assert.AreEqual((int)section, DataStore.i.exploreV2.currentSectionIndex.Get());
+    }
+
+    [Test]
+    [TestCase(ExploreSection.Backpack, true)]
+    [TestCase(ExploreSection.Builder, true)]
+    [TestCase(ExploreSection.Explore, true)]
+    [TestCase(ExploreSection.Map, true)]
+    [TestCase(ExploreSection.Quest, true)]
+    [TestCase(ExploreSection.Settings, true)]
+    [TestCase(ExploreSection.Backpack, false)]
+    [TestCase(ExploreSection.Builder, false)]
+    [TestCase(ExploreSection.Explore, false)]
+    [TestCase(ExploreSection.Map, false)]
+    [TestCase(ExploreSection.Quest, false)]
+    [TestCase(ExploreSection.Settings, false)]
+    public void SetSectionActiveCorrectly(ExploreSection section, bool isActive)
+    {
+        // Act
+        exploreV2MenuComponent.SetSectionActive(section, isActive);
+
+        // Assert
+        Assert.AreEqual(isActive, exploreV2MenuComponent.sectionSelector.GetSection((int)section).IsActive());
+    }
+
+    [Test]
+    [TestCase(ExploreSection.Backpack)]
+    [TestCase(ExploreSection.Builder)]
+    [TestCase(ExploreSection.Map)]
+    [TestCase(ExploreSection.Quest)]
+    [TestCase(ExploreSection.Settings)]
+    public void ConfigureEncapsulatedSectionCorrectly(ExploreSection section)
+    {
+        // Arrange
+        GameObject testGO = new GameObject();
+        BaseVariable<Transform> featureConfiguratorFlag = new BaseVariable<Transform>(testGO.transform);
+
+        // Act
+        exploreV2MenuComponent.ConfigureEncapsulatedSection(section, featureConfiguratorFlag);
+
+        // Assert
+        Assert.IsTrue(featureConfiguratorFlag.Get());
+    }
+
+    [Test]
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]
@@ -70,19 +133,18 @@ public class ExploreV2MenuComponentViewTests
         // Arrange
         exploreV2MenuComponent.sectionSelector.RefreshControl();
         exploreV2MenuComponent.CreateSectionSelectorMappings();
-        exploreV2MenuComponent.placesAndEventsSection.gameObject.SetActive(false);
+
+        if (sectionIndex == 0)
+            DataStore.i.exploreV2.currentSectionIndex.Set(1, false);
+        else
+            DataStore.i.exploreV2.currentSectionIndex.Set(0, false);
 
         // Act
         exploreV2MenuComponent.RemoveSectionSelectorMappings();
         exploreV2MenuComponent.sectionSelector.GetSection(sectionIndex).onSelect.Invoke(true);
 
         // Assert
-        switch (sectionIndex)
-        {
-            case 0:
-                Assert.IsFalse(exploreV2MenuComponent.placesAndEventsSection.gameObject.activeSelf);
-                break;
-        }
+        Assert.AreNotEqual(sectionIndex, DataStore.i.exploreV2.currentSectionIndex.Get());
     }
 
     [Test]

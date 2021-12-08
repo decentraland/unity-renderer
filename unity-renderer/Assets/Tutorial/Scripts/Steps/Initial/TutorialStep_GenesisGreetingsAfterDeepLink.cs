@@ -15,7 +15,6 @@ namespace DCL.Tutorial
         {
             base.OnStepFinished();
             tutorialController?.hudController?.taskbarHud?.SetVisibility(true);
-            //tutorialController?.hudController?.profileHud?.SetBackpackButtonVisibility(true);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
     }

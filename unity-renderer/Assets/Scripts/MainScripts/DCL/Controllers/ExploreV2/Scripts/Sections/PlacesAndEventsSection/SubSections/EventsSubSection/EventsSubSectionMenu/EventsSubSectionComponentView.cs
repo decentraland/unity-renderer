@@ -237,6 +237,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         featuredEvents.SetItems(eventComponentsToAdd);
         SetFeaturedEventsActive(events.Count > 0);
     }
+
     public void SetFeaturedEventsAsLoading(bool isVisible)
     {
         SetFeaturedEventsActive(!isVisible);

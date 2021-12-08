@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Huds.QuestsPanel;
 using DCL.QuestsController;
 using NSubstitute;
@@ -41,6 +41,7 @@ namespace Tests.QuestsPanelHUD
 
             Assert.AreEqual(questsController, hudController.questsController);
             Assert.AreEqual(hudView, hudController.view);
+            Assert.IsTrue(DataStore.i.Quests.isInitialized.Get());
         }
 
         [Test]
