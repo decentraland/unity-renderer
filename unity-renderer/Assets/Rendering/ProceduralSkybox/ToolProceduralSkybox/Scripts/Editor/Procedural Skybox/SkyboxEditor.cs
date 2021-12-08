@@ -56,7 +56,10 @@ namespace DCL.Skybox
                 return;
             }
 
-            overridingController = SkyboxController.i.GetControlBackFromEditor(selectedConfiguration.name, timeOfTheDay, lifecycleDuration, isPaused);
+            if (Application.isPlaying && SkyboxController.i != null)
+            {
+                overridingController = SkyboxController.i.GetControlBackFromEditor(selectedConfiguration.name, timeOfTheDay, lifecycleDuration, isPaused);
+            }
         }
 
         void OnFocus() { EnsureDependencies(); }
@@ -283,7 +286,7 @@ namespace DCL.Skybox
             if (SkyboxController.i != null)
             {
                 isPaused = SkyboxController.i.IsPaused();
-                lifecycleDuration = SkyboxController.i.lifecycleDuration;
+                lifecycleDuration = (float)SkyboxController.i.lifecycleDuration;
                 selectedConfiguration = SkyboxController.i.GetCurrentConfiguration();
                 overridingController = SkyboxController.i.SetOverrideController(true);
                 timeOfTheDay = SkyboxController.i.GetCurrentTimeOfTheDay();
