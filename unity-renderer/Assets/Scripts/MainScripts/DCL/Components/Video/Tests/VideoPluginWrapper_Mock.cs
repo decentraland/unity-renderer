@@ -64,11 +64,10 @@ namespace Tests
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
         }
-
-        public int GetTexture(string id)
+        public Texture2D PrepareTexture(string id)
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
-            return 0;
+            return null;
         }
 
         public void Play(string id, float startTime)

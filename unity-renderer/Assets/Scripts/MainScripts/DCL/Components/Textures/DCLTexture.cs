@@ -147,7 +147,7 @@ namespace DCL
             }
         }
 
-        private int refCount;
+        protected int refCount;
 
         public virtual void AttachTo(PBRMaterial material) { AddRefCount(); }
 
