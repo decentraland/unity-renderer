@@ -666,7 +666,10 @@ namespace DCL.Interface
             set
             {
                 OnMessage = value;
-                ProcessQueuedMessages();
+                if (OnMessage != null)
+                {
+                    ProcessQueuedMessages();
+                }
             } 
             get => OnMessage;
         }
