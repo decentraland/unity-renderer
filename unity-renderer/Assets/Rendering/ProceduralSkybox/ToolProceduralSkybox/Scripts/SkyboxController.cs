@@ -21,16 +21,16 @@ namespace DCL.Skybox
         public string loadedConfig;
         //Time for one complete circle. In Hours. default 24
         public float cycleTime = 24;
-        public double lifecycleDuration = 2;
+        public float lifecycleDuration = 2;
 
-        private double timeOfTheDay;                            // (Nishant.K) Time will be provided from outside, So remove this variable
+        private float timeOfTheDay;                            // (Nishant.K) Time will be provided from outside, So remove this variable
         private Light directionalLight;
         private SkyboxConfiguration configuration;
         private Material selectedMat;
         private bool overrideDefaultSkybox;
         private string overrideSkyboxID;
         private bool isPaused;
-        private double timeNormalizationFactor;
+        private float timeNormalizationFactor;
         private int slotCount;
         private bool overrideByEditor = false;
 
@@ -302,7 +302,9 @@ namespace DCL.Skybox
 
             double timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
             double percentageSkyboxtime = timeInCycle - (int)timeInCycle;
-            timeOfTheDay = percentageSkyboxtime * cycleTime;
+
+
+            timeOfTheDay = (float)percentageSkyboxtime * cycleTime;
 
             //Debug.Log("Procedural Skybox :: Current UTC time: " + WorldTimer.i.GetCurrentTime().ToString());
             //Debug.Log("Procedural Skybox :: Cycle Min: " + cycleMin + ", Cycle max: " + cycleMax);
@@ -416,10 +418,10 @@ namespace DCL.Skybox
 
             timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
             //GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
-            timeOfTheDay = ClampDouble(timeOfTheDay, 0.01, cycleTime);
-            DataStore.i.skyboxConfig.currentVirtualTime.Set((float)timeOfTheDay);
+            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
+            DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
 
-            configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
+            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
 
             // Cycle resets
             if (timeOfTheDay >= cycleTime)
@@ -515,12 +517,12 @@ namespace DCL.Skybox
         private double ClampDouble(double timeOfTheDay, double min, float max)
         {
             double result = timeOfTheDay;
-            if (timeOfTheDay <= min)
+            if (timeOfTheDay < min)
             {
                 result = min;
             }
 
-            if (timeOfTheDay >= max)
+            if (timeOfTheDay > max)
             {
                 result = max;
             }

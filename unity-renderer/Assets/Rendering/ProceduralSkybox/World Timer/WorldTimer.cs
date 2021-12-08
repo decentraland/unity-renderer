@@ -12,7 +12,9 @@ namespace DCL.ServerTime
         public event OnTimeUpdated OnTimeChanged;
 
         public float serverHitFrequency;
-        public string serverURL = "https://worldtimeapi.org/api/timezone/Etc/UTC";
+        public string serverURL = "https://peer.decentraland.org/lambdas/health";
+        //https://peer.decentraland.org/lambdas/health
+        //
 
         private bool initialized = false;
         private DateTime lastTimeFromServer = DateTime.Now.ToUniversalTime();
@@ -33,13 +35,14 @@ namespace DCL.ServerTime
         private void WebRequestCompleted(AsyncOperation obj)
         {
             Debug.Log("Procedural Skybox :: Timer request completed: " + webRequest.result);
+
             switch (webRequest.result)
             {
                 case UnityWebRequest.Result.InProgress:
                     break;
                 case UnityWebRequest.Result.Success:
-                    TimerSchema res = JsonUtility.FromJson<TimerSchema>(webRequest.downloadHandler.text);
-                    UpdateTimeWithServerTime(res.datetime);
+                    string responseHeaderTime = webRequest.GetResponseHeader("date");
+                    UpdateTimeWithServerTime(responseHeaderTime);
                     initialized = true;
                     break;
                 case UnityWebRequest.Result.ConnectionError:
