@@ -594,6 +594,7 @@ public class AvatarEditorHUDController : IHUD
             if (DataStore.i.common.isSignUpFlow.Get())
                 CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
             DataStore.i.common.isPlayerRendererLoaded.OnChange += PlayerRendererLoaded;
 
             OnOpen?.Invoke();
