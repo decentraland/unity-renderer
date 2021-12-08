@@ -9,7 +9,7 @@ namespace DCL
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
         const string METADATA_FILENAME = "metadata.json";
-        
+
         public static bool VERBOSE = false;
         public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
 
@@ -30,7 +30,8 @@ namespace DCL
         private Transform containerTransform;
         private WebRequestAsyncOperation asyncOp;
 
-        public AssetPromise_AB(string contentUrl, string hash, Transform containerTransform = null) : base(contentUrl, hash)
+        public AssetPromise_AB(string contentUrl, string hash, Transform containerTransform = null) : base(contentUrl,
+            hash)
         {
             this.containerTransform = containerTransform;
             assetBundlesLoader.Start();
@@ -82,9 +83,13 @@ namespace DCL
             UnregisterConcurrentRequest();
         }
 
-        protected override void OnAfterLoadOrReuse() { }
+        protected override void OnAfterLoadOrReuse()
+        {
+        }
 
-        protected override void OnBeforeLoadOrReuse() { }
+        protected override void OnBeforeLoadOrReuse()
+        {
+        }
 
         protected IEnumerator LoadAssetBundleWithDeps(string baseUrl, string hash, Action OnSuccess, Action OnFail)
         {
@@ -100,7 +105,8 @@ namespace DCL
 
             RegisterConcurrentRequest();
 #if (UNITY_EDITOR || UNITY_STANDALONE)
-            asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash), disposeOnCompleted: false);
+            asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash),
+                disposeOnCompleted: false);
 #else
             //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, disposeOnCompleted: false);
@@ -124,7 +130,7 @@ namespace DCL
                 asyncOp.Dispose();
                 yield break;
             }
-            
+
             AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
             asyncOp.Dispose();
 
@@ -138,10 +144,10 @@ namespace DCL
 
             asset.ownerAssetBundle = assetBundle;
             asset.assetBundleAssetName = assetBundle.name;
-            
+
             // 2. Check internal metadata file (dependencies, version, timestamp) and if it doesn't exist, fetch the external depmap file (old way of handling ABs dependencies)
             TextAsset metadata = assetBundle.LoadAsset<TextAsset>(METADATA_FILENAME);
-            
+
             if (metadata != null)
             {
                 AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash);
@@ -153,7 +159,7 @@ namespace DCL
 
                 yield return AssetBundleDepMapLoadHelper.WaitUntilExternalDepMapIsResolved(hash);
             }
-            
+
             // 3. Resolve dependencies
             if (AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
             {
@@ -184,7 +190,8 @@ namespace DCL
             string result = $"AB request... loadCoroutine = {loadCoroutine} ... state = {state}\n";
 
             if (asyncOp.webRequest != null)
-                result += $"url = {asyncOp.webRequest.url} ... code = {asyncOp.webRequest.responseCode} ... progress = {asyncOp.webRequest.downloadProgress}\n";
+                result +=
+                    $"url = {asyncOp.webRequest.url} ... code = {asyncOp.webRequest.responseCode} ... progress = {asyncOp.webRequest.downloadProgress}\n";
             else
                 result += $"null request for url: {contentUrl + hash}\n";
 
@@ -203,7 +210,19 @@ namespace DCL
             return result;
         }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail) { loadCoroutine = CoroutineStarter.Start(LoadAssetBundleWithDeps(contentUrl, hash, OnSuccess, OnFail)); }
+        protected override void OnLoad(Action OnSuccess, Action OnFail)
+        {
+            loadCoroutine = CoroutineStarter.Start(DCLCoroutineRunner.Run(
+                LoadAssetBundleWithDeps(contentUrl, hash, OnSuccess, OnFail),
+                exception => HandleLoadException(exception, OnFail)));
+        }
+
+        private void HandleLoadException(Exception exception, Action failCallback)
+        {
+            Debug.LogException(exception);
+            DataStore.i.HUDs.loadingHUD.error.Set(exception);
+            failCallback?.Invoke();
+        }
 
         IEnumerator WaitForConcurrentRequestsSlot()
         {

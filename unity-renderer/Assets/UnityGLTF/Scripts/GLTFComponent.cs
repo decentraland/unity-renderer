@@ -175,13 +175,14 @@ namespace UnityGLTF
                 return;
 
             state = State.FAILED;
-
+            
             CoroutineStarter.Stop(loadingRoutine);
             loadingRoutine = null;
-
+            
             DecrementDownloadCount();
 
             OnFailedLoadingAsset?.Invoke();
+            DataStore.i.HUDs.loadingHUD.error.Set(obj);
 
             if (obj != null)
             {
@@ -242,7 +243,8 @@ namespace UnityGLTF
                         // Path.Combine treats paths that start with the separator character
                         // as absolute paths, ignoring the first path passed in. This removes
                         // that character to properly handle a filename written with it.
-                        GLTFUri = GLTFUri.TrimStart(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
+                        GLTFUri = GLTFUri.TrimStart(new[]
+                            {Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar});
                         string fullPath = Path.Combine(Application.streamingAssetsPath, GLTFUri);
                         string directoryPath = URIHelper.GetDirectoryName(fullPath);
                         loader = new GLTFFileLoader(directoryPath);
@@ -282,7 +284,8 @@ namespace UnityGLTF
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.initialVisibility = initialVisibility;
                     sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
-                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get()
+                        .IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
 
                     float time = Time.realtimeSinceStartup;
 
@@ -320,7 +323,6 @@ namespace UnityGLTF
                     }
 
                     state = State.COMPLETED;
-
                     DecrementDownloadCount();
                 }
                 finally
