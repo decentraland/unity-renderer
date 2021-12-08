@@ -297,7 +297,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         {
             address = TESTING_ETH_ADDRESS;
             network = TESTING_TLD;
-            DataStore.i.playerRealm.Set(new CurrentRealmModel()
+            DataStore.i.realm.playerRealm.Set(new CurrentRealmModel()
             {
                 domain = $"https://peer-lb.decentraland.{TESTING_TLD}",
                 contentServerUrl = $"https://peer-lb.decentraland.{TESTING_TLD}/content",
@@ -364,9 +364,9 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         try
         {
             ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                                       .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                                       .Aggregate((i, j) => i.Concat(j))
-                                       .ToArray();
+                .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                .Aggregate((i, j) => i.Concat(j))
+                .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);

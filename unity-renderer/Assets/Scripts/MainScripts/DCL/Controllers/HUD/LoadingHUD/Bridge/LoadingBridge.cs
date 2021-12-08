@@ -19,8 +19,6 @@ public class LoadingBridge : MonoBehaviour
 
         if (!string.IsNullOrEmpty(payload.message))
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
-        // mendez: showWalletPrompt no longer needs to exist
-        DataStore.i.HUDs.loadingHUD.showWalletPrompt.Set(false);
         DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
     }
 }

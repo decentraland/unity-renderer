@@ -302,7 +302,7 @@ namespace DCL
                     case MessagingTypes.OPEN_NFT_DIALOG:
                         {
                             if (msgPayload is Protocol.OpenNftDialog payload)
-                                DataStore.i.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId,
+                                DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId,
                                     payload.comment), true);
                             break;
                         }

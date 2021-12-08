@@ -17,16 +17,6 @@ namespace DCL.Components
 
             public Color color = Color.white;
 
-            //These values exist in the SDK but we are doing nothing with these values
-            public float thickness = 1f;
-            public Color placeHolderColor = Color.white;
-            public float maxWidth = 100f;
-            public bool autoStretchWidth = true;
-            public Color background = Color.black;
-
-            public string fontWeight = "normal";
-            //
-
             public float fontSize = 100f;
             public string font;
             public string value = "";

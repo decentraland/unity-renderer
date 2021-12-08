@@ -8,6 +8,7 @@ public class TaskbarButton : MonoBehaviour
 {
     [FormerlySerializedAs("openButton")]
     public Button toggleButton;
+
     public GameObject lineOffIndicator;
     public ShowHideAnimator lineOnIndicator;
     public Image iconImage;
@@ -31,11 +32,11 @@ public class TaskbarButton : MonoBehaviour
         if (iconImage != null)
             originalIconColor = iconImage.color;
 
-        DataStore.i.appMode.OnChange += AppMode_OnChange;
-        AppMode_OnChange(DataStore.i.appMode.Get(), AppMode.DEFAULT);
+        DataStore.i.common.appMode.OnChange += AppMode_OnChange;
+        AppMode_OnChange(DataStore.i.common.appMode.Get(), AppMode.DEFAULT);
     }
 
-    private void OnDestroy() { DataStore.i.appMode.OnChange -= AppMode_OnChange; }
+    private void OnDestroy() { DataStore.i.common.appMode.OnChange -= AppMode_OnChange; }
 
     private void AppMode_OnChange(AppMode currentMode, AppMode previousMode)
     {

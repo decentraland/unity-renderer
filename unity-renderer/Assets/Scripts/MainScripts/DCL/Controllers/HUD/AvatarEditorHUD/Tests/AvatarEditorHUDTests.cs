@@ -45,7 +45,7 @@ namespace AvatarEditorHUD_Tests
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
-            DataStore.i.isPlayerRendererLoaded.Set(true);
+            DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
 
         [UnityTearDown]
