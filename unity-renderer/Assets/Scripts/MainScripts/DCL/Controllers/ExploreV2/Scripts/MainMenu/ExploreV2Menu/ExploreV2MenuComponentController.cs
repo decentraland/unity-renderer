@@ -48,8 +48,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view = CreateView();
         SetVisibility(false);
 
-        DataStore.i.playerRealm.OnChange += UpdateRealmInfo;
-        UpdateRealmInfo(DataStore.i.playerRealm.Get(), null);
+        DataStore.i.realm.playerRealm.OnChange += UpdateRealmInfo;
+        UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
@@ -135,7 +135,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Dispose()
     {
-        DataStore.i.playerRealm.OnChange -= UpdateRealmInfo;
+        DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
@@ -368,7 +368,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentRealmViewer.SetRealm(formattedRealmName);
 
         // Calculate number of users in the current realm
-        List<RealmModel> realmList = DataStore.i.realmsInfo.Get()?.ToList();
+        List<RealmModel> realmList = DataStore.i.realm.realmsInfo.Get()?.ToList();
         RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealmServer && (r.layer == null || r.layer == currentRealmLayer));
         int realmUsers = 0;
         if (currentRealmModel != null)

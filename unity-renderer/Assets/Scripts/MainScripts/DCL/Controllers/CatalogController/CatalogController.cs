@@ -17,7 +17,7 @@ public class CatalogController : MonoBehaviour
 
     public static CatalogController i { get; private set; }
 
-    public static BaseDictionary<string, WearableItem> wearableCatalog => DataStore.i.wearables;
+    public static BaseDictionary<string, WearableItem> wearableCatalog => DataStore.i.common.wearables;
 
     private static Dictionary<string, int> wearablesInUseCounters = new Dictionary<string, int>();
     private static Dictionary<string, Promise<WearableItem>> awaitingWearablePromises = new Dictionary<string, Promise<WearableItem>>();
@@ -47,7 +47,7 @@ public class CatalogController : MonoBehaviour
             timeSinceLastUnusedWearablesCheck = 0f;
         }
     }
-    
+
     public static void Clear()
     {
         wearablesInUseCounters.Clear();
@@ -180,7 +180,7 @@ public class CatalogController : MonoBehaviour
 
         return promiseResult;
     }
-    
+
     public static Promise<WearableItem[]> RequestOwnedWearables(string userId)
     {
         Promise<WearableItem[]> promiseResult;
@@ -188,7 +188,7 @@ public class CatalogController : MonoBehaviour
         if (!awaitingWearablesByContextPromises.ContainsKey(OWNED_WEARABLES_CONTEXT))
         {
             promiseResult = new Promise<WearableItem[]>();
-            
+
             awaitingWearablesByContextPromises.Add(OWNED_WEARABLES_CONTEXT, promiseResult);
 
             if (!pendingWearablesByContextRequestedTimes.ContainsKey(OWNED_WEARABLES_CONTEXT))

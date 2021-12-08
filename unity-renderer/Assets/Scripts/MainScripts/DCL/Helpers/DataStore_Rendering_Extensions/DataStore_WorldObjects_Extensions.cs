@@ -15,7 +15,7 @@ namespace DCL
         /// <param name="self"></param>
         /// <param name="entity"></param>
         /// <param name="rendereable"></param>
-        public static void AddRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
+        public static void AddRendereable( this DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
         {
             if ( entity == null )
             {
@@ -46,7 +46,7 @@ namespace DCL
         /// <param name="self"></param>
         /// <param name="entity"></param>
         /// <param name="rendereable"></param>
-        public static void RemoveRendereable( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
+        public static void RemoveRendereable( this DataStore_WorldObjects self, IDCLEntity entity, Rendereable rendereable )
         {
             if ( entity == null )
             {
@@ -70,10 +70,10 @@ namespace DCL
             self.RemoveRendereable( sceneId, rendereable );
         }
 
-        private static void AddMesh( this DataStore.DataStore_WorldObjects self, string sceneId, Mesh mesh )
+        private static void AddMesh( this DataStore_WorldObjects self, string sceneId, Mesh mesh )
         {
             if (!self.sceneData.ContainsKey(sceneId))
-                self.sceneData.Add(sceneId, new DataStore.DataStore_WorldObjects.SceneData());
+                self.sceneData.Add(sceneId, new DataStore_WorldObjects.SceneData());
 
             BaseDictionary<Mesh, int> sceneMeshes = self.sceneData[sceneId].refCountedMeshes;
 
@@ -86,7 +86,7 @@ namespace DCL
             }
         }
 
-        private static void RemoveMesh( this DataStore.DataStore_WorldObjects self, string sceneId, Mesh mesh )
+        private static void RemoveMesh( this DataStore_WorldObjects self, string sceneId, Mesh mesh )
         {
             BaseDictionary<Mesh, int> sceneMeshes = self.sceneData[sceneId].refCountedMeshes;
 
@@ -109,7 +109,7 @@ namespace DCL
                 self.sceneData.Remove(sceneId);
         }
 
-        private static void AddMesh( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
+        private static void AddMesh( this DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
         {
             if (entity == null)
             {
@@ -128,7 +128,7 @@ namespace DCL
             self.AddMesh( sceneId, mesh );
         }
 
-        private static void RemoveMesh( this DataStore.DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
+        private static void RemoveMesh( this DataStore_WorldObjects self, IDCLEntity entity, Mesh mesh )
         {
             if (entity == null)
             {
@@ -153,7 +153,7 @@ namespace DCL
             self.RemoveMesh( sceneId, mesh );
         }
 
-        private static void AddRendereable( this DataStore.DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
+        private static void AddRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if ( rendereable == null )
             {
@@ -173,7 +173,7 @@ namespace DCL
                 sceneData.renderedObjects.Add(rendereable);
         }
 
-        private static void RemoveRendereable( this DataStore.DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
+        private static void RemoveRendereable( this DataStore_WorldObjects self, string sceneId, Rendereable rendereable )
         {
             if ( rendereable == null )
             {
@@ -196,7 +196,7 @@ namespace DCL
                 self.sceneData.Remove(sceneId);
         }
 
-        private static bool IsEmpty( this DataStore.DataStore_WorldObjects.SceneData self)
+        private static bool IsEmpty( this DataStore_WorldObjects.SceneData self)
         {
             return self.refCountedMeshes.Count() == 0 && self.renderedObjects.Count() == 0;
         }
