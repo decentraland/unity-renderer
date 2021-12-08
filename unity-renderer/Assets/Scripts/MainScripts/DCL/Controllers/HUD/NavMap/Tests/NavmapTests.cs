@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -18,7 +19,6 @@ namespace Tests
             yield return base.SetUp();
 
             controller = new MinimapHUDController();
-            navmapView = Object.FindObjectOfType<DCL.NavmapView>();
         }
 
         protected override IEnumerator TearDown()
@@ -64,15 +64,15 @@ namespace Tests
         {
             const string sceneName = "SCENE_NAME";
             MinimapMetadata.GetMetadata()
-                           .AddSceneInfo(
-                               new MinimapMetadata.MinimapSceneInfo
-                               {
-                                   parcels = new List<Vector2Int>
-                                   {
-                                       new Vector2Int(-77, -77)
-                                   },
-                                   name = sceneName
-                               });
+                .AddSceneInfo(
+                    new MinimapMetadata.MinimapSceneInfo
+                    {
+                        parcels = new List<Vector2Int>
+                        {
+                            new Vector2Int(-77, -77)
+                        },
+                        name = sceneName
+                    });
             CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77, -77));
             Assert.AreEqual(sceneName, navmapView.currentSceneNameText.text);
             Assert.AreEqual("-77,-77", navmapView.currentSceneCoordsText.text);

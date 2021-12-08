@@ -24,6 +24,7 @@ namespace Tests
             yield return base.SetUp();
             Environment.i.world.sceneController.SortScenesByDistance();
             scene = TestUtils.CreateTestScene();
+            CommonScriptableObjects.rendererState.Set(true);
         }
 
         [UnityTest]

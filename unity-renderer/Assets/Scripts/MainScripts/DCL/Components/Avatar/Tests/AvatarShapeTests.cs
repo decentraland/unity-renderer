@@ -14,11 +14,19 @@ namespace Tests
     public class AvatarShapeTests : IntegrationTestSuite_Legacy
     {
         private ParcelScene scene;
+        private CatalogController catalogController;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
+            catalogController = new GameObject("CatalogController").AddComponent<CatalogController>();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            Object.Destroy(catalogController.gameObject);
+            yield return base.TearDown();
         }
 
         void AssertMaterialsAreCorrect(Transform root)

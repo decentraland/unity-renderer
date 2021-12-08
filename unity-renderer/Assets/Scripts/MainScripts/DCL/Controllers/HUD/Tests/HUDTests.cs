@@ -12,16 +12,21 @@ namespace Tests
         protected override bool justSceneSetUp => true;
 
         private IHUDController hudController = null;
+        private FriendsController friendsController;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+
+            friendsController = FriendsController.Create();
             hudController = DCL.Environment.i.hud.controller;
             hudController.Cleanup();
+            yield return null;
         }
 
         protected override IEnumerator TearDown()
         {
+            UnityEngine.Object.Destroy(friendsController.gameObject);
             hudController.Cleanup();
             yield return base.TearDown();
         }

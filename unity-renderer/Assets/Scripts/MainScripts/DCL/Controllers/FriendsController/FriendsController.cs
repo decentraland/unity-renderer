@@ -8,6 +8,11 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public static bool VERBOSE = false;
     public static FriendsController i { get; private set; }
 
+    public static FriendsController Create()
+    {
+        return new GameObject("FriendsController").AddComponent<FriendsController>();
+    }
+
     public int friendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
     void Awake() { i = this; }
@@ -63,7 +68,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action OnInitialized;
 
     public Dictionary<string, UserStatus> GetFriends() { return new Dictionary<string, UserStatus>(friends); }
-    
+
     public void RejectFriendship(string friendUserId)
     {
         UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -72,7 +77,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
             action = FriendshipAction.REJECTED
         });
     }
-    
+
     public void RequestFriendship(string friendUserId)
     {
         UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
@@ -191,18 +196,18 @@ public class FriendsController : MonoBehaviour, IFriendsController
     {
         var friendshipStatus = ToFriendshipStatus(msg.action);
         var userId = msg.userId;
-        
+
         if (friends.ContainsKey(userId) && friends[userId].friendshipStatus == friendshipStatus)
             return;
-        
+
         if (!friends.ContainsKey(userId))
             friends.Add(userId, new UserStatus());
-        
+
         if (ItsAnOutdatedUpdate(userId, friendshipStatus))
             return;
 
         friends[userId].friendshipStatus = friendshipStatus;
-        
+
         if (friendshipStatus == FriendshipStatus.FRIEND)
             friends[userId].friendshipStartedTime = DateTime.UtcNow;
 

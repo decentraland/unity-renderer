@@ -62,7 +62,7 @@ namespace CameraController_Test
         [UnityTest]
         public IEnumerator ActivateAndDeactivateWithKernelRenderingToggleEvents()
         {
-            RenderingController renderingController = GameObject.FindObjectOfType<RenderingController>();
+            RenderingController renderingController = new GameObject("RenderingController").AddComponent<RenderingController>();
             renderingController.DeactivateRendering();
             Assert.IsFalse(cameraController.camera.enabled);
 
@@ -71,6 +71,8 @@ namespace CameraController_Test
             renderingController.renderingActivatedAckLock.RemoveAllLocks();
             renderingController.ActivateRendering();
             Assert.IsTrue(cameraController.camera.enabled);
+
+            Object.Destroy(renderingController.gameObject);
         }
     }
 }

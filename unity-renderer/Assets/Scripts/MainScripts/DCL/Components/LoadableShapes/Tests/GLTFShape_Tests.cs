@@ -65,7 +65,8 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         sceneAssetPack.assets.Add(sceneObject);
 
-        AssetCatalogBridge.i.AddSceneAssetPackToCatalog(sceneAssetPack);
+        var catalog = AssetCatalogBridge.Create();
+        catalog.AddSceneAssetPackToCatalog(sceneAssetPack);
 
         TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
@@ -77,15 +78,15 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
 
-        if (!(gltfShape is LoadWrapper_GLTF))
-            Assert.Fail();
-
+        Assert.IsTrue(gltfShape is LoadWrapper_GLTF);
 
         LoadWrapper_GLTF gltfWrapper = (LoadWrapper_GLTF) gltfShape;
         ContentProvider customContentProvider = AssetCatalogBridge.i.GetContentProviderForAssetIdInSceneObjectCatalog(mockupAssetId);
         Assert.AreEqual(customContentProvider.baseUrl, gltfWrapper.customContentProvider.baseUrl);
         Assert.AreEqual(mockupKey, gltfWrapper.customContentProvider.contents[0].file);
         Assert.AreEqual(mockupValue, gltfWrapper.customContentProvider.contents[0].hash);
+
+        Object.Destroy( catalog.gameObject );
     }
 
     [UnityTest]
