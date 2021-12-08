@@ -139,13 +139,13 @@ public class IntegrationTestSuite_Legacy
     {
         yield return null;
 
-        Debug.Log("A");
+        //Debug.Log("A");
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
-        Debug.Log("B");
+        //Debug.Log("B");
         yield return TearDown_LegacySystems();
-        Debug.Log("C");
+        //Debug.Log("C");
         // if (DCLCharacterController.i != null)
         // {
         //     DCLCharacterController.i.ResumeGravity();
