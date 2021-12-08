@@ -21,7 +21,17 @@ namespace DCL.Interface
     public static class WebInterface
     {
         public static bool VERBOSE = false;
-        public static System.Action<string, string> OnMessageFromEngine;
+
+        private static Action<string, string> OnMessage;
+        public static System.Action<string, string> OnMessageFromEngine
+        {
+            set
+            {
+                OnMessage = value;
+                ProcessQueuedMessages();
+            } 
+            get => OnMessage;
+        }
 
         [System.Serializable]
         private class ReportPositionPayload
