@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AssetPromiseErrorReporter;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Assertions;
@@ -33,9 +34,11 @@ namespace DCL.Components
 
 
             if (customContentProvider == null)
-                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
+                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles,
+                    new StopLoadingHudReporter(DataStore.i));
             else
-                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
+                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles,
+                    new StopLoadingHudReporter(DataStore.i));
 
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;
@@ -56,7 +59,7 @@ namespace DCL.Components
             this.entity.OnCleanupEvent += OnEntityCleanup;
 
             successWrapperEvent = (x) => OnSuccessWrapper(OnSuccess);
-            failWrapperEvent = () => OnFailWrapper(OnFail);
+            failWrapperEvent = () => OnFailWrapper(OnFail); 
 
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;

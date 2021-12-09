@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AssetPromiseErrorReporter;
 using DCL.Helpers;
 using GPUSkinning;
 using UnityEngine;
@@ -359,7 +360,7 @@ namespace DCL
             {
                 HideAll();
 
-                bodyShapeController = new BodyShapeController(resolvedBody);
+                bodyShapeController = new BodyShapeController(resolvedBody, new StopLoadingHudReporter(DataStore.i));
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
                 mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
@@ -600,7 +601,7 @@ namespace DCL
                     break;
 
                 default:
-                    var wearableController = new WearableController(wearable);
+                    var wearableController = new WearableController(wearable, new StopLoadingHudReporter(DataStore.i));
                     wearableControllers.Add(wearable, wearableController);
                     break;
             }

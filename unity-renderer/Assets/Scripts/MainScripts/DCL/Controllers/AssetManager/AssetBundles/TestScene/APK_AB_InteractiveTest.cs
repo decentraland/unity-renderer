@@ -1,6 +1,8 @@
 using DCL;
 using System.Collections.Generic;
+using AssetPromiseErrorReporter;
 using DCL.Helpers;
+using NSubstitute;
 using UnityEngine;
 
 public class APK_AB_InteractiveTest : MonoBehaviour
@@ -20,7 +22,7 @@ public class APK_AB_InteractiveTest : MonoBehaviour
 
     void Generate(string url, string hash)
     {
-        AssetPromise_AB_GameObject promise = new AssetPromise_AB_GameObject(url, hash);
+        AssetPromise_AB_GameObject promise = new AssetPromise_AB_GameObject(url, hash, Substitute.For<IAssetPromiseErrorReporter>());
 
         Vector3 pos = posOffset;
         promise.settings.initialLocalPosition = pos;

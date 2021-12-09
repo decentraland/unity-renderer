@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Helpers;
 using GPUSkinning;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -82,7 +84,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
 
-        WearableController wearable = new WearableController(wearableItem);
+        WearableController wearable = new WearableController(wearableItem, Substitute.For<IAssetPromiseErrorReporter>());
         toCleanUp.Add(wearable);
 
         bool succeeded = false;

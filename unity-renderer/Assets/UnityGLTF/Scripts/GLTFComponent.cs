@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Components;
 using UnityEngine;
@@ -96,6 +97,7 @@ namespace UnityGLTF
         private IWebRequestController webRequestController;
         private bool prioritizeDownload = false;
         private string baseUrl = "";
+        private IAssetPromiseErrorReporter loadErrorReporter;
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -133,6 +135,7 @@ namespace UnityGLTF
             }
 
             this.fileToHashConverter = fileToHashConverter;
+            loadErrorReporter = new StopLoadingHudReporter(DataStore.i);
 
             if ( throttlingCounter != null )
             {
@@ -169,7 +172,7 @@ namespace UnityGLTF
             this.addMaterialsToPersistentCaching = settings.addMaterialsToPersistentCaching;
         }
 
-        private void OnFail_Internal(Exception obj)
+        private void OnFail_Internal(Exception exception)
         {
             if (state == State.FAILED)
                 return;
@@ -182,16 +185,16 @@ namespace UnityGLTF
             DecrementDownloadCount();
 
             OnFailedLoadingAsset?.Invoke();
-            DataStore.i.HUDs.loadingHUD.error.Set(obj);
+            loadErrorReporter?.Report(exception);
 
-            if (obj != null)
+            if (exception != null)
             {
-                if (obj is IndexOutOfRangeException)
+                if (exception is IndexOutOfRangeException)
                 {
                     Destroy(gameObject);
                 }
 
-                Debug.Log($"GLTF Failure {obj} ... url = {this.GLTFUri}\n{obj.StackTrace}");
+                Debug.Log($"GLTF Failure {exception} ... url = {this.GLTFUri}\n{exception.StackTrace}");
             }
         }
 

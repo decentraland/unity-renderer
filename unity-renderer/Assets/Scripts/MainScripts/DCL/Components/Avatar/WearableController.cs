@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using AssetPromiseErrorReporter;
 using UnityEngine;
 
 public class WearableController
@@ -14,6 +15,7 @@ public class WearableController
     private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
     public readonly WearableItem wearable;
+    private readonly IAssetPromiseErrorReporter assetPromiseErrorReporter;
     protected RendereableAssetLoadHelper loader;
 
     public string id => wearable.id;
@@ -31,9 +33,11 @@ public class WearableController
 
     public IReadOnlyList<SkinnedMeshRenderer> GetRenderers() { return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers); }
 
-    public WearableController(WearableItem wearableItem)
+    public WearableController(WearableItem wearableItem,
+        IAssetPromiseErrorReporter assetPromiseErrorReporter)
     {
         this.wearable = wearableItem;
+        this.assetPromiseErrorReporter = assetPromiseErrorReporter;
         SetupAssetBundlesConfig();
     }
 
@@ -70,7 +74,7 @@ public class WearableController
 
         var provider = wearable.GetContentProvider(bodyShapeId);
 
-        loader = new RendereableAssetLoadHelper(provider, wearable.baseUrlBundles);
+        loader = new RendereableAssetLoadHelper(provider, wearable.baseUrlBundles, assetPromiseErrorReporter);
 
         loader.settings.forceNewInstance = false;
         loader.settings.initialLocalPosition = Vector3.up * 0.75f;

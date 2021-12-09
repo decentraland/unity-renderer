@@ -6,6 +6,8 @@ using DCL.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AssetPromiseErrorReporter;
+using NSubstitute;
 using UnityEngine;
 using UnityGLTF;
 
@@ -94,7 +96,7 @@ namespace AvatarShape_Tests
 
     class WearableController_Mock : WearableController
     {
-        public WearableController_Mock(WearableItem wearableItem) : base(wearableItem) { }
+        public WearableController_Mock(WearableItem wearableItem) : base(wearableItem, Substitute.For<IAssetPromiseErrorReporter>()) { }
 
         public WearableController_Mock(WearableController original) : base(original) { }
 
@@ -105,7 +107,7 @@ namespace AvatarShape_Tests
 
     class BodyShapeController_Mock : BodyShapeController
     {
-        public BodyShapeController_Mock(WearableItem original) : base(original) { }
+        public BodyShapeController_Mock(WearableItem original) : base(original, Substitute.For<IAssetPromiseErrorReporter>()) { }
 
         public BodyShapeController_Mock(BodyShapeController original) : base(original) { }
 

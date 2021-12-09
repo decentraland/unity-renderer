@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
@@ -29,7 +30,8 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     private AvatarAnimationEventHandler animEventHandler;
 
-    public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
+    public BodyShapeController(WearableItem wearableItem,
+        IAssetPromiseErrorReporter assetPromiseErrorReporter) : base(wearableItem, assetPromiseErrorReporter) { }
 
     protected BodyShapeController(BodyShapeController original) : base(original)
     {

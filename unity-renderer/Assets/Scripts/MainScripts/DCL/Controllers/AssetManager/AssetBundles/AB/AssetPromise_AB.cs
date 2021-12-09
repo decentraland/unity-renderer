@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using AssetPromiseErrorReporter;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -28,12 +29,16 @@ namespace DCL
 
         public static AssetBundlesLoader assetBundlesLoader = new AssetBundlesLoader();
         private Transform containerTransform;
+        private readonly IAssetPromiseErrorReporter errorReporter;
         private WebRequestAsyncOperation asyncOp;
 
-        public AssetPromise_AB(string contentUrl, string hash, Transform containerTransform = null) : base(contentUrl,
+        public AssetPromise_AB(string contentUrl, string hash,
+            Transform containerTransform = null,
+            IAssetPromiseErrorReporter errorReporter = null) : base(contentUrl,
             hash)
         {
             this.containerTransform = containerTransform;
+            this.errorReporter = errorReporter;
             assetBundlesLoader.Start();
         }
 
@@ -168,7 +173,7 @@ namespace DCL
                     while (it.MoveNext())
                     {
                         var dep = it.Current;
-                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform);
+                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform, errorReporter);
                         AssetPromiseKeeper_AB.i.Keep(promise);
                         dependencyPromises.Add(promise);
                     }
@@ -219,8 +224,7 @@ namespace DCL
 
         private void HandleLoadException(Exception exception, Action failCallback)
         {
-            Debug.LogException(exception);
-            DataStore.i.HUDs.loadingHUD.error.Set(exception);
+            errorReporter?.Report(exception);
             failCallback?.Invoke();
         }
 

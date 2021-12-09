@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Components;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -32,7 +34,7 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wearableItem);
-            WearableController wearable = new WearableController(wearableItem);
+            WearableController wearable = new WearableController(wearableItem, Substitute.For<IAssetPromiseErrorReporter>());
             toCleanUp.Add(wearable);
 
             //Act
@@ -65,7 +67,7 @@ namespace AvatarShape_Tests
                     }
                 }
             };
-            WearableController wearable = new WearableController(unexistentWearableItem);
+            WearableController wearable = new WearableController(unexistentWearableItem, Substitute.For<IAssetPromiseErrorReporter>());
             toCleanUp.Add(wearable);
 
             //Act
@@ -95,7 +97,7 @@ namespace AvatarShape_Tests
             }
 
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
-            WearableController wearable = new WearableController(wereableItem);
+            WearableController wearable = new WearableController(wereableItem, Substitute.For<IAssetPromiseErrorReporter>());
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
@@ -117,7 +119,7 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
-            WearableController wearable = new WearableController(wereableItem);
+            WearableController wearable = new WearableController(wereableItem, Substitute.For<IAssetPromiseErrorReporter>());
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
@@ -136,7 +138,7 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
-            WearableController wearable = new WearableController(wereableItem);
+            WearableController wearable = new WearableController(wereableItem, Substitute.For<IAssetPromiseErrorReporter>());
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);

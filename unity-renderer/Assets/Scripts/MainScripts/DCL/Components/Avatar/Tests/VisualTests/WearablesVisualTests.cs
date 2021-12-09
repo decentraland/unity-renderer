@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Helpers;
+using NSubstitute;
 using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using UnityEngine;
@@ -165,7 +167,7 @@ public class WearablesVisualTests : VisualTestsBase
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
 
-        WearableController wearable = new WearableController(wearableItem);
+        WearableController wearable = new WearableController(wearableItem, Substitute.For<IAssetPromiseErrorReporter>());
         toCleanUp.Add(wearable);
 
         bool succeeded = false;
