@@ -21,7 +21,7 @@ public enum DCLAction_Trigger
     ToggleUIVisibility = 123,
     ToggleControlsHud = 124,
     ToggleSettings = 125,
-    ToggleExploreHud = 126,
+    ToggleStartMenu = 126,
     ToggleVoiceChatRecording = 127,
     ToggleAvatarEditorHud = 128,
     ToggleQuestsPanelHud = 129,
@@ -226,7 +226,7 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleSettings:
                     InputProcessor.FromKey(action, KeyCode.P, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
-                case DCLAction_Trigger.ToggleExploreHud:
+                case DCLAction_Trigger.ToggleStartMenu:
                     if (allUIHidden)
                         break;
                     InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);

@@ -9,7 +9,7 @@ public class ShortcutsController : IDisposable
     internal InputAction_Trigger toggleAvatarNames;
     internal InputAction_Trigger toggleControls;
     internal InputAction_Trigger toggleAvatarEditor;
-    internal InputAction_Trigger toggleExplore;
+    internal InputAction_Trigger toggleStartMenu;
     internal InputAction_Trigger toggleExpressionsHUD;
     internal InputAction_Trigger toggleNavMap;
     internal InputAction_Trigger togglePlacesAndEvents;
@@ -20,7 +20,7 @@ public class ShortcutsController : IDisposable
         toggleAvatarNames = Resources.Load<InputAction_Trigger>("ToggleAvatarNames");
         toggleControls = Resources.Load<InputAction_Trigger>("ToggleControlsHud");
         toggleAvatarEditor = Resources.Load<InputAction_Trigger>("ToggleAvatarEditorHud");
-        toggleExplore = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
+        toggleStartMenu = Resources.Load<InputAction_Trigger>("ToggleStartMenu");
         toggleExpressionsHUD = Resources.Load<InputAction_Trigger>("OpenExpressions");
         toggleNavMap = Resources.Load<InputAction_Trigger>("ToggleNavMap");
         togglePlacesAndEvents = Resources.Load<InputAction_Trigger>("TogglePlacesAndEventsHud");
@@ -35,7 +35,7 @@ public class ShortcutsController : IDisposable
         toggleAvatarEditor.OnTriggered += ToggleAvatarEditorTriggered;
         toggleAvatarNames.OnTriggered += ToggleAvatarNamesTriggered;
         toggleQuestsPanel.OnTriggered += ToggleQuestPanel;
-        toggleExplore.OnTriggered += ToggleExploreTriggered;
+        toggleStartMenu.OnTriggered += ToggleStartMenuTriggered;
         toggleExpressionsHUD.OnTriggered += ToggleExpressionsTriggered;
         toggleNavMap.OnTriggered += ToggleNavMapTriggered;
         togglePlacesAndEvents.OnTriggered += TogglePlacesAndEventsTriggered;
@@ -47,7 +47,7 @@ public class ShortcutsController : IDisposable
         toggleAvatarEditor.OnTriggered -= ToggleAvatarEditorTriggered;
         toggleAvatarNames.OnTriggered -= ToggleAvatarNamesTriggered;
         toggleQuestsPanel.OnTriggered -= ToggleQuestPanel;
-        toggleExplore.OnTriggered -= ToggleExploreTriggered;
+        toggleStartMenu.OnTriggered -= ToggleStartMenuTriggered;
         toggleExpressionsHUD.OnTriggered -= ToggleExpressionsTriggered;
         toggleNavMap.OnTriggered -= ToggleNavMapTriggered;
         togglePlacesAndEvents.OnTriggered -= TogglePlacesAndEventsTriggered;
@@ -63,7 +63,7 @@ public class ShortcutsController : IDisposable
         DataStore.i.HUDs.questsPanelVisible.Set(value);
     }
 
-    private void ToggleExploreTriggered(DCLAction_Trigger action)
+    private void ToggleStartMenuTriggered(DCLAction_Trigger action)
     {
         bool value = !DataStore.i.exploreV2.isOpen.Get();
 

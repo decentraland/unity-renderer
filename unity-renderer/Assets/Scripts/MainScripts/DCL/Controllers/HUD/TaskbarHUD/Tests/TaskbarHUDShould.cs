@@ -16,7 +16,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
     private SettingsPanelHUDController settingsPanelHudController;
-    private ExploreHUDController exploreHUDController;
 
     protected override bool justSceneSetUp => true;
 
@@ -44,7 +43,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
         settingsPanelHudController?.Dispose();
-        exploreHUDController?.Dispose();
 
         controller.Dispose();
         UnityEngine.Object.Destroy(userProfileGO);
