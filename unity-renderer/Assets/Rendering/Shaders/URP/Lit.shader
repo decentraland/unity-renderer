@@ -276,7 +276,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma fragment LitGBufferPassFragment
 
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl" // ?? Should add GPU Skinning ??
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             ENDHLSL
         }
 
