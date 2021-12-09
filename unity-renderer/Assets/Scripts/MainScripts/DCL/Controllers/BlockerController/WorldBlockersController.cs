@@ -114,6 +114,8 @@ namespace DCL.Controllers
 
             if (blockersParent != null)
                 Object.Destroy(blockersParent.gameObject);
+
+            enabled = false;
         }
 
         internal void SetupWorldBlockers(HashSet<Vector2Int> allLoadedParcelCoords)
