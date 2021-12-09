@@ -15,6 +15,7 @@ namespace DCL.Builder
         IBuilderAPIController builderAPIController { get; }
         ISceneManager sceneManager  { get; }
         ICameraController cameraController { get; }
+        IPublisher publisher { get; }
 
         IEditorContext editorContext { get; }
 

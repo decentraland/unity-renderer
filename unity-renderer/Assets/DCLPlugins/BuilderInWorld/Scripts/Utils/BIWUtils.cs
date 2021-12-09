@@ -30,11 +30,11 @@ public static partial class BIWUtils
     {
         if (data == null)
             data = new LoadParcelScenesMessage.UnityParcelScene();
-        
+
         data.baseUrl = baseUrl;
         if (data.contents == null)
             data.contents = new List<ContentServerUtils.MappingPair>();
-        
+
         foreach (KeyValuePair<string, string> content in contents)
         {
             ContentServerUtils.MappingPair mappingPair = new ContentServerUtils.MappingPair();
@@ -55,7 +55,7 @@ public static partial class BIWUtils
         }
         return data;
     }
-    
+
     public static void RemoveAssetsFromCurrentScene()
     {
         //We remove the old assets to they don't collide with the new ones
@@ -65,7 +65,7 @@ public static partial class BIWUtils
         }
         DataStore.i.builderInWorld.currentSceneCatalogItemDict.Clear();
     }
-    
+
     public static void ShowGenericNotification(string message, DCL.NotificationModel.Type type = DCL.NotificationModel.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
         if (NotificationsController.i == null)
@@ -78,13 +78,13 @@ public static partial class BIWUtils
             destroyOnFinish = true
         });
     }
-    
+
     public static long ConvertToMilisecondsTimestamp(DateTime value)
     {
         TimeSpan elapsedTime = value - Epoch;
         return (long) elapsedTime.TotalMilliseconds;
     }
-    
+
     public static SceneMetricsModel GetSceneMetricsLimits(int parcelAmount)
     {
         SceneMetricsModel  cachedModel = new SceneMetricsModel();
@@ -115,13 +115,13 @@ public static partial class BIWUtils
     }
 
     //We create the scene the same way as the current builder do, so we ensure the compatibility between both builders
-    private static BuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
+    private static WebBuilderScene CreateEmtpyBuilderScene(int parcelsAmount)
     {
         BuilderGround ground = new BuilderGround();
         ground.assetId = BIWSettings.FLOOR_ID;
         ground.componentId = Guid.NewGuid().ToString();
 
-        BuilderScene scene = new BuilderScene
+        WebBuilderScene scene = new WebBuilderScene
         {
             id = Guid.NewGuid().ToString(),
             limits = GetSceneMetricsLimits(parcelsAmount),
@@ -179,14 +179,16 @@ public static partial class BIWUtils
         return n2;
     }
 
-    public static Vector2Int GetSceneSize(IParcelScene parcelScene)
+    public static Vector2Int GetSceneSize(IParcelScene parcelScene) { return GetSceneSize(parcelScene.sceneData.parcels); }
+
+    public static Vector2Int GetSceneSize(Vector2Int[] parcels)
     {
         int minX = Int32.MaxValue;
         int maxX = Int32.MinValue;
         int minY = Int32.MaxValue;
         int maxY = Int32.MinValue;
 
-        foreach (var parcel in parcelScene.sceneData.parcels)
+        foreach (var parcel in parcels)
         {
             if (parcel.x > maxX)
                 maxX = parcel.x;
