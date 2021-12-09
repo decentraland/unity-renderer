@@ -127,7 +127,7 @@ public class PlayerAvatarController : MonoBehaviour
             enableCameraCheck = true;
             avatarCollider.gameObject.SetActive(true);
             CommonScriptableObjects.rendererState.RemoveLock(this);
-            DataStore.i.isPlayerRendererLoaded.Set(true);
+            DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }
     }
 
