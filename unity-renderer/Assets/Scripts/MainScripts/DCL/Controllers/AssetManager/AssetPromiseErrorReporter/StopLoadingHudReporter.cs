@@ -1,6 +1,5 @@
 ﻿using System;
 using DCL;
-using UnityEngine;
 
 namespace AssetPromiseErrorReporter
 {
@@ -15,7 +14,6 @@ namespace AssetPromiseErrorReporter
         
         public void Report(Exception exception)
         {
-            Debug.LogException(exception);
             dataStore.HUDs.loadingHUD.error.Set(exception);
         }
     }
