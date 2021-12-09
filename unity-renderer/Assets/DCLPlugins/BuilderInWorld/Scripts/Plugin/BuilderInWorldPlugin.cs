@@ -82,12 +82,6 @@ public class BuilderInWorldPlugin : IPlugin
 
         DataStore.i.builderInWorld.isInitialized.Set(true);
     }
-    
-    private void TaskBarCreated()
-    {
-        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
-        HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
-    }
 
     public void Dispose()
     {
