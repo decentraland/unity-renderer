@@ -22,10 +22,9 @@ public interface IBIWEditor
     void LateUpdate();
 
     /// <summary>
-    /// Open the editor with the scene that you pass. It must be ready to work correctly
+    /// Open the editor to start working on it
     /// </summary>
-    /// <param name="sceneToEdit"></param>
-    void EnterEditMode(IBuilderScene sceneToEdit);
+    void EnterEditMode(IBuilderScene scene);
 
     /// <summary>
     /// Exits from the editor

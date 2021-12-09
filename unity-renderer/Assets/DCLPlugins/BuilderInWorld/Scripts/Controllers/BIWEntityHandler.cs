@@ -512,7 +512,6 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         IDCLEntity newEntity = sceneToEdit.CreateEntity(data.entityId);
 
-
         if (data.transformComponent != null)
         {
             DCLTransform.Model model = new DCLTransform.Model();
@@ -550,7 +549,6 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out var nftComponent))
             nftComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
-
 
         creatorController.CreateLoadingObject(convertedEntity);
         EntityListChanged();

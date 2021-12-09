@@ -12,7 +12,6 @@ public class BIWSaveController : BIWController, IBIWSaveController
     public int numberOfSaves { get; set; } = 0;
 
     private BuilderInWorldBridge bridge;
-    private IBuilderScene builderScene;
 
     private float nextTimeToSave;
     private bool canActivateSave = true;
@@ -52,7 +51,6 @@ public class BIWSaveController : BIWController, IBIWSaveController
     public override void EnterEditMode(IBuilderScene scene)
     {
         base.EnterEditMode(scene);
-        builderScene =  scene;
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         ResetNumberOfSaves();
     }

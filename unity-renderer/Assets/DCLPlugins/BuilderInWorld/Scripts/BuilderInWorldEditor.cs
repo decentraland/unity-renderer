@@ -188,15 +188,16 @@ public class BuilderInWorldEditor : IBIWEditor
         creatorController?.CleanUp();
     }
 
-    public void EnterEditMode(IBuilderScene sceneToEdit)
+    public void EnterEditMode(IBuilderScene builderScene)
     {
-        this.sceneToEdit = sceneToEdit;
+        sceneToEdit = builderScene;
 
         BIWNFTController.i.StartEditMode();
+        ParcelSettings.VISUAL_LOADING_ENABLED = false;
+
         if (biwAudioHandler != null && biwAudioHandler.gameObject != null)
             biwAudioHandler.gameObject.SetActive(true);
 
-        ParcelSettings.VISUAL_LOADING_ENABLED = false;
         cursorGO.SetActive(false);
 
         if ( context.editorContext.editorHUD != null)
@@ -230,7 +231,6 @@ public class BuilderInWorldEditor : IBIWEditor
         }
 
         startEditorTimeStamp = Time.realtimeSinceStartup;
-
 
         BIWAnalytics.AddSceneInfo(sceneToEdit.scene.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit.scene).ToString(), BIWUtils.GetSceneSize(sceneToEdit.scene));
     }
@@ -277,7 +277,7 @@ public class BuilderInWorldEditor : IBIWEditor
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
 
-    public void InmediateExit() { builderInWorldBridge.ExitKernelEditMode(sceneToEdit.scene); }
+    public void InmediateExit() { builderInWorldBridge.StopIsolatedMode(sceneToEdit.scene); }
 
     public void EnterBiwControllers()
     {

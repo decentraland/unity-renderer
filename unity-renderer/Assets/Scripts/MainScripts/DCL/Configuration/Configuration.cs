@@ -29,6 +29,9 @@ namespace DCL.Configuration
         public const string VOXEL_TAG = "Voxel";
         public const string CUSTOM_LAND = "CUSTOM LAND";
 
+        //NFT
+        public const string NFT_ETHEREUM_PROTOCOL = "ethereum://";
+
         //Scene files
         public const string BUILDER_SCENE_STATE_DEFINITION_FILE_NAME = "scene-state-definition.json";
         public const string BUILDER_SCENE_ASSET_FILE_NAME = "scene-assets.json";

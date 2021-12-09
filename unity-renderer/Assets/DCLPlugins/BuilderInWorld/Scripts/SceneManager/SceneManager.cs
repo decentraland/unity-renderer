@@ -8,6 +8,10 @@ using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using DCL.Builder.Manifest;
+using DCL.Components;
+using DCL.Models;
+using Newtonsoft.Json;
 
 namespace DCL.Builder
 {
@@ -130,6 +134,99 @@ namespace DCL.Builder
             }
         }
 
+        private void SendManifestToScene()
+        {
+            //We remove the old assets to they don't collide with the new ones
+            BIWUtils.RemoveAssetsFromCurrentScene();
+
+            //We add the assets from the scene to the catalog
+            var assets = sceneToEdit.manifest.scene.assets.Values.ToArray();
+            AssetCatalogBridge.i.AddScenesObjectToSceneCatalog(assets);
+
+            //We prepare the mappings to the scenes
+            Dictionary<string, string> contentDictionary = new Dictionary<string, string>();
+
+            foreach (var sceneObject in assets)
+            {
+                foreach (var content in sceneObject.contents)
+                {
+                    if (!contentDictionary.ContainsKey(content.Key))
+                        contentDictionary.Add(content.Key, content.Value);
+                }
+            }
+
+            //We add the mappings to the scene
+            BIWUtils.AddSceneMappings(contentDictionary, BIWUrlUtils.GetUrlSceneObjectContent(), sceneToEdit.scene.sceneData);
+
+            // We iterate all the entities to create the entity in the scene
+            foreach (BuilderEntity builderEntity in sceneToEdit.manifest.scene.entities.Values)
+            {
+                var entity = sceneToEdit.scene.CreateEntity(builderEntity.id);
+
+                bool nameComponentFound = false;
+                // We iterate all the id of components in the entity, to add the component 
+                foreach (string idComponent in builderEntity.components)
+                {
+                    //This shouldn't happen, the component should be always in the scene, but just in case
+                    if (!sceneToEdit.manifest.scene.components.ContainsKey(idComponent))
+                        continue;
+
+                    // We get the component from the scene and create it in the entity
+                    BuilderComponent component = sceneToEdit.manifest.scene.components[idComponent];
+
+                    switch (component.type)
+                    {
+                        case "Transform":
+                            DCLTransform.Model model = JsonConvert.DeserializeObject<DCLTransform.Model>(component.data.ToString());
+                            EntityComponentsUtils.AddTransformComponent(sceneToEdit.scene, entity, model);
+                            break;
+
+                        case "GLTFShape":
+                            LoadableShape.Model gltfModel = JsonConvert.DeserializeObject<LoadableShape.Model>(component.data.ToString());
+                            EntityComponentsUtils.AddGLTFComponent(sceneToEdit.scene, entity, gltfModel, component.id);
+                            break;
+
+                        case "NFTShape":
+                            //Builder use a different way to load the NFT so we convert it to our system
+                            string url = JsonConvert.DeserializeObject<string>(component.data.ToString());
+                            string assedId = url.Replace(BIWSettings.NFT_ETHEREUM_PROTOCOL, "");
+                            int index = assedId.IndexOf("/", StringComparison.Ordinal);
+                            string partToremove = assedId.Substring(index);
+                            assedId = assedId.Replace(partToremove, "");
+
+                            NFTShape.Model nftModel = new NFTShape.Model();
+                            nftModel.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
+                            nftModel.src = url;
+                            nftModel.assetId = assedId;
+
+                            EntityComponentsUtils.AddNFTShapeComponent(sceneToEdit.scene, entity, nftModel, component.id);
+                            break;
+
+                        case "Name":
+                            nameComponentFound = true;
+                            DCLName.Model nameModel = JsonConvert.DeserializeObject<DCLName.Model>(component.data.ToString());
+                            nameModel.builderValue = builderEntity.name;
+                            EntityComponentsUtils.AddNameComponent(sceneToEdit.scene , entity, nameModel, Guid.NewGuid().ToString());
+                            break;
+
+                        case "LockedOnEdit":
+                            DCLLockedOnEdit.Model lockedModel = JsonConvert.DeserializeObject<DCLLockedOnEdit.Model>(component.data.ToString());
+                            EntityComponentsUtils.AddLockedOnEditComponent(sceneToEdit.scene , entity, lockedModel, Guid.NewGuid().ToString());
+                            break;
+                    }
+                }
+
+                // We need to mantain the builder name of the entity, so we create the equivalent part in biw. We do this so we can maintain the smart-item references
+                if (!nameComponentFound)
+                {
+                    DCLName.Model nameModel = new DCLName.Model();
+                    nameModel.value = builderEntity.name;
+                    nameModel.builderValue = builderEntity.name;
+                    EntityComponentsUtils.AddNameComponent(sceneToEdit.scene , entity, nameModel, Guid.NewGuid().ToString());
+                }
+            }
+        }
+
         public void WebRequestCreated(IWebRequestAsyncOperation webRequest)
         {
             if (currentState == State.LOADING_CATALOG)
@@ -155,9 +252,8 @@ namespace DCL.Builder
         public void StartFlowFromProject(Manifest.Manifest manifest)
         {
             DataStore.i.HUDs.loadingHUD.visible.Set(true);
-            ParcelScene convertedScene = ManifestTranslator.ManifestToParcelScene(manifest);
 
-            BuilderScene builderScene = new BuilderScene(manifest, convertedScene, IBuilderScene.SceneType.PROJECT);
+            BuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT);
             StartFlow(builderScene, SOURCE_BUILDER_PANEl);
         }
 
@@ -239,6 +335,7 @@ namespace DCL.Builder
             if (currentState != State.IDLE || targetScene == null)
                 return;
 
+            sceneToEditId = targetScene.manifest.project.scene_id;
             sceneToEdit = targetScene;
 
             NotificationsController.i.allowNotifications = false;
@@ -255,8 +352,6 @@ namespace DCL.Builder
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             BIWAnalytics.StartEditorFlow(source);
             beginStartFlowTimeStamp = Time.realtimeSinceStartup;
-
-            context.cameraController.ActivateCamera(sceneToEdit.scene);
 
             NextState();
         }
@@ -315,6 +410,8 @@ namespace DCL.Builder
             sceneToEdit.SetScene(Environment.i.world.state.GetScene(sceneToEditId));
             sceneMetricsAnalyticsHelper = new BiwSceneMetricsAnalyticsHelper(sceneToEdit.scene);
             sceneToEdit.scene.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
+            SendManifestToScene();
+            context.cameraController.ActivateCamera(sceneToEdit.scene);
         }
 
         private void NewSceneReady(string id)
@@ -431,8 +528,7 @@ namespace DCL.Builder
 
             manifestPromise.Then(response =>
             {
-                ParcelScene convertedScene = ManifestTranslator.ManifestToParcelScene(response.manifest);
-                BuilderScene builderScene = new BuilderScene(response.manifest, convertedScene, IBuilderScene.SceneType.LAND, response.hasBeenCreated);
+                BuilderScene builderScene = new BuilderScene(response.manifest, IBuilderScene.SceneType.LAND, response.hasBeenCreated);
                 StartFlow(builderScene, source);
             });
 
@@ -447,16 +543,13 @@ namespace DCL.Builder
         {
             Environment.i.platform.cullingController.Stop();
 
-            sceneToEditId = sceneToEdit.scene.sceneData.id;
-
             // In this point we're sure that the catalog loading (the first half of our progress bar) has already finished
             initialLoadingController.SetPercentage(50f);
             Environment.i.world.sceneController.OnNewSceneAdded += NewSceneAdded;
             Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
             Environment.i.world.blockersController.SetEnabled(false);
 
-            if (sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
-                builderInWorldBridge.StartKernelEditMode(sceneToEdit.scene);
+            builderInWorldBridge.StartIsolatedMode(sceneToEditId);
         }
 
         internal void ActivateLandAccessBackgroundChecker()

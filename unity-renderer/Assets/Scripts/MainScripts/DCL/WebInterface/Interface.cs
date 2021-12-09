@@ -24,6 +24,18 @@ namespace DCL.Interface
         public static System.Action<string, string> OnMessageFromEngine;
 
         [System.Serializable]
+        public class StartIsolatedModePayload
+        {
+            public IsolatedConfig config;
+        }
+
+        [System.Serializable]
+        public class StopIsolatedModePayload
+        {
+            public string sceneId;
+        }
+
+        [System.Serializable]
         private class ReportPositionPayload
         {
             /** Camera position, world space */
@@ -55,30 +67,6 @@ namespace DCL.Interface
                 this.eventType = eventType;
                 this.payload = payload;
             }
-        }
-
-        [System.Serializable]
-        public class StartStatefulMode : ControlEvent<StartStatefulMode.Payload>
-        {
-            [System.Serializable]
-            public class Payload
-            {
-                public string sceneId;
-            }
-
-            public StartStatefulMode(string sceneId) : base("StartStatefulMode", new Payload() { sceneId = sceneId }) { }
-        }
-
-        [System.Serializable]
-        public class StopStatefulMode : ControlEvent<StopStatefulMode.Payload>
-        {
-            [System.Serializable]
-            public class Payload
-            {
-                public string sceneId;
-            }
-
-            public StopStatefulMode(string sceneId) : base("StopStatefulMode", new Payload() { sceneId = sceneId }) { }
         }
 
         [System.Serializable]
@@ -147,9 +135,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class OnClickEvent : UUIDEvent<OnClickEventPayload>
-        {
-        };
+        public class OnClickEvent : UUIDEvent<OnClickEventPayload> { };
 
         [System.Serializable]
         public class CameraModePayload
@@ -164,9 +150,7 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
-        public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload>
-        {
-        };
+        public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload> { };
 
         [System.Serializable]
         public class OnGlobalPointerEvent
@@ -175,42 +159,28 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
-        public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload>
-        {
-        };
+        public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload> { };
 
         [System.Serializable]
-        private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload>
-        {
-        };
+        private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload> { };
 
         [System.Serializable]
-        private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload>
-        {
-        };
+        private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload> { };
 
         [System.Serializable]
         private class OnTextInputChangeTextEvent : UUIDEvent<OnTextInputChangeTextEventPayload> { };
 
         [System.Serializable]
-        private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload>
-        {
-        };
+        private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload> { };
 
         [System.Serializable]
-        private class OnFocusEvent : UUIDEvent<EmptyPayload>
-        {
-        };
+        private class OnFocusEvent : UUIDEvent<EmptyPayload> { };
 
         [System.Serializable]
-        private class OnBlurEvent : UUIDEvent<EmptyPayload>
-        {
-        };
+        private class OnBlurEvent : UUIDEvent<EmptyPayload> { };
 
         [System.Serializable]
-        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload>
-        {
-        };
+        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload> { };
 
         [System.Serializable]
         public class OnClickEventPayload
@@ -283,7 +253,7 @@ namespace DCL.Interface
         {
             public string value;
         }
-        
+
         [System.Serializable]
         public class OnTextInputChangeTextEventPayload
         {
@@ -291,8 +261,9 @@ namespace DCL.Interface
             public class Payload
             {
                 public string value;
-                public bool isSubmit;          
+                public bool isSubmit;
             }
+
             public Payload value = new Payload();
         }
 
@@ -304,9 +275,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class EmptyPayload
-        {
-        }
+        public class EmptyPayload { }
 
         [System.Serializable]
         public class MetricsModel
@@ -340,9 +309,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class OnEnterEventPayload
-        {
-        }
+        public class OnEnterEventPayload { }
 
         [System.Serializable]
         public class TransformPayload
@@ -421,14 +388,10 @@ namespace DCL.Interface
         // Note (Zak): We need to explicitly define this classes for the JsonUtility to
         // be able to serialize them
         [System.Serializable]
-        public class RaycastHitFirstResponse : RaycastResponse<RaycastHitEntity>
-        {
-        }
+        public class RaycastHitFirstResponse : RaycastResponse<RaycastHitEntity> { }
 
         [System.Serializable]
-        public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities>
-        {
-        }
+        public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities> { }
 
         [System.Serializable]
         public class SendExpressionPayload
@@ -775,6 +738,8 @@ namespace DCL.Interface
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
         private static HeadersPayload headersPayload = new HeadersPayload();
+        private static StartIsolatedModePayload startIsolatedModePayload = new StartIsolatedModePayload();
+        private static StopIsolatedModePayload stopIsolatedModePayload = new StopIsolatedModePayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -822,7 +787,7 @@ namespace DCL.Interface
         {
             headersPayload.method = method;
             headersPayload.url = url;
-            if(metadata != null)
+            if (metadata != null)
                 headersPayload.metadata = metadata;
             SendMessage(eventName, headersPayload );
         }
@@ -1099,10 +1064,7 @@ namespace DCL.Interface
         {
             public string description;
 
-            public SendSaveUserDescriptionPayload(string description)
-            {
-                this.description = description;
-            }
+            public SendSaveUserDescriptionPayload(string description) { this.description = description; }
         }
 
         [Serializable]
@@ -1146,10 +1108,7 @@ namespace DCL.Interface
             SendMessage("SaveUserUnverifiedName", payload);
         }
 
-        public static void SendSaveUserDescription(string about)
-        {
-            SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about));
-        }
+        public static void SendSaveUserDescription(string about) { SendMessage("SaveUserDescription", new SendSaveUserDescriptionPayload(about)); }
 
         public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 
@@ -1192,6 +1151,14 @@ namespace DCL.Interface
         public static void ReportMotdClicked() { SendMessage("MotdConfirmClicked"); }
 
         public static void OpenURL(string url) { SendMessage("OpenWebURL", new OpenURLPayload { url = url }); }
+
+        public static void StartIsolatedMode(IsolatedConfig config)
+        {
+            startIsolatedModePayload.config = config;
+            SendMessage("StartIsolatedMode", config);
+        }
+
+        public static void StopIsolatedMode() { SendMessage("StopIsolatedMode", stopIsolatedModePayload); }
 
         public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
 

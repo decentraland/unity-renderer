@@ -27,12 +27,9 @@ public class BuilderInWorldBridge : MonoBehaviour
     private TransformComponent entityTransformComponentModel = new TransformComponent();
 
     private StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
-    private SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
-    private SaveProjectInfoEvent saveProjectInfo = new SaveProjectInfoEvent();
     private ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     private EntityPayload entityPayload = new EntityPayload();
     private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
-    internal BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
 
     #region MessagesFromKernel
 
@@ -82,21 +79,6 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.data = smartItemComponent.GetValues();
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
-    }
-
-    public void SaveSceneInfo(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
-    {
-        saveProjectInfo.payload.title = sceneName;
-        saveProjectInfo.payload.description = sceneDescription;
-        saveProjectInfo.payload.screenshot = sceneScreenshot;
-
-        WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, saveProjectInfo);
-    }
-
-    public void SaveSceneState(ParcelScene scene)
-    {
-        saveSceneState.payload = JsonUtility.ToJson(builderProjectPayload);
-        WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, saveSceneState);
     }
 
     public void ChangeEntityLockStatus(BIWEntity entity, ParcelScene scene)
@@ -243,9 +225,17 @@ public class BuilderInWorldBridge : MonoBehaviour
         OnKernelUpdated?.Invoke();
     }
 
-    public void StartKernelEditMode(IParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id)); }
+    public void StartIsolatedMode(string sceneId)
+    {
+        IsolatedConfig config = new IsolatedConfig();
+        config.sceneId = sceneId;
+        config.recreateScene = true;
+        config.land = new ILand();
+        config.land.mappingsResponse = new MappingsResponse();
+        WebInterface.StartIsolatedMode(config);
+    }
 
-    public void ExitKernelEditMode(IParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
+    public void StopIsolatedMode(IParcelScene scene) { WebInterface.StopIsolatedMode(); }
 
     public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
     {
