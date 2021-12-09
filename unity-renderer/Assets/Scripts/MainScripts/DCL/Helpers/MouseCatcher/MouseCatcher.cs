@@ -41,7 +41,7 @@ namespace DCL
 
         public void LockCursor()
         {
-            if (!renderingEnabled || DataStore.i.isSignUpFlow.Get())
+            if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get())
                 return;
 
             Utils.LockCursor();

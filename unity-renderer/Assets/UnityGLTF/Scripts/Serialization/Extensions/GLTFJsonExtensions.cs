@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GLTF.Schema;
@@ -58,6 +60,38 @@ namespace GLTF.Extensions
             }
 
             return list;
+        }
+
+        public static IEnumerator ReadListDelayed<T>(this JsonReader reader, Func<T> deserializerFunc, Action<List<T>> onComplete)
+        {
+            if (reader.Read() && reader.TokenType != JsonToken.StartArray)
+            {
+                throw new Exception(string.Format("Invalid array at: {0}", reader.Path));
+            }
+
+            var list = new List<T>();
+            var skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
+            int throttlingCounter = 0;
+            const int throttlingCounterInterval = 100;
+
+            while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+            {
+                list.Add(deserializerFunc());
+
+                // deserializerFunc can advance to EndArray. We need to check for this case as well. 
+                if (reader.TokenType == JsonToken.EndArray)
+                    break;
+
+                throttlingCounter++;
+                if ( throttlingCounter > throttlingCounterInterval )
+                {
+                    yield return skipFrameIfDepletedTimeBudget;
+                    throttlingCounter = 0;
+                }
+            }
+
+            onComplete.Invoke(list);
+            yield break;
         }
 
         public static List<T> ReadList<T>(this JsonReader reader, Func<T> deserializerFunc)
@@ -180,6 +214,7 @@ namespace GLTF.Extensions
                 {
                     throw new Exception("JToken used for Color deserialization was not a JArray. It was a " + token.Type.ToString());
                 }
+
                 if (colorArray.Count != 4)
                 {
                     throw new Exception("JArray used for Color deserialization did not have 4 entries for RGBA. It had " + colorArray.Count);
@@ -253,6 +288,7 @@ namespace GLTF.Extensions
                 {
                     throw new Exception("JToken used for Vector2 deserialization was not a JArray. It was a " + token.Type.ToString());
                 }
+
                 if (vectorArray.Count != 2)
                 {
                     throw new Exception("JArray used for Vector2 deserialization did not have 2 entries for XY. It had " + vectorArray.Count);
@@ -279,6 +315,7 @@ namespace GLTF.Extensions
                 {
                     throw new Exception("JToken used for Vector3 deserialization was not a JArray. It was a " + token.Type.ToString());
                 }
+
                 if (vectorArray.Count != 3)
                 {
                     throw new Exception("JArray used for Vector3 deserialization did not have 3 entries for XYZ. It had " + vectorArray.Count);
@@ -372,7 +409,6 @@ namespace GLTF.Extensions
 
         private static List<object> ReadObjectList(this JsonReader reader)
         {
-
             var list = new List<object>();
 
             while (reader.Read() && reader.TokenType != JsonToken.EndArray)

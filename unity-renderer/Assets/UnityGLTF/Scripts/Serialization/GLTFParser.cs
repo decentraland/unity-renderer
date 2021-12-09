@@ -1,5 +1,6 @@
 ﻿using GLTF.Schema;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -37,13 +38,37 @@ namespace GLTF
         public const uint CHUNK_HEADER_SIZE = 8;
         public const uint MAGIC_NUMBER = 0x46546c67;
 
+        public static IEnumerator ParseJsonDelayed(Stream stream, GLTFRoot gltfRoot, long startPosition = 0)
+        {
+            if (stream == null)
+            {
+                throw new Exception("GLTFParser.ParseJson stream == null");
+            }
+
+            stream.Position = startPosition;
+            bool isGLB = IsGLB(stream);
+
+            // Check for binary format magic bytes
+            if (isGLB)
+            {
+                ParseJsonChunk(stream, startPosition);
+            }
+            else
+            {
+                stream.Position = startPosition;
+            }
+
+            yield return GLTFRoot.DeserializeDelayed(gltfRoot, new StreamReader(stream));
+            gltfRoot.IsGLB = isGLB;
+        }
+
         public static void ParseJson(Stream stream, out GLTFRoot gltfRoot, long startPosition = 0)
         {
             if (stream == null)
             {
                 throw new Exception("GLTFParser.ParseJson stream == null");
             }
-            
+
             stream.Position = startPosition;
             bool isGLB = IsGLB(stream);
 
@@ -91,7 +116,6 @@ namespace GLTF
                 Length = chunkLength,
                 Type = chunkType
             };
-
         }
 
         public static GLBHeader ParseGLBHeader(Stream stream)
@@ -152,7 +176,9 @@ namespace GLTF
             if (header.Version != 2)
             {
                 throw new GLTFHeaderInvalidException("Unsupported glTF version");
-            };
+            }
+
+            ;
 
             if (header.FileLength != (stream.Length - startPosition))
             {

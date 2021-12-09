@@ -84,11 +84,14 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         {
             if (footstepLand != null)
                 footstepLand.Play(true);
+
             if (stickersController != null && footL != null && footR != null)
-                    stickersController.PlaySticker("footstepLand",
-                        Vector3.Lerp(footL.position, footR.position, 0.5f),
-                        Vector3.up,
-                        false);
+            {
+                stickersController.PlaySticker("footstepLand",
+                    Vector3.Lerp(footL.position, footR.position, 0.5f),
+                    Vector3.up,
+                    false);
+            }
         }
 
         // Simulate footsteps when avatar is not visible

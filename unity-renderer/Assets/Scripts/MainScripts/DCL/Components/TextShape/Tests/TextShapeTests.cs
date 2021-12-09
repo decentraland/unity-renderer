@@ -27,7 +27,6 @@ namespace Tests
                 color = Color.white,
                 opacity = 0.5f,
                 fontSize = 10,
-                fontWeight = "",
 
                 width = 20,
                 height = 20,

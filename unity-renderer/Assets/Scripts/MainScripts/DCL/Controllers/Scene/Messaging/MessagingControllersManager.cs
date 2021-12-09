@@ -253,11 +253,11 @@ namespace DCL
 
                 if (pendingInitMessagesCount == 0)
                 {
-                    UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = Mathf.Clamp(timeBudgetCounter, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
+                    AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = Mathf.Clamp(timeBudgetCounter, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
                 }
                 else
                 {
-                    UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = 0;
+                    AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = 0;
                 }
 
                 yield return null;

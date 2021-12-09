@@ -21,6 +21,7 @@ namespace DCL
 
         [SerializeField] internal AvatarOnPointerDown onPointerDown;
         internal IPlayerName playerName;
+        internal IAvatarReporterController avatarReporterController;
 
         private StringVariable currentPlayerInfoCardId;
 
@@ -39,6 +40,11 @@ namespace DCL
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+            
+            if (avatarReporterController == null)
+            {
+                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
+            }
         }
 
         private void Start()
@@ -125,7 +131,7 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
-
+            
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
@@ -165,7 +171,11 @@ namespace DCL
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
                 otherPlayers.Add(player.id, player);
+                avatarReporterController.ReportAvatarRemoved();
             }
+            
+            avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
         }
@@ -176,6 +186,7 @@ namespace DCL
             {
                 player.worldPosition = entity.gameObject.transform.position;
                 player.forwardDirection = entity.gameObject.transform.forward;
+                avatarReporterController.ReportAvatarPosition(player.worldPosition);
             }
         }
 
@@ -242,6 +253,7 @@ namespace DCL
                 entity.OnTransformChange = null;
                 entity = null;
             }
+            avatarReporterController.ReportAvatarRemoved();
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }

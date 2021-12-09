@@ -8,8 +8,8 @@ namespace DCL
     {
         private RealmsInfoModel model = new RealmsInfoModel();
 
-        public CurrentRealmVariable playerRealm => DataStore.i.playerRealm;
-        public RealmsVariable realmsInfo => DataStore.i.realmsInfo;
+        public CurrentRealmVariable playerRealm => DataStore.i.realm.playerRealm;
+        public RealmsVariable realmsInfo => DataStore.i.realm.realmsInfo;
 
         public void Set(string json)
         {
@@ -20,8 +20,8 @@ namespace DCL
         public void Set(RealmsInfoModel newModel)
         {
             model = newModel;
-            DataStore.i.playerRealm.Set(model.current?.Clone());
-            DataStore.i.realmsInfo.Set(model.realms);
+            DataStore.i.realm.playerRealm.Set(model.current?.Clone());
+            DataStore.i.realm.realmsInfo.Set(model.realms);
         }
     }
 

@@ -8,6 +8,8 @@ namespace DCL
 {
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
+        const string METADATA_FILENAME = "metadata.json";
+        
         public static bool VERBOSE = false;
         public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
 
@@ -104,25 +106,7 @@ namespace DCL
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, disposeOnCompleted: false);
 #endif
 
-            if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
-                CoroutineStarter.Start(DependencyMapLoadHelper.GetDepMap(baseUrl, hash));
-
-            yield return DependencyMapLoadHelper.WaitUntilDepMapIsResolved(hash);
-
-            if (DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
-            {
-                using (var it = DependencyMapLoadHelper.dependenciesMap[hash].GetEnumerator())
-                {
-                    while (it.MoveNext())
-                    {
-                        var dep = it.Current;
-                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform);
-                        AssetPromiseKeeper_AB.i.Keep(promise);
-                        dependencyPromises.Add(promise);
-                    }
-                }
-            }
-
+            // 1. Download asset bundle, but don't load its objects yet
             yield return asyncOp;
 
             if (asyncOp.isDisposed)
@@ -140,14 +124,7 @@ namespace DCL
                 asyncOp.Dispose();
                 yield break;
             }
-
-            UnregisterConcurrentRequest();
-
-            foreach (var promise in dependencyPromises)
-            {
-                yield return promise;
-            }
-
+            
             AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(asyncOp.webRequest);
             asyncOp.Dispose();
 
@@ -161,6 +138,43 @@ namespace DCL
 
             asset.ownerAssetBundle = assetBundle;
             asset.assetBundleAssetName = assetBundle.name;
+            
+            // 2. Check internal metadata file (dependencies, version, timestamp) and if it doesn't exist, fetch the external depmap file (old way of handling ABs dependencies)
+            TextAsset metadata = assetBundle.LoadAsset<TextAsset>(METADATA_FILENAME);
+            
+            if (metadata != null)
+            {
+                AssetBundleDepMapLoadHelper.LoadDepMapFromJSON(metadata.text, hash);
+            }
+            else
+            {
+                if (!AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
+                    CoroutineStarter.Start(AssetBundleDepMapLoadHelper.LoadExternalDepMap(baseUrl, hash));
+
+                yield return AssetBundleDepMapLoadHelper.WaitUntilExternalDepMapIsResolved(hash);
+            }
+            
+            // 3. Resolve dependencies
+            if (AssetBundleDepMapLoadHelper.dependenciesMap.ContainsKey(hash))
+            {
+                using (var it = AssetBundleDepMapLoadHelper.dependenciesMap[hash].GetEnumerator())
+                {
+                    while (it.MoveNext())
+                    {
+                        var dep = it.Current;
+                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform);
+                        AssetPromiseKeeper_AB.i.Keep(promise);
+                        dependencyPromises.Add(promise);
+                    }
+                }
+            }
+
+            UnregisterConcurrentRequest();
+
+            foreach (var promise in dependencyPromises)
+            {
+                yield return promise;
+            }
 
             assetBundlesLoader.MarkAssetBundleForLoad(asset, assetBundle, containerTransform, OnSuccess, OnFail);
         }

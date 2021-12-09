@@ -9,6 +9,7 @@ namespace DCL
     public class DebugConfigComponent : MonoBehaviour
     {
         public DebugConfig debugConfig;
+
         public enum DebugPanel
         {
             Off,
@@ -33,10 +34,11 @@ namespace DCL
 
         private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
         private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
-        
+
         public bool openBrowserWhenStart;
 
         [Header("Kernel General Settings")]
+        public string kernelVersion ;
         public bool useCustomContentServer = false;
 
         public string customContentServerUrl = "http://localhost:1338/";
@@ -45,7 +47,6 @@ namespace DCL
         public BaseUrl baseUrlMode;
 
         public string baseUrlCustom;
-
 
         [Space(10)]
         public Environment environment;
@@ -137,6 +138,11 @@ namespace DCL
                     break;
             }
 
+            if ( !string.IsNullOrEmpty(kernelVersion))
+            {
+                debugString += $"kernel-version={kernelVersion}&";
+            }
+
             if (forceLocalComms)
             {
                 debugString += "LOCAL_COMMS&";
@@ -187,10 +193,7 @@ namespace DCL
                 $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}");
 #endif
         }
-        
-        private void OnDestroy()
-        {
-            DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue;
-        }
+
+        private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
     }
 }

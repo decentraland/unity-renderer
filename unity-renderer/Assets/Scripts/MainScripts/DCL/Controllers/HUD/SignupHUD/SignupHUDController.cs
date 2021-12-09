@@ -57,7 +57,7 @@ namespace SignupHUD
         internal void OnTermsOfServiceAgreed()
         {
             WebInterface.SendPassport(name, email);
-            DataStore.i.isSignUpFlow.Set(false);
+            DataStore.i.common.isSignUpFlow.Set(false);
             signupVisible.Set(false);
         }
 

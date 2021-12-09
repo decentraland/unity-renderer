@@ -6,6 +6,7 @@ using UnityEngine;
 public class HUDBridge : MonoBehaviour
 {
     #region MessagesFromKernel
+
     [System.Serializable]
     class ConfigureHUDElementMessage
     {
@@ -13,6 +14,7 @@ public class HUDBridge : MonoBehaviour
         public HUDConfiguration configuration;
         public string extraPayload;
     }
+
     public void ConfigureHUDElement(string payload)
     {
         ConfigureHUDElementMessage message = JsonUtility.FromJson<ConfigureHUDElementMessage>(payload);
@@ -23,6 +25,7 @@ public class HUDBridge : MonoBehaviour
 
         HUDController.i.ConfigureHUDElement(id, configuration, extraPayload);
     }
+
     public void TriggerSelfUserExpression(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
 
     public void AirdroppingRequest(string payload)
@@ -65,9 +68,10 @@ public class HUDBridge : MonoBehaviour
     {
         if (HUDController.i.avatarEditorHud != null)
         {
-            DataStore.i.isSignUpFlow.Set(true);
+            DataStore.i.common.isSignUpFlow.Set(true);
             HUDController.i.avatarEditorHud?.SetVisibility(true);
         }
     }
+
     #endregion
 }

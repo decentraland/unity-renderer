@@ -156,7 +156,7 @@ namespace DCL.Builder
         private void OnPlayerTeleportedToEditScene(Vector2Int coords)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             StartFlowWithPermission(targetScene, SOURCE_BUILDER_PANEl);
         }
 
@@ -226,23 +226,23 @@ namespace DCL.Builder
         private void UpdateLandsWithAccess()
         {
             DeployedScenesFetcher.FetchLandsFromOwner(
-                                     Environment.i.platform.serviceProviders.catalyst,
-                                     Environment.i.platform.serviceProviders.theGraph,
-                                     userProfile.ethAddress,
-                                     KernelConfig.i.Get().network,
-                                     BIWSettings.CACHE_TIME_LAND,
-                                     BIWSettings.CACHE_TIME_SCENES)
-                                 .Then(lands =>
-                                 {
-                                     DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                                     if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                                     {
-                                         CheckSceneToEditByShorcut();
-                                     }
+                    Environment.i.platform.serviceProviders.catalyst,
+                    Environment.i.platform.serviceProviders.theGraph,
+                    userProfile.ethAddress,
+                    KernelConfig.i.Get().network,
+                    BIWSettings.CACHE_TIME_LAND,
+                    BIWSettings.CACHE_TIME_SCENES)
+                .Then(lands =>
+                {
+                    DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                    if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                    {
+                        CheckSceneToEditByShorcut();
+                    }
 
-                                     isWaitingForPermission = false;
-                                     alreadyAskedForLandPermissions = true;
-                                 });
+                    isWaitingForPermission = false;
+                    alreadyAskedForLandPermissions = true;
+                });
         }
 
         internal void CatalogLoaded()
@@ -271,7 +271,7 @@ namespace DCL.Builder
             initialLoadingController.Show();
             initialLoadingController.SetPercentage(0f);
 
-            DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
+            DataStore.i.common.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             BIWAnalytics.StartEditorFlow(source);
             beginStartFlowTimeStamp = Time.realtimeSinceStartup;
