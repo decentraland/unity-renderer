@@ -15,13 +15,13 @@ struct Varyings
 {
     float4 uvAlbedoNormal           : TEXCOORD0; //Albedo, Normal UVs
     //float4 uvMetallicEmissive       : TEXCOORD1; //Metallic, Emissive UVs
-    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 10); // Lightmaps support
+    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 1); // Lightmaps support
 
 #if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
     float3 positionWS               : TEXCOORD2;
 #endif
 
-    float3 normalWS                 : TEXCOORD9;
+    float3 normalWS                 : TEXCOORD3;
 #if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR)
     float4 tangentWS                : TEXCOORD4;    // xyz: tangent, w: sign
 #endif

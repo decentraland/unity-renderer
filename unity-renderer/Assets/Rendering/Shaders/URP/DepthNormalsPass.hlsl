@@ -9,7 +9,7 @@
 struct Varyings
 {
     float4 positionCS   : SV_POSITION;
-    float2 uv           : TEXCOORD3; // moved from TEXCOORD1 to TEXCOORD3
+    float2 uv           : TEXCOORD1;
     float3 normalWS     : TEXCOORD2;
 
     UNITY_VERTEX_INPUT_INSTANCE_ID

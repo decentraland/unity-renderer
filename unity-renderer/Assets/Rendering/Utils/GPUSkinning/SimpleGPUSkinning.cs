@@ -82,6 +82,9 @@ namespace GPUSkinning
             }
 
             bones = skr.bones;
+            
+            // This works for Avatars because we know the bounds, but not for DCLAnimator skinned mesh renderers.
+            // TODO: Try running the skr for 1 frame and take its calculated bounds. This should be done every time the animation changes.
             meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
             UpdateMatrices();
 
