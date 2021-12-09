@@ -289,7 +289,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         SetIdleFrame();
     }
 
-    // AvatarSystem
+    // AvatarSystem entry points
     public bool Prepare(string bodyshapeId, GameObject container)
     {
         if (!container.transform.TryFindChildRecursively("Armature", out Transform armature))
@@ -302,11 +302,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         armatureParent.gameObject.GetOrCreateComponent<StickerAnimationListener>();
 
         BindBodyShape(animation, bodyshapeId, target);
-        InitializeAvatarAudioAndParticleHandlers(container, animation);
+        InitializeAvatarAudioAndParticleHandlers(animation);
         return true;
     }
 
-    private void InitializeAvatarAudioAndParticleHandlers(GameObject container, Animation createdAnimation)
+    public void PlayExpression(string expressionId, long timestamps) { SetExpressionValues(expressionId, timestamps); }
+
+    private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
     {
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
         AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();

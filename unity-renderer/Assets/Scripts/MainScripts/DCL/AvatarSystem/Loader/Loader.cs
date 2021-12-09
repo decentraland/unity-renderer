@@ -80,8 +80,10 @@ namespace AvatarSystem
             }
 
             AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
+            (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(bodyshape.id, wearables);
+            var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
 
-            if (!MergeAvatar(AvatarSystemUtils.GetActiveBodyparts(bodyshapeLoader, settings).Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out Renderer combinedRenderer))
+            if (!MergeAvatar(activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out Renderer combinedRenderer))
             {
                 status = ILoader.Status.Failed_Mayor;
                 //TODO Dispose properly

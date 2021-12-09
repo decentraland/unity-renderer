@@ -13,8 +13,8 @@ namespace AvatarSystem
             Idle,
             Loading,
             Succeeded,
-            Failed_Mayor,
-            Failed_Minor
+            Failed_Minor,
+            Failed_Mayor
         }
 
         GameObject bodyshapeContainer { get; }

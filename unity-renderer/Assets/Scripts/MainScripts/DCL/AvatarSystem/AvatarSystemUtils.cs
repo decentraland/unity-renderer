@@ -11,13 +11,14 @@ namespace AvatarSystem
     public static class AvatarSystemUtils
     {
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
-        public static int _BaseColor = Shader.PropertyToID("_BaseColor");
-        public static int _EmissionColor = Shader.PropertyToID("_EmissionColor");
-        public static int _BaseMap = Shader.PropertyToID("_BaseMap");
-        public static int _EyesTexture = Shader.PropertyToID("_EyesTexture");
-        public static int _EyeTint = Shader.PropertyToID("_EyeTint");
-        public static int _IrisMask = Shader.PropertyToID("_IrisMask");
-        public static int _TintMask = Shader.PropertyToID("_TintMask");
+        public static readonly int _BaseColor = Shader.PropertyToID("_BaseColor");
+        public static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
+        public static readonly int _EyesTexture = Shader.PropertyToID("_EyesTexture");
+        public static readonly int _EyeTint = Shader.PropertyToID("_EyeTint");
+        public static readonly int _IrisMask = Shader.PropertyToID("_IrisMask");
+        public static readonly int _TintMask = Shader.PropertyToID("_TintMask");
+        public static readonly int DitherFade = Shader.PropertyToID("_DitherFade");
+        public static readonly string SSAO_OFF_KEYWORD = "_SSAO_OFF";
 
         public static bool IsCategoryRequired(string category) { return true; }
 
@@ -153,16 +154,65 @@ namespace AvatarSystem
             return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);
         }
 
-        public static List<SkinnedMeshRenderer> GetActiveBodyparts(IBodyshapeLoader bodyshapeLoader, AvatarSettings settings)
+        /// <summary>
+        /// Filters hidden wearables.
+        /// Conflicts will be resolved by order in the array
+        /// </summary>
+        /// <param name="bodyshapeId"></param>
+        /// <param name="wearables"></param>
+        /// <returns></returns>
+        public static List<WearableItem> FilterHiddenWearables(string bodyshapeId, IEnumerable<WearableItem> wearables)
+        {
+            HashSet<string> hiddenCategories = new HashSet<string>();
+            List<WearableItem> filteredWearables = new List<WearableItem>();
+            foreach (WearableItem wearable in wearables)
+            {
+                if (hiddenCategories.Contains(wearable.data.category))
+                {
+                    continue;
+                }
+                filteredWearables.Add(wearable);
+                hiddenCategories.UnionWith(wearable.GetHidesList(bodyshapeId));
+            }
+
+            return filteredWearables;
+        }
+
+        public static (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) GetActiveBodyParts(string bodyshapeId, IEnumerable<WearableItem> wearables)
+        {
+            bool headVisible = true;
+            bool upperBodyVisible = true;
+            bool lowerBodyVisible = true;
+            bool feetVisible = true;
+
+            HashSet<string> hiddenList = new HashSet<string>();
+            HashSet<string> usedCategories = new HashSet<string>();
+
+            foreach (WearableItem wearable in wearables)
+            {
+                usedCategories.Add(wearable.data.category);
+                string[] hiddenByThisWearable = wearable.GetHidesList(bodyshapeId);
+                if (hiddenByThisWearable != null)
+                    hiddenList.UnionWith(hiddenByThisWearable);
+            }
+
+            headVisible = !hiddenList.Contains(WearableLiterals.Categories.BODY_SHAPE) && !usedCategories.Contains(WearableLiterals.Categories.BODY_SHAPE);
+            upperBodyVisible = !hiddenList.Contains(WearableLiterals.Categories.UPPER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.UPPER_BODY);
+            lowerBodyVisible = !hiddenList.Contains(WearableLiterals.Categories.LOWER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.LOWER_BODY);
+            feetVisible = !hiddenList.Contains(WearableLiterals.Categories.FEET) && !usedCategories.Contains(WearableLiterals.Categories.FEET);
+            return (headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
+        }
+
+        public static List<SkinnedMeshRenderer> GetActiveBodyPartsRenderers(IBodyshapeLoader bodyshapeLoader, bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible)
         {
             List<SkinnedMeshRenderer> result = new List<SkinnedMeshRenderer>();
-            if (settings.headVisible)
+            if (headVisible)
                 result.Add(bodyshapeLoader.headRenderer);
-            if (settings.upperbodyVisible)
+            if (upperBodyVisible)
                 result.Add(bodyshapeLoader.upperBodyRenderer);
-            if (settings.lowerbodyVisible)
+            if (lowerBodyVisible)
                 result.Add(bodyshapeLoader.lowerBodyRenderer);
-            if (settings.feetVisible)
+            if (feetVisible)
                 result.Add(bodyshapeLoader.feetRenderer);
             return result;
         }

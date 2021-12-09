@@ -8,14 +8,18 @@ namespace AvatarSystem
 {
     public interface IAvatar : IDisposable
     {
+        public enum Status
+        {
+            Idle,
+            Loaded,
+            Failed
+        }
+
+        Status status { get; }
+
         UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default);
         void SetVisibility(bool visible);
         void SetExpression(string expressionId, long timestamps);
-    }
-
-    public interface IVisibility
-    {
-        bool composedVisibility { get; }
-        void SetVisible(bool visible);
+        void SetLODLevel(int lodIndex);
     }
 }

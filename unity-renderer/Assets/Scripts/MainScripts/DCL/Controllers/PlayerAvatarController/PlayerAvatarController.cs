@@ -1,12 +1,20 @@
+using System.Collections;
+using System.Linq;
+using System.Threading;
+using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Interface;
 using UnityEngine;
+using LOD = AvatarSystem.LOD;
 
 public class PlayerAvatarController : MonoBehaviour
 {
     private const string LOADING_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
 
-    public AvatarRenderer avatarRenderer;
+    private AvatarSystem.Avatar avatar;
+    private CancellationTokenSource avatarLoadingCts = null;
+    public GameObject avatarContainer;
+
     public Collider avatarCollider;
     public AvatarVisibility avatarVisibility;
     public float cameraDistanceToDeactivate = 1.0f;
@@ -25,11 +33,7 @@ public class PlayerAvatarController : MonoBehaviour
         DataStore.i.common.isPlayerRendererLoaded.Set(false);
         playerAvatarAnalytics = new PlayerAvatarAnalytics(Analytics.i, CommonScriptableObjects.playerCoords);
 
-        //NOTE(Brian): We must wait for loading to finish before deactivating the renderer, or the GLTF Loader won't finish.
-        avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
-        avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
-        avatarRenderer.OnSuccessEvent += OnAvatarRendererReady;
-        avatarRenderer.OnFailEvent += OnAvatarRendererFail;
+        avatar = new AvatarSystem.Avatar(new WearableItemResolver(), new Loader(new WearableLoaderFactory(), avatarContainer), GetComponentInChildren<AvatarAnimatorLegacy>(), new Visibility(avatarContainer), new LOD(avatarContainer, userProfile.bodySnapshotObserver));
 
         if ( UserProfileController.i != null )
         {
@@ -42,35 +46,11 @@ public class PlayerAvatarController : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    private void OnAvatarRendererReady()
-    {
-        enableCameraCheck = true;
-        avatarCollider.gameObject.SetActive(true);
-        CommonScriptableObjects.rendererState.RemoveLock(this);
-        avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
-        avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
-        DataStore.i.common.isPlayerRendererLoaded.Set(true);
-
-        if (avatarWereablesErrors || baseWereablesErrors)
-            ShowWearablesWarning();
-    }
-
-    private void OnAvatarRendererFail(bool isFatalError)
-    {
-        avatarWereablesErrors = true;
-
-        if (isFatalError)
-            WebInterface.ReportAvatarFatalError();
-        else
-            OnAvatarRendererReady();
-    }
-
     private void OnBaseWereablesFail()
     {
         UserProfileController.i.OnBaseWereablesFail -= OnBaseWereablesFail;
-        baseWereablesErrors = true;
 
-        if (enableCameraCheck && !avatarWereablesErrors)
+        if (enableCameraCheck)
             ShowWearablesWarning();
     }
 
@@ -102,7 +82,7 @@ public class PlayerAvatarController : MonoBehaviour
         avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
     }
 
-    public void SetAvatarVisibility(bool isVisible) { avatarRenderer.SetGOVisibility(isVisible); }
+    public void SetAvatarVisibility(bool isVisible) { avatar.SetVisibility(isVisible); }
 
     private void OnEnable()
     {
@@ -112,15 +92,50 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void OnAvatarExpression(string id, long timestamp)
     {
-        avatarRenderer.SetExpression(id, timestamp);
+        avatar.SetExpression(id, timestamp);
         playerAvatarAnalytics.ReportExpression(id);
     }
 
-    private void OnUserProfileOnUpdate(UserProfile profile) { avatarRenderer.ApplyModel(profile.avatar, null, null); }
+    private void OnUserProfileOnUpdate(UserProfile profile)
+    {
+        StopAllCoroutines();
+        StartCoroutine(LoadingRoutine(profile));
+    }
+
+    private IEnumerator LoadingRoutine(UserProfile profile)
+    {
+        avatarLoadingCts?.Cancel();
+        avatarLoadingCts = new CancellationTokenSource();
+        var wearableItems = profile.avatar.wearables.ToList();
+        wearableItems.Add(profile.avatar.bodyShape);
+        yield return avatar.Load(wearableItems, new AvatarSettings
+                           {
+                               bodyshapeId = profile.avatar.bodyShape,
+                               eyesColor = profile.avatar.eyeColor,
+                               skinColor = profile.avatar.skinColor,
+                               hairColor = profile.avatar.hairColor,
+                           }, avatarLoadingCts.Token)
+                           .ToCoroutine();
+
+        if (avatar.status == IAvatar.Status.Failed )
+        {
+            //TODO Enable
+            //WebInterface.ReportAvatarFatalError();
+        }
+        else
+        {
+            enableCameraCheck = true;
+            avatarCollider.gameObject.SetActive(true);
+            CommonScriptableObjects.rendererState.RemoveLock(this);
+            DataStore.i.isPlayerRendererLoaded.Set(true);
+        }
+    }
 
     private void OnDisable()
     {
         userProfile.OnUpdate -= OnUserProfileOnUpdate;
         userProfile.OnAvatarExpressionSet -= OnAvatarExpression;
     }
+
+    private void OnDestroy() { avatar?.Dispose(); }
 }
