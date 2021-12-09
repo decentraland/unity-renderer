@@ -3,6 +3,7 @@
 
 #include "Lighting.hlsl"
 #include "FadeDithering.hlsl"
+#include "GPUSkinning.hlsl"
 
 #if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR))) || defined(_DETAIL)
 #define REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR
@@ -10,27 +11,17 @@
 
 // keep this file in sync with LitGBufferPass.hlsl
 
-struct Attributes
-{
-    float4 positionOS   : POSITION;
-    float3 normalOS     : NORMAL;
-    float4 tangentOS    : TANGENT;
-    float2 texcoord     : TEXCOORD0;
-    float2 texcoord1   : TEXCOORD2;
-    UNITY_VERTEX_INPUT_INSTANCE_ID
-};
-
 struct Varyings
 {
     float4 uvAlbedoNormal           : TEXCOORD0; //Albedo, Normal UVs
     //float4 uvMetallicEmissive       : TEXCOORD1; //Metallic, Emissive UVs
-    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 1);
+    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 10); // Lightmaps support
 
 #if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
     float3 positionWS               : TEXCOORD2;
 #endif
 
-    float3 normalWS                 : TEXCOORD3;
+    float3 normalWS                 : TEXCOORD9;
 #if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR)
     float4 tangentWS                : TEXCOORD4;    // xyz: tangent, w: sign
 #endif
@@ -43,8 +34,7 @@ struct Varyings
 #endif
 
 	//NOTE(Brian): needed for FadeDithering
-	float4 positionSS               : TEXCOORD8;
-
+	float4 positionSS               : TEXCOORD8; 
 
     float4 positionCS               : SV_POSITION;
     UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -94,6 +84,10 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
 Varyings LitPassVertex(Attributes input)
 {
     Varyings output = (Varyings)0;
+
+    #ifdef _GPU_SKINNING 
+    ApplyGPUSkinning(input, input.uv1, input.uv3);
+    #endif
 
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_TRANSFER_INSTANCE_ID(input, output);

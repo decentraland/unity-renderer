@@ -97,6 +97,8 @@ Shader "DCL/Universal Render Pipeline/Lit"
         Tags{"RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
         LOD 300
 
+        // Info of each pass purpose at https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@10.1/manual/urp-shaders/urp-shaderlab-pass-tags.html
+        
         // ------------------------------------------------------------------
         //  Forward pass. Shades all light in a single pass. GI + emission + Fog
         Pass
@@ -152,7 +154,22 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
+            #pragma multi_compile_local _ _GPU_SKINNING
+
             #include "LitInput.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                float2 texcoord1    : TEXCOORD2;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
             #include "LitForwardPass.hlsl"
             ENDHLSL
         }
@@ -184,8 +201,22 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
+            #pragma multi_compile_local _ _GPU_SKINNING
+
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+                
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
+            #include "ShadowCasterPass.hlsl"
             ENDHLSL
         }
 
@@ -245,7 +276,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma fragment LitGBufferPassFragment
 
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl" // ?? Should add GPU Skinning ??
             ENDHLSL
         }
 
@@ -275,8 +306,22 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
+            #pragma multi_compile_local _ _GPU_SKINNING
+            
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+                
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
+            #include "DepthOnlyPass.hlsl"
             ENDHLSL
         }
 
@@ -307,8 +352,22 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
+            #pragma multi_compile_local _ _GPU_SKINNING
+
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+                
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
+            #include "DepthNormalsPass.hlsl"
             ENDHLSL
         }
 
@@ -341,6 +400,7 @@ Shader "DCL/Universal Render Pipeline/Lit"
 
             ENDHLSL
         }
+        
         Pass
         {
             Name "Universal2D"
@@ -373,6 +433,8 @@ Shader "DCL/Universal Render Pipeline/Lit"
         Tags{"RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="2.0"}
         LOD 300
 
+        // Info of each pass purpose at https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@10.1/manual/urp-shaders/urp-shaderlab-pass-tags.html
+        
         // ------------------------------------------------------------------
         //  Forward pass. Shades all light in a single pass. GI + emission + Fog
         Pass
@@ -431,7 +493,22 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
+            #pragma multi_compile_local _ _GPU_SKINNING
+
             #include "LitInput.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                float2 texcoord1    : TEXCOORD2;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
             #include "LitForwardPass.hlsl"
             ENDHLSL
         }
@@ -462,8 +539,22 @@ Shader "DCL/Universal Render Pipeline/Lit"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
+            #pragma multi_compile_local _ _GPU_SKINNING
+
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+                
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
+            #include "ShadowCasterPass.hlsl"
             ENDHLSL
         }
 
@@ -491,9 +582,23 @@ Shader "DCL/Universal Render Pipeline/Lit"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-
+            
+            #pragma multi_compile_local _ _GPU_SKINNING
+            
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+                
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
+            #include "DepthOnlyPass.hlsl"
             ENDHLSL
         }
 
@@ -523,8 +628,22 @@ Shader "DCL/Universal Render Pipeline/Lit"
             // GPU Instancing
             #pragma multi_compile_instancing
 
+            #pragma multi_compile_local _ _GPU_SKINNING
+
             #include "LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
+            struct Attributes
+            {
+                float3 positionOS   : POSITION;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                float2 texcoord     : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+                
+                // Bones data for GPU Skinning
+                float4 uv1          : TEXCOORD1;
+                float4 uv3          : TEXCOORD3;
+            };
+            #include "DepthNormalsPass.hlsl"
             ENDHLSL
         }
 

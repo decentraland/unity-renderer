@@ -16,7 +16,7 @@ namespace GPUSkinning
         /// This must be done once per SkinnedMeshRenderer before animating.
         /// </summary>
         /// <param name="skr"></param>
-        public static void EncodeBindPosesIntoMesh(SkinnedMeshRenderer skr)
+        public static void EncodeBindPosesIntoMesh(SkinnedMeshRenderer skr, int bone01DataUVChannel = -1, int bone23DataUVChannel = 1)
         {
             Mesh sharedMesh = skr.sharedMesh;
             int vertexCount = sharedMesh.vertexCount;
@@ -39,8 +39,12 @@ namespace GPUSkinning
                 bone23data[i].w = boneWeight.weight3;
             }
 
-            skr.sharedMesh.tangents = bone01data;
-            skr.sharedMesh.SetUVs(1, bone23data);
+            if(bone01DataUVChannel >= 0)
+                skr.sharedMesh.SetUVs(bone01DataUVChannel, bone01data);
+            else
+                skr.sharedMesh.tangents = bone01data;
+            
+            skr.sharedMesh.SetUVs(bone23DataUVChannel, bone23data);
         }
     }
 
@@ -55,10 +59,10 @@ namespace GPUSkinning
         private Transform[] bones;
         private Matrix4x4[] boneMatrices;
 
-        public SimpleGPUSkinning (SkinnedMeshRenderer skr, bool encodeBindPoses = true)
+        public SimpleGPUSkinning (SkinnedMeshRenderer skr, bool encodeBindPoses = true, int bone01DataUVChannel = -1, int bone23DataUVChannel = 1)
         {
             if ( encodeBindPoses )
-                GPUSkinningUtils.EncodeBindPosesIntoMesh(skr);
+                GPUSkinningUtils.EncodeBindPosesIntoMesh(skr, bone01DataUVChannel, bone23DataUVChannel);
 
             boneMatrices = new Matrix4x4[skr.bones.Length];
 
