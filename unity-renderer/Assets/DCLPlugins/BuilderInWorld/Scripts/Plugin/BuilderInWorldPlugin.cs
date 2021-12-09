@@ -108,9 +108,9 @@ public class BuilderInWorldPlugin : IPlugin
         publisher.Dipose();
         context.Dispose();
 
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
+        DCL.Environment.i.platform?.updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        DCL.Environment.i.platform?.updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        DCL.Environment.i.platform?.updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
 
     public void Update()
