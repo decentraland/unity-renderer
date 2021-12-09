@@ -19,7 +19,6 @@ namespace DCL.Builder
         {
             this.isNew = isNew;
             this.manifest = manifest;
-            this.scene = scene;
 
             this.sceneType = sceneType;
         }
