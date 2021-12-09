@@ -41,7 +41,10 @@ namespace DCL
             }
         }
 
-        public void SetDisableAssetBundles() { RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY; }
+        public void SetDisableAssetBundles()
+        {
+            RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
+        }
 
         [ContextMenu("Dump Renderers Lockers Info")]
         public void DumpRendererLockersInfo()

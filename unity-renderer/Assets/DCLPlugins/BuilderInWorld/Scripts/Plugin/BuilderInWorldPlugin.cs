@@ -59,7 +59,6 @@ public class BuilderInWorldPlugin : IPlugin
         builderAPIController = context.builderAPIController;
         cameraController = context.cameraController;
         publisher = context.publisher;
-
         Initialize();
     }
 
@@ -89,7 +88,6 @@ public class BuilderInWorldPlugin : IPlugin
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
-
     private void TaskBarCreated()
     {
         HUDController.i.OnTaskbarCreation -= TaskBarCreated;

@@ -20,10 +20,10 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
             var userProfile = UserProfile.GetOwnUserProfile();
             var nametag = UnityWebRequest.EscapeURL(userProfile.userName);
             var kernelConfig = KernelConfig.i.Get();
-            var realm = DataStore.i.playerRealm.Get()?.serverName;
+            var realm = DataStore.i.realm.playerRealm.Get()?.serverName;
             var unityVersion = kernelConfig.rendererVersion;
             var kernelVersion = kernelConfig.kernelVersion;
-            
+
             var os = UnityWebRequest.EscapeURL(GetOSInfo());
             var cpu = UnityWebRequest.EscapeURL(GetCPUInfo());
             var ram = UnityWebRequest.EscapeURL(GetMemoryInfo());
@@ -37,11 +37,12 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
                          $"&ram={ram}" +
                          $"&gpu={gpu}" +
                          $"&nametag={nametag}" +
-                         $"&realm={realm}" + 
+                         $"&realm={realm}" +
                          $"&labels={GetLabels()}";
 
             WebInterface.OpenURL(url);
         }
+
         private string GetLabels()
         {
 #if UNITY_WEBGL
@@ -50,6 +51,7 @@ namespace MainScripts.DCL.Controllers.HUD.TaskbarHUD
             return "explorer-desktop,new";
 #endif
         }
+
         private string GetOSInfo()
         {
 #if UNITY_WEBGL

@@ -27,7 +27,7 @@ public class AvatarEditorHUDController : IHUD
     private UserProfile userProfile;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
-    bool isPlayerRendererLoaded => DataStore.i.isPlayerRendererLoaded.Get();
+    bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
@@ -172,7 +172,7 @@ public class AvatarEditorHUDController : IHUD
         }
 
         LoadUserProfile(userProfile, true);
-        DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
+        DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
     }
 
     public void LoadUserProfile(UserProfile userProfile, bool forceLoading)
@@ -557,7 +557,7 @@ public class AvatarEditorHUDController : IHUD
             asset.renderScale = prevRenderScale;
 
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
-            DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
+            DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
 
             OnClose?.Invoke();
         }
@@ -565,7 +565,7 @@ public class AvatarEditorHUDController : IHUD
         {
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             LoadOwnedWereables(userProfile);
-            DCL.Environment.i.messaging.manager.paused = DataStore.i.isSignUpFlow.Get();
+            DCL.Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.avatarEditor;
             currentRenderProfile.avatarProfile.Apply();
 
@@ -578,7 +578,7 @@ public class AvatarEditorHUDController : IHUD
             asset.renderScale = 1.0f;
 
             CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
-            DataStore.i.isPlayerRendererLoaded.OnChange += PlayerRendererLoaded;
+            DataStore.i.common.isPlayerRendererLoaded.OnChange += PlayerRendererLoaded;
 
             OnOpen?.Invoke();
         }
@@ -591,7 +591,7 @@ public class AvatarEditorHUDController : IHUD
     {
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
-        DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
+        DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
 
         CleanUp();
     }
@@ -606,7 +606,7 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile.OnUpdate -= LoadUserProfile;
         this.catalog.OnAdded -= AddWearable;
         this.catalog.OnRemoved -= RemoveWearable;
-        DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
+        DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
     }
 
     public void SetConfiguration(HUDConfiguration configuration) { SetVisibility(configuration.active); }
@@ -615,9 +615,9 @@ public class AvatarEditorHUDController : IHUD
     {
         var avatarModel = model.ToAvatarModel();
 
-        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, DataStore.i.isSignUpFlow.Get());
+        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, DataStore.i.common.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
-        if (DataStore.i.isSignUpFlow.Get())
+        if (DataStore.i.common.isSignUpFlow.Get())
             DataStore.i.HUDs.signupVisible.Set(true);
 
         SetVisibility(false);
@@ -628,7 +628,7 @@ public class AvatarEditorHUDController : IHUD
         if (!view.isOpen)
             return;
 
-        if (!DataStore.i.isSignUpFlow.Get())
+        if (!DataStore.i.common.isSignUpFlow.Get())
             LoadUserProfile(userProfile);
         else
             WebInterface.SendCloseUserAvatar(true);

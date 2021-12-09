@@ -33,7 +33,7 @@ public class NFTPromptHUDController : IHUD
         view.OnOwnersPopupClosed += HideOwnersPopup;
 
         ownersInfoController = new OwnersInfoController(view.GetOwnerElementPrefab());
-        DataStore.i.onOpenNFTPrompt.OnChange += OpenNftInfoDialog;
+        DataStore.i.common.onOpenNFTPrompt.OnChange += OpenNftInfoDialog;
     }
 
     public void OpenNftInfoDialog(NFTPromptModel model, NFTPromptModel prevModel)
@@ -87,7 +87,7 @@ public class NFTPromptHUDController : IHUD
 
         view?.Dispose();
 
-        DataStore.i.onOpenNFTPrompt.OnChange -= OpenNftInfoDialog;
+        DataStore.i.common.onOpenNFTPrompt.OnChange -= OpenNftInfoDialog;
     }
 
     private void SetNFT(NFTInfoSingleAsset info, string comment, bool shouldRefreshOwners)

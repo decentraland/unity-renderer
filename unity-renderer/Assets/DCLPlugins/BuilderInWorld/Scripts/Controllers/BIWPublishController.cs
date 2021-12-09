@@ -23,7 +23,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
     {
         base.Initialize(context);
 
-
         entityHandler = context.editorContext.entityHandler;
         creatorController = context.editorContext.creatorController;
 

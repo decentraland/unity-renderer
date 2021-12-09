@@ -14,14 +14,6 @@ namespace DCL.Components
         [Serializable]
         public class Model : BaseModel
         {
-            //These values exist in the SDK but we are doing nothing with these values
-            public string fontWeight = "normal";
-            public bool resizeToFit = false;
-            public float zIndex = 0;
-
-            public bool isPickable = false;
-            //
-
             public bool billboard;
 
             [Header("Font Properties")]
