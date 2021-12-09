@@ -35,7 +35,7 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
     public override void Start()
     {
         base.Start();
-        
+
         closeButton.onClick.AddListener(CloseButtonClicked);
         alphaBackground.onClick.AddListener(CloseButtonClicked);
         RefreshControl();
@@ -59,5 +59,20 @@ public class ModalComponentView : BaseComponentView, IModalComponentView
     {
         OnCloseAction?.Invoke();
         Hide();
+    }
+
+    public override void Show(bool instant = false)
+    {
+        if (isVisible)
+            return;
+
+        base.Show(instant);
+    }
+    public override void Hide(bool instant = false)
+    {
+        if (!isVisible)
+            return;
+
+        base.Hide(instant);
     }
 }

@@ -154,6 +154,8 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     internal List<Scene> scenesDeployedFromProject = new List<Scene>();
     internal List<IProjectSceneCardView> sceneCardViews = new List<IProjectSceneCardView>();
 
+    private Coroutine animCoroutine;
+    
     private void Awake()
     {
         editorButton.onClick.AddListener(EditorButtonClicked);    
@@ -173,6 +175,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     {
         AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
         editorButton.onClick.RemoveAllListeners();
+        CoroutineStarter.Stop(animCoroutine);
         if(!isDestroyed)
             Destroy(gameObject);
     }
@@ -250,7 +253,9 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     private void AddRectTransformHeight(RectTransform rectTransform, float height)
     {
-        CoroutineStarter.Start(ChangeHeightAnimation(rectTransform, height));
+        if(animCoroutine != null)
+            CoroutineStarter.Stop(animCoroutine);
+        animCoroutine = CoroutineStarter.Start(ChangeHeightAnimation(rectTransform, height));
     }
     
     private void ScenesVisiblitityChange(bool isVisible)
