@@ -115,9 +115,13 @@ namespace DCL
 
         protected virtual void OnDestroy()
         {
+            Environment.OnDestroy();
+            
+            pluginSystem?.Dispose();
+
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.Dispose();
+            
             kernelCommunication?.Dispose();
         }
 
