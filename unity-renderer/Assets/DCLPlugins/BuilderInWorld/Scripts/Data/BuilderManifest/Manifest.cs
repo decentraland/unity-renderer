@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL.Builder.Manifest
 {
@@ -10,6 +7,6 @@ namespace DCL.Builder.Manifest
     {
         public int version;
         public ProjectData project;
-        public BuilderScene scene;
+        public WebBuilderScene scene;
     }
 }

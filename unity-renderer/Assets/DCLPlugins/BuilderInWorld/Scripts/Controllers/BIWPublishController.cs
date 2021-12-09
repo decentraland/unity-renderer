@@ -111,7 +111,14 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if (!CanPublish())
             return;
 
-        context.editorContext.editorHUD.PublishStart();
+        if (DataStore.i.builderInWorld.isDevBuild.Get())
+        {
+            //TODO: Implement project publish
+        }
+        else
+        {
+            context.editorContext.editorHUD.PublishStart();
+        }
     }
 
     private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)
