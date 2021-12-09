@@ -479,6 +479,7 @@ namespace DCL
             Environment.i.messaging.manager.SetSceneReady(sceneId);
 
             WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneId));
+            WebInterface.ReportCameraChanged(CommonScriptableObjects.cameraMode.Get(), sceneId);
 
             Environment.i.world.blockersController.SetupWorldBlockers();
 
