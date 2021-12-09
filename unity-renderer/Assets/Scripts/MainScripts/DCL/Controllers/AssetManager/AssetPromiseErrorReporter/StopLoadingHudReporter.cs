@@ -14,7 +14,7 @@ namespace AssetPromiseErrorReporter
         
         public void Report(Exception exception)
         {
-            dataStore.HUDs.loadingHUD.error.Set(exception);
+            dataStore.HUDs.loadingHUD.criticalLoadingError.Set(exception);
         }
     }
 }
