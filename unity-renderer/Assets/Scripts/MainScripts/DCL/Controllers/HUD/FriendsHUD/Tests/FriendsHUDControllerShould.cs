@@ -13,8 +13,6 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     FriendsHUDView view;
     FriendsController_Mock friendsController;
 
-    protected override bool justSceneSetUp => true;
-
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {

@@ -15,8 +15,6 @@ namespace AvatarEditorHUD_Tests
         private AvatarEditorHUDController_Mock controller;
         private BaseDictionary<string, WearableItem> catalog;
 
-        protected override bool justSceneSetUp => true;
-
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {

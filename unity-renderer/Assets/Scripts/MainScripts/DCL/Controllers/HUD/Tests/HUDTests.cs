@@ -9,8 +9,6 @@ namespace Tests
 {
     public class HUDControllerShould : IntegrationTestSuite_Legacy
     {
-        protected override bool justSceneSetUp => true;
-
         private IHUDController hudController = null;
         private FriendsController friendsController;
 

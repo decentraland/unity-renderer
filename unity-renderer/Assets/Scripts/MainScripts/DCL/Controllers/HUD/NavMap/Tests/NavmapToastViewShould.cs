@@ -11,7 +11,6 @@ namespace Tests
     {
         NavmapToastView navmapToastView;
         private NavmapView navmapView;
-        protected override bool justSceneSetUp => true;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()

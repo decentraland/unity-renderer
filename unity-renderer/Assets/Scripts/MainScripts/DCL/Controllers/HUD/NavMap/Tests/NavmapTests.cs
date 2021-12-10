@@ -11,7 +11,6 @@ namespace Tests
     {
         private MinimapHUDController controller;
         DCL.NavmapView navmapView;
-        protected override bool justSceneSetUp => true;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()

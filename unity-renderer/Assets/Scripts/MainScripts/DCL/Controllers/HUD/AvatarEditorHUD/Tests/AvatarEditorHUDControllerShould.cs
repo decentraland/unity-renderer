@@ -23,8 +23,6 @@ namespace AvatarEditorHUD_Tests
         private ColorList hairColorList;
         private ColorList eyeColorList;
 
-        protected override bool justSceneSetUp => true;
-
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {

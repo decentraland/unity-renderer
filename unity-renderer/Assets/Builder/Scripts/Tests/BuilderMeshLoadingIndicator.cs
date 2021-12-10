@@ -9,7 +9,6 @@ using UnityEngine.TestTools;
 
 public class BuilderMeshLoadingIndicator : IntegrationTestSuite_Legacy
 {
-    protected override bool justSceneSetUp => true;
     private ParcelScene scene;
 
     [UnityTest]

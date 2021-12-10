@@ -21,8 +21,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private ExploreHUDController exploreHUDController;
     private UserProfileController userProfileController;
 
-    protected override bool justSceneSetUp => true;
-
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
