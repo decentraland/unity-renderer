@@ -18,6 +18,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         biwModeController = new BIWModeController();
+        CommonScriptableObjects.rendererState.Set(true);
 
         BIWActionController actionController = new BIWActionController();
 
@@ -34,8 +35,6 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
         biwModeController.EnterEditMode(scene);
         actionController.EnterEditMode(scene);
-
-        CommonScriptableObjects.rendererState.Set(true);
     }
 
     [Test]
