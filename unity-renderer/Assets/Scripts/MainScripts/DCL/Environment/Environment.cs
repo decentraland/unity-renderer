@@ -93,7 +93,7 @@ namespace DCL
             public readonly PlatformContext platform;
             public readonly WorldRuntimeContext world;
             public readonly HUDContext hud;
-            
+
             public Model () { }
 
             public Model(System.Func<MessagingContext> messagingBuilder,
