@@ -93,8 +93,7 @@ namespace DCL
             public readonly PlatformContext platform;
             public readonly WorldRuntimeContext world;
             public readonly HUDContext hud;
-            public bool IsBeingDestroyed { get ; private set; }
-
+            
             public Model () { }
 
             public Model(System.Func<MessagingContext> messagingBuilder,
@@ -115,15 +114,6 @@ namespace DCL
                 platform?.Dispose();
                 hud?.Dispose();
             }
-            public void OnDestroy()
-            {
-                IsBeingDestroyed = true;
-            }
-        }
-
-        public static void OnDestroy()
-        {
-            i.OnDestroy();
         }
     }
 }

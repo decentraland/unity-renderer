@@ -98,7 +98,7 @@ public class BuilderInWorldPlugin : IPlugin
 
     public void Dispose()
     {
-        if (Environment.i.IsBeingDestroyed)
+        if (DataStore.i.common.isWorldBeingDestroyed.Get())
             return;
         
         if (HUDController.i != null)

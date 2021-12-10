@@ -115,7 +115,7 @@ namespace DCL
 
         protected virtual void OnDestroy()
         {
-            Environment.OnDestroy();
+            DataStore.i.common.isWorldBeingDestroyed.Set(true);
             
             pluginSystem?.Dispose();
 

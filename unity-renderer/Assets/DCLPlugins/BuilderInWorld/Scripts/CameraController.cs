@@ -75,7 +75,7 @@ namespace DCL.Builder
 
         public void DeactivateCamera()
         {
-            if (!Environment.i.IsBeingDestroyed)
+            if (!DataStore.i.common.isWorldBeingDestroyed.Get())
                 cameraController?.SetCameraMode(avatarCameraModeBeforeEditing);
         }
 
