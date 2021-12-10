@@ -33,8 +33,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 12.499998, y: 8.4}
-  m_SizeDelta: {x: -95, y: -16.862938}
+  m_AnchoredPosition: {x: 20, y: 8.415734}
+  m_SizeDelta: {x: -120, y: -16.831469}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &961069750720000318
 GameObject:
@@ -108,6 +108,7 @@ MonoBehaviour:
   yesSkipInputAction: {fileID: 0}
   noSkipInputAction: {fileID: 0}
   tooltipTransform: {fileID: 770479781646097019}
+  clickOnTooltipToFinish: 1
   setMaxTimeToHide: 0
   maxTimeToHide: 5
   voiceChatAction: {fileID: 11400000, guid: 01f0b80c7a1c044868504467140ae590, type: 2}
@@ -284,7 +285,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -450.83997, y: 0}
-  m_SizeDelta: {x: 390, y: 140}
+  m_SizeDelta: {x: 410, y: 140}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &7491104538370866601
 CanvasRenderer:

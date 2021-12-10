@@ -471,8 +471,7 @@ namespace DCL.Tutorial_Tests
             yield return ExecuteAvatarSpecificTutorialStep(10, () =>
             {
                 TutorialStep_TutorialCompleted step = (TutorialStep_TutorialCompleted)tutorialController.runningStep;
-                step.OnShowAnimationFinish();
-                step.OnHideAnimationFinish();
+                step.okPressed = true;
             });
         }
 
