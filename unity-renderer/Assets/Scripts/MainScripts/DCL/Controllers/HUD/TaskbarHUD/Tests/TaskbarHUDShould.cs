@@ -1,6 +1,7 @@
 using DCL.SettingsPanelHUD;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -16,6 +17,9 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
     private SettingsPanelHUDController settingsPanelHudController;
+    private HelpAndSupportHUDController helpAndSupportHUDController;
+    private ExploreHUDController exploreHUDController;
+    private UserProfileController userProfileController;
 
     protected override bool justSceneSetUp => true;
 
@@ -26,6 +30,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         CommonScriptableObjects.rendererState.Set(true);
 
         userProfileGO = new GameObject();
+        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
 
         controller = new TaskbarHUDController();
         controller.Initialize(null, chatController, null, null, null);
@@ -45,7 +50,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         settingsPanelHudController?.Dispose();
 
         controller.Dispose();
-        UnityEngine.Object.Destroy(userProfileGO);
+        Object.Destroy(userProfileGO);
+        Object.Destroy(userProfileController.gameObject);
 
         yield return base.TearDown();
     }
@@ -105,8 +111,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
-        TestHelpers_Friends.FakeAddFriend(friendsController, friendsHudController.view, "test-1");
-        TestHelpers_Chat.FakePrivateChatMessageFrom(chatController, "test-1", "test message!");
+        TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, friendsHudController.view, "test-1");
+        TestHelpers_Chat.FakePrivateChatMessageFrom(userProfileController, chatController, "test-1", "test message!");
 
         var buttonList = view.GetButtonList();
 

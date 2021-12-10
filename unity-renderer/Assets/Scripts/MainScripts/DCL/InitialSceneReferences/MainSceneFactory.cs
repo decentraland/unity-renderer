@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 namespace DCL
 {
@@ -67,6 +68,16 @@ namespace DCL
         public static GameObject CreateEventSystem() => LoadAndInstantiate("EventSystem");
 
         public static GameObject CreateInteractionHoverCanvas() => LoadAndInstantiate("InteractionHoverCanvas");
+
+        public static BuilderInWorldBridge CreateBuilderInWorldBridge(GameObject gameObject = null)
+        {
+            if (gameObject == null)
+                gameObject = new GameObject("BuilderInWorldBridge");
+
+            var instance = gameObject.AddComponent<BuilderInWorldBridge>();
+            SceneReferences.i.biwBridgeGameObject = instance.gameObject;
+            return instance;
+        }
 
         private static GameObject LoadAndInstantiate(string name)
         {

@@ -1280,5 +1280,10 @@ namespace DCL.Helpers
         {
             return Environment.i.world.sceneController.CreateTestScene() as ParcelScene;
         }
+
+        public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : MonoBehaviour
+        {
+            return new GameObject(gameObjectName).AddComponent<T>();
+        }
     }
 }

@@ -18,6 +18,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     private BIWFloorHandler biwFloorHandler;
     private BIWCreatorController biwCreatorController;
     private ParcelScene scene;
+    private AssetCatalogBridge assetCatalogBridge;
 
     protected override IEnumerator SetUp()
     {
@@ -28,6 +29,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwCreatorController = new BIWCreatorController();
         biwFloorHandler = new BIWFloorHandler();
         entityHandler = new BIWEntityHandler();
+        assetCatalogBridge = AssetCatalogBridge.Create();
 
         var referencesController = BIWTestUtils.CreateContextWithGenericMocks(
             entityHandler,
@@ -49,7 +51,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalogBridge);
         CatalogItem floorItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         biwCreatorController.EnterEditMode(scene);
@@ -89,7 +91,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
 
-        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalogBridge);
 
         CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
@@ -117,6 +119,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     {
         yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
 
+        Object.Destroy(assetCatalogBridge);
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
         entityHandler.Dispose();

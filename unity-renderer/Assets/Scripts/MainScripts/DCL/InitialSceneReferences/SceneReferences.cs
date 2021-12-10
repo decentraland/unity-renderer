@@ -14,7 +14,7 @@ namespace DCL
         public GameObject biwCameraParent { get; internal set; }
         public InputController inputController { get; internal set; }
         public GameObject cursorCanvas { get; internal set; }
-        public GameObject biwBridgeGameObject { get; internal set; }
+        public GameObject biwBridgeGameObject { get; set; }
         public PlayerAvatarController playerAvatarController { get; internal set; }
         public CameraController cameraController { get; internal set; }
         public UnityEngine.Camera mainCamera { get; internal set; }

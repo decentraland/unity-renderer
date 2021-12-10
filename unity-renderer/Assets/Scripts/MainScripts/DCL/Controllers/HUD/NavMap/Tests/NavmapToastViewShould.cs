@@ -28,7 +28,6 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
-            navmapView.Initialize();
             yield return base.TearDown();
         }
 

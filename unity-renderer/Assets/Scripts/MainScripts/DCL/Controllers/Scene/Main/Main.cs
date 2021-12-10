@@ -127,7 +127,21 @@ namespace DCL
 
         protected virtual void InitializeSceneDependencies()
         {
-            //TODO: sceneReferences.biwBridgeGameObject
+            gameObject.AddComponent<UserProfileController>();
+            gameObject.AddComponent<RenderingController>();
+            gameObject.AddComponent<CatalogController>();
+            gameObject.AddComponent<MinimapMetadataController>();
+            gameObject.AddComponent<ChatController>();
+            gameObject.AddComponent<FriendsController>();
+            gameObject.AddComponent<LoadingFeedbackController>();
+            gameObject.AddComponent<HotScenesController>();
+            gameObject.AddComponent<GIFProcessingBridge>();
+            gameObject.AddComponent<RenderProfileBridge>();
+            gameObject.AddComponent<AssetCatalogBridge>();
+            gameObject.AddComponent<ScreenSizeWatcher>();
+            gameObject.AddComponent<SceneControllerBridge>();
+
+            MainSceneFactory.CreateBuilderInWorldBridge(gameObject);
             MainSceneFactory.CreateBridges();
             MainSceneFactory.CreateMouseCatcher();
             MainSceneFactory.CreatePlayerSystems();

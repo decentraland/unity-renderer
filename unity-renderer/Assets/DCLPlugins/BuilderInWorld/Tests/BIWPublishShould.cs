@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Builder;
 using DCL.Components;
 using DCL.Controllers;
@@ -10,11 +11,13 @@ using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWPublishShould : IntegrationTestSuite_Legacy
 {
     private BIWPublishController biwPublishController;
     private BIWEntityHandler biwEntityHandler;
+    private BuilderInWorldBridge biwBridge;
     private IContext context;
     private ParcelScene scene;
 
@@ -26,6 +29,8 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 
         biwPublishController = new BIWPublishController();
         biwEntityHandler = new BIWEntityHandler();
+        biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();
+
         context = BIWTestUtils.CreateContextWithGenericMocks(
             biwPublishController,
             biwEntityHandler
@@ -99,6 +104,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        Object.Destroy(biwBridge.gameObject);
         biwPublishController.Dispose();
         biwEntityHandler.Dispose();
         yield return base.TearDown();

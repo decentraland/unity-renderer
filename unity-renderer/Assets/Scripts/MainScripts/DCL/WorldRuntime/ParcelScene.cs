@@ -166,7 +166,7 @@ namespace DCL.Controllers
             isReleased = true;
         }
 
-        public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData.ToString(); }
+        public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData; }
 
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {

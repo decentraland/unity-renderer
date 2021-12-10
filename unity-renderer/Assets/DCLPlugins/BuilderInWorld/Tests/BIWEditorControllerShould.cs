@@ -9,6 +9,7 @@ using DCL.Models;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using UnityEngine;
 using UnityGLTF;
 
 public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
@@ -16,6 +17,8 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     private BuilderInWorldEditor mainController;
     private IBuilderAPIController apiSubstitute;
     private ParcelScene scene;
+    private AssetCatalogBridge assetCatalogBridge;
+    private BuilderInWorldBridge biwBridge;
 
     protected override IEnumerator SetUp()
     {
@@ -26,8 +29,14 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
 
         mainController = new BuilderInWorldEditor();
+        assetCatalogBridge = AssetCatalogBridge.Create();
         apiSubstitute = Substitute.For<IBuilderAPIController>();
-        mainController.Initialize(BIWTestUtils.CreateContextWithGenericMocks(apiSubstitute));
+
+        biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();
+
+        mainController.Initialize(
+            BIWTestUtils.CreateContextWithGenericMocks(apiSubstitute)
+        );
     }
 
     [Test]
@@ -136,7 +145,7 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalogBridge);
         ((EditorContext) mainController.context.editorContext).floorHandlerReference = Substitute.For<IBIWFloorHandler>();
         mainController.sceneToEdit = scene;
         mainController.EnterBiwControllers();
@@ -151,8 +160,12 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
+
         DataStore.i.builderInWorld.catalogItemDict.Clear();
-        AssetCatalogBridge.i.ClearCatalog();
+
+        Object.Destroy( assetCatalogBridge.gameObject );
+        Object.Destroy( biwBridge.gameObject );
+
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController.context.Dispose();
         mainController.Dispose();

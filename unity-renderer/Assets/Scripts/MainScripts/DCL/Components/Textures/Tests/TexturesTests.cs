@@ -16,6 +16,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            CommonScriptableObjects.rendererState.Set(true);
             scene = TestUtils.CreateTestScene();
         }
 

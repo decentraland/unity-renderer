@@ -51,9 +51,8 @@ namespace Tests.BuildModeHUDControllers
         public void SelectAssetPack()
         {
             //Arrange
-            mockedGameObject = new GameObject();
-            AssetCatalogBridge.i = mockedGameObject.AddComponent<AssetCatalogBridge>();
-            BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+            var assetCatalog = AssetCatalogBridge.Create();
+            BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalog);
             var catalogItemPack = BIWCatalogManager.GetCatalogItemPackList()[0];
 
             //Act
@@ -61,6 +60,7 @@ namespace Tests.BuildModeHUDControllers
 
             //Assert
             sceneCatalogController.sceneCatalogView.Received(1).ShowBackButton(true);
+            Object.Destroy(assetCatalog.gameObject);
         }
 
         [Test]

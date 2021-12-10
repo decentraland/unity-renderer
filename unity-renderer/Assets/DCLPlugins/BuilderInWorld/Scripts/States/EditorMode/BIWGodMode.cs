@@ -103,7 +103,7 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
         gizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
-        
+
         multiSelectionInputAction.OnStarted -= MultiSelectionInputStart;
         multiSelectionInputAction.OnFinished -= MultiSelectionInputEnd;
 
@@ -137,7 +137,6 @@ public class BIWGodMode : BIWMode
             SetEditObjectAtMouse();
         else if (isSquareMultiSelectionInputActive && isMouseDragging)
             CheckOutlineEntitiesInSquareSelection(Input.mousePosition);
-
     }
 
     public override void OnGUI()
@@ -155,7 +154,7 @@ public class BIWGodMode : BIWMode
     {
         ChangeSnapTemporaryActivated();
     }
-    
+
     private void MultiSelectionInputEnd(DCLAction_Hold action)
     {
         ChangeSnapTemporaryDeactivated();
@@ -509,7 +508,10 @@ public class BIWGodMode : BIWMode
         SetLookAtObject(parcelScene);
 
         freeCameraController.LookAt(lookAtTransform);
-        freeCameraController.SetResetConfiguration(Camera.main.transform.position, lookAtTransform);
+
+        Camera camera = context.sceneReferences.mainCamera;
+        Vector3 cameraPosition = camera != null ? camera.transform.position : Vector3.zero;
+        freeCameraController.SetResetConfiguration(cameraPosition, lookAtTransform);
     }
 
     public override void OnDeleteEntity(BIWEntity entity)

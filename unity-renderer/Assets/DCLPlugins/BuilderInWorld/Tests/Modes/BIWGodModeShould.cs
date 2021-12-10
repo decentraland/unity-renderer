@@ -58,6 +58,8 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);
         godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
         godMode.freeCameraController.Configure().gameObject.Returns(mockedGameObject);
+
+        CommonScriptableObjects.rendererState.Set(true);
     }
 
     [UnityTest]
@@ -73,9 +75,14 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         entities.Add(entity);
         context.editorContext.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
         godMode.lastMousePosition = Vector3.zero;
+
         Camera camera = Camera.main;
-        camera.transform.position = new Vector3(-7.8f, 8.9f, -5.2f);
-        camera.transform.LookAt(new Vector3(8, 0, 8));
+
+        if ( camera != null )
+        {
+            camera.transform.position = new Vector3(-7.8f, 8.9f, -5.2f);
+            camera.transform.LookAt(new Vector3(8, 0, 8));
+        }
 
         //Act
         godMode.EndBoundMultiSelection(Vector3.one * 9999);
@@ -177,9 +184,14 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         entities.Add(entity);
         context.editorContext.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
         godMode.lastMousePosition = Vector3.zero;
+
         Camera camera = Camera.main;
-        camera.transform.position = new Vector3(-7.8f, 8.9f, -5.2f);
-        camera.transform.LookAt(new Vector3(8, 0, 8));
+
+        if ( camera != null )
+        {
+            camera.transform.position = new Vector3(-7.8f, 8.9f, -5.2f);
+            camera.transform.LookAt(new Vector3(8, 0, 8));
+        }
 
         //Act
         godMode.CheckOutlineEntitiesInSquareSelection(Vector3.one * 9999);

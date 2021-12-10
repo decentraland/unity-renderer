@@ -79,9 +79,7 @@ namespace DCL.Builder
 
         public void Dispose()
         {
-            Debug.Log("1");
             editorContext.Dispose();
-            Debug.Log("2");
             panelHUD.Dispose();
             projectReferencesAsset = null;
             inputsReferencesAsset = null;
@@ -157,37 +155,21 @@ namespace DCL.Builder
 
         public void Dispose()
         {
-            Debug.Log("a");
             editorHUD.Dispose();
-
-            Debug.Log("b");
             outlinerController.Dispose();
-            Debug.Log("c");
             inputHandler.Dispose();
-            Debug.Log("d");
             inputWrapper.Dispose();
-            Debug.Log("e");
             publishController.Dispose();
-            Debug.Log("f");
             creatorController.Dispose();
-            Debug.Log("g");
             modeController.Dispose();
-            Debug.Log("h");
             floorHandler.Dispose();
-            Debug.Log("j");
             entityHandler.Dispose();
-            Debug.Log("k");
             actionController.Dispose();
-            Debug.Log("l");
             saveController.Dispose();
-            Debug.Log("m");
             raycastController.Dispose();
-            Debug.Log("n");
             gizmosController.Dispose();
-            Debug.Log("o");
 
             sceneReferences.Dispose();
-            Debug.Log("p");
 
 
             godModeDynamicVariablesAssetReference = null;

@@ -436,7 +436,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     public void GetNameFromCatalog()
     {
         //Arrange
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        var assetCatalogBridge = AssetCatalogBridge.Create();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -444,6 +445,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.AreSame(name, item.name);
+
+        Object.Destroy(assetCatalogBridge.gameObject);
     }
 
     [Test]

@@ -18,6 +18,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     private BIWCreatorController biwCreatorController;
     private IContext context;
     private ParcelScene scene;
+    private AssetCatalogBridge assetCatalogBridge;
 
     protected override IEnumerator SetUp()
     {
@@ -27,6 +28,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
 
         biwCreatorController = new BIWCreatorController();
         entityHandler = new BIWEntityHandler();
+        assetCatalogBridge = AssetCatalogBridge.Create();
 
         context = BIWTestUtils.CreateContextWithGenericMocks(
             entityHandler,
@@ -45,7 +47,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -64,7 +66,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -87,7 +89,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -103,7 +105,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -120,7 +122,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         biwCreatorController.CreateCatalogItem(item);
         BIWEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
@@ -137,7 +139,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         biwCreatorController.CreateCatalogItem(item);
         BIWEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
@@ -155,7 +157,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -187,6 +189,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
         yield return null;
 
+        Object.Destroy( assetCatalogBridge.gameObject );
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
 

@@ -34,6 +34,8 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
         biwModeController.EnterEditMode(scene);
         actionController.EnterEditMode(scene);
+
+        CommonScriptableObjects.rendererState.Set(true);
     }
 
     [Test]

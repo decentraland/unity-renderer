@@ -27,6 +27,9 @@ namespace Tests
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
+
+            CommonScriptableObjects.rendererState.Set(true);
+
             Environment.i.world.sceneBoundsChecker.Stop();
 
             // Set character position and camera rotation

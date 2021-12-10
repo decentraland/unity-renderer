@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Builder;
+using NSubstitute;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -16,6 +17,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     private const string ENTITY_ID = "1";
     private IContext context;
     private ParcelScene scene;
+    private AssetCatalogBridge assetCatalogBridge;
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
@@ -30,6 +32,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         var entityHandler = new BIWEntityHandler();
         var biwFloorHandler = new BIWFloorHandler();
         var biwCreatorController = new BIWCreatorController();
+        assetCatalogBridge = AssetCatalogBridge.Create();
 
         context = BIWTestUtils.CreateContextWithGenericMocks(
             biwActionController,
@@ -47,8 +50,15 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         entityHandler.EnterEditMode(scene);
         biwFloorHandler.EnterEditMode(scene);
         biwCreatorController.EnterEditMode(scene);
+    }
 
-        Debug.Log("SETUP");
+    protected override IEnumerator TearDown()
+    {
+        Object.Destroy( assetCatalogBridge.gameObject );
+        BIWCatalogManager.ClearCatalog();
+        BIWNFTController.i.ClearNFTs();
+        context.Dispose();
+        yield return base.TearDown();
     }
 
     [Test]
@@ -149,7 +159,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     {
         BIWCatalogManager.Init();
 
-        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalogBridge);
 
         CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
@@ -195,13 +205,5 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         }
 
         context.editorContext.floorHandler.Dispose();
-    }
-
-    protected override IEnumerator TearDown()
-    {
-        BIWCatalogManager.ClearCatalog();
-        BIWNFTController.i.ClearNFTs();
-        context.Dispose();
-        yield return base.TearDown();
     }
 }

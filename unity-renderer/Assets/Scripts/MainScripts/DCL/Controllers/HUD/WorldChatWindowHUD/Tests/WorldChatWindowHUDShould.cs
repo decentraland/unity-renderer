@@ -1,6 +1,7 @@
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Helpers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -23,7 +24,7 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
-        userProfileController = new GameObject("UserProfileController").AddComponent<UserProfileController>();
+        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
         userProfileController.ClearProfilesCatalog();
 
         var ownProfile = UserProfile.GetOwnUserProfile();

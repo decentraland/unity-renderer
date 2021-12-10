@@ -19,6 +19,7 @@ namespace Tests
             yield return base.SetUp();
 
             controller = new MinimapHUDController();
+            navmapView = Object.FindObjectOfType<NavmapView>();
         }
 
         protected override IEnumerator TearDown()
