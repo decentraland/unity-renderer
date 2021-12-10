@@ -21,7 +21,6 @@ namespace DCL.Interface
     public static class WebInterface
     {
         public static bool VERBOSE = false;
-        public static System.Action<string, string> OnMessageFromEngine;
 
         [System.Serializable]
         private class ReportPositionPayload
@@ -659,7 +658,23 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
     [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
+        
+    public static System.Action<string, string> OnMessageFromEngine;
 #else
+        public static Action<string, string> OnMessageFromEngine
+        {
+            set
+            {
+                OnMessage = value;
+                if (OnMessage != null)
+                {
+                    ProcessQueuedMessages();
+                }
+            } 
+            get => OnMessage;
+        }
+        private static Action<string, string> OnMessage;
+        
         private static bool hasQueuedMessages = false;
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
