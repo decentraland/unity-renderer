@@ -3,13 +3,12 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using System;
 using System.Collections.Generic;
 using DCL.Builder;
 using DCL.Camera;
-using UnityEngine;
 using CameraController = DCL.Camera.CameraController;
 using Environment = DCL.Environment;
+using UnityEngine;
 
 public class BIWGodMode : BIWMode
 {
@@ -90,7 +89,7 @@ public class BIWGodMode : BIWMode
         multiSelectionInputAction.OnStarted += MultiSelectionInputStart;
         multiSelectionInputAction.OnFinished += MultiSelectionInputEnd;
 
-        gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
+        gizmoManager.OnChangeTransformValue += EntitiesTransformByGizmos;
         gizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
         gizmoManager.OnGizmoTransformObjectStart += OnGizmosTransformStart;
     }
@@ -112,10 +111,10 @@ public class BIWGodMode : BIWMode
         BIWInputWrapper.OnMouseUpOnUI -= OnInputMouseUpOnUi;
         BIWInputWrapper.OnMouseDrag -= OnInputMouseDrag;
 
-        gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
+        gizmoManager.OnChangeTransformValue -= EntitiesTransformByGizmos;
 
         if (lookAtTransform.gameObject != null)
-            GameObject.Destroy(lookAtTransform.gameObject);
+            Object.Destroy(lookAtTransform.gameObject);
 
         if ( context.editorContext.editorHUD == null)
             return;
@@ -196,7 +195,7 @@ public class BIWGodMode : BIWMode
         SetSnapActive(!isSnapActiveValue);
     }
 
-    internal void EntitiesTransfromByGizmos(Vector3 transformValue)
+    internal void EntitiesTransformByGizmos(Vector3 transformValue)
     {
         if (gizmoManager.GetSelectedGizmo() != BIWSettings.ROTATE_GIZMO_NAME)
             return;
@@ -360,7 +359,7 @@ public class BIWGodMode : BIWMode
         if (buttonID == 1)
         {
             mouseSecondaryBtnPressed = true;
-            freeCameraController.StartDectectingMovement();
+            freeCameraController.StartDetectingMovement();
         }
 
         if (buttonID != 0)
