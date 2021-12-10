@@ -11,6 +11,7 @@ namespace DCL.Skybox
         public float updateAfter = 60;
         float timer;
         RenderTexture renderTex;
+        public Transform followTransform;
 
         private void Start()
         {
@@ -29,12 +30,21 @@ namespace DCL.Skybox
                 timer = 0;
                 BakeNewReflection();
             }
+
+        }
+
+        private void LateUpdate()
+        {
+            if (followTransform != null)
+            {
+                transform.position = followTransform.position;
+            }
         }
 
         void BakeNewReflection()
         {
-            realtimeProbe.RenderProbe(renderTex);
-            customProbe.customBakedTexture = renderTex;
+            realtimeProbe.RenderProbe();
+            //customProbe.customBakedTexture = renderTex;
             Debug.Log("Procedural Skybox :: Render Probe");
         }
     }

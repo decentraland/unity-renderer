@@ -142,7 +142,8 @@ namespace DCL.Skybox
             if (Camera.main != null)
             {
                 GameObject mainCam = Camera.main.gameObject;
-                skyboxProbe.transform.parent = mainCam.transform;
+                //skyboxProbe.transform.parent = mainCam.transform;
+                runtimeReflectionObj.followTransform = mainCam.transform;
                 Debug.Log("Procedural Skybox :: Parenting done");
                 probeParented = true;
             }
@@ -397,6 +398,8 @@ namespace DCL.Skybox
 
         private void Configuration_OnTimelineEvent(string tag, bool enable, bool trigger) { OnTimelineEvent?.Invoke(tag, enable, trigger); }
 
+        int syncCounter = 0;
+
         // Update is called once per frame
         public void Update()
         {
@@ -421,6 +424,15 @@ namespace DCL.Skybox
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
 
+            syncCounter++;
+
+
+            if (syncCounter >= 10)
+            {
+                GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+                syncCounter = 0;
+            }
+
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
 
             // Cycle resets
@@ -429,6 +441,7 @@ namespace DCL.Skybox
                 timeOfTheDay = 0.01f;
                 configuration.CycleResets();
             }
+
         }
 
         public void Dispose()
