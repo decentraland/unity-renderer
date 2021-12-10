@@ -147,7 +147,6 @@ namespace DCL.Skybox
             // Render Layers
             RenderTextureLayers(selectedConfiguration.layers);
 
-            //GUILayout.Space(300);
             EditorGUILayout.EndScrollView();
             GUILayout.Space(10);
             GUILayout.EndArea();

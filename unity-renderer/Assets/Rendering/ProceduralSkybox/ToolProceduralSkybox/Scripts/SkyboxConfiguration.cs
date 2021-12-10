@@ -87,7 +87,6 @@ namespace DCL.Skybox
             float percentage = normalizedDayTime * 100;
 
             // General Values
-            selectedMat.SetFloat("_dayTime", dayTime);
             selectedMat.SetColor("_lightTint", directionalLightLayer.tintColor.Evaluate(normalizedDayTime));
             selectedMat.SetVector("_lightDirection", directionalLightGO.transform.rotation.eulerAngles);
 

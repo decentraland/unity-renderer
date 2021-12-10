@@ -13,8 +13,6 @@ namespace DCL.ServerTime
 
         public float serverHitFrequency;
         public string serverURL = "https://peer.decentraland.org/lambdas/health";
-        //https://peer.decentraland.org/lambdas/health
-        //
 
         private bool initialized = false;
         private DateTime lastTimeFromServer = DateTime.Now.ToUniversalTime();
@@ -34,8 +32,6 @@ namespace DCL.ServerTime
 
         private void WebRequestCompleted(AsyncOperation obj)
         {
-            Debug.Log("Procedural Skybox :: Timer request completed: " + webRequest.result);
-
             switch (webRequest.result)
             {
                 case UnityWebRequest.Result.InProgress:
@@ -78,10 +74,5 @@ namespace DCL.ServerTime
             TimeSpan systemTimeOffset = DateTime.Now - lastTimeFromSystem;
             return lastTimeFromServer.ToUniversalTime().Add(systemTimeOffset);
         }
-    }
-
-    public class TimerSchema
-    {
-        public string datetime;
     }
 }

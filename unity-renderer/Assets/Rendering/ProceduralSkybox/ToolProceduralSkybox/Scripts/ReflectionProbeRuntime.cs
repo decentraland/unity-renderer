@@ -7,16 +7,12 @@ namespace DCL.Skybox
     public class ReflectionProbeRuntime : MonoBehaviour
     {
         public ReflectionProbe realtimeProbe;
-        public ReflectionProbe customProbe;
         public float updateAfter = 60;
         float timer;
-        RenderTexture renderTex;
         public Transform followTransform;
 
         private void Start()
         {
-            renderTex = new RenderTexture(realtimeProbe.resolution, realtimeProbe.resolution, 0);
-            renderTex.dimension = UnityEngine.Rendering.TextureDimension.Cube;
             timer = 0;
             BakeNewReflection();
         }
@@ -41,11 +37,6 @@ namespace DCL.Skybox
             }
         }
 
-        void BakeNewReflection()
-        {
-            realtimeProbe.RenderProbe();
-            //customProbe.customBakedTexture = renderTex;
-            Debug.Log("Procedural Skybox :: Render Probe");
-        }
+        void BakeNewReflection() { realtimeProbe.RenderProbe(); }
     }
 }
