@@ -11,19 +11,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 public class BIWCommonShould : IntegrationTestSuite_Legacy
 {
-    private GameObject mockedGameObject;
-
     private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
+        CommonScriptableObjects.rendererState.Set(true);
     }
 
     [Test]
@@ -55,7 +55,7 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
         Vector3 fromPosition = new Vector3(0, 10, 0);
         Vector3 toPosition = Vector3.zero;
         Vector3 direction = toPosition - fromPosition;
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+        UnityEngine.Ray ray = SceneReferences.i.mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
         //Act
         bool groundLayerFound = Physics.Raycast(fromPosition, direction, out hit, BIWGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER);
@@ -110,8 +110,6 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
     [Test]
     public void GetCorrectSceneSize()
     {
-        mockedGameObject = new GameObject("SceneSize");
-
         //Arrange
         var firstScene = CreateParcelSceneForSizeTest(new []
         {
@@ -166,11 +164,18 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(fourResult, new Vector2Int(2, 2));
         Assert.AreEqual(fiveResult, new Vector2Int(3, 1));
         Assert.AreEqual(sixResult, new Vector2Int(1, 3));
+
+        UnityEngine.Object.Destroy(firstScene.gameObject);
+        UnityEngine.Object.Destroy(secondScene.gameObject);
+        UnityEngine.Object.Destroy(thirdScene.gameObject);
+        UnityEngine.Object.Destroy(fourScene.gameObject);
+        UnityEngine.Object.Destroy(fiveScene.gameObject);
+        UnityEngine.Object.Destroy(sixScene.gameObject);
     }
 
     private ParcelScene CreateParcelSceneForSizeTest(Vector2Int[] parcels)
     {
-        ParcelScene scene = mockedGameObject.AddComponent<ParcelScene>();
+        ParcelScene scene = TestUtils.CreateComponentWithGameObject<ParcelScene>("SceneTest");
         var data = new LoadParcelScenesMessage.UnityParcelScene();
         data.parcels = parcels;
         data.id = "scene-for-size-test";
@@ -180,10 +185,6 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        UnityEngine.Object.Destroy(mockedGameObject);
-
-        AssetCatalogBridge.i.ClearCatalog();
-        BIWCatalogManager.ClearCatalog();
         yield return base.TearDown();
     }
 }
