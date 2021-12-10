@@ -211,8 +211,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Here you will find all your collectibles and you can equip them to change
-    your look!
+  m_text: 'In the backpack you will find all your collectibles and you can equip
+    them to change your look!
 
 
     <i>Remember, press ESC to return to the world.</i>'
@@ -243,7 +243,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.05
+  m_fontSize: 15.8
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1

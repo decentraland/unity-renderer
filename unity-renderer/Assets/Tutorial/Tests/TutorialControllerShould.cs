@@ -418,6 +418,7 @@ namespace DCL.Tutorial_Tests
             {
                 TutorialStep_Tooltip_BackpackButton step = (TutorialStep_Tooltip_BackpackButton)tutorialController.runningStep;
                 step.ProfileHud_OnOpen();
+                step.ProfileHud_OnClose();
             });
         }
 
