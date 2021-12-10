@@ -1278,10 +1278,10 @@ namespace DCL.Helpers
 
         public static ParcelScene CreateTestScene()
         {
-            return Environment.i.world.sceneController.CreateTestScene() as ParcelScene;
+            return WorldStateUtils.CreateTestScene() as ParcelScene;
         }
 
-        public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : MonoBehaviour
+        public static T CreateComponentWithGameObject<T>(string gameObjectName) where T : Component
         {
             return new GameObject(gameObjectName).AddComponent<T>();
         }

@@ -104,13 +104,7 @@ namespace DCL
         protected virtual void Update()
         {
             Environment.i.platform.Update();
-            Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-        }
-
-        protected virtual void LateUpdate()
-        {
-            Environment.i.world.sceneController.LateUpdate();
         }
 
         protected virtual void OnDestroy()

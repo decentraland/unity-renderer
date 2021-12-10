@@ -37,32 +37,32 @@ public class IntegrationTestSuite_Legacy
     {
         DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
 
-        testSceneIntegrityChecker = new TestSceneIntegrityChecker();
-
-        //NOTE(Brian): integrity checker is disabled in batch mode to make it run faster in CI
-        if (Application.isBatchMode || !enableSceneIntegrityChecker)
-        {
-            testSceneIntegrityChecker.enabled = false;
-        }
-
         legacySystems = SetUp_LegacySystems();
 
         RenderProfileManifest.i.Initialize();
 
         Environment.SetupWithBuilders
         (
-            MessagingContextFactory.CreateDefault,
-            PlatformContextFactory.CreateDefault,
-            WorldRuntimeContextFactory.CreateDefault,
+            CreateMessagingContext,
+            CreatePlatformContext,
+            CreateRuntimeContext,
             HUDContextFactory.CreateDefault
         );
 
         SetUp_SceneController();
 
-        yield return testSceneIntegrityChecker.SaveSceneSnapshot();
-        yield return null;
         //TODO(Brian): Remove when the init layer is ready
         Environment.i.platform.cullingController.Stop();
+        yield break;
+    }
+
+    protected virtual WorldRuntimeContext CreateRuntimeContext() { return WorldRuntimeContextFactory.CreateDefault(); }
+
+    protected virtual PlatformContext CreatePlatformContext() { return PlatformContextFactory.CreateDefault(); }
+
+    protected virtual MessagingContext CreateMessagingContext()
+    {
+        return MessagingContextFactory.CreateDefault();
     }
 
     protected virtual List<GameObject> SetUp_LegacySystems()
@@ -110,7 +110,7 @@ public class IntegrationTestSuite_Legacy
 
         CatalogController.Clear();
 
-        yield return testSceneIntegrityChecker?.TestSceneSnapshot();
+        //yield return testSceneIntegrityChecker?.TestSceneSnapshot();
     }
 
     protected void TearDown_Memory()
@@ -122,8 +122,8 @@ public class IntegrationTestSuite_Legacy
         if (PoolManager.i != null)
             PoolManager.i.Dispose();
 
-        Caching.ClearCache();
-        Resources.UnloadUnusedAssets();
+        // Caching.ClearCache();
+        // Resources.UnloadUnusedAssets();
     }
 
     public void SetUp_SceneController()
@@ -134,6 +134,8 @@ public class IntegrationTestSuite_Legacy
         sceneController.deferredMessagesDecoding = false;
         sceneController.prewarmSceneMessagesPool = false;
         sceneController.prewarmEntitiesPool = false;
+
+        DataStore.i.camera.enableCameraGameFeelHelpers.Set(false);
     }
 
     public static T Reflection_GetField<T>(object instance, string fieldName) { return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance); }
