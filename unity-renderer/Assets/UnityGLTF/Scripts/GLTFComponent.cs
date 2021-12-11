@@ -47,6 +47,7 @@ namespace UnityGLTF
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
+        public GLTFThrottlingCounter throttlingCounter;
 
         public bool InitialVisibility
         {
@@ -133,7 +134,19 @@ namespace UnityGLTF
 
             this.fileToHashConverter = fileToHashConverter;
 
-            loadingRoutine = DCL.CoroutineUtils.StartThrowingCoroutine(this, LoadAssetCoroutine(settings), OnFail_Internal);
+            if ( throttlingCounter != null )
+            {
+                loadingRoutine = this.StartThrottledCoroutine(
+                    enumerator: LoadAssetCoroutine(settings),
+                    onException: OnFail_Internal,
+                    timeBudgetCounter: throttlingCounter.EvaluateTimeBudget);
+            }
+            else
+            {
+                loadingRoutine = this.StartThrowingCoroutine(
+                    enumerator: LoadAssetCoroutine(settings),
+                    onException: OnFail_Internal);
+            }
         }
 
         void ApplySettings(Settings settings)

@@ -7,14 +7,18 @@ namespace DCL.Controllers
 {
     public interface IParcelScene
     {
+        event System.Action<float> OnLoadingStateUpdated;
+        event System.Action<IDCLEntity> OnEntityAdded;
+        event System.Action<IDCLEntity> OnEntityRemoved;
+
         IDCLEntity CreateEntity(string id);
         Transform GetSceneTransform();
         Dictionary<string, IDCLEntity> entities { get; }
         Dictionary<string, ISharedComponent> disposableComponents { get; }
         T GetSharedComponent<T>() where T : class;
         ISharedComponent GetSharedComponent(string id);
-        event System.Action<IDCLEntity> OnEntityAdded;
-        event System.Action<IDCLEntity> OnEntityRemoved;
+        ISharedComponent SharedComponentCreate(string id, int classId);
+        void SharedComponentAttach(string entityId, string id);
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }

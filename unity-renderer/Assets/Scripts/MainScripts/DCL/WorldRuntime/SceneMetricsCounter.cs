@@ -282,6 +282,9 @@ namespace DCL
 
             for (int i = 0; i < originalMaterialsCount; i++)
             {
+                if (originalMaterials[i] == null)
+                    continue;
+
                 AddMaterial(entityMetrics, originalMaterials[i]);
                 logger.Log($"SceneMetrics: material {originalMaterials[i].name} of entity {entity.entityId} -- (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName})");
             }
@@ -337,7 +340,7 @@ namespace DCL
 
             logger.Log("Disposing...");
         }
-        
+
         public SceneMetricsModel GetLimits()
         {
             if (cachedModel == null)

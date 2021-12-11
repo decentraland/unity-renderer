@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DCL.SettingsCommon
 {
     [Serializable]
-    public class QualitySettings : ICloneable
+    public struct QualitySettings
     {
         public enum BaseResolution
         {
@@ -24,19 +24,21 @@ namespace DCL.SettingsCommon
 
         public string displayName;
 
-        [Tooltip("Base resolution level")]
-        public BaseResolution baseResolution;
+        [Tooltip("Base resolution level")] public BaseResolution baseResolution;
 
         [Tooltip("Controls the global anti aliasing setting")]
         public UnityEngine.Rendering.Universal.MsaaQuality antiAliasing;
 
-        [Tooltip("Scales the camera render target allowing the game to render at a resolution different than native resolution. UI is always rendered at native resolution")] [Range(0.5f, 1)]
+        [Tooltip(
+            "Scales the camera render target allowing the game to render at a resolution different than native resolution. UI is always rendered at native resolution")]
+        [Range(0.5f, 1)]
         public float renderScale;
 
         [Tooltip("If enabled the main light can be a shadow casting light")]
         public bool shadows;
 
-        [Tooltip("If enabled pipeline will perform shadow filterin. Otherwise all lights that cast shadows will fallback to perform a single shadow sample")]
+        [Tooltip(
+            "If enabled pipeline will perform shadow filterin. Otherwise all lights that cast shadows will fallback to perform a single shadow sample")]
         public bool softShadows;
 
         [Tooltip("Resolution of the main light shadowmap texture")]
@@ -45,8 +47,7 @@ namespace DCL.SettingsCommon
         [Tooltip("Camera Far")] [Range(40, 500)]
         public float cameraDrawDistance;
 
-        [Tooltip("Enable bloom post process")]
-        public bool bloom;
+        [Tooltip("Enable bloom post process")] public bool bloom;
 
         [Tooltip("Enable 30 FPS capping for more stable framerate")]
         public bool fpsCap;
@@ -60,15 +61,14 @@ namespace DCL.SettingsCommon
         [Tooltip("Enable culling for detail objects in the viewport.")]
         public bool enableDetailObjectCulling;
 
-        [Tooltip("If detail object culling is ON, this slider determines the relative size of culled objects from tiny to big. Bigger values gives better performance, but more objects will be hidden.")] [Range(0, 100)]
+        [Tooltip(
+            "If detail object culling is ON, this slider determines the relative size of culled objects from tiny to big. Bigger values gives better performance, but more objects will be hidden.")]
+        [Range(0, 100)]
         public float detailObjectCullingLimit;
 
-        [Tooltip("SSAO quality level")]
-        public SSAOQualityLevel ssaoQuality;
+        [Tooltip("SSAO quality level")] public SSAOQualityLevel ssaoQuality;
 
         [Tooltip("Amount of HQ Avatars visible at any time")]
         public int maxHQAvatars;
-
-        public object Clone() => MemberwiseClone();
     }
 }

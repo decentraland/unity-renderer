@@ -19,7 +19,7 @@ namespace DCL
         public PoolableComponentFactory componentFactory;
 
         private PerformanceMetricsController performanceMetricsController;
-        private IKernelCommunication kernelCommunication;
+        protected IKernelCommunication kernelCommunication;
 
         private PluginSystem pluginSystem;
 
@@ -43,7 +43,7 @@ namespace DCL
                 SetupEnvironment();
             }
 
-            pluginSystem = new PluginSystem();
+            SetupPlugins();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -65,6 +65,11 @@ namespace DCL
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
+        protected virtual void SetupPlugins()
+        {
+            pluginSystem = PluginSystemFactory.Create();
+        }
+
         protected virtual void SetupEnvironment()
         {
             Environment.SetupWithBuilders(
@@ -82,7 +87,7 @@ namespace DCL
 
         protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
 
-        private void Start()
+        protected virtual void Start()
         {
             // this event should be the last one to be executed after initialization
             // it is used by the kernel to signal "EngineReady" or something like that
@@ -101,24 +106,21 @@ namespace DCL
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-            pluginSystem?.Update();
         }
 
         protected virtual void LateUpdate()
         {
             Environment.i.world.sceneController.LateUpdate();
-            pluginSystem?.LateUpdate();
         }
 
         protected virtual void OnDestroy()
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.OnDestroy();
+            pluginSystem?.Dispose();
             kernelCommunication?.Dispose();
         }
 
-        private void OnGUI() { pluginSystem?.OnGUI(); }
         protected virtual void InitializeSceneDependencies()
         {
             var bridges = Init("Bridges");

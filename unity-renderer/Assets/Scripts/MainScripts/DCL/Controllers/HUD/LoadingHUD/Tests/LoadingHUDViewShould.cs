@@ -16,7 +16,6 @@ namespace Tests.LoadingHUD
         {
             Assert.AreEqual("", hudView.text.text);
             Assert.AreEqual(0, hudView.loadingBar.transform.localScale.x);
-            Assert.IsFalse(hudView.walletPrompt.activeSelf);
         }
 
         [Test]
@@ -40,13 +39,6 @@ namespace Tests.LoadingHUD
         {
             hudView.SetPercentage(0.7f);
             Assert.AreEqual(0.7f, hudView.loadingBar.transform.localScale.x);
-        }
-
-        [Test]
-        public void SetWalletPromptProperly()
-        {
-            hudView.SetWalletPrompt(true);
-            Assert.IsTrue(hudView.walletPrompt.activeSelf);
         }
 
         [Test]

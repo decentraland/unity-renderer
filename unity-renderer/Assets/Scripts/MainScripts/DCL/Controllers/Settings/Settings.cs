@@ -14,9 +14,9 @@ namespace DCL.SettingsCommon
         public event Action OnResetAllSettings;
         public QualitySettingsData qualitySettingsPresets => qualitySettingsPreset;
 
-        public SettingsModule<QualitySettings> qualitySettings;
-        public SettingsModule<GeneralSettings> generalSettings;
-        public SettingsModule<AudioSettings> audioSettings;
+        public ISettingsRepository<QualitySettings> qualitySettings;
+        public ISettingsRepository<GeneralSettings> generalSettings;
+        public ISettingsRepository<AudioSettings> audioSettings;
 
         private static QualitySettingsData qualitySettingsPreset = null;
 
@@ -42,10 +42,27 @@ namespace DCL.SettingsCommon
             if (autosettingsEnabled == null)
                 autosettingsEnabled = Resources.Load<BooleanVariable>("ScriptableObjects/AutoQualityEnabled");
 
-
-            qualitySettings = new SettingsModule<QualitySettings>(QUALITY_SETTINGS_KEY, qualitySettingsPreset.defaultPreset);
-            generalSettings = new SettingsModule<GeneralSettings>(GENERAL_SETTINGS_KEY, GetDefaultGeneralSettings());
-            audioSettings = new SettingsModule<AudioSettings>(AUDIO_SETTINGS_KEY, GetDefaultAudioSettings());
+            qualitySettings = new ProxySettingsRepository<QualitySettings>(
+                new PlayerPrefsQualitySettingsRepository(
+                    new PlayerPrefsSettingsByKey(QUALITY_SETTINGS_KEY),
+                    qualitySettingsPreset.defaultPreset),
+                new SettingsModule<QualitySettings>(
+                    QUALITY_SETTINGS_KEY,
+                    qualitySettingsPreset.defaultPreset));
+            generalSettings = new ProxySettingsRepository<GeneralSettings>(
+                new PlayerPrefsGeneralSettingsRepository(
+                    new PlayerPrefsSettingsByKey(GENERAL_SETTINGS_KEY),
+                    GetDefaultGeneralSettings()),
+                new SettingsModule<GeneralSettings>(
+                    GENERAL_SETTINGS_KEY,
+                    GetDefaultGeneralSettings()));
+            audioSettings = new ProxySettingsRepository<AudioSettings>(
+                new PlayerPrefsAudioSettingsRepository(
+                    new PlayerPrefsSettingsByKey(AUDIO_SETTINGS_KEY),
+                    GetDefaultAudioSettings()),
+                new SettingsModule<AudioSettings>(
+                    AUDIO_SETTINGS_KEY,
+                    GetDefaultAudioSettings()));
 
             SubscribeToVirtualAudioMixerEvents();
             audioMixer = Resources.Load<AudioMixer>("AudioMixer");
@@ -76,7 +93,7 @@ namespace DCL.SettingsCommon
                 mouseSensitivity = 0.6f,
                 scenesLoadRadius = 4,
                 avatarsLODDistance = 16,
-                maxNonLODAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
+                maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
                 voiceChatVolume = 1,
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
                 autoqualityOn = false,

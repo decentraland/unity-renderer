@@ -20,18 +20,18 @@ public class Catalyst : ICatalyst
 
     public Catalyst()
     {
-        if (DataStore.i.playerRealm.Get() != null)
+        if (DataStore.i.realm.playerRealm.Get() != null)
         {
-            realmDomain = DataStore.i.playerRealm.Get().domain;
-            realmContentServerUrl = DataStore.i.playerRealm.Get().contentServerUrl;
+            realmDomain = DataStore.i.realm.playerRealm.Get().domain;
+            realmContentServerUrl = DataStore.i.realm.playerRealm.Get().contentServerUrl;
         }
 
-        DataStore.i.playerRealm.OnChange += PlayerRealmOnOnChange;
+        DataStore.i.realm.playerRealm.OnChange += PlayerRealmOnOnChange;
     }
 
     public void Dispose()
     {
-        DataStore.i.playerRealm.OnChange -= PlayerRealmOnOnChange;
+        DataStore.i.realm.playerRealm.OnChange -= PlayerRealmOnOnChange;
         deployedScenesCache.Dispose();
     }
 

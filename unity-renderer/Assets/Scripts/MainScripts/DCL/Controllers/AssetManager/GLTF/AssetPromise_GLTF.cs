@@ -22,24 +22,16 @@ namespace DCL
         object id = null;
 
         public AssetPromise_GLTF(string url)
-            : this(new ContentProvider_Dummy(), url, null, Environment.i.platform.webRequest)
-        {
-        }
+            : this(new ContentProvider_Dummy(), url, null, Environment.i.platform.webRequest) { }
 
         public AssetPromise_GLTF(string url, IWebRequestController webRequestController)
-            : this(new ContentProvider_Dummy(), url, null, webRequestController)
-        {
-        }
+            : this(new ContentProvider_Dummy(), url, null, webRequestController) { }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash = null)
-            : this(provider, url, hash, Environment.i.platform.webRequest)
-        {
-        }
+            : this(provider, url, hash, Environment.i.platform.webRequest) { }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, IWebRequestController webRequestController)
-            : this(provider, url, null, webRequestController)
-        {
-        }
+            : this(provider, url, null, webRequestController) { }
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash, IWebRequestController webRequestController)
         {
@@ -64,6 +56,7 @@ namespace DCL
         {
             if (asset?.container != null)
             {
+                asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
                 settings.ApplyAfterLoad(asset.container.transform);
             }
         }
@@ -73,6 +66,7 @@ namespace DCL
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
+            gltfComponent.throttlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;
             gltfComponent.Initialize(webRequestController);
 
             GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
@@ -105,7 +99,6 @@ namespace DCL
             asset.name = fileName;
         }
 
-
         private void RendererCreated(Renderer r)
         {
             Assert.IsTrue(r != null, "Renderer is null?");
@@ -129,10 +122,7 @@ namespace DCL
             asset.meshToTriangleCount[mesh] = mesh.triangles.Length;
         }
 
-        bool FileToHash(string fileName, out string hash)
-        {
-            return provider.TryGetContentHash(assetDirectoryPath + fileName, out hash);
-        }
+        bool FileToHash(string fileName, out string hash) { return provider.TryGetContentHash(assetDirectoryPath + fileName, out hash); }
 
         protected override void OnReuse(Action OnSuccess)
         {

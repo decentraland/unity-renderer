@@ -17,7 +17,6 @@ namespace DCL.Components
         {
             public float valueX = 0;
             public float valueY = 0;
-            public Color borderColor = Color.white;
             public Color backgroundColor = Color.clear;
             public bool isHorizontal = false;
             public bool isVertical = true;
