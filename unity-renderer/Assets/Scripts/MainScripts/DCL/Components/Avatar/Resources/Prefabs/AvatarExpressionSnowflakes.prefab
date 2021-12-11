@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5673025932302310262}
   - component: {fileID: 3964549090173202151}
   m_Layer: 0
-  m_Name: AvatarExpressionSnowflake
+  m_Name: AvatarExpressionSnowflakes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8946916107192316977}
-  m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!199 &2228690976404301376
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -182,8 +182,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2.5
-      minScalar: 1.5
+      scalar: 3
+      minScalar: 2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -732,8 +732,8 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 0, z: 2.5}
-    m_Rotation: {x: 0, y: 180, z: 0}
+    m_Position: {x: 0, y: 4, z: 0}
+    m_Rotation: {x: 90, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
@@ -932,7 +932,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2.5
+      scalar: 3.5
       minScalar: 10
       maxCurve:
         serializedVersion: 2
