@@ -74,9 +74,6 @@ namespace DCL
             {
                 EnsureEntityPool();
             }
-
-            // Warmup some shader variants
-            Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
         }
 
         public void Dispose()
