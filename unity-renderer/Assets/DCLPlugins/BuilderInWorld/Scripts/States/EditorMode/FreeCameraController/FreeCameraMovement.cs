@@ -199,7 +199,7 @@ namespace DCL.Camera
                 zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
         }
 
-        public void StartDectectingMovement()
+        public void StartDetectingMovement()
         {
             isDetectingMovement = true;
             hasBeenMovement = false;
@@ -564,9 +564,9 @@ namespace DCL.Camera
 
         public void SetResetConfiguration(Vector3 position, Transform lookAt)
         {
-            SetResetConfiguration(position,lookAt.position);
+            SetResetConfiguration(position, lookAt.position);
         }
-        
+
         public void SetResetConfiguration(Vector3 position, Vector3 pointToLook)
         {
             originalCameraPosition = position;

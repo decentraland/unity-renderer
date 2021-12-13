@@ -134,8 +134,6 @@ public class IntegrationTestSuite_Legacy
         sceneController.deferredMessagesDecoding = false;
         sceneController.prewarmSceneMessagesPool = false;
         sceneController.prewarmEntitiesPool = false;
-
-        DataStore.i.camera.enableCameraGameFeelHelpers.Set(false);
     }
 
     public static T Reflection_GetField<T>(object instance, string fieldName) { return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance); }

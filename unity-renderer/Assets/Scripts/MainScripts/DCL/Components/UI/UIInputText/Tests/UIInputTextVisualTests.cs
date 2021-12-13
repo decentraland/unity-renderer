@@ -12,15 +12,13 @@ public class UIInputTextVisualTests : UIVisualTestsBase
     [Explicit]
     [VisualTest]
     [Category("Explicit")]
-    public IEnumerator UIInputTextVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UIInputTextTest1()); }
+    public IEnumerator UIInputTextVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UIInputTextTest1()); }
 
     [UnityTest]
     [VisualTest]
     [Category("Visual Tests")]
     public IEnumerator UIInputTextTest1()
     {
-        yield return InitUIVisualTestScene("UIInputTextTest");
-
         string mainContainerId = "herodes";
         yield return CreateUIComponent<UIContainerRect, UIContainerRect.Model>(CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model
         {
@@ -44,7 +42,7 @@ public class UIInputTextVisualTests : UIVisualTestsBase
             fontSize = 10f
         }, "textInput");
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 0f));
+        yield return VisualTestUtils.TakeSnapshot("UIInputTextTest", camera, new Vector3(0f, 2f, 0f));
     }
 
     // Our current architecture for UIInputText/UIText does not represent the one from the SDK

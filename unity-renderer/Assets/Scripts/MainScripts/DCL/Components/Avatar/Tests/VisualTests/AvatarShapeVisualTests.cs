@@ -15,7 +15,7 @@ namespace Tests
         [VisualTest]
         [NUnit.Framework.Explicit]
         [Category("Explicit")]
-        public IEnumerator AvatarShapeVisualTest_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest1()); }
+        public IEnumerator AvatarShapeVisualTest_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(AvatarShapeVisualTest1()); }
 
         [UnityTest]
         [VisualTest]
@@ -23,28 +23,26 @@ namespace Tests
         [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest1()
         {
-            yield return InitVisualTestsScene("AvatarShape_A");
-
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Avatar #1", "TestAvatar.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
 
-            VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
+            VisualTestUtils.RepositionVisualTestsCamera(camera, camPos, camTarget);
 
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
             yield return new WaitForSeconds(5.0f);
 
-            yield return VisualTestHelpers.TakeSnapshot();
+            yield return VisualTestUtils.TakeSnapshot("AvatarShape_A", camera);
         }
 
         [UnityTest]
         [VisualTest]
         [NUnit.Framework.Explicit]
         [Category("Explicit")]
-        public IEnumerator AvatarShapeVisualTest2_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest2()); }
+        public IEnumerator AvatarShapeVisualTest2_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(AvatarShapeVisualTest2()); }
 
         [UnityTest]
         [VisualTest]
@@ -52,19 +50,17 @@ namespace Tests
         [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest2()
         {
-            yield return InitVisualTestsScene("AvatarShape_B");
-
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Avatar #2", "TestAvatar2.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
 
-            VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
+            VisualTestUtils.RepositionVisualTestsCamera(camera, camPos, camTarget);
 
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
-            yield return VisualTestHelpers.TakeSnapshot();
+            yield return VisualTestUtils.TakeSnapshot("AvatarShape_B", camera);
         }
     }
 }

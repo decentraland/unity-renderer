@@ -1,53 +1,71 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
+using Environment = System.Environment;
 
 public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
     protected ParcelScene scene;
+    protected Camera camera;
+    private AnisotropicFiltering originalAnisoSetting;
 
-    //protected override string TEST_SCENE_NAME => "MainVisualTest";
-    protected override bool enableSceneIntegrityChecker => false;
+    protected override WorldRuntimeContext CreateRuntimeContext()
+    {
+        return DCL.Tests.WorldRuntimeContextFactory. //CreateMocked();
+            CreateWithGenericMocks(
+                new WorldState(),
+                new RuntimeComponentFactory()
+            );
+    }
+
+    protected override PlatformContext CreatePlatformContext()
+    {
+        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
+            WebRequestController.Create(),
+            new ServiceProviders()
+        );
+    }
+
+    protected override MessagingContext CreateMessagingContext()
+    {
+        return DCL.Tests.MessagingContextFactory.CreateMocked();
+    }
+
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.Add(MainSceneFactory.CreateEnvironment());
+        return result;
+    }
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        originalAnisoSetting = QualitySettings.anisotropicFiltering;
         QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
-        VisualTestHelpers.SetSSAOActive(false);
+        VisualTestUtils.SetSSAOActive(false);
         scene = TestUtils.CreateTestScene();
-    }
 
-    public IEnumerator InitVisualTestsScene(string testName)
-    {
-        //yield return InitScene();
-        yield return null;
+        DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
 
-        //TODO(Brian): This is to wait for SceneController.Awake(). We should remove this
-        //             When the entry point is refactored.
+        VisualTestUtils.snapshotIndex = 0;
+
         RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
-
-        Environment.i.world.sceneBoundsChecker.Stop();
-        Environment.i.world.blockersController.SetEnabled(false);
-
-        //base.SetUp_Renderer();
-
-        VisualTestHelpers.currentTestName = testName.Replace(".", "_");
-        VisualTestHelpers.snapshotIndex = 0;
-
-        DCLCharacterController.i.PauseGravity();
-        DCLCharacterController.i.enabled = false;
+        CommonScriptableObjects.rendererState.Set(true);
 
         // Position character inside parcel (0,0)
-        TestUtils.SetCharacterPosition(new Vector3(0, 2f, 0f));
+        camera = TestUtils.CreateComponentWithGameObject<Camera>("CameraContainer");
 
-        yield return null;
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(0, 2, 0));
     }
 
     protected override IEnumerator TearDown()
     {
-        QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+        Object.Destroy(camera.gameObject);
+        QualitySettings.anisotropicFiltering = originalAnisoSetting;
         yield return base.TearDown();
     }
 }

@@ -148,10 +148,13 @@ namespace DCL
                 data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
             }
 
-            if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
+            if (Environment.i.world.state.loadedScenes != null)
             {
-                Debug.LogWarning($"Scene {data.id} is already loaded.");
-                return Environment.i.world.state.loadedScenes[data.id];
+                if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
+                {
+                    Debug.LogWarning($"Scene {data.id} is already loaded.");
+                    return Environment.i.world.state.loadedScenes[data.id];
+                }
             }
 
             var go = new GameObject();
@@ -163,8 +166,10 @@ namespace DCL
             if (DCLCharacterController.i != null)
                 newScene.InitializeDebugPlane();
 
-            Environment.i.world.state.scenesSortedByDistance.Add(newScene);
-            Environment.i.world.state.loadedScenes.Add(data.id, newScene);
+            Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
+            Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
+
+
             return newScene;
         }
     }

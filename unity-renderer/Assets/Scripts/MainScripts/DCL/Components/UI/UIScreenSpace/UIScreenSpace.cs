@@ -17,12 +17,11 @@ namespace DCL.Components
         public Canvas canvas;
         public GraphicRaycaster graphicRaycaster;
 
-        private DCLCharacterPosition currentCharacterPosition;
         private CanvasGroup canvasGroup;
 
         public UIScreenSpace()
         {
-            DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
+            CommonScriptableObjects.playerWorldPosition.OnChange += OnPlayerWorldPositionChanged;
             model = new Model();
         }
 
@@ -45,9 +44,9 @@ namespace DCL.Components
                 InitializeCanvas();
                 initialized = true;
             }
-            else if (DCLCharacterController.i != null)
+            else
             {
-                OnCharacterMoved(DCLCharacterController.i.characterPosition);
+                OnPlayerWorldPositionChanged(CommonScriptableObjects.playerWorldPosition.Get(), CommonScriptableObjects.playerWorldPosition.Get());
             }
 
             //We have to wait a frame for the Canvas Scaler to act
@@ -56,7 +55,8 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
+            CommonScriptableObjects.playerWorldPosition.OnChange -= OnPlayerWorldPositionChanged;
+            //DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
 
             if (childHookRectTransform != null)
@@ -65,18 +65,16 @@ namespace DCL.Components
             }
         }
 
-        void OnCharacterMoved(DCLCharacterPosition newCharacterPosition)
+        void OnPlayerWorldPositionChanged(Vector3 current, Vector3 previous)
         {
             if (canvas == null)
                 return;
-
-            currentCharacterPosition = newCharacterPosition;
 
             UpdateCanvasVisibility();
 
             if (VERBOSE)
             {
-                Debug.Log($"set screenspace = {currentCharacterPosition}");
+                Debug.Log($"set screenspace = {current}");
             }
         }
 
@@ -89,7 +87,7 @@ namespace DCL.Components
 
             var model = (Model) this.model;
 
-            bool isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(currentCharacterPosition.worldPosition));
+            bool isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition));
             bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get());
 
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
@@ -157,10 +155,7 @@ namespace DCL.Components
                 Debug.Log("canvas initialized, height: " + childHookRectTransform.rect.height);
             }
 
-            if (DCLCharacterController.i != null)
-            {
-                OnCharacterMoved(DCLCharacterController.i.characterPosition);
-            }
+            OnPlayerWorldPositionChanged(CommonScriptableObjects.playerWorldPosition, CommonScriptableObjects.playerWorldPosition);
 
             if (VERBOSE)
             {
