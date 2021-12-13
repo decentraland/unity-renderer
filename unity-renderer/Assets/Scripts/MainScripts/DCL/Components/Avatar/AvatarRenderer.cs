@@ -44,6 +44,7 @@ namespace DCL
         public event Action<float> OnImpostorAlphaValueUpdate;
         public event Action<float> OnAvatarAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
+        public event Action OnChanged;
 
         internal BodyShapeController bodyShapeController;
         internal Dictionary<WearableItem, WearableController> wearableControllers = new Dictionary<WearableItem, WearableController>();
@@ -58,7 +59,7 @@ namespace DCL
         public bool isLoading;
         public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
         public float maxY { get; private set; } = 0;
-
+        
         private Coroutine loadCoroutine;
         private AssetPromise_Texture bodySnapshotTexturePromise;
         private List<string> wearablesInUse = new List<string>();
@@ -109,6 +110,7 @@ namespace DCL
             // TODO(Brian): Find a better approach than overloading callbacks like this. This code is not readable.
             void onSuccessWrapper()
             {
+                OnChanged?.Invoke();
                 onSuccess?.Invoke();
                 this.OnSuccessEvent -= onSuccessWrapper;
             }
@@ -759,5 +761,7 @@ namespace DCL
             isDestroyed = true;
             CleanupAvatar();
         }
+        
+        public Transform[] GetBones() => bodyShapeController?.bones;
     }
 }

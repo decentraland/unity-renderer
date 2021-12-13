@@ -31,6 +31,7 @@ namespace DCL
 
             // Transform
             builders.Add((int) CLASS_ID_COMPONENT.TRANSFORM, BuildComponent<DCLTransform>);
+            builders.Add((int) CLASS_ID_COMPONENT.AVATAR_ATTACH, BuildComponent<AvatarAttachComponent>);
 
             // Shapes
             builders.Add((int) CLASS_ID.BOX_SHAPE, BuildComponent<BoxShape>);

@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Interface;
+using DCL.NotificationModel;
 using UnityEngine;
 
 public class PlayerAvatarController : MonoBehaviour
@@ -49,10 +50,26 @@ public class PlayerAvatarController : MonoBehaviour
         CommonScriptableObjects.rendererState.RemoveLock(this);
         avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
         avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
+        avatarRenderer.OnChanged -= OnAvatarChanged;
+        avatarRenderer.OnChanged += OnAvatarChanged;
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
+
+        var player = new Player()
+        {
+            id = userProfile.userId,
+            name = userProfile.name,
+            renderer = avatarRenderer,
+            anchorPoints = new AvatarAnchorPoints()
+        };
+        DataStore.i.player.ownPlayer.Set(player);
 
         if (avatarWereablesErrors || baseWereablesErrors)
             ShowWearablesWarning();
+    }
+
+    private void OnAvatarChanged()
+    {
+        DataStore.i.player.ownPlayer.Get().anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
     }
 
     private void OnAvatarRendererFail(bool isFatalError)
@@ -76,10 +93,10 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void ShowWearablesWarning()
     {
-        NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
+        NotificationsController.i.ShowNotification(new Model
         {
             message = LOADING_WEARABLES_ERROR_MESSAGE,
-            type = DCL.NotificationModel.Type.GENERIC,
+            type = Type.GENERIC,
             timer = 10f,
             destroyOnFinish = true
         });

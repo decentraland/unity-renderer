@@ -629,6 +629,15 @@ namespace DCL.Controllers
                         }
                     }
                     return;
+                case "transform":
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component ))
+                        {
+                            component.Cleanup();
+                            entity.components.Remove( CLASS_ID_COMPONENT.AVATAR_ATTACH );
+                        }
+                    }
+                    return;
             }
         }
 

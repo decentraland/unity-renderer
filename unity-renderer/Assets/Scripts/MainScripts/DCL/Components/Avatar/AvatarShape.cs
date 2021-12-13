@@ -35,11 +35,14 @@ namespace DCL
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
+        private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
+
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+            avatarRenderer.OnChanged += OnAvatarChanged;
             
             if (avatarReporterController == null)
             {
@@ -68,6 +71,7 @@ namespace DCL
                 poolableObject.RemoveFromPool();
 
             avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
+            avatarRenderer.OnChanged -= OnAvatarChanged;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -170,6 +174,7 @@ namespace DCL
                 player.playerName = playerName;
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
+                player.anchorPoints = anchorPoints;
                 otherPlayers.Add(player.id, player);
                 avatarReporterController.ReportAvatarRemoved();
             }
@@ -257,5 +262,10 @@ namespace DCL
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
+        
+        private void OnAvatarChanged()
+        {
+            player?.anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
+        }
     }
 }
