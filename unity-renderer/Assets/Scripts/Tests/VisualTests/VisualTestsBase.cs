@@ -4,6 +4,7 @@ using UnityEngine;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
+using UnityEngine.Rendering.Universal;
 
 public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
@@ -59,6 +60,9 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         camera.clearFlags = CameraClearFlags.Color;
         camera.backgroundColor = Color.grey;
         camera.allowHDR = true;
+        camera.GetUniversalAdditionalCameraData().renderPostProcessing = true;
+        camera.GetUniversalAdditionalCameraData().volumeLayerMask = LayerMask.GetMask("PostProcessing");
+        camera.GetUniversalAdditionalCameraData().renderShadows = true;
 
         UnityEngine.RenderSettings.fog = true;
         UnityEngine.RenderSettings.fogMode = FogMode.Linear;
