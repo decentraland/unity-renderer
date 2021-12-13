@@ -11,6 +11,20 @@ namespace Tests
     // Visual tests are disabled until we fix the resolution issue
     public class AvatarShapeVisualTests : VisualTestsBase
     {
+        private CatalogController catalogController;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            Object.Destroy(catalogController.gameObject);
+            yield return base.TearDown();
+        }
+
         [UnityTest]
         [VisualTest]
         [NUnit.Framework.Explicit]

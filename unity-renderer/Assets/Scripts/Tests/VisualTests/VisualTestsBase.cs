@@ -14,11 +14,10 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
     protected override WorldRuntimeContext CreateRuntimeContext()
     {
-        return DCL.Tests.WorldRuntimeContextFactory. //CreateMocked();
-            CreateWithGenericMocks(
-                new WorldState(),
-                new RuntimeComponentFactory()
-            );
+        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks(
+            new WorldState(),
+            new RuntimeComponentFactory()
+        );
     }
 
     protected override PlatformContext CreatePlatformContext()
@@ -58,6 +57,9 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
         // Position character inside parcel (0,0)
         camera = TestUtils.CreateComponentWithGameObject<Camera>("CameraContainer");
+        camera.clearFlags = CameraClearFlags.Color;
+        camera.backgroundColor = Color.grey;
+        camera.allowHDR = true;
 
         VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(0, 2, 0));
     }
@@ -65,6 +67,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         Object.Destroy(camera.gameObject);
+        Object.Destroy(scene.gameObject);
         QualitySettings.anisotropicFiltering = originalAnisoSetting;
         yield return base.TearDown();
     }

@@ -40,7 +40,7 @@ namespace DCL
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
-            
+
             if (avatarReporterController == null)
             {
                 avatarReporterController = new AvatarReporterController(Environment.i.world.state);
@@ -90,8 +90,10 @@ namespace DCL
             {
                 initializedPosition = true;
 
+                float characterHeight = DCLCharacterController.i != null ? DCLCharacterController.i.characterController.height : 0.8f;
+
                 avatarMovementController.MoveTo(
-                    entity.gameObject.transform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2,
+                    entity.gameObject.transform.localPosition - Vector3.up * characterHeight / 2,
                     entity.gameObject.transform.localRotation, true);
             }
 
@@ -131,14 +133,15 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
-            
+
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            if (config.features.enableAvatarLODs)
-                                avatarRenderer.InitializeImpostor();
-                        });
+                .Then(config =>
+                {
+                    if (config.features.enableAvatarLODs)
+                        avatarRenderer.InitializeImpostor();
+                });
         }
+
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
@@ -173,7 +176,7 @@ namespace DCL
                 otherPlayers.Add(player.id, player);
                 avatarReporterController.ReportAvatarRemoved();
             }
-            
+
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
 
             player.playerName.SetIsTalking(model.talking);
@@ -253,6 +256,7 @@ namespace DCL
                 entity.OnTransformChange = null;
                 entity = null;
             }
+
             avatarReporterController.ReportAvatarRemoved();
         }
 

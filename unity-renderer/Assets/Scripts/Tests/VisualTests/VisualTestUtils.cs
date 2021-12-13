@@ -17,7 +17,6 @@ namespace DCL.Helpers
             Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
 
         public static bool generateBaseline = false;
-        public static string currentTestName;
         public static int snapshotIndex;
 
         public static IEnumerator GenerateBaselineForTest(IEnumerator test)

@@ -10,6 +10,7 @@ using WaitUntil = UnityEngine.WaitUntil;
 
 public class WearablesVisualTests : VisualTestsBase
 {
+    private CatalogController catalogController;
     private BaseDictionary<string, WearableItem> catalog;
     private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
     private readonly HashSet<AvatarMeshCombinerHelper> toCleanUpCombiners = new HashSet<AvatarMeshCombinerHelper>();
@@ -20,6 +21,8 @@ public class WearablesVisualTests : VisualTestsBase
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         toCleanUp.Clear();
 
@@ -197,6 +200,8 @@ public class WearablesVisualTests : VisualTestsBase
 
     protected override IEnumerator TearDown()
     {
+        Object.Destroy(catalogController.gameObject);
+
         foreach (AvatarMeshCombinerHelper combiner in toCleanUpCombiners)
         {
             combiner.Dispose();
