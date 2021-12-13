@@ -30,8 +30,12 @@ Varyings DepthNormalsVertex(Attributes input)
     output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);
     output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
 
+    #ifdef _GPU_SKINNING
+    output.normalWS = input.normalOS;
+    #else
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
     output.normalWS = NormalizeNormalPerVertex(normalInput.normalWS);
+    #endif
 
     return output;
 }
