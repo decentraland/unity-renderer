@@ -236,12 +236,12 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         Promise<InitialStateResponse> statePromise = new Promise<InitialStateResponse>();
         mainController.initialStateManager = Substitute.For<IInitialStateManager>();
         mainController.initialStateManager.Configure()
-                      .GetInitialManifest(apiSubstitute, Arg.Any<string>(), Arg.Any<Scene>(), Arg.Any<Vector2Int>())
+                      .GetInitialManifest(Arg.Any<IBuilderAPIController>(), Arg.Any<string>(), Arg.Any<Scene>(), Arg.Any<Vector2Int>())
                       .Returns(statePromise);
 
         InitialStateResponse initialStateResponse = new InitialStateResponse();
         initialStateResponse.manifest = Substitute.For<IManifest>();
-
+            
         // Act
         mainController.CheckSceneToEditByShorcut();
         statePromise.Resolve(initialStateResponse);
