@@ -1,3 +1,4 @@
+using System;
 using AssetPromiseErrorReporter;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -84,7 +85,7 @@ namespace DCL.Components
         }
 
         public event System.Action<Rendereable> OnSuccessEvent;
-        public event System.Action OnFailEvent;
+        public event System.Action<Exception> OnFailEvent;
 
         public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
         {
@@ -104,7 +105,7 @@ namespace DCL.Components
                     break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, () => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent));
                     break;
             }
         }
@@ -131,7 +132,7 @@ namespace DCL.Components
             }
         }
 
-        void LoadAssetBundle(string targetUrl, System.Action<Rendereable> OnSuccess, System.Action OnFail)
+        void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
         {
             if (abPromise != null)
             {
@@ -144,13 +145,13 @@ namespace DCL.Components
 
             if (string.IsNullOrEmpty(bundlesBaseUrl))
             {
-                OnFailWrapper(null, OnFail);
+                OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"));
                 return;
             }
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
-                OnFailWrapper(null, OnFail);
+                OnFailWrapper(OnFail, new Exception($"Content url does not contains {targetUrl}"));
                 return;
             }
 
@@ -171,12 +172,12 @@ namespace DCL.Components
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            abPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
+            abPromise.OnFailEvent += (x, exception) => OnFailWrapper(OnFail, exception);
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
         }
 
-        void LoadGltf(string targetUrl, System.Action<Rendereable> OnSuccess, System.Action OnFail)
+        void LoadGltf(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail)
         {
             if (gltfPromise != null)
             {
@@ -188,16 +189,16 @@ namespace DCL.Components
 
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
-                OnFailWrapper(null, OnFail);
+                OnFailWrapper(OnFail, new Exception($"Content provider does not contains url {targetUrl}"));
                 return;
             }
 
             gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl, hash);
-            gltfPromise.settings = this.settings;
+            gltfPromise.settings = settings;
 
             gltfPromise.OnSuccessEvent += (x) =>
             {
-                var r = new Rendereable()
+                var r = new Rendereable
                 {
                     container = x.container,
                     totalTriangleCount = x.totalTriangleCount,
@@ -208,19 +209,18 @@ namespace DCL.Components
 
                 OnSuccessWrapper(r, OnSuccess);
             };
-            gltfPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
+            gltfPromise.OnFailEvent += (asset, exception) => OnFailWrapper(OnFail, exception);
 
             AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
 
-        private void OnFailWrapper(Asset_WithPoolableContainer loadedAsset, System.Action OnFail)
+        private void OnFailWrapper(Action<Exception> OnFail, Exception exception)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;
 #endif
 
-
-            OnFail?.Invoke();
+            OnFail?.Invoke(exception);
             ClearEvents();
         }
 

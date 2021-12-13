@@ -123,12 +123,12 @@ namespace NFTShape_Internal
             string url = $"{config.nftInfo.imageUrl}=s{asset.hqResolution}";
 
             Action debugSuccess = null;
-            Action debugFail = null;
+            Action<Exception> debugFail = null;
 
             if (config.nftConfig.verbose)
             {
                 debugSuccess = () => Debug.Log($"Success: Fetch {config.nftInfo.name} HQ image");
-                debugFail = () => Debug.Log($"Fail: Fetch {config.nftInfo.name} HQ image");
+                debugFail = error => Debug.Log($"Fail: Fetch {config.nftInfo.name} HQ image, Exception: {error}");
             }
 
             asset.FetchAndSetHQAsset(url, debugSuccess, debugFail);

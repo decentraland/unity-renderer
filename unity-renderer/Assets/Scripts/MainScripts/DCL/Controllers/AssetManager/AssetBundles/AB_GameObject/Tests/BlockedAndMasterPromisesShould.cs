@@ -46,11 +46,11 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 
             var prom2 = CreatePromise();
             bool failEventCalled2 = false;
-            prom2.OnFailEvent += (x) => { failEventCalled2 = true; };
+            prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
             var prom3 = CreatePromise();
             bool failEventCalled3 = false;
-            prom3.OnFailEvent += (x) => { failEventCalled3 = true; };
+            prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
 
             keeper.Keep(prom);
             keeper.Keep(prom2);
@@ -90,19 +90,19 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             Asset_AB_GameObject asset = null;
             bool failEventCalled1 = false;
             prom.OnSuccessEvent += (x) => { asset = x; };
-            prom.OnFailEvent += (x) => { failEventCalled1 = true; };
+            prom.OnFailEvent += (x, error) => { failEventCalled1 = true; };
 
             var prom2 = CreatePromise(invalidHash);
             Asset_AB_GameObject asset2 = null;
             bool failEventCalled2 = false;
             prom2.OnSuccessEvent += (x) => { asset2 = x; };
-            prom2.OnFailEvent += (x) => { failEventCalled2 = true; };
+            prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
             var prom3 = CreatePromise(invalidHash);
             Asset_AB_GameObject asset3 = null;
             bool failEventCalled3 = false;
             prom3.OnSuccessEvent += (x) => { asset3 = x; };
-            prom3.OnFailEvent += (x) => { failEventCalled3 = true; };
+            prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
 
             keeper.Keep(prom);
             keeper.Keep(prom2);

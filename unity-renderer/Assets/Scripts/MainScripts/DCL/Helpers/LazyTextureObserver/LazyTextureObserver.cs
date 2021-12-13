@@ -70,7 +70,7 @@ namespace DCL.Helpers
 
         private State state = State.NONE;
         private Action<Texture2D> OnLoaded;
-        private Action OnFail;
+        private Action<Exception> OnFail;
 
         private HashSet<Action<Texture2D>> subscriptions = new HashSet<Action<Texture2D>>();
 
@@ -90,11 +90,11 @@ namespace DCL.Helpers
                 OnLoaded?.Invoke(x);
             };
 
-            textureLoader.OnFail += () =>
+            textureLoader.OnFail += error =>
             {
                 state = State.NONE;
                 uri = null;
-                OnFail?.Invoke();
+                OnFail?.Invoke(error);
             };
         }
 
@@ -106,7 +106,7 @@ namespace DCL.Helpers
             {
                 subscriptions.Add(listener);
                 this.OnLoaded += listener;
-                this.OnFail += () => listener.Invoke(null);
+                this.OnFail += e => listener.Invoke(null);
             }
 
             // First, check if we did set a texture directly and return it if so.

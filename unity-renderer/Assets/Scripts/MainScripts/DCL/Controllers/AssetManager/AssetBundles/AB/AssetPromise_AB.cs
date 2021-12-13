@@ -96,13 +96,13 @@ namespace DCL
         {
         }
 
-        protected IEnumerator LoadAssetBundleWithDeps(string baseUrl, string hash, Action OnSuccess, Action OnFail)
+        protected IEnumerator LoadAssetBundleWithDeps(string baseUrl, string hash, Action OnSuccess, Action<Exception> OnFail)
         {
             string finalUrl = baseUrl + hash;
 
             if (failedRequestUrls.Contains(finalUrl))
             {
-                OnFail?.Invoke();
+                OnFail?.Invoke(new Exception($"The url {finalUrl} has failed"));
                 yield break;
             }
 
@@ -122,7 +122,7 @@ namespace DCL
 
             if (asyncOp.isDisposed)
             {
-                OnFail?.Invoke();
+                OnFail?.Invoke(new Exception("Operation is disposed"));
                 yield break;
             }
 
@@ -131,7 +131,7 @@ namespace DCL
                 if (VERBOSE)
                     Debug.Log($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}");
                 failedRequestUrls.Add(finalUrl);
-                OnFail?.Invoke();
+                OnFail?.Invoke(new Exception($"Request failed? {asyncOp.webRequest.error} ... {finalUrl}"));
                 asyncOp.Dispose();
                 yield break;
             }
@@ -141,8 +141,7 @@ namespace DCL
 
             if (assetBundle == null || asset == null)
             {
-                OnFail?.Invoke();
-
+                OnFail?.Invoke(new Exception("Asset bundle or asset is null"));
                 failedRequestUrls.Add(finalUrl);
                 yield break;
             }
@@ -215,17 +214,17 @@ namespace DCL
             return result;
         }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
+        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             loadCoroutine = CoroutineStarter.Start(DCLCoroutineRunner.Run(
                 LoadAssetBundleWithDeps(contentUrl, hash, OnSuccess, OnFail),
                 exception => HandleLoadException(exception, OnFail)));
         }
 
-        private void HandleLoadException(Exception exception, Action failCallback)
+        private void HandleLoadException(Exception exception, Action<Exception> failCallback)
         {
             errorReporter?.Report(exception);
-            failCallback?.Invoke();
+            failCallback?.Invoke(exception);
         }
 
         IEnumerator WaitForConcurrentRequestsSlot()

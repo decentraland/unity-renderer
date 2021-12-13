@@ -69,14 +69,10 @@ namespace DCL.Components
             }
         }
 
-        void OnFail(Asset_AudioClip assetAudioClip)
+        void OnFail(Asset_AudioClip assetAudioClip, Exception exception)
         {
             loadingState = LoadState.LOADING_FAILED;
-
-            if (OnLoadingFinished != null)
-            {
-                OnLoadingFinished.Invoke(this);
-            }
+            OnLoadingFinished?.Invoke(this);
         }
 
         IEnumerator TryToLoad()

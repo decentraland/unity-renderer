@@ -100,7 +100,7 @@ public class WearableController
 
         loader.OnSuccessEvent += OnSuccessWrapper;
 
-        void OnFailEventWrapper()
+        void OnFailEventWrapper(Exception error)
         {
             if (loader != null)
             {

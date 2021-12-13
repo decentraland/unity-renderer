@@ -38,7 +38,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
                 }
                 ;
 
-            prom.OnFailEvent += (x) => { Debug.Log("Fail is called"); };
+            prom.OnFailEvent += (x, error) => { Debug.Log($"Fail is called, Exception: {error}"); };
 
             Vector3 initialPos = Vector3.one;
             Quaternion initialRot = Quaternion.LookRotation(Vector3.right, Vector3.up);
@@ -137,7 +137,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             var prom = CreatePromise("Broken_paladin_AB");
 
             bool failed = false;
-            prom.OnFailEvent += (x) => { failed = true; };
+            prom.OnFailEvent += (x, error) => { failed = true; };
             keeper.Keep(prom);
 
             yield return prom;

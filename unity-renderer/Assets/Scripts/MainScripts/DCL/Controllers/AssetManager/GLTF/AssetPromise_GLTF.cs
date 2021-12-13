@@ -63,7 +63,7 @@ namespace DCL
 
         public override object GetId() { return id; }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
+        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
             gltfComponent.throttlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;

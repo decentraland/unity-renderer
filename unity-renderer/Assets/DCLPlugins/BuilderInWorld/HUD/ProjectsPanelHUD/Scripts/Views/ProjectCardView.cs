@@ -314,7 +314,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
         thumbnailPromise = new AssetPromise_Texture(projectThumbnailUrl);
         thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => SetThumbnail((Texture2D) null);
+        thumbnailPromise.OnFailEvent += (texture, error) => SetThumbnail(null);
 
         loadingImgGameObject.SetActive(true);
         thumbnail.enabled = false;
