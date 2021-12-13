@@ -50,7 +50,7 @@ namespace DCL.Builder
         private BiwSceneMetricsAnalyticsHelper sceneMetricsAnalyticsHelper;
         private InputController inputController;
         internal BuilderInWorldBridge builderInWorldBridge;
-        internal InitialStateManager initialStateManager;
+        internal IInitialStateManager initialStateManager;
         internal IBuilderInWorldLoadingController initialLoadingController;
         private float beginStartFlowTimeStamp = 0;
 
@@ -71,6 +71,8 @@ namespace DCL.Builder
 
             BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
             context.builderAPIController.OnWebRequestCreated += WebRequestCreated;
+
+            initialStateManager = new InitialStateManager();
 
             ConfigureLoadingController();
         }
@@ -521,8 +523,6 @@ namespace DCL.Builder
             Scene deployedScene = GetDeployedSceneFromParcel(targetScene);
             string landCoords = targetScene.sceneData.basePosition.x + "," + targetScene.sceneData.basePosition.y;
             Vector2Int parcelSize = BIWUtils.GetSceneSize(targetScene);
-
-            initialStateManager = new InitialStateManager(context);
 
             Promise<InitialStateResponse> manifestPromise = initialStateManager.GetInitialManifest(context.builderAPIController, landCoords, deployedScene, parcelSize);
 

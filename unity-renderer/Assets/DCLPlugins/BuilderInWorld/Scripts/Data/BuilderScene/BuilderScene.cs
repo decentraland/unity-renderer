@@ -15,7 +15,7 @@ namespace DCL.Builder
 
         private bool isNew = false;
 
-        public BuilderScene(Manifest.Manifest manifest, IBuilderScene.SceneType sceneType, bool isNew = false)
+        public BuilderScene(Manifest.IManifest manifest, IBuilderScene.SceneType sceneType, bool isNew = false)
         {
             this.isNew = isNew;
             this.manifest = manifest;

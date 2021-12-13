@@ -11,13 +11,27 @@ using UnityEngine;
 
 namespace DCL.Builder
 {
-    public class InitialStateManager
+    public interface IInitialStateManager
     {
-        internal IContext context;
+        /// <summary>
+        /// This call will look for the correct manifest of the land. The lookup will be the next
+        /// 1. If the land has a published scene with a project ID, we load this project, if not we continue looking
+        /// 2. If the scene has been published with the stateless manifest, we create a project from it, if not we continue looking
+        /// 3. If the land has a linked project ( by the coords) we load the project, if not we continue looking
+        /// 4. If there is not project associated and we cant create it from a stateless manifest, we just create an empty one
+        /// </summary>
+        /// <param name="builderAPIController"></param>
+        /// <param name="landCoords"></param>
+        /// <param name="scene"></param>
+        /// <param name="parcelSize"></param>
+        /// <returns></returns>
+        Promise<InitialStateResponse> GetInitialManifest(IBuilderAPIController builderAPIController, string landCoords, Scene scene, Vector2Int parcelSize);
+    }
+
+    public class InitialStateManager : IInitialStateManager
+    {
         private InitialStateResponse response = new InitialStateResponse();
         private Promise<InitialStateResponse> masterManifestPromise;
-
-        public InitialStateManager(IContext context) { this.context = context; }
 
         public Promise<InitialStateResponse> GetInitialManifest(IBuilderAPIController builderAPIController, string landCoords, Scene scene, Vector2Int parcelSize)
         {
@@ -165,7 +179,7 @@ namespace DCL.Builder
 
     public class InitialStateResponse
     {
-        public Manifest.Manifest manifest;
+        public Manifest.IManifest manifest;
         public bool hasBeenCreated = false;
     }
 }

@@ -131,12 +131,15 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void TestStartStatefullScene()
     {
+        //Arrange
+        ILand land = new ILand();
+        land.sceneId = "ds";
+
         //Act
-        //TODO: Implement correct test
-        // biwBridge.StartIsolatedMode(scene);
+        biwBridge.StartIsolatedMode(land);
 
         //Assert
-        //CheckMessageReceived();
+        CheckMessageReceived();
     }
 
     [Test]

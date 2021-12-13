@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
+using DCL.Builder.Manifest;
 using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -232,14 +233,22 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         ((Context)mainController.context).builderAPIController = Substitute.For<IBuilderAPIController>();
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
+        Promise<InitialStateResponse> statePromise = new Promise<InitialStateResponse>();
+        mainController.initialStateManager = Substitute.For<IInitialStateManager>();
+        mainController.initialStateManager.Configure()
+                      .GetInitialManifest(apiSubstitute, Arg.Any<string>(), Arg.Any<Scene>(), Arg.Any<Vector2Int>())
+                      .Returns(statePromise);
+
+        InitialStateResponse initialStateResponse = new InitialStateResponse();
+        initialStateResponse.manifest = Substitute.For<IManifest>();
 
         // Act
-        //TODO: We should resolve the manifest here to make it work, for that we need to being able to inject a manifest  
-        // mainController.CheckSceneToEditByShorcut();
-        // resultOkPromise.Resolve(true);
+        mainController.CheckSceneToEditByShorcut();
+        statePromise.Resolve(initialStateResponse);
+        resultOkPromise.Resolve(true);
 
         // Assert
-        //Assert.AreNotEqual(mainController.currentState, SceneManager.State.IDLE);
+        Assert.AreNotEqual(mainController.currentState, SceneManager.State.IDLE);
     }
 
     [Test]
