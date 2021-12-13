@@ -26,6 +26,73 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+    public static ILand CreateILandFromManifest(IManifest manifest, Vector2Int initialCoord)
+    {
+        ILand land = new ILand();
+        land.sceneId = manifest.project.scene_id;
+        land.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
+
+        land.mappingsResponse = new MappingsResponse();
+        land.mappingsResponse.parcel_id = land.sceneId;
+        land.mappingsResponse.root_cid = land.sceneId;
+        land.mappingsResponse.contents = new List<ContentServerUtils.MappingPair>();
+
+        land.sceneJsonData = new SceneJsonData();
+        land.sceneJsonData.main = "bin/game.js";
+        land.sceneJsonData.scene = new SceneParcels();
+        land.sceneJsonData.scene.@base = initialCoord.x + "," + initialCoord.y;
+
+        int amountOfParcels = manifest.project.rows * manifest.project.cols;
+        land.sceneJsonData.scene.parcels = new string[amountOfParcels];
+
+        int baseX = initialCoord.x;
+        int baseY = initialCoord.y;
+
+        int currentPositionInRow = 0;
+        for (int i = 0; i < amountOfParcels; i++ )
+        {
+            land.sceneJsonData.scene.parcels[i] = baseX + "," + baseY;
+            currentPositionInRow++;
+            baseX++;
+            if (currentPositionInRow >= manifest.project.rows)
+            {
+                baseX = initialCoord.x;
+                baseY++;
+                currentPositionInRow = 0;
+            }
+        }
+
+        return land;
+    }
+
+    public static ILand CreateILandFromParcelScene(IParcelScene scene)
+    {
+        ILand land = new ILand();
+        land.sceneId = scene.sceneData.id;
+        land.baseUrl = scene.sceneData.baseUrl;
+        land.baseUrlBundles = scene.sceneData.baseUrlBundles;
+
+        land.mappingsResponse = new MappingsResponse();
+        land.mappingsResponse.parcel_id = land.sceneId;
+        land.mappingsResponse.root_cid = land.sceneId;
+        land.mappingsResponse.contents = scene.sceneData.contents;
+
+        land.sceneJsonData = new SceneJsonData();
+        land.sceneJsonData.main = "bin/game.js";
+        land.sceneJsonData.scene = new SceneParcels();
+        land.sceneJsonData.scene.@base = scene.sceneData.basePosition.ToString();
+        land.sceneJsonData.scene.parcels = new string[scene.sceneData.parcels.Length];
+
+        int count = 0;
+        foreach (Vector2Int parcel in scene.sceneData.parcels)
+        {
+            land.sceneJsonData.scene.parcels[count] = parcel.x + "," + parcel.y;
+            count++;
+        }
+
+        return land;
+    }
+
     public static void AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
     {
         if (data == null)

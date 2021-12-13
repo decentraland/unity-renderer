@@ -54,15 +54,16 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.sceneToEdit = builderScene;
         mainController.CatalogLoaded();
         scene.CreateEntity("Test");
+        mainController.sceneToEditId = scene.sceneData.id;
 
         // Act
-        mainController.StartFlowFromLandWithPermission(scene, "Test");
+        mainController.StartFlow(builderScene, "source");
         ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         createdScene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         // Assert
-        Assert.AreEqual(mainController.currentState, SceneManager.State.SCENE_LOADED );
+        Assert.AreEqual(SceneManager.State.SCENE_LOADED, mainController.currentState );
     }
 
     [Test]

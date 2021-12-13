@@ -11,16 +11,16 @@ namespace DCL.Builder
 
         void Start()
         {
-            DataStore.i.featureFlags.flags.Set(new FeatureFlag());
-            DataStore.i.builderInWorld.isDevBuild.Set(true);
-
-            plugin = new BuilderInWorldPlugin();
-            plugin.panelController.SetVisibility(true);
 
             if (EventSystem.current == null)
             {
                 var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
             }
+
+            BuilderInWorldLoadingController controller = new BuilderInWorldLoadingController();
+            controller.Initialize();
+            controller.Show();
+            controller.SetPercentage(50f);
         }
     }
 }

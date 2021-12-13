@@ -249,8 +249,6 @@ public class BuilderInWorldEditor : IBIWEditor
 
         cursorGO.SetActive(true);
 
-        InmediateExit();
-
         if ( context.editorContext.editorHUD != null)
         {
             context.editorContext.editorHUD.ClearEntityList();
@@ -276,8 +274,6 @@ public class BuilderInWorldEditor : IBIWEditor
         DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
-
-    public void InmediateExit() { builderInWorldBridge.StopIsolatedMode(sceneToEdit.scene); }
 
     public void EnterBiwControllers()
     {

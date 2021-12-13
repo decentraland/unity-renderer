@@ -42,10 +42,10 @@ public class DCLCharacterController : MonoBehaviour
     float lastMovementReportTime;
     float originalGravity;
     Vector3 lastLocalGroundPosition;
-    
+
     Vector3 lastCharacterRotation;
     Vector3 lastGlobalCharacterRotation;
-    
+
     Vector3 velocity = Vector3.zero;
 
     public bool isWalking { get; private set; } = false;
@@ -118,6 +118,7 @@ public class DCLCharacterController : MonoBehaviour
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerWorldPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
+        DataStore.i.player.playerPosition.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
 
         characterPosition = new DCLCharacterPosition();
@@ -140,7 +141,7 @@ public class DCLCharacterController : MonoBehaviour
 
         avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
         firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
-        
+
     }
 
     private void SubscribeToInput()
@@ -196,7 +197,9 @@ public class DCLCharacterController : MonoBehaviour
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
         CommonScriptableObjects.playerWorldPosition.Set(characterPosition.worldPosition);
-        CommonScriptableObjects.playerCoords.Set(Utils.WorldToGridPosition(characterPosition.worldPosition));
+        Vector2Int playerPosition = Utils.WorldToGridPosition(characterPosition.worldPosition);
+        CommonScriptableObjects.playerCoords.Set(playerPosition);
+        DataStore.i.player.playerPosition.Set(playerPosition);
 
         if (Moved(lastPosition))
         {
@@ -356,7 +359,7 @@ public class DCLCharacterController : MonoBehaviour
     private void SaveLateUpdateGroundTransforms()
     {
         lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
-        
+
         if (CommonScriptableObjects.characterForward.HasValue())
         {
             lastCharacterRotation = groundTransform.InverseTransformDirection(CommonScriptableObjects.characterForward.Get().Value);
@@ -402,7 +405,7 @@ public class DCLCharacterController : MonoBehaviour
             Vector3 newGroundWorldPos = groundTransform.TransformPoint(lastLocalGroundPosition);
             movingPlatformSpeed = Vector3.Distance(newGroundWorldPos, transform.position);
             transform.position = newGroundWorldPos;
-            
+
             Vector3 newCharacterForward = groundTransform.TransformDirection(lastCharacterRotation);
             Vector3 lastFrameDifference = Vector3.zero;
             if (CommonScriptableObjects.characterForward.HasValue())
@@ -429,7 +432,7 @@ public class DCLCharacterController : MonoBehaviour
                     CommonScriptableObjects.playerIsOnMovingPlatform.Set(true);
                     Physics.SyncTransforms();
                     SaveLateUpdateGroundTransforms();
-                    
+
                     Quaternion deltaRotation = groundTransform.rotation * Quaternion.Inverse(groundLastRotation);
                     CommonScriptableObjects.movingPlatformRotationDelta.Set(deltaRotation);
                 }

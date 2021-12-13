@@ -225,17 +225,27 @@ public class BuilderInWorldBridge : MonoBehaviour
         OnKernelUpdated?.Invoke();
     }
 
-    public void StartIsolatedMode(string sceneId)
+    public void StartIsolatedMode(ILand land)
     {
         IsolatedConfig config = new IsolatedConfig();
-        config.sceneId = sceneId;
-        config.recreateScene = true;
-        config.land = new ILand();
-        config.land.mappingsResponse = new MappingsResponse();
+        config.mode = IsolatedMode.BUILDER;
+
+        IsolatedBuilderConfig builderConfig = new IsolatedBuilderConfig();
+
+        builderConfig.sceneId = land.sceneId;
+        builderConfig.recreateScene = true;
+        builderConfig.land = land;
+
+        config.payload = builderConfig;
         WebInterface.StartIsolatedMode(config);
     }
 
-    public void StopIsolatedMode(IParcelScene scene) { WebInterface.StopIsolatedMode(); }
+    public void StopIsolatedMode()
+    {
+        IsolatedConfig config = new IsolatedConfig();
+        config.mode = IsolatedMode.BUILDER;
+        WebInterface.StopIsolatedMode(config);
+    }
 
     public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
     {

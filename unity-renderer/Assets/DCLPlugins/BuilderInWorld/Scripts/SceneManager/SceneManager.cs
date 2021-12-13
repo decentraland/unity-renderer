@@ -95,7 +95,6 @@ namespace DCL.Builder
             if (sceneToEdit?.scene != null)
                 sceneToEdit.scene.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
 
-
             editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
             context.builderAPIController.OnWebRequestCreated -= WebRequestCreated;
 
@@ -245,7 +244,7 @@ namespace DCL.Builder
         private void OnPlayerTeleportedToEditScene(Vector2Int coords)
         {
             var targetScene = Environment.i.world.state.scenesSortedByDistance
-                .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
             StartFlowFromLandWithPermission(targetScene, SOURCE_BUILDER_PANEl);
         }
 
@@ -303,23 +302,23 @@ namespace DCL.Builder
         private void UpdateLandsWithAccess()
         {
             DeployedScenesFetcher.FetchLandsFromOwner(
-                    Environment.i.platform.serviceProviders.catalyst,
-                    Environment.i.platform.serviceProviders.theGraph,
-                    userProfile.ethAddress,
-                    KernelConfig.i.Get().network,
-                    BIWSettings.CACHE_TIME_LAND,
-                    BIWSettings.CACHE_TIME_SCENES)
-                .Then(lands =>
-                {
-                    DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                    if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
-                    {
-                        CheckSceneToEditByShorcut();
-                    }
+                                     Environment.i.platform.serviceProviders.catalyst,
+                                     Environment.i.platform.serviceProviders.theGraph,
+                                     userProfile.ethAddress,
+                                     KernelConfig.i.Get().network,
+                                     BIWSettings.CACHE_TIME_LAND,
+                                     BIWSettings.CACHE_TIME_SCENES)
+                                 .Then(lands =>
+                                 {
+                                     DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                                     if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                                     {
+                                         CheckSceneToEditByShorcut();
+                                     }
 
-                    isWaitingForPermission = false;
-                    alreadyAskedForLandPermissions = true;
-                });
+                                     isWaitingForPermission = false;
+                                     alreadyAskedForLandPermissions = true;
+                                 });
         }
 
         internal void CatalogLoaded()
@@ -330,7 +329,7 @@ namespace DCL.Builder
             NextState();
         }
 
-        internal void StartFlow(BuilderScene targetScene, string source)
+        internal void StartFlow(IBuilderScene targetScene, string source)
         {
             if (currentState != State.IDLE || targetScene == null)
                 return;
@@ -344,7 +343,6 @@ namespace DCL.Builder
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
 
             //We configure the loading part
-            initialLoadingController.SetLoadingType(targetScene.sceneType);
             initialLoadingController.Show();
             initialLoadingController.SetPercentage(0f);
 
@@ -499,6 +497,8 @@ namespace DCL.Builder
             context.cameraController.DeactivateCamera();
             context.editor.ExitEditMode();
 
+            builderInWorldBridge.StopIsolatedMode();
+
             DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
         }
 
@@ -549,7 +549,9 @@ namespace DCL.Builder
             Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
             Environment.i.world.blockersController.SetEnabled(false);
 
-            builderInWorldBridge.StartIsolatedMode(sceneToEditId);
+            ILand land = BIWUtils.CreateILandFromManifest(sceneToEdit.manifest, DataStore.i.player.playerPosition.Get());
+
+            builderInWorldBridge.StartIsolatedMode(land);
         }
 
         internal void ActivateLandAccessBackgroundChecker()

@@ -147,7 +147,10 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
         while (true)
         {
             yield return new WaitForSeconds(timeBetweenTips);
-            yield return RunTipsAnimationCoroutine();
+            float initialNormalizedPos = loadingTipsScroll.horizontalNormalizedPosition;
+            currentFinalNormalizedPos = initialNormalizedPos + (1f / (loadingTips.Count - 1));
+            loadingTipsScroll.horizontalNormalizedPosition =   currentFinalNormalizedPos;
+            // yield return RunTipsAnimationCoroutine();
             IncrementTipIndex();
         }
     }
@@ -170,7 +173,7 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
         float currentAnimationTime = 0f;
         float initialNormalizedPos = loadingTipsScroll.horizontalNormalizedPosition;
         currentFinalNormalizedPos = initialNormalizedPos + (1f / (loadingTips.Count - 1));
-
+        loadingTipsScroll.horizontalNormalizedPosition =   currentFinalNormalizedPos;
         while (currentAnimationTime <= animationTipsTransitionTime)
         {
             loadingTipsScroll.horizontalNormalizedPosition = Mathf.Lerp(
