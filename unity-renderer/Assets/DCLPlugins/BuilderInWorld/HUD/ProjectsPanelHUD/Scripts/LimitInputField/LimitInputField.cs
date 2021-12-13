@@ -40,6 +40,8 @@ public class LimitInputField : MonoBehaviour
             hasBeenEmpty = true;
     }
 
+    public void SetText(string value) { inputField.SetTextWithoutNotify(value); }
+
     public void SetError() { LimitReached(); }
 
     private void InputLostFocus(string value)
