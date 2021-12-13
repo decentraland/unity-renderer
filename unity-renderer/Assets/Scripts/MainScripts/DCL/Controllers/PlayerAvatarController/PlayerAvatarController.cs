@@ -1,6 +1,9 @@
+using System;
 using DCL;
-using DCL.Interface;
+using DCL.FatalErrorReporter;
+using DCL.NotificationModel;
 using UnityEngine;
+using Type = DCL.NotificationModel.Type;
 
 public class PlayerAvatarController : MonoBehaviour
 {
@@ -19,6 +22,7 @@ public class PlayerAvatarController : MonoBehaviour
     private bool avatarWereablesErrors = false;
     private bool baseWereablesErrors = false;
     private PlayerAvatarAnalytics playerAvatarAnalytics;
+    private IFatalErrorReporter fatalErrorReporter;
 
     private void Start()
     {
@@ -38,6 +42,12 @@ public class PlayerAvatarController : MonoBehaviour
         }
 
         CommonScriptableObjects.rendererState.AddLock(this);
+        
+#if UNITY_WEBGL
+        fatalErrorReporter = new WebFatalErrorReporter();
+#else
+        fatalErrorReporter = new DefaultFatalErrorReporter(DataStore.i);
+#endif
 
         mainCamera = Camera.main;
     }
@@ -55,12 +65,12 @@ public class PlayerAvatarController : MonoBehaviour
             ShowWearablesWarning();
     }
 
-    private void OnAvatarRendererFail(bool isFatalError)
+    private void OnAvatarRendererFail(Exception exception)
     {
         avatarWereablesErrors = true;
 
-        if (isFatalError)
-            WebInterface.ReportAvatarFatalError();
+        if (exception is AvatarLoadFatalException)
+            fatalErrorReporter.Report(exception);
         else
             OnAvatarRendererReady();
     }
@@ -76,10 +86,10 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void ShowWearablesWarning()
     {
-        NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
+        NotificationsController.i.ShowNotification(new Model
         {
             message = LOADING_WEARABLES_ERROR_MESSAGE,
-            type = DCL.NotificationModel.Type.GENERIC,
+            type = Type.GENERIC,
             timer = 10f,
             destroyOnFinish = true
         });

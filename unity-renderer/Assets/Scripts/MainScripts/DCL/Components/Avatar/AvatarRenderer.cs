@@ -43,7 +43,7 @@ namespace DCL
         public event Action OnSuccessEvent;
         public event Action<float> OnImpostorAlphaValueUpdate;
         public event Action<float> OnAvatarAlphaValueUpdate;
-        public event Action<bool> OnFailEvent;
+        public event Action<Exception> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
         internal Dictionary<WearableItem, WearableController> wearableControllers = new Dictionary<WearableItem, WearableController>();
@@ -110,18 +110,18 @@ namespace DCL
             void onSuccessWrapper()
             {
                 onSuccess?.Invoke();
-                this.OnSuccessEvent -= onSuccessWrapper;
+                OnSuccessEvent -= onSuccessWrapper;
             }
 
-            this.OnSuccessEvent += onSuccessWrapper;
+            OnSuccessEvent += onSuccessWrapper;
 
-            void onFailWrapper(bool isFatalError)
+            void onFailWrapper(Exception exception)
             {
                 onFail?.Invoke();
-                this.OnFailEvent -= onFailWrapper;
+                OnFailEvent -= onFailWrapper;
             }
 
-            this.OnFailEvent += onFailWrapper;
+            OnFailEvent += onFailWrapper;
 
             isLoading = false;
 
@@ -255,7 +255,7 @@ namespace DCL
             }
             else
             {
-                OnFailEvent?.Invoke(true);
+                OnFailEvent?.Invoke(new AvatarLoadFatalException("bodyShape is null"));
                 yield break;
             }
 
@@ -292,7 +292,7 @@ namespace DCL
             if (resolvedBody == null)
             {
                 isLoading = false;
-                OnFailEvent?.Invoke(true);
+                OnFailEvent?.Invoke(new AvatarLoadFatalException("Could not resolve body for avatar"));
                 yield break;
             }
 
@@ -487,7 +487,7 @@ namespace DCL
             //              proper language feature.
             if (loadSoftFailed)
             {
-                OnFailEvent?.Invoke(false);
+                OnFailEvent?.Invoke(new Exception("loadSoftFailed: true"));
             }
             else
             {
@@ -531,21 +531,23 @@ namespace DCL
 
         void OnBodyShapeLoadingFail(WearableController wearableController, Exception error)
         {
-            Debug.LogError($"Avatar: {model?.name}  -  Failed loading bodyshape: {wearableController?.id}  -  Exception: {error}");
+            var errorMessage = $"Avatar: {model?.name}  -  Failed loading bodyshape: {wearableController?.id}  -  Exception: {error}";
+            Debug.LogError(errorMessage);
             CleanupAvatar();
-            OnFailEvent?.Invoke(true);
+            OnFailEvent?.Invoke(new AvatarLoadFatalException(errorMessage));
         }
 
         void OnWearableLoadingFail(WearableController wearableController, Exception error, int retriesCount = MAX_RETRIES)
         {
             if (retriesCount <= 0)
             {
-                Debug.LogError($"Avatar: {model?.name}  -  Failed loading wearable: {wearableController?.id}  -  Exception: {error}");
+                var errorMessage = $"Avatar: {model?.name}  -  Failed loading wearable: {wearableController?.id}  -  Exception: {error}";
+                Debug.LogError(errorMessage);
                 // cleaning up the avatar nulls OnFailEvent, so save it in a temporal variable and then execute it
                 // so the fail stream doesnt die
                 var failEventBeforeClearing = OnFailEvent;
                 CleanupAvatar();
-                failEventBeforeClearing?.Invoke(false);
+                failEventBeforeClearing?.Invoke(new Exception(errorMessage));
                 return;
             }
 
