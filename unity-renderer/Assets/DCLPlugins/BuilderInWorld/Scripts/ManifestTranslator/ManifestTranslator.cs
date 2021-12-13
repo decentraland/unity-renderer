@@ -8,7 +8,6 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Models;
 using Newtonsoft.Json;
-using NSubstitute;
 using UnityEngine;
 
 namespace DCL.Builder
