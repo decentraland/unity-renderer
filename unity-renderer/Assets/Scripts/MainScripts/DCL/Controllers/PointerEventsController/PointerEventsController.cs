@@ -97,7 +97,6 @@ namespace DCL
             {
                 clickHandler = null;
                 UnhoverLastHoveredObject(hoverController);
-                Debug.Log($"1 - didHit {didHit} - uiIsBlocking {uiIsBlocking} - currentSceneId {currentSceneId}");
                 return;
             }
 
@@ -106,7 +105,6 @@ namespace DCL
             {
                 ResolveGenericRaycastHandlers(raycastHandlerTarget);
                 UnhoverLastHoveredObject(hoverController);
-                Debug.Log("2");
                 return;
             }
 
@@ -120,7 +118,6 @@ namespace DCL
             if (!EventObjectCanBeHovered(info, hitInfo.distance))
             {
                 UnhoverLastHoveredObject(hoverController);
-                Debug.Log("3");
                 return;
             }
 
@@ -155,8 +152,6 @@ namespace DCL
                     else
                         e.SetHoverState(false);
                 }
-
-                Debug.Log("4");
             }
 
             newHoveredGO = null;

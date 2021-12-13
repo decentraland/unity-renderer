@@ -36,7 +36,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     {
         yield return base.SetUp();
 
-        scene = (ParcelScene)Environment.i.world.sceneController.CreateTestScene();
+        scene = TestUtils.CreateTestScene();
         scene.contentProvider = new ContentProvider_Dummy();
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
     }

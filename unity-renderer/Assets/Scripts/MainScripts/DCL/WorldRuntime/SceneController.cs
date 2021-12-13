@@ -479,7 +479,6 @@ namespace DCL
 
             IWorldState worldState = Environment.i.world.state;
 
-            Debug.Log("Should not enter here");
             worldState.currentSceneId = null;
             worldState.scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
 
