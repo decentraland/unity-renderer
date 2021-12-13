@@ -57,8 +57,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
         // Position character inside parcel (0,0)
         camera = TestUtils.CreateComponentWithGameObject<Camera>("CameraContainer");
-        camera.clearFlags = CameraClearFlags.Color;
-        camera.backgroundColor = Color.grey;
+        camera.clearFlags = CameraClearFlags.Skybox;
         camera.allowHDR = true;
         camera.GetUniversalAdditionalCameraData().renderPostProcessing = true;
         camera.GetUniversalAdditionalCameraData().volumeLayerMask = LayerMask.GetMask("PostProcessing");
