@@ -1,5 +1,4 @@
 using System;
-using AssetPromiseErrorReporter;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -31,11 +30,9 @@ namespace DCL.Components
 
 
             if (customContentProvider == null)
-                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles,
-                    new StopLoadingHudReporter(DataStore.i));
+                loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
             else
-                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles,
-                    new StopLoadingHudReporter(DataStore.i));
+                loadHelper = new RendereableAssetLoadHelper(customContentProvider, entity.scene.sceneData.baseUrlBundles);
 
             loadHelper.settings.forceGPUOnlyMesh = true;
             loadHelper.settings.parent = entity.meshRootGameObject.transform;

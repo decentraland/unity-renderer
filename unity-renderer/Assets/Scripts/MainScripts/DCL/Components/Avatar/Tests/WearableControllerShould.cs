@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using AssetPromiseErrorReporter;
-using DCL;
 using DCL.Components;
 using NSubstitute;
 using NUnit.Framework;
@@ -34,13 +32,13 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wearableItem);
-            WearableController wearable = new WearableController(wearableItem, Substitute.For<IAssetPromiseErrorReporter>());
+            WearableController wearable = new WearableController(wearableItem);
             toCleanUp.Add(wearable);
 
             //Act
             bool succeeded = false;
             bool failed = false;
-            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, x => failed = true);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, (x, e) => failed = true);
             yield return new WaitUntil(() => succeeded || failed);
 
             //Assert
@@ -67,7 +65,7 @@ namespace AvatarShape_Tests
                     }
                 }
             };
-            WearableController wearable = new WearableController(unexistentWearableItem, Substitute.For<IAssetPromiseErrorReporter>());
+            WearableController wearable = new WearableController(unexistentWearableItem);
             toCleanUp.Add(wearable);
 
             //Act
@@ -75,7 +73,7 @@ namespace AvatarShape_Tests
             bool failed = false;
             RendereableAssetLoadHelper.LoadingType cacheLoadingType = RendereableAssetLoadHelper.defaultLoadingType;
             RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_ONLY;
-            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, x => failed = true);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, (x, e) => failed = true);
             yield return new WaitUntil(() => succeeded || failed);
             RendereableAssetLoadHelper.defaultLoadingType = cacheLoadingType;
 
@@ -97,7 +95,7 @@ namespace AvatarShape_Tests
             }
 
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
-            WearableController wearable = new WearableController(wereableItem, Substitute.For<IAssetPromiseErrorReporter>());
+            WearableController wearable = new WearableController(wereableItem);
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
@@ -119,7 +117,7 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
-            WearableController wearable = new WearableController(wereableItem, Substitute.For<IAssetPromiseErrorReporter>());
+            WearableController wearable = new WearableController(wereableItem);
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
@@ -138,7 +136,7 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
-            WearableController wearable = new WearableController(wereableItem, Substitute.For<IAssetPromiseErrorReporter>());
+            WearableController wearable = new WearableController(wereableItem);
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);

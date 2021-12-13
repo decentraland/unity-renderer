@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using AssetPromiseErrorReporter;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -29,16 +28,13 @@ namespace DCL
 
         public static AssetBundlesLoader assetBundlesLoader = new AssetBundlesLoader();
         private Transform containerTransform;
-        private readonly IAssetPromiseErrorReporter errorReporter;
         private WebRequestAsyncOperation asyncOp;
 
         public AssetPromise_AB(string contentUrl, string hash,
-            Transform containerTransform = null,
-            IAssetPromiseErrorReporter errorReporter = null) : base(contentUrl,
+            Transform containerTransform = null) : base(contentUrl,
             hash)
         {
             this.containerTransform = containerTransform;
-            this.errorReporter = errorReporter;
             assetBundlesLoader.Start();
         }
 
@@ -172,7 +168,7 @@ namespace DCL
                     while (it.MoveNext())
                     {
                         var dep = it.Current;
-                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform, errorReporter);
+                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform);
                         AssetPromiseKeeper_AB.i.Keep(promise);
                         dependencyPromises.Add(promise);
                     }
@@ -218,13 +214,7 @@ namespace DCL
         {
             loadCoroutine = CoroutineStarter.Start(DCLCoroutineRunner.Run(
                 LoadAssetBundleWithDeps(contentUrl, hash, OnSuccess, OnFail),
-                exception => HandleLoadException(exception, OnFail)));
-        }
-
-        private void HandleLoadException(Exception exception, Action<Exception> failCallback)
-        {
-            errorReporter?.Report(exception);
-            failCallback?.Invoke(exception);
+                exception => OnFail?.Invoke(exception)));
         }
 
         IEnumerator WaitForConcurrentRequestsSlot()

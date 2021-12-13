@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AssetPromiseErrorReporter;
 using DCL.Helpers;
 using GPUSkinning;
 using UnityEngine;
@@ -249,7 +248,7 @@ namespace DCL
             WearableItem resolvedBody = null;
 
             // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
-            Helpers.Promise<WearableItem> avatarBodyPromise = null;
+            Promise<WearableItem> avatarBodyPromise = null;
             if (!string.IsNullOrEmpty(model.bodyShape))
             {
                 avatarBodyPromise = CatalogController.RequestWearable(model.bodyShape);
@@ -263,7 +262,7 @@ namespace DCL
             List<WearableItem> resolvedWearables = new List<WearableItem>();
 
             // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
-            List<Helpers.Promise<WearableItem>> avatarWearablePromises = new List<Helpers.Promise<WearableItem>>();
+            List<Promise<WearableItem>> avatarWearablePromises = new List<Promise<WearableItem>>();
             if (model.wearables != null)
             {
                 for (int i = 0; i < model.wearables.Count; i++)
@@ -298,7 +297,7 @@ namespace DCL
             }
 
             // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
-            List<Helpers.Promise<WearableItem>> replacementPromises = new List<Helpers.Promise<WearableItem>>();
+            List<Promise<WearableItem>> replacementPromises = new List<Promise<WearableItem>>();
 
             foreach (var avatarWearablePromise in avatarWearablePromises)
             {
@@ -360,7 +359,7 @@ namespace DCL
             {
                 HideAll();
 
-                bodyShapeController = new BodyShapeController(resolvedBody, new StopLoadingHudReporter(DataStore.i));
+                bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
                 mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
@@ -427,7 +426,7 @@ namespace DCL
                 if (bodyIsDirty)
                     wearable.boneRetargetingDirty = true;
 
-                wearable.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x));
+                wearable.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, (x, error) => OnWearableLoadingFail(x, error));
                 yield return null;
             }
 
@@ -524,29 +523,33 @@ namespace DCL
         {
             if (wearableController == null || model == null)
             {
-                Debug.LogWarning($"WearableSuccess was called wrongly: IsWearableControllerNull=>{wearableController == null}, IsModelNull=>{model == null}");
-                OnWearableLoadingFail(wearableController, 0);
+                var message = $"WearableSuccess was called wrongly: IsWearableControllerNull=>{wearableController == null}, IsModelNull=>{model == null}";
+                Debug.LogWarning(message);
+                OnWearableLoadingFail(wearableController, new Exception(message), 0);
             }
         }
 
-        void OnBodyShapeLoadingFail(WearableController wearableController)
+        void OnBodyShapeLoadingFail(WearableController wearableController, Exception error)
         {
-            Debug.LogError($"Avatar: {model?.name}  -  Failed loading bodyshape: {wearableController?.id}");
+            Debug.LogError($"Avatar: {model?.name}  -  Failed loading bodyshape: {wearableController?.id}  -  Exception: {error}");
             CleanupAvatar();
             OnFailEvent?.Invoke(true);
         }
 
-        void OnWearableLoadingFail(WearableController wearableController, int retriesCount = MAX_RETRIES)
+        void OnWearableLoadingFail(WearableController wearableController, Exception error, int retriesCount = MAX_RETRIES)
         {
             if (retriesCount <= 0)
             {
-                Debug.LogError($"Avatar: {model?.name}  -  Failed loading wearable: {wearableController?.id}");
+                Debug.LogError($"Avatar: {model?.name}  -  Failed loading wearable: {wearableController?.id}  -  Exception: {error}");
+                // cleaning up the avatar nulls OnFailEvent, so save it in a temporal variable and then execute it
+                // so the fail stream doesnt die
+                var failEventBeforeClearing = OnFailEvent;
                 CleanupAvatar();
-                OnFailEvent?.Invoke(false);
+                failEventBeforeClearing?.Invoke(false);
                 return;
             }
 
-            wearableController.Load(bodyShapeController.id, transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x, retriesCount - 1));
+            wearableController.Load(bodyShapeController.id, transform, OnWearableLoadingSuccess, (x, e) => OnWearableLoadingFail(x, e, retriesCount - 1));
         }
 
         private void SetWearableBones()
@@ -601,7 +604,7 @@ namespace DCL
                     break;
 
                 default:
-                    var wearableController = new WearableController(wearable, new StopLoadingHudReporter(DataStore.i));
+                    var wearableController = new WearableController(wearable);
                     wearableControllers.Add(wearable, wearableController);
                     break;
             }

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public interface IBodyShapeController
 {
@@ -30,8 +30,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     private AvatarAnimationEventHandler animEventHandler;
 
-    public BodyShapeController(WearableItem wearableItem,
-        IAssetPromiseErrorReporter assetPromiseErrorReporter) : base(wearableItem, assetPromiseErrorReporter) { }
+    public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
     protected BodyShapeController(BodyShapeController original) : base(original)
     {
@@ -49,7 +48,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
         feetActive = original.feetActive;
     }
 
-    public override void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
+    public override void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController, Exception> onFail)
     {
         animationTarget = parent;
         base.Load(bodyShapeId, parent, onSuccess, onFail);
@@ -240,7 +239,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public override void CleanUp()
     {
-        UnityEngine.Object.Destroy(animEventHandler);
+        Object.Destroy(animEventHandler);
         facialFeaturesVisible = true;
         base.CleanUp();
     }

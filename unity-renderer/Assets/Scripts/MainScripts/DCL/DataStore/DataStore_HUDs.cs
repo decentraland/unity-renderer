@@ -22,7 +22,6 @@ namespace DCL
             public readonly BaseVariable<string> message = new BaseVariable<string>(null);
             public readonly BaseVariable<float> percentage = new BaseVariable<float>(0);
             public readonly BaseVariable<bool> showTips = new BaseVariable<bool>(false);
-            public readonly BaseVariable<Exception> criticalLoadingError = new BaseVariable<Exception>();
         }
     }
 }

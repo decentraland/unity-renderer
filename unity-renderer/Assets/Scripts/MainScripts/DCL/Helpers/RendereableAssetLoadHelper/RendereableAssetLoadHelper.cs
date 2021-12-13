@@ -1,5 +1,4 @@
 using System;
-using AssetPromiseErrorReporter;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -41,7 +40,6 @@ namespace DCL.Components
         }
 
         string bundlesContentUrl;
-        private readonly IAssetPromiseErrorReporter assetPromiseErrorReporter;
         ContentProvider contentProvider;
 
         AssetPromise_GLTF gltfPromise;
@@ -76,16 +74,14 @@ namespace DCL.Components
         float loadFinishTime = float.MaxValue;
 #endif
 
-        public RendereableAssetLoadHelper(ContentProvider contentProvider, string bundlesContentUrl,
-            IAssetPromiseErrorReporter assetPromiseErrorReporter)
+        public RendereableAssetLoadHelper(ContentProvider contentProvider, string bundlesContentUrl)
         {
             this.contentProvider = contentProvider;
             this.bundlesContentUrl = bundlesContentUrl;
-            this.assetPromiseErrorReporter = assetPromiseErrorReporter;
         }
 
-        public event System.Action<Rendereable> OnSuccessEvent;
-        public event System.Action<Exception> OnFailEvent;
+        public event Action<Rendereable> OnSuccessEvent;
+        public event Action<Exception> OnFailEvent;
 
         public void Load(string targetUrl, LoadingType forcedLoadingType = LoadingType.DEFAULT)
         {
@@ -155,7 +151,7 @@ namespace DCL.Components
                 return;
             }
 
-            abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash, assetPromiseErrorReporter);
+            abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
 
             abPromise.OnSuccessEvent += (x) =>
@@ -224,7 +220,7 @@ namespace DCL.Components
             ClearEvents();
         }
 
-        private void OnSuccessWrapper(Rendereable loadedAsset, System.Action<Rendereable> OnSuccess)
+        private void OnSuccessWrapper(Rendereable loadedAsset, Action<Rendereable> OnSuccess)
         {
 #if UNITY_EDITOR
             loadFinishTime = Time.realtimeSinceStartup;

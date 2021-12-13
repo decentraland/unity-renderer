@@ -2,25 +2,20 @@ using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
-using DCL.Configuration;
 using UnityEngine;
 using System.Collections.Generic;
-using AssetPromiseErrorReporter;
 using DCL.Models;
 
 namespace DCL
 {
     public class AssetPromise_AB_GameObject : AssetPromise_WithUrl<Asset_AB_GameObject>
     {
-        private readonly IAssetPromiseErrorReporter errorReporter;
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
 
-        public AssetPromise_AB_GameObject(string contentUrl, string hash,
-            IAssetPromiseErrorReporter errorReporter) : base(contentUrl, hash)
+        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
-            this.errorReporter = errorReporter;
         }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
@@ -94,7 +89,7 @@ namespace DCL
 
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
-            subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform, errorReporter);
+            subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform);
             bool success = false;
             subPromise.OnSuccessEvent += (x) => success = true;
             asset.ownerPromise = subPromise;

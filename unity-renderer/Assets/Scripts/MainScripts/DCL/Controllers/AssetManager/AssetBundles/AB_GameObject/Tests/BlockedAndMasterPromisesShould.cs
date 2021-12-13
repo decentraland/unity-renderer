@@ -1,9 +1,7 @@
+using System.Collections;
 using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
-using System.Collections;
-using AssetPromiseErrorReporter;
-using NSubstitute;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -19,7 +17,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
         {
             string contentUrl = TestAssetsUtils.GetPath() + "/AssetBundles/";
             hash = hash ?? "QmNS4K7GaH63T9rhAfkrra7ADLXSEeco8FTGknkPnAVmKM";
-            var prom = new AssetPromise_AB_GameObject(contentUrl, hash, Substitute.For<IAssetPromiseErrorReporter>());
+            var prom = new AssetPromise_AB_GameObject(contentUrl, hash);
             return prom;
         }
 

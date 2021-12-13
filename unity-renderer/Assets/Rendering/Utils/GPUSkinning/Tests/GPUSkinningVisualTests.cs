@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Helpers;
 using GPUSkinning;
@@ -84,13 +83,13 @@ public class GPUSkinningVisualTests : VisualTestsBase
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
         Assert.NotNull(wearableItem);
 
-        WearableController wearable = new WearableController(wearableItem, Substitute.For<IAssetPromiseErrorReporter>());
+        WearableController wearable = new WearableController(wearableItem);
         toCleanUp.Add(wearable);
 
         bool succeeded = false;
         bool failed = false;
 
-        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, x => failed = true);
+        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, (x, e) => failed = true);
 
         yield return new WaitUntil(() => succeeded || failed);
 

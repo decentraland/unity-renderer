@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.IO;
-using AssetPromiseErrorReporter;
 using DCL;
 using DCL.Components;
 using UnityEngine;
@@ -97,7 +96,6 @@ namespace UnityGLTF
         private IWebRequestController webRequestController;
         private bool prioritizeDownload = false;
         private string baseUrl = "";
-        private IAssetPromiseErrorReporter loadErrorReporter;
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -135,7 +133,6 @@ namespace UnityGLTF
             }
 
             this.fileToHashConverter = fileToHashConverter;
-            loadErrorReporter = new StopLoadingHudReporter(DataStore.i);
 
             if ( throttlingCounter != null )
             {
@@ -185,7 +182,6 @@ namespace UnityGLTF
             DecrementDownloadCount();
 
             OnFailedLoadingAsset?.Invoke(exception);
-            loadErrorReporter?.Report(exception);
 
             if (exception != null)
             {

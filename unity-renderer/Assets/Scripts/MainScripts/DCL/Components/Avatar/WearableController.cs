@@ -1,11 +1,10 @@
-using DCL;
-using DCL.Components;
-using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using AssetPromiseErrorReporter;
+using DCL;
+using DCL.Components;
+using DCL.Helpers;
 using UnityEngine;
 
 public class WearableController
@@ -15,7 +14,6 @@ public class WearableController
     private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
     public readonly WearableItem wearable;
-    private readonly IAssetPromiseErrorReporter assetPromiseErrorReporter;
     protected RendereableAssetLoadHelper loader;
 
     public string id => wearable.id;
@@ -33,11 +31,9 @@ public class WearableController
 
     public IReadOnlyList<SkinnedMeshRenderer> GetRenderers() { return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers); }
 
-    public WearableController(WearableItem wearableItem,
-        IAssetPromiseErrorReporter assetPromiseErrorReporter)
+    public WearableController(WearableItem wearableItem)
     {
-        this.wearable = wearableItem;
-        this.assetPromiseErrorReporter = assetPromiseErrorReporter;
+        wearable = wearableItem;
         SetupAssetBundlesConfig();
     }
 
@@ -57,7 +53,7 @@ public class WearableController
         useAssetBundles = featureFlags != null && featureFlags.IsFeatureEnabled(AB_FEATURE_FLAG_NAME); 
     }
 
-    public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
+    public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController, Exception> onFail)
     {
         if (isReady)
             return;
@@ -68,13 +64,13 @@ public class WearableController
 
         if (representation == null)
         {
-            onFail?.Invoke(this);
+            onFail?.Invoke(this, new Exception($"Wearable load fail. There is no representation for bodyShape {bodyShapeId} on wearable {wearable.id}"));
             return;
         }
 
         var provider = wearable.GetContentProvider(bodyShapeId);
 
-        loader = new RendereableAssetLoadHelper(provider, wearable.baseUrlBundles, assetPromiseErrorReporter);
+        loader = new RendereableAssetLoadHelper(provider, wearable.baseUrlBundles);
 
         loader.settings.forceNewInstance = false;
         loader.settings.initialLocalPosition = Vector3.up * 0.75f;
@@ -110,7 +106,7 @@ public class WearableController
                 loader = null;
             }
 
-            onFail?.Invoke(this);
+            onFail?.Invoke(this, error);
         }
 
         loader.OnFailEvent += OnFailEventWrapper;
