@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2097296
+    totalSpriteSurfaceArea: 2113680
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -108,6 +108,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 04c3edf2ef4a747ffbe6f20a72aac0d9, type: 3}
   - {fileID: 21300000, guid: 42402c03014144e64b56b0f83f883e5e, type: 3}
   - {fileID: 21300000, guid: ad6eb51354c9f4bd4af55d70ae175139, type: 3}
+  - {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}
   - {fileID: 21300000, guid: 37894a231569347e8b89612f29611b85, type: 3}
   - {fileID: 21300000, guid: 540ccf231c7f68848b71c262e2a8c1f7, type: 3}
   - {fileID: 21300000, guid: edb831335c79c4bc9977a312db827955, type: 3}
@@ -141,7 +142,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c6bfc325bda1f44ba9affb7ecdf26a11, type: 3}
   - {fileID: 21300000, guid: 6fbdd825c58334612a3d1645eba6da25, type: 3}
   - {fileID: 21300000, guid: 4e9a4135cdf6d42afb73b12a76bf53f2, type: 3}
-  - {fileID: 21300000, guid: 4bb84435c63fb4e1f9276314c9e47125, type: 3}
   - {fileID: 21300000, guid: 47acd065431664e80a9a8cdedf8acb31, type: 3}
   - {fileID: 21300000, guid: 7ec9c5651d0c04c2db1086ffdad1a3d0, type: 3}
   - {fileID: 21300000, guid: e0a2bc75af20840e79cb10bba9987431, type: 3}
@@ -248,6 +248,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 42eb1ceb0cb414d60b49ce912a143517, type: 3}
   - {fileID: 21300000, guid: 64b96cebc797f4e75ad10e05ff68466f, type: 3}
   - {fileID: 21300000, guid: b1fdbdeb128d64657bb427b7c93fbab4, type: 3}
+  - {fileID: 21300000, guid: f40bf6fb414054290a754636595da223, type: 3}
   - {fileID: 21300000, guid: a3a66afb0cf6d49da8b0b2b18f7b20d0, type: 3}
   - {fileID: 21300000, guid: cea1ac0c0c969478ea2054b9a06f7c86, type: 3}
   - {fileID: 21300000, guid: 90be4f1cf715b4378954ea0510aeb9ba, type: 3}
@@ -348,6 +349,7 @@ SpriteAtlas:
   - NFTContainer
   - ContainerRectLeft20
   - ContainerRadius10@2x
+  - DCLLogoColor
   - Outline1Radius12
   - ButtonFlatWhite
   - ExitFullScreenIcon
@@ -381,7 +383,6 @@ SpriteAtlas:
   - Button14
   - ContainerShadowRadiusSix
   - JumpInSquare
-  - StokeRectRadius12
   - BubblePeak
   - Frame5
   - ArrowUp
@@ -488,6 +489,7 @@ SpriteAtlas:
   - Ellipse32
   - ChatIcon
   - RectRadiusStroke16
+  - TopStroke2Rect12
   - ContainerRadius8
   - OutlineRedButton
   - ManaContainer
