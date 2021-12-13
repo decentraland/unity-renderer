@@ -813,7 +813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 6.2, y: -4.700012}
+  m_AnchoredPosition: {x: 6.200012, y: -4.700012}
   m_SizeDelta: {x: 191.38, y: 227.3}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1110629050973134691
@@ -2826,7 +2826,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: StartMenuButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7356755232379146868, guid: 88cd164bd30b4c446917e9faee11dd6a, type: 3}
+    - {fileID: 425374008393503123, guid: 88cd164bd30b4c446917e9faee11dd6a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 88cd164bd30b4c446917e9faee11dd6a, type: 3}
 --- !u!224 &473998141878399483 stripped
 RectTransform:
