@@ -4,7 +4,6 @@ using UnityEngine;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
-using Environment = System.Environment;
 
 public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
@@ -60,6 +59,11 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         camera.clearFlags = CameraClearFlags.Color;
         camera.backgroundColor = Color.grey;
         camera.allowHDR = true;
+
+        UnityEngine.RenderSettings.fog = true;
+        UnityEngine.RenderSettings.fogMode = FogMode.Linear;
+        UnityEngine.RenderSettings.fogStartDistance = 100;
+        UnityEngine.RenderSettings.fogEndDistance = 110;
 
         VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(0, 2, 0));
     }
