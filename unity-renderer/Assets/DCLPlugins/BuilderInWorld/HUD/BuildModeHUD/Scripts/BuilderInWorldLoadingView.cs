@@ -150,7 +150,6 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
             float initialNormalizedPos = loadingTipsScroll.horizontalNormalizedPosition;
             currentFinalNormalizedPos = initialNormalizedPos + (1f / (loadingTips.Count - 1));
             loadingTipsScroll.horizontalNormalizedPosition =   currentFinalNormalizedPos;
-            // yield return RunTipsAnimationCoroutine();
             IncrementTipIndex();
         }
     }

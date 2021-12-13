@@ -207,10 +207,9 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
-    public void NewSceneForLand(IBuilderScene screenshot)
+    public void NewSceneForLand(IBuilderScene sceneWithSceenshot)
     {
         //TODO: Implement welcome panel
-        //controllers.newProjectDetailsController.SetPublicationScreenshot(screenshot);
         controllers.newProjectDetailsController.SetActive(true);
     }
 

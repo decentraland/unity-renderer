@@ -111,22 +111,23 @@ namespace Tests.BuildModeHUDControllers
             builderEditorHudController.NewSceneForLand(Substitute.For<IBuilderScene>());
 
             // Assert
-            //builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetPublicationScreenshot(testScreenshot);
             // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
+
+            //builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetPublicationScreenshot(testScreenshot);
             //builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetActive(true);
         }
 
         [Test]
         public void ConfirmNewProjectDetailsCorrectly()
         {
-            //TODO: Implement when the welcome panel has been implemented
+            //TODO: Re-Implement when the welcome panel has been implemented
             // Arrange
             bool newProjectDetailsConfirmed = false;
             // builderEditorHudController.OnSaveSceneInfoAction += (name, desc, image) =>
             // {
             //     newProjectDetailsConfirmed = true;
             // };
-            builderEditorHudController.context.cameraController.Configure().GetLastScreenshot().Returns(new Texture2D(120, 120));
+            //builderEditorHudController.context.cameraController.Configure().GetLastScreenshot().Returns(new Texture2D(120, 120));
 
             // Act
             // builderEditorHudController.SaveSceneInfo();

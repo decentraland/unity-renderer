@@ -121,7 +121,6 @@ public class BIWPublishController : BIWController, IBIWPublishController
         {
             //TODO: Implement project publish
         }
-
     }
 
     internal void TakeSceneScreenshotForPublish()
