@@ -533,8 +533,11 @@ namespace DCL
         {
             var errorMessage = $"Avatar: {model?.name}  -  Failed loading bodyshape: {wearableController?.id}  -  Exception: {error}";
             Debug.LogError(errorMessage);
+            // cleaning up the avatar nulls OnFailEvent, so save it in a temporal variable and then execute it
+            // so the fail stream doesnt die
+            var failEventBeforeClearing = OnFailEvent;
             CleanupAvatar();
-            OnFailEvent?.Invoke(new AvatarLoadFatalException(errorMessage));
+            failEventBeforeClearing?.Invoke(new AvatarLoadFatalException(errorMessage));
         }
 
         void OnWearableLoadingFail(WearableController wearableController, Exception error, int retriesCount = MAX_RETRIES)
