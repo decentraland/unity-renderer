@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 4668052
+    totalSpriteSurfaceArea: 4676244
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -85,6 +85,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4b1c9751d9ed642a190d2431fa02b5f8, type: 3}
   - {fileID: 21300000, guid: 35d9dd519b2dd8a47a6f251b25fded0f, type: 3}
   - {fileID: 21300000, guid: 24bad1613b3e14b969cf6086aa095ffc, type: 3}
+  - {fileID: 21300000, guid: 8ba9b271a894b4f8695979cdfe864b48, type: 3}
   - {fileID: 21300000, guid: 511aa971d8654400498da53ce8f013b7, type: 3}
   - {fileID: 21300000, guid: 0d4bfb71b11af4dc0967886c03434d5b, type: 3}
   - {fileID: 21300000, guid: a26c049177d1b423cbf29f2f44dd73c2, type: 3}
@@ -297,6 +298,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 24dc203e4e3c4422c92496e4ea5fb524, type: 3}
   - {fileID: 21300000, guid: ffc3be3e8ae37400bb01f74051bbc912, type: 3}
   - {fileID: 21300000, guid: 8141c84e8680a488d8dd05453596b0cc, type: 3}
+  - {fileID: 21300000, guid: 590e1b5ec5d7e45379b7d1f4f3f4e1af, type: 3}
   - {fileID: 21300000, guid: 9542616ed37ec4213b07f1127bd8d938, type: 3}
   - {fileID: 21300000, guid: b01bb67eac45b4ce4b289efdfb7c1847, type: 3}
   - {fileID: 21300000, guid: 6e8b3a7ec6a0949b4a3ba5a6c983c30f, type: 3}
@@ -344,6 +346,7 @@ SpriteAtlas:
   - ContainerRadius6
   - VoiceChatCross
   - DecentralandIsologotipo68
+  - TopRect12
   - SceneInfoContainer
   - Button16
   - BlockedUser
@@ -520,7 +523,7 @@ SpriteAtlas:
   - Ellipse32
   - ChatIcon
   - RectRadiusStroke16
-  - TopStroke2Rect12
+  - Top12Outline2
   - ContainerRadius8
   - OutlineRedButton
   - ManaContainer
@@ -556,6 +559,7 @@ SpriteAtlas:
   - ContainerRectBottom
   - CardBlockIcon
   - Button10
+  - BottomRect12
   - ContainerRectTop
   - Button6
   - EditIcon
