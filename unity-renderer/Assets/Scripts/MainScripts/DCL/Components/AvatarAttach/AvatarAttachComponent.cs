@@ -31,7 +31,6 @@ namespace DCL.Components
         void IEntityComponent.Initialize(IParcelScene scene, IDCLEntity entity)
         {
             handler.Initialize(scene, entity);
-            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
         }
 
         bool IComponent.IsValid() => true;

@@ -43,6 +43,8 @@ namespace DCL.Components
                 return;
             }
 
+            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
+
             if (prevModel.avatarId != model.avatarId)
             {
                 Dettach();
