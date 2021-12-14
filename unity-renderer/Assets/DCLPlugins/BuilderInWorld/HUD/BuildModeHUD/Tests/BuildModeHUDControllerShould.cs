@@ -32,8 +32,7 @@ namespace Tests.BuildModeHUDControllers
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
                 saveHUDController = Substitute.For<ISaveHUDController>(),
-                newProjectDetailsController = Substitute.For<IPublicationDetailsController>(),
-                publicationDetailsController = Substitute.For<IPublicationDetailsController>()
+                newProjectDetailsController = Substitute.For<INewProjectDetailController>()
             };
 
             builderEditorHudController = Substitute.ForPartsOf<BuilderEditorHUDController>();
@@ -63,7 +62,6 @@ namespace Tests.BuildModeHUDControllers
             builderEditorHudController.controllers.topActionsButtonsController = null;
             builderEditorHudController.controllers.saveHUDController = null;
             builderEditorHudController.controllers.newProjectDetailsController = null;
-            builderEditorHudController.controllers.publicationDetailsController = null;
 
             // Act
             builderEditorHudController.CreateBuildModeControllers();
@@ -84,7 +82,6 @@ namespace Tests.BuildModeHUDControllers
             Assert.NotNull(builderEditorHudController.controllers.topActionsButtonsController, "The topActionsButtonsController is null!");
             Assert.NotNull(builderEditorHudController.controllers.saveHUDController, "The saveHUDController is null!");
             Assert.NotNull(builderEditorHudController.controllers.newProjectDetailsController, "The newProjectDetailsController is null!");
-            Assert.NotNull(builderEditorHudController.controllers.publicationDetailsController, "The publicationDetailsController is null!");
         }
 
         [Test]
@@ -151,16 +148,6 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void PublishStartCorrectly()
-        {
-            // Act
-            builderEditorHudController.PublishStart(Substitute.For<IBuilderScene>());
-
-            // Assert
-            builderEditorHudController.controllers.publicationDetailsController.Received(1).SetActive(true);
-        }
-
-        [Test]
         public void ConfirmPublicationDetailsCorrectly()
         {
             // Act
@@ -174,27 +161,6 @@ namespace Tests.BuildModeHUDControllers
                                           Arg.Any<string>(),
                                           Arg.Any<string>());
             builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
-        }
-
-        [Test]
-        public void CancelPublicationDetailsCorrectly()
-        {
-            // Act
-            builderEditorHudController.CancelPublishModal(BuildModeModalType.PUBLISH);
-
-            // Assert
-            builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1).SetActive(false, BuildModeModalType.PUBLISH);
-            builderEditorHudController.controllers.publicationDetailsController.Received(1).SetActive(true);
-        }
-
-        [Test]
-        public void CancelPublishModalCorrectly()
-        {
-            // Act
-            builderEditorHudController.CancelPublicationDetails();
-
-            // Assert
-            builderEditorHudController.controllers.publicationDetailsController.Received(1).SetActive(false);
         }
 
         [Test]
@@ -244,7 +210,6 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             Assert.IsTrue(exitConfirmed, "exitConfirmed is false!");
-            builderEditorHudController.controllers.publicationDetailsController.Received().SetDefaultPublicationInfo();
         }
 
         [Test]

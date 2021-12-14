@@ -1,3 +1,4 @@
+using DCL.Builder;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -30,8 +31,7 @@ namespace Tests.BuildModeHUDViews
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
                 saveHUDController =  Substitute.For<ISaveHUDController>(),
-                newProjectDetailsController = Substitute.For<IPublicationDetailsController>(),
-                publicationDetailsController = Substitute.For<IPublicationDetailsController>()
+                newProjectDetailsController = Substitute.For<INewProjectDetailController>()
             };
 
             buildModeHUDView = BuildModeHUDView.Create();
@@ -78,8 +78,6 @@ namespace Tests.BuildModeHUDViews
             testControllers.saveHUDController.Received(1).Initialize(buildModeHUDView.saveView);
             Assert.AreEqual(testControllers.newProjectDetailsController, buildModeHUDView.controllers.newProjectDetailsController, "The newProjectDetailsController does not match!");
             testControllers.newProjectDetailsController.Received(1).Initialize(buildModeHUDView.newProjectDetailsView);
-            Assert.AreEqual(testControllers.publicationDetailsController, buildModeHUDView.controllers.publicationDetailsController, "The publicationDetailsController does not match!");
-            testControllers.publicationDetailsController.Received(1).Initialize(buildModeHUDView.publicationDetailsView);
         }
 
         [Test]

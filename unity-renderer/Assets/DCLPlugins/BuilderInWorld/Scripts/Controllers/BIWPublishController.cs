@@ -113,14 +113,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
 
         TakeSceneScreenshotForPublish();
 
-        if (builderScene.sceneType == IBuilderScene.SceneType.LAND)
-        {
-            context.editorContext.editorHUD.PublishStart(builderScene);
-        }
-        else
-        {
-            //TODO: Implement project publish
-        }
+        context.publisher.Publish(builderScene);
     }
 
     internal void TakeSceneScreenshotForPublish()
