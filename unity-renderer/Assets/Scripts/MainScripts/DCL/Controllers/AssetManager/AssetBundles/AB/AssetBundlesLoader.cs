@@ -20,9 +20,9 @@ namespace DCL
             public AssetBundle assetBundle;
             public Transform containerTransform;
             public Action onSuccess;
-            public Action onFail;
+            public Action<Exception> onFail;
 
-            public AssetBundleInfo(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action onFail)
+            public AssetBundleInfo(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action<Exception> onFail)
             {
                 this.asset = asset;
                 this.assetBundle = assetBundle;
@@ -77,7 +77,7 @@ namespace DCL
             lowPriorityLoadQueue.Clear();
         }
 
-        public void MarkAssetBundleForLoad(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action onFail)
+        public void MarkAssetBundleForLoad(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action<Exception> onFail)
         {
             CheckForReprioritizeAwaitingAssets();
 
@@ -130,7 +130,7 @@ namespace DCL
         {
             if (assetBundleInfo.assetBundle == null)
             {
-                assetBundleInfo.onFail?.Invoke();
+                assetBundleInfo.onFail?.Invoke(new Exception("Asset bundle is null"));
                 yield break;
             }
 

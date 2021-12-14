@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
-using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -171,7 +170,7 @@ public class WearablesVisualTests : VisualTestsBase
         bool succeeded = false;
         bool failed = false;
 
-        wearable.Load(bodyShapeId, holder.transform, x => succeeded = true, x => failed = true);
+        wearable.Load(bodyShapeId, holder.transform, x => succeeded = true, (x, e) => failed = true);
 
         yield return new WaitUntil(() => succeeded || failed);
 

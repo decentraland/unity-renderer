@@ -49,7 +49,7 @@ public static class ThumbnailsManager
         var promise = new AssetPromise_Texture(url);
 
         promise.OnSuccessEvent += OnComplete;
-        promise.OnFailEvent += x => { Debug.Log($"Error downloading: {url}"); };
+        promise.OnFailEvent += (x, error) => { Debug.Log($"Error downloading: {url}, Exception: {error}"); };
 
         AssetPromiseKeeper_Texture.i.Keep(promise);
         return promise;

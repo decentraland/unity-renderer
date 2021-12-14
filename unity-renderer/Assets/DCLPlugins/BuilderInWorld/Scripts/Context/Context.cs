@@ -20,8 +20,8 @@ namespace DCL.Builder
         public IBuilderAPIController builderAPIController { get; internal set; }
         public ISceneManager sceneManager  { get; internal set; }
         public ICameraController cameraController  { get; internal set; }
-
         public ISceneReferences sceneReferences { get; internal set; }
+        public IPublisher publisher { get; internal set; }
 
         //Editor
         public IEditorContext editorContext { get; internal set; }
@@ -31,6 +31,7 @@ namespace DCL.Builder
             IBuilderAPIController builderAPIController,
             ISceneManager sceneManager,
             ICameraController cameraController,
+            IPublisher publisher,
             IBuilderEditorHUDController editorHUD,
             IBIWOutlinerController outlinerController,
             IBIWInputHandler inputHandler,
@@ -58,6 +59,7 @@ namespace DCL.Builder
             this.builderAPIController = builderAPIController;
             this.sceneManager = sceneManager;
             this.cameraController = cameraController;
+            this.publisher = publisher;
 
             editorContext = new EditorContext(editorHUD,
                 outlinerController,
@@ -91,7 +93,7 @@ namespace DCL.Builder
 
         private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
         private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
-        
+
         BIWGodModeDynamicVariables IEditorContext.godModeDynamicVariablesAsset => godModeDynamicVariablesAssetReference;
         BIWFirstPersonDynamicVariables IEditorContext.firstPersonDynamicVariablesAsset => firstPersonDynamicVariablesAssetReference;
 
@@ -172,7 +174,7 @@ namespace DCL.Builder
             gizmosController.Dispose();
 
             sceneReferences.Dispose();
-            
+
             godModeDynamicVariablesAssetReference = null;
             firstPersonDynamicVariablesAssetReference = null;
         }

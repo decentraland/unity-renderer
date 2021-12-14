@@ -165,7 +165,7 @@ namespace DCL.Components
                         Debug.LogWarning($"LoadableShape '{model.assetId}' not found in catalog, probably asset pack deleted");
 #endif
                         failed = true;
-                        OnLoadFailed(null);
+                        OnLoadFailed(null, new Exception($"LoadableShape '{model.assetId}' not found in catalog, probably asset pack deleted"));
                         return;
                     }
 
@@ -214,7 +214,7 @@ namespace DCL.Components
 
         protected virtual void ConfigureColliders(IDCLEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
 
-        protected void OnLoadFailed(LoadWrapper loadWrapper)
+        protected void OnLoadFailed(LoadWrapper loadWrapper, Exception exception)
         {
             if (loadWrapper != null)
                 CleanFailedWrapper(loadWrapper);
@@ -253,7 +253,7 @@ namespace DCL.Components
 
             if (entity.meshesInfo.currentShape == null)
             {
-                OnLoadFailed(loadWrapper);
+                OnLoadFailed(loadWrapper, new Exception($"Entity {entity.entityId} current shape of mesh information is null"));
                 return;
             }
 

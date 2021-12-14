@@ -34,7 +34,7 @@ namespace DCL
 
         internal event Action<AssetPromise<AssetType>> OnPreFinishEvent;
         public event Action<AssetType> OnSuccessEvent;
-        public event Action<AssetType> OnFailEvent;
+        public event Action<AssetType, Exception> OnFailEvent;
 
         public override bool keepWaiting { get { return state == AssetPromiseState.LOADING || state == AssetPromiseState.WAITING; } }
 
@@ -44,10 +44,10 @@ namespace DCL
             OnFailEvent = null;
         }
 
-        internal void ForceFail()
+        internal void ForceFail(Exception reason)
         {
             OnPreFinishEvent = null;
-            CallAndClearEvents(false);
+            CallAndClearEvents(false, reason);
             state = AssetPromiseState.IDLE_AND_EMPTY;
         }
 
@@ -60,7 +60,7 @@ namespace DCL
             state = AssetPromiseState.WAITING;
         }
 
-        protected void CallAndClearEvents(bool isSuccess = true)
+        protected void CallAndClearEvents(bool isSuccess, Exception exception)
         {
             if (asset == null)
             {
@@ -70,8 +70,10 @@ namespace DCL
             OnPreFinishEvent?.Invoke(this);
             OnPreFinishEvent = null;
 
-            Action<AssetType> finalEvent = isSuccess ? OnSuccessEvent : OnFailEvent;
-            finalEvent?.Invoke(asset);
+            if (isSuccess)
+                OnSuccessEvent?.Invoke(asset);
+            else
+                OnFailEvent?.Invoke(asset, exception);
 
             ClearEvents();
         }
@@ -96,7 +98,7 @@ namespace DCL
                 }
                 else
                 {
-                    CallAndClearEvents(false);
+                    CallAndClearEvents(false, new Exception("Asset is null"));
                 }
 
                 return;
@@ -120,7 +122,7 @@ namespace DCL
         {
             OnAfterLoadOrReuse();
             state = AssetPromiseState.FINISHED;
-            CallAndClearEvents(isSuccess: true);
+            CallAndClearEvents(true, null);
         }
 
         protected void OnLoadSuccess()
@@ -129,17 +131,17 @@ namespace DCL
             {
                 OnAfterLoadOrReuse();
                 state = AssetPromiseState.FINISHED;
-                CallAndClearEvents(isSuccess: true);
+                CallAndClearEvents(true, null);
             }
             else
             {
-                OnLoadFailure();
+                OnLoadFailure(new Exception("Could not add asset to library"));
             }
         }
 
-        protected void OnLoadFailure()
+        protected void OnLoadFailure(Exception exception)
         {
-            CallAndClearEvents(isSuccess: false);
+            CallAndClearEvents(false, exception);
             Cleanup();
         }
 
@@ -181,7 +183,7 @@ namespace DCL
         }
 
         protected abstract void OnCancelLoading();
-        protected abstract void OnLoad(Action OnSuccess, Action OnFail);
+        protected abstract void OnLoad(Action OnSuccess, Action<Exception> OnFail);
         protected abstract void OnBeforeLoadOrReuse();
         protected abstract void OnAfterLoadOrReuse();
         public abstract object GetId();

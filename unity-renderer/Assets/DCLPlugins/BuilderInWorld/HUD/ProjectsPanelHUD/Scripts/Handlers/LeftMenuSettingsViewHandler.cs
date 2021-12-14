@@ -91,7 +91,7 @@ namespace DCL.Builder
                 }
 
                 promiseAvatarThumbnail = new AssetPromise_Texture(sceneData.authorThumbnail);
-                promiseAvatarThumbnail.OnFailEvent += asset => viewReferences.avatarThumbnailContainer.SetActive(false);
+                promiseAvatarThumbnail.OnFailEvent += (asset, error) => viewReferences.avatarThumbnailContainer.SetActive(false);
                 promiseAvatarThumbnail.OnSuccessEvent += asset =>
                 {
                     viewReferences.avatarThumbnailContainer.SetActive(true);
@@ -112,7 +112,7 @@ namespace DCL.Builder
                 }
 
                 promiseSceneThumbnail = new AssetPromise_Texture(sceneData.thumbnailUrl);
-                promiseSceneThumbnail.OnFailEvent += asset => viewReferences.thumbnail.texture = defaultThumbnail;
+                promiseSceneThumbnail.OnFailEvent += (asset, error) => viewReferences.thumbnail.texture = defaultThumbnail;
                 promiseSceneThumbnail.OnSuccessEvent += asset =>
                 {
                     viewReferences.thumbnail.texture = asset.texture;

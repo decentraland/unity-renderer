@@ -7,7 +7,7 @@ namespace DCL.Helpers
     {
         private AssetPromise_Texture currentPromise;
         public event Action<Texture2D> OnSuccess;
-        public event Action OnFail;
+        public event Action<Exception> OnFail;
 
         public Texture2D GetTexture()
         {
@@ -26,9 +26,9 @@ namespace DCL.Helpers
                 OnSuccess?.Invoke(x.texture);
             };
 
-            currentPromise.OnFailEvent += (x) =>
+            currentPromise.OnFailEvent += (x, e) =>
             {
-                OnFail?.Invoke();
+                OnFail?.Invoke(e);
                 Debug.LogError($"Texture loading failed! {uri}");
             };
 

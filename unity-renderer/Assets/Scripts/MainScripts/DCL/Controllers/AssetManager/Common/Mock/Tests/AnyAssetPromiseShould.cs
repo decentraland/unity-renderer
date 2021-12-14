@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using System.Collections;
 using UnityEngine.Assertions;
@@ -54,7 +55,7 @@ namespace AssetPromiseKeeper_Mock_Tests
 
             bool failCalled = false;
 
-            System.Action<Asset_Mock> testEvent = (x) =>
+            Action<Asset_Mock, Exception> testEvent = (x, error) =>
             {
                 failCalled = true;
             };
@@ -94,7 +95,7 @@ namespace AssetPromiseKeeper_Mock_Tests
             AssetPromise_Mock prom = new AssetPromise_Mock();
             bool failCalled = false;
 
-            System.Action<Asset_Mock> testEvent = (x) =>
+            Action<Asset_Mock, Exception> testEvent = (x, error) =>
             {
                 failCalled = true;
             };
