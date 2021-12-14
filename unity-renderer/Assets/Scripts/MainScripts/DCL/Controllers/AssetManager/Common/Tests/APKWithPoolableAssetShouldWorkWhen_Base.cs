@@ -30,7 +30,7 @@ namespace AssetPromiseKeeper_Tests
             AssetPromiseType prom2 = CreatePromise();
 
             prom2.OnFailEvent +=
-                (x) => { calledFail = true; };
+                (x, error) => { calledFail = true; };
 
             keeper.Keep(prom2);
             GameObject container = prom2.asset.container;
@@ -100,7 +100,7 @@ namespace AssetPromiseKeeper_Tests
             bool calledFail = false;
 
             prom.OnFailEvent +=
-                (x) => { calledFail = true; };
+                (x, error) => { calledFail = true; };
 
             keeper.Keep(prom);
             yield return null;
@@ -201,7 +201,7 @@ namespace AssetPromiseKeeper_Tests
                 (x) => { calledSuccess = true; };
 
             prom.OnFailEvent +=
-                (x) => { calledFail = true; };
+                (x, error) => { calledFail = true; };
 
             keeper.Keep(prom);
             keeper.Forget(prom);

@@ -22,10 +22,15 @@ public class DCLWebSocketService : WebSocketBehavior
             type = type,
             payload = message
         };
-        Send(Newtonsoft.Json.JsonConvert.SerializeObject(x));
-        if (VERBOSE)
+
+        if (ConnectionState == WebSocketState.Open)
         {
-            Debug.Log("SendMessageToWeb: " + type);
+            Send(Newtonsoft.Json.JsonConvert.SerializeObject(x));
+        
+            if (VERBOSE)
+            {
+                Debug.Log("SendMessageToWeb: " + type);
+            }
         }
 #endif
     }

@@ -36,7 +36,7 @@ public class LoadWrapperShould : IntegrationTestSuite
 
         wrapper.WhenForAnyArgs(x => x.Unload()).Do((info) => unloaded = true);
 
-        wrapper.Load(url, loadWrapper => loaded = true, loadWrapper => failed = true );
+        wrapper.Load(url, loadWrapper => loaded = true, (loadWrapper, error) => failed = true );
 
         entity.OnCleanupEvent?.Invoke(entity);
 

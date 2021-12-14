@@ -168,7 +168,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
                 {
                     Assert.IsFalse(forgottenPromises[promiseHash], "Success on forgotten promise shouldn't be called");
                 };
-                prom.OnFailEvent += (asset) =>
+                prom.OnFailEvent += (asset, error) =>
                 {
                     Assert.IsFalse(forgottenPromises[promiseHash], "Fail on forgotten promise shouldn't be called");
                 };

@@ -255,11 +255,11 @@ internal class HotSceneCellView : MonoBehaviour
         sceneName.text = sceneInfo.name;
 
         FetchThumbnail(sceneInfo.thumbnail,
-            onFail: () => FetchThumbnail(MapUtils.GetMarketPlaceThumbnailUrl(sceneInfo.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR),
-                onFail: () => SetThumbnail(errorThumbnail.texture)));
+            onFail: error => FetchThumbnail(MapUtils.GetMarketPlaceThumbnailUrl(sceneInfo.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR),
+                onFail: error => SetThumbnail(errorThumbnail.texture)));
     }
 
-    private void FetchThumbnail(string url, Action onFail) { thumbnailHandler.FetchThumbnail(url, SetThumbnail, onFail); }
+    private void FetchThumbnail(string url, Action<Exception> onFail) { thumbnailHandler.FetchThumbnail(url, SetThumbnail, onFail); }
 
     private void SetThumbnail(Texture2D texture)
     {

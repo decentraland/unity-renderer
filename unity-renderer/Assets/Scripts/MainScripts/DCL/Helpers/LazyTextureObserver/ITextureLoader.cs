@@ -14,7 +14,7 @@ namespace DCL.Helpers
         void Unload();
 
         event Action<Texture2D> OnSuccess;
-        event Action OnFail;
+        event Action<Exception> OnFail;
         Texture2D GetTexture();
     }
 }
