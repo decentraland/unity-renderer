@@ -6,7 +6,6 @@ using DCL.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NSubstitute;
 using UnityEngine;
 
 namespace AvatarShape_Tests
