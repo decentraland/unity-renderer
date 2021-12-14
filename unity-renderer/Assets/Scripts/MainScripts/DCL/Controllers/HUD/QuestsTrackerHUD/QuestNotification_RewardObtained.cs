@@ -37,7 +37,7 @@ namespace DCL.Huds.QuestsTracker
 
             imagePromise = new AssetPromise_Texture(itemImageURL);
             imagePromise.OnSuccessEvent += OnImageReady;
-            imagePromise.OnFailEvent += x => { Debug.Log($"Error downloading reward image: {itemImageURL}"); };
+            imagePromise.OnFailEvent += (x, error) => { Debug.Log($"Error downloading reward image: {itemImageURL}, Exception: {error}"); };
 
             AssetPromiseKeeper_Texture.i.Keep(imagePromise);
         }

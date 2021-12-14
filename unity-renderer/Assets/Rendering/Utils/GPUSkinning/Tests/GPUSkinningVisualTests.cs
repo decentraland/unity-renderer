@@ -4,6 +4,7 @@ using System.Linq;
 using DCL;
 using DCL.Helpers;
 using GPUSkinning;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -88,7 +89,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
         bool succeeded = false;
         bool failed = false;
 
-        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, x => failed = true);
+        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, (x, e) => failed = true);
 
         yield return new WaitUntil(() => succeeded || failed);
 

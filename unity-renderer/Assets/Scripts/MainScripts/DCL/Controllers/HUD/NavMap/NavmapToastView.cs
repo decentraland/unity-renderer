@@ -100,7 +100,7 @@ namespace DCL
                 {
                     texturePromise = new AssetPromise_Texture(sceneInfo.previewImageUrl, storeTexAsNonReadable: false);
                     texturePromise.OnSuccessEvent += (textureAsset) => { DisplayThumbnail(textureAsset.texture); };
-                    texturePromise.OnFailEvent += (textureAsset) => { DisplayThumbnail(scenePreviewFailImage.texture); };
+                    texturePromise.OnFailEvent += (textureAsset, error) => { DisplayThumbnail(scenePreviewFailImage.texture); };
                     AssetPromiseKeeper_Texture.i.Keep(texturePromise);
                 }
 

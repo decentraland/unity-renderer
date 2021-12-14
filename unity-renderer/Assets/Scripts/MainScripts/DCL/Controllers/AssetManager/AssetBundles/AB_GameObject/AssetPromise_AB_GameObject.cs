@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
-using DCL.Configuration;
 using UnityEngine;
 using System.Collections.Generic;
 using DCL.Models;
@@ -15,9 +14,14 @@ namespace DCL
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
 
-        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash) { }
+        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
+        {
+        }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail) { loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail)); }
+        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
+        {
+            loadingCoroutine = CoroutineStarter.Start(LoadingCoroutine(OnSuccess, OnFail));
+        }
 
         protected override bool AddToLibrary()
         {
@@ -83,7 +87,7 @@ namespace DCL
                 return $"subPromise == null? state = {state}";
         }
 
-        public IEnumerator LoadingCoroutine(Action OnSuccess, Action OnFail)
+        public IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
             subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform);
             bool success = false;
@@ -107,7 +111,7 @@ namespace DCL
             }
             else
             {
-                OnFail?.Invoke();
+                OnFail?.Invoke(new Exception($"AB sub-promise asset or container is null. Asset: {subPromise.asset}, container: {asset.container}"));
             }
         }
 
