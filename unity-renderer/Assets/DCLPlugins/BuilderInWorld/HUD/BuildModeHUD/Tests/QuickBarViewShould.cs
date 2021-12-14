@@ -12,11 +12,15 @@ namespace Tests.BuildModeHUDViews
         public void SetUp()
         {
             quickBarView = QuickBarView.Create();
-            quickBarView.generalCanvas = new GameObject().AddComponent<Canvas>();
+            quickBarView.generalCanvas = new GameObject("_GeneralCanvas").AddComponent<Canvas>();
         }
 
         [TearDown]
-        public void TearDown() { Object.Destroy(quickBarView.gameObject); }
+        public void TearDown()
+        {
+            Object.Destroy(quickBarView.generalCanvas.gameObject);
+            Object.Destroy(quickBarView.gameObject);
+        }
 
         [Test]
         public void SelectQuickBarObjectCorrectly()
@@ -114,7 +118,7 @@ namespace Tests.BuildModeHUDViews
             quickBarView.OnQuickBarInputTriggered += (index) => triggeredIndex = index;
 
             // Act
-            quickBarView.OnQuickBarInputTriggedered(indexToDrop);
+            quickBarView.RaiseQuickBarInputTriggered(indexToDrop);
 
             // Assert
             Assert.AreEqual(indexToDrop, triggeredIndex, "The triggered index does not match!");

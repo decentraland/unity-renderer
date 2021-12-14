@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public interface IQuickBarView
 {
@@ -12,7 +13,7 @@ public interface IQuickBarView
     event Action<int> OnSetIndexToBeginDrag;
     event Action<int> OnSetIndexToDrop;
 
-    void OnQuickBarInputTriggedered(int index);
+    void RaiseQuickBarInputTriggered(int index);
     void QuickBarObjectSelected(int index);
     void SceneObjectDroppedFromQuickBar(int fromIndex, int toIndex, Texture texture);
     void SceneObjectDroppedFromCatalog(BaseEventData data);
@@ -24,7 +25,6 @@ public interface IQuickBarView
     void DragSlot(BaseEventData eventData, int triggerIndex);
     void EndDragSlot(int triggerIndex);
     void CancelCurrentDragging();
-
 }
 
 public class QuickBarView : MonoBehaviour, IQuickBarView
@@ -108,15 +108,15 @@ public class QuickBarView : MonoBehaviour, IQuickBarView
             });
         }
 
-        quickBar1InputAction.OnTriggered += OnQuickBar1InputTriggedered;
-        quickBar2InputAction.OnTriggered += OnQuickBar2InputTriggedered;
-        quickBar3InputAction.OnTriggered += OnQuickBar3InputTriggedered;
-        quickBar4InputAction.OnTriggered += OnQuickBar4InputTriggedered;
-        quickBar5InputAction.OnTriggered += OnQuickBar5InputTriggedered;
-        quickBar6InputAction.OnTriggered += OnQuickBar6InputTriggedered;
-        quickBar7InputAction.OnTriggered += OnQuickBar7InputTriggedered;
-        quickBar8InputAction.OnTriggered += OnQuickBar8InputTriggedered;
-        quickBar9InputAction.OnTriggered += OnQuickBar9InputTriggedered;
+        quickBar1InputAction.OnTriggered += OnQuickBar1InputTriggered;
+        quickBar2InputAction.OnTriggered += OnQuickBar2InputTriggered;
+        quickBar3InputAction.OnTriggered += OnQuickBar3InputTriggered;
+        quickBar4InputAction.OnTriggered += OnQuickBar4InputTriggered;
+        quickBar5InputAction.OnTriggered += OnQuickBar5InputTriggered;
+        quickBar6InputAction.OnTriggered += OnQuickBar6InputTriggered;
+        quickBar7InputAction.OnTriggered += OnQuickBar7InputTriggered;
+        quickBar8InputAction.OnTriggered += OnQuickBar8InputTriggered;
+        quickBar9InputAction.OnTriggered += OnQuickBar9InputTriggered;
     }
 
     private void OnDestroy()
@@ -133,15 +133,18 @@ public class QuickBarView : MonoBehaviour, IQuickBarView
             BIWUtils.RemoveEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.Drop);
         }
 
-        quickBar1InputAction.OnTriggered -= OnQuickBar1InputTriggedered;
-        quickBar2InputAction.OnTriggered -= OnQuickBar2InputTriggedered;
-        quickBar3InputAction.OnTriggered -= OnQuickBar3InputTriggedered;
-        quickBar4InputAction.OnTriggered -= OnQuickBar4InputTriggedered;
-        quickBar5InputAction.OnTriggered -= OnQuickBar5InputTriggedered;
-        quickBar6InputAction.OnTriggered -= OnQuickBar6InputTriggedered;
-        quickBar7InputAction.OnTriggered -= OnQuickBar7InputTriggedered;
-        quickBar8InputAction.OnTriggered -= OnQuickBar8InputTriggedered;
-        quickBar9InputAction.OnTriggered -= OnQuickBar9InputTriggedered;
+        // TODO(Brian): We should use an array here
+        quickBar1InputAction.OnTriggered -= OnQuickBar1InputTriggered;
+        quickBar2InputAction.OnTriggered -= OnQuickBar2InputTriggered;
+        quickBar3InputAction.OnTriggered -= OnQuickBar3InputTriggered;
+        quickBar4InputAction.OnTriggered -= OnQuickBar4InputTriggered;
+        quickBar5InputAction.OnTriggered -= OnQuickBar5InputTriggered;
+        quickBar6InputAction.OnTriggered -= OnQuickBar6InputTriggered;
+        quickBar7InputAction.OnTriggered -= OnQuickBar7InputTriggered;
+        quickBar8InputAction.OnTriggered -= OnQuickBar8InputTriggered;
+        quickBar9InputAction.OnTriggered -= OnQuickBar9InputTriggered;
+
+        Object.Destroy(draggedSlot.gameObject);
     }
 
     public void QuickBarObjectSelected(int index) { OnQuickBarObjectSelected?.Invoke(index); }
@@ -171,25 +174,25 @@ public class QuickBarView : MonoBehaviour, IQuickBarView
         shortcutsImgs[shortcutIndex].SetEmpty();
     }
 
-    private void OnQuickBar1InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(0); }
+    private void OnQuickBar1InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(0); }
 
-    private void OnQuickBar2InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(1); }
+    private void OnQuickBar2InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(1); }
 
-    private void OnQuickBar3InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(2); }
+    private void OnQuickBar3InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(2); }
 
-    private void OnQuickBar4InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(3); }
+    private void OnQuickBar4InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(3); }
 
-    private void OnQuickBar5InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(4); }
+    private void OnQuickBar5InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(4); }
 
-    private void OnQuickBar6InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(5); }
+    private void OnQuickBar6InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(5); }
 
-    private void OnQuickBar7InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(6); }
+    private void OnQuickBar7InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(6); }
 
-    private void OnQuickBar8InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(7); }
+    private void OnQuickBar8InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(7); }
 
-    private void OnQuickBar9InputTriggedered(DCLAction_Trigger action) { OnQuickBarInputTriggedered(8); }
+    private void OnQuickBar9InputTriggered(DCLAction_Trigger action) { RaiseQuickBarInputTriggered(8); }
 
-    public void OnQuickBarInputTriggedered(int index) { OnQuickBarInputTriggered?.Invoke(index); }
+    public void RaiseQuickBarInputTriggered(int index) { OnQuickBarInputTriggered?.Invoke(index); }
 
     internal void CreateSlotToDrag()
     {

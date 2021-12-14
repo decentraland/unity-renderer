@@ -1,3 +1,4 @@
+using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
@@ -19,23 +20,17 @@ namespace Tests.BuildModeHUDControllers
     {
         private EntityInformationController entityInformationController;
 
-        [SetUp]
-        public void SetUp()
+        protected override IEnumerator SetUp()
         {
             entityInformationController = new EntityInformationController();
             entityInformationController.Initialize(Substitute.For<IEntityInformationView>());
-            Environment.i.platform.webRequest.Initialize(
-                genericWebRequest: new WebRequest(),
-                assetBundleWebRequest: new WebRequestAssetBundle(),
-                textureWebRequest: new WebRequestTexture(),
-                audioWebRequest: new WebRequestAudio());
+            yield return base.SetUp();
         }
 
-        [TearDown]
-        public void TearDown()
+        protected override IEnumerator TearDown()
         {
             entityInformationController.Dispose();
-            Environment.i.platform.webRequest.Dispose();
+            yield return base.TearDown();
         }
 
         [Test]

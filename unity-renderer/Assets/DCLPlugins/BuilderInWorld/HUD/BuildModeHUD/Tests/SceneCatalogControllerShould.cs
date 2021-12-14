@@ -12,7 +12,6 @@ namespace Tests.BuildModeHUDControllers
     {
         private SceneCatalogController sceneCatalogController;
         private ISceneCatalogView view;
-        private GameObject mockedGameObject;
 
         [SetUp]
         public void SetUp()
@@ -27,11 +26,7 @@ namespace Tests.BuildModeHUDControllers
         [TearDown]
         public void TearDown()
         {
-            AssetCatalogBridge.i.ClearCatalog();
-            BIWCatalogManager.ClearCatalog();
             sceneCatalogController.Dispose();
-            if (mockedGameObject != null)
-                GameObject.Destroy(mockedGameObject);
         }
 
         [Test]

@@ -1,5 +1,6 @@
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Tests.BuildModeHUDControllers
 {
@@ -15,7 +16,16 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown() { builderInWorldLoadingController.Dispose(); }
+        public void TearDown()
+        {
+            builderInWorldLoadingController.Dispose();
+            GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+
+            foreach ( var obj in allObjects )
+            {
+                Debug.Log($"this: {this.GetType().FullName} obj: {obj.name}");
+            }
+        }
 
         [Test]
         public void ShowCorrectly()
