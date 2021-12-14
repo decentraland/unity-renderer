@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -51, y: 0}
+  m_AnchoredPosition: {x: -49.1, y: 0}
   m_SizeDelta: {x: 64, y: 16}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &4934646478000920611
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Name
+  m_text: Test-User
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0da28b1264c7140eda8582804e5d094b, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 263d3c969cdca4dfaaa71514f806a4c2, type: 2}
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.2
+  m_fontSize: 12.65
   m_fontSizeBase: 8
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -334,7 +334,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -14, y: 0}
+  m_AnchoredPosition: {x: -12.09996, y: 0}
   m_SizeDelta: {x: 35, y: 16}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &2969383859082564131
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '#b47f'
+  m_text: '#d4f5'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -392,7 +392,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12.35
+  m_fontSize: 12.2
   m_fontSizeBase: 7.2
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -508,7 +508,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -517,7 +517,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!114 &7528735507517742048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -646,8 +646,8 @@ MonoBehaviour:
       type: 3}
     profilePictureTexture: {fileID: 0}
     profilePictureUri: 
-    profileName: Name
-    profileAddress: 0x8947234hj32g42j3h4g234g423b47f
+    profileName: Test-User
+    profileAddress: 0x897234982345jkh5ku3hjhkd4f5
 --- !u!1001 &7028673778984091369
 PrefabInstance:
   m_ObjectHideFlags: 0
