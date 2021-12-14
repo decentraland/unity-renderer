@@ -203,7 +203,10 @@ namespace DCL.Huds.QuestsPanel
         public void Dispose()
         {
             if (!isDestroyed)
+            {
+                ClearQuests();
                 Destroy(gameObject);
+            }
         }
 
         public void SetAsFullScreenMenuMode(Transform parentTransform)
@@ -223,7 +226,11 @@ namespace DCL.Huds.QuestsPanel
             rectTransform.offsetMin = Vector2.zero;
         }
 
-        private void OnDestroy() { isDestroyed = true; }
+        private void OnDestroy()
+        {
+            ClearQuests();
+            isDestroyed = true;
+        }
 
         private void CloseQuestsPanel()
         {
