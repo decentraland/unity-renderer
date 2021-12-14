@@ -123,9 +123,9 @@ public class QuickBarController : IQuickBarController
             SetQuickBarShortcut(catalogItem, lastIndexDroped, x.texture);
         };
 
-        quickBarShortcutsThumbnailPromises[lastIndexDroped].OnFailEvent += x =>
+        quickBarShortcutsThumbnailPromises[lastIndexDroped].OnFailEvent += (x, error) =>
         {
-            Debug.Log($"Error downloading: {url}");
+            Debug.Log($"Error downloading: {url}, Exception: {error}");
         };
 
         AssetPromiseKeeper_Texture.i.Keep(quickBarShortcutsThumbnailPromises[lastIndexDroped]);

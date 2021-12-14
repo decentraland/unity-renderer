@@ -66,9 +66,9 @@ namespace DCL.Builder
             return manifest;
         }
 
-        public static BuilderScene TranslateSceneToManifest(ParcelScene scene)
+        public static WebBuilderScene TranslateSceneToManifest(ParcelScene scene)
         {
-            BuilderScene builderScene = new BuilderScene();
+            WebBuilderScene builderScene = new WebBuilderScene();
             builderScene.id = Guid.NewGuid().ToString();
 
             BuilderGround ground = new BuilderGround();

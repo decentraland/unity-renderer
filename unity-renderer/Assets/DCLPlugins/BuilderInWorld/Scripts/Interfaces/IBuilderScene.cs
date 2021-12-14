@@ -4,6 +4,5 @@ using UnityEngine;
 
 namespace DCL.Builder
 {
-    //TODO: this class is in process to be made
-    public class PublishController { }
+    public interface IBuilderScene { }
 }

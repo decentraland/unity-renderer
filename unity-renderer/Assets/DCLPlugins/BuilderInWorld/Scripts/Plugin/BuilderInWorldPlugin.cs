@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
 using UnityEngine;
@@ -13,6 +10,7 @@ public class BuilderInWorldPlugin : IPlugin
     internal IBuilderAPIController builderAPIController;
     internal ISceneManager sceneManager;
     internal ICameraController cameraController;
+    internal IPublisher publisher;
 
     internal IContext context;
 
@@ -26,12 +24,14 @@ public class BuilderInWorldPlugin : IPlugin
         builderAPIController = new BuilderAPIController();
         sceneManager = new SceneManager();
         cameraController = new CameraController();
+        publisher = new Publisher();
 
         context = new Context(editor,
             panelController,
             builderAPIController,
             sceneManager,
             cameraController,
+            publisher,
             new BuilderEditorHUDController(),
             new BIWOutlinerController(),
             new BIWInputHandler(),
@@ -53,11 +53,12 @@ public class BuilderInWorldPlugin : IPlugin
     public BuilderInWorldPlugin(IContext context)
     {
         this.context = context;
-        this.sceneManager = context.sceneManager;
+        sceneManager = context.sceneManager;
         panelController = context.panelHUD;
         editor = context.editor;
         builderAPIController = context.builderAPIController;
         cameraController = context.cameraController;
+        publisher = context.publisher;
 
         Initialize();
     }
@@ -74,6 +75,7 @@ public class BuilderInWorldPlugin : IPlugin
         builderAPIController.Initialize(context);
         sceneManager.Initialize(context);
         cameraController.Initialize(context);
+        publisher.Initialize();
 
         if (HUDController.i != null)
         {
@@ -88,7 +90,6 @@ public class BuilderInWorldPlugin : IPlugin
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
 
-
     private void TaskBarCreated()
     {
         HUDController.i.OnTaskbarCreation -= TaskBarCreated;
@@ -97,6 +98,9 @@ public class BuilderInWorldPlugin : IPlugin
 
     public void Dispose()
     {
+        if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            return;
+        
         if (HUDController.i != null)
             HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
@@ -104,11 +108,12 @@ public class BuilderInWorldPlugin : IPlugin
         panelController.Dispose();
         sceneManager.Dispose();
         cameraController.Dispose();
+        publisher.Dipose();
         context.Dispose();
 
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
+        Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
 
     public void Update()
@@ -117,13 +122,7 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Update();
     }
 
-    public void LateUpdate()
-    {
-        editor.LateUpdate();
-    }
+    public void LateUpdate() { editor.LateUpdate(); }
 
-    public void OnGUI()
-    {
-        editor.OnGUI();
-    }
+    public void OnGUI() { editor.OnGUI(); }
 }

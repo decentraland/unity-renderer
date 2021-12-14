@@ -174,7 +174,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
         {
             thumbnailPromise = new AssetPromise_Texture(url);
             thumbnailPromise.OnSuccessEvent += asset => SetThumbnail(asset.texture);
-            thumbnailPromise.OnFailEvent += asset => SetThumbnail(defaultThumbnail);
+            thumbnailPromise.OnFailEvent += (asset, error) => SetThumbnail(defaultThumbnail);
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
 

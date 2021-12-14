@@ -8,7 +8,7 @@ internal class ThumbnailHandler : IDisposable
 
     AssetPromise_Texture texturePromise = null;
 
-    public void FetchThumbnail(string url, Action<Texture2D> onSuccess, Action onFail)
+    public void FetchThumbnail(string url, Action<Texture2D> onSuccess, Action<Exception> onFail)
     {
         if (!(texture is null))
         {
@@ -16,7 +16,7 @@ internal class ThumbnailHandler : IDisposable
         }
         else if (string.IsNullOrEmpty(url))
         {
-            onFail?.Invoke();
+            onFail?.Invoke(new Exception("Cannot fetch thumbnail, url is empty or null"));
         }
         else if (texturePromise is null)
         {
@@ -26,10 +26,10 @@ internal class ThumbnailHandler : IDisposable
                 texture = textureAsset.texture;
                 onSuccess?.Invoke(texture);
             };
-            texturePromise.OnFailEvent += textureAsset =>
+            texturePromise.OnFailEvent += (textureAsset, error) =>
             {
                 texturePromise = null;
-                onFail?.Invoke();
+                onFail?.Invoke(error);
             };
             AssetPromiseKeeper_Texture.i.Keep(texturePromise);
         }
