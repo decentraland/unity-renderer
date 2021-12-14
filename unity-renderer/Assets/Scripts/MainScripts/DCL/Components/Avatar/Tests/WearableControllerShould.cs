@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Components;
-using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
