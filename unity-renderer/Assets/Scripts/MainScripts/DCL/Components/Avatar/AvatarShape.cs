@@ -265,7 +265,7 @@ namespace DCL
         
         private void OnAvatarChanged()
         {
-            player?.anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
+            anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
         }
     }
 }
