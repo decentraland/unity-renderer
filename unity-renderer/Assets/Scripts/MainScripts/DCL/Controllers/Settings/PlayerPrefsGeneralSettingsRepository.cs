@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace DCL.SettingsCommon
@@ -14,11 +14,13 @@ namespace DCL.SettingsCommon
         public const string AVATARS_LOD_DISTANCE = "avatarsLODDistance";
         public const string MAX_NON_LOAD_AVATARS = "maxNonLODAvatars";
         public const string VOICE_CHAT_ALLOW = "voiceChatAllow";
+        public const string PROCEDURAL_SKYBOX_MODE = "ProceduralSkyboxMode";
+        public const string SKYBOX_TIME = "skyboxTime";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly GeneralSettings defaultSettings;
         private GeneralSettings currentSettings;
-        
+
         public event Action<GeneralSettings> OnChanged;
 
         public PlayerPrefsGeneralSettingsRepository(
@@ -34,15 +36,13 @@ namespace DCL.SettingsCommon
 
         public void Apply(GeneralSettings settings)
         {
-            if (currentSettings.Equals(settings)) return;
+            if (currentSettings.Equals(settings))
+                return;
             currentSettings = settings;
             OnChanged?.Invoke(currentSettings);
         }
 
-        public void Reset()
-        {
-            Apply(defaultSettings);
-        }
+        public void Reset() { Apply(defaultSettings); }
 
         public void Save()
         {
@@ -55,6 +55,8 @@ namespace DCL.SettingsCommon
             settingsByKey.SetFloat(AVATARS_LOD_DISTANCE, currentSettings.avatarsLODDistance);
             settingsByKey.SetFloat(MAX_NON_LOAD_AVATARS, currentSettings.maxNonLODAvatars);
             settingsByKey.SetEnum(VOICE_CHAT_ALLOW, currentSettings.voiceChatAllow);
+            settingsByKey.SetEnum(PROCEDURAL_SKYBOX_MODE, currentSettings.proceduralSkyboxMode);
+            settingsByKey.SetFloat(SKYBOX_TIME, currentSettings.skyboxTime);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -62,7 +64,7 @@ namespace DCL.SettingsCommon
         private GeneralSettings Load()
         {
             var settings = defaultSettings;
-            
+
             try
             {
                 settings.autoqualityOn = settingsByKey.GetBool(AUTO_QUALITY_ON, defaultSettings.autoqualityOn);
@@ -75,6 +77,8 @@ namespace DCL.SettingsCommon
                 settings.avatarsLODDistance = settingsByKey.GetFloat(AVATARS_LOD_DISTANCE, defaultSettings.avatarsLODDistance);
                 settings.maxNonLODAvatars = settingsByKey.GetFloat(MAX_NON_LOAD_AVATARS, defaultSettings.maxNonLODAvatars);
                 settings.voiceChatAllow = settingsByKey.GetEnum(VOICE_CHAT_ALLOW, defaultSettings.voiceChatAllow);
+                settings.proceduralSkyboxMode = settingsByKey.GetEnum(PROCEDURAL_SKYBOX_MODE, defaultSettings.proceduralSkyboxMode);
+                settings.skyboxTime = settingsByKey.GetFloat(SKYBOX_TIME, defaultSettings.skyboxTime);
             }
             catch (Exception e)
             {

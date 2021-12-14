@@ -168,6 +168,8 @@ namespace DCL
             public BaseVariable<float> updateReflectionTime = new BaseVariable<float>(-1);
             public BaseVariable<bool> disableReflection = new BaseVariable<bool>(false);
             public BaseVariable<float> currentVirtualTime = new BaseVariable<float>();
+            public BaseVariable<bool> useDynamicSkybox = new BaseVariable<bool>(true);
+            public BaseVariable<float> fixedTime = new BaseVariable<float>(0);
         }
     }
 }

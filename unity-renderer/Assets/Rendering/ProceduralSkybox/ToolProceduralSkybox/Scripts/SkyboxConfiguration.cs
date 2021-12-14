@@ -24,6 +24,8 @@ namespace DCL.Skybox
         public List<TransitioningFloat> horizonHeight = new List<TransitioningFloat>();
         public Texture2D horizonMask;
         public Vector3 horizonMaskValues = new Vector3(0, 0, 0);
+        public Gradient horizonPlaneColor = new Gradient();
+        public List<TransitioningFloat> horizonPlaneHeight = new List<TransitioningFloat>();
 
         // Ambient Color
         public bool ambientTrilight = true;
@@ -100,6 +102,8 @@ namespace DCL.Skybox
             selectedMat.SetFloat("_horizonWidth", GetTransitionValue(horizonWidth, percentage, 0f));
             selectedMat.SetTexture("_horizonMask", horizonMask);
             selectedMat.SetVector("_horizonMaskValues", horizonMaskValues);
+            selectedMat.SetColor("_HorizonPlaneColor", horizonPlaneColor.Evaluate(normalizedDayTime));
+            selectedMat.SetFloat("_horizonPlaneHeight", GetTransitionValue(horizonPlaneHeight, percentage, -1f));
 
 
             // Apply Ambient colors to the rendering settings
@@ -496,35 +500,6 @@ namespace DCL.Skybox
                 fadeChanged = true;
                 selectedMat.SetFloat("_fadeTime_" + slotNum, percentage);
             }
-
-
-            //if (layer.timeSpan_End >= layer.timeSpan_start)
-            //{
-            //    if (dayTime >= fadeOutStartTime)
-            //    {
-            //        float percentage = Mathf.InverseLerp(layer.timeSpan_End, fadeOutStartTime, dayTime);
-            //        fadeChanged = true;
-            //        selectedMat.SetFloat("_fadeTime_" + slotNum, percentage);
-            //    }
-            //}
-            //else
-            //{
-            //    float endTimeEdited = cycleTime + layer.timeSpan_End;
-            //    float dayTimeEdited = dayTime;
-            //    if (dayTime < layer.timeSpan_start)
-            //    {
-            //        dayTimeEdited = cycleTime + dayTime;
-            //    }
-
-            //    fadeOutStartTime = endTimeEdited - layer.fadingOutTime;
-
-            //    if (dayTimeEdited >= fadeOutStartTime)
-            //    {
-            //        float percentage = Mathf.InverseLerp(endTimeEdited, fadeOutStartTime, dayTimeEdited);
-            //        fadeChanged = true;
-            //        selectedMat.SetFloat("_fadeTime_" + slotNum, percentage);
-            //    }
-            //}
 
             return fadeChanged;
         }

@@ -521,6 +521,12 @@ namespace DCL.Skybox
 
             // Horizon mask values
             RenderVector3Field("Horizon Mask Values", ref selectedConfiguration.horizonMaskValues);
+
+            // Horizon Plane color
+            RenderColorGradientField(selectedConfiguration.horizonPlaneColor, "Horizon Plane Color", 0, 24);
+
+            // Horizon Height
+            RenderTransitioningFloat(selectedConfiguration.horizonPlaneHeight, "Horizon Plane Height", "%", "value", true, -1, 0);
         }
 
         void RenderAmbientLayer()

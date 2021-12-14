@@ -4590,7 +4590,7 @@
     },
     "m_Name": "HorizonPlaneHeigth",
     "m_DefaultReferenceName": "Vector1_1e1d6744b98b44e6a58172cca5720d78",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "_horizonPlaneHeight",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,

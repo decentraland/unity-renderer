@@ -85,6 +85,31 @@ namespace DCL.Skybox
             KernelConfig.i.OnChange += KernelConfig_OnChange;
 
             DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+
+            // Register UI related events
+            DataStore.i.skyboxConfig.useDynamicSkybox.OnChange += UseDynamicSkybox_OnChange;
+            DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
+        }
+
+        private void FixedTime_OnChange(float current, float previous)
+        {
+            if (!DataStore.i.skyboxConfig.useDynamicSkybox.Get())
+            {
+                PauseTime(true, current);
+            }
+        }
+
+        private void UseDynamicSkybox_OnChange(bool current, bool previous)
+        {
+            if (current)
+            {
+                // Get latest time from server
+                UpdateConfig();
+            }
+            else
+            {
+                PauseTime(true, DataStore.i.skyboxConfig.fixedTime.Get());
+            }
         }
 
         private void GetOrCreateEnvironmentProbe()
@@ -179,6 +204,14 @@ namespace DCL.Skybox
                 return;
             }
 
+            // Reset Object Update value without notifying
+            DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
+
+            if (!DataStore.i.skyboxConfig.useDynamicSkybox.Get())
+            {
+                return;
+            }
+
             if (loadedConfig != DataStore.i.skyboxConfig.configToLoad.Get())
             {
                 // Apply configuration
@@ -200,9 +233,6 @@ namespace DCL.Skybox
             {
                 RenderProfileManifest.i.currentProfile.Apply();
             }
-
-            // Reset Object Update value without notifying
-            DataStore.i.skyboxConfig.objectUpdated.Set(false, false);
 
             // if Paused
             if (DataStore.i.skyboxConfig.jumpToTime.Get() >= 0)
