@@ -55,6 +55,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
         view.OnCloseButtonPressed += OnCloseButtonPressed;
+        view.OnAfterShowAnimation += OnAfterShowAnimation;
 
         DataStore.i.exploreV2.topMenuTooltipReference.Set(topMenuTooltipReference);
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
@@ -155,6 +156,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (view != null)
         {
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
+            view.OnAfterShowAnimation -= OnAfterShowAnimation;
             view.OnInitialized -= CreateControllers;
             view.OnSectionOpen -= OnSectionOpen;
             view.Dispose();
@@ -192,7 +194,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (visible)
         {
             Utils.UnlockCursor();
-            CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
 
             if (DataStore.i.common.isTutorialRunning.Get())
                 view.GoToSection(ExploreV2MenuComponentView.DEFAULT_SECTION);
@@ -211,6 +212,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         view.SetVisible(visible);
     }
+
+    internal void OnAfterShowAnimation() { CommonScriptableObjects.isFullscreenHUDOpen.Set(true); }
 
     internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
     {

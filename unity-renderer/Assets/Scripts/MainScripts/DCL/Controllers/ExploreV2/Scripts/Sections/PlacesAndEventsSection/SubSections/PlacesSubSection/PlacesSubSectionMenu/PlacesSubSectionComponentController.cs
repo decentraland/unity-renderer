@@ -91,8 +91,18 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.RestartScrollViewPosition();
         view.SetPlacesAsLoading(true);
         view.SetShowMorePlacesButtonActive(false);
-        RequestAllPlacesFromAPI();
         reloadPlaces = false;
+
+        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+            RequestAllPlacesFromAPI();
+        else
+            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+    }
+
+    internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
+    {
+        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        RequestAllPlacesFromAPI();
     }
 
     internal void RequestAllPlacesFromAPI()

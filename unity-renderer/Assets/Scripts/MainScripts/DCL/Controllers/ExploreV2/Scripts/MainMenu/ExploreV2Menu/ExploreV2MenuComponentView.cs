@@ -20,6 +20,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     event Action<ExploreSection> OnSectionOpen;
 
     /// <summary>
+    /// It will be triggered after the show animation has finished.
+    /// </summary>
+    event Action OnAfterShowAnimation;
+
+    /// <summary>
     /// Real viewer component.
     /// </summary>
     IRealmViewerComponentView currentRealmViewer { get; }
@@ -74,6 +79,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// </summary>
     /// <param name="isActive">True to show it.</param>
     void SetVisible(bool isActive);
+
+    /// <summary>
+    /// It is called after the show animation has finished.
+    /// </summary>
+    void OnAfterShowAnimationCompleted();
 
     /// <summary>
     /// Open a section.
@@ -145,6 +155,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action OnInitialized;
     public event Action<bool> OnCloseButtonPressed;
     public event Action<ExploreSection> OnSectionOpen;
+    public event Action OnAfterShowAnimation;
 
     public override void Start()
     {
@@ -179,6 +190,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         if (isActive)
         {
+            DataStore.i.exploreV2.isInShowAnimationTransiton.Set(true);
             Show();
             GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
         }
@@ -187,6 +199,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             Hide();
             AudioScriptableObjects.dialogClose.Play(true);
         }
+    }
+
+    public void OnAfterShowAnimationCompleted()
+    {
+        DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
+        OnAfterShowAnimation?.Invoke();
     }
 
     public void GoToSection(ExploreSection section)

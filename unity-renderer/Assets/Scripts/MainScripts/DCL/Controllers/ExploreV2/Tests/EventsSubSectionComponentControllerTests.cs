@@ -1,3 +1,4 @@
+using DCL;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -75,6 +76,7 @@ public class EventsSubSectionComponentControllerTests
         // Arrange
         eventsSubSectionComponentController.currentUpcomingEventsShowed = -1;
         eventsSubSectionComponentController.reloadEvents = true;
+        DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
 
         // Act
         eventsSubSectionComponentController.RequestAllEvents();

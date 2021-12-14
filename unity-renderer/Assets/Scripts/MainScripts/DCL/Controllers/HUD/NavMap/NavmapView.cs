@@ -22,6 +22,7 @@ namespace DCL
         Transform mapRendererMinimapParent;
         Vector3 atlasOriginalPosition;
         MinimapMetadata mapMetadata;
+        bool waitingForFullscreenHUDOpen = false;
 
         BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
 
@@ -80,6 +81,39 @@ namespace DCL
         }
 
         internal void SetVisible(bool visible)
+        {
+            if (waitingForFullscreenHUDOpen)
+                return;
+
+            if (visible)
+            {
+                if (CommonScriptableObjects.isFullscreenHUDOpen.Get())
+                {
+                    SetVisibility_Internal(true);
+                }
+                else
+                {
+                    waitingForFullscreenHUDOpen = true;
+                    CommonScriptableObjects.isFullscreenHUDOpen.OnChange += IsFullscreenHUDOpen_OnChange;
+                }
+            }
+            else
+            {
+                SetVisibility_Internal(false);
+            }
+        }
+
+        private void IsFullscreenHUDOpen_OnChange(bool current, bool previous)
+        {
+            if (!current)
+                return;
+
+            CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= IsFullscreenHUDOpen_OnChange;
+            SetVisibility_Internal(true);
+            waitingForFullscreenHUDOpen = false;
+        }
+
+        internal void SetVisibility_Internal(bool visible)
         {
             if (MapRenderer.i == null)
                 return;

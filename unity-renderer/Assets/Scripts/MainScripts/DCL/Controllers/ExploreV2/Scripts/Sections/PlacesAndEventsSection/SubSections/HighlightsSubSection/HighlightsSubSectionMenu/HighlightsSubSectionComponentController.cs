@@ -115,6 +115,17 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         view.SetLiveAsLoading(true);
         RequestAllPlacesAndEventsFromAPI();
         reloadHighlights = false;
+
+        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+            RequestAllPlacesAndEventsFromAPI();
+        else
+            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+    }
+
+    internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
+    {
+        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        RequestAllPlacesAndEventsFromAPI();
     }
 
     internal void RequestAllPlacesAndEventsFromAPI()

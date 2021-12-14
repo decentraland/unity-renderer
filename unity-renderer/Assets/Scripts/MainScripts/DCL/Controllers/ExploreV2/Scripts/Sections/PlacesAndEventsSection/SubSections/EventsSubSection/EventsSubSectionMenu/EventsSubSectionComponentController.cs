@@ -108,8 +108,18 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetUpcomingEventsAsLoading(true);
         view.SetShowMoreUpcomingEventsButtonActive(false);
         view.SetGoingEventsAsLoading(true);
-        RequestAllEventsFromAPI();
         reloadEvents = false;
+
+        if (!DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+            RequestAllEventsFromAPI();
+        else
+            DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange += IsInShowAnimationTransitonChanged;
+    }
+
+    internal void IsInShowAnimationTransitonChanged(bool current, bool previous)
+    {
+        DataStore.i.exploreV2.isInShowAnimationTransiton.OnChange -= IsInShowAnimationTransitonChanged;
+        RequestAllEventsFromAPI();
     }
 
     internal void RequestAllEventsFromAPI()

@@ -23,7 +23,10 @@ namespace Tests
             navmapToastView = navmapView.toastView;
 
             if (!DataStore.i.HUDs.navmapVisible.Get())
+            {
+                CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
                 navmapView.SetVisible(true);
+            }
         }
 
         protected override IEnumerator TearDown()
