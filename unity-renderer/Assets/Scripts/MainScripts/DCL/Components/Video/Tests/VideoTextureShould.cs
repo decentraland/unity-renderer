@@ -57,6 +57,7 @@ namespace Tests
                 seek = 10
             };
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+            yield return component.routine;
 
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
@@ -103,6 +104,7 @@ namespace Tests
             yield return TestUtils.WaitForMessageFromEngine("VideoProgressEvent", json,
                 () => { },
                 () => wasEventSent = true);
+            yield return component.routine;
 
             Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
         }
@@ -117,6 +119,7 @@ namespace Tests
                 playing = true
             };
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+            yield return component.routine;
 
             var expectedEvent = new WebInterface.SendVideoProgressEvent()
             {
@@ -321,7 +324,7 @@ namespace Tests
             };
             var component = CreateDCLVideoTextureWithCustomTextureModel(scene, model);
 
-            yield return null;
+            yield return component.routine;
 
             Assert.AreApproximatelyEqual(1f, component.texturePlayer.volume, 0.01f);
 

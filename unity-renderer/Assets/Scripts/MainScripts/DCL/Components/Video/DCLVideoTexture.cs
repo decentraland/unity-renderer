@@ -43,8 +43,6 @@ namespace DCL.Components
         private bool isPlayStateDirty = false;
         internal bool isVisible = false;
 
-        //public override Texture2D texture => texturePlayer?.texture;
-
         private bool isPlayerInScene = true;
         private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL_IN_SECONDS;
         private float lastVideoProgressReportTime;
@@ -63,8 +61,6 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
-
-            yield return new WaitUntil(() => texturePlayer != null && texturePlayer.isReady);
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
@@ -107,10 +103,7 @@ namespace DCL.Components
 
             if (texture == null)
             {
-                while (texturePlayer.texture == null && !texturePlayer.isError)
-                {
-                    yield return null;
-                }
+                yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
 
                 if (texturePlayer.isError)
                 {
