@@ -59,7 +59,7 @@ public class BuilderInWorldPlugin : IPlugin
         builderAPIController = context.builderAPIController;
         cameraController = context.cameraController;
         publisher = context.publisher;
-        
+
         Initialize();
     }
 
@@ -89,7 +89,7 @@ public class BuilderInWorldPlugin : IPlugin
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
-    
+
     private void TaskBarCreated()
     {
         HUDController.i.OnTaskbarCreation -= TaskBarCreated;
@@ -98,6 +98,9 @@ public class BuilderInWorldPlugin : IPlugin
 
     public void Dispose()
     {
+        if (DataStore.i.common.isWorldBeingDestroyed.Get())
+            return;
+        
         if (HUDController.i != null)
             HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
@@ -108,9 +111,9 @@ public class BuilderInWorldPlugin : IPlugin
         publisher.Dipose();
         context.Dispose();
 
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-        DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
+        Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+        Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
     }
 
     public void Update()
@@ -119,13 +122,7 @@ public class BuilderInWorldPlugin : IPlugin
         sceneManager.Update();
     }
 
-    public void LateUpdate()
-    {
-        editor.LateUpdate();
-    }
+    public void LateUpdate() { editor.LateUpdate(); }
 
-    public void OnGUI()
-    {
-        editor.OnGUI();
-    }
+    public void OnGUI() { editor.OnGUI(); }
 }
