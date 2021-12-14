@@ -5,7 +5,7 @@ using DCL;
 
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
-    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowflakes", ANIM_NAME_HOHOHO = "hohoho";
+    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho";
     const float MIN_EVENT_WAIT_TIME = 0.1f;
 
     AudioEvent footstepLight;
