@@ -132,7 +132,7 @@ namespace DCL.Builder
             
             thumbnailPromise = new AssetPromise_Texture(thumbnailUrl);
             thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
-            thumbnailPromise.OnFailEvent += texture => SetThumbnail((Texture2D) null);
+            thumbnailPromise.OnFailEvent += (texture, error) => SetThumbnail((Texture2D) null);
             thumbnail.enabled = false;
             
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);

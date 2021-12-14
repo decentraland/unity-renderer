@@ -231,7 +231,7 @@ public class NFTShapeLoaderController : MonoBehaviour
                     assetPromise?.Forget();
                     this.assetPromise = promise;
                     FetchNFTInfoSuccess(promise.asset, nftInfo, false);
-                }, () => isError = true);
+                }, error => isError = true);
         }
 
         if (isError)

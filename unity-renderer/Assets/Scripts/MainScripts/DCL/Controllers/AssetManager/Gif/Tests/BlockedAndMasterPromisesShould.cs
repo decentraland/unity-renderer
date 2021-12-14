@@ -18,19 +18,19 @@ namespace AssetPromiseKeeper_Gif_Tests
             Asset_Gif asset = null;
             bool failEventCalled1 = false;
             prom.OnSuccessEvent += (x) => { asset = x; };
-            prom.OnFailEvent += (x) => { failEventCalled1 = true; };
+            prom.OnFailEvent += (x, error) => { failEventCalled1 = true; };
 
             var prom2 = new AssetPromise_Gif("43254378");
             Asset_Gif asset2 = null;
             bool failEventCalled2 = false;
             prom2.OnSuccessEvent += (x) => { asset2 = x; };
-            prom2.OnFailEvent += (x) => { failEventCalled2 = true; };
+            prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
             var prom3 = new AssetPromise_Gif("09898765");
             Asset_Gif asset3 = null;
             bool failEventCalled3 = false;
             prom3.OnSuccessEvent += (x) => { asset3 = x; };
-            prom3.OnFailEvent += (x) => { failEventCalled3 = true; };
+            prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
 
             keeper.Keep(prom);
             keeper.Keep(prom2);

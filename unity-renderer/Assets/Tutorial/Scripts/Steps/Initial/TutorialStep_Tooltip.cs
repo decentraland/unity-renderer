@@ -10,6 +10,7 @@ namespace DCL.Tutorial
     public class TutorialStep_Tooltip : TutorialStep, IPointerDownHandler
     {
         [SerializeField] protected RectTransform tooltipTransform;
+        [SerializeField] bool clickOnTooltipToFinish = true;
         [SerializeField] bool setMaxTimeToHide = false;
         [SerializeField] float maxTimeToHide = 5f;
 
@@ -29,7 +30,13 @@ namespace DCL.Tutorial
                 stepIsFinished = true;
         }
 
-        public virtual void OnPointerDown(PointerEventData eventData) { stepIsFinished = true; }
+        public virtual void OnPointerDown(PointerEventData eventData)
+        {
+            if (!clickOnTooltipToFinish)
+                return;
+
+            stepIsFinished = true;
+        }
 
         public override void OnStepStart()
         {

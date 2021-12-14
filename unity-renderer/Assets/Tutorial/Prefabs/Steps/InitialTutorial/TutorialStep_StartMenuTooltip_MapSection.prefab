@@ -211,8 +211,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Helps you navigate the world, discover new places and teleport anywhere
-    with just one click!
+  m_text: 'The map helps you navigate the world, discover new places and teleport
+    anywhere with just one click!
 
 
     <i>Remember, press ESC to return to the world.</i>'

@@ -84,6 +84,8 @@ namespace Tests
         [Test]
         public void BePopulatedCorrectly()
         {
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
+
             var sceneInfo = new MinimapMetadata.MinimapSceneInfo()
             {
                 name = "foo",
@@ -105,6 +107,8 @@ namespace Tests
 
             Assert.IsTrue(navmapToastView.sceneTitleText.gameObject.activeInHierarchy);
             Assert.IsTrue(navmapToastView.sceneOwnerText.gameObject.activeInHierarchy);
+
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
         }
     }
 }

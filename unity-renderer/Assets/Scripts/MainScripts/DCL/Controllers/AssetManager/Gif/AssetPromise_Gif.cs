@@ -12,7 +12,7 @@ namespace DCL
 
         public override object GetId() { return url; }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
+        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             var processor = new GifProcessor(url);
             asset.processor = processor;

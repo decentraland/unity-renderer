@@ -1,10 +1,10 @@
-using DCL;
-using DCL.Components;
-using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DCL;
+using DCL.Components;
+using DCL.Helpers;
 using UnityEngine;
 
 public class WearableController
@@ -33,7 +33,7 @@ public class WearableController
 
     public WearableController(WearableItem wearableItem)
     {
-        this.wearable = wearableItem;
+        wearable = wearableItem;
         SetupAssetBundlesConfig();
     }
 
@@ -53,7 +53,7 @@ public class WearableController
         useAssetBundles = featureFlags != null && featureFlags.IsFeatureEnabled(AB_FEATURE_FLAG_NAME); 
     }
 
-    public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
+    public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController, Exception> onFail)
     {
         if (isReady)
             return;
@@ -64,7 +64,7 @@ public class WearableController
 
         if (representation == null)
         {
-            onFail?.Invoke(this);
+            onFail?.Invoke(this, new Exception($"Wearable load fail. There is no representation for bodyShape {bodyShapeId} on wearable {wearable.id}"));
             return;
         }
 
@@ -96,7 +96,7 @@ public class WearableController
 
         loader.OnSuccessEvent += OnSuccessWrapper;
 
-        void OnFailEventWrapper()
+        void OnFailEventWrapper(Exception error)
         {
             if (loader != null)
             {
@@ -106,7 +106,7 @@ public class WearableController
                 loader = null;
             }
 
-            onFail?.Invoke(this);
+            onFail?.Invoke(this, error);
         }
 
         loader.OnFailEvent += OnFailEventWrapper;

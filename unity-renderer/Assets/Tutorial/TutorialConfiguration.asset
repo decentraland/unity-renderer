@@ -59,7 +59,7 @@ MonoBehaviour:
   - {fileID: 1503008310291586882, guid: f334bf74ded32e946a7a737fb996b2eb, type: 3}
   - {fileID: 689055756687240284, guid: 5ac7673c54af3ab4989dceacadc20b50, type: 3}
   stepsFromUserThatAlreadyDidTheTutorial:
-  - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
+  - {fileID: 6297414436400636056, guid: d879a46a3bfc8cc418efc89c69f7cf1d, type: 3}
   - {fileID: 6080892075692692803, guid: 5a6d38f6c995b16429ca50e59cf964d7, type: 3}
   - {fileID: 507904477223215582, guid: e00e2889ecda6bb4abd7e2992aaf79c4, type: 3}
   - {fileID: 507904477223215582, guid: ddaf09cfb1058cd4ca0549a7869f17c5, type: 3}
@@ -101,9 +101,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  eagleCamInitPosition: {x: 30, y: 20, z: -60}
-  eagleCamInitLookAtPoint: {x: 0, y: 0, z: 0}
-  eagleCamRotationActived: 1
+  eagleCamInitPosition: {x: 15, y: 115, z: -30}
+  eagleCamInitLookAtPoint: {x: 16, y: 105, z: 6}
+  eagleCamRotationActived: 0
   eagleCamRotationSpeed: 1
   debugRunTutorial: 0
   debugStartingStepIndex: 0

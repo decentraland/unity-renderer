@@ -6,6 +6,7 @@ namespace DCL
     {
         public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> isOpen = new BaseVariable<bool>(false);
+        public readonly BaseVariable<bool> isInShowAnimationTransiton = new BaseVariable<bool>(false);
         public readonly BaseVariable<int> currentSectionIndex = new BaseVariable<int>(0);
         public readonly BaseVariable<bool> placesAndEventsVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> profileCardIsOpen = new BaseVariable<bool>(false);

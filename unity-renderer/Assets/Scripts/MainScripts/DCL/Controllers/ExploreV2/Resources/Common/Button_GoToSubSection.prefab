@@ -277,7 +277,7 @@ PrefabInstance:
     - target: {fileID: 5170059318450306070, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 179.3375
+      value: 149.35
       objectReference: {fileID: 0}
     - target: {fileID: 5170059318450306070, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -287,7 +287,7 @@ PrefabInstance:
     - target: {fileID: 5466927874646222343, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Name
-      value: Button_ViewAllEvents
+      value: Button_GoToSubSection
       objectReference: {fileID: 0}
     - target: {fileID: 7518669975530283665, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
@@ -318,17 +318,17 @@ PrefabInstance:
     - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Spacing
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Padding.m_Left
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Padding.m_Right
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}

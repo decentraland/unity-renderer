@@ -1,3 +1,4 @@
+using DCL;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -84,6 +85,7 @@ public class HighlightsSubSectionComponentControllerTests
     {
         // Arrange
         highlightsSubSectionComponentController.reloadHighlights = true;
+        DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
 
         // Act
         highlightsSubSectionComponentController.RequestAllPlacesAndEvents();
