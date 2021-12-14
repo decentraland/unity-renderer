@@ -24,7 +24,7 @@ public class ProfileHUDController : IHUD
     private const string URL_PRIVACY_POLICY = "https://decentraland.org/privacy";
     private const float FETCH_MANA_INTERVAL = 60;
 
-    internal ProfileHUDView view;
+    public readonly ProfileHUDView view;
     internal AvatarEditorHUDController avatarEditorHud;
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -43,7 +43,7 @@ public class ProfileHUDController : IHUD
         mouseCatcher = SceneReferences.i?.mouseCatcher;
 
 
-        view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ProfileHUD")).GetComponent<ProfileHUDView>();
+        view = UnityEngine.Object.Instantiate(GetViewPrefab()).GetComponent<ProfileHUDView>();
         view.name = "_ProfileHUD";
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
@@ -90,6 +90,10 @@ public class ProfileHUDController : IHUD
             KernelConfig.i.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
+    }
+    protected virtual GameObject GetViewPrefab()
+    {
+        return Resources.Load<GameObject>("ProfileHUD");
     }
 
     public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
-internal class ProfileHUDView : MonoBehaviour
+public class ProfileHUDView : MonoBehaviour
 {
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
