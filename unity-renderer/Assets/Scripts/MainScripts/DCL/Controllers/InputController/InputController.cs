@@ -35,6 +35,9 @@ public enum DCLAction_Trigger
     Expression_Clap = 205,
     Expression_ThrowMoney = 206,
     Expression_SendKiss = 207,
+    Expression_Dance = 208,
+    Expression_Hohoho = 209,
+    Expression_Snowfall = 210,
 
     //Builder In World 4xx
     BuildEditModeChange = 408,
@@ -237,7 +240,7 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.Expression_FistPump:
                     InputProcessor.FromKey(action, KeyCode.Alpha2, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
-                case DCLAction_Trigger.Expression_Robot:
+                case DCLAction_Trigger.Expression_Dance:
                     InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_RaiseHand:
@@ -251,6 +254,12 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.Expression_SendKiss:
                     InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.Expression_Hohoho:
+                    InputProcessor.FromKey(action, KeyCode.Alpha8, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.Expression_Snowfall:
+                    InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeChange:
                     InputProcessor.FromKey(action, KeyCode.K, modifiers: InputProcessor.Modifier.FocusNotInInput);
