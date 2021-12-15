@@ -30,7 +30,11 @@ namespace DCL.SettingsCommon
         {
             if (qualitySettingsPreset == null)
             {
+#if UNITY_STANDALONE
+                qualitySettingsPreset = Resources.Load<QualitySettingsData>("ScriptableObjects/DesktopQualitySettingsData");
+#else
                 qualitySettingsPreset = Resources.Load<QualitySettingsData>("ScriptableObjects/QualitySettingsData");
+#endif
             }
 
             if (autoqualitySettings == null)

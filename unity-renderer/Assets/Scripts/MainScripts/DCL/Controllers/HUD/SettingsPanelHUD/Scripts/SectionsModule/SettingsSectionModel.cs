@@ -1,6 +1,7 @@
 using DCL.SettingsPanelHUD.Widgets;
 using ReorderableList;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL.SettingsPanelHUD.Sections
 {
@@ -29,6 +30,19 @@ namespace DCL.SettingsPanelHUD.Sections
         public SettingsSectionController sectionController;
 
         [Reorderable]
-        public SettingsWidgetList widgets;
+        [FormerlySerializedAs("widgets")] public SettingsWidgetList defaultPlatformWidgets;
+        [Reorderable]
+        public SettingsWidgetList desktopWidgets;
+
+        public SettingsWidgetList widgets
+        {
+#if UNITY_STANDALONE
+            get => desktopWidgets;
+            set => desktopWidgets = value;
+#else
+            get => defaultPlatformWidgets;
+            set => defaultPlatformWidgets = value;
+#endif
+        }
     }
 }
