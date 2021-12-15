@@ -23,6 +23,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             {
                 DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
             }
+
+            CommonSettingsScriptableObjects.dynamicSkyboxDisabled.Set(currentGeneralSettings.proceduralSkyboxMode == GeneralSettings.ProceduralSkyboxMode.DYNAMIC);
         }
     }
 }
