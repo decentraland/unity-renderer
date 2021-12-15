@@ -12,22 +12,34 @@ namespace DCL.Components
         private IBaseVariable<Player> ownPlayer => DataStore.i.player.ownPlayer;
         private IBaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
+        /// <summary>
+        /// Search for an `avatarId` that could be the own player or any other player.
+        /// If that `avatarId` is loaded it will call `onSuccess`, otherwise it will wait
+        /// for that `avatarId` to be loaded
+        /// </summary>
         public void SearchAnchorPoints(string avatarId, Action<IAvatarAnchorPoints> onSuccess)
         {
             CancelCurrentSearch();
 
-            searchAvatarId = avatarId;
+            if (string.IsNullOrEmpty(avatarId))
+                return;
 
-            if (avatarId == ownPlayer.Get().id)
+            searchAvatarId = avatarId;
+            string ownPlayerId = ownPlayer.Get()?.id;
+
+            // NOTE: ownPlayerId null means player avatar is not loaded yet
+            // so we subscribe to the event for when player avatar is set.
+            if (string.IsNullOrEmpty(ownPlayerId))
+            {
+                ownPlayer.OnChange += OnOwnPlayerChanged;
+            }
+            else if (avatarId == ownPlayerId)
             {
                 onSuccess?.Invoke(ownPlayer.Get().anchorPoints);
                 return;
             }
-            else if (string.IsNullOrEmpty(ownPlayer.Get().id))
-            {
-                ownPlayer.OnChange += OnOwnPlayerChanged;
-            }
 
+            // If `avatarId` does not match ownPlayer id then we check against other players.
             if (otherPlayers.TryGetValue(avatarId, out Player player))
             {
                 onSuccess?.Invoke(player.anchorPoints);
@@ -35,10 +47,14 @@ namespace DCL.Components
                 return;
             }
 
+            // If `avatarId` was not found yet, then we subscribe and wait for a player of that id to connect.
             otherPlayers.OnAdded += OnOtherPlayersAdded;
             onIdFoundCallback = onSuccess;
         }
 
+        /// <summary>
+        /// Cancel the active search/waiting of the `avatarId`
+        /// </summary>
         public void CancelCurrentSearch()
         {
             otherPlayers.OnAdded -= OnOtherPlayersAdded;

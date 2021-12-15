@@ -12,20 +12,21 @@ namespace DCL.Components
         public IParcelScene scene { private set; get; }
         public IDCLEntity entity { private set; get; }
 
-        private AvatarAttachComponent.Model prevModel = null;
+        internal AvatarAttachComponent.Model prevModel = null;
 
         private IAvatarAnchorPoints anchorPoints;
         private AvatarAnchorPointIds anchorPointId;
+
         private Coroutine componentUpdate = null;
 
         private readonly AvatarAttachPlayerHandler avatarAttachPlayerHandler = new AvatarAttachPlayerHandler();
-        private Vector3 scale = Vector3.one;
+        private ISceneBoundsChecker sceneBoundsChecker => Environment.i?.world?.sceneBoundsChecker;
 
         public void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
             this.entity = entity;
-            avatarAttachPlayerHandler.onAvatarDisconnect += Dettach;
+            avatarAttachPlayerHandler.onAvatarDisconnect += Detach;
         }
 
         public void OnModelUpdated(string json)
@@ -43,11 +44,11 @@ namespace DCL.Components
                 return;
             }
 
-            Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
+            sceneBoundsChecker?.AddEntityToBeChecked(entity);
 
             if (prevModel.avatarId != model.avatarId)
             {
-                Dettach();
+                Detach();
 
                 if (!string.IsNullOrEmpty(model.avatarId))
                 {
@@ -58,12 +59,12 @@ namespace DCL.Components
 
         public void CleanUp()
         {
-            Dettach();
-            avatarAttachPlayerHandler.onAvatarDisconnect -= Dettach;
+            Detach();
+            avatarAttachPlayerHandler.onAvatarDisconnect -= Detach;
             avatarAttachPlayerHandler.Dispose();
         }
 
-        private void Dettach()
+        internal void Detach()
         {
             if (componentUpdate != null)
             {
@@ -79,7 +80,7 @@ namespace DCL.Components
             avatarAttachPlayerHandler.CancelCurrentSearch();
         }
 
-        private void Attach(string avatarId, AvatarAnchorPointIds anchorPointId)
+        internal void Attach(string avatarId, AvatarAnchorPointIds anchorPointId)
         {
             avatarAttachPlayerHandler.SearchAnchorPoints(avatarId, anchorPoints =>
             {
@@ -87,7 +88,7 @@ namespace DCL.Components
             });
         }
 
-        private void Attach(IAvatarAnchorPoints anchorPoints, AvatarAnchorPointIds anchorPointId)
+        internal void Attach(IAvatarAnchorPoints anchorPoints, AvatarAnchorPointIds anchorPointId)
         {
             this.anchorPoints = anchorPoints;
             this.anchorPointId = anchorPointId;
@@ -102,6 +103,12 @@ namespace DCL.Components
         {
             while (true)
             {
+                if (entity == null)
+                {
+                    componentUpdate = null;
+                    yield break;
+                }
+
                 var anchorPoint = anchorPoints.GetTransfom(anchorPointId);
 
                 entity.gameObject.transform.position = anchorPoint.position;
