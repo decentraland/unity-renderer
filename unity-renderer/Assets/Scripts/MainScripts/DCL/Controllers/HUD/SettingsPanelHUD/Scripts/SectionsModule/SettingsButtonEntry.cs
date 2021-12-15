@@ -68,7 +68,9 @@ namespace DCL.SettingsPanelHUD.Sections
             if (isSelected)
                 return;
 
+            icon.color = textColorOnSelect;
             backgroundImage.color = backgroundColorOnSelect;
+            text.color = textColorOnSelect;
         }
 
         public void OnPointerExit(PointerEventData eventData)
@@ -76,7 +78,9 @@ namespace DCL.SettingsPanelHUD.Sections
             if (isSelected)
                 return;
 
+            icon.color = originalTextColor;
             backgroundImage.color = originalBackgroundColor;
+            text.color = originalTextColor;
         }
     }
 }
