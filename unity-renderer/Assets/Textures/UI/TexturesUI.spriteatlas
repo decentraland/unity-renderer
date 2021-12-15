@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 4691716
+    totalSpriteSurfaceArea: 2204343
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -66,6 +66,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a3858430b23c149488cbba79c79b511f, type: 3}
   - {fileID: 21300000, guid: 09da6730b26434c19973555545d3eb24, type: 3}
   - {fileID: 21300000, guid: 219eab3075e6f47e38920b886ba74eee, type: 3}
+  - {fileID: 21300000, guid: 0187ad300d0014cd6a1aa5f9b694497d, type: 3}
   - {fileID: 21300000, guid: 9d8a1240643c848f38c614260af68c76, type: 3}
   - {fileID: 21300000, guid: 88dde3500b2da42c89518050e5250b21, type: 3}
   - {fileID: 21300000, guid: 9ee0d9605c0e04a57946e54a0b997c90, type: 3}
@@ -213,7 +214,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1c63e329c16184c1bb493ada5f85c91b, type: 3}
   - {fileID: 21300000, guid: f9934449af9e15443befe12f639d5979, type: 3}
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
-  - {fileID: 21300000, guid: 04d23689353fc41279c835e20dc167f7, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
   - {fileID: 21300000, guid: 604176a988cdc416ca612d5e95156254, type: 3}
   - {fileID: 21300000, guid: 35746db90808fac4aa31ef672b070378, type: 3}
@@ -331,11 +331,12 @@ SpriteAtlas:
   - ContainerRadius16Shadow
   - SearchFriendsImage
   - BuilderOn
+  - Publish
   - RadialGradient
   - CellBright
   - Spinner
   - RectRadius8
-  - EllipticalStroke2
+  - EllipseOutline2
   - Shadow10
   - CollapseStroke
   - DeleteIconOutline
@@ -478,7 +479,6 @@ SpriteAtlas:
   - Frame12
   - ContainerRadius24Shadow
   - Ellipse128
-  - Reference
   - MessageIcon
   - FriendsIcon
   - ContainerRadius100
@@ -496,7 +496,7 @@ SpriteAtlas:
   - CardPassportIcon
   - JumpInIcon
   - RoundedContainer34
-  - MarketplaceEditorIcon
+  - MarketIcon
   - PassportIcon
   - ContainerRadius6Shadow
   - RectRadius16Bottom
