@@ -32,6 +32,10 @@ public class MinimapHUDView : MonoBehaviour
     [Header("Tutorial Configuration")]
     [SerializeField] internal RectTransform startMenuTooltipReference;
 
+    internal Animator startMenuButtonAnimator;
+
+    private void Awake() { startMenuButtonAnimator = startMenuButton.GetComponent<Animator>(); }
+
     private void Initialize(MinimapHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
@@ -41,7 +45,15 @@ public class MinimapHUDView : MonoBehaviour
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
-        startMenuButton.onClick.AddListener(controller.OpenStartMenu);
+        startMenuButton.onClick.AddListener(() =>
+        {
+            startMenuButtonAnimator?.SetTrigger("pressed");
+            controller.OpenStartMenu();
+        });
+        startMenuButton.onFocused += (isFocused) =>
+        {
+            startMenuButtonAnimator?.SetBool("hover", isFocused);
+        };
 
         var renderer = MapRenderer.i;
 
