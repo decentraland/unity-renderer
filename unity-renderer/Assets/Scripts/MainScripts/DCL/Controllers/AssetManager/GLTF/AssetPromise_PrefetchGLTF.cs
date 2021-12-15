@@ -1,3 +1,5 @@
+using System;
+
 namespace DCL
 {
     public class AssetPromise_PrefetchGLTF : AssetPromise_GLTF
@@ -6,13 +8,9 @@ namespace DCL
 
         protected override void OnBeforeLoadOrReuse() { asset.container.name = "GLTF: " + fileName; }
 
-        public override object GetId() { return base.GetId(); }
-
-        protected override void OnLoad(System.Action OnSuccess, System.Action OnFail) { base.OnLoad(OnSuccess, OnFail); }
-
         void ParseGLTFWebRequestedFile(ref string requestedFileName) { provider.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out requestedFileName); }
 
-        protected override void OnReuse(System.Action OnSuccess) { asset.Show(false, OnSuccess); }
+        protected override void OnReuse(Action OnSuccess) { asset.Show(false, OnSuccess); }
 
         protected override bool AddToLibrary()
         {
@@ -28,7 +26,7 @@ namespace DCL
             }
             else
             {
-                CallAndClearEvents(false);
+                CallAndClearEvents(false, new Exception("The asset already exists in the library"));
             }
         }
 

@@ -112,10 +112,10 @@ namespace DCL.Huds.QuestsPanel
 
             thumbnailPromise = new AssetPromise_Texture(thumbnailURL);
             thumbnailPromise.OnSuccessEvent += OnThumbnailReady;
-            thumbnailPromise.OnFailEvent += x =>
+            thumbnailPromise.OnFailEvent += (x, error) =>
             {
                 thumbnailImage.gameObject.SetActive(false);
-                Debug.Log($"Error downloading quest panel popup thumbnail: {thumbnailURL}");
+                Debug.Log($"Error downloading quest panel popup thumbnail: {thumbnailURL}, Exception: {error}");
             };
 
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);

@@ -19,10 +19,6 @@ namespace DCL.Components
 
             public Color color = Color.white;
 
-            //These values exist in the SDK but we are doing nothing with these values
-            public string fontWeight = "normal";
-            //
-
             public bool adaptWidth = false;
             public bool adaptHeight = false;
             public float fontSize = 100f;

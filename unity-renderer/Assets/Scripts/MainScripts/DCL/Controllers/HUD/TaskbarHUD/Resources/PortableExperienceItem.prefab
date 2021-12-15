@@ -659,7 +659,8 @@ MonoBehaviour:
   lineOnIndicator: {fileID: 1486688441464555219}
   iconImage: {fileID: 0}
   notInteractableColor: {r: 0, g: 0, b: 0, a: 0}
-  compatibleModes: 
+  compatibleModes: 00000000
+  firstTimeLabelIndicator: {fileID: 0}
 --- !u!114 &4515106414855995578
 MonoBehaviour:
   m_ObjectHideFlags: 0

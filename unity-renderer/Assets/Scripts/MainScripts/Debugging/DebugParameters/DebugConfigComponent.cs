@@ -38,6 +38,7 @@ namespace DCL
         public bool openBrowserWhenStart;
 
         [Header("Kernel General Settings")]
+        public string kernelVersion ;
         public bool useCustomContentServer = false;
 
         public string customContentServerUrl = "http://localhost:1338/";
@@ -62,7 +63,6 @@ namespace DCL
         public bool testWearables = false;
         public bool enableTutorial = false;
         public bool builderInWorld = false;
-        public bool enableProceduralSkybox = false;
         public bool soloScene = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
@@ -138,6 +138,11 @@ namespace DCL
                     break;
             }
 
+            if ( !string.IsNullOrEmpty(kernelVersion))
+            {
+                debugString += $"kernel-version={kernelVersion}&";
+            }
+
             if (forceLocalComms)
             {
                 debugString += "LOCAL_COMMS&";
@@ -168,12 +173,7 @@ namespace DCL
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
             }
 
-            if (enableProceduralSkybox)
-            {
-                debugString += "ENABLE_PROCEDURAL_SKYBOX&";
-            }
-
-            if (!string.IsNullOrEmpty(realm))
+            if ( !string.IsNullOrEmpty(realm))
             {
                 debugString += $"realm={realm}&";
             }
@@ -195,6 +195,5 @@ namespace DCL
         }
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
-
     }
 }

@@ -73,7 +73,11 @@ namespace DCL.Builder
             cameraController?.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
         }
 
-        public void DeactivateCamera() { cameraController?.SetCameraMode(avatarCameraModeBeforeEditing); }
+        public void DeactivateCamera()
+        {
+            if (!DataStore.i.common.isWorldBeingDestroyed.Get())
+                cameraController?.SetCameraMode(avatarCameraModeBeforeEditing);
+        }
 
         public Texture2D GetLastScreenshot() { return lastScreenshot;}
 

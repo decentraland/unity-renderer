@@ -17,7 +17,7 @@ namespace NFTShape_Internal
 
         public NFTImageAsset(ITexture previewTexture, int hqResolution, Action<Texture2D> textureUpdateCallback)
         {
-            this.previewAsset = previewTexture;
+            previewAsset = previewTexture;
             this.hqResolution = hqResolution;
             this.textureUpdateCallback = textureUpdateCallback;
         }
@@ -32,19 +32,19 @@ namespace NFTShape_Internal
             textureUpdateCallback = null;
         }
 
-        public void FetchAndSetHQAsset(string url, Action onSuccess, Action onFail)
+        public void FetchAndSetHQAsset(string url, Action onSuccess, Action<Exception> onFail)
         {
             hqTexture = new AssetPromise_Texture(url);
 
-            hqTexture.OnSuccessEvent += (asset) =>
+            hqTexture.OnSuccessEvent += asset =>
             {
                 textureUpdateCallback?.Invoke(asset.texture);
                 onSuccess?.Invoke();
             };
-            hqTexture.OnFailEvent += (asset) =>
+            hqTexture.OnFailEvent += (asset, error) =>
             {
                 hqTexture = null;
-                onFail?.Invoke();
+                onFail?.Invoke(error);
             };
 
             AssetPromiseKeeper_Texture.i.Keep(hqTexture);

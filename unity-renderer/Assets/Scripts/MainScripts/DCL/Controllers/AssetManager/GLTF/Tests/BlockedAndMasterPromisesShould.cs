@@ -23,11 +23,11 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             AssetPromise_GLTF prom2 = new AssetPromise_GLTF(scene.contentProvider, url);
             bool failEventCalled2 = false;
-            prom2.OnFailEvent += (x) => { failEventCalled2 = true; };
+            prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
             AssetPromise_GLTF prom3 = new AssetPromise_GLTF(scene.contentProvider, url);
             bool failEventCalled3 = false;
-            prom3.OnFailEvent += (x) => { failEventCalled3 = true; };
+            prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
 
             keeper.Keep(prom);
             keeper.Keep(prom2);
@@ -75,19 +75,19 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Asset_GLTF asset = null;
             bool failEventCalled1 = false;
             prom.OnSuccessEvent += (x) => { asset = x; };
-            prom.OnFailEvent += (x) => { failEventCalled1 = true; };
+            prom.OnFailEvent += (x, error) => { failEventCalled1 = true; };
 
             AssetPromise_GLTF prom2 = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF asset2 = null;
             bool failEventCalled2 = false;
             prom2.OnSuccessEvent += (x) => { asset2 = x; };
-            prom2.OnFailEvent += (x) => { failEventCalled2 = true; };
+            prom2.OnFailEvent += (x, error) => { failEventCalled2 = true; };
 
             AssetPromise_GLTF prom3 = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF asset3 = null;
             bool failEventCalled3 = false;
             prom3.OnSuccessEvent += (x) => { asset3 = x; };
-            prom3.OnFailEvent += (x) => { failEventCalled3 = true; };
+            prom3.OnFailEvent += (x, error) => { failEventCalled3 = true; };
 
             keeper.Keep(prom);
             keeper.Keep(prom2);
