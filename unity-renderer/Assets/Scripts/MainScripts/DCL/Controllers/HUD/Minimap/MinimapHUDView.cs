@@ -8,6 +8,9 @@ public class MinimapHUDView : MonoBehaviour
     public const string VIEW_PATH = "MinimapHUD";
     public const string VIEW_OBJECT_NAME = "_MinimapHUD";
 
+    private int START_MENU_HOVER_BOOL = Animator.StringToHash("hover");
+    private int START_MENU_PRESSED_TRIGGER = Animator.StringToHash("pressed");
+
     [Header("Information")] [SerializeField]
     private TextMeshProUGUI sceneNameText;
 
@@ -47,12 +50,12 @@ public class MinimapHUDView : MonoBehaviour
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
         startMenuButton.onClick.AddListener(() =>
         {
-            startMenuButtonAnimator?.SetTrigger("pressed");
+            startMenuButtonAnimator?.SetTrigger(START_MENU_PRESSED_TRIGGER);
             controller.OpenStartMenu();
         });
         startMenuButton.onFocused += (isFocused) =>
         {
-            startMenuButtonAnimator?.SetBool("hover", isFocused);
+            startMenuButtonAnimator?.SetBool(START_MENU_HOVER_BOOL, isFocused);
         };
 
         var renderer = MapRenderer.i;
