@@ -72,7 +72,7 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         if (!entityPromiseKeeperDict.ContainsKey(promiseId))
             entityPromiseKeeperDict.Add(promiseId, entity);
         newLoadedThumbnailPromise.OnSuccessEvent += SetThumbnail;
-        newLoadedThumbnailPromise.OnFailEvent += x => { Debug.Log($"Error downloading: {url}"); };
+        newLoadedThumbnailPromise.OnFailEvent += (x, error) => { Debug.Log($"Error downloading: {url}, Exception: {error}"); };
 
         AssetPromiseKeeper_Texture.i.Keep(newLoadedThumbnailPromise);
     }

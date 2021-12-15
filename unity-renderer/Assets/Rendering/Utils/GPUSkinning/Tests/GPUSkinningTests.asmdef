@@ -1,32 +1,33 @@
 {
-  "name": "GPUSkinningTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:f070f44586498a44c9e6d2ea3e166379",
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:07d177de1697ea140902b30d6889fa5d",
-    "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
-    "GUID:28f74c468a54948bfa9f625c5d428f56",
-    "GUID:9fad297e585ef204c9c2c497d77099f0",
-    "GUID:e65144cdbd5b744238fa03c40df6cd71",
-    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-    "GUID:59a84c943ce672c4695df742fcdd6d20",
-    "GUID:1e6b57fe78f7b724e9567f29f6a40c2c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "NSubstitute.dll",
-    "nunit.framework.dll",
-    "System.Threading.Tasks.Extensions.dll"
-  ],
-  "autoReferenced": true,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "GPUSkinningTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:f070f44586498a44c9e6d2ea3e166379",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:07d177de1697ea140902b30d6889fa5d",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:9fad297e585ef204c9c2c497d77099f0",
+        "GUID:e65144cdbd5b744238fa03c40df6cd71",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:59a84c943ce672c4695df742fcdd6d20",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:18ee28afad71091499d9ebad494c995e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "nunit.framework.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

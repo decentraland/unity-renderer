@@ -115,9 +115,13 @@ namespace DCL
 
         protected virtual void OnDestroy()
         {
+            DataStore.i.common.isWorldBeingDestroyed.Set(true);
+            
+            pluginSystem?.Dispose();
+
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.Dispose();
+            
             kernelCommunication?.Dispose();
         }
 
