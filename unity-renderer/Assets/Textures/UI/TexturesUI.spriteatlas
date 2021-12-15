@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 4676244
+    totalSpriteSurfaceArea: 4684363
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -98,6 +98,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2f8d6212d390e424ba86746c7be53eba, type: 3}
   - {fileID: 21300000, guid: 400fa122300374d5c9492754b211336f, type: 3}
   - {fileID: 21300000, guid: 39177232480c9442b9c785ef3c94a093, type: 3}
+  - {fileID: 21300000, guid: 903e82323051c41339d97e1f52c7c984, type: 3}
   - {fileID: 21300000, guid: 6d6f6142025570c4c8c8705c19f66da4, type: 3}
   - {fileID: 21300000, guid: e0b16592248644670b24222cef732ed0, type: 3}
   - {fileID: 21300000, guid: b3a558a257e4f4f988f0f1b57a559485, type: 3}
@@ -131,6 +132,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f7c61f14e511e4444929b9c47611edac, type: 3}
   - {fileID: 21300000, guid: 0822ae34e463d49f49b978299714fd21, type: 3}
   - {fileID: 21300000, guid: 65d50244ec48c4d31b169fe48412f711, type: 3}
+  - {fileID: 21300000, guid: 14d01e642387749e482a6f14133c57b8, type: 3}
   - {fileID: 21300000, guid: d077f9943309847eb8bb9c36ecff7a44, type: 3}
   - {fileID: 21300000, guid: c983eea4ebd9d43579acbb2e5c500480, type: 3}
   - {fileID: 21300000, guid: a13564b4fa74e4061bafd65fb9bfdc46, type: 3}
@@ -359,6 +361,7 @@ SpriteAtlas:
   - Ellipse64
   - ContainerRadius4
   - HideBarIcon
+  - Container12Shadow10
   - InputFieldBuilderFocus
   - NFTUniqueContainer
   - RoundedSquare20x20
@@ -392,6 +395,7 @@ SpriteAtlas:
   - Key
   - DialogCornerRight
   - ConnectionStatus
+  - Container12Shadow4
   - LockIcon
   - Camera
   - NFTEmpty
@@ -496,7 +500,7 @@ SpriteAtlas:
   - ContainerRowHover
   - ShareIconOutline
   - TabBarBackground
-  - TaskBarMenu
+  - MenuIcon
   - HideUIIcon
   - MenuContainerHover
   - ContainerRadius12
