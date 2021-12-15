@@ -1,6 +1,8 @@
 using DCL.SettingsPanelHUD;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using DCL;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -20,6 +22,22 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private HelpAndSupportHUDController helpAndSupportHUDController;
     private ExploreHUDController exploreHUDController;
     private UserProfileController userProfileController;
+
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        // result.Add(MainSceneFactory.CreateBridges());
+        // result.Add(MainSceneFactory.CreateEnvironment());
+        // result.AddRange(MainSceneFactory.CreatePlayerSystems());
+        // result.Add(MainSceneFactory.CreateNavMap());
+        // result.Add(MainSceneFactory.CreateAudioHandler());
+        // result.Add(MainSceneFactory.CreateHudController());
+        result.Add(MainSceneFactory.CreateMouseCatcher());
+        // result.Add(MainSceneFactory.CreateSettingsController());
+        // result.Add(MainSceneFactory.CreateEventSystem());
+        // result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
+        return result;
+    }
 
     protected override IEnumerator SetUp()
     {

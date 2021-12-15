@@ -21,6 +21,23 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     private IBuilderAPIController apiSubstitute;
     private ParcelScene scene;
 
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.Add(MainSceneFactory.CreateBridges());
+        result.Add(MainSceneFactory.CreateEnvironment());
+        result.AddRange(MainSceneFactory.CreatePlayerSystems());
+        result.Add(MainSceneFactory.CreateNavMap());
+        result.Add(MainSceneFactory.CreateAudioHandler());
+        result.Add(MainSceneFactory.CreateHudController());
+        result.Add(MainSceneFactory.CreateMouseCatcher());
+        result.Add(MainSceneFactory.CreateSettingsController());
+        result.Add(MainSceneFactory.CreateEventSystem());
+        result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
+        return result;
+    }
+
+
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();

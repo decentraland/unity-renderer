@@ -60,16 +60,7 @@ public class IntegrationTestSuite_Legacy
     protected virtual List<GameObject> SetUp_LegacySystems()
     {
         List<GameObject> result = new List<GameObject>();
-        result.Add(MainSceneFactory.CreateBridges());
-        result.Add(MainSceneFactory.CreateEnvironment());
         result.AddRange(MainSceneFactory.CreatePlayerSystems());
-        result.Add(MainSceneFactory.CreateNavMap());
-        result.Add(MainSceneFactory.CreateAudioHandler());
-        result.Add(MainSceneFactory.CreateHudController());
-        result.Add(MainSceneFactory.CreateMouseCatcher());
-        result.Add(MainSceneFactory.CreateSettingsController());
-        result.Add(MainSceneFactory.CreateEventSystem());
-        result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
         return result;
     }
 

@@ -4,6 +4,8 @@ using DCL.Interface;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -18,6 +20,23 @@ namespace Tests
         Camera mockCamera;
 
         private ParcelScene scene;
+
+        protected override List<GameObject> SetUp_LegacySystems()
+        {
+            List<GameObject> result = new List<GameObject>();
+            // result.Add(MainSceneFactory.CreateBridges());
+            // result.Add(MainSceneFactory.CreateEnvironment());
+            // result.AddRange(MainSceneFactory.CreatePlayerSystems());
+            // result.Add(MainSceneFactory.CreateNavMap());
+            // result.Add(MainSceneFactory.CreateAudioHandler());
+            // result.Add(MainSceneFactory.CreateHudController());
+            // result.Add(MainSceneFactory.CreateMouseCatcher());
+            // result.Add(MainSceneFactory.CreateSettingsController());
+            result.Add(MainSceneFactory.CreateEventSystem());
+            // result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
+            return result;
+        }
+
 
         protected override IEnumerator SetUp()
         {

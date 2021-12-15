@@ -73,6 +73,7 @@ public class BIWGodMode : BIWMode
 
         if (context.sceneReferences.cameraController.GetComponent<CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraController = (FreeCameraMovement) cameraState;
+
         mouseCatcher = context.sceneReferences.mouseCatcher.GetComponent<MouseCatcher>();
         avatarRenderer = context.sceneReferences.playerAvatarController.GetComponent<PlayerAvatarController>();
 

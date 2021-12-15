@@ -19,6 +19,14 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
 {
     private ParcelScene scene;
 
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.Add(MainSceneFactory.CreateEnvironment());
+        result.AddRange(MainSceneFactory.CreatePlayerSystems());
+        return result;
+    }
+
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
