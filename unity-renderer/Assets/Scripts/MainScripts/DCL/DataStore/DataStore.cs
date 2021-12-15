@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DCL
@@ -51,5 +51,6 @@ namespace DCL
         public DataStore_FeatureFlag featureFlags => i.Get<DataStore_FeatureFlag>();
         public DataStore_Camera camera => i.Get<DataStore_Camera>();
         public DataStore_Settings settings => i.Get<DataStore_Settings>();
+        public DataStore_SkyboxConfig skyboxConfig => i.Get<DataStore_SkyboxConfig>();
     }
 }
