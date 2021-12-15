@@ -27,15 +27,18 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
     }
     (Vector3 position, Quaternion rotation, Vector3 scale) IAvatarAnchorPoints.GetTransform(AvatarAnchorPointIds anchorPointId)
     {
-        if (anchorPointId == AvatarAnchorPointIds.NameTag)
+        if (anchorPointId == AvatarAnchorPointIds.NameTag && avatarTransform != null)
         {
             return (avatarTransform.position + Vector3.up * nameTagY, avatarTransform.rotation, Vector3.one);
         }
 
-        if (!boneTransformMapping.TryGetValue(anchorPointId, out Transform bone))
+        if (boneTransformMapping.TryGetValue(anchorPointId, out Transform bone))
         {
-            return (Vector3.zero, Quaternion.identity, Vector3.one);
+            if (bone != null)
+            {
+                return (bone.position, bone.rotation, bone.lossyScale);
+            }
         }
-        return (bone.position, bone.rotation, bone.lossyScale);
+        return (Vector3.zero, Quaternion.identity, Vector3.one);
     }
 }
