@@ -8,11 +8,11 @@ namespace DCL.Components
 {
     internal class AvatarAttachHandler
     {
-        public AvatarAttachComponent.Model model { private set; get; } = new AvatarAttachComponent.Model();
+        public AvatarAttachComponent.Model model { internal set; get; } = new AvatarAttachComponent.Model();
         public IParcelScene scene { private set; get; }
         public IDCLEntity entity { private set; get; }
 
-        internal AvatarAttachComponent.Model prevModel = null;
+        private AvatarAttachComponent.Model prevModel = null;
 
         private IAvatarAnchorPoints anchorPoints;
         private AvatarAnchorPointIds anchorPointId;
@@ -64,7 +64,7 @@ namespace DCL.Components
             avatarAttachPlayerHandler.Dispose();
         }
 
-        internal void Detach()
+        internal virtual void Detach()
         {
             if (componentUpdate != null)
             {
@@ -80,7 +80,7 @@ namespace DCL.Components
             avatarAttachPlayerHandler.CancelCurrentSearch();
         }
 
-        internal void Attach(string avatarId, AvatarAnchorPointIds anchorPointId)
+        internal virtual void Attach(string avatarId, AvatarAnchorPointIds anchorPointId)
         {
             avatarAttachPlayerHandler.SearchAnchorPoints(avatarId, anchorPoints =>
             {
@@ -88,7 +88,7 @@ namespace DCL.Components
             });
         }
 
-        internal void Attach(IAvatarAnchorPoints anchorPoints, AvatarAnchorPointIds anchorPointId)
+        internal virtual void Attach(IAvatarAnchorPoints anchorPoints, AvatarAnchorPointIds anchorPointId)
         {
             this.anchorPoints = anchorPoints;
             this.anchorPointId = anchorPointId;

@@ -1,11 +1,9 @@
-using System;
 using DCL;
 using DCL.Components;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace AvatarAttach_Tests
 {
@@ -21,7 +19,7 @@ namespace AvatarAttach_Tests
         public void DoNotDetachOrAttachIfIdMatchPreviousModel()
         {
             AvatarAttachHandler handler = Substitute.ForPartsOf<AvatarAttachHandler>();
-            handler.prevModel = new AvatarAttachComponent.Model() { avatarId = "Temptation" };
+            handler.model = new AvatarAttachComponent.Model() { avatarId = "Temptation" };
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = "Temptation" });
             handler.DidNotReceive().Detach();
             handler.DidNotReceive().Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
@@ -61,7 +59,7 @@ namespace AvatarAttach_Tests
             handler.Received(1).Detach();
 
             DataStore.i.player.otherPlayers.Remove(userId);
-            handler.Received(2).Detach();
+            handler.Received(1).Detach();
             handler.CleanUp();
         }
 
@@ -83,18 +81,18 @@ namespace AvatarAttach_Tests
         public void UpdateComponentCorrectly()
         {
             const string userId = "Temptation";
+            Vector3 targetPosition = new Vector3(70, -135, 0);
+            Quaternion targetRotation = Quaternion.Euler(0, 30, 0);
 
             GameObject entityGo = new GameObject("AvatarAttachHandlerShould");
             entityGo.transform.position = Vector3.zero;
             entityGo.transform.rotation = Quaternion.identity;
 
-            // NOTE: can't mock using entity.gameObject.Returns(entityGo) for some reason NSubstitute goes
-            // crazy when running in the test queue but works ok when running it isolated
-            DecentralandEntity entity = new DecentralandEntity { gameObject = entityGo };
+            IDCLEntity entity = Substitute.For<IDCLEntity>();
+            entity.gameObject.Returns(entityGo);
 
-            // NOTE: can't mock using NSubstitute. for some reason NSubstitute goes
-            // crazy when running in the test queue but works ok when running it isolated
-            IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints_Mock();
+            IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
+            anchorPoints.GetTransfom(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, Vector3.one));
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
 
@@ -102,26 +100,11 @@ namespace AvatarAttach_Tests
             handler.Initialize(null, entity);
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = userId, anchorPointId = 0 });
 
-            Assert.AreEqual(AvatarAnchorPoints_Mock.targetPosition, entityGo.transform.position);
-            Assert.AreEqual(AvatarAnchorPoints_Mock.targetRotation.eulerAngles, entityGo.transform.rotation.eulerAngles);
+            Assert.AreEqual(targetPosition, entityGo.transform.position);
+            Assert.AreEqual(targetRotation.eulerAngles, entityGo.transform.rotation.eulerAngles);
 
             handler.CleanUp();
             Object.Destroy(entityGo);
-        }
-
-        class AvatarAnchorPoints_Mock : IAvatarAnchorPoints
-        {
-            public static readonly Vector3 targetPosition = new Vector3(70, -135, 0);
-            public static readonly Quaternion targetRotation = Quaternion.Euler(0, 30, 0);
-
-            void IAvatarAnchorPoints.Prepare(Transform avatarTransform, Transform[] bones, float nameTagY)
-            {
-                throw new NotImplementedException();
-            }
-            (Vector3 position, Quaternion rotation, Vector3 scale) IAvatarAnchorPoints.GetTransfom(AvatarAnchorPointIds anchorPointId)
-            {
-                return (targetPosition, targetRotation, Vector3.one);
-            }
         }
     }
 }
