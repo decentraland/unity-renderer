@@ -2,6 +2,7 @@ using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.SettingsCommon;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -32,6 +33,11 @@ namespace DCL
             }
 
             i = this;
+            
+            Settings.CreateSharedInstance(
+                Resources.Load<QualitySettingsData>("ScriptableObjects/QualitySettingsData"),
+                Resources.Load<QualitySettingsData>("ScriptableObjects/AutoQualitySettingsData"),
+                Resources.Load<BooleanVariable>("ScriptableObjects/AutoQualityEnabled"));
 
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();

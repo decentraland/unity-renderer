@@ -6,45 +6,43 @@ using UnityEngine.Audio;
 
 namespace DCL.SettingsCommon
 {
-    public class Settings : Singleton<Settings>
+    public class Settings
     {
         const string QUALITY_SETTINGS_KEY = "Settings.Quality";
         const string GENERAL_SETTINGS_KEY = "Settings.General";
         const string AUDIO_SETTINGS_KEY = "Settings.Audio";
+
+        public static Settings i { get; private set; }
+
         public event Action OnResetAllSettings;
+        
         public QualitySettingsData qualitySettingsPresets => qualitySettingsPreset;
-
-        public ISettingsRepository<QualitySettings> qualitySettings;
-        public ISettingsRepository<GeneralSettings> generalSettings;
-        public ISettingsRepository<AudioSettings> audioSettings;
-
-        private static QualitySettingsData qualitySettingsPreset = null;
-
-        public QualitySettingsData autoqualitySettings = null;
+        public QualitySettingsData autoQualitySettings;
         public QualitySettings lastValidAutoqualitySet;
 
-        private readonly BooleanVariable autosettingsEnabled = null;
+        public readonly ISettingsRepository<QualitySettings> qualitySettings;
+        public readonly ISettingsRepository<GeneralSettings> generalSettings;
+        public readonly ISettingsRepository<AudioSettings> audioSettings;
+        
+        private readonly QualitySettingsData qualitySettingsPreset;
+        private readonly BooleanVariable autosettingsEnabled ;
         private readonly AudioMixer audioMixer;
 
-        public Settings()
+        public static void CreateSharedInstance(QualitySettingsData qualitySettingsPreset,
+            QualitySettingsData autoQualitySettings,
+            BooleanVariable autoQualitySettingsEnabled)
         {
-            if (qualitySettingsPreset == null)
-            {
-#if UNITY_STANDALONE
-                qualitySettingsPreset = Resources.Load<QualitySettingsData>("ScriptableObjects/DesktopQualitySettingsData");
-#else
-                qualitySettingsPreset = Resources.Load<QualitySettingsData>("ScriptableObjects/QualitySettingsData");
-#endif
-            }
+            if (i != null) return;
+            i = new Settings(qualitySettingsPreset, autoQualitySettings, autoQualitySettingsEnabled);
+        }
 
-            if (autoqualitySettings == null)
-            {
-                autoqualitySettings = Resources.Load<QualitySettingsData>("ScriptableObjects/AutoQualitySettingsData");
-                lastValidAutoqualitySet = autoqualitySettings[autoqualitySettings.Length / 2];
-            }
-
-            if (autosettingsEnabled == null)
-                autosettingsEnabled = Resources.Load<BooleanVariable>("ScriptableObjects/AutoQualityEnabled");
+        public Settings(QualitySettingsData qualitySettingsPreset,
+            QualitySettingsData autoQualitySettings,
+            BooleanVariable autoQualitySettingsEnabled)
+        {
+            this.qualitySettingsPreset = qualitySettingsPreset;
+            this.autoQualitySettings = autoQualitySettings;
+            autosettingsEnabled = autoQualitySettingsEnabled;
 
             qualitySettings = new ProxySettingsRepository<QualitySettings>(
                 new PlayerPrefsQualitySettingsRepository(
@@ -129,10 +127,10 @@ namespace DCL.SettingsCommon
         /// <param name="index">Index within the autoQualitySettings array</param>
         public void ApplyAutoQualitySettings(int index)
         {
-            if (index < 0 || index >= autoqualitySettings.Length)
+            if (index < 0 || index >= autoQualitySettings.Length)
                 return;
 
-            lastValidAutoqualitySet = autoqualitySettings[index];
+            lastValidAutoqualitySet = autoQualitySettings[index];
 
             var qualiltyData = qualitySettings.Data;
 
