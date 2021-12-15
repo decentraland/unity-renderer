@@ -8,10 +8,6 @@ namespace DCL.SettingsCommon
 {
     public class Settings
     {
-        const string QUALITY_SETTINGS_KEY = "Settings.Quality";
-        const string GENERAL_SETTINGS_KEY = "Settings.General";
-        const string AUDIO_SETTINGS_KEY = "Settings.Audio";
-
         public static Settings i { get; private set; }
 
         public event Action OnResetAllSettings;
@@ -25,56 +21,39 @@ namespace DCL.SettingsCommon
         public readonly ISettingsRepository<AudioSettings> audioSettings;
         
         private readonly QualitySettingsData qualitySettingsPreset;
-        private readonly BooleanVariable autosettingsEnabled ;
+        private readonly BooleanVariable autoQualitySettingsEnabled;
         private readonly AudioMixer audioMixer;
 
-        public static void CreateSharedInstance(QualitySettingsData qualitySettingsPreset,
-            QualitySettingsData autoQualitySettings,
-            BooleanVariable autoQualitySettingsEnabled)
+        public static void CreateSharedInstance(ISettingsFactory settingsFactory)
         {
             if (i != null) return;
-            i = new Settings(qualitySettingsPreset, autoQualitySettings, autoQualitySettingsEnabled);
+            i = settingsFactory.Build();
         }
 
         public Settings(QualitySettingsData qualitySettingsPreset,
             QualitySettingsData autoQualitySettings,
-            BooleanVariable autoQualitySettingsEnabled)
+            BooleanVariable autoQualitySettingsEnabled,
+            AudioMixer audioMixer,
+            ISettingsRepository<QualitySettings> graphicsQualitySettingsRepository,
+            ISettingsRepository<GeneralSettings> generalSettingsRepository,
+            ISettingsRepository<AudioSettings> audioSettingsRepository)
         {
             this.qualitySettingsPreset = qualitySettingsPreset;
             this.autoQualitySettings = autoQualitySettings;
-            autosettingsEnabled = autoQualitySettingsEnabled;
-
-            qualitySettings = new ProxySettingsRepository<QualitySettings>(
-                new PlayerPrefsQualitySettingsRepository(
-                    new PlayerPrefsSettingsByKey(QUALITY_SETTINGS_KEY),
-                    qualitySettingsPreset.defaultPreset),
-                new SettingsModule<QualitySettings>(
-                    QUALITY_SETTINGS_KEY,
-                    qualitySettingsPreset.defaultPreset));
-            generalSettings = new ProxySettingsRepository<GeneralSettings>(
-                new PlayerPrefsGeneralSettingsRepository(
-                    new PlayerPrefsSettingsByKey(GENERAL_SETTINGS_KEY),
-                    GetDefaultGeneralSettings()),
-                new SettingsModule<GeneralSettings>(
-                    GENERAL_SETTINGS_KEY,
-                    GetDefaultGeneralSettings()));
-            audioSettings = new ProxySettingsRepository<AudioSettings>(
-                new PlayerPrefsAudioSettingsRepository(
-                    new PlayerPrefsSettingsByKey(AUDIO_SETTINGS_KEY),
-                    GetDefaultAudioSettings()),
-                new SettingsModule<AudioSettings>(
-                    AUDIO_SETTINGS_KEY,
-                    GetDefaultAudioSettings()));
+            this.autoQualitySettingsEnabled = autoQualitySettingsEnabled;
+            this.audioMixer = audioMixer;
+            qualitySettings = graphicsQualitySettingsRepository;
+            generalSettings = generalSettingsRepository;
+            audioSettings = audioSettingsRepository;
 
             SubscribeToVirtualAudioMixerEvents();
-            audioMixer = Resources.Load<AudioMixer>("AudioMixer");
         }
 
         public void Dispose() { UnsubscribeFromVirtualAudioMixerEvents(); }
 
         public void LoadDefaultSettings()
         {
-            autosettingsEnabled.Set(false);
+            autoQualitySettingsEnabled.Set(false);
 
             qualitySettings.Reset();
             generalSettings.Reset();
@@ -86,39 +65,6 @@ namespace DCL.SettingsCommon
             LoadDefaultSettings();
             SaveSettings();
             OnResetAllSettings?.Invoke();
-        }
-
-        private GeneralSettings GetDefaultGeneralSettings()
-        {
-            return new GeneralSettings
-            {
-                mouseSensitivity = 0.6f,
-                scenesLoadRadius = 4,
-                avatarsLODDistance = 16,
-                maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
-                voiceChatVolume = 1,
-                voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
-                autoqualityOn = false,
-                namesOpacity = 0.5f,
-                profanityChatFiltering = true,
-                nightMode = false,
-                hideUI = false,
-                showAvatarNames = true
-            };
-        }
-
-        private AudioSettings GetDefaultAudioSettings()
-        {
-            return new AudioSettings()
-            {
-                masterVolume = 1f,
-                voiceChatVolume = 1f,
-                avatarSFXVolume = 1f,
-                uiSFXVolume = 1f,
-                sceneSFXVolume = 1f,
-                musicVolume = 1f,
-                chatSFXEnabled = true
-            };
         }
 
         /// <summary>

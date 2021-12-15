@@ -34,10 +34,7 @@ namespace DCL
 
             i = this;
             
-            Settings.CreateSharedInstance(
-                Resources.Load<QualitySettingsData>("ScriptableObjects/QualitySettingsData"),
-                Resources.Load<QualitySettingsData>("ScriptableObjects/AutoQualitySettingsData"),
-                Resources.Load<BooleanVariable>("ScriptableObjects/AutoQualityEnabled"));
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
