@@ -8,6 +8,9 @@ public class MinimapHUDView : MonoBehaviour
     public const string VIEW_PATH = "MinimapHUD";
     public const string VIEW_OBJECT_NAME = "_MinimapHUD";
 
+    private int START_MENU_HOVER_BOOL = Animator.StringToHash("hover");
+    private int START_MENU_PRESSED_TRIGGER = Animator.StringToHash("pressed");
+
     [Header("Information")] [SerializeField]
     private TextMeshProUGUI sceneNameText;
 
@@ -32,6 +35,10 @@ public class MinimapHUDView : MonoBehaviour
     [Header("Tutorial Configuration")]
     [SerializeField] internal RectTransform startMenuTooltipReference;
 
+    internal Animator startMenuButtonAnimator;
+
+    private void Awake() { startMenuButtonAnimator = startMenuButton.GetComponent<Animator>(); }
+
     private void Initialize(MinimapHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
@@ -41,7 +48,15 @@ public class MinimapHUDView : MonoBehaviour
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
-        startMenuButton.onClick.AddListener(controller.OpenStartMenu);
+        startMenuButton.onClick.AddListener(() =>
+        {
+            startMenuButtonAnimator?.SetTrigger(START_MENU_PRESSED_TRIGGER);
+            controller.OpenStartMenu();
+        });
+        startMenuButton.onFocused += (isFocused) =>
+        {
+            startMenuButtonAnimator?.SetBool(START_MENU_HOVER_BOOL, isFocused);
+        };
 
         var renderer = MapRenderer.i;
 

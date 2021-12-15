@@ -12,6 +12,11 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     bool isVisible { get; }
 
     /// <summary>
+    /// It will be triggered when UI Component is focused.
+    /// </summary>
+    event Action<bool> onFocused;
+
+    /// <summary>
     /// It will inform if the UI Component is focused or not.
     /// </summary>
     bool isFocused { get; }
@@ -81,6 +86,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public bool isVisible { get; private set; }
     private bool isDestroyed = false;
 
+    public event Action<bool> onFocused;
     public bool isFocused { get; private set; }
 
     public virtual void Awake()
@@ -113,9 +119,17 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
         isVisible = false;
     }
 
-    public virtual void OnFocus() { isFocused = true; }
+    public virtual void OnFocus()
+    {
+        isFocused = true;
+        onFocused?.Invoke(true);
+    }
 
-    public virtual void OnLoseFocus() { isFocused = false; }
+    public virtual void OnLoseFocus()
+    {
+        isFocused = false;
+        onFocused?.Invoke(false);
+    }
 
     public virtual void OnScreenSizeChanged() { }
 
