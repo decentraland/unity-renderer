@@ -22,13 +22,6 @@ namespace Tests.BuildModeHUDControllers
         [TearDown]
         public void TearDown()
         {
-            GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
-
-            foreach ( var obj in allObjects )
-            {
-                Debug.Log($"this: {this.GetType().FullName} obj: {obj.name}");
-            }
-
             quickBarController.Dispose();
         }
 
