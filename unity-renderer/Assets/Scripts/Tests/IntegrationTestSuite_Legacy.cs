@@ -117,6 +117,15 @@ public class IntegrationTestSuite_Legacy
             MapRenderer.i.Cleanup();
 
         CatalogController.Clear();
+
+        GameObject[] gos = Object.FindObjectsOfType<GameObject>(true);
+
+        foreach ( var go in gos )
+        {
+            Object.Destroy(go);
+        }
+
+        yield return null;
     }
 
     protected void TearDown_Memory()
