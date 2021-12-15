@@ -46,7 +46,7 @@ public class ShowHideAnimator : MonoBehaviour
     {
         animator.speed = animSpeedFactor;
 
-        if ( animator.isInitialized )
+        if ( animator.isActiveAndEnabled )
             animator.SetBool(visibleParamHash, true);
 
         if (instant)
@@ -57,7 +57,7 @@ public class ShowHideAnimator : MonoBehaviour
     {
         animator.speed = animSpeedFactor;
 
-        if ( animator.isInitialized )
+        if ( animator.isActiveAndEnabled )
             animator.SetBool(visibleParamHash, false);
 
         if (instant)
