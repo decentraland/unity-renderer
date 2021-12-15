@@ -130,15 +130,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
 
-    [Header("Tutorial Config")]
-    [SerializeField] internal RectTransform topMenuTooltipReference;
-    [SerializeField] internal RectTransform placesAndEventsTooltipReference;
-    [SerializeField] internal RectTransform backpackTooltipReference;
-    [SerializeField] internal RectTransform mapTooltipReference;
-    [SerializeField] internal RectTransform builderTooltipReference;
-    [SerializeField] internal RectTransform questTooltipReference;
-    [SerializeField] internal RectTransform settingsTooltipReference;
-
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
