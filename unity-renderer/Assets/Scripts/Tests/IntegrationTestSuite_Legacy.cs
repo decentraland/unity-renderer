@@ -50,11 +50,12 @@ public class IntegrationTestSuite_Legacy
         );
 
         SetUp_SceneController();
-        
+
         yield return SetUp_Camera();
 
         //TODO(Brian): Remove when the init layer is ready
         Environment.i.platform.cullingController.Stop();
+        AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
         yield break;
     }
 
@@ -132,23 +133,23 @@ public class IntegrationTestSuite_Legacy
         sceneController.prewarmSceneMessagesPool = false;
         sceneController.prewarmEntitiesPool = false;
     }
-    
-        public virtual IEnumerator SetUp_Camera()
-        {
-            CameraController cameraController = Object.FindObjectOfType<CameraController>();
-            
-            if ( cameraController == null )
+
+    public virtual IEnumerator SetUp_Camera()
+    {
+        CameraController cameraController = Object.FindObjectOfType<CameraController>();
+
+        if ( cameraController == null )
             yield break;
-    
-            var tpsMode = cameraController.GetCameraMode(CameraMode.ModeId.ThirdPerson) as CameraStateTPS;
-    
-            if ( tpsMode != null )
-            {
-                tpsMode.cameraDampOnGroundType.settings.enabled = false;
-                tpsMode.cameraFreefall.settings.enabled = false;
-                tpsMode.cameraDampOnSprint.settings.enabled = false;
-            }
+
+        var tpsMode = cameraController.GetCameraMode(CameraMode.ModeId.ThirdPerson) as CameraStateTPS;
+
+        if ( tpsMode != null )
+        {
+            tpsMode.cameraDampOnGroundType.settings.enabled = false;
+            tpsMode.cameraFreefall.settings.enabled = false;
+            tpsMode.cameraDampOnSprint.settings.enabled = false;
         }
+    }
 
     public static T Reflection_GetField<T>(object instance, string fieldName) { return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance); }
 
