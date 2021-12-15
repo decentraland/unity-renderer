@@ -1,22 +1,10 @@
 using DCL;
-using DCL.Controllers;
-using DCL.Helpers;
-using DCL.Models;
-using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Reflection;
 using DCL.Camera;
-using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
-using Assert = UnityEngine.Assertions.Assert;
-using DCL.Tutorial;
-using NSubstitute;
-using UnityEditor;
 
 public class IntegrationTestSuite_Legacy
 {
@@ -25,10 +13,6 @@ public class IntegrationTestSuite_Legacy
     /// so they are cleaned up automatically in the teardown
     /// </summary>
     private GameObject runtimeGameObjectsRoot;
-
-    protected virtual bool enableSceneIntegrityChecker => true;
-
-    protected TestSceneIntegrityChecker testSceneIntegrityChecker;
 
     private List<GameObject> legacySystems = new List<GameObject>();
 

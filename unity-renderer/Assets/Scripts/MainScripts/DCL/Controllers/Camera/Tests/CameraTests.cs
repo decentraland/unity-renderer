@@ -11,7 +11,6 @@ namespace CameraController_Test
     public class CameraControllerShould : IntegrationTestSuite_Legacy
     {
         private CameraController cameraController => SceneReferences.i.cameraController;
-        protected override bool enableSceneIntegrityChecker => false;
 
         [Test]
         public void ReactToCameraChangeAction()

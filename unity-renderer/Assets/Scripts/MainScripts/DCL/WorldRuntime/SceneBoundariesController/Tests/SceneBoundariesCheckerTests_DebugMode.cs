@@ -11,7 +11,6 @@ namespace SceneBoundariesCheckerTests
 {
     public class SceneBoundariesCheckerTests_DebugMode : IntegrationTestSuite_Legacy
     {
-        protected override bool enableSceneIntegrityChecker => false;
         private ParcelScene scene;
 
         protected override IEnumerator SetUp()

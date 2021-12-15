@@ -45,6 +45,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         yield return base.SetUp();
         originalAnisoSetting = QualitySettings.anisotropicFiltering;
         QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+
         VisualTestUtils.SetSSAOActive(false);
         scene = TestUtils.CreateTestScene();
 

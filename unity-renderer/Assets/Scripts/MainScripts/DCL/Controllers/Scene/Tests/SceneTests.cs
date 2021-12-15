@@ -14,8 +14,6 @@ using UnityEngine.TestTools;
 
 public class SceneTests : IntegrationTestSuite_Legacy
 {
-    protected override bool enableSceneIntegrityChecker => false;
-
     private ParcelScene scene;
     private ISceneController sceneController => DCL.Environment.i.world.sceneController;
 
