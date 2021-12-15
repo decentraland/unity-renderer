@@ -15,6 +15,7 @@ namespace AvatarShape_Tests
         private const string SUNGLASSES_ID = "dcl://base-avatars/black_sun_glasses";
         private const string BLUE_BANDANA_ID = "dcl://base-avatars/blue_bandana";
 
+        private CatalogController catalogController;
         private AvatarModel avatarModel;
         private BaseDictionary<string, WearableItem> catalog;
         private AvatarShape avatarShape;
@@ -24,9 +25,6 @@ namespace AvatarShape_Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            // SetUp_SceneController();
-            // yield return SetUp_CharacterController();
-
             scene = TestUtils.CreateTestScene();
 
             if (avatarShape == null)
@@ -42,11 +40,18 @@ namespace AvatarShape_Tests
                         { }
                 };
 
+                catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
                 catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
                 avatarShape = AvatarShapeTestHelpers.CreateAvatarShape(scene, avatarModel);
 
                 yield return new DCL.WaitUntil(() => avatarShape.everythingIsLoaded, 20);
             }
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            Object.Destroy(catalogController.gameObject);
+            yield return base.TearDown();
         }
 
         [UnityTest]

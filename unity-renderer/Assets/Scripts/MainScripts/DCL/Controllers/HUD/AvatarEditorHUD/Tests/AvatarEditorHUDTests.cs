@@ -3,6 +3,7 @@ using DCL;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -18,6 +19,7 @@ namespace AvatarEditorHUD_Tests
 
     public class WearableItemsShould : IntegrationTestSuite_Legacy
     {
+        private CatalogController catalogController;
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
         private BaseDictionary<string, WearableItem> catalog;
@@ -40,6 +42,7 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
+            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
@@ -49,7 +52,9 @@ namespace AvatarEditorHUD_Tests
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
+            Object.Destroy(catalogController.gameObject);
             controller.CleanUp();
+            Object.Destroy(userProfile);
             yield return base.TearDown();
         }
 
