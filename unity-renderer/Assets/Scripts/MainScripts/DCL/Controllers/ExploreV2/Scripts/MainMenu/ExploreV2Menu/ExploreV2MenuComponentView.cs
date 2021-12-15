@@ -144,13 +144,13 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
-    public RectTransform currentTopMenuTooltipReference => topMenuTooltipReference;
-    public RectTransform currentPlacesAndEventsTooltipReference => placesAndEventsTooltipReference;
-    public RectTransform currentBackpackTooltipReference => backpackTooltipReference;
-    public RectTransform currentMapTooltipReference => mapTooltipReference;
-    public RectTransform currentBuilderTooltipReference => builderTooltipReference;
-    public RectTransform currentQuestTooltipReference => questTooltipReference;
-    public RectTransform currentSettingsTooltipReference => settingsTooltipReference;
+    public RectTransform currentTopMenuTooltipReference => sectionSelector.GetSection((int) ExploreSection.Explore).pivot;
+    public RectTransform currentPlacesAndEventsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Explore).pivot;
+    public RectTransform currentBackpackTooltipReference => sectionSelector.GetSection((int)ExploreSection.Backpack).pivot;
+    public RectTransform currentMapTooltipReference => sectionSelector.GetSection((int)ExploreSection.Map).pivot;
+    public RectTransform currentBuilderTooltipReference => sectionSelector.GetSection((int)ExploreSection.Builder).pivot;
+    public RectTransform currentQuestTooltipReference => sectionSelector.GetSection((int)ExploreSection.Quest).pivot;
+    public RectTransform currentSettingsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Settings).pivot;
 
     public event Action OnInitialized;
     public event Action<bool> OnCloseButtonPressed;

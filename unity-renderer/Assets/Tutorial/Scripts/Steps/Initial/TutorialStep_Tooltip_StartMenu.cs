@@ -92,7 +92,7 @@ namespace DCL.Tutorial
             }
 
             if (startMenuTooltipTransform != null)
-                tooltipTransform.position = startMenuTooltipTransform.position;
+                tooltipTransform.position = startMenuTooltipTransform.position - (Vector3.down * -20f);
         }
 
         internal void ExploreV2IsOpenChanged(bool current, bool previous)

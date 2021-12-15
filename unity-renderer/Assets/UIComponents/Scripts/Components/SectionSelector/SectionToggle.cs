@@ -7,6 +7,11 @@ using static UnityEngine.UI.Toggle;
 public interface ISectionToggle
 {
     /// <summary>
+    /// Pivot of the section object.
+    /// </summary>
+    RectTransform pivot { get; }
+
+    /// <summary>
     /// Event that will be triggered when the toggle is selected.
     /// </summary>
     ToggleEvent onSelect { get; }
@@ -70,6 +75,7 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
+    public RectTransform pivot => transform as RectTransform;
     public ToggleEvent onSelect => toggle?.onValueChanged;
 
     private void Awake() { ConfigureDefaultOnSelectAction(); }

@@ -126,7 +126,8 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
 
         foreach (Transform child in transform)
         {
-            if (child.gameObject == sectionToggleTemplate.gameObject)
+            if (child.gameObject == sectionToggleTemplate.gameObject ||
+                child.name.Contains("TooltipRef"))
                 continue;
 
             SectionToggle existingSection = child.GetComponent<SectionToggle>();
