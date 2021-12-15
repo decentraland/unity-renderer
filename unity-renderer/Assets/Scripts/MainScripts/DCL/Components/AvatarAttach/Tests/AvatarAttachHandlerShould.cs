@@ -92,7 +92,7 @@ namespace AvatarAttach_Tests
             entity.gameObject.Returns(entityGo);
 
             IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
-            anchorPoints.GetTransfom(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, Vector3.one));
+            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, Vector3.one));
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
 

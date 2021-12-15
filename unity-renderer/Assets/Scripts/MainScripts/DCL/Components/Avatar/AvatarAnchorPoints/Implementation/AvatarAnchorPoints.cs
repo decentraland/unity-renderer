@@ -25,7 +25,7 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
             }
         }
     }
-    (Vector3 position, Quaternion rotation, Vector3 scale) IAvatarAnchorPoints.GetTransfom(AvatarAnchorPointIds anchorPointId)
+    (Vector3 position, Quaternion rotation, Vector3 scale) IAvatarAnchorPoints.GetTransform(AvatarAnchorPointIds anchorPointId)
     {
         if (anchorPointId == AvatarAnchorPointIds.NameTag)
         {

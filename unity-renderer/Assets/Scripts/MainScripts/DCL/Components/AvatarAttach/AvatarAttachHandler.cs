@@ -109,7 +109,7 @@ namespace DCL.Components
                     yield break;
                 }
 
-                var anchorPoint = anchorPoints.GetTransfom(anchorPointId);
+                var anchorPoint = anchorPoints.GetTransform(anchorPointId);
 
                 entity.gameObject.transform.position = anchorPoint.position;
                 entity.gameObject.transform.rotation = anchorPoint.rotation;
