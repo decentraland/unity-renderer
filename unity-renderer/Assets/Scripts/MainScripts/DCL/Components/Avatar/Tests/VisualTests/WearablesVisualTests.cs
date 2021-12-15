@@ -75,7 +75,7 @@ public class WearablesVisualTests : VisualTestsBase
     public IEnumerator AlphaTestWearable_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(AlphaTestWearable()); }
 
     [UnityTest, VisualTest]
-    [Category("Visual Tests")]
+    [Explicit, Category("Explicit")]
     public IEnumerator AlphaTestWearable()
     {
         //Arrange
