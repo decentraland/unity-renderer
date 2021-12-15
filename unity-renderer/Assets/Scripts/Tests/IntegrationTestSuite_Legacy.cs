@@ -37,6 +37,11 @@ public class IntegrationTestSuite_Legacy
     {
         DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
 
+        // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
+        //              like this.
+        CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+        CommonScriptableObjects.rendererState.Set(true);
+
         legacySystems = SetUp_LegacySystems();
 
         RenderProfileManifest.i.Initialize();
