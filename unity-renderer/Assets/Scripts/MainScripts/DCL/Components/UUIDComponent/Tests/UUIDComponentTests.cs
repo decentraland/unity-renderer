@@ -1170,19 +1170,23 @@ namespace Tests
             };
             var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 onPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            yield return component.routine;
+
             Assert.IsTrue(component != null);
 
-            yield return null;
-
             mainCamera.transform.position = new Vector3(8, 1, 7);
+            yield return null;
 
             var hoverCanvasController = InteractionHoverCanvasController.i;
             Assert.IsNotNull(hoverCanvasController);
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
             // Check default properties
+            Assert.IsNotNull(hoverCanvasController.GetCurrentHoverIcon(), "OnPointerEvent.SetFeedbackState never called!");
             Assert.AreEqual("AnyButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
             Assert.AreEqual("Interact", hoverCanvasController.text.text);
+
             yield return null;
 
             onPointerDownModel.button = "PRIMARY";
