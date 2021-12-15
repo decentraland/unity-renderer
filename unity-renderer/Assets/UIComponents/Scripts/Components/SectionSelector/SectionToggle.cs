@@ -55,15 +55,17 @@ public interface ISectionToggle
 public class SectionToggle : MonoBehaviour, ISectionToggle
 {
     [SerializeField] private Toggle toggle;
-    [SerializeField] private TMP_Text sectionText;
-    [SerializeField] private Image sectionImage;
 
     [Header("Visual Configuration When Selected")]
+    [SerializeField] private Image selectedIcon;
+    [SerializeField] private TMP_Text selectedTitle;
     [SerializeField] private ColorBlock backgroundTransitionColorsForSelected;
     [SerializeField] private Color selectedTextColor;
     [SerializeField] private Color selectedImageColor;
 
     [Header("Visual Configuration When Unselected")]
+    [SerializeField] private Image unselectedIcon;
+    [SerializeField] private TMP_Text unselectedTitle;
     [SerializeField] private ColorBlock backgroundTransitionColorsForUnselected;
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
@@ -78,8 +80,16 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     {
         return new SectionToggleModel
         {
-            icon = sectionImage.sprite,
-            title = sectionText.text
+            selectedIcon = selectedIcon.sprite,
+            selectedTitle = selectedTitle.text,
+            selectedTextColor = selectedTextColor,
+            selectedImageColor = selectedImageColor,
+            unselectedIcon = unselectedIcon.sprite,
+            unselectedTitle = unselectedTitle.text,
+            backgroundTransitionColorsForSelected = backgroundTransitionColorsForSelected,
+            unselectedTextColor = unselectedTextColor,
+            unselectedImageColor = unselectedImageColor,
+            backgroundTransitionColorsForUnselected = backgroundTransitionColorsForUnselected
         };
     }
 
@@ -88,13 +98,28 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         if (model == null)
             return;
 
-        if (sectionText != null)
-            sectionText.text = model.title;
-
-        if (sectionImage != null)
+        if (selectedTitle != null)
         {
-            sectionImage.enabled = model.icon != null;
-            sectionImage.sprite = model.icon;
+            selectedTitle.text = model.selectedTitle;
+            selectedTitle.color = model.selectedTextColor;
+        }
+
+        if (unselectedTitle != null)
+        {
+            unselectedTitle.text = model.unselectedTitle;
+            unselectedTitle.color = model.unselectedTextColor;
+        }
+
+        if (selectedIcon != null)
+        {
+            selectedIcon.sprite = model.selectedIcon;
+            selectedIcon.color = model.selectedImageColor;
+        }
+
+        if (unselectedIcon != null)
+        {
+            unselectedIcon.sprite = model.unselectedIcon;
+            unselectedIcon.color = model.unselectedImageColor;
         }
 
         backgroundTransitionColorsForSelected = model.backgroundTransitionColorsForSelected;
@@ -121,16 +146,36 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
     public void SetSelectedVisuals()
     {
+        if (selectedIcon != null)
+            selectedIcon.gameObject.SetActive(true);
+
+        if (unselectedIcon != null)
+            unselectedIcon.gameObject.SetActive(false);
+
+        if (selectedTitle != null)
+            selectedTitle.gameObject.SetActive(true);
+
+        if (unselectedTitle != null)
+            unselectedTitle.gameObject.SetActive(false);
+
         toggle.colors = backgroundTransitionColorsForSelected;
-        sectionText.color = selectedTextColor;
-        sectionImage.color = selectedImageColor;
     }
 
     public void SetUnselectedVisuals()
     {
+        if (selectedIcon != null)
+            selectedIcon.gameObject.SetActive(false);
+
+        if (unselectedIcon != null)
+            unselectedIcon.gameObject.SetActive(true);
+
+        if (selectedTitle != null)
+            selectedTitle.gameObject.SetActive(false);
+
+        if (unselectedTitle != null)
+            unselectedTitle.gameObject.SetActive(true);
+
         toggle.colors = backgroundTransitionColorsForUnselected;
-        sectionText.color = unselectedTextColor;
-        sectionImage.color = unselectedImageColor;
     }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }

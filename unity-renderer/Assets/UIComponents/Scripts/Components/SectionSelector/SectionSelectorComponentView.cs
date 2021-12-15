@@ -89,6 +89,7 @@ public class SectionSelectorComponentView : BaseComponentView, ISectionSelectorC
         newGO.name = name;
         newGO.gameObject.SetActive(true);
         newGO.SetInfo(newSectionModel);
+        newGO.SelectToggle();
         instantiatedSections.Add(newGO);
     }
 
