@@ -59,7 +59,7 @@ namespace DCL
         public bool isLoading;
         public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
         public float maxY { get; private set; } = 0;
-        
+
         private Coroutine loadCoroutine;
         private AssetPromise_Texture bodySnapshotTexturePromise;
         private List<string> wearablesInUse = new List<string>();
