@@ -144,7 +144,8 @@ public class QuickBarView : MonoBehaviour, IQuickBarView
         quickBar8InputAction.OnTriggered -= OnQuickBar8InputTriggered;
         quickBar9InputAction.OnTriggered -= OnQuickBar9InputTriggered;
 
-        Object.Destroy(draggedSlot.gameObject);
+        if (draggedSlot != null)
+            Object.Destroy(draggedSlot.gameObject);
     }
 
     public void QuickBarObjectSelected(int index) { OnQuickBarObjectSelected?.Invoke(index); }
