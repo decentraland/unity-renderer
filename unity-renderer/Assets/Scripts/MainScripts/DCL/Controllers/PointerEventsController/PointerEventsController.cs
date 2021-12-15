@@ -65,6 +65,9 @@ namespace DCL
 
         public void Update()
         {
+            if ( charCamera == null )
+                RetrieveCamera();
+
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null)
                 return;
 

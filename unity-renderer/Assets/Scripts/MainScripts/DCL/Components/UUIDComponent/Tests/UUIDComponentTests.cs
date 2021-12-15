@@ -25,6 +25,7 @@ namespace Tests
             List<GameObject> result = new List<GameObject>();
             result.Add(MainSceneFactory.CreateEnvironment());
             result.Add(MainSceneFactory.CreateEventSystem());
+            result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
             return result;
         }
 
@@ -56,7 +57,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = TestUtils.CreateTestScene() as ParcelScene;
+            scene = TestUtils.CreateTestScene();
 
             Physics.autoSyncTransforms = true;
             CommonScriptableObjects.rendererState.Set(true);
@@ -66,7 +67,6 @@ namespace Tests
             mainCamera.transform.position = Vector3.zero;
             mainCamera.transform.forward = Vector3.forward;
 
-            //Debug.Log($"Setting my ID... enabled = {Environment.i.world.sceneController.enabled}");
             DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
         }
 
@@ -558,7 +558,7 @@ namespace Tests
             TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
 
             mainCamera.transform.position = new Vector3(3, 2, 12);
-            mainCamera.transform.forward = Vector3.forward;
+            mainCamera.transform.forward = Vector3.right;
 
             yield return shape.routine;
 
@@ -591,8 +591,6 @@ namespace Tests
             sceneEvent.eventType = "uuidEvent";
             bool eventTriggered = false;
 
-            Debug.Log("Current Scene " + DCL.Environment.i.world.state.currentSceneId);
-
             yield return TestUtils.ExpectMessageToKernel(
                 targetEventType,
                 sceneEvent,
@@ -616,7 +614,8 @@ namespace Tests
                     return true;
                 });
 
-            Debug.Log("Fail time");
+            Debug.Break();
+            yield return null;
 
             Assert.IsTrue(eventTriggered);
         }
@@ -866,8 +865,9 @@ namespace Tests
             yield return clickTargetShape.routine;
 
             // Set character position and camera rotation
-            mainCamera.transform.position = new Vector3(3, 2, 1);
+            mainCamera.transform.position = new Vector3(3, 3, 1);
 
+            Debug.Break();
             yield return null;
 
             // Create pointer down component and add it to target entity
@@ -920,7 +920,7 @@ namespace Tests
 
 
             // Move character in front of target entity and rotate camera
-            mainCamera.transform.position = new Vector3(3, 2, 6);
+            mainCamera.transform.position = new Vector3(3, 3, 6);
             mainCamera.transform.forward = Vector3.back;
 
             yield return null;
@@ -1131,7 +1131,7 @@ namespace Tests
             Assert.IsFalse(targetEntityHit, "Target entity was hit but other entity was blocking it");
 
             // Move character in front of target entity and rotate camera
-            mainCamera.transform.position = new Vector3(3, 2, 12);
+            mainCamera.transform.position = new Vector3(3, 3, 12);
             mainCamera.transform.forward = Vector3.back;
 
             yield return null;
@@ -1182,10 +1182,7 @@ namespace Tests
 
             mainCamera.transform.position = new Vector3(8, 1, 7);
 
-            // Rotate camera towards the interactive object
-            mainCamera.transform.position = new Vector3(3, 2, 12);
-            mainCamera.transform.rotation = Quaternion.Euler(45, 0, 0);
-
+            Debug.Break();
             yield return null;
 
             var hoverCanvasController = InteractionHoverCanvasController.i;
@@ -1230,11 +1227,10 @@ namespace Tests
 
             yield return null;
 
-            mainCamera.transform.position = new Vector3(8, 1, 7);
+            mainCamera.transform.position = new Vector3(8, 2, 7);
 
-            // Rotate camera towards the interactive object
-            mainCamera.transform.rotation = Quaternion.Euler(45, 0, 0);
 
+            Debug.Break();
             yield return null;
 
             var hoverCanvas = InteractionHoverCanvasController.i.canvas;

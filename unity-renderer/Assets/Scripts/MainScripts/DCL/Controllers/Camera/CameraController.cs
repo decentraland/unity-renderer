@@ -49,7 +49,7 @@ namespace DCL.Camera
         [HideInInspector]
         public System.Action<CameraMode.ModeId> onSetCameraMode;
 
-        private void Start()
+        private void Awake()
         {
             cameraTransform = this.camera.transform;
 
@@ -135,7 +135,7 @@ namespace DCL.Camera
 
             DCL.Interface.WebInterface.ReportCameraChanged(newMode);
 
-            onSetCameraMode.Invoke(newMode);
+            onSetCameraMode?.Invoke(newMode);
         }
 
         public CameraStateBase GetCameraMode( CameraMode.ModeId mode ) { return cameraModes.FirstOrDefault( x => x.cameraModeId == mode ); }
