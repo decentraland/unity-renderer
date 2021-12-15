@@ -614,9 +614,6 @@ namespace Tests
                     return true;
                 });
 
-            Debug.Break();
-            yield return null;
-
             Assert.IsTrue(eventTriggered);
         }
 
@@ -866,9 +863,6 @@ namespace Tests
 
             // Set character position and camera rotation
             mainCamera.transform.position = new Vector3(3, 3, 1);
-
-            Debug.Break();
-            yield return null;
 
             // Create pointer down component and add it to target entity
             string onPointerId = "pointerevent-1";
@@ -1182,9 +1176,6 @@ namespace Tests
 
             mainCamera.transform.position = new Vector3(8, 1, 7);
 
-            Debug.Break();
-            yield return null;
-
             var hoverCanvasController = InteractionHoverCanvasController.i;
             Assert.IsNotNull(hoverCanvasController);
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
@@ -1228,10 +1219,6 @@ namespace Tests
             yield return null;
 
             mainCamera.transform.position = new Vector3(8, 2, 7);
-
-
-            Debug.Break();
-            yield return null;
 
             var hoverCanvas = InteractionHoverCanvasController.i.canvas;
             Assert.IsNotNull(hoverCanvas);
