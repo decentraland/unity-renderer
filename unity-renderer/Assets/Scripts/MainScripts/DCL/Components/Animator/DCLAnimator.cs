@@ -111,13 +111,18 @@ namespace DCL.Components
                 animationShape.OnLoaded += OnShapeLoaded;
             }
 
+            SetupGPUSkinning(shapeEntity.renderers);
+            // entity.meshesInfo.UpdateRenderersCollection();
+        }
+
+        private void SetupGPUSkinning(Renderer[] renderers)
+        {
             gpuSkinnings.Clear();
-            for (var i = 0; i < shapeEntity.renderers.Length; i++)
+            for (var i = 0; i < renderers.Length; i++)
             {
-                if (shapeEntity.renderers[i] is SkinnedMeshRenderer)
-                    gpuSkinnings.Add(new SimpleGPUSkinning(shapeEntity.renderers[i] as SkinnedMeshRenderer, true, 1, 3));
+                if (renderers[i] is SkinnedMeshRenderer)
+                    gpuSkinnings.Add(new SimpleGPUSkinning(renderers[i] as SkinnedMeshRenderer, true, 1, 3));
             }
-            // Debug.Log($"GPUSkinnings created: {gpuSkinnings.Count}/{shapeEntity.renderers.Length}");
         }
 
         private void LateUpdate()

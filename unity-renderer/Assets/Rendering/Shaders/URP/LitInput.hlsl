@@ -14,8 +14,8 @@
 // NOTE: Do not ifdef the properties here as SRP batcher can not handle different layouts.
 CBUFFER_START(UnityPerMaterial)
 float4x4 _WorldInverse;
-float4x4 _Matrices[100];
-float4x4 _BindPoses[100];
+float4x4 _Matrices[200];
+float4x4 _BindPoses[200];
 float4 _BaseMap_ST;
 float4 _DetailAlbedoMap_ST;
 half4 _BaseColor;

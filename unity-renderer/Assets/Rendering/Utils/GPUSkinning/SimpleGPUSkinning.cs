@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -54,13 +55,15 @@ namespace GPUSkinning
         private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
         private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
 
-        public Renderer renderer { get; }
+        public Renderer renderer { get; private set; }
 
         private Transform[] bones;
         private Matrix4x4[] boneMatrices;
 
         public SimpleGPUSkinning (SkinnedMeshRenderer skr, bool encodeBindPoses = true, int bone01DataUVChannel = -1, int bone23DataUVChannel = 1)
         {
+            Bounds targetBounds = new Bounds(new Vector3(0, 0, 0), new Vector3(1000, 1000, 1000));
+            
             if ( encodeBindPoses )
                 GPUSkinningUtils.EncodeBindPosesIntoMesh(skr, bone01DataUVChannel, bone23DataUVChannel);
 
@@ -74,18 +77,32 @@ namespace GPUSkinning
             meshFilter.sharedMesh = skr.sharedMesh;
 
             renderer = go.AddComponent<MeshRenderer>();
-            renderer.sharedMaterials = skr.sharedMaterials;
-            foreach (Material material in renderer.sharedMaterials)
+            
+            // TODO: Find a way of using sharedMaterials here, maybe caching 1 "shareable" material with the GPU_SKINNING
+            // keyword enabled? otherwise, if we use always sharedMaterials here, all the non-skinned meshes break
+            renderer.materials = skr.materials;
+            
+            for (var i = 0; i < renderer.materials.Length; i++)
             {
+                var material = renderer.materials[i];
+                
+                InitializeShaderMatrix(material, BIND_POSES);
                 material.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
                 material.EnableKeyword("_GPU_SKINNING");
             }
 
             bones = skr.bones;
             
-            // This works for Avatars because we know the bounds, but not for DCLAnimator skinned mesh renderers.
-            // TODO: Try running the skr for 1 frame and take its calculated bounds. This should be done every time the animation changes.
-            meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
+            bool isAvatar = bone01DataUVChannel == -1;
+            if (isAvatar)
+            {
+                meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
+            }
+            else
+            {
+                meshFilter.mesh.bounds = targetBounds;
+            }
+            
             UpdateMatrices();
 
             Object.Destroy(skr);
@@ -93,7 +110,7 @@ namespace GPUSkinning
 
         public void Update()
         {
-            if (!renderer.isVisible)
+            if (renderer == null || !renderer.isVisible)
                 return;
 
             UpdateMatrices();
@@ -108,12 +125,24 @@ namespace GPUSkinning
                 boneMatrices[i] = bone.localToWorldMatrix;
             }
 
-            for (int index = 0; index < renderer.sharedMaterials.Length; index++)
+            // TODO: Find a way of using sharedMaterials here, maybe caching 1 "shareable" material with the GPU_SKINNING
+            // keyword enabled? otherwise, if we use always sharedMaterials here, all the non-skinned meshes break
+            for (int index = 0; index < renderer.materials.Length; index++)
             {
-                Material material = renderer.sharedMaterials[index];
+                Material material = renderer.materials[index];
+                
+                InitializeShaderMatrix(material, BONE_MATRICES);
                 material.SetMatrix(RENDERER_WORLD_INVERSE, renderer.transform.worldToLocalMatrix);
                 material.SetMatrixArray(BONE_MATRICES, boneMatrices);
             }
+        }
+
+        // HACK for avoiding: "Property (_Matrices) exceeds previous array size (76 vs 63). Cap to previous size. Restart Unity to recreate the arrays."
+        // TODO: Can we optimize this extra matrix spaces somehow? Maybe keeping an int and using it in the shader to make sure it doesn't
+        // traverse unneeded matrix elements.
+        private void InitializeShaderMatrix(Material material, int matrixPropertyID)
+        {
+            material.SetMatrixArray(matrixPropertyID, new Matrix4x4[200]);
         }
     }
 }
