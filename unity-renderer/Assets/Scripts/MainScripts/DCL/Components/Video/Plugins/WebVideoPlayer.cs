@@ -10,6 +10,7 @@ namespace DCL.Components.Video.Plugin
         public bool playing => GetState() == VideoState.PLAYING;
         public bool isError => GetState() == VideoState.ERROR;
         public bool visible { get; set; } = true;
+        public bool isReady { get; private set; } = false;
 
         public readonly string url;
 
@@ -17,7 +18,6 @@ namespace DCL.Components.Video.Plugin
 
         private readonly IVideoPluginWrapper plugin;
 
-        private bool isReady = false;
         private bool playWhenReady = false;
         private float playStartTime = -1;
 
@@ -28,7 +28,6 @@ namespace DCL.Components.Video.Plugin
             videoPlayerId = id;
             this.plugin = plugin;
             this.url = url;
-            texture = new Texture2D(1, 1);
             plugin.Create(id, url, useHls);
         }
 
@@ -50,8 +49,8 @@ namespace DCL.Components.Video.Plugin
                     if (!isReady)
                     {
                         isReady = true;
-                        texture.UpdateExternalTexture((IntPtr)plugin.GetTexture(videoPlayerId));
-                        texture.Apply();
+
+                        texture = plugin.PrepareTexture(videoPlayerId);
                     }
 
                     if (playWhenReady)
