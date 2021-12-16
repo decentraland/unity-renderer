@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEngine.UI.Toggle;
 
@@ -57,7 +58,7 @@ public interface ISectionToggle
     bool IsActive();
 }
 
-public class SectionToggle : MonoBehaviour, ISectionToggle
+public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 {
     [SerializeField] private Toggle toggle;
 
@@ -137,6 +138,11 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
         onSelect.RemoveAllListeners();
         ConfigureDefaultOnSelectAction();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        SelectToggle();
     }
 
     public void SelectToggle(bool reselectIfAlreadyOn = false)
