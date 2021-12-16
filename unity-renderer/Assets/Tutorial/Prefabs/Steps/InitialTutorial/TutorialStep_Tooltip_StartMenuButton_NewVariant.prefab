@@ -20,8 +20,10 @@ PrefabInstance:
     - target: {fileID: 3947925781027475414, guid: e5f5e18a835a34e45830f29570029838,
         type: 3}
       propertyPath: m_text
-      value: This is the new Start Menu! It will help you navigate through all the
-        main features. Click on it!
+      value: 'This is the new Start Menu! It will help you navigate through all the
+        main features.
+
+        Click on it!'
       objectReference: {fileID: 0}
     - target: {fileID: 3947925781027475414, guid: e5f5e18a835a34e45830f29570029838,
         type: 3}
@@ -117,7 +119,7 @@ PrefabInstance:
     - target: {fileID: 8356612391156026704, guid: e5f5e18a835a34e45830f29570029838,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -109.0156
+      value: -80
       objectReference: {fileID: 0}
     - target: {fileID: 8356612391156026704, guid: e5f5e18a835a34e45830f29570029838,
         type: 3}
@@ -127,7 +129,7 @@ PrefabInstance:
     - target: {fileID: 8356612391156026704, guid: e5f5e18a835a34e45830f29570029838,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -20.492218
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e5f5e18a835a34e45830f29570029838, type: 3}

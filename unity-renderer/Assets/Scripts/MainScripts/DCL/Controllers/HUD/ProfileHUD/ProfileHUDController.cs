@@ -90,6 +90,9 @@ public class ProfileHUDController : IHUD
             KernelConfig.i.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
+
+        DataStore.i.exploreV2.isInitialized.OnChange += ExploreV2Changed;
+        ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
     }
     protected virtual GameObject GetViewPrefab()
     {
@@ -147,6 +150,8 @@ public class ProfileHUDController : IHUD
 
         view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
         DataStore.i.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
+
+        DataStore.i.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
     }
 
     void OnProfileUpdated(UserProfile profile) { view?.SetProfile(profile); }
@@ -232,4 +237,6 @@ public class ProfileHUDController : IHUD
         if (currentIsFullScreenMenuMode != CommonScriptableObjects.isProfileHUDOpen.Get())
             view.ToggleMenu();
     }
+
+    private void ExploreV2Changed(bool current, bool previous) { view.SetStartMenuButtonActive(current); }
 }

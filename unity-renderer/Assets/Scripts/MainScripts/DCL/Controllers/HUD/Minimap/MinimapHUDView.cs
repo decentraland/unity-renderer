@@ -21,7 +21,6 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private Button addBookmarkButton;
     [SerializeField] private Button reportSceneButton;
     [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
-    [SerializeField] internal ButtonComponentView startMenuButton;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
@@ -32,13 +31,6 @@ public class MinimapHUDView : MonoBehaviour
     public InputAction_Trigger toggleNavMapAction;
     [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
 
-    [Header("Tutorial Configuration")]
-    [SerializeField] internal RectTransform startMenuTooltipReference;
-
-    internal Animator startMenuButtonAnimator;
-
-    private void Awake() { startMenuButtonAnimator = startMenuButton.GetComponent<Animator>(); }
-
     private void Initialize(MinimapHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
@@ -48,15 +40,6 @@ public class MinimapHUDView : MonoBehaviour
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
-        startMenuButton.onClick.AddListener(() =>
-        {
-            startMenuButtonAnimator?.SetTrigger(START_MENU_PRESSED_TRIGGER);
-            controller.OpenStartMenu();
-        });
-        startMenuButton.onFocused += (isFocused) =>
-        {
-            startMenuButtonAnimator?.SetBool(START_MENU_HOVER_BOOL, isFocused);
-        };
 
         var renderer = MapRenderer.i;
 
@@ -91,6 +74,4 @@ public class MinimapHUDView : MonoBehaviour
         else if (!visible && mainShowHideAnimator.isVisible)
             mainShowHideAnimator.Hide();
     }
-
-    public void SetStartMenuButtonActive(bool isActive) { startMenuButton.gameObject.SetActive(isActive); }
 }

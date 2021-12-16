@@ -1,3 +1,5 @@
+using DCL;
+using ExploreV2Analytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
@@ -136,12 +138,13 @@ public class ProfileHUDView : MonoBehaviour
 
     internal event Action OnOpen;
     internal event Action OnClose;
+    internal bool isStartMenuInitialized = false;
 
     private void Awake()
     {
         closeActionDelegate = (x) => HideMenu();
 
-        buttonToggleMenu.onClick.AddListener(ToggleMenu);
+        buttonToggleMenu.onClick.AddListener(OpenStartMenu);
         buttonCopyAddress.onClick.AddListener(CopyAddress);
         buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
@@ -176,6 +179,27 @@ public class ProfileHUDView : MonoBehaviour
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
         ForceLayoutToRefreshSize();
     }
+
+    internal void OpenStartMenu()
+    {
+        if (isStartMenuInitialized)
+        {
+            if (!DataStore.i.exploreV2.isOpen.Get())
+            {
+                var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+                exploreV2Analytics.SendStartMenuVisibility(
+                    true,
+                    ExploreUIVisibilityMethod.FromClick);
+            }
+            DataStore.i.exploreV2.isOpen.Set(true);
+        }
+        else
+        {
+            ToggleMenu();
+        }
+    }
+
+    public void SetStartMenuButtonActive(bool isActive) { isStartMenuInitialized = isActive; }
 
     internal void ToggleMenu()
     {

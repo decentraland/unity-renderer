@@ -9,7 +9,7 @@ namespace DCL.Tutorial
     public class TutorialStep_Tooltip_StartMenu : TutorialStep_Tooltip
     {
         internal const int TEACHER_CANVAS_SORT_ORDER_START = 4;
-        internal const string PROFILE_STEP = "TutorialStep_Tooltip_ProfileButton";
+        internal const string TUTORIAL_COMPLETED_STEP = "TutorialStep_TutorialCompleted";
         internal const string TOP_MENU_STEP = "TutorialStep_StartMenuTooltip_TopMenu";
         internal const string PLACES_AND_EVENTS_STEP = "TutorialStep_StartMenuTooltip_PlacesAndEventsSection";
         internal const string BACKPACK_STEP = "TutorialStep_StartMenuTooltip_BackpackSection";
@@ -92,7 +92,7 @@ namespace DCL.Tutorial
             }
 
             if (startMenuTooltipTransform != null)
-                tooltipTransform.position = startMenuTooltipTransform.position - (Vector3.down * -20f);
+                tooltipTransform.position = startMenuTooltipTransform.position - (Vector3.down * -30f);
         }
 
         internal void ExploreV2IsOpenChanged(bool current, bool previous)
@@ -100,7 +100,7 @@ namespace DCL.Tutorial
             if (current)
                 return;
 
-            tutorialController.GoToSpecificStep(PROFILE_STEP);
+            tutorialController.GoToSpecificStep(TUTORIAL_COMPLETED_STEP);
         }
 
         internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
