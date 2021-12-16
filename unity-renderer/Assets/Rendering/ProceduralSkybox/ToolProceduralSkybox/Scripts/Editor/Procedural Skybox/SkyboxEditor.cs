@@ -641,6 +641,7 @@ namespace DCL.Skybox
                 EditorGUILayout.LabelField("Start", GUILayout.Width(45));
                 GUILayout.Space(0);
                 selectedConfiguration.timelineTags[i].startTime = EditorGUILayout.FloatField(selectedConfiguration.timelineTags[i].startTime, GUILayout.Width(50));
+                ClampToDayTime(ref selectedConfiguration.timelineTags[i].startTime);
 
                 // End time
                 if (!selectedConfiguration.timelineTags[i].isTrigger)
@@ -648,6 +649,7 @@ namespace DCL.Skybox
                     EditorGUILayout.LabelField("End", GUILayout.Width(40));
                     GUILayout.Space(0);
                     selectedConfiguration.timelineTags[i].endTime = EditorGUILayout.FloatField(selectedConfiguration.timelineTags[i].endTime, GUILayout.Width(50));
+                    ClampToDayTime(ref selectedConfiguration.timelineTags[i].endTime);
                 }
                 else
                 {
@@ -802,6 +804,8 @@ namespace DCL.Skybox
 
             // Time Span
             RenderSepratedFloatFields("Time Span", "Starts", ref layer.timeSpan_start, "Ends", ref layer.timeSpan_End);
+            ClampToDayTime(ref layer.timeSpan_start);
+            ClampToDayTime(ref layer.timeSpan_End);
 
             // Fading
             RenderSepratedFloatFields("Fading", "In", ref layer.fadingInTime, "Out", ref layer.fadingOutTime);
@@ -1502,6 +1506,8 @@ namespace DCL.Skybox
 
             return time;
         }
+
+        private void ClampToDayTime(ref float value) { value = Mathf.Clamp(value, 0, 24); }
     }
 
 }

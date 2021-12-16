@@ -465,7 +465,7 @@ namespace DCL.Skybox
                 dayTimeEdited = 24 + dayTime;
             }
 
-            if (dayTimeEdited <= fadeInCompletionTime)
+            if (dayTimeEdited < fadeInCompletionTime)
             {
                 float percentage = Mathf.InverseLerp(layer.timeSpan_start, fadeInCompletionTime, dayTimeEdited);
                 fadeChanged = true;
@@ -494,7 +494,7 @@ namespace DCL.Skybox
 
             float fadeOutStartTime = endTimeEdited - layer.fadingOutTime;
 
-            if (dayTimeEdited >= fadeOutStartTime)
+            if (dayTimeEdited > fadeOutStartTime)
             {
                 float percentage = Mathf.InverseLerp(endTimeEdited, fadeOutStartTime, dayTimeEdited);
                 fadeChanged = true;
