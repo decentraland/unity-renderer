@@ -255,12 +255,13 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
             OnEventUnsubscribeEventClicked);
 
 
-        for (int i = 0; i < placeComponentsToAdd.Count; i++)
+        for (int i = 0; i < HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES; i++)
         {
-            placesAndEventsToSet.Add(placeComponentsToAdd[i]);
-
             if (eventComponentsToAdd.Count - 1 >= i)
                 placesAndEventsToSet.Add(eventComponentsToAdd[i]);
+
+            if (placeComponentsToAdd.Count - 1 >= i)
+                placesAndEventsToSet.Add(placeComponentsToAdd[i]);
         }
 
         trendingPlacesAndEvents.SetItems(placesAndEventsToSet);

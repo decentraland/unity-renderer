@@ -181,8 +181,8 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
             events.Add(eventCardModel);
         }
 
-        view.SetTrendingPlacesAndEvents(places, events);
         view.SetTrendingPlacesAndEventsAsLoading(false);
+        view.SetTrendingPlacesAndEvents(places, events);
     }
 
     public void LoadFeaturedPlaces()
