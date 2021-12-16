@@ -34,7 +34,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
     internal event Action OnPlacesFromAPIUpdated;
 
-    internal const int INITIAL_NUMBER_OF_ROWS = 4;
+    internal const int INITIAL_NUMBER_OF_ROWS = 5;
     internal const int SHOW_MORE_ROWS_INCREMENT = 3;
     internal IPlacesSubSectionComponentView view;
     internal IPlacesAPIController placesAPIApiController;
