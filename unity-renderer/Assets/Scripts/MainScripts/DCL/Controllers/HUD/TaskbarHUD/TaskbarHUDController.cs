@@ -122,7 +122,7 @@ public class TaskbarHUDController : IHUD
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
-        if (!view.friendsButton.gameObject.activeSelf)
+        if (!view.friendsButton.transform.parent.gameObject.activeSelf)
             return;
 
         OnFriendsToggleInputPress();
@@ -286,7 +286,7 @@ public class TaskbarHUDController : IHUD
 
     public void DisableFriendsWindow()
     {
-        view.friendsButton.gameObject.SetActive(false);
+        view.friendsButton.transform.parent.gameObject.SetActive(false);
         view.chatHeadsGroup.ClearChatHeads();
     }
 
