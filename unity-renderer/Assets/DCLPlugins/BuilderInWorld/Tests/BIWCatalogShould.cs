@@ -16,7 +16,7 @@ public class BIWCatalogShould
     protected IEnumerator SetUp()
     {
         BIWCatalogManager.Init();
-        assetCatalogBridge = AssetCatalogBridge.Create();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
         yield return null;
     }
 

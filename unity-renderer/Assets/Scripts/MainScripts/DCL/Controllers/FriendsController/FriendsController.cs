@@ -8,11 +8,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public static bool VERBOSE = false;
     public static FriendsController i { get; private set; }
 
-    public static FriendsController Create()
-    {
-        return new GameObject("FriendsController").AddComponent<FriendsController>();
-    }
-
     public int friendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
     void Awake() { i = this; }

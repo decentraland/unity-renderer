@@ -436,7 +436,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     public void GetNameFromCatalog()
     {
         //Arrange
-        var assetCatalogBridge = AssetCatalogBridge.Create();
+        var assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
         BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 

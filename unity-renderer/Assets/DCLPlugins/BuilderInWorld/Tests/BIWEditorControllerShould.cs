@@ -29,7 +29,7 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
 
         mainController = new BuilderInWorldEditor();
-        assetCatalogBridge = AssetCatalogBridge.Create();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
         apiSubstitute = Substitute.For<IBuilderAPIController>();
 
         biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();

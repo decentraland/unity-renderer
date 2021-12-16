@@ -91,7 +91,6 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
 
         // Act
         mainController.StartFlowWithPermission(scene, "Test");
-        //ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         scene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
@@ -108,7 +107,6 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.StartFlowWithPermission(scene, "Test");
-        //ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         scene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
@@ -123,7 +121,6 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void FindSceneToEdit()
     {
         // Arrange
-        //ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
         scene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
         CommonScriptableObjects.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));

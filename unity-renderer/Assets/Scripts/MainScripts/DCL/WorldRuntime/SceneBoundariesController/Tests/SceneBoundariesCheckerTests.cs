@@ -21,7 +21,6 @@ namespace SceneBoundariesCheckerTests
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
-            CommonScriptableObjects.rendererState.Set(true);
         }
 
         [UnityTest]

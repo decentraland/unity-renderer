@@ -5,11 +5,6 @@ using UnityEngine;
 
 public class HotScenesController : MonoBehaviour
 {
-    public static HotScenesController Create()
-    {
-        return new GameObject("HotScenesController").AddComponent<HotScenesController>();
-    }
-
     public static HotScenesController i { get; private set; }
 
     public event Action OnHotSceneListFinishUpdating;

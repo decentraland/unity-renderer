@@ -31,7 +31,6 @@ public class BIWCommonShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
-        CommonScriptableObjects.rendererState.Set(true);
     }
 
     [Test]

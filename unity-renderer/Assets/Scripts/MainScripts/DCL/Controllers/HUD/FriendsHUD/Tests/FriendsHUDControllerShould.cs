@@ -20,7 +20,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 
         NotificationsController.i.Initialize(new NotificationHUDController());
 
-        userProfileController = new GameObject("ProfileHUDController").AddComponent<UserProfileController>();
+        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
         controller = new FriendsHUDController();
         friendsController = new FriendsController_Mock();
         controller.Initialize(friendsController, UserProfile.GetOwnUserProfile());

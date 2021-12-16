@@ -46,7 +46,7 @@ namespace Tests.BuildModeHUDControllers
         public void SelectAssetPack()
         {
             //Arrange
-            var assetCatalog = AssetCatalogBridge.Create();
+            var assetCatalog = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
             BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalog);
             var catalogItemPack = BIWCatalogManager.GetCatalogItemPackList()[0];
 

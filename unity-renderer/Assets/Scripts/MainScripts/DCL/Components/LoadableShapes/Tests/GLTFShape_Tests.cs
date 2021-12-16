@@ -65,7 +65,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         sceneAssetPack.assets.Add(sceneObject);
 
-        var catalog = AssetCatalogBridge.Create();
+        var catalog = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
         catalog.AddSceneAssetPackToCatalog(sceneAssetPack);
 
         TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(

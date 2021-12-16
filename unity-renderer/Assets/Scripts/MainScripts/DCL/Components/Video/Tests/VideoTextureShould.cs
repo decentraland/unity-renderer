@@ -33,7 +33,6 @@ namespace Tests
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
             DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;
-            CommonScriptableObjects.rendererState.Set(true);
         }
 
         protected override IEnumerator TearDown()

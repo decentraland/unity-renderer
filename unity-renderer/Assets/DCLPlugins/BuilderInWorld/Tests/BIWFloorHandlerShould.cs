@@ -29,7 +29,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwCreatorController = new BIWCreatorController();
         biwFloorHandler = new BIWFloorHandler();
         entityHandler = new BIWEntityHandler();
-        assetCatalogBridge = AssetCatalogBridge.Create();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
 
         var referencesController = BIWTestUtils.CreateContextWithGenericMocks(
             entityHandler,

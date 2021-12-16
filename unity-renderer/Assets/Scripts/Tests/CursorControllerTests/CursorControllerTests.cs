@@ -71,7 +71,6 @@ namespace Tests
             scene = TestUtils.CreateTestScene();
 
             Physics.autoSyncTransforms = true;
-            CommonScriptableObjects.rendererState.Set(true);
 
             mainCamera = TestUtils.CreateComponentWithGameObject<Camera>("Main Camera");
             mainCamera.tag = "MainCamera";

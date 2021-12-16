@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using DCL;
 using DCL.Camera;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -61,7 +62,7 @@ namespace CameraController_Test
         [UnityTest]
         public IEnumerator ActivateAndDeactivateWithKernelRenderingToggleEvents()
         {
-            RenderingController renderingController = new GameObject("RenderingController").AddComponent<RenderingController>();
+            RenderingController renderingController = TestUtils.CreateComponentWithGameObject<RenderingController>("RenderingController");
             renderingController.DeactivateRendering();
             Assert.IsFalse(cameraController.camera.enabled);
 

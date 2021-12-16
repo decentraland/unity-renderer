@@ -41,7 +41,6 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         scene = TestUtils.CreateTestScene();
-        CommonScriptableObjects.rendererState.Set(true);
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 

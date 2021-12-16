@@ -16,11 +16,6 @@ public class AssetCatalogBridge : MonoBehaviour
 
     public static AssetCatalogBridge i { get; internal set; }
 
-    public static AssetCatalogBridge Create()
-    {
-        return new GameObject("AssetCatalogBridge").AddComponent<AssetCatalogBridge>();
-    }
-
     private SceneAssetPackDictionary sceneAssetPackCatalogValue;
 
     public SceneAssetPackDictionary sceneAssetPackCatalog

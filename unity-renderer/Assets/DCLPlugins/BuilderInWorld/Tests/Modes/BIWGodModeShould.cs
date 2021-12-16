@@ -48,7 +48,6 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         scene = TestUtils.CreateTestScene();
-        CommonScriptableObjects.rendererState.Set(true);
 
         modeController = new BIWModeController();
         raycastController = new BIWRaycastController();

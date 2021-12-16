@@ -20,7 +20,7 @@ namespace Tests
         {
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
-            catalogController = new GameObject("CatalogController").AddComponent<CatalogController>();
+            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         }
 
         protected override IEnumerator TearDown()

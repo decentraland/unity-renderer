@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,7 +13,7 @@ namespace Tests.BuildModeHUDViews
         public void SetUp()
         {
             quickBarView = QuickBarView.Create();
-            quickBarView.generalCanvas = new GameObject("_GeneralCanvas").AddComponent<Canvas>();
+            quickBarView.generalCanvas = TestUtils.CreateComponentWithGameObject<Canvas>("_GeneralCanvas");
         }
 
         [TearDown]

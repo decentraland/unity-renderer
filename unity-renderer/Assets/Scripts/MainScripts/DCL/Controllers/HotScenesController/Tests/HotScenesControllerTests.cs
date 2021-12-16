@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +14,7 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        hotScenesController = HotScenesController.Create();
+        hotScenesController = TestUtils.CreateComponentWithGameObject<HotScenesController>("HotScenesController");
     }
 
     protected override IEnumerator TearDown()

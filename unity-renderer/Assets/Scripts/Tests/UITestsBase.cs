@@ -33,7 +33,6 @@ namespace Tests
             scene = TestUtils.CreateTestScene();
             DCLCharacterController.i.PauseGravity();
             TestUtils.SetCharacterPosition(new Vector3(8f, 0f, 8f));
-            CommonScriptableObjects.rendererState.Set(true);
         }
 
         protected Vector2 CalculateAlignedAnchoredPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")

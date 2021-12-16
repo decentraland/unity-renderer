@@ -32,7 +32,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         var entityHandler = new BIWEntityHandler();
         var biwFloorHandler = new BIWFloorHandler();
         var biwCreatorController = new BIWCreatorController();
-        assetCatalogBridge = AssetCatalogBridge.Create();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
 
         context = BIWTestUtils.CreateContextWithGenericMocks(
             biwActionController,

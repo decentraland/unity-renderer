@@ -28,7 +28,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
 
         biwCreatorController = new BIWCreatorController();
         entityHandler = new BIWEntityHandler();
-        assetCatalogBridge = AssetCatalogBridge.Create();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
 
         context = BIWTestUtils.CreateContextWithGenericMocks(
             entityHandler,
