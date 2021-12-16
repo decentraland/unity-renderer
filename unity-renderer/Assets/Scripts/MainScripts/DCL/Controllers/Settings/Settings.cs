@@ -23,9 +23,11 @@ namespace DCL.SettingsCommon
         private readonly BooleanVariable autoQualitySettingsEnabled;
         private readonly AudioMixer audioMixer;
 
+        private bool isDisposed;
+
         public static void CreateSharedInstance(ISettingsFactory settingsFactory)
         {
-            if (i != null) return;
+            if (i != null && !i.isDisposed) return;
             i = settingsFactory.Build();
         }
 
@@ -51,7 +53,7 @@ namespace DCL.SettingsCommon
         public void Dispose()
         {
             UnsubscribeFromVirtualAudioMixerEvents();
-            DisposeSharedInstance();
+            isDisposed = true;
         }
 
         public void LoadDefaultSettings()
@@ -133,12 +135,6 @@ namespace DCL.SettingsCommon
             qualitySettings.Save();
             audioSettings.Save();
             PlayerPrefsUtils.Save();
-        }
-
-        private void DisposeSharedInstance()
-        {
-            if (this == i)
-                i = null;
         }
     }
 }
