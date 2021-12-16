@@ -1,7 +1,6 @@
 using System;
 using DCL.Helpers;
 using DCL.Interface;
-using UnityEngine;
 using UnityEngine.Audio;
 
 namespace DCL.SettingsCommon
@@ -49,7 +48,11 @@ namespace DCL.SettingsCommon
             SubscribeToVirtualAudioMixerEvents();
         }
 
-        public void Dispose() { UnsubscribeFromVirtualAudioMixerEvents(); }
+        public void Dispose()
+        {
+            UnsubscribeFromVirtualAudioMixerEvents();
+            DisposeSharedInstance();
+        }
 
         public void LoadDefaultSettings()
         {
@@ -130,6 +133,12 @@ namespace DCL.SettingsCommon
             qualitySettings.Save();
             audioSettings.Save();
             PlayerPrefsUtils.Save();
+        }
+
+        private void DisposeSharedInstance()
+        {
+            if (this == i)
+                i = null;
         }
     }
 }
