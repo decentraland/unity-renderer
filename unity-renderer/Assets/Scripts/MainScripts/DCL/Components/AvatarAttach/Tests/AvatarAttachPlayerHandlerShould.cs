@@ -1,15 +1,23 @@
 using DCL;
 using DCL.Components;
 using NUnit.Framework;
+using UnityEditor;
+using UnityEngine;
 
 namespace AvatarAttach_Tests
 {
     public class AvatarAttachPlayerHandlerShould
     {
+        private UserProfile userProfile;
+
         [TearDown]
         public void TearDown()
         {
             DataStore.Clear();
+            if (userProfile != null && AssetDatabase.Contains(userProfile))
+            {
+                Resources.UnloadAsset(userProfile);
+            }
         }
 
         [Test]
@@ -17,10 +25,13 @@ namespace AvatarAttach_Tests
         {
             const string playerId = "Temptation";
 
+            userProfile = UserProfile.GetOwnUserProfile();
+            userProfile.UpdateData(new UserProfileModel() { userId = playerId });
+
             BaseVariable<Player> ownPlayer = DataStore.i.player.ownPlayer;
             ownPlayer.Set(new Player() { id = playerId });
 
-            AvatarAttachPlayerHandler handler = new AvatarAttachPlayerHandler();
+            GetAnchorPointsHandler handler = new GetAnchorPointsHandler();
 
             bool found = false;
             handler.SearchAnchorPoints(playerId, anchorPoints => found = true);
@@ -33,9 +44,12 @@ namespace AvatarAttach_Tests
         {
             const string playerId = "Temptation";
 
+            userProfile = UserProfile.GetOwnUserProfile();
+            userProfile.UpdateData(new UserProfileModel() { userId = playerId });
+
             BaseVariable<Player> ownPlayer = DataStore.i.player.ownPlayer;
 
-            AvatarAttachPlayerHandler handler = new AvatarAttachPlayerHandler();
+            GetAnchorPointsHandler handler = new GetAnchorPointsHandler();
 
             bool found = false;
             handler.SearchAnchorPoints(playerId, anchorPoints => found = true);
@@ -55,7 +69,7 @@ namespace AvatarAttach_Tests
             BaseDictionary<string, Player> otherPlayers = DataStore.i.player.otherPlayers;
             otherPlayers.Add(playerId, new Player() { id = playerId });
 
-            AvatarAttachPlayerHandler handler = new AvatarAttachPlayerHandler();
+            GetAnchorPointsHandler handler = new GetAnchorPointsHandler();
 
             bool found = false;
             handler.SearchAnchorPoints(playerId, anchorPoints => found = true);
@@ -70,7 +84,7 @@ namespace AvatarAttach_Tests
 
             BaseDictionary<string, Player> otherPlayers = DataStore.i.player.otherPlayers;
 
-            AvatarAttachPlayerHandler handler = new AvatarAttachPlayerHandler();
+            GetAnchorPointsHandler handler = new GetAnchorPointsHandler();
 
             bool found = false;
             handler.SearchAnchorPoints(playerId, anchorPoints => found = true);
@@ -90,11 +104,11 @@ namespace AvatarAttach_Tests
             BaseDictionary<string, Player> otherPlayers = DataStore.i.player.otherPlayers;
             otherPlayers.Add(playerId, new Player() { id = playerId });
 
-            AvatarAttachPlayerHandler handler = new AvatarAttachPlayerHandler();
+            GetAnchorPointsHandler handler = new GetAnchorPointsHandler();
 
             bool disconnectedTriggered = false;
             handler.SearchAnchorPoints(playerId, null);
-            handler.onAvatarDisconnect += () => disconnectedTriggered = true;
+            handler.OnAvatarRemoved += () => disconnectedTriggered = true;
 
             Assert.IsFalse(disconnectedTriggered);
 

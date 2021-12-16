@@ -19,14 +19,14 @@ namespace DCL.Components
 
         private Coroutine componentUpdate = null;
 
-        private readonly AvatarAttachPlayerHandler avatarAttachPlayerHandler = new AvatarAttachPlayerHandler();
+        private readonly GetAnchorPointsHandler getAnchorPointsHandler = new GetAnchorPointsHandler();
         private ISceneBoundsChecker sceneBoundsChecker => Environment.i?.world?.sceneBoundsChecker;
 
         public void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
             this.entity = entity;
-            avatarAttachPlayerHandler.onAvatarDisconnect += Detach;
+            getAnchorPointsHandler.OnAvatarRemoved += Detach;
         }
 
         public void OnModelUpdated(string json)
@@ -60,8 +60,8 @@ namespace DCL.Components
         public void CleanUp()
         {
             Detach();
-            avatarAttachPlayerHandler.onAvatarDisconnect -= Detach;
-            avatarAttachPlayerHandler.Dispose();
+            getAnchorPointsHandler.OnAvatarRemoved -= Detach;
+            getAnchorPointsHandler.Dispose();
         }
 
         internal virtual void Detach()
@@ -77,12 +77,12 @@ namespace DCL.Components
                 entity.gameObject.transform.localPosition = EnvironmentSettings.MORDOR;
             }
 
-            avatarAttachPlayerHandler.CancelCurrentSearch();
+            getAnchorPointsHandler.CancelCurrentSearch();
         }
 
         internal virtual void Attach(string avatarId, AvatarAnchorPointIds anchorPointId)
         {
-            avatarAttachPlayerHandler.SearchAnchorPoints(avatarId, anchorPoints =>
+            getAnchorPointsHandler.SearchAnchorPoints(avatarId, anchorPoints =>
             {
                 Attach(anchorPoints, anchorPointId);
             });
