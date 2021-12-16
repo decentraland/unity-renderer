@@ -1,11 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AvatarAnchorPoints : IAvatarAnchorPoints
 {
-    private AvatarAnchorPointsNameMapping boneNamesMapping = new AvatarAnchorPointsNameMapping();
+    private static readonly Dictionary<AvatarAnchorPointIds, string> boneMapping = new Dictionary<AvatarAnchorPointIds, string>()
+    {
+        { AvatarAnchorPointIds.LeftHand, "Avatar_LeftHand" },
+        { AvatarAnchorPointIds.RightHand, "Avatar_RightHand" },
+    };
 
-    private Dictionary<AvatarAnchorPointIds, Transform> boneTransformMapping = new Dictionary<AvatarAnchorPointIds, Transform>();
+    private readonly Dictionary<AvatarAnchorPointIds, Transform> boneTransformMapping = new Dictionary<AvatarAnchorPointIds, Transform>();
 
     private Transform avatarTransform;
     private float nameTagY;
@@ -19,7 +24,7 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
 
         foreach (var bone in bones)
         {
-            if (boneNamesMapping.TryGet(bone.name, out AvatarAnchorPointIds anchorPointId))
+            if (TryGetIdFromBoneName(bone.name, out AvatarAnchorPointIds anchorPointId))
             {
                 boneTransformMapping.Add(anchorPointId, bone);
             }
@@ -40,5 +45,12 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
             }
         }
         return (Vector3.zero, Quaternion.identity, Vector3.one);
+    }
+
+    private static bool TryGetIdFromBoneName(string boneName, out AvatarAnchorPointIds id)
+    {
+        var result = boneMapping.FirstOrDefault(pair => pair.Value == boneName);
+        id = result.Key;
+        return !string.IsNullOrEmpty(result.Value);
     }
 }
