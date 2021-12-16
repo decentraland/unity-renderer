@@ -542,7 +542,7 @@ SpriteAtlas:
   - Ellipse32
   - ChatIcon
   - RectRadiusStroke16
-  - Top12Outline2
+  - Outline3Top12
   - ContainerRadius8
   - OutlineRedButton
   - ManaContainer
