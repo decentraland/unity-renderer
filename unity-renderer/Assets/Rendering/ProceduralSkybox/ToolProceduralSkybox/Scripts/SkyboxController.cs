@@ -148,12 +148,19 @@ namespace DCL.Skybox
             {
                 runtimeReflectionObj = skyboxProbe.gameObject.AddComponent<ReflectionProbeRuntime>();
             }
+
+            // Update resolution
+            runtimeReflectionObj.UpdateResolution(DataStore.i.skyboxConfig.reflectionResolution.Get());
+            DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
+
             // Assign as seconds
             runtimeReflectionObj.updateAfter = reflectionUpdateTime * 60;
 
             RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Custom;
             RenderSettings.customReflection = null;
         }
+
+        private void ReflectionResolution_OnChange(int current, int previous) { runtimeReflectionObj.UpdateResolution(current); }
 
         private void AssignCameraInstancetoProbe()
         {
@@ -454,6 +461,9 @@ namespace DCL.Skybox
             configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
             KernelConfig.i.OnChange -= KernelConfig_OnChange;
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            DataStore.i.skyboxConfig.useDynamicSkybox.OnChange -= UseDynamicSkybox_OnChange;
+            DataStore.i.skyboxConfig.fixedTime.OnChange -= FixedTime_OnChange;
+            DataStore.i.skyboxConfig.reflectionResolution.OnChange -= ReflectionResolution_OnChange;
         }
 
         public void PauseTime(bool overrideTime = false, float newTime = 0)

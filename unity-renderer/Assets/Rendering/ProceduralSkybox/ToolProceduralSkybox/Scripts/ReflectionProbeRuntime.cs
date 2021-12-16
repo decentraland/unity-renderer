@@ -10,10 +10,12 @@ namespace DCL.Skybox
         public float updateAfter = 60;
         float timer;
         public Transform followTransform;
+        public int resolution = 256;
 
         private void Start()
         {
             timer = 0;
+            realtimeProbe.resolution = resolution;
             BakeNewReflection();
         }
 
@@ -37,6 +39,16 @@ namespace DCL.Skybox
             }
         }
 
-        void BakeNewReflection() { realtimeProbe.RenderProbe(); }
+        void BakeNewReflection()
+        {
+            realtimeProbe.resolution = resolution;
+            realtimeProbe.RenderProbe();
+        }
+
+        public void UpdateResolution(int resolution)
+        {
+            this.resolution = resolution;
+            realtimeProbe.resolution = resolution;
+        }
     }
 }

@@ -5,17 +5,16 @@ using UnityEngine;
 namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Dynamic Skybox", fileName = "DynamicSkyboxControlController")]
-    public class DynamicSkyboxControlController : SpinBoxSettingsControlController
+    public class DynamicSkyboxControlController : ToggleSettingsControlController
     {
         // Start is called before the first frame update
-        public override object GetStoredValue() { return (int)currentGeneralSettings.proceduralSkyboxMode; }
+        public override object GetStoredValue() { return currentGeneralSettings.dynamicProceduralSkbox; }
 
         // Update is called once per frame
         public override void UpdateSetting(object newValue)
         {
-            int newIntValue = (int)newValue;
-            currentGeneralSettings.proceduralSkyboxMode = (GeneralSettings.ProceduralSkyboxMode)newIntValue;
-            if (currentGeneralSettings.proceduralSkyboxMode == GeneralSettings.ProceduralSkyboxMode.DYNAMIC)
+            currentGeneralSettings.dynamicProceduralSkbox = (bool)newValue;
+            if (currentGeneralSettings.dynamicProceduralSkbox)
             {
                 DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
             }
@@ -24,7 +23,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
                 DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
             }
 
-            CommonSettingsScriptableObjects.dynamicSkyboxDisabled.Set(currentGeneralSettings.proceduralSkyboxMode == GeneralSettings.ProceduralSkyboxMode.DYNAMIC);
+            CommonSettingsScriptableObjects.dynamicSkyboxDisabled.Set(currentGeneralSettings.dynamicProceduralSkbox);
         }
     }
 }

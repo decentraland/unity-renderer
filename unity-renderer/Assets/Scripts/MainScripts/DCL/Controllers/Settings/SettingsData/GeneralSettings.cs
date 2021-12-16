@@ -6,7 +6,6 @@ namespace DCL.SettingsCommon
     public struct GeneralSettings
     {
         public enum VoiceChatAllow { ALL_USERS, VERIFIED_ONLY, FRIENDS_ONLY }
-        public enum ProceduralSkyboxMode { DYNAMIC, FIXED }
 
         public float mouseSensitivity;
         public float voiceChatVolume;
@@ -17,7 +16,7 @@ namespace DCL.SettingsCommon
         public float maxNonLODAvatars;
         public float namesOpacity;
         public bool profanityChatFiltering;
-        public ProceduralSkyboxMode proceduralSkyboxMode;
+        public bool dynamicProceduralSkbox;
         public float skyboxTime;
     }
 }

@@ -99,7 +99,7 @@ namespace DCL.SettingsCommon
                 autoqualityOn = false,
                 namesOpacity = 0.5f,
                 profanityChatFiltering = true,
-                proceduralSkyboxMode = GeneralSettings.ProceduralSkyboxMode.DYNAMIC,
+                dynamicProceduralSkbox = true,
                 skyboxTime = 0.0f,
             };
         }

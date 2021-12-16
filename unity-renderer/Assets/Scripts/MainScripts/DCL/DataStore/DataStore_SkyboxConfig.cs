@@ -12,5 +12,6 @@ namespace DCL
         public BaseVariable<float> currentVirtualTime = new BaseVariable<float>();
         public BaseVariable<bool> useDynamicSkybox = new BaseVariable<bool>(true);
         public BaseVariable<float> fixedTime = new BaseVariable<float>(0);
+        public BaseVariable<int> reflectionResolution = new BaseVariable<int>(256);
     }
 }
