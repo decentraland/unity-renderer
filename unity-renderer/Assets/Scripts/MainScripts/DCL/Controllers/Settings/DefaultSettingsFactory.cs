@@ -9,7 +9,7 @@ namespace DCL.SettingsCommon
         const string GENERAL_SETTINGS_KEY = "Settings.General";
         const string AUDIO_SETTINGS_KEY = "Settings.Audio";
 
-        private string graphicsQualitySettingsPresetPath = "ScriptableObjects/DesktopQualitySettingsData";
+        private string graphicsQualitySettingsPresetPath = "ScriptableObjects/QualitySettingsData";
         private string autoQualitySettingsPath = "ScriptableObjects/AutoQualitySettingsData";
         private string autoQualitySettingsEnabledPath = "ScriptableObjects/AutoQualityEnabled";
         private string audioMixerPath = "AudioMixer";
