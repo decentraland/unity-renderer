@@ -240,7 +240,7 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.Expression_FistPump:
                     InputProcessor.FromKey(action, KeyCode.Alpha2, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
-                case DCLAction_Trigger.Expression_Dance:
+                case DCLAction_Trigger.Expression_Robot:
                     InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_RaiseHand:
@@ -254,12 +254,6 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.Expression_SendKiss:
                     InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    break;
-                case DCLAction_Trigger.Expression_Hohoho:
-                    InputProcessor.FromKey(action, KeyCode.Alpha8, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    break;
-                case DCLAction_Trigger.Expression_Snowfall:
-                    InputProcessor.FromKey(action, KeyCode.Alpha9, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeChange:
                     InputProcessor.FromKey(action, KeyCode.K, modifiers: InputProcessor.Modifier.FocusNotInInput);

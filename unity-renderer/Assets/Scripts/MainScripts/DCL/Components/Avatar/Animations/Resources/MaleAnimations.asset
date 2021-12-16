@@ -61,3 +61,9 @@ MonoBehaviour:
     id: snowfall
   - clip: {fileID: 7400000, guid: 7ce91a41fdad8e648b9d5d46ec1f5fba, type: 2}
     id: hohoho
+  - clip: {fileID: 7400000, guid: 0f8758ad5d2c9614eaf737f7d5a02683, type: 2}
+    id: crafting
+  - clip: {fileID: 7400000, guid: ae751f28919a9da45901722032494cd7, type: 2}
+    id: snowballhit
+  - clip: {fileID: 7400000, guid: 410500199428da6479aff90425c0ad9e, type: 2}
+    id: snowballthrow
