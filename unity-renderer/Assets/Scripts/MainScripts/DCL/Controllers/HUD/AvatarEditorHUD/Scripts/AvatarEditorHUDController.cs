@@ -30,6 +30,7 @@ public class AvatarEditorHUDController : IHUD
     bool isPlayerRendererLoaded => DataStore.i.common.isPlayerRendererLoaded.Get();
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     BaseVariable<Transform> configureBackpackInFullscreenMenu => DataStore.i.exploreV2.configureBackpackInFullscreenMenu;
+    BaseVariable<bool> exploreV2IsOpen => DataStore.i.exploreV2.isOpen;
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
@@ -41,6 +42,7 @@ public class AvatarEditorHUDController : IHUD
     private bool ownedWearablesAlreadyLoaded = false;
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
+    private bool avatarIsDirty = false;
 
     public AvatarEditorHUDView view;
 
@@ -62,6 +64,8 @@ public class AvatarEditorHUDController : IHUD
 
         configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
         ConfigureBackpackInFullscreenMenuChanged(configureBackpackInFullscreenMenu.Get(), null);
+
+        exploreV2IsOpen.OnChange += ExploreV2IsOpenChanged;
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
         hairColorList = Resources.Load<ColorList>("HairColor");
@@ -407,6 +411,7 @@ public class AvatarEditorHUDController : IHUD
             toReplace.ForEach(UnequipWearable);
             model.wearables.Add(wearable);
             view.EquipWearable(wearable);
+            avatarIsDirty = true;
         }
     }
 
@@ -416,6 +421,7 @@ public class AvatarEditorHUDController : IHUD
         {
             model.wearables.Remove(wearable);
             view.UnequipWearable(wearable);
+            avatarIsDirty = true;
         }
     }
 
@@ -609,6 +615,7 @@ public class AvatarEditorHUDController : IHUD
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
         view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
+        exploreV2IsOpen.OnChange -= ExploreV2IsOpenChanged;
 
         CleanUp();
     }
@@ -676,4 +683,13 @@ public class AvatarEditorHUDController : IHUD
     public void ToggleVisibility() { SetVisibility(!view.isOpen); }
 
     private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
+
+    private void ExploreV2IsOpenChanged(bool current, bool previous)
+    {
+        if (!current && avatarIsDirty)
+        {
+            LoadUserProfile(userProfile, true);
+            avatarIsDirty = false;
+        }
+    }
 }
