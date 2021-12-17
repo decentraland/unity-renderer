@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DCL.Tutorial
 {
     /// <summary>
@@ -14,8 +16,9 @@ namespace DCL.Tutorial
                 tutorialController.hudController.profileHud != null)
             {
                 tutorialController.hudController.profileHud.OnOpen += ProfileHud_OnOpen;
-                tutorialController.hudController.profileHud.OnClose += ProfileHud_OnClose;
             }
+
+            DataStore.i.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
         }
 
         public override void OnStepFinished()
@@ -27,34 +30,31 @@ namespace DCL.Tutorial
                 tutorialController.hudController.profileHud != null)
             {
                 tutorialController.hudController.profileHud.OnOpen -= ProfileHud_OnOpen;
-                tutorialController.hudController.profileHud.OnClose -= ProfileHud_OnClose;
             }
+
+            DataStore.i.exploreV2.isOpen.OnChange -= ExploreV2IsOpenChanged;
         }
 
         protected override void SetTooltipPosition()
         {
             base.SetTooltipPosition();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.profileHud != null &&
-                tutorialController.hudController.profileHud.tutorialTooltipReference)
-            {
-                tooltipTransform.position = tutorialController.hudController.profileHud.tutorialTooltipReference.position;
-            }
+            tooltipTransform.position = DataStore.i.exploreV2.profileCardTooltipReference.Get().position;
         }
 
         internal void ProfileHud_OnOpen()
         {
-            isRelatedFeatureActived = true;
+            tutorialController.SetNextSkippedSteps(0);
             stepIsFinished = true;
-            tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
 
-        internal void ProfileHud_OnClose()
+        internal void ExploreV2IsOpenChanged(bool current, bool previous)
         {
-            if (isRelatedFeatureActived)
-                isRelatedFeatureActived = false;
+            if (!current)
+            {
+                tutorialController.SetNextSkippedSteps(7);
+                stepIsFinished = true;
+            }
         }
     }
 }

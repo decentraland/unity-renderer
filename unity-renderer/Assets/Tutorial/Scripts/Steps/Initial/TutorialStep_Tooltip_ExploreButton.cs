@@ -8,7 +8,7 @@ namespace DCL.Tutorial
     public class TutorialStep_Tooltip_ExploreButton : TutorialStep_Tooltip
     {
         private const string PLAYER_PREFS_START_MENU_SHOWED = "StartMenuFeatureShowed";
-        private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
+        private const int TEACHER_CANVAS_SORT_ORDER_START = 5;
 
         public override void OnStepStart()
         {
@@ -17,7 +17,6 @@ namespace DCL.Tutorial
             DataStore.i.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
 
             tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
-            tutorialController.SetNextSkippedSteps(7);
         }
 
         public override void OnStepFinished()
@@ -46,11 +45,7 @@ namespace DCL.Tutorial
         internal void ExploreV2IsOpenChanged(bool current, bool previous)
         {
             if (current)
-            {
-                tutorialController.SetNextSkippedSteps(0);
                 stepIsFinished = true;
-                tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.StepCompleted);
-            }
         }
     }
 }

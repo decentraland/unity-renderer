@@ -22,5 +22,6 @@ namespace DCL
         public readonly BaseVariable<Transform> builderTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> questTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> settingsTooltipReference = new BaseVariable<Transform>(null);
+        public readonly BaseVariable<Transform> profileCardTooltipReference = new BaseVariable<Transform>(null);
     }
 }

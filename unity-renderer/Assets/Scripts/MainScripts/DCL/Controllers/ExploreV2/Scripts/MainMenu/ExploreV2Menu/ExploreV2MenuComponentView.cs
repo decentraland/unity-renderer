@@ -75,6 +75,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     RectTransform currentSettingsTooltipReference { get; }
 
     /// <summary>
+    /// Transform used to positionate the profile section tooltips.
+    /// </summary>
+    RectTransform currentProfileCardTooltipReference { get; }
+
+    /// <summary>
     /// Shows/Hides the game object of the explore menu.
     /// </summary>
     /// <param name="isActive">True to show it.</param>
@@ -130,6 +135,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
 
+    [Header("Tutorial References")]
+    [SerializeField] internal RectTransform profileCardTooltipReference;
+
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
@@ -142,6 +150,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public RectTransform currentBuilderTooltipReference => sectionSelector.GetSection((int)ExploreSection.Builder).pivot;
     public RectTransform currentQuestTooltipReference => sectionSelector.GetSection((int)ExploreSection.Quest).pivot;
     public RectTransform currentSettingsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Settings).pivot;
+    public RectTransform currentProfileCardTooltipReference => profileCardTooltipReference;
 
     public event Action OnInitialized;
     public event Action<bool> OnCloseButtonPressed;

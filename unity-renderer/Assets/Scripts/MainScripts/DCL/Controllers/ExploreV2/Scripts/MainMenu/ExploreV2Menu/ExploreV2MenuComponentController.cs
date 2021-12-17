@@ -20,6 +20,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal RectTransform builderTooltipReference { get => view.currentBuilderTooltipReference; }
     internal RectTransform questTooltipReference { get => view.currentQuestTooltipReference; }
     internal RectTransform settingsTooltipReference { get => view.currentSettingsTooltipReference; }
+    internal RectTransform profileCardTooltipReference { get => view.currentProfileCardTooltipReference; }
 
     internal IExploreV2MenuComponentView view;
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
@@ -64,6 +65,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.builderTooltipReference.Set(builderTooltipReference);
         DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
+        DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
 
         view.OnInitialized += CreateControllers;
         view.OnSectionOpen += OnSectionOpen;
