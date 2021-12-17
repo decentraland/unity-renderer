@@ -18,9 +18,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private PrivateChatWindowHUDController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
-    private SettingsPanelHUDController settingsPanelHudController;
-    private HelpAndSupportHUDController helpAndSupportHUDController;
-    private ExploreHUDController exploreHUDController;
     private UserProfileController userProfileController;
 
     protected override List<GameObject> SetUp_LegacySystems()
@@ -52,7 +49,6 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController?.Dispose();
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
-        settingsPanelHudController?.Dispose();
 
         controller.Dispose();
         Object.Destroy(userProfileGO);
