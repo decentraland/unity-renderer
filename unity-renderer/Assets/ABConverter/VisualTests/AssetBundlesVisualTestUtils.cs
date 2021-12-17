@@ -9,7 +9,7 @@ namespace DCL.Helpers
     /// <summary>
     /// Visual tests helper class used to validate Asset Bundle conversions. Based on 'Scripts/Tests/VisualTests/VisualTestHelpers.cs'.
     /// </summary>
-    public static class AssetBundlesVisualTestHelpers
+    public static class AssetBundlesVisualTestUtils
     {
         public static string testImagesPath = Application.dataPath + "/../TestResources/VisualTests/CurrentTestImages/";
 
@@ -178,7 +178,7 @@ namespace DCL.Helpers
             for (int i = 0; i < testImagePixels.Length; i++)
             {
                 if (!IsSamePixel(testImagePixels[i], baselineImagePixels[i],
-                    TestSettings.VISUAL_TESTS_PIXELS_CHECK_THRESHOLD))
+                        TestSettings.VISUAL_TESTS_PIXELS_CHECK_THRESHOLD))
                 {
                     differentPixels++;
                     diffImagePixels[i] = diffColor;
