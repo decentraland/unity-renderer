@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Cinemachine;
@@ -6,22 +5,14 @@ using DCL.Rendering;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsCommon.SettingsControllers.SpecificControllers;
 using NUnit.Framework;
-using System.Collections;
-using System.Reflection;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.SceneManagement;
-using UnityEngine.TestTools;
 
 namespace DCL.SettingsCommon.SettingsControllers.Tests
 {
     public class SettingsControlsShould
     {
-        private const string TEST_SCENE_PATH = "Assets/Scripts/MainScripts/DCL/Controllers/Settings/SettingsControllers/Tests/TestScenes";
-        private const string TEST_SCENE_NAME = "SettingsTestScene";
-
         private SettingsControlController settingController;
 
         private CinemachineFreeLook freeLookCamera;
