@@ -1,5 +1,7 @@
 using DCL;
 using DCL.Components;
+using DCL.Configuration;
+using DCL.Controllers;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
@@ -54,6 +56,7 @@ namespace AvatarAttach_Tests
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId });
             AvatarAttachHandler handler = Substitute.ForPartsOf<AvatarAttachHandler>();
+            handler.IsInsideScene(Arg.Any<Vector3>()).Returns(true);
 
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = userId });
             handler.Received(1).Detach();
@@ -96,12 +99,45 @@ namespace AvatarAttach_Tests
 
             DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
 
-            AvatarAttachHandler handler = new AvatarAttachHandler();
-            handler.Initialize(null, entity);
+            AvatarAttachHandler handler = Substitute.ForPartsOf<AvatarAttachHandler>();
+            handler.IsInsideScene(Arg.Any<Vector3>()).Returns(true);
+
+            handler.Initialize(Substitute.For<IParcelScene>(), entity);
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = userId, anchorPointId = 0 });
 
             Assert.AreEqual(targetPosition, entityGo.transform.position);
             Assert.AreEqual(targetRotation.eulerAngles, entityGo.transform.rotation.eulerAngles);
+
+            handler.CleanUp();
+            Object.Destroy(entityGo);
+        }
+
+        [Test]
+        public void SendEntityToMORDORwhenOutOfScene()
+        {
+            const string userId = "Temptation";
+            Vector3 targetPosition = new Vector3(70, -135, 0);
+            Quaternion targetRotation = Quaternion.Euler(0, 30, 0);
+
+            GameObject entityGo = new GameObject("AvatarAttachHandlerShould");
+            entityGo.transform.position = Vector3.zero;
+            entityGo.transform.rotation = Quaternion.identity;
+
+            IDCLEntity entity = Substitute.For<IDCLEntity>();
+            entity.gameObject.Returns(entityGo);
+
+            IAvatarAnchorPoints anchorPoints = Substitute.For<IAvatarAnchorPoints>();
+            anchorPoints.GetTransform(Arg.Any<AvatarAnchorPointIds>()).Returns((targetPosition, targetRotation, Vector3.one));
+
+            DataStore.i.player.otherPlayers.Add(userId, new Player() { id = userId, anchorPoints = anchorPoints });
+
+            AvatarAttachHandler handler = Substitute.ForPartsOf<AvatarAttachHandler>();
+            handler.IsInsideScene(Arg.Any<Vector3>()).Returns(false);
+
+            handler.Initialize(Substitute.For<IParcelScene>(), entity);
+            handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = userId, anchorPointId = 0 });
+
+            Assert.AreEqual(EnvironmentSettings.MORDOR, entityGo.transform.position);
 
             handler.CleanUp();
             Object.Destroy(entityGo);

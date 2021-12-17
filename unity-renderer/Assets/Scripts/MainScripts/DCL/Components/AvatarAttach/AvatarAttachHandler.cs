@@ -1,6 +1,7 @@
 using System.Collections;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ namespace DCL.Components
 {
     internal class AvatarAttachHandler
     {
+        private const float BOUNDARIES_CHECK_INTERVAL = 0.7f;
+
         public AvatarAttachComponent.Model model { internal set; get; } = new AvatarAttachComponent.Model();
         public IParcelScene scene { private set; get; }
         public IDCLEntity entity { private set; get; }
@@ -21,6 +24,10 @@ namespace DCL.Components
 
         private readonly GetAnchorPointsHandler getAnchorPointsHandler = new GetAnchorPointsHandler();
         private ISceneBoundsChecker sceneBoundsChecker => Environment.i?.world?.sceneBoundsChecker;
+
+        private Vector2Int? currentCords = null;
+        private bool isInsideScene = true;
+        private float lastBoundariesCheckTime = 0;
 
         public void Initialize(IParcelScene scene, IDCLEntity entity)
         {
@@ -99,9 +106,11 @@ namespace DCL.Components
 
         IEnumerator ComponentUpdate()
         {
+            currentCords = null;
+
             while (true)
             {
-                if (entity == null)
+                if (entity == null || scene == null)
                 {
                     componentUpdate = null;
                     yield break;
@@ -109,12 +118,42 @@ namespace DCL.Components
 
                 var anchorPoint = anchorPoints.GetTransform(anchorPointId);
 
-                entity.gameObject.transform.position = anchorPoint.position;
-                entity.gameObject.transform.rotation = anchorPoint.rotation;
-                sceneBoundsChecker?.AddEntityToBeChecked(entity);
+                if (IsInsideScene(CommonScriptableObjects.worldOffset + anchorPoint.position))
+                {
+                    entity.gameObject.transform.position = anchorPoint.position;
+                    entity.gameObject.transform.rotation = anchorPoint.rotation;
+
+                    if (Time.unscaledTime - lastBoundariesCheckTime > BOUNDARIES_CHECK_INTERVAL)
+                    {
+                        CheckSceneBoundaries(entity);
+                    }
+                }
+                else
+                {
+                    entity.gameObject.transform.localPosition = EnvironmentSettings.MORDOR;
+                }
 
                 yield return null;
             }
+        }
+
+        internal virtual bool IsInsideScene(Vector3 position)
+        {
+            bool result = isInsideScene;
+            Vector2Int coords = Utils.WorldToGridPosition(position);
+            if (currentCords == null || currentCords != coords)
+            {
+                result = scene.IsInsideSceneBoundaries(coords, position.y);
+            }
+            currentCords = coords;
+            isInsideScene = result;
+            return result;
+        }
+
+        private void CheckSceneBoundaries(IDCLEntity entity)
+        {
+            sceneBoundsChecker?.AddEntityToBeChecked(entity);
+            lastBoundariesCheckTime = Time.unscaledTime;
         }
     }
 }
