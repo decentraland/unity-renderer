@@ -4,6 +4,9 @@ using DCL.Helpers;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using DCL;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -11,6 +14,22 @@ namespace Tests
 {
     public class CharacterControllerTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override List<GameObject> SetUp_LegacySystems()
+        {
+            List<GameObject> result = new List<GameObject>();
+            result.Add(MainSceneFactory.CreateEnvironment());
+            result.AddRange(MainSceneFactory.CreatePlayerSystems());
+            return result;
+        }
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         [UnityTest]
         public IEnumerator CharacterTeleportReposition() { yield return InitCharacterPosition(10, 2, 10); }
 

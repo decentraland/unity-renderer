@@ -5,21 +5,88 @@ using DCL;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using DCL.Camera;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 namespace Tests
 {
     public class CursorControllerTests : IntegrationTestSuite_Legacy
     {
-        protected override bool enableSceneIntegrityChecker => false;
+        private ParcelScene scene;
+        private Camera mainCamera;
+        private CursorController cursorController;
 
+        protected override List<GameObject> SetUp_LegacySystems()
+        {
+            List<GameObject> result = new List<GameObject>();
+            result.Add(MainSceneFactory.CreateEnvironment());
+            result.Add(MainSceneFactory.CreateEventSystem());
+            result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
+            return result;
+        }
+
+        protected override WorldRuntimeContext CreateRuntimeContext()
+        {
+            return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
+            (
+                new PointerEventsController(),
+                new RuntimeComponentFactory(),
+                new WorldState()
+            );
+        }
+
+        protected override PlatformContext CreatePlatformContext()
+        {
+            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
+            (
+                new UpdateEventHandler(),
+                WebRequestController.Create()
+            );
+        }
+
+        protected override MessagingContext CreateMessagingContext()
+        {
+            return DCL.Tests.MessagingContextFactory.CreateMocked();
+        }
+
+        [UnitySetUp]
         protected override IEnumerator SetUp()
         {
+            cursorController = TestUtils.CreateComponentWithGameObject<CursorController>("CursorController");
+            cursorController.normalCursor = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector3.zero);
+            cursorController.normalCursor.name = "Normal";
+            cursorController.hoverCursor = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector3.zero);
+            cursorController.hoverCursor.name = "Hover";
+            cursorController.cursorImage = cursorController.gameObject.AddComponent<Image>();
+            cursorController.cursorImage.enabled = false;
+            cursorController.SetNormalCursor();
+
             yield return base.SetUp();
-            Environment.i.world.sceneController.SortScenesByDistance();
-            sceneInitialized = false;
+
+            scene = TestUtils.CreateTestScene();
+
+            Physics.autoSyncTransforms = true;
+
+            mainCamera = TestUtils.CreateComponentWithGameObject<Camera>("Main Camera");
+            mainCamera.tag = "MainCamera";
+            mainCamera.transform.position = Vector3.zero;
+            mainCamera.transform.forward = Vector3.forward;
+
+            DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            Object.Destroy(cursorController.normalCursor);
+            Object.Destroy(cursorController.hoverCursor);
+            Object.Destroy(cursorController.gameObject);
+            Object.Destroy(mainCamera.gameObject);
+            yield return base.TearDown();
         }
 
         [UnityTest]
@@ -51,54 +118,27 @@ namespace Tests
 
             yield return null;
 
-            var cursorController = GameObject.FindObjectOfType<CursorController>();
-
             // Check cursor shows normal sprite
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
 
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
+            mainCamera.transform.position = new Vector3(8, 2, 7f);
+            mainCamera.transform.rotation = Quaternion.identity;
 
-            var cameraController = GameObject.FindObjectOfType<CameraController>();
-
-            // Rotate camera towards the interactive object
-            var cameraRotationPayload = new CameraController.SetRotationPayload()
-            {
-                x = 45,
-                y = 0,
-                z = 0
-            };
-
-            cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }));
-
+            //Debug.Break();
+            yield return null;
             yield return null;
 
             // Check cursor shows hover sprite
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.hoverCursor);
 
-            // Rotate the camera away from the interactive object
-            cameraRotationPayload = new CameraController.SetRotationPayload()
-            {
-                x = 0,
-                y = 0,
-                z = 0,
-                cameraTarget = (DCLCharacterController.i.transform.position - entity.gameObject.transform.position)
-            };
+            mainCamera.transform.forward = Vector3.back;
 
-            cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }));
-
+            //Debug.Break();
+            yield return null;
             yield return null;
 
             // Check cursor shows normal sprite
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
-
-            DCLCharacterController.i.ResumeGravity();
         }
 
         [UnityTest]
@@ -130,16 +170,11 @@ namespace Tests
 
             yield return null;
 
-            var cursorController = GameObject.FindObjectOfType<CursorController>();
-
             // Check cursor shows normal sprite
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
 
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
-
-            // Rotate camera towards the interactive object
-            cameraController.SetRotation(45, 0, 0);
+            mainCamera.transform.position = new Vector3(8, 2, 7f);
+            mainCamera.transform.forward = Vector3.forward;
 
             yield return null;
 
@@ -159,17 +194,11 @@ namespace Tests
 
             // Check cursor shows normal sprite
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
-
-            DCLCharacterController.i.ResumeGravity();
         }
 
         [UnityTest]
         public IEnumerator FeedbackIsNotDisplayedOnParent()
         {
-            var cursorController = GameObject.FindObjectOfType<CursorController>();
-
-            Assert.IsNotNull(cameraController, "camera is null?");
-
             // Create parent entity
             IDCLEntity blockingEntity;
             BoxShape blockingShape = TestUtils.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
@@ -196,7 +225,8 @@ namespace Tests
             TestUtils.SetEntityParent(scene, clickTargetEntity, blockingEntity);
 
             // Set character position and camera rotation
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 1));
+            mainCamera.transform.position = new Vector3(3, 3, 1);
+
             yield return null;
 
             // Create pointer down component and add it to target entity
@@ -217,8 +247,8 @@ namespace Tests
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
 
             // Move character in front of target entity and rotate camera
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
-            cameraController.SetRotation(0, 0, 0, new Vector3(0, 0, -1));
+            mainCamera.transform.position = new Vector3(3, 3, 12);
+            mainCamera.transform.forward = Vector3.back;
 
             yield return null;
             yield return null;
@@ -255,14 +285,8 @@ namespace Tests
 
             yield return null;
 
-            DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
-
-            var cameraController = GameObject.FindObjectOfType<CameraController>();
-
-            // Rotate camera towards the interactive object
-            cameraController.SetRotation(45, 0, 0);
-
-            yield return null;
+            mainCamera.transform.position = new Vector3(8, 2, 7f);
+            mainCamera.transform.forward = Vector3.forward;
 
             var hoverCanvasController = InteractionHoverCanvasController.i;
             Assert.IsNotNull(hoverCanvasController);
@@ -285,8 +309,6 @@ namespace Tests
 
             // Check hover feedback is no longer enabled
             Assert.IsFalse(hoverCanvasController.canvas.enabled);
-
-            DCLCharacterController.i.ResumeGravity();
         }
 
         [UnityTest]
@@ -316,12 +338,8 @@ namespace Tests
 
             yield return null;
 
-            DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
-
-            var cameraController = GameObject.FindObjectOfType<CameraController>();
-
-            // Rotate camera towards the interactive object
-            cameraController.SetRotation(45, 0, 0);
+            mainCamera.transform.position = new Vector3(8, 2, 7f);
+            mainCamera.transform.forward = Vector3.forward;
 
             yield return null;
 
@@ -346,8 +364,6 @@ namespace Tests
 
             // Check hover feedback is still enabled
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
-
-            DCLCharacterController.i.ResumeGravity();
         }
     }
 }

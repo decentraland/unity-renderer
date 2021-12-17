@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text.RegularExpressions;
 using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -10,6 +11,14 @@ namespace AssetPromiseKeeper_GLTF_Tests
 {
     public class BlockedAndMasterPromisesShould : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         [UnityTest]
         public IEnumerator SucceedWhenMastersParentIsDestroyed()
         {
@@ -32,7 +41,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             keeper.Keep(prom);
             keeper.Keep(prom2);
             keeper.Keep(prom3);
-            
+
             var asset = prom.asset;
 
             keeper.Forget(prom);
@@ -42,7 +51,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Object.Destroy(parent);
 
             yield return prom;
-            
+
             yield return prom2;
             yield return prom3;
 
@@ -65,10 +74,10 @@ namespace AssetPromiseKeeper_GLTF_Tests
         public IEnumerator FailCorrectlyWhenGivenWrongURL()
         {
             var keeper = new AssetPromiseKeeper_GLTF();
-            
+
             //NOTE(Brian): Expect the 404 error
             LogAssert.Expect(LogType.Log, new Regex("^.*?404"));
-            
+
             string url = TestAssetsUtils.GetPath() + "/non_existing_url.glb";
 
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);

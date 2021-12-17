@@ -6,8 +6,6 @@ using UnityEngine.TestTools;
 
 public class ProfileHUDTests : IntegrationTestSuite_Legacy
 {
-    protected override bool justSceneSetUp => true;
-
     private ProfileHUDController controller;
     private IUserProfileBridge userProfileBridge;
     private bool allUIHiddenOriginalValue;

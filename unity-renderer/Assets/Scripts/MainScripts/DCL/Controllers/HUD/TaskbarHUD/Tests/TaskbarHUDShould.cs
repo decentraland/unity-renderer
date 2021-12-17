@@ -1,6 +1,9 @@
 using DCL.SettingsPanelHUD;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using DCL;
+using DCL.Helpers;
 using UnityEngine;
 
 public class TaskbarHUDShould : IntegrationTestSuite_Legacy
@@ -15,17 +18,21 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private PrivateChatWindowHUDController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
-    private SettingsPanelHUDController settingsPanelHudController;
+    private UserProfileController userProfileController;
 
-    protected override bool justSceneSetUp => true;
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.Add(MainSceneFactory.CreateMouseCatcher());
+        return result;
+    }
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        CommonScriptableObjects.rendererState.Set(true);
-
         userProfileGO = new GameObject();
+        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
 
         controller = new TaskbarHUDController();
         controller.Initialize(null, chatController, null, null, null);
@@ -42,10 +49,10 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController?.Dispose();
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
-        settingsPanelHudController?.Dispose();
 
         controller.Dispose();
-        UnityEngine.Object.Destroy(userProfileGO);
+        Object.Destroy(userProfileGO);
+        Object.Destroy(userProfileController.gameObject);
 
         yield return base.TearDown();
     }
@@ -105,8 +112,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(Vector2.zero, rt.anchoredPosition, badPositionMsg);
         Assert.AreEqual(Vector2.zero, rt.pivot, badPivotMsg);
 
-        TestHelpers_Friends.FakeAddFriend(friendsController, friendsHudController.view, "test-1");
-        TestHelpers_Chat.FakePrivateChatMessageFrom(chatController, "test-1", "test message!");
+        TestHelpers_Friends.FakeAddFriend(userProfileController, friendsController, friendsHudController.view, "test-1");
+        TestHelpers_Chat.FakePrivateChatMessageFrom(userProfileController, chatController, "test-1", "test message!");
 
         var buttonList = view.GetButtonList();
 

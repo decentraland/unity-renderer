@@ -10,14 +10,13 @@ using UnityEngine.TestTools;
 
 public class BIWCatalogShould
 {
-    private GameObject gameObjectToUse;
+    private AssetCatalogBridge assetCatalogBridge;
 
     [UnitySetUp]
     protected IEnumerator SetUp()
     {
         BIWCatalogManager.Init();
-        gameObjectToUse = new GameObject("_TestObject");
-        gameObjectToUse.AddComponent<AssetCatalogBridge>();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
         yield return null;
     }
 
@@ -25,7 +24,7 @@ public class BIWCatalogShould
     public void BuilderInWorldSearch()
     {
         string nameToFilter = "Sandy";
-        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalogBridge);
 
         CatalogItem catalogItemToFilter = null;
         foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
@@ -48,10 +47,10 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldQuickBar()
     {
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
-        CatalogItemAdapter adapter = BIWTestUtils.CreateCatalogItemAdapter(gameObjectToUse);
+        CatalogItemAdapter adapter = BIWTestUtils.CreateCatalogItemAdapter(assetCatalogBridge.gameObject);
         adapter.SetContent(item);
 
         CatalogAssetGroupAdapter groupAdapter = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
@@ -59,7 +58,7 @@ public class BIWCatalogShould
 
         CatalogGroupListView catalogGroupListView = new GameObject("_CatalogGroupListView").AddComponent<CatalogGroupListView>();
         catalogGroupListView.SubscribeToEvents(groupAdapter);
-        catalogGroupListView.generalCanvas = Utils.GetOrCreateComponent<Canvas>(gameObjectToUse);
+        catalogGroupListView.generalCanvas = assetCatalogBridge.gameObject.GetOrCreateComponent<Canvas>();
         SceneCatalogView sceneCatalogView = SceneCatalogView.Create();
         sceneCatalogView.catalogGroupListView = catalogGroupListView;
         SceneCatalogController sceneCatalogController = new SceneCatalogController();
@@ -84,7 +83,7 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldToggleFavorite()
     {
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
@@ -99,7 +98,7 @@ public class BIWCatalogShould
     [Test]
     public void CatalogItemsSceneObject()
     {
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);
@@ -122,8 +121,7 @@ public class BIWCatalogShould
         AssetCatalogBridge.i.ClearCatalog();
         BIWCatalogManager.ClearCatalog();
         BIWCatalogManager.Dispose();
-        if (gameObjectToUse != null)
-            GameObject.Destroy(gameObjectToUse);
+        UnityEngine.Object.Destroy(assetCatalogBridge.gameObject);
         yield return null;
     }
 }

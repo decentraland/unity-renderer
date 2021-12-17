@@ -26,12 +26,20 @@ namespace Tests.QuestsPanelHUD
             QuestTask taskMock = new QuestTask { id = MOCK_TASK_ID };
             sectionMock.tasks = new [] { taskMock };
             questMock.sections = new [] { sectionMock };
+
             DataStore.i.Quests.quests.Set(new [] { (questMock.id, questMock) });
 
             questsController = Substitute.For<IQuestsController>();
             hudView = Substitute.For<IQuestsPanelHUDView>();
             hudController = Substitute.ForPartsOf<QuestsPanelHUDController>();
             hudController.Configure().CreateView().Returns(info => hudView);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            hudController.Dispose();
+            DataStore.Clear();
         }
 
         [Test]
@@ -159,9 +167,5 @@ namespace Tests.QuestsPanelHUD
             questsController.OnQuestUpdated += Raise.Event<QuestUpdated>("newQuest1", true);
             hudView.DidNotReceive().RequestAddOrUpdateQuest("newQuest1");
         }
-
-        [TearDown]
-        public void TearDown() { DataStore.Clear(); }
     }
-
 }

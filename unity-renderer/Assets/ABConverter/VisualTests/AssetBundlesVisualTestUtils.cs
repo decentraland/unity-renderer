@@ -1,45 +1,21 @@
 using DCL.Configuration;
 using System.Collections;
 using System.IO;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 namespace DCL.Helpers
 {
-    public static class VisualTestHelpers
+    /// <summary>
+    /// Visual tests helper class used to validate Asset Bundle conversions. Based on 'Scripts/Tests/VisualTests/VisualTestHelpers.cs'.
+    /// </summary>
+    public static class AssetBundlesVisualTestUtils
     {
         public static string testImagesPath = Application.dataPath + "/../TestResources/VisualTests/CurrentTestImages/";
 
-        public static string baselineImagesPath =
-            Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
+        public static string baselineImagesPath = Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
 
         public static bool generateBaseline = false;
-        public static string currentTestName;
-        public static int snapshotIndex;
-
-        public static IEnumerator GenerateBaselineForTest(IEnumerator test)
-        {
-            generateBaseline = true;
-            yield return test;
-            generateBaseline = false;
-        }
-
-        /// <summary>
-        /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
-        /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
-        ///
-        /// Snapshot name will be generated dinamically using the name set in InitVisualTestsScene() and an static counter.
-        /// </summary>
-        /// <param name="shotPosition">camera will be placed here.</param>
-        /// <param name="shotTarget">camera will point towards here.</param>
-        public static IEnumerator TakeSnapshot(Vector3? shotPosition = null, Vector3? shotTarget = null)
-        {
-            yield return TakeSnapshotOrTest(currentTestName + "_" + snapshotIndex + ".png", shotPosition, shotTarget);
-            snapshotIndex++;
-        }
 
         public static IEnumerator TakeSnapshot(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
@@ -63,20 +39,6 @@ namespace DCL.Helpers
             {
                 yield return TakeSnapshot(testImagesPath, snapshotName, camera, snapshotsWidth, snapshotsHeight);
             }
-        }
-
-        /// <summary>
-        /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
-        /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
-        /// </summary>
-        /// <param name="snapshotName">name used for saving the visual test file</param>
-        /// <param name="shotPosition">camera will be placed here.</param>
-        /// <param name="shotTarget">camera will point towards here.</param>
-        public static IEnumerator TakeSnapshotOrTest(string snapshotName, Vector3? shotPosition = null, Vector3? shotTarget = null)
-        {
-            yield return TakeSnapshot(snapshotName, VisualTestController.i.camera, shotPosition, shotTarget);
-
-            TestSnapshot(baselineImagesPath + snapshotName, testImagesPath + snapshotName, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY);
         }
 
         public static bool TestSnapshot(string baselineImagePathWithFilename, string testImagePathWithFilename, float ratio, bool assert = true)
@@ -124,29 +86,19 @@ namespace DCL.Helpers
                 File.Delete(finalPath);
 
                 // Just in case, wait until the file is deleted
-                yield return new DCL.WaitUntil(() => { return !File.Exists(finalPath); }, 10f);
+                yield return new WaitUntil(() => { return !File.Exists(finalPath); });
             }
 
             // We should only read the screen buffer after rendering is complete
             yield return null;
 
-            RenderTexture renderTexture = new RenderTexture(width, height, 32, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.sRGB);
+            RenderTexture renderTexture = new RenderTexture(width, height, 24);
             camera.targetTexture = renderTexture;
             camera.Render();
 
             RenderTexture.active = renderTexture;
-            Texture2D currentSnapshot = new Texture2D(width, height, TextureFormat.RGBAFloat, false);
+            Texture2D currentSnapshot = new Texture2D(width, height, TextureFormat.RGB24, false);
             currentSnapshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-
-            // Apply Gamma color space
-            var pixels = currentSnapshot.GetPixels();
-            for (int index = 0; index < pixels.Length; index++)
-            {
-                pixels[index] = new Color( Mathf.LinearToGammaSpace(pixels[index].r), Mathf.LinearToGammaSpace(pixels[index].g), Mathf.LinearToGammaSpace(pixels[index].b));
-            }
-
-            currentSnapshot.SetPixels(pixels);
-
             currentSnapshot.Apply();
 
             yield return null;
@@ -160,7 +112,7 @@ namespace DCL.Helpers
             File.WriteAllBytes(finalPath, bytes);
 
             // Just in case, wait until the file is created
-            yield return new DCL.WaitUntil(() => { return File.Exists(finalPath); }, 10f);
+            yield return new WaitUntil(() => { return File.Exists(finalPath); });
 
             RenderTexture.active = null;
             renderTexture.Release();
@@ -226,7 +178,7 @@ namespace DCL.Helpers
             for (int i = 0; i < testImagePixels.Length; i++)
             {
                 if (!IsSamePixel(testImagePixels[i], baselineImagePixels[i],
-                    TestSettings.VISUAL_TESTS_PIXELS_CHECK_THRESHOLD))
+                        TestSettings.VISUAL_TESTS_PIXELS_CHECK_THRESHOLD))
                 {
                     differentPixels++;
                     diffImagePixels[i] = diffColor;
@@ -284,25 +236,6 @@ namespace DCL.Helpers
             return readableText;
         }
 
-        public static Texture2D ResizeTexture(Texture2D source, int newWidth, int newHeight)
-        {
-            source.filterMode = FilterMode.Point;
-
-            RenderTexture renderTex = RenderTexture.GetTemporary(newWidth, newHeight);
-
-            renderTex.filterMode = FilterMode.Point;
-            RenderTexture.active = renderTex;
-            Graphics.Blit(source, renderTex);
-
-            Texture2D newTex = new Texture2D(newWidth, newHeight);
-            newTex.ReadPixels(new Rect(0, 0, newWidth, newWidth), 0, 0);
-            newTex.Apply();
-
-            RenderTexture.active = null;
-
-            return newTex;
-        }
-
         public static bool IsSamePixel(Color32 pixelA, Color32 pixelB, float checkThreshold)
         {
             return (pixelA.r > pixelB.r - checkThreshold && pixelA.r < pixelB.r + checkThreshold) &&
@@ -324,32 +257,5 @@ namespace DCL.Helpers
         }
 
         public static void RepositionVisualTestsCamera(Camera camera, Vector3? position = null, Vector3? target = null) { RepositionVisualTestsCamera(camera.transform, position, target); }
-
-        public static void SetSSAOActive(bool active)
-        {
-            var urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
-
-            ScriptableRenderer forwardRenderer = urpAsset.GetRenderer(0);
-            FieldInfo featuresField = typeof(ScriptableRenderer).GetField("m_RendererFeatures", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            IList features = featuresField.GetValue(forwardRenderer) as IList;
-            ScriptableRendererFeature ssaoFeature = features[0] as ScriptableRendererFeature;
-
-            if (!active)
-            {
-                ssaoFeature.SetActive(false);
-                return;
-            }
-
-            FieldInfo settingsField = ssaoFeature.GetType().GetField("m_Settings", BindingFlags.NonPublic | BindingFlags.Instance);
-            object settings = settingsField.GetValue(ssaoFeature);
-
-            FieldInfo sourceField = settings.GetType().GetField("Source", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo downsampleField = settings.GetType().GetField("Downsample", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            ssaoFeature.SetActive(true);
-            sourceField.SetValue(settings, 1);
-            downsampleField.SetValue(settings, false);
-        }
     }
 }

@@ -166,7 +166,7 @@ namespace DCL.Controllers
             isReleased = true;
         }
 
-        public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData.ToString(); }
+        public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData; }
 
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
@@ -252,10 +252,10 @@ namespace DCL.Controllers
             var newEntity = new DecentralandEntity();
             newEntity.entityId = id;
 
-            Environment.i.world.sceneController.EnsureEntityPool();
+            PoolManagerFactory.EnsureEntityPool(false);
 
             // As we know that the pool already exists, we just get one gameobject from it
-            PoolableObject po = PoolManager.i.Get(SceneController.EMPTY_GO_POOL_NAME);
+            PoolableObject po = PoolManager.i.Get(PoolManagerFactory.EMPTY_GO_POOL_NAME);
 
             newEntity.meshesInfo.innerGameObject = po.gameObject;
             newEntity.gameObject = po.gameObject;
@@ -382,46 +382,50 @@ namespace DCL.Controllers
             if (me == null)
                 return;
 
-            if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+            Environment.i.platform.cullingController.MarkDirty();
+            Environment.i.platform.physicsSyncController.MarkDirty();
+
+            if ( DCLCharacterController.i != null )
             {
-                // In this case, the entity will attached to the first person camera
-                // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
-                me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
-                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
-            }
-            else if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
-            {
-                // In this case, the entity will be attached to the avatar
-                // It will simply rotate with the avatar, regardless of where the camera is pointing
-                me.SetParent(DCLCharacterController.i.avatarReference);
-                Environment.i.world.sceneBoundsChecker.AddPersistent(me);
-            }
-            else
-            {
+                if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+                {
+                    // In this case, the entity will attached to the first person camera
+                    // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
+                    me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
+                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                    return;
+                }
+
+                if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+                {
+                    // In this case, the entity will be attached to the avatar
+                    // It will simply rotate with the avatar, regardless of where the camera is pointing
+                    me.SetParent(DCLCharacterController.i.avatarReference);
+                    Environment.i.world.sceneBoundsChecker.AddPersistent(me);
+                    return;
+                }
+
                 if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
                 {
                     Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(me);
                 }
-
-                if (parentId == "0")
-                {
-                    // The entity will be child of the scene directly
-                    me.SetParent(null);
-                    me.gameObject.transform.SetParent(gameObject.transform, false);
-                }
-                else
-                {
-                    IDCLEntity myParent = GetEntityForUpdate(parentId);
-
-                    if (myParent != null)
-                    {
-                        me.SetParent(myParent);
-                    }
-                }
             }
 
-            Environment.i.platform.cullingController.MarkDirty();
-            Environment.i.platform.physicsSyncController.MarkDirty();
+            if (parentId == "0")
+            {
+                // The entity will be child of the scene directly
+                me.SetParent(null);
+                me.gameObject.transform.SetParent(gameObject.transform, false);
+            }
+            else
+            {
+                IDCLEntity myParent = GetEntityForUpdate(parentId);
+
+                if (myParent != null)
+                {
+                    me.SetParent(myParent);
+                }
+            }
         }
 
         /**

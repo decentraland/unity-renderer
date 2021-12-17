@@ -1,6 +1,8 @@
 using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Helpers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -14,13 +16,14 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
     private UserProfileModel ownProfileModel;
     private UserProfileModel testProfileModel;
 
-    protected override bool justSceneSetUp => true;
+    private UserProfileController userProfileController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        UserProfileController.i.ClearProfilesCatalog();
+        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
+        userProfileController.ClearProfilesCatalog();
 
         var ownProfile = UserProfile.GetOwnUserProfile();
 
@@ -32,11 +35,11 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
         testProfileModel = new UserProfileModel();
         testProfileModel.userId = "my-user-id-2";
         testProfileModel.name = "TEST_USER";
-        UserProfileController.i.AddUserProfileToCatalog(testProfileModel);
+        userProfileController.AddUserProfileToCatalog(testProfileModel);
 
         //NOTE(Brian): This profile is added by the LoadProfile message in the normal flow.
         //             Adding this here because its used by the chat flow in ChatMessageToChatEntry.
-        UserProfileController.i.AddUserProfileToCatalog(ownProfileModel);
+        userProfileController.AddUserProfileToCatalog(ownProfileModel);
 
         controller = new WorldChatWindowHUDController();
         chatController = new ChatController_Mock();
@@ -51,6 +54,7 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        Object.Destroy(userProfileController.gameObject);
         controller.Dispose();
         yield return base.TearDown();
     }
@@ -193,7 +197,7 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
             name = "testUserName",
         };
 
-        UserProfileController.i.AddUserProfileToCatalog(model);
+        userProfileController.AddUserProfileToCatalog(model);
 
         var msg = new ChatMessage()
         {
@@ -216,7 +220,5 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual($"/w {model.name} ", controller.view.chatHudView.inputField.text);
 
         yield return null;
-
-        yield break;
     }
 }

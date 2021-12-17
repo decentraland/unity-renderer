@@ -1,6 +1,9 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
+using DCL.Camera;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -8,7 +11,7 @@ namespace CameraController_Test
 {
     public class CameraControllerShould : IntegrationTestSuite_Legacy
     {
-        protected override bool enableSceneIntegrityChecker => false;
+        private CameraController cameraController => SceneReferences.i.cameraController;
 
         [Test]
         public void ReactToCameraChangeAction()
@@ -59,7 +62,7 @@ namespace CameraController_Test
         [UnityTest]
         public IEnumerator ActivateAndDeactivateWithKernelRenderingToggleEvents()
         {
-            RenderingController renderingController = GameObject.FindObjectOfType<RenderingController>();
+            RenderingController renderingController = TestUtils.CreateComponentWithGameObject<RenderingController>("RenderingController");
             renderingController.DeactivateRendering();
             Assert.IsFalse(cameraController.camera.enabled);
 
@@ -68,6 +71,8 @@ namespace CameraController_Test
             renderingController.renderingActivatedAckLock.RemoveAllLocks();
             renderingController.ActivateRendering();
             Assert.IsTrue(cameraController.camera.enabled);
+
+            Object.Destroy(renderingController.gameObject);
         }
     }
 }

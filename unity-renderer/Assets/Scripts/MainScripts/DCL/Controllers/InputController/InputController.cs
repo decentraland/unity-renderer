@@ -644,6 +644,9 @@ public static class InputProcessor
 
     public static bool FocusIsInInputField()
     {
+        if (EventSystem.current == null)
+            return false;
+
         if (EventSystem.current.currentSelectedGameObject != null &&
             (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null ||
              EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null))

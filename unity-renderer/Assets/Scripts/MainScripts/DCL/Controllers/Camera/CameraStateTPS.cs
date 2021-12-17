@@ -44,7 +44,7 @@ namespace DCL.Camera
 
         public CameraDampOnSprint cameraDampOnSprint;
 
-        public override void Init(UnityEngine.Camera camera)
+        public override void Initialize(UnityEngine.Camera camera)
         {
             freeLookTopRig = defaultVirtualCameraAsFreeLook.GetRig(0).GetCinemachineComponent<CinemachineTransposer>();
             freeLookTopRigOriginalBodyDamping = new Vector3(freeLookTopRig.m_XDamping, freeLookTopRig.m_YDamping, freeLookTopRig.m_ZDamping);
@@ -57,10 +57,19 @@ namespace DCL.Camera
             cameraDampOnGroundType = new CameraDampOnGroundType(cameraDampOnGroundTypeSettings, cameraTargetProbe);
             cameraFreefall = new CameraFreefall(cameraFreefallSettings, defaultVirtualCameraAsFreeLook);
 
-            base.Init(camera);
+            base.Initialize(camera);
         }
 
-        private void OnEnable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera; }
+        public override void Cleanup()
+        {
+            if (cameraTargetProbe != null)
+                Destroy(cameraTargetProbe.gameObject);
+        }
+
+        private void OnEnable()
+        {
+            CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera;
+        }
 
         private void OnDisable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera; }
 
@@ -173,13 +182,14 @@ namespace DCL.Camera
                 var dirToLook = (cameraTarget - newPos);
                 eulerDir = Quaternion.LookRotation(dirToLook).eulerAngles;
             }
-            
+
             defaultVirtualCameraAsFreeLook.m_XAxis.Value = eulerDir.y;
-            
+
             //value range 0 to 1, being 0 the bottom orbit and 1 the top orbit
             var yValue = Mathf.InverseLerp(-90, 90, eulerDir.x);
             defaultVirtualCameraAsFreeLook.m_YAxis.Value = yValue;
         }
+
         public override void OnBlock(bool blocked)
         {
             base.OnBlock(blocked);

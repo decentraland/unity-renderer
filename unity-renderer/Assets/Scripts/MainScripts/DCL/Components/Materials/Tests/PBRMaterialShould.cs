@@ -4,16 +4,20 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Linq;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 public class PBRMaterialShould : IntegrationTestSuite_Legacy
 {
+    private ParcelScene scene;
+
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
         Environment.i.world.sceneBoundsChecker.Stop();
     }
 

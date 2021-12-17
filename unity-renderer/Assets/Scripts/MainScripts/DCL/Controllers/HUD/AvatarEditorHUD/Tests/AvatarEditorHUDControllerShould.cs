@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -16,12 +17,11 @@ namespace AvatarEditorHUD_Tests
 
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
+        private CatalogController catalogController;
         private BaseDictionary<string, WearableItem> catalog;
         private ColorList skinColorList;
         private ColorList hairColorList;
         private ColorList eyeColorList;
-
-        protected override bool justSceneSetUp => true;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -37,6 +37,7 @@ namespace AvatarEditorHUD_Tests
                 userProfile = ScriptableObject.CreateInstance<UserProfile>();
             }
 
+            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
@@ -58,6 +59,7 @@ namespace AvatarEditorHUD_Tests
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
+            Object.Destroy(catalogController.gameObject);
             controller.Dispose();
             yield return base.TearDown();
         }
