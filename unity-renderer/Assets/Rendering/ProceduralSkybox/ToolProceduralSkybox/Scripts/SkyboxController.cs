@@ -66,6 +66,8 @@ namespace DCL.Skybox
                 directionalLight.type = LightType.Directional;
             }
 
+            CommonScriptableObjects.proceduralSkyboxDisabled.Set(false);
+
             GetOrCreateEnvironmentProbe();
 
             // Get current time from the server
@@ -463,6 +465,9 @@ namespace DCL.Skybox
 
         public void Dispose()
         {
+
+            CommonScriptableObjects.proceduralSkyboxDisabled.Set(true);
+
             // set skyboxConfig to false
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
