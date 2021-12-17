@@ -42,7 +42,6 @@ namespace DCL
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
-            avatarRenderer.OnChanged += OnAvatarChanged;
             
             if (avatarReporterController == null)
             {
@@ -71,7 +70,6 @@ namespace DCL
                 poolableObject.RemoveFromPool();
 
             avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
-            avatarRenderer.OnChanged -= OnAvatarChanged;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -180,6 +178,7 @@ namespace DCL
             }
             
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+            anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
@@ -262,10 +261,5 @@ namespace DCL
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
-        
-        private void OnAvatarChanged()
-        {
-            anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
-        }
     }
 }

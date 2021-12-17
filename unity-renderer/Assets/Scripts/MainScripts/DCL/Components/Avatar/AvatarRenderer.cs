@@ -44,7 +44,6 @@ namespace DCL
         public event Action<float> OnImpostorAlphaValueUpdate;
         public event Action<float> OnAvatarAlphaValueUpdate;
         public event Action<Exception> OnFailEvent;
-        public event Action OnChanged;
 
         internal BodyShapeController bodyShapeController;
         internal Dictionary<WearableItem, WearableController> wearableControllers = new Dictionary<WearableItem, WearableController>();
@@ -110,7 +109,6 @@ namespace DCL
             // TODO(Brian): Find a better approach than overloading callbacks like this. This code is not readable.
             void onSuccessWrapper()
             {
-                OnChanged?.Invoke();
                 onSuccess?.Invoke();
                 OnSuccessEvent -= onSuccessWrapper;
             }
