@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using DCL.Camera;
 using DCL.Controllers;
 using UnityEngine;
@@ -29,29 +30,40 @@ namespace Tests
             return result;
         }
 
-        protected override WorldRuntimeContext CreateRuntimeContext()
+        protected override ServiceLocator InitializeServiceLocator()
         {
-            return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
-            (
-                new PointerEventsController(),
-                new RuntimeComponentFactory(),
-                new WorldState()
-            );
+            ServiceLocator result = new ServiceLocator();
+            result.Register<IPointerEventsController>( () => new PointerEventsController());
+            result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
+            result.Register<IWorldState>( () => new WorldState());
+            result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
+            result.Register<IWebRequestController>( WebRequestController.Create );
+            return result;
         }
 
-        protected override PlatformContext CreatePlatformContext()
-        {
-            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
-            (
-                new UpdateEventHandler(),
-                WebRequestController.Create()
-            );
-        }
-
-        protected override MessagingContext CreateMessagingContext()
-        {
-            return DCL.Tests.MessagingContextFactory.CreateMocked();
-        }
+        // protected override WorldRuntimeContext CreateRuntimeContext()
+        // {
+        //     return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
+        //     (
+        //         new PointerEventsController(),
+        //         new RuntimeComponentFactory(),
+        //         new WorldState()
+        //     );
+        // }
+        //
+        // protected override PlatformContext CreatePlatformContext()
+        // {
+        //     return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
+        //     (
+        //         new UpdateEventHandler(),
+        //         WebRequestController.Create()
+        //     );
+        // }
+        //
+        // protected override MessagingContext CreateMessagingContext()
+        // {
+        //     return DCL.Tests.MessagingContextFactory.CreateMocked();
+        // }
 
         [UnitySetUp]
         protected override IEnumerator SetUp()

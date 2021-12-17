@@ -26,6 +26,11 @@ namespace DCL
 
         public void Initialize()
         {
+            sceneSortDirty = true;
+            positionDirty = true;
+            lastSortFrame = 0;
+            enabled = true;
+
             loadingFeedbackController = new LoadingFeedbackController();
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
@@ -54,29 +59,6 @@ namespace DCL
             {
                 // Warmup some shader variants
                 Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-            }
-        }
-
-        public SceneController ()
-        {
-            sceneSortDirty = true;
-            positionDirty = true;
-            lastSortFrame = 0;
-            enabled = true;
-        }
-
-        private void OnDebugModeSet(bool current, bool previous)
-        {
-            if (current == previous)
-                return;
-
-            if (current)
-            {
-                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
-            }
-            else
-            {
-                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
             }
         }
 

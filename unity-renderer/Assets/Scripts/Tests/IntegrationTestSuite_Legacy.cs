@@ -33,7 +33,7 @@ public class IntegrationTestSuite_Legacy
 
         RenderProfileManifest.i.Initialize();
 
-        Environment.Setup(ServiceLocatorFactory.CreateDefault());
+        Environment.Setup(InitializeServiceLocator());
 
         SetUp_SceneController();
 
@@ -44,7 +44,12 @@ public class IntegrationTestSuite_Legacy
         AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
         yield break;
     }
-   
+
+    protected virtual ServiceLocator InitializeServiceLocator()
+    {
+        return ServiceLocatorFactory.CreateDefault();
+    }
+
 
     protected virtual List<GameObject> SetUp_LegacySystems()
     {

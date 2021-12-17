@@ -119,7 +119,7 @@ namespace DCL
             DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             
             DataStore.i.common.isWorldBeingDestroyed.Set(true);
-            
+
             pluginSystem?.Dispose();
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -136,7 +136,6 @@ namespace DCL
             gameObject.AddComponent<MinimapMetadataController>();
             gameObject.AddComponent<ChatController>();
             gameObject.AddComponent<FriendsController>();
-            gameObject.AddComponent<LoadingFeedbackController>();
             gameObject.AddComponent<HotScenesController>();
             gameObject.AddComponent<GIFProcessingBridge>();
             gameObject.AddComponent<RenderProfileBridge>();
