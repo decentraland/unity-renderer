@@ -312,6 +312,9 @@ public class ExploreV2MenuComponentControllerTests
     [TestCase(5)]
     public void RaiseCurrentSectionIndexChangedCorrectly(int sectionIndex)
     {
+        // Arrange
+        DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
+
         // Act
         exploreV2MenuController.CurrentSectionIndexChanged(sectionIndex, 0);
 

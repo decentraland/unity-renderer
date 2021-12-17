@@ -175,6 +175,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void CurrentSectionIndexChanged(int current, int previous)
     {
+        if (DataStore.i.exploreV2.isInShowAnimationTransiton.Get())
+            return;
+
         if (Enum.IsDefined(typeof(ExploreSection), current))
         {
             if (!view.IsSectionActive((ExploreSection)current))
