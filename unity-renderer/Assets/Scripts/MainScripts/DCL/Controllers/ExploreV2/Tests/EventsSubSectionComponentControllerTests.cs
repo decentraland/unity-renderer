@@ -1,3 +1,4 @@
+using DCL;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -75,6 +76,7 @@ public class EventsSubSectionComponentControllerTests
         // Arrange
         eventsSubSectionComponentController.currentUpcomingEventsShowed = -1;
         eventsSubSectionComponentController.reloadEvents = true;
+        DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
 
         // Act
         eventsSubSectionComponentController.RequestAllEvents();
@@ -106,7 +108,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.OnRequestedEventsUpdated();
@@ -128,7 +130,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadFeaturedEvents();
@@ -144,7 +146,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadTrendingEvents();
@@ -159,7 +161,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadUpcomingEvents();
@@ -187,7 +189,7 @@ public class EventsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = CreateTestEventsFromApi(numberOfEvents);
+        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
         eventsSubSectionComponentController.LoadGoingEvents();
@@ -195,33 +197,6 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
         eventsSubSectionComponentView.Received().SetGoingEventsAsLoading(false);
-    }
-
-    [Test]
-    public void CreateEventCardModelFromAPIEventCorrectly()
-    {
-        // Arrange
-        EventFromAPIModel testEventFromAPI = CreateTestEvent("1");
-
-        // Act
-        EventCardComponentModel eventCardModel = eventsSubSectionComponentController.CreateEventCardModelFromAPIEvent(testEventFromAPI);
-
-        // Assert
-        Assert.AreEqual(testEventFromAPI.id, eventCardModel.eventId);
-        Assert.AreEqual(testEventFromAPI.image, eventCardModel.eventPictureUri);
-        Assert.AreEqual(testEventFromAPI.live, eventCardModel.isLive);
-        Assert.AreEqual(EventsSubSectionComponentController.LIVE_TAG_TEXT, eventCardModel.liveTagText);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventDate(testEventFromAPI), eventCardModel.eventDateText);
-        Assert.AreEqual(testEventFromAPI.name, eventCardModel.eventName);
-        Assert.AreEqual(testEventFromAPI.description, eventCardModel.eventDescription);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventStartDate(testEventFromAPI), eventCardModel.eventStartedIn);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventStartDateFromTo(testEventFromAPI), eventCardModel.eventStartsInFromTo);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventOrganized(testEventFromAPI), eventCardModel.eventOrganizer);
-        Assert.AreEqual(eventsSubSectionComponentController.FormatEventPlace(testEventFromAPI), eventCardModel.eventPlace);
-        Assert.AreEqual(testEventFromAPI.total_attendees, eventCardModel.subscribedUsers);
-        Assert.AreEqual(false, eventCardModel.isSubscribed);
-        Assert.AreEqual(new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]), eventCardModel.coords);
-        Assert.AreEqual(testEventFromAPI, eventCardModel.eventFromAPIInfo);
     }
 
     [Test]
@@ -244,7 +219,7 @@ public class EventsSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         eventsSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        EventFromAPIModel testEventFromAPI = CreateTestEvent("1");
+        EventFromAPIModel testEventFromAPI = ExploreEventsTestHelpers.CreateTestEvent("1");
 
         // Act
         eventsSubSectionComponentController.JumpInToEvent(testEventFromAPI);
@@ -253,67 +228,5 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView.Received().HideEventModal();
         Assert.IsTrue(exploreClosed);
         exploreV2Analytics.Received().SendEventTeleport(testEventFromAPI.id, testEventFromAPI.name, new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]));
-    }
-
-    // TODO (Santi): Uncomment when the RegisterAttendEvent POST is available.
-    //[Test]
-    //public void SubscribeToEventCorrectly()
-    //{
-    //    // Arrange
-    //    string testEventId = "1";
-
-    //    // Act
-    //    eventsSubSectionComponentController.SubscribeToEvent(testEventId);
-
-    //    // Assert
-    //    eventsAPIController.Received().RegisterAttendEvent(testEventId, true, Arg.Any<Action>(), Arg.Any<Action<string>>());
-    //}
-
-    // TODO (Santi): Uncomment when the RegisterAttendEvent POST is available.
-    //[Test]
-    //public void UnsubscribeToEventCorrectly()
-    //{
-    //    // Arrange
-    //    string testEventId = "1";
-
-    //    // Act
-    //    eventsSubSectionComponentController.UnsubscribeToEvent(testEventId);
-
-    //    // Assert
-    //    eventsAPIController.Received().RegisterAttendEvent(testEventId, false, Arg.Any<Action>(), Arg.Any<Action<string>>());
-    //}
-
-    private List<EventFromAPIModel> CreateTestEventsFromApi(int numberOfEvents)
-    {
-        List<EventFromAPIModel> testEvents = new List<EventFromAPIModel>();
-
-        for (int i = 0; i < numberOfEvents; i++)
-        {
-            testEvents.Add(CreateTestEvent((i + 1).ToString()));
-        }
-
-        return testEvents;
-    }
-
-    private EventFromAPIModel CreateTestEvent(string id)
-    {
-        return new EventFromAPIModel
-        {
-            id = id,
-            attending = false,
-            coordinates = new int[] { 10, 10 },
-            description = "Test Description",
-            finish_at = "2021-11-30T11:11:00.000Z",
-            highlighted = false,
-            image = "Test Uri",
-            live = true,
-            name = "Test Name",
-            next_start_at = "2021-09-30T11:11:00.000Z",
-            realm = null,
-            scene_name = "Test Scene Name",
-            total_attendees = 100,
-            trending = false,
-            user_name = "Test User Name"
-        };
     }
 }

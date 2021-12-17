@@ -9,11 +9,35 @@ namespace DCL.Tutorial
     public class TutorialStep_TutorialCompleted : TutorialStep
     {
         [SerializeField] AudioEvent audioEventSuccess;
+        [SerializeField] ButtonComponentView okButton;
+        [SerializeField] GameObject modal;
+
+        internal bool okPressed = false;
+
+        public override void OnStepStart()
+        {
+            base.OnStepStart();
+
+            modal.SetActive(true);
+
+            okButton.onClick.AddListener(() =>
+            {
+                modal.SetActive(false);
+                stepAnimator.SetTrigger("OkPressed");
+                okPressed = true;
+            });
+        }
 
         public override IEnumerator OnStepExecute()
         {
+            yield return new WaitUntil(() => okPressed);
             audioEventSuccess.Play(true);
-            yield break;
+        }
+
+        public override void OnStepFinished()
+        {
+            base.OnStepFinished();
+            okButton.onClick.RemoveAllListeners();
         }
     }
 }

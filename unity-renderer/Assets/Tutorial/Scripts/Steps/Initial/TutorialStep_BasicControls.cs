@@ -31,7 +31,6 @@ namespace DCL.Tutorial
             tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
 
             tutorialController.hudController?.taskbarHud?.SetVisibility(false);
-            tutorialController.hudController?.profileHud?.SetBackpackButtonVisibility(false);
         }
 
         public override IEnumerator OnStepExecute()
@@ -45,7 +44,6 @@ namespace DCL.Tutorial
             base.OnStepFinished();
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
             tutorialController.hudController?.taskbarHud?.SetVisibility(true);
-            tutorialController.hudController?.profileHud?.SetBackpackButtonVisibility(true);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
 

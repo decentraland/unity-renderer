@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -87,6 +86,8 @@ namespace DCL.Builder
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
+            AudioScriptableObjects.buttonClick.Play(true);
+
             if (isOn)
                 return;
 
