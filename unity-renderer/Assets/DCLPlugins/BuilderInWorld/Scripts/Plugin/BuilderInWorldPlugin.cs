@@ -1,6 +1,5 @@
 using DCL;
 using DCL.Builder;
-using UnityEngine;
 
 public class BuilderInWorldPlugin : IPlugin
 {
@@ -77,32 +76,17 @@ public class BuilderInWorldPlugin : IPlugin
         cameraController.Initialize(context);
         publisher.Initialize();
 
-        if (HUDController.i != null)
-        {
-            if (HUDController.i.taskbarHud != null)
-                HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
-            else
-                HUDController.i.OnTaskbarCreation += TaskBarCreated;
-        }
-
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.OnGui, OnGUI);
-    }
 
-    private void TaskBarCreated()
-    {
-        HUDController.i.OnTaskbarCreation -= TaskBarCreated;
-        HUDController.i.taskbarHud.SetBuilderInWorldStatus(true);
+        DataStore.i.builderInWorld.isInitialized.Set(true);
     }
 
     public void Dispose()
     {
         if (DataStore.i.common.isWorldBeingDestroyed.Get())
             return;
-        
-        if (HUDController.i != null)
-            HUDController.i.OnTaskbarCreation -= TaskBarCreated;
 
         editor.Dispose();
         panelController.Dispose();

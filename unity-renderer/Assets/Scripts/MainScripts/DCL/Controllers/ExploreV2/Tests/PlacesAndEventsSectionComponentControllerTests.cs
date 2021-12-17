@@ -26,6 +26,7 @@ public class PlacesAndEventsSectionComponentControllerTests
         Assert.AreEqual(placesAndEventsSectionComponentView, placesAndEventsSectionComponentController.view);
         Assert.IsNotNull(placesAndEventsSectionComponentController.placesSubSectionComponentController);
         Assert.IsNotNull(placesAndEventsSectionComponentController.eventsSubSectionComponentController);
+        Assert.IsNotNull(placesAndEventsSectionComponentController.highlightsSubSectionComponentController);
     }
 
     [Test]
@@ -33,7 +34,7 @@ public class PlacesAndEventsSectionComponentControllerTests
     {
         // Arrange
         bool exploreClosed = false;
-        placesAndEventsSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
+        placesAndEventsSectionComponentController.OnCloseExploreV2 += (fromShortcut) => exploreClosed = true;
 
         // Act
         placesAndEventsSectionComponentController.RequestExploreV2Closing();
@@ -43,16 +44,24 @@ public class PlacesAndEventsSectionComponentControllerTests
     }
 
     [Test]
-    public void RaiseOnAnyActionExecutedInAnySubSectionCorrectly()
+    public void GoToEventsSubSectionCorrectly()
     {
-        // Arrange
-        bool anyActionExecuted = false;
-        placesAndEventsSectionComponentController.OnAnyActionExecuted += () => anyActionExecuted = true;
-
         // Act
-        placesAndEventsSectionComponentController.OnAnyActionExecutedInAnySubSection();
+        placesAndEventsSectionComponentController.GoToEventsSubSection();
 
         // Assert
-        Assert.IsTrue(anyActionExecuted);
+        placesAndEventsSectionComponentView.Received().GoToSubsection(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RaisePlacesAndEventsVisibleChangedCorrectly(bool isVisible)
+    {
+        // Act
+        placesAndEventsSectionComponentController.PlacesAndEventsVisibleChanged(isVisible, !isVisible);
+
+        // Arrange
+        placesAndEventsSectionComponentView.Received().SetActive(isVisible);
     }
 }

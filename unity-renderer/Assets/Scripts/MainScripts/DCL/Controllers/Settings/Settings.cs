@@ -98,7 +98,10 @@ namespace DCL.SettingsCommon
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
                 autoqualityOn = false,
                 namesOpacity = 0.5f,
-                profanityChatFiltering = true
+                profanityChatFiltering = true,
+                nightMode = false,
+                hideUI = false,
+                showAvatarNames = true
             };
         }
 

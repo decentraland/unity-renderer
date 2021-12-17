@@ -1,10 +1,9 @@
 using DCL;
-using UnityEngine;
-using DCL.Interface;
-using System.Collections;
-using System;
 using DCL.Helpers;
-using UnityEngine.Events;
+using DCL.Interface;
+using System;
+using System.Collections;
+using UnityEngine;
 using Environment = DCL.Environment;
 using WaitUntil = UnityEngine.WaitUntil;
 
@@ -33,7 +32,7 @@ public class ProfileHUDController : IHUD
     private Coroutine fetchManaIntervalRoutine = null;
     private Coroutine fetchPolygonManaIntervalRoutine = null;
 
-    public RectTransform backpackTooltipReference { get => view.backpackTooltipReference; }
+    public RectTransform tutorialTooltipReference { get => view.tutorialTooltipReference; }
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -48,13 +47,12 @@ public class ProfileHUDController : IHUD
         view.name = "_ProfileHUD";
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
+        DataStore.i.exploreV2.profileCardIsOpen.OnChange += SetAsFullScreenMenuMode;
 
-        SetBackpackButtonVisibility(false);
         view.connectedWalletSection.SetActive(false);
         view.nonConnectedWalletSection.SetActive(false);
         view.ActivateDescriptionEditionMode(false);
 
-        view.buttonBackpack.onClick.AddListener(OpenBackpackWindow);
         view.buttonLogOut.onClick.AddListener(WebInterface.LogOut);
         view.buttonSignUp.onClick.AddListener(WebInterface.RedirectToSignUp);
         view.buttonClaimName.onClick.AddListener(() => WebInterface.OpenURL(URL_CLAIM_NAME));
@@ -92,6 +90,9 @@ public class ProfileHUDController : IHUD
             KernelConfig.i.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
+
+        DataStore.i.exploreV2.isInitialized.OnChange += ExploreV2Changed;
+        ExploreV2Changed(DataStore.i.exploreV2.isInitialized.Get(), false);
     }
     protected virtual GameObject GetViewPrefab()
     {
@@ -146,8 +147,11 @@ public class ProfileHUDController : IHUD
         {
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
-        
+
         view.descriptionPreviewInput.onSubmit.RemoveListener(UpdateProfileDescription);
+        DataStore.i.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
+
+        DataStore.i.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
     }
 
     void OnProfileUpdated(UserProfile profile) { view?.SetProfile(profile); }
@@ -183,37 +187,6 @@ public class ProfileHUDController : IHUD
     public void SetManaBalance(string balance) { view.manaCounterView?.SetBalance(balance); }
 
     public void SetPolygonManaBalance(double balance) { view.polygonManaCounterView.SetBalance(balance); }
-
-    /// <summary>
-    /// Configure an AvatarEditorHUDController for the Backpack button.
-    /// </summary>
-    /// <param name="controller">The avatar editor controller to asign.</param>
-    public void AddBackpackWindow(AvatarEditorHUDController controller)
-    {
-        if (controller == null)
-        {
-            Debug.LogWarning("AddBackpackWindow >>> Backpack window doesn't exist yet!");
-            return;
-        }
-
-        avatarEditorHud = controller;
-        SetBackpackButtonVisibility(true);
-    }
-
-    /// <summary>
-    /// Show/Hide the Backpack button.
-    /// </summary>
-    /// <param name="visible">True for showing the button.</param>
-    public void SetBackpackButtonVisibility(bool visible) { view?.SetBackpackButtonVisibility(avatarEditorHud != null && visible); }
-
-    private void OpenBackpackWindow()
-    {
-        if (avatarEditorHud == null)
-            return;
-
-        avatarEditorHud.SetVisibility(true);
-        HideProfileMenu();
-    }
 
     /// <summary>
     /// Close the Profile menu.
@@ -256,4 +229,14 @@ public class ProfileHUDController : IHUD
         view.ActivateDescriptionEditionMode(false);
         userProfileBridge.SaveDescription(description);
     }
+
+    private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)
+    {
+        view.SetCardAsFullScreenMenuMode(currentIsFullScreenMenuMode);
+
+        if (currentIsFullScreenMenuMode != CommonScriptableObjects.isProfileHUDOpen.Get())
+            view.ToggleMenu();
+    }
+
+    private void ExploreV2Changed(bool current, bool previous) { view.SetStartMenuButtonActive(current); }
 }

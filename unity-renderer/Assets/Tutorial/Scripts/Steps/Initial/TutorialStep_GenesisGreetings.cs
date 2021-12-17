@@ -42,7 +42,6 @@ namespace DCL.Tutorial
                 tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
 
                 tutorialController.hudController?.taskbarHud?.SetVisibility(false);
-                tutorialController.hudController?.profileHud?.SetBackpackButtonVisibility(false);
 
                 if (Environment.i != null && Environment.i.world != null)
                 {

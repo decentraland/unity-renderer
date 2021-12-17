@@ -16,5 +16,8 @@ namespace DCL.SettingsCommon
         public float maxNonLODAvatars;
         public float namesOpacity;
         public bool profanityChatFiltering;
+        public bool nightMode;
+        public bool hideUI;
+        public bool showAvatarNames;
     }
 }

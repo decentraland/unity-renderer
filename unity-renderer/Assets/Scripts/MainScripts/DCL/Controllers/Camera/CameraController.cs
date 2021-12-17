@@ -85,7 +85,7 @@ namespace DCL.Camera
             if (visibleState == prevVisibleState)
                 return;
 
-            camera.enabled = !visibleState;
+            camera.enabled = !visibleState && CommonScriptableObjects.rendererState.Get();
         }
 
         public bool TryGetCameraStateByType<T>(out CameraStateBase searchedCameraState)
@@ -102,7 +102,7 @@ namespace DCL.Camera
             return false;
         }
 
-        private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled; }
+        private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled && !CommonScriptableObjects.isFullscreenHUDOpen; }
 
         private void CameraBlocked_OnChange(bool current, bool previous)
         {
