@@ -89,6 +89,7 @@ namespace DCL.Skybox
             // Register UI related events
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
+            DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
         }
 
         private void FixedTime_OnChange(float current, float previous)
@@ -96,6 +97,11 @@ namespace DCL.Skybox
             if (!DataStore.i.skyboxConfig.useDynamicSkybox.Get())
             {
                 PauseTime(true, current);
+            }
+
+            if (runtimeReflectionObj != null)
+            {
+                runtimeReflectionObj.FixedSkyboxTimeChanged();
             }
         }
 
@@ -109,6 +115,11 @@ namespace DCL.Skybox
             else
             {
                 PauseTime(true, DataStore.i.skyboxConfig.fixedTime.Get());
+            }
+
+            if (runtimeReflectionObj != null)
+            {
+                runtimeReflectionObj.SkyboxModeChanged(current);
             }
         }
 
@@ -151,7 +162,6 @@ namespace DCL.Skybox
 
             // Update resolution
             runtimeReflectionObj.UpdateResolution(DataStore.i.skyboxConfig.reflectionResolution.Get());
-            DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
 
             // Assign as seconds
             runtimeReflectionObj.updateAfter = reflectionUpdateTime * 60;

@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   realtimeProbe: {fileID: 6092104304780022208}
-  customProbe: {fileID: 0}
   updateAfter: 5
   followTransform: {fileID: 0}
+  resolution: 256
 --- !u!215 &6092104304780022208
 ReflectionProbe:
   m_ObjectHideFlags: 0
@@ -60,7 +60,7 @@ ReflectionProbe:
   m_Type: 0
   m_Mode: 1
   m_RefreshMode: 0
-  m_TimeSlicingMode: 0
+  m_TimeSlicingMode: 1
   m_Resolution: 256
   m_UpdateFrequency: 0
   m_BoxSize: {x: 100, y: 100, z: 100}
