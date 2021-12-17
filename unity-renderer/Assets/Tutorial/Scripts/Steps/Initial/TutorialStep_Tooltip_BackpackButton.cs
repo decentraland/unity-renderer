@@ -39,7 +39,8 @@ namespace DCL.Tutorial
         {
             base.SetTooltipPosition();
 
-            tooltipTransform.position = DataStore.i.exploreV2.profileCardTooltipReference.Get().position;
+            if (DataStore.i.exploreV2.profileCardTooltipReference.Get() != null)
+                tooltipTransform.position = DataStore.i.exploreV2.profileCardTooltipReference.Get().position;
         }
 
         internal void ProfileHud_OnOpen()

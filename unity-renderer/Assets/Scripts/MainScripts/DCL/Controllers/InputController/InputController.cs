@@ -229,7 +229,7 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleStartMenu:
                     if (allUIHidden)
                         break;
-                    InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.TogglePlacesAndEventsHud:
                     InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
