@@ -644,6 +644,7 @@ public class AvatarEditorHUDController : IHUD
         if (DataStore.i.common.isSignUpFlow.Get())
             DataStore.i.HUDs.signupVisible.Set(true);
 
+        avatarIsDirty = false;
         SetVisibility(false);
     }
 
