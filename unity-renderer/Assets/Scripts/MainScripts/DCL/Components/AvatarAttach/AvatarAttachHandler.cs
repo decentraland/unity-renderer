@@ -44,8 +44,6 @@ namespace DCL.Components
                 return;
             }
 
-            sceneBoundsChecker?.AddEntityToBeChecked(entity);
-
             if (prevModel.avatarId != model.avatarId)
             {
                 Detach();
@@ -113,6 +111,7 @@ namespace DCL.Components
 
                 entity.gameObject.transform.position = anchorPoint.position;
                 entity.gameObject.transform.rotation = anchorPoint.rotation;
+                sceneBoundsChecker?.AddEntityToBeChecked(entity);
 
                 yield return null;
             }
