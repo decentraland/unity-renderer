@@ -48,6 +48,10 @@ MonoBehaviour:
   updateAfter: 5
   followTransform: {fileID: 0}
   resolution: 256
+  fixedSkybox: 0
+  fixedSkyboxBaked: 0
+  fixedSkyboxUpdateTime: 3
+  fixedSkyboxTimer: 0
 --- !u!215 &6092104304780022208
 ReflectionProbe:
   m_ObjectHideFlags: 0
@@ -75,7 +79,7 @@ ReflectionProbe:
     m_Bits: 0
   m_IntensityMultiplier: 1
   m_BlendDistance: 1
-  m_HDR: 0
+  m_HDR: 1
   m_BoxProjection: 0
   m_RenderDynamicObjects: 0
   m_UseOcclusionCulling: 0
