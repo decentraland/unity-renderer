@@ -157,14 +157,23 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action<ExploreSection> OnSectionOpen;
     public event Action OnAfterShowAnimation;
 
+    internal RectTransform profileCardRectTranform;
+
     public override void Start()
     {
+        profileCardRectTranform = profileCard.GetComponent<RectTransform>();
+
         DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
         CreateSectionSelectorMappings();
         ConfigureCloseButton();
 
         OnInitialized?.Invoke();
+    }
+
+    public override void Update()
+    {
+        CheckIfProfileCardShouldBeClosed();
     }
 
     public override void RefreshControl()
@@ -342,6 +351,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { OnCloseButtonPressed?.Invoke(true); }
+
+    internal void CheckIfProfileCardShouldBeClosed()
+    {
+        if (!DataStore.i.exploreV2.profileCardIsOpen.Get())
+            return;
+
+        if (Input.GetMouseButton(0) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTranform, Input.mousePosition, Camera.main) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.expandedMenu, Input.mousePosition, Camera.main))
+        {
+            DataStore.i.exploreV2.profileCardIsOpen.Set(false);
+        }
+    }
 
     internal static ExploreV2MenuComponentView Create()
     {

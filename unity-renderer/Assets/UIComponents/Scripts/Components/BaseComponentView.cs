@@ -37,6 +37,11 @@ public interface IBaseComponentView : IPointerEnterHandler, IPointerExitHandler,
     void Start();
 
     /// <summary>
+    /// It is called once per frame.
+    /// </summary>
+    void Update();
+
+    /// <summary>
     /// Updates the UI component with the current model configuration.
     /// </summary>
     void RefreshControl();
@@ -98,6 +103,8 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     public virtual void OnEnable() { StartCoroutine(RaiseOnScreenSizeChangedAfterDelay()); }
 
     public virtual void Start() { }
+
+    public virtual void Update() { }
 
     public abstract void RefreshControl();
 

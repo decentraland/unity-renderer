@@ -130,6 +130,8 @@ public class ProfileHUDView : MonoBehaviour
     [SerializeField]
     internal GameObject descriptionContainer;
 
+    public RectTransform expandedMenu => mainRootLayout;
+
     private InputAction_Trigger.Triggered closeActionDelegate;
 
     private Coroutine copyToastRoutine = null;
