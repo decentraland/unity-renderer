@@ -131,6 +131,20 @@ public class WearableItem
 
     public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
 
+    public bool IsSmart()
+    {
+        if (data?.representations == null) return false;
+        
+        for (var i = 0; i < data.representations.Length; i++)
+        {
+            var representation = data.representations[i];
+            var containsGameJs = representation.contents.Any(pair => pair.key.EndsWith("game.js"));
+            if (containsGameJs) return true;
+        }
+        
+        return false;
+    }
+
     public string GetName(string langCode = "en")
     {
         if (!cachedI18n.ContainsKey(langCode))
