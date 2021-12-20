@@ -99,8 +99,9 @@ namespace DCL.SettingsCommon
                 autoqualityOn = false,
                 namesOpacity = 0.5f,
                 profanityChatFiltering = true,
-                dynamicProceduralSkbox = true,
-                skyboxTime = 0.0f,
+                nightMode = false,
+                hideUI = false,
+                showAvatarNames = true
             };
         }
 

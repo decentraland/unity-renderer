@@ -25,7 +25,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
         freeCameraMovement.StopDetectingMovement();
 
         //Act
-        freeCameraMovement.StartDectectingMovement();
+        freeCameraMovement.StartDetectingMovement();
 
         //Assert
         Assert.IsTrue(freeCameraMovement.isDetectingMovement);
@@ -36,7 +36,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
     public void StopDectectingMovement()
     {
         //Arrange
-        freeCameraMovement.StartDectectingMovement();
+        freeCameraMovement.StartDetectingMovement();
 
         //Act
         freeCameraMovement.StopDetectingMovement();
@@ -207,7 +207,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
 
     protected override IEnumerator TearDown()
     {
-        GameObject.Destroy(mockedGameObject);
+        Object.Destroy(mockedGameObject);
         yield return base.TearDown();
     }
 }

@@ -1,16 +1,32 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 public class HotScenesControllerTests : IntegrationTestSuite_Legacy
 {
+    private HotScenesController hotScenesController;
+
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+        hotScenesController = TestUtils.CreateComponentWithGameObject<HotScenesController>("HotScenesController");
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        UnityEngine.Object.Destroy(hotScenesController.gameObject);
+        yield return base.TearDown();
+    }
+
     [UnityTest]
     public IEnumerator HotScenesControllerShouldParseJsonCorrectly()
     {
-        var controller = HotScenesController.i;
+        var controller = hotScenesController;
 
         var hotSceneList = GetTestHotSceneList();
 
@@ -96,6 +112,7 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
 
         return hotSceneList;
     }
+
     void CheckListEquals(List<HotScenesController.HotSceneInfo> l1, List<HotScenesController.HotSceneInfo> l2)
     {
         Assert.IsTrue(l1.Count == l2.Count, "HotScenesLists length mismatch");

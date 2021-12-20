@@ -241,6 +241,12 @@ namespace Tests.QuestsTrackerHUD
         [SetUp]
         public void SetUp() { sectionEntry = Object.Instantiate(Resources.Load<GameObject>("QuestsTrackerSection")).GetComponent<QuestsTrackerSection>(); }
 
+        [TearDown]
+        public void TearDown()
+        {
+            Object.Destroy( sectionEntry.gameObject );
+        }
+
         [Test]
         public void PopulateProperly()
         {

@@ -9,13 +9,11 @@ using UnityEngine.TestTools;
 
 public class NFTShapeVisualTests : VisualTestsBase
 {
-    protected override IEnumerator SetUp() { yield break; }
-
     [UnityTest]
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests1_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests1()); }
+    public IEnumerator NFTShapeVisualTests1_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(NFTShapeVisualTests1()); }
 
     [UnityTest]
     [VisualTest]
@@ -23,18 +21,16 @@ public class NFTShapeVisualTests : VisualTestsBase
     [Category("Visual Tests")]
     public IEnumerator NFTShapeVisualTests1()
     {
-        yield return InitVisualTestsScene("NFTShapeVisualTest1");
-
         yield return SpawnNFTShapes(0, 6, 3);
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(2f, 1.5f, 6.25f));
+        yield return VisualTestUtils.TakeSnapshot("NFTShapeVisualTest1", camera, new Vector3(2f, 1.5f, 6.25f));
     }
 
     [UnityTest]
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests2_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests2()); }
+    public IEnumerator NFTShapeVisualTests2_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(NFTShapeVisualTests2()); }
 
     [UnityTest]
     [VisualTest]
@@ -42,18 +38,16 @@ public class NFTShapeVisualTests : VisualTestsBase
     [Category("Visual Tests")]
     public IEnumerator NFTShapeVisualTests2()
     {
-        yield return InitVisualTestsScene("NFTShapeVisualTest2");
-
         yield return SpawnNFTShapes(6, 6, 3);
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(2f, 1.5f, 6.25f));
+        yield return VisualTestUtils.TakeSnapshot("NFTShapeVisualTest2", camera, new Vector3(2f, 1.5f, 6.25f));
     }
 
     [UnityTest]
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests3_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests3()); }
+    public IEnumerator NFTShapeVisualTests3_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(NFTShapeVisualTests3()); }
 
     [UnityTest]
     [VisualTest]
@@ -61,18 +55,16 @@ public class NFTShapeVisualTests : VisualTestsBase
     [Category("Visual Tests")]
     public IEnumerator NFTShapeVisualTests3()
     {
-        yield return InitVisualTestsScene("NFTShapeVisualTest3");
-
         yield return SpawnNFTShapes(12, 6, 3);
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(2f, 1.5f, 6.25f));
+        yield return VisualTestUtils.TakeSnapshot("NFTShapeVisualTest3", camera, new Vector3(2f, 1.5f, 6.25f));
     }
 
     [UnityTest]
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests4_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests4()); }
+    public IEnumerator NFTShapeVisualTests4_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(NFTShapeVisualTests4()); }
 
     [UnityTest]
     [VisualTest]
@@ -80,11 +72,9 @@ public class NFTShapeVisualTests : VisualTestsBase
     [Category("Visual Tests")]
     public IEnumerator NFTShapeVisualTests4()
     {
-        yield return InitVisualTestsScene("NFTShapeVisualTest4");
-
         yield return SpawnNFTShapes(18, 5, 3);
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(2f, 1.5f, 6.25f));
+        yield return VisualTestUtils.TakeSnapshot("NFTShapeVisualTest4", camera, new Vector3(2f, 1.5f, 6.25f));
     }
 
     IEnumerator SpawnNFTShapes(int startingTypeIndex, int nftShapeTypesAmount, int maxColumns)

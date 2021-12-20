@@ -78,7 +78,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
 
-        bridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
+        if ( context.sceneReferences.biwBridgeGameObject != null )
+            bridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
 
         outlinerController = context.editorContext.outlinerController;
 
@@ -164,7 +165,9 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
                 !entity.HasRotatedSinceLastReport() &&
                 !forceReport)
                 return;
-            bridge.EntityTransformReport(entity.rootEntity, sceneToEdit);
+
+            if ( bridge != null )
+                bridge.EntityTransformReport(entity.rootEntity, sceneToEdit);
             entity.PositionReported();
             entity.ScaleReported();
             entity.RotationReported();
@@ -178,6 +181,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     public List<BIWEntity> GetSelectedEntityList() { return selectedEntities; }
 
     public bool IsAnyEntitySelected() { return selectedEntities.Count > 0; }
+
     public void SetActiveMode(IBIWMode buildMode)
     {
         currentActiveMode = buildMode;
@@ -519,7 +523,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             model.position = data.transformComponent.position;
             model.rotation = Quaternion.Euler(data.transformComponent.rotation);
             model.scale = data.transformComponent.scale;
-            
+
             EntityComponentsUtils.AddTransformComponent(sceneToEdit, newEntity, model);
         }
 
@@ -564,7 +568,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         DCLTransform.Model transformModel = new DCLTransform.Model();
         transformModel.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
 
-        Vector3 pointToLookAt = Camera.main.transform.position;
+        Camera camera = context.sceneReferences.mainCamera;
+        Vector3 pointToLookAt = camera != null ? camera.transform.position : Vector3.zero;
         pointToLookAt.y = editionGOPosition.y;
         Quaternion lookOnLook = Quaternion.LookRotation(editionGOPosition - pointToLookAt);
 
@@ -739,7 +744,9 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         hudController?.RefreshCatalogAssetPack();
         EntityListChanged();
-        bridge?.RemoveEntityOnKernel(idToRemove, sceneToEdit);
+
+        if ( bridge != null )
+            bridge.RemoveEntityOnKernel(idToRemove, sceneToEdit);
     }
 
     public void DeleteSingleEntity(BIWEntity entityToDelete)
@@ -799,10 +806,18 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     private void RemoveConvertedEntity(IDCLEntity entity) { convertedEntities.Remove(GetConvertedUniqueKeyForEntity(entity)); }
 
-    public void NotifyEntityIsCreated(IDCLEntity entity) { bridge?.AddEntityOnKernel(entity, sceneToEdit); }
+    public void NotifyEntityIsCreated(IDCLEntity entity)
+    {
+        if (bridge != null)
+            bridge.AddEntityOnKernel(entity, sceneToEdit);
+    }
 
     [ExcludeFromCodeCoverage]
-    public void UpdateSmartItemComponentInKernel(BIWEntity entityToUpdate) { bridge?.UpdateSmartItemComponent(entityToUpdate, sceneToEdit); }
+    public void UpdateSmartItemComponentInKernel(BIWEntity entityToUpdate)
+    {
+        if ( bridge != null )
+            bridge.UpdateSmartItemComponent(entityToUpdate, sceneToEdit);
+    }
 
     public void SetEntityName(BIWEntity entityToApply, string newName) { SetEntityName(entityToApply, newName, true); }
 
@@ -822,8 +837,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         entityToApply.SetDescriptiveName(newName);
         entityNameList.Add(newName);
 
-        if (sendUpdateToKernel)
-            bridge?.ChangedEntityName(entityToApply, sceneToEdit);
+        if (sendUpdateToKernel && bridge != null)
+            bridge.ChangedEntityName(entityToApply, sceneToEdit);
     }
 
     internal void ChangeEntityVisibilityStatus(BIWEntity entityToApply)
@@ -839,7 +854,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         if (entityToApply.isLocked && selectedEntities.Contains(entityToApply))
             DeselectEntity(entityToApply);
 
-        bridge?.ChangeEntityLockStatus(entityToApply, sceneToEdit);
+        if (bridge != null)
+            bridge.ChangeEntityLockStatus(entityToApply, sceneToEdit);
     }
 
     private string GetConvertedUniqueKeyForEntity(string entityID) { return sceneToEdit.sceneData.id + entityID; }

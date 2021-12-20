@@ -24,7 +24,10 @@ public enum HUDElementID
     NFT_INFO_DIALOG = 16,
     TELEPORT_DIALOG = 17,
     CONTROLS_HUD = 18,
+
+    [Obsolete("Deprecated HUD Element")]
     EXPLORE_HUD = 19,
+
     HELP_AND_SUPPORT_HUD = 20,
 
     [Obsolete("Deprecated HUD Element")]

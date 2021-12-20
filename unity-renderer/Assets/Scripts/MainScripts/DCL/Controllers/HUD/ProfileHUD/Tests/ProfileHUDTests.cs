@@ -6,8 +6,6 @@ using UnityEngine.TestTools;
 
 public class ProfileHUDTests : IntegrationTestSuite_Legacy
 {
-    protected override bool justSceneSetUp => true;
-    
     private ProfileHUDController controller;
     private IUserProfileBridge userProfileBridge;
     private bool allUIHiddenOriginalValue;
@@ -118,32 +116,6 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void AddBackpackWindowCorrectly()
-    {
-        Assert.IsNull(controller.avatarEditorHud);
-        Assert.IsFalse(controller.view.buttonBackpack.gameObject.activeSelf);
-
-        AvatarEditorHUDController testAvatarEditor = new AvatarEditorHUDController();
-        controller.AddBackpackWindow(testAvatarEditor);
-
-        Assert.IsNotNull(controller.avatarEditorHud);
-        Assert.IsTrue(controller.view.buttonBackpack.gameObject.activeSelf);
-    }
-
-    [Test]
-    public void ShowAndHideBackpackButtonCorrectly()
-    {
-        AvatarEditorHUDController testAvatarEditor = new AvatarEditorHUDController();
-        controller.AddBackpackWindow(testAvatarEditor);
-
-        controller.SetBackpackButtonVisibility(true);
-        Assert.IsTrue(controller.view.buttonBackpack.gameObject.activeSelf);
-
-        controller.SetBackpackButtonVisibility(false);
-        Assert.IsFalse(controller.view.buttonBackpack.gameObject.activeSelf);
-    }
-
-    [Test]
     public void ActivateAndDeactivateProfileNameEditionCorrectly()
     {
         controller.view.textName.text = "test name";
@@ -221,12 +193,12 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         };
         var profile = UserProfile.GetOwnUserProfile();
         profile.UpdateData(profileModel);
-        
+
         const string aboutMe = "i make pancakes";
         controller.view.ActivateDescriptionEditionMode(true);
         controller.view.descriptionEditionInput.text = aboutMe;
         controller.view.descriptionEditionInput.OnSubmit(null);
-        
+
         userProfileBridge.Received(0).SaveDescription(Arg.Any<string>());
     }
 

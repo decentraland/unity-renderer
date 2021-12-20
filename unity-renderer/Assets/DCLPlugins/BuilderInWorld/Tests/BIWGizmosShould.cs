@@ -4,6 +4,7 @@ using Builder.Gizmos;
 using DCL;
 using DCL.Builder;
 using DCL.Configuration;
+using DCL.Controllers;
 using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
@@ -16,10 +17,14 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     private BIWGizmosAxis gizmosAxis;
     private IBIWGizmos gizmo;
     private GameObject mockedGameObject;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
+
         mockedGameObject = new GameObject("BIWGizmosShould");
 
         gizmo = Substitute.For<IBIWGizmos>();

@@ -2,7 +2,8 @@
     "name": "ExploreV2Analytics",
     "rootNamespace": "",
     "references": [
-        "GUID:2fe81fa47ac9ca345860b544ce917241"
+        "GUID:2fe81fa47ac9ca345860b544ce917241",
+        "GUID:18093eb7b0538d548b9cf01e9adb9b19"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

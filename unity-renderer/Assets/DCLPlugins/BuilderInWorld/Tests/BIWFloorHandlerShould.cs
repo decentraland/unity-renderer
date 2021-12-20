@@ -4,6 +4,7 @@ using System.Linq;
 using DCL;
 using DCL.Builder;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -16,14 +17,19 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private BIWFloorHandler biwFloorHandler;
     private BIWCreatorController biwCreatorController;
+    private ParcelScene scene;
+    private AssetCatalogBridge assetCatalogBridge;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        scene = TestUtils.CreateTestScene();
+
         biwCreatorController = new BIWCreatorController();
         biwFloorHandler = new BIWFloorHandler();
         entityHandler = new BIWEntityHandler();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
 
         var referencesController = BIWTestUtils.CreateContextWithGenericMocks(
             entityHandler,
@@ -45,7 +51,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalogBridge);
         CatalogItem floorItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         biwCreatorController.EnterEditMode(scene);
@@ -85,7 +91,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
 
-        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects(assetCatalogBridge);
 
         CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
@@ -113,6 +119,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     {
         yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
 
+        Object.Destroy(assetCatalogBridge);
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
         entityHandler.Dispose();
