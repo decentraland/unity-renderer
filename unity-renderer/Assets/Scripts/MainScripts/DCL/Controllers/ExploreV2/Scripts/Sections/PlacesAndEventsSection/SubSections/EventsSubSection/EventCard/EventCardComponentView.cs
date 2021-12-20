@@ -154,6 +154,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
 
     [Header("Configuration")]
+    [SerializeField] internal Sprite defaultPicture;
     [SerializeField] internal bool isEventCardModal = false;
     [SerializeField] internal EventCardComponentModel model;
 
@@ -250,6 +251,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public void SetEventPicture(Sprite sprite)
     {
+        if (sprite == null && defaultPicture != null)
+            sprite = defaultPicture;
+
         model.eventPictureSprite = sprite;
 
         if (eventImage == null)
@@ -260,6 +264,12 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public void SetEventPicture(Texture2D texture)
     {
+        if (texture == null && defaultPicture != null)
+        {
+            SetEventPicture(defaultPicture);
+            return;
+        }
+
         model.eventPictureTexture = texture;
 
         if (!Application.isPlaying)
@@ -273,6 +283,12 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public void SetEventPicture(string uri)
     {
+        if (string.IsNullOrEmpty(uri) && defaultPicture != null)
+        {
+            SetEventPicture(defaultPicture);
+            return;
+        }
+
         model.eventPictureUri = uri;
 
         if (!Application.isPlaying)

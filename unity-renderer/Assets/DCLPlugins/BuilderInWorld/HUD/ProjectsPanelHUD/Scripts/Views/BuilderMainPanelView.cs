@@ -24,6 +24,7 @@ namespace DCL.Builder
         LeftMenuSettingsViewReferences GetSettingsViewReferences();
         SceneCardViewContextMenu GetSceneCardViewContextMenu();
         IUnpublishPopupView GetUnpublishPopup();
+        void SetAsFullScreenMenuMode(Transform parentTransform);
     }
 
     internal class BuilderMainPanelView : MonoBehaviour, IBuilderMainPanelView, ISceneListener, IProjectsListener
@@ -104,7 +105,7 @@ namespace DCL.Builder
         }
 
         ProjectCardView IBuilderMainPanelView.GetProjectCardView() { return projectCardView; }
-        
+
         SceneCardView IBuilderMainPanelView.GetSceneCardViewPrefab() { return sceneCardViewPrefab; }
 
         Transform IBuilderMainPanelView.GetSectionContainer() { return sectionsContainer; }
@@ -158,9 +159,26 @@ namespace DCL.Builder
         void ISceneListener.SceneRemoved(ISceneCardView scene) { scenesCount--; }
 
         public void OnSetProjects(Dictionary<string, IProjectCardView> projects) { projectScenesCount = projects.Count; }
-        
+
         public void OnProjectAdded(IProjectCardView project) { projectScenesCount++; }
-        
+
         public void OnProjectRemoved(IProjectCardView project) { projectScenesCount--; }
+
+        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        {
+            if (parentTransform == null)
+                return;
+
+            transform.SetParent(parentTransform);
+            transform.localScale = Vector3.one;
+
+            RectTransform rectTransform = transform as RectTransform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.localPosition = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+        }
     }
 }

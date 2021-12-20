@@ -7,6 +7,7 @@ using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 using static DCL.Tutorial.TutorialController;
+using Object = UnityEngine.Object;
 
 namespace DCL.Tutorial_Tests
 {
@@ -39,7 +40,7 @@ namespace DCL.Tutorial_Tests
             TutorialType tutorialType = TutorialType.Initial;
             bool userAlreadyDidTheTutorial = false;
 
-            tutorialController.isRunning = false;
+            DataStore.i.common.isTutorialRunning.Set(false);
             tutorialController.configuration.eagleCamRotationActived = true;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
             tutorialController.userAlreadyDidTheTutorial = true;
@@ -57,7 +58,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
 
             // Assert
-            Assert.IsTrue(tutorialController.isRunning);
+            Assert.IsTrue(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
             Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
@@ -76,7 +77,7 @@ namespace DCL.Tutorial_Tests
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             tutorialController.tutorialReset = true;
-            tutorialController.isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             NotificationsController.disableWelcomeNotification = true;
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -91,7 +92,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(CommonScriptableObjects.featureKeyTriggersBlocked.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.AreEqual(1f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.IsFalse(NotificationsController.disableWelcomeNotification);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -108,7 +109,7 @@ namespace DCL.Tutorial_Tests
             yield return tutorialController.StartTutorialFromStep(0);
 
             // Assert
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromGenesisPlaza, tutorialController.currentPath);
@@ -121,7 +122,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -133,7 +134,7 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromDeepLink, tutorialController.currentPath);
@@ -146,7 +147,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -158,7 +159,7 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -172,7 +173,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -185,7 +186,7 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromUserThatAlreadyDidTheTutorial, tutorialController.currentPath);
@@ -198,7 +199,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -213,7 +214,7 @@ namespace DCL.Tutorial_Tests
             yield return tutorialController.StartTutorialFromStep(0);
 
             // Assert
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
             Assert.AreEqual(TutorialPath.FromBuilderInWorld, tutorialController.currentPath);
@@ -226,7 +227,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsFalse(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
@@ -327,19 +328,6 @@ namespace DCL.Tutorial_Tests
         }
 
         [Test]
-        public void MoreMenuRestartTutorialCorrectly()
-        {
-            // Arrange
-            tutorialController.tutorialReset = false;
-
-            // Act
-            tutorialController.MoreMenu_OnRestartTutorial();
-
-            // Assert
-            //Assert.IsTrue(tutorialController.tutorialReset);
-        }
-
-        [Test]
         public void RotateEagleEyeCameraCorrectly()
         {
             // Arrange
@@ -414,20 +402,9 @@ namespace DCL.Tutorial_Tests
         }
 
         [UnityTest]
-        public IEnumerator ExecuteMinimapTooltipStepCorrectly()
-        {
-            yield return ExecuteAvatarSpecificTutorialStep(6, () =>
-            {
-                TutorialStep_MinimapTooltip step = (TutorialStep_MinimapTooltip)tutorialController.runningStep;
-                step.NavmapView_OnToggle(true);
-                step.NavmapView_OnToggle(false);
-            });
-        }
-
-        [UnityTest]
         public IEnumerator ExecuteOpenControlsPanelStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(7, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(6, () =>
             {
                 TutorialStep_OpenControlsPanel step = (TutorialStep_OpenControlsPanel)tutorialController.runningStep;
                 step.ControlsHud_OnControlsOpened();
@@ -438,50 +415,28 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteTooltipBackpackButtonStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(8, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(7, () =>
             {
                 TutorialStep_Tooltip_BackpackButton step = (TutorialStep_Tooltip_BackpackButton)tutorialController.runningStep;
                 step.ProfileHud_OnOpen();
-                step.ProfileHud_OnClose();
             });
         }
 
         [UnityTest]
         public IEnumerator ExecuteTooltipExploreButtonStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(9, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(8, () =>
             {
                 TutorialStep_Tooltip_ExploreButton step = (TutorialStep_Tooltip_ExploreButton)tutorialController.runningStep;
-                step.ExploreHud_OnOpen();
-                step.ExploreHud_OnClose();
-            });
-        }
-
-        [UnityTest]
-        public IEnumerator ExecuteTooltipTaskbarMoreButtonStepCorrectly()
-        {
-            yield return ExecuteAvatarSpecificTutorialStep(10, () =>
-            {
-                TutorialStep_Tooltip_TaskbarMoreButton step = (TutorialStep_Tooltip_TaskbarMoreButton)tutorialController.runningStep;
-                step.MoreMenu_OnMoreMenuOpened(true);
-                step.MoreMenu_OnMoreMenuOpened(false);
-            });
-        }
-
-        [UnityTest]
-        public IEnumerator ExecuteTooltipRestartTutorialButtonStepCorrectly()
-        {
-            yield return ExecuteAvatarSpecificTutorialStep(11, () =>
-            {
-                TutorialStep_Tooltip_RestartTutorialButton step = (TutorialStep_Tooltip_RestartTutorialButton)tutorialController.runningStep;
-                step.MoreMenu_OnMoreMenuOpened(true);
+                step.ExploreV2IsOpenChanged(true, false);
+                step.ExploreV2IsOpenChanged(false, true);
             });
         }
 
         [UnityTest]
         public IEnumerator ExecuteTooltipSocialFeaturesByOpeningWorldChatStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(9, () =>
             {
                 TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
                 step.WorldChatWindowHud_OnOpen();
@@ -491,7 +446,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteTooltipSocialFeaturesByOpeningFriendsStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(9, () =>
             {
                 TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
                 step.FriendsHud_OnFriendsOpened();
@@ -502,7 +457,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteTooltipSocialFeaturesByStartingVoiceChatStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(9, () =>
             {
                 TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
                 step.VoiceChatAction_OnStarted(DCLAction_Hold.VoiceChatRecording);
@@ -511,33 +466,19 @@ namespace DCL.Tutorial_Tests
         }
 
         [UnityTest]
-        public IEnumerator ExecuteTooltipUsersAroundStepCorrectly()
-        {
-            CommonScriptableObjects.voiceChatDisabled.Set(false);
-
-            yield return ExecuteAvatarSpecificTutorialStep(13, () =>
-            {
-                TutorialStep_Tooltip_UsersAround step = (TutorialStep_Tooltip_UsersAround)tutorialController.runningStep;
-                step.UsersAroundListHud_OnOpen();
-                CommonScriptableObjects.voiceChatDisabled.Set(true);
-            });
-        }
-
-        [UnityTest]
         public IEnumerator ExecuteTutorialCompletedStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(14, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(10, () =>
             {
                 TutorialStep_TutorialCompleted step = (TutorialStep_TutorialCompleted)tutorialController.runningStep;
-                step.OnShowAnimationFinish();
-                step.OnHideAnimationFinish();
+                step.okPressed = true;
             });
         }
 
         [UnityTest]
         public IEnumerator ExecuteWelcomeStepCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(15, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(11, () =>
             {
                 TutorialStep_Welcome step = (TutorialStep_Welcome)tutorialController.runningStep;
                 step.confirmInputAction.RaiseOnStarted();
@@ -547,7 +488,7 @@ namespace DCL.Tutorial_Tests
         [UnityTest]
         public IEnumerator ExecuteLockTheCursorCorrectly()
         {
-            yield return ExecuteAvatarSpecificTutorialStep(16, () =>
+            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
             {
                 TutorialStep_LockTheCursor step = (TutorialStep_LockTheCursor)tutorialController.runningStep;
                 step.mouseCatcher = null;
@@ -588,9 +529,12 @@ namespace DCL.Tutorial_Tests
         private void CreateAndConfigureTutorial()
         {
             tutorialController = new TutorialController();
-            tutorialController.tutorialView = tutorialController.CreateTutorialView();
             tutorialView = tutorialController.tutorialView;
-            tutorialView.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialSettings>("TutorialConfigurationForTests"));
+
+            // NOTE(Brian): Avoid AudioListener warning
+            tutorialView.gameObject.AddComponent<AudioListener>();
+
+            tutorialView.configuration = Object.Instantiate(Resources.Load<TutorialSettings>("TutorialConfigurationForTests"));
             tutorialView.ConfigureView(tutorialController);
             tutorialController.SetConfiguration(tutorialView.configuration);
             tutorialController = tutorialView.tutorialController;
@@ -613,7 +557,7 @@ namespace DCL.Tutorial_Tests
         {
             foreach (var step in currentSteps)
             {
-                GameObject.Destroy(step);
+                Object.Destroy(step);
             }
 
             tutorialController.Dispose();
@@ -640,7 +584,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
             tutorialController.tutorialReset = false;
-            tutorialController.isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -662,7 +606,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.playerIsInGenesisPlaza = false;
             tutorialController.tutorialReset = false;
             tutorialController.openedFromDeepLink = true;
-            tutorialController.isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -683,7 +627,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
-            tutorialController.isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -702,7 +646,7 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = true;
-            tutorialController.isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -720,7 +664,7 @@ namespace DCL.Tutorial_Tests
             currentSteps = tutorialController.configuration.stepsFromBuilderInWorld;
 
             tutorialController.tutorialType = TutorialType.BuilderInWorld;
-            tutorialController.isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -760,7 +704,7 @@ namespace DCL.Tutorial_Tests
 
         private void CheckRunningStep()
         {
-            Assert.IsTrue(tutorialController.isRunning);
+            Assert.IsTrue(DataStore.i.common.isTutorialRunning.Get());
             Assert.IsNotNull(tutorialController.runningStep);
             Assert.IsTrue(currentSteps[currentStepIndex] == tutorialController.runningStep);
             Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
@@ -769,6 +713,7 @@ namespace DCL.Tutorial_Tests
         private IEnumerator ExecuteAvatarSpecificTutorialStep(int stepIndex, Action actionToFinishStep)
         {
             // Arrange
+            DataStore.i.exploreV2.isInitialized.Set(true);
             TutorialStep stepToTest = tutorialController.configuration.stepsOnGenesisPlaza[stepIndex];
             ClearCurrentSteps();
             tutorialController.configuration.teacherRawImage = null;
@@ -778,7 +723,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
             tutorialController.tutorialReset = false;
-            tutorialController.isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             tutorialController.runningStep = null;
 
             // Act

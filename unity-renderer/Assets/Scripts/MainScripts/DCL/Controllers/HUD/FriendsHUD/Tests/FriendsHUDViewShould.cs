@@ -8,8 +8,6 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
     FriendsHUDController controller;
     FriendsHUDView view;
 
-    protected override bool justSceneSetUp => true;
-
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {

@@ -43,6 +43,9 @@ namespace DCL
 
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
+
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         }
 
         private void OnDebugModeSet(bool current, bool previous)
@@ -72,7 +75,7 @@ namespace DCL
 
             if (prewarmEntitiesPool)
             {
-                EnsureEntityPool();
+                PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
             }
         }
 
@@ -82,6 +85,9 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
+
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
             UnloadAllScenes(includePersistent: true);
 
@@ -95,8 +101,6 @@ namespace DCL
                 return;
 
             InputController_Legacy.i.Update();
-
-            Environment.i.world.pointerEventsController.Update();
 
             if (lastSortFrame != Time.frameCount && sceneSortDirty)
             {
@@ -112,18 +116,6 @@ namespace DCL
                 return;
 
             Environment.i.platform.physicsSyncController.Sync();
-        }
-
-        public void EnsureEntityPool() // TODO: Move to PoolManagerFactory
-        {
-            if (PoolManager.i.ContainsPool(EMPTY_GO_POOL_NAME))
-                return;
-
-            GameObject go = new GameObject();
-            Pool pool = PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go, maxPrewarmCount: 2000, isPersistent: true);
-
-            if (prewarmEntitiesPool)
-                pool.ForcePrewarm();
         }
 
         //======================================================================
@@ -430,43 +422,10 @@ namespace DCL
 
         public IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
-            if (data == null)
-            {
-                data = new LoadParcelScenesMessage.UnityParcelScene();
-            }
-
-            if (data.parcels == null)
-            {
-                data.parcels = new Vector2Int[] { data.basePosition };
-            }
-
-            if (string.IsNullOrEmpty(data.id))
-            {
-                data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
-            }
-
-            if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
-            {
-                Debug.LogWarning($"Scene {data.id} is already loaded.");
-                return Environment.i.world.state.loadedScenes[data.id];
-            }
-
-            var go = new GameObject();
-            var newScene = go.AddComponent<ParcelScene>();
-            newScene.isTestScene = true;
-            newScene.isPersistent = true;
-            newScene.SetData(data);
-
-            if (DCLCharacterController.i != null)
-                newScene.InitializeDebugPlane();
-
-            Environment.i.world.state.scenesSortedByDistance.Add(newScene);
-
+            IParcelScene result = WorldStateUtils.CreateTestScene(data);
             Environment.i.messaging.manager.AddControllerIfNotExists(this, data.id);
-
-            Environment.i.world.state.loadedScenes.Add(data.id, newScene);
-            OnNewSceneAdded?.Invoke(newScene);
-            return newScene;
+            OnNewSceneAdded?.Invoke(result);
+            return result;
         }
 
         public void SendSceneReady(string sceneId)
@@ -897,7 +856,5 @@ namespace DCL
 
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
-
-        public const string EMPTY_GO_POOL_NAME = "Empty";
     }
 }

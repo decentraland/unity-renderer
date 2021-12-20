@@ -67,8 +67,26 @@ public class SectionSelectorComponentViewTests
         ISectionToggle existingSection2 = sectionSelectorComponent.GetSection(1);
 
         // Assert
-        Assert.AreEqual(testSections[0].title, existingSection1.GetInfo().title, "The item 1 gotten does not match.");
-        Assert.AreEqual(testSections[1].title, existingSection2.GetInfo().title, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].selectedIcon, existingSection1.GetInfo().selectedIcon, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].selectedIcon, existingSection2.GetInfo().selectedIcon, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].selectedTitle, existingSection1.GetInfo().selectedTitle, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].selectedTitle, existingSection2.GetInfo().selectedTitle, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].selectedTextColor, existingSection1.GetInfo().selectedTextColor, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].selectedTextColor, existingSection2.GetInfo().selectedTextColor, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].selectedImageColor, existingSection1.GetInfo().selectedImageColor, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].selectedImageColor, existingSection2.GetInfo().selectedImageColor, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].unselectedIcon, existingSection1.GetInfo().unselectedIcon, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].unselectedIcon, existingSection2.GetInfo().unselectedIcon, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].unselectedTitle, existingSection1.GetInfo().unselectedTitle, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].unselectedTitle, existingSection2.GetInfo().unselectedTitle, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].backgroundTransitionColorsForSelected, existingSection1.GetInfo().backgroundTransitionColorsForSelected, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].backgroundTransitionColorsForSelected, existingSection2.GetInfo().backgroundTransitionColorsForSelected, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].unselectedTextColor, existingSection1.GetInfo().unselectedTextColor, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].unselectedTextColor, existingSection2.GetInfo().unselectedTextColor, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].unselectedImageColor, existingSection1.GetInfo().unselectedImageColor, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].unselectedImageColor, existingSection2.GetInfo().unselectedImageColor, "The item 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].backgroundTransitionColorsForUnselected, existingSection1.GetInfo().backgroundTransitionColorsForUnselected, "The item 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].backgroundTransitionColorsForUnselected, existingSection2.GetInfo().backgroundTransitionColorsForUnselected, "The item 2 gotten does not match.");
     }
 
     [Test]
@@ -82,8 +100,8 @@ public class SectionSelectorComponentViewTests
         List<ISectionToggle> allExistingItems = sectionSelectorComponent.GetAllSections();
 
         // Assert
-        Assert.AreEqual(testSections[0].title, allExistingItems[0].GetInfo().title, "The section 1 gotten does not match.");
-        Assert.AreEqual(testSections[1].title, allExistingItems[1].GetInfo().title, "The section 2 gotten does not match.");
+        Assert.AreEqual(testSections[0].selectedTitle, allExistingItems[0].GetInfo().selectedTitle, "The section 1 gotten does not match.");
+        Assert.AreEqual(testSections[1].selectedTitle, allExistingItems[1].GetInfo().selectedTitle, "The section 2 gotten does not match.");
         Assert.AreEqual(testSections.Count, allExistingItems.Count, "The number of sections gotten do not match.");
     }
 
@@ -93,8 +111,8 @@ public class SectionSelectorComponentViewTests
         // Arrange
         SectionToggleModel testSection = new SectionToggleModel
         {
-            icon = testSprite,
-            title = "Test Title",
+            selectedIcon = testSprite,
+            selectedTitle = "Test Title",
         };
         string testName = "TestName";
 
@@ -102,10 +120,10 @@ public class SectionSelectorComponentViewTests
         sectionSelectorComponent.CreateSection(testSection, testName);
 
         // Assert
-        ISectionToggle newSection = sectionSelectorComponent.instantiatedSections.FirstOrDefault(x => x.GetInfo().title == testSection.title);
+        ISectionToggle newSection = sectionSelectorComponent.instantiatedSections.FirstOrDefault(x => x.GetInfo().selectedTitle == testSection.selectedTitle);
         Assert.IsNotNull(newSection, "The item does not exist in the instantiatedItems list.");
-        Assert.IsTrue(newSection.GetInfo().title == testSection.title, "The item title does not match.");
-        Assert.IsTrue(newSection.GetInfo().icon == testSection.icon, "The item icon does not match.");
+        Assert.IsTrue(newSection.GetInfo().selectedTitle == testSection.selectedTitle, "The item title does not match.");
+        Assert.IsTrue(newSection.GetInfo().selectedIcon == testSection.selectedIcon, "The item icon does not match.");
         Assert.AreEqual(testName, ((SectionToggle)newSection).name, "The item game object name does not match.");
     }
 
@@ -142,8 +160,8 @@ public class SectionSelectorComponentViewTests
         {
             sections.Add(new SectionToggleModel
             {
-                icon = testSprite,
-                title = $"Test{i + 1}"
+                selectedIcon = testSprite,
+                selectedTitle = $"Test{i + 1}"
             });
         }
 

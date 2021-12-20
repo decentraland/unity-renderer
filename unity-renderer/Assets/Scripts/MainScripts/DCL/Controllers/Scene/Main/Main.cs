@@ -104,57 +104,48 @@ namespace DCL
         protected virtual void Update()
         {
             Environment.i.platform.Update();
-            Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-        }
-
-        protected virtual void LateUpdate()
-        {
-            Environment.i.world.sceneController.LateUpdate();
         }
 
         protected virtual void OnDestroy()
         {
+            DataStore.i.common.isWorldBeingDestroyed.Set(true);
+            
+            pluginSystem?.Dispose();
+
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.Dispose();
+            
             kernelCommunication?.Dispose();
         }
 
         protected virtual void InitializeSceneDependencies()
         {
-            var bridges = Init("Bridges");
-            var mouseCatcher = Init("MouseCatcher").GetComponent<MouseCatcher>();
-            var environment = Init("Environment").GetComponent<EnvironmentReferences>();
-            var playerReferences = Init("Player").GetComponent<PlayerReferences>();
+            gameObject.AddComponent<UserProfileController>();
+            gameObject.AddComponent<RenderingController>();
+            gameObject.AddComponent<CatalogController>();
+            gameObject.AddComponent<MinimapMetadataController>();
+            gameObject.AddComponent<ChatController>();
+            gameObject.AddComponent<FriendsController>();
+            gameObject.AddComponent<LoadingFeedbackController>();
+            gameObject.AddComponent<HotScenesController>();
+            gameObject.AddComponent<GIFProcessingBridge>();
+            gameObject.AddComponent<RenderProfileBridge>();
+            gameObject.AddComponent<AssetCatalogBridge>();
+            gameObject.AddComponent<ScreenSizeWatcher>();
+            gameObject.AddComponent<SceneControllerBridge>();
 
-            Init("HUDController");
-            Init("HUDAudioHandler");
-            Init("NavMap");
-            Init("SettingsController");
-
-            SceneReferences.i.Initialize(
-                mouseCatcher,
-                environment.ground,
-                playerReferences.biwCameraRoot,
-                playerReferences.inputController,
-                playerReferences.cursorCanvas,
-                gameObject,
-                playerReferences.avatarController,
-                playerReferences.cameraController,
-                playerReferences.mainCamera,
-                bridges,
-                environment.environmentLight,
-                environment.postProcessVolume,
-                playerReferences.thirdPersonCamera,
-                playerReferences.firstPersonCamera);
-        }
-
-        private static GameObject Init(string name)
-        {
-            GameObject instance = Instantiate(Resources.Load(name)) as GameObject;
-            instance.name = name;
-            return instance;
+            MainSceneFactory.CreateBuilderInWorldBridge(gameObject);
+            MainSceneFactory.CreateBridges();
+            MainSceneFactory.CreateMouseCatcher();
+            MainSceneFactory.CreatePlayerSystems();
+            MainSceneFactory.CreateEnvironment();
+            MainSceneFactory.CreateAudioHandler();
+            MainSceneFactory.CreateHudController();
+            MainSceneFactory.CreateSettingsController();
+            MainSceneFactory.CreateNavMap();
+            MainSceneFactory.CreateEventSystem();
+            MainSceneFactory.CreateInteractionHoverCanvas();
         }
     }
 }

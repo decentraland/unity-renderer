@@ -10,14 +10,14 @@ namespace DCL.Camera
 
         private CinemachinePOV pov;
 
-        public override void Init(UnityEngine.Camera cameraTransform)
+        public override void Initialize(UnityEngine.Camera cameraTransform)
         {
-            base.Init(cameraTransform);
+            base.Initialize(cameraTransform);
 
             if (defaultVirtualCamera is CinemachineVirtualCamera vcamera)
                 pov = vcamera.GetCinemachineComponent<CinemachinePOV>();
         }
-        
+
         public override void OnUpdate()
         {
             var xzPlaneForward = Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1));

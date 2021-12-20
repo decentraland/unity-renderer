@@ -1,4 +1,3 @@
-using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +14,7 @@ namespace DCL.Huds.QuestsPanel
         void SetVisibility(bool active);
         bool isVisible { get; }
         void Dispose();
+        void SetAsFullScreenMenuMode(Transform parentTransform);
     }
 
     public class QuestsPanelHUDView : MonoBehaviour, IQuestsPanelHUDView
@@ -196,25 +196,41 @@ namespace DCL.Huds.QuestsPanel
             noQuestsTitle.SetActive(availableQuestsContainer.childCount == 0 );
         }
 
-        public void SetVisibility(bool active)
-        {
-            gameObject.SetActive(active);
-
-            if (active)
-                AudioScriptableObjects.dialogOpen.Play();
-            else
-                AudioScriptableObjects.dialogClose.Play();
-        }
+        public void SetVisibility(bool active) { gameObject.SetActive(active); }
 
         public bool isVisible => gameObject.activeSelf;
 
         public void Dispose()
         {
             if (!isDestroyed)
+            {
+                ClearQuests();
                 Destroy(gameObject);
+            }
         }
 
-        private void OnDestroy() { isDestroyed = true; }
+        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        {
+            if (parentTransform == null)
+                return;
+
+            transform.SetParent(parentTransform);
+            transform.localScale = Vector3.one;
+
+            RectTransform rectTransform = transform as RectTransform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.localPosition = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+        }
+
+        private void OnDestroy()
+        {
+            ClearQuests();
+            isDestroyed = true;
+        }
 
         private void CloseQuestsPanel()
         {

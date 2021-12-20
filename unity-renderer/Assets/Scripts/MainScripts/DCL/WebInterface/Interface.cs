@@ -1259,7 +1259,11 @@ namespace DCL.Interface
 
         public static void OpenURL(string url)
         {
+#if UNITY_WEBGL
             SendMessage("OpenWebURL", new OpenURLPayload { url = url });
+#else
+            Application.OpenURL(url);
+#endif
         }
 
         public static void SendReportScene(string sceneID)

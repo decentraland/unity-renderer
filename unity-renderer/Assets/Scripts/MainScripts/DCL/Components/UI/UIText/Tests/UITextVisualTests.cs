@@ -11,15 +11,13 @@ public class UITextVisualTests : UIVisualTestsBase
     [UnityTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator UITextVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UITextTest1()); }
+    public IEnumerator UITextVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UITextTest1()); }
 
     [UnityTest]
     [VisualTest]
     [Category("Visual Tests")]
     public IEnumerator UITextTest1()
     {
-        yield return InitUIVisualTestScene("UITextTest");
-
         var uiInputText = TestUtils.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE);
         yield return uiInputText.routine;
 
@@ -57,6 +55,6 @@ public class UITextVisualTests : UIVisualTestsBase
             vTextAlign = "center",
         });
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 0f));
+        yield return VisualTestUtils.TakeSnapshot("UITextTest", camera, new Vector3(0f, 2f, 0f));
     }
 }

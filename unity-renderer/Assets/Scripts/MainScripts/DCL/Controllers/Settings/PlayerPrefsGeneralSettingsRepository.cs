@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace DCL.SettingsCommon
@@ -18,7 +18,7 @@ namespace DCL.SettingsCommon
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly GeneralSettings defaultSettings;
         private GeneralSettings currentSettings;
-        
+
         public event Action<GeneralSettings> OnChanged;
 
         public PlayerPrefsGeneralSettingsRepository(
@@ -34,15 +34,13 @@ namespace DCL.SettingsCommon
 
         public void Apply(GeneralSettings settings)
         {
-            if (currentSettings.Equals(settings)) return;
+            if (currentSettings.Equals(settings))
+                return;
             currentSettings = settings;
             OnChanged?.Invoke(currentSettings);
         }
 
-        public void Reset()
-        {
-            Apply(defaultSettings);
-        }
+        public void Reset() { Apply(defaultSettings); }
 
         public void Save()
         {
@@ -62,7 +60,7 @@ namespace DCL.SettingsCommon
         private GeneralSettings Load()
         {
             var settings = defaultSettings;
-            
+
             try
             {
                 settings.autoqualityOn = settingsByKey.GetBool(AUTO_QUALITY_ON, defaultSettings.autoqualityOn);

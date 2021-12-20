@@ -6,6 +6,9 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using DCL.Camera;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -14,20 +17,62 @@ namespace Tests
 {
     public class UUIDComponentTests : IntegrationTestSuite_Legacy
     {
-        protected override bool enableSceneIntegrityChecker => false;
+        private ParcelScene scene;
+        private Camera mainCamera;
+
+        protected override List<GameObject> SetUp_LegacySystems()
+        {
+            List<GameObject> result = new List<GameObject>();
+            result.Add(MainSceneFactory.CreateEnvironment());
+            result.Add(MainSceneFactory.CreateEventSystem());
+            result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
+            return result;
+        }
+
+        protected override WorldRuntimeContext CreateRuntimeContext()
+        {
+            return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
+            (
+                new PointerEventsController(),
+                new RuntimeComponentFactory(),
+                new WorldState()
+            );
+        }
+
+        protected override PlatformContext CreatePlatformContext()
+        {
+            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
+            (
+                new UpdateEventHandler(),
+                WebRequestController.Create()
+            );
+        }
+
+        protected override MessagingContext CreateMessagingContext()
+        {
+            return DCL.Tests.MessagingContextFactory.CreateMocked();
+        }
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            Environment.i.world.sceneBoundsChecker.Stop();
+            scene = TestUtils.CreateTestScene();
 
-            // Set character position and camera rotation
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.characterController.enabled = false;
+            Physics.autoSyncTransforms = true;
 
-            cameraController.SetRotation(0, 0, 0, new Vector3(0, 0, 1));
-            cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
+            mainCamera = TestUtils.CreateComponentWithGameObject<Camera>("Main Camera");
+            mainCamera.tag = "MainCamera";
+            mainCamera.transform.position = Vector3.zero;
+            mainCamera.transform.forward = Vector3.forward;
+
+            DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            Object.Destroy(mainCamera.gameObject);
+            yield return base.TearDown();
         }
 
         void InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape)
@@ -511,8 +556,8 @@ namespace Tests
             InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape);
             TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
 
-            cameraController.SetRotation(0, 0, 0, new Vector3(1, 0, 0));
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
+            mainCamera.transform.position = new Vector3(3, 2, 12);
+            mainCamera.transform.forward = Vector3.right;
 
             yield return shape.routine;
 
@@ -577,8 +622,8 @@ namespace Tests
             InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape);
             TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
 
-            cameraController.SetRotation(0, 0, 0, new Vector3(1, 0, 0));
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
+            mainCamera.transform.position = new Vector3(3, 2, 12);
+            mainCamera.transform.forward = Vector3.right;
 
             yield return shape.routine;
 
@@ -643,8 +688,8 @@ namespace Tests
             InstantiateEntityWithShape(out entity, out shape);
             TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
 
-            cameraController.SetRotation(0, 0, 0, new Vector3(1, 0, 0));
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
+            mainCamera.transform.position = new Vector3(3, 2, 12);
+            mainCamera.transform.forward = Vector3.right;
 
             yield return shape.routine;
 
@@ -710,8 +755,8 @@ namespace Tests
             InstantiateEntityWithShape(out entity, out shape);
             TestUtils.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
 
-            cameraController.SetRotation(0, 0, 0, new Vector3(1, 0, 0));
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
+            mainCamera.transform.position = new Vector3(3, 2, 12);
+            mainCamera.transform.forward = Vector3.right;
 
             yield return shape.routine;
 
@@ -801,8 +846,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerDownEventWhenEntityIsBehindOther()
         {
-            Assert.IsNotNull(cameraController, "camera is null?");
-
             // Create blocking entity
             IDCLEntity blockingEntity;
             BoxShape blockingShape;
@@ -818,9 +861,7 @@ namespace Tests
             yield return clickTargetShape.routine;
 
             // Set character position and camera rotation
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 1));
-
-            yield return null;
+            mainCamera.transform.position = new Vector3(3, 3, 1);
 
             // Create pointer down component and add it to target entity
             string onPointerId = "pointerevent-1";
@@ -872,8 +913,8 @@ namespace Tests
 
 
             // Move character in front of target entity and rotate camera
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 6));
-            cameraController.SetRotation(0, 0, 0, new Vector3(0, 0, -1));
+            mainCamera.transform.position = new Vector3(3, 3, 6);
+            mainCamera.transform.forward = Vector3.back;
 
             yield return null;
 
@@ -904,8 +945,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerDownEventAndPointerBlockerShape()
         {
-            Assert.IsNotNull(cameraController, "camera is null?");
-
             // Create blocking entity
             IDCLEntity blockingEntity;
             BoxShape blockingShape;
@@ -923,7 +962,7 @@ namespace Tests
             yield return clickTargetShape.routine;
 
             // Set character position and camera rotation
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 1));
+            mainCamera.transform.position = new Vector3(3, 3, 1);
 
             yield return null;
 
@@ -1008,6 +1047,8 @@ namespace Tests
 
             yield return null;
 
+            yield return new WaitForSeconds(5.0f);
+
             Assert.IsTrue(targetEntityHit, "Target entity wasn't hit and no other entity is blocking it");
         }
 
@@ -1030,7 +1071,8 @@ namespace Tests
             TestUtils.SetEntityParent(scene, clickTargetEntity, blockingEntity);
 
             // Set character position and camera rotation
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 1));
+            mainCamera.transform.position = new Vector3(3, 2, 1);
+
             yield return null;
 
             // Create pointer down component and add it to target entity
@@ -1082,8 +1124,8 @@ namespace Tests
             Assert.IsFalse(targetEntityHit, "Target entity was hit but other entity was blocking it");
 
             // Move character in front of target entity and rotate camera
-            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
-            cameraController.SetRotation(0, 0, 0, new Vector3(0, 0, -1));
+            mainCamera.transform.position = new Vector3(3, 3, 12);
+            mainCamera.transform.forward = Vector3.back;
 
             yield return null;
 
@@ -1127,17 +1169,12 @@ namespace Tests
             };
             var component = TestUtils.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 onPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            yield return component.routine;
+
             Assert.IsTrue(component != null);
 
-            yield return null;
-
-            DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
-
-            var cameraController = GameObject.FindObjectOfType<DCL.Camera.CameraController>();
-
-            // Rotate camera towards the interactive object
-            cameraController.SetRotation(45, 0, 0);
-
+            mainCamera.transform.position = new Vector3(8, 1, 7);
             yield return null;
 
             var hoverCanvasController = InteractionHoverCanvasController.i;
@@ -1145,8 +1182,10 @@ namespace Tests
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
             // Check default properties
+            Assert.IsNotNull(hoverCanvasController.GetCurrentHoverIcon(), "OnPointerEvent.SetFeedbackState never called!");
             Assert.AreEqual("AnyButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
             Assert.AreEqual("Interact", hoverCanvasController.text.text);
+
             yield return null;
 
             onPointerDownModel.button = "PRIMARY";
@@ -1160,8 +1199,6 @@ namespace Tests
 
             Assert.AreEqual("PrimaryButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
             Assert.AreEqual("Click!", hoverCanvasController.text.text);
-
-            DCLCharacterController.i.ResumeGravity();
         }
 
         [UnityTest]
@@ -1184,14 +1221,7 @@ namespace Tests
 
             yield return null;
 
-            DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7));
-
-            var cameraController = GameObject.FindObjectOfType<DCL.Camera.CameraController>();
-
-            // Rotate camera towards the interactive object
-            cameraController.SetRotation(45, 0, 0);
-
-            yield return null;
+            mainCamera.transform.position = new Vector3(8, 2, 7);
 
             var hoverCanvas = InteractionHoverCanvasController.i.canvas;
             Assert.IsNotNull(hoverCanvas);
@@ -1207,10 +1237,7 @@ namespace Tests
             yield return null;
 
             Assert.IsFalse(hoverCanvas.enabled);
-
             Object.Destroy(component);
-
-            DCLCharacterController.i.ResumeGravity();
         }
     }
 }

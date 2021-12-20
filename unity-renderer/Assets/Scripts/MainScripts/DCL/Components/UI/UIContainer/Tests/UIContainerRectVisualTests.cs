@@ -12,15 +12,13 @@ public class UIContainerRectVisualTests : UIVisualTestsBase
     [Explicit]
     [VisualTest]
     [Category("Explicit")]
-    public IEnumerator UIContainerRectVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UIContainerRectTest1()); }
+    public IEnumerator UIContainerRectVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UIContainerRectTest1()); }
 
     [UnityTest]
     [VisualTest]
     [Category("Visual Tests")]
     public IEnumerator UIContainerRectTest1()
     {
-        yield return InitUIVisualTestScene("UIContainerRectTest");
-
         string mainContainerId = "herodes";
         yield return CreateUIComponent<UIContainerRect, UIContainerRect.Model>(CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model
         {
@@ -135,6 +133,6 @@ public class UIContainerRectVisualTests : UIVisualTestsBase
             positionY = new UIValue(20f, UIValue.Unit.PERCENT)
         }, "innerPanel1");
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 0f));
+        yield return VisualTestUtils.TakeSnapshot("UIContainerRectTest", camera, new Vector3(0f, 2f, 0f));
     }
 }

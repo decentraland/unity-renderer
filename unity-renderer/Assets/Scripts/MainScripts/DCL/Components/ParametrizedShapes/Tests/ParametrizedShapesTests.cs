@@ -5,11 +5,20 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 {
+    private ParcelScene scene;
+
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
+    }
+
     [UnityTest]
     public IEnumerator BoxShapeUpdate()
     {

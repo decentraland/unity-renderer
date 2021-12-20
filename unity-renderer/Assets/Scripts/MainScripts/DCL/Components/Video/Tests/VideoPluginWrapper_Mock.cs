@@ -22,6 +22,7 @@ namespace Tests
 
         private Coroutine coroutineDelayedReady;
         private Coroutine coroutinePlay;
+        private Texture2D texture = null;
 
         public void Dispose()
         {
@@ -38,6 +39,7 @@ namespace Tests
             Assert.IsTrue(coroutineDelayedReady == null, "delayedReady should be null at this stage!");
             state = VideoState.LOADING;
             coroutineDelayedReady = CoroutineStarter.Start(GetReadyAfterDelay());
+            texture = new Texture2D(1, 1);
         }
 
         /// <summary>
@@ -64,11 +66,10 @@ namespace Tests
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
         }
-
-        public int GetTexture(string id)
+        public Texture2D PrepareTexture(string id)
         {
             Assert.AreEqual(this.id, id, "Using ID that was not created!");
-            return 0;
+            return texture;
         }
 
         public void Play(string id, float startTime)
