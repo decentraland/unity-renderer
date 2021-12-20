@@ -74,7 +74,7 @@ public class BuilderInWorldPlugin : IPlugin
         builderAPIController.Initialize(context);
         sceneManager.Initialize(context);
         cameraController.Initialize(context);
-        publisher.Initialize();
+        publisher.Initialize(context);
 
         if (HUDController.i != null)
         {

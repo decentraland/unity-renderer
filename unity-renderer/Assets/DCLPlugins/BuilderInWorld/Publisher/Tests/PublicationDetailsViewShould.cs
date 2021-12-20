@@ -5,13 +5,13 @@ namespace Tests.BuildModeHUDViews
 {
     public class PublicationDetailsViewShould
     {
-        private PublicationDetailsView publicationDetailsView;
+        private LandPublisherView landPublisherView;
 
         [SetUp]
-        public void SetUp() { publicationDetailsView = PublicationDetailsView.Create(); }
+        public void SetUp() { landPublisherView = LandPublisherView.Create(); }
 
         [TearDown]
-        public void TearDown() { Object.Destroy(publicationDetailsView.gameObject); }
+        public void TearDown() { Object.Destroy(landPublisherView.gameObject); }
 
         [Test]
         [TestCase(true)]
@@ -19,13 +19,13 @@ namespace Tests.BuildModeHUDViews
         public void SetActiveCorrectly(bool isActive)
         {
             // Arrange
-            publicationDetailsView.gameObject.SetActive(!isActive);
+            landPublisherView.gameObject.SetActive(!isActive);
 
             // Act
-            publicationDetailsView.SetActive(isActive);
+            landPublisherView.SetActive(isActive);
 
             // Assert
-            Assert.AreEqual(isActive, publicationDetailsView.gameObject.activeSelf, "The publicationDetailsView active property does not match!");
+            Assert.AreEqual(isActive, landPublisherView.gameObject.activeSelf, "The publicationDetailsView active property does not match!");
         }
 
         [Test]
@@ -33,10 +33,10 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             bool isCancelClicked = false;
-            publicationDetailsView.OnCancel += () => isCancelClicked = true;
+            landPublisherView.OnCancel += () => isCancelClicked = true;
 
             // Act
-            publicationDetailsView.Cancel();
+            landPublisherView.Cancel();
 
             // Assert
             Assert.IsTrue(isCancelClicked, "isCancelClicked is false!");
@@ -48,19 +48,19 @@ namespace Tests.BuildModeHUDViews
             // Arrange
             string testName = "Test name";
             string testDesc = "Test des";
-            publicationDetailsView.sceneNameInput.text = testName;
-            publicationDetailsView.sceneDescriptionInput.text = testDesc;
+            landPublisherView.sceneNameInput.text = testName;
+            landPublisherView.sceneDescriptionInput.text = testDesc;
             bool isPublishClicked = false;
             string sceneNameReceived = "";
             string sceneDescReceived = "";
 
-            publicationDetailsView.OnPublish += () =>
+            landPublisherView.OnPublish += () =>
             {
                 isPublishClicked = true;
             };
 
             // Act
-            publicationDetailsView.Publish();
+            landPublisherView.Publish();
 
             // Assert
             Assert.IsTrue(isPublishClicked, "isCancelClicked is false!");
@@ -74,13 +74,13 @@ namespace Tests.BuildModeHUDViews
         public void SetSceneNameValidationActiveCorrectly(bool isActive)
         {
             // Arrange
-            publicationDetailsView.sceneNameValidationText.enabled = !isActive;
+            landPublisherView.sceneNameValidationText.enabled = !isActive;
 
             // Act
-            publicationDetailsView.SetSceneNameValidationActive(isActive);
+            landPublisherView.SetSceneNameValidationActive(isActive);
 
             // Assert
-            Assert.AreEqual(isActive, publicationDetailsView.sceneNameValidationText.enabled, "sceneNameValidationText enable property does not match!");
+            Assert.AreEqual(isActive, landPublisherView.sceneNameValidationText.enabled, "sceneNameValidationText enable property does not match!");
         }
 
         [Test]
@@ -90,10 +90,10 @@ namespace Tests.BuildModeHUDViews
             string testName = "Test name";
 
             // Act
-            publicationDetailsView.SetSceneName(testName);
+            landPublisherView.SetSceneName(testName);
 
             // Assert
-            Assert.AreEqual(testName, publicationDetailsView.sceneNameInput.text, "sceneNameInput text does not match!");
+            Assert.AreEqual(testName, landPublisherView.sceneNameInput.text, "sceneNameInput text does not match!");
         }
 
         [Test]
@@ -103,10 +103,10 @@ namespace Tests.BuildModeHUDViews
             string testDesc = "Test desc";
 
             // Act
-            publicationDetailsView.SetSceneDescription(testDesc);
+            landPublisherView.SetSceneDescription(testDesc);
 
             // Assert
-            Assert.AreEqual(testDesc, publicationDetailsView.sceneDescriptionInput.text, "sceneDescriptionInput text does not match!");
+            Assert.AreEqual(testDesc, landPublisherView.sceneDescriptionInput.text, "sceneDescriptionInput text does not match!");
         }
 
         [Test]
@@ -115,13 +115,13 @@ namespace Tests.BuildModeHUDViews
         public void SetPublishButtonActiveCorrectly(bool isActive)
         {
             // Arrange
-            publicationDetailsView.publishButton.interactable = !isActive;
+            landPublisherView.publishButton.interactable = !isActive;
 
             // Act
-            publicationDetailsView.SetPublishButtonActive(isActive);
+            landPublisherView.SetPublishButtonActive(isActive);
 
             // Assert
-            Assert.AreEqual(isActive, publicationDetailsView.publishButton.interactable, "publishButton interactable property does not match!");
+            Assert.AreEqual(isActive, landPublisherView.publishButton.interactable, "publishButton interactable property does not match!");
         }
 
         [Test]
@@ -129,10 +129,10 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             string testName = "Test name";
-            publicationDetailsView.sceneNameInput.text = testName;
+            landPublisherView.sceneNameInput.text = testName;
 
             // Act
-            string currentName = publicationDetailsView.GetSceneName();
+            string currentName = landPublisherView.GetSceneName();
 
             // Assert
             Assert.AreEqual(testName, currentName, "The returned name does not match!");
@@ -143,10 +143,10 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             string testDesc = "Test description";
-            publicationDetailsView.sceneDescriptionInput.text = testDesc;
+            landPublisherView.sceneDescriptionInput.text = testDesc;
 
             // Act
-            string currentDesc = publicationDetailsView.GetSceneDescription();
+            string currentDesc = landPublisherView.GetSceneDescription();
 
             // Assert
             Assert.AreEqual(testDesc, currentDesc, "The returned description does not match!");
@@ -157,10 +157,10 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             Texture2D testTexture = new Texture2D(512, 512);
-            publicationDetailsView.sceneScreenshot.sprite = Sprite.Create(testTexture, new Rect(0.0f, 0.0f, testTexture.width, testTexture.height), new Vector2(0.5f, 0.5f));
+            landPublisherView.sceneScreenshot.sprite = Sprite.Create(testTexture, new Rect(0.0f, 0.0f, testTexture.width, testTexture.height), new Vector2(0.5f, 0.5f));
 
             // Act
-            Texture2D returnedTexture = publicationDetailsView.GetSceneScreenshotTexture();
+            Texture2D returnedTexture = landPublisherView.GetSceneScreenshotTexture();
 
             // Assert
             Assert.AreEqual(testTexture, returnedTexture, "The returned texture does not match!");
@@ -170,28 +170,28 @@ namespace Tests.BuildModeHUDViews
         public void UpdateSceneNameCharCounterCorrectly()
         {
             // Arrange
-            publicationDetailsView.sceneNameInput.text = "123456";
-            publicationDetailsView.sceneNameCharCounterText.text = "";
+            landPublisherView.sceneNameInput.text = "123456";
+            landPublisherView.sceneNameCharCounterText.text = "";
 
             // Act
-            publicationDetailsView.UpdateSceneNameCharCounter();
+            landPublisherView.UpdateSceneNameCharCounter();
 
             // Assert
-            Assert.AreEqual($"6/{publicationDetailsView.sceneNameCharLimit}", publicationDetailsView.sceneNameCharCounterText.text, "The scene name char counter have not been updated correctly!");
+            Assert.AreEqual($"6/{landPublisherView.sceneNameCharLimit}", landPublisherView.sceneNameCharCounterText.text, "The scene name char counter have not been updated correctly!");
         }
 
         [Test]
         public void UpdateSceneDescriptionCharCounterCorrectly()
         {
             // Arrange
-            publicationDetailsView.sceneDescriptionInput.text = "123456";
-            publicationDetailsView.sceneDescriptionCharCounterText.text = "";
+            landPublisherView.sceneDescriptionInput.text = "123456";
+            landPublisherView.sceneDescriptionCharCounterText.text = "";
 
             // Act
-            publicationDetailsView.UpdateSceneDescriptionCharCounter();
+            landPublisherView.UpdateSceneDescriptionCharCounter();
 
             // Assert
-            Assert.AreEqual($"6/{publicationDetailsView.sceneDescriptionCharLimit}", publicationDetailsView.sceneDescriptionCharCounterText.text, "The scene description char counter have not been updated correctly!");
+            Assert.AreEqual($"6/{landPublisherView.sceneDescriptionCharLimit}", landPublisherView.sceneDescriptionCharCounterText.text, "The scene description char counter have not been updated correctly!");
         }
     }
 }

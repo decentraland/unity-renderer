@@ -6,8 +6,8 @@ namespace DCL.Builder
 {
     public interface IPublisher
     {
-        void Initialize();
+        void Initialize(IContext context);
         void Dipose();
-        void Publish(IBuilderScene scene);
+        void StartPublish(IBuilderScene scene);
     }
 }

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public interface IPublicationDetailsView
+public interface ILandPublisherView
 {
     event Action OnCancel;
     event Action OnPublish;
@@ -26,7 +26,7 @@ public interface IPublicationDetailsView
     void UpdateSceneDescriptionCharCounter();
 }
 
-public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
+public class LandPublisherView : MonoBehaviour, ILandPublisherView
 {
     public event Action OnCancel;
     public event Action OnPublish;
@@ -48,9 +48,9 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
 
     public string currentSceneName => sceneNameInput.text;
 
-    internal static PublicationDetailsView Create()
+    internal static LandPublisherView Create()
     {
-        var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<PublicationDetailsView>();
+        var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<LandPublisherView>();
         view.gameObject.name = "_PublicationDetailsView";
 
         return view;

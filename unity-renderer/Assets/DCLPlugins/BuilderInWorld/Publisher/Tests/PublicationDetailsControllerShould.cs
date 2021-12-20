@@ -5,17 +5,17 @@ namespace Tests.PublisherTest
 {
     public class PublicationDetailsControllerShould
     {
-        private PublicationDetailsController publicationDetailsController;
+        private LandPublisherController landPublisherController;
 
         [SetUp]
         public void SetUp()
         {
-            publicationDetailsController = new PublicationDetailsController();
-            publicationDetailsController.Initialize(Substitute.For<IPublicationDetailsView>());
+            landPublisherController = new LandPublisherController();
+            landPublisherController.Initialize(Substitute.For<ILandPublisherView>());
         }
 
         [TearDown]
-        public void TearDown() { publicationDetailsController.Dispose(); }
+        public void TearDown() { landPublisherController.Dispose(); }
 
         [Test]
         [TestCase(true)]
@@ -23,10 +23,10 @@ namespace Tests.PublisherTest
         public void SetActiveCorrectly(bool isActive)
         {
             // Act
-            publicationDetailsController.SetActive(isActive);
+            landPublisherController.SetActive(isActive);
 
             // Assert
-            publicationDetailsController.publicationDetailsView.Received(1).SetActive(isActive);
+            landPublisherController.landPublisherView.Received(1).SetActive(isActive);
         }
 
         [Test]
@@ -34,13 +34,13 @@ namespace Tests.PublisherTest
         {
             // Arrange
             bool isCancelClicked = false;
-            publicationDetailsController.OnCancel += () => isCancelClicked = true;
+            landPublisherController.OnCancel += () => isCancelClicked = true;
 
             // Act
-            publicationDetailsController.Cancel();
+            landPublisherController.Cancel();
 
             // Assert
-            publicationDetailsController.publicationDetailsView.Received(1).SetActive(false);
+            landPublisherController.landPublisherView.Received(1).SetActive(false);
             Assert.IsTrue(isCancelClicked, "isCancelClicked is false!");
         }
 
@@ -52,7 +52,7 @@ namespace Tests.PublisherTest
             // Arrange
             string testName = "Test name";
             string testDesc = "Test desc";
-            publicationDetailsController.isValidated = isValidated;
+            landPublisherController.isValidated = isValidated;
 
             bool isPublishClicked = false;
             //TODO: reeimplmentar
@@ -64,7 +64,7 @@ namespace Tests.PublisherTest
             // Assert
             if (isValidated)
             {
-                publicationDetailsController.publicationDetailsView.Received(1).SetActive(false);
+                landPublisherController.landPublisherView.Received(1).SetActive(false);
                 Assert.IsTrue(isPublishClicked, "isPublishClicked is false!");
             }
         }
@@ -75,26 +75,26 @@ namespace Tests.PublisherTest
         public void ValidatePublicationInfoCorrectly(string sceneName)
         {
             // Arrange
-            publicationDetailsController.isValidated = sceneName.Length == 0;
+            landPublisherController.isValidated = sceneName.Length == 0;
 
             // Act
-            publicationDetailsController.ValidatePublicationInfo(sceneName);
+            landPublisherController.ValidatePublicationInfo(sceneName);
 
             // Assert
-            Assert.AreEqual(sceneName.Length > 0, publicationDetailsController.isValidated, "isValidated does not match!");
-            publicationDetailsController.publicationDetailsView.Received().SetSceneNameValidationActive(!publicationDetailsController.isValidated);
-            publicationDetailsController.publicationDetailsView.Received().SetPublishButtonActive(publicationDetailsController.isValidated);
+            Assert.AreEqual(sceneName.Length > 0, landPublisherController.isValidated, "isValidated does not match!");
+            landPublisherController.landPublisherView.Received().SetSceneNameValidationActive(!landPublisherController.isValidated);
+            landPublisherController.landPublisherView.Received().SetPublishButtonActive(landPublisherController.isValidated);
         }
 
         [Test]
         public void SetDefaultPublicationInfoCorrectly()
         {
             // Act
-            publicationDetailsController.SetDefaultPublicationInfo();
+            landPublisherController.SetDefaultPublicationInfo();
 
             // Assert
-            publicationDetailsController.publicationDetailsView.Received().SetSceneName(PublicationDetailsController.DEFAULT_SCENE_NAME);
-            publicationDetailsController.publicationDetailsView.Received().SetSceneDescription(PublicationDetailsController.DEFAULT_SCENE_DESC);
+            landPublisherController.landPublisherView.Received().SetSceneName(LandPublisherController.DEFAULT_SCENE_NAME);
+            landPublisherController.landPublisherView.Received().SetSceneDescription(LandPublisherController.DEFAULT_SCENE_DESC);
         }
 
         [Test]
@@ -109,8 +109,8 @@ namespace Tests.PublisherTest
             // publicationDetailsController.SetCustomPublicationInfo(testName, testDesc);
 
             // Assert
-            publicationDetailsController.publicationDetailsView.Received().SetSceneName(testName);
-            publicationDetailsController.publicationDetailsView.Received().SetSceneDescription(testDesc);
+            landPublisherController.landPublisherView.Received().SetSceneName(testName);
+            landPublisherController.landPublisherView.Received().SetSceneDescription(testDesc);
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace Tests.PublisherTest
             // publicationDetailsController.GetSceneName();
 
             // Assert
-            publicationDetailsController.publicationDetailsView.Received().GetSceneName();
+            landPublisherController.landPublisherView.Received().GetSceneName();
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace Tests.PublisherTest
             // publicationDetailsController.GetSceneDescription();
 
             // Assert
-            publicationDetailsController.publicationDetailsView.Received().GetSceneDescription();
+            landPublisherController.landPublisherView.Received().GetSceneDescription();
         }
 
         [Test]
@@ -143,7 +143,7 @@ namespace Tests.PublisherTest
             // publicationDetailsController.GetSceneScreenshotTexture();
 
             // Assert
-            publicationDetailsController.publicationDetailsView.Received().GetSceneScreenshotTexture();
+            landPublisherController.landPublisherView.Received().GetSceneScreenshotTexture();
         }
     }
 }

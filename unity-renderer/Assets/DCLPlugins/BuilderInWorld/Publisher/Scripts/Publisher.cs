@@ -8,12 +8,12 @@ namespace DCL.Builder
     public class Publisher : IPublisher
     {
         private IPublishProjectController projectPublisher;
-        private IPublicationDetailsController landPublisher;
+        private ILandPublisherController landPublisher;
 
-        public void Initialize()
+        public void Initialize(IContext context)
         {
             projectPublisher = new PublishProjectController();
-            landPublisher = new PublicationDetailsController();
+            landPublisher = new LandPublisherController();
 
             landPublisher.Initialize();
             projectPublisher.Initialize();
@@ -25,7 +25,7 @@ namespace DCL.Builder
             landPublisher.Dispose();
         }
 
-        public void Publish(IBuilderScene scene)
+        public void StartPublish(IBuilderScene scene)
         {
             switch (scene.sceneType)
             {
@@ -33,12 +33,14 @@ namespace DCL.Builder
                     projectPublisher.StartPublishFlow(scene);
                     break;
                 case IBuilderScene.SceneType.LAND:
-                    // landPublisher.Publish();
+                    landPublisher.StartPublishFlow(scene);
                     break;
                 default:
                     Debug.Log("This should no appear, the scene should have a know type!");
                     break;
             }
         }
+
+        public void PublishProject() { }
     }
 }

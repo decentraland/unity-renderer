@@ -111,16 +111,10 @@ public class BIWPublishController : BIWController, IBIWPublishController
         if (!CanPublish())
             return;
 
-        TakeSceneScreenshotForPublish();
-
-        context.publisher.Publish(builderScene);
-    }
-
-    internal void TakeSceneScreenshotForPublish()
-    {
         context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
             builderScene.sceneScreenshotTexture = sceneSnapshot;
+            context.publisher.StartPublish(builderScene);
         });
     }
 
