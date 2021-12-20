@@ -7,19 +7,7 @@ namespace DCL.SettingsCommon
 {
     public class Settings
     {
-        private static Settings sharedInstance;
-        public static Settings i
-        {
-            get
-            {
-                // this is only set for playmode tests
-                // before referencing i on production code its recommended to call CreateSharedInstance
-                if (sharedInstance == null)
-                    CreateSharedInstance(new DefaultSettingsFactory());
-                return sharedInstance;
-            }
-            private set => sharedInstance = value;
-        }
+        public static Settings i { get; private set; }
 
         public event Action OnResetAllSettings;
         
@@ -39,8 +27,8 @@ namespace DCL.SettingsCommon
 
         public static void CreateSharedInstance(ISettingsFactory settingsFactory)
         {
-            if (sharedInstance != null && !sharedInstance.isDisposed) return;
-            sharedInstance = settingsFactory.Build();
+            if (i != null && !i.isDisposed) return;
+            i = settingsFactory.Build();
         }
 
         public Settings(QualitySettingsData qualitySettingsPreset,
