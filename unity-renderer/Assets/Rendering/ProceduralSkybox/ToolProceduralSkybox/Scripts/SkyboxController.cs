@@ -67,6 +67,7 @@ namespace DCL.Skybox
             }
 
             CommonScriptableObjects.proceduralSkyboxDisabled.Set(false);
+            CommonScriptableObjects.proceduralSkyboxEnabled.Set(true);
 
             GetOrCreateEnvironmentProbe();
 
@@ -467,6 +468,7 @@ namespace DCL.Skybox
         {
 
             CommonScriptableObjects.proceduralSkyboxDisabled.Set(true);
+            CommonScriptableObjects.proceduralSkyboxEnabled.Set(false);
 
             // set skyboxConfig to false
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);

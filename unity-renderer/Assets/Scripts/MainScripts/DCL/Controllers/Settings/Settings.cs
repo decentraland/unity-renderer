@@ -101,7 +101,9 @@ namespace DCL.SettingsCommon
                 profanityChatFiltering = true,
                 nightMode = false,
                 hideUI = false,
-                showAvatarNames = true
+                showAvatarNames = true,
+                dynamicProceduralSkybox = true,
+                skyboxTime = 0.0f
             };
         }
 

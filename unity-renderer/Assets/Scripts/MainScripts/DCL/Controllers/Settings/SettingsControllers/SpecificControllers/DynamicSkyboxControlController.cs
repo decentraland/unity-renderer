@@ -8,13 +8,13 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     public class DynamicSkyboxControlController : ToggleSettingsControlController
     {
         // Start is called before the first frame update
-        public override object GetStoredValue() { return currentGeneralSettings.dynamicProceduralSkbox; }
+        public override object GetStoredValue() { return currentGeneralSettings.dynamicProceduralSkybox; }
 
         // Update is called once per frame
         public override void UpdateSetting(object newValue)
         {
-            currentGeneralSettings.dynamicProceduralSkbox = (bool)newValue;
-            if (currentGeneralSettings.dynamicProceduralSkbox)
+            currentGeneralSettings.dynamicProceduralSkybox = (bool)newValue;
+            if (currentGeneralSettings.dynamicProceduralSkybox)
             {
                 DataStore.i.skyboxConfig.useDynamicSkybox.Set(true);
             }
@@ -23,7 +23,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
                 DataStore.i.skyboxConfig.useDynamicSkybox.Set(false);
             }
 
-            CommonSettingsScriptableObjects.dynamicSkyboxDisabled.Set(currentGeneralSettings.dynamicProceduralSkbox);
+            CommonSettingsScriptableObjects.dynamicSkyboxDisabled.Set(currentGeneralSettings.dynamicProceduralSkybox);
         }
     }
 }

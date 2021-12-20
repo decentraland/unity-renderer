@@ -55,7 +55,7 @@ namespace DCL.SettingsCommon
             settingsByKey.SetFloat(AVATARS_LOD_DISTANCE, currentSettings.avatarsLODDistance);
             settingsByKey.SetFloat(MAX_NON_LOAD_AVATARS, currentSettings.maxNonLODAvatars);
             settingsByKey.SetEnum(VOICE_CHAT_ALLOW, currentSettings.voiceChatAllow);
-            settingsByKey.SetBool(PROCEDURAL_SKYBOX_MODE, currentSettings.dynamicProceduralSkbox);
+            settingsByKey.SetBool(PROCEDURAL_SKYBOX_MODE, currentSettings.dynamicProceduralSkybox);
             settingsByKey.SetFloat(SKYBOX_TIME, currentSettings.skyboxTime);
         }
 
@@ -77,7 +77,7 @@ namespace DCL.SettingsCommon
                 settings.avatarsLODDistance = settingsByKey.GetFloat(AVATARS_LOD_DISTANCE, defaultSettings.avatarsLODDistance);
                 settings.maxNonLODAvatars = settingsByKey.GetFloat(MAX_NON_LOAD_AVATARS, defaultSettings.maxNonLODAvatars);
                 settings.voiceChatAllow = settingsByKey.GetEnum(VOICE_CHAT_ALLOW, defaultSettings.voiceChatAllow);
-                settings.dynamicProceduralSkbox = settingsByKey.GetBool(PROCEDURAL_SKYBOX_MODE, defaultSettings.dynamicProceduralSkbox);
+                settings.dynamicProceduralSkybox = settingsByKey.GetBool(PROCEDURAL_SKYBOX_MODE, defaultSettings.dynamicProceduralSkybox);
                 settings.skyboxTime = settingsByKey.GetFloat(SKYBOX_TIME, defaultSettings.skyboxTime);
             }
             catch (Exception e)
