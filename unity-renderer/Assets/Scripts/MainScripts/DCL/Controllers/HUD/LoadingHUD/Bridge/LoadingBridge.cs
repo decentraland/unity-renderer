@@ -12,8 +12,6 @@ public class LoadingBridge : MonoBehaviour
         public bool showTips = false;
     }
 
-    public event Action<bool> OnLoadingScreenVisibleStateChange;
-
     public void SetLoadingScreen(string jsonMessage)
     {
         Payload payload = JsonUtility.FromJson<Payload>(jsonMessage);
@@ -22,7 +20,5 @@ public class LoadingBridge : MonoBehaviour
         if (!string.IsNullOrEmpty(payload.message))
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
         DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
-
-        OnLoadingScreenVisibleStateChange?.Invoke(payload.isVisible);
     }
 }

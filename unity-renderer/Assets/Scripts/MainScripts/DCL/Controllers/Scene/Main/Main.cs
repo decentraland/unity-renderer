@@ -22,7 +22,6 @@ namespace DCL
         protected IKernelCommunication kernelCommunication;
 
         private PluginSystem pluginSystem;
-        private LoadingBridge loadingScreenBridge;
 
         protected virtual void Awake()
         {
@@ -43,8 +42,7 @@ namespace DCL
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
                 
-                loadingScreenBridge = SceneReferences.i.bridgeGameObject.GetComponent<LoadingBridge>();
-                loadingScreenBridge.OnLoadingScreenVisibleStateChange += OnLoadingScreenVisibleStateChange;
+                DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
 
             SetupPlugins();
@@ -69,12 +67,13 @@ namespace DCL
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
-        void OnLoadingScreenVisibleStateChange(bool loadingScreenIsVisible)
+        void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
         {
-            if (loadingScreenIsVisible)
+            if (newVisibleValue)
             {
+                // Prewarm shader variants
                 Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-                loadingScreenBridge.OnLoadingScreenVisibleStateChange -= OnLoadingScreenVisibleStateChange;
+                DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             }
         }
 
