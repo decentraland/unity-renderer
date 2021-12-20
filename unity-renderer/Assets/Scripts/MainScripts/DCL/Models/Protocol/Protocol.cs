@@ -21,6 +21,7 @@ namespace DCL.Models
         SMART_ITEM = 204,
         AUDIO_STREAM = 202,
         AVATAR_MODIFIER_AREA = 205,
+        AVATAR_ATTACH = 206,
         QUEST_TRACKING_INFORMATION = 1417815519 // This corresponds with dcl-ecs-quests
     }
 

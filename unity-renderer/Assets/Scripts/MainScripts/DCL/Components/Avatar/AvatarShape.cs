@@ -35,6 +35,8 @@ namespace DCL
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
+        private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
+
         private void Awake()
         {
             model = new AvatarModel();
@@ -173,11 +175,13 @@ namespace DCL
                 player.playerName = playerName;
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
+                player.anchorPoints = anchorPoints;
                 otherPlayers.Add(player.id, player);
                 avatarReporterController.ReportAvatarRemoved();
             }
 
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+            anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));

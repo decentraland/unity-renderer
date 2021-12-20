@@ -1,5 +1,6 @@
 using System;
 using DCL;
+using DCL.Interface;
 using DCL.FatalErrorReporter;
 using DCL.NotificationModel;
 using UnityEngine;
@@ -60,6 +61,18 @@ public class PlayerAvatarController : MonoBehaviour
         avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
         avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
         DataStore.i.common.isPlayerRendererLoaded.Set(true);
+
+        IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
+        anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
+
+        var player = new Player()
+        {
+            id = userProfile.userId,
+            name = userProfile.name,
+            renderer = avatarRenderer,
+            anchorPoints = anchorPoints
+        };
+        DataStore.i.player.ownPlayer.Set(player);
 
         if (avatarWereablesErrors || baseWereablesErrors)
             ShowWearablesWarning();
