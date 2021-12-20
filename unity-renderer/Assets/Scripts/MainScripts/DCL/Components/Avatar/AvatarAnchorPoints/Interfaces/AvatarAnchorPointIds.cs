@@ -1,6 +1,7 @@
 public enum AvatarAnchorPointIds
 {
-    NameTag = 0,
+    Position = 0,
+    NameTag,
     LeftHand,
     RightHand
 }

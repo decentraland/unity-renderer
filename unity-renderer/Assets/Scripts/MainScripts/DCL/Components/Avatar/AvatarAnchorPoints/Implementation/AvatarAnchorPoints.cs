@@ -32,6 +32,11 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
     }
     (Vector3 position, Quaternion rotation, Vector3 scale) IAvatarAnchorPoints.GetTransform(AvatarAnchorPointIds anchorPointId)
     {
+        if (anchorPointId == AvatarAnchorPointIds.Position && avatarTransform != null)
+        {
+            return (avatarTransform.position, avatarTransform.rotation, Vector3.one);
+        }
+
         if (anchorPointId == AvatarAnchorPointIds.NameTag && avatarTransform != null)
         {
             return (avatarTransform.position + Vector3.up * nameTagY, avatarTransform.rotation, Vector3.one);
