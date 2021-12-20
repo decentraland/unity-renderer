@@ -33,6 +33,11 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         scene = TestUtils.CreateTestScene();
         scene.contentProvider = new ContentProvider_Dummy();
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+
+        // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
+        //              like this.
+        CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+        CommonScriptableObjects.rendererState.Set(true);
     }
 
     [UnityTest]

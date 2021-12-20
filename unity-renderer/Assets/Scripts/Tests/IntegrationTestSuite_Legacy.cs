@@ -114,9 +114,13 @@ public class IntegrationTestSuite_Legacy
         PoolManager.enablePrewarm = false;
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         var sceneController = Environment.i.world.sceneController;
-        sceneController.deferredMessagesDecoding = false;
-        sceneController.prewarmSceneMessagesPool = false;
-        sceneController.prewarmEntitiesPool = false;
+
+        if ( sceneController != null )
+        {
+            sceneController.deferredMessagesDecoding = false;
+            sceneController.prewarmSceneMessagesPool = false;
+            sceneController.prewarmEntitiesPool = false;
+        }
     }
 
     public virtual IEnumerator SetUp_Camera()

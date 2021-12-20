@@ -9,6 +9,7 @@ using UnityEngine.TestTools;
 
 public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
+    private NotificationsController notificationsController;
     private PrivateChatWindowHUDController controller;
     private PrivateChatWindowHUDView view;
 
@@ -22,6 +23,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
+        notificationsController = TestUtils.CreateComponentWithGameObject<NotificationsController>("NotificationsController");
 
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
 
@@ -52,6 +54,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         UnityEngine.Object.Destroy(userProfileController.gameObject);
+        UnityEngine.Object.Destroy(notificationsController.gameObject);
         controller.Dispose();
         yield return base.TearDown();
     }
@@ -179,7 +182,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         InitializeChatWindowController(chatController);
 
         // Initialize friends HUD
-        NotificationsController.i.Initialize(new NotificationHUDController());
+        notificationsController.Initialize(new NotificationHUDController());
 
         FriendsHUDController friendsHudController = new FriendsHUDController();
         friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile());
@@ -197,7 +200,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(true, friendsHudController.view.gameObject.activeSelf);
 
         friendsHudController.Dispose();
-        NotificationsController.i.Dispose();
+        notificationsController.Dispose();
     }
 
     private ChatEntry.Model GetViewEntryModel(int index) { return controller.view.chatHudView.entries[index].model; }

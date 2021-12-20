@@ -37,6 +37,7 @@ public class FeatureFlagController : IFeatureFlagController
     {
         Object.Destroy(bridgeGameObject);
         bridgeGameObject = null;
+        featureFlagBridgeComponent = null;
     }
 
     public void Initialize()

@@ -6,6 +6,7 @@ using System.Text;
 using DCL;
 using DCL.Builder;
 using DCL.Helpers;
+using DCL.Tests;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.Core.Arguments;
@@ -15,6 +16,7 @@ using Tests;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
+using Environment = System.Environment;
 
 public class BIWBuilderApiShould : IntegrationTestSuite
 {
@@ -22,11 +24,6 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     private IWebRequestController mockedRequestController;
     private string baseURL;
     private GameObject gameObjectToDestroy;
-
-    protected override void InitializeServices(ServiceLocator serviceLocator)
-    {
-        serviceLocator.Register<IWebRequestController>(WebRequestController.Create);
-    }
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
@@ -41,6 +38,8 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         var context = BIWTestUtils.CreateMockedContext();
         context.sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
         apiController.Initialize(context);
+
+        mockedRequestController = DCL.Environment.i.platform.webRequest;
     }
 
     [UnityTearDown]

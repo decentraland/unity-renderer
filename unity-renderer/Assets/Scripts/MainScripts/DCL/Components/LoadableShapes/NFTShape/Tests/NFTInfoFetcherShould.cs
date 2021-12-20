@@ -1,22 +1,25 @@
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 
-public class NFTInfoFectcherShould
+public class NFTInfoFetcherShould
 {
     private NFTInfoFetcher fetcher;
 
     [SetUp]
-    protected void SetUp() {  fetcher = new NFTInfoFetcher(); }
+    protected void SetUp()
+    {
+        fetcher = new NFTInfoFetcher();
+    }
 
     [Test]
-    public void NFTInfoFetcherFail()
+    public void CallFailWhenFetchFails()
     {
         //Act - Assert
         fetcher.FetchNFTImage("testAddress", "testId", info =>  Assert.Fail(), Assert.Pass );
     }
 
     [Test]
-    public void NFTInfoFetcherDipose()
+    public void DisposeCorrectly()
     {
         //Arrange
         fetcher.FetchNFTImage("testAddress", "testId", null, null );

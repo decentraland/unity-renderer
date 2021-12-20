@@ -46,7 +46,7 @@ namespace DCL.Rendering
 
         private CullingController() { }
 
-        private CullingController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
+        public CullingController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
         {
             if (cullingObjectsTracker == null)
                 objectsTracker = new CullingObjectsTracker();

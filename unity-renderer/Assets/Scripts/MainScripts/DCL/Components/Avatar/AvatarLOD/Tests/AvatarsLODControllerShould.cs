@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
@@ -18,8 +19,13 @@ namespace Tests.AvatarsLODController
         [SetUp]
         public void SetUp()
         {
+            ServiceLocator serviceLocator = new ServiceLocator();
+            serviceLocator.Register<IUpdateEventHandler>( () => Substitute.For<IUpdateEventHandler>());
+            DCL.Environment.Setup(serviceLocator);
+
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
             controller = Substitute.ForPartsOf<DCL.AvatarsLODController>();
+            controller.Initialize();
         }
 
         [Test]
@@ -245,6 +251,8 @@ namespace Tests.AvatarsLODController
         [Test]
         public void HideCharacterClippingAvatars()
         {
+            Debug.Log("Start");
+
             DataStore.i.avatarsLOD.maxAvatars.Set(2);
             controller.enabled = true;
 
@@ -252,6 +260,7 @@ namespace Tests.AvatarsLODController
             CommonScriptableObjects.cameraForward.Set(Vector3.forward);
             CommonScriptableObjects.cameraPosition.Set(cameraPosition);
             CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+
             float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
 
             Player avatar = CreateMockPlayer("avatar");
@@ -261,11 +270,13 @@ namespace Tests.AvatarsLODController
 
             // Place at normal distance
             avatar.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f);
+            Debug.Log("Update blah");
             controller.Update();
             avatarPlayerController.Received().SetFullAvatar();
 
             // Place super close to the main player
             avatar.worldPosition = cameraPosition + Vector3.forward * 0.75f;
+            Debug.Log("Update blah 2");
             controller.Update();
             avatarPlayerController.Received().SetInvisible();
         }
@@ -487,6 +498,7 @@ namespace Tests.AvatarsLODController
         {
             controller.Dispose();
             DataStore.Clear();
+            DCL.Environment.Dispose();
         }
     }
 }

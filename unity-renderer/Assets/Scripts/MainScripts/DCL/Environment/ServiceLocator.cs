@@ -9,6 +9,9 @@ namespace DCL
 
     public class ServiceLocator : IDisposable
     {
+        private static bool VERBOSE = false;
+        private static Logger logger = new Logger("ServiceLocator") { verboseEnabled = VERBOSE };
+
         private Dictionary<Type, IService> services = new Dictionary<Type, IService>();
         private Dictionary<Type, ServiceBuilder> serviceBuilders = new Dictionary<Type, ServiceBuilder>();
 
@@ -34,7 +37,7 @@ namespace DCL
 
             if (!serviceBuilders.ContainsKey(type))
             {
-                Debug.LogWarning($"Trying to unregister non-existent type! type: {type.FullName}");
+                logger.Warning($"Trying to unregister non-existent type! type: {type.FullName}");
                 return;
             }
 
@@ -48,13 +51,13 @@ namespace DCL
 
             if (!serviceBuilders.ContainsKey(type))
             {
-                Debug.LogWarning($"Not registered! use Register<T> to set the type builder first and then Initialize() to create it. type: {type.FullName}");
+                logger.Verbose($"Not registered! use Register<T> to set the type builder first and then Initialize() to create it. type: {type.FullName}");
                 return null;
             }
 
             if (!services.ContainsKey(type))
             {
-                Debug.LogWarning($"Not initialized! use Initialize() to create this service. type: {type.FullName}");
+                logger.Warning($"Not initialized! use Initialize() to create this service. type: {type.FullName}");
                 return null;
             }
 

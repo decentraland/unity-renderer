@@ -45,8 +45,9 @@ namespace DCL.Controllers
                 SetEnabled(false);
         }
 
-        public WorldBlockersController(IBlockerInstanceHandler blockerInstanceHandler = null)
+        public WorldBlockersController(IBlockerInstanceHandler blockerInstanceHandler = null, ISceneHandler sceneHandler = null)
         {
+            this.sceneHandler = sceneHandler;
             this.blockerInstanceHandler = blockerInstanceHandler;
         }
 
@@ -95,7 +96,8 @@ namespace DCL.Controllers
                 blockerInstanceHandler = new BlockerInstanceHandler(blockerAnimationHandler);
             }
 
-            this.sceneHandler = DCL.Environment.i.world.state;
+            if ( this.sceneHandler == null )
+                this.sceneHandler = DCL.Environment.i.world.state;
 
             blockerInstanceHandler.SetParent(blockersParent);
 

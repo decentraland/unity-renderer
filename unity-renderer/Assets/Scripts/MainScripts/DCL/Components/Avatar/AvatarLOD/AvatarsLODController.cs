@@ -26,23 +26,29 @@ namespace DCL
         internal bool enabled;
         private UnityEngine.Camera mainCamera;
 
-        public void Initialize()
+        public AvatarsLODController ()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
             DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagChanged;
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        }
+
+        public void Initialize()
+        {
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         private void OnFeatureFlagChanged(FeatureFlag current, FeatureFlag previous)
         {
             if (enabled == current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME))
                 return;
+
             Initialize(current);
         }
 
         internal void Initialize(FeatureFlag current)
         {
             enabled = current.IsFeatureEnabled(AVATAR_LODS_FLAG_NAME);
+
             if (!enabled)
                 return;
 
@@ -67,6 +73,7 @@ namespace DCL
             if (!enabled || lodControllers.ContainsKey(id))
                 return;
 
+            Debug.Log("Registering avatar... " + id);
             lodControllers.Add(id, CreateLodController(player));
         }
 
@@ -123,9 +130,11 @@ namespace DCL
             overlappingTracker.Reset();
 
             (IAvatarLODController lodController, float distance)[] lodControllersByDistance = ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition);
+
             for (int index = 0; index < lodControllersByDistance.Length; index++)
             {
                 (IAvatarLODController lodController, float distance) = lodControllersByDistance[index];
+
                 if (IsInInvisibleDistance(distance))
                 {
                     lodController.SetNameVisible(false);
@@ -146,6 +155,7 @@ namespace DCL
                         lodController.SetNameVisible(true);
                     else
                         lodController.SetNameVisible(overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(mainCamera)));
+
                     continue;
                 }
 

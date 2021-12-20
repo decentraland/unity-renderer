@@ -32,7 +32,7 @@ namespace Tests
 
         protected override ServiceLocator InitializeServiceLocator()
         {
-            ServiceLocator result = new ServiceLocator();
+            ServiceLocator result = DCL.Tests.ServiceLocatorFactory.CreateMocked();
             result.Register<IPointerEventsController>( () => new PointerEventsController());
             result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
             result.Register<IWorldState>( () => new WorldState());

@@ -23,6 +23,7 @@ public class BlockersControllerShould
         allLoadedParcelCoords.Add(new Vector2Int(-1, 0));
         allLoadedParcelCoords.Add(new Vector2Int(-1, 1));
 
+        sceneHandler = Substitute.For<ISceneHandler>();
         sceneHandler.GetAllLoadedScenesCoords().Returns(allLoadedParcelCoords);
 
         var animationHandler = Substitute.For<IBlockerAnimationHandler>();
@@ -35,7 +36,7 @@ public class BlockersControllerShould
         blockersParent = new GameObject();
         blockerInstanceHandler.SetParent(blockersParent.transform);
 
-        blockerController = new WorldBlockersController(blockerInstanceHandler);
+        blockerController = new WorldBlockersController(blockerInstanceHandler, sceneHandler);
     }
 
     [TearDown]
@@ -53,7 +54,7 @@ public class BlockersControllerShould
         blockerInstanceHandler.GetBlockers().Returns(new Dictionary<Vector2Int, IPoolableObject>());
 
         blockerController.Dispose();
-        blockerController = new WorldBlockersController(blockerInstanceHandler);
+        blockerController = new WorldBlockersController(blockerInstanceHandler, sceneHandler);
 
         // Act-assert #1: first blockers added should be shown
         blockerController.SetupWorldBlockers();

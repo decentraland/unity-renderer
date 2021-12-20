@@ -9,16 +9,26 @@ namespace DCL
         private int maxTime = 60;
         private float lastActivityTime = 0.0f;
         private bool idle = false;
+        private IUpdateEventHandler updateEventHandler;
         public event IIdleChecker.ChangeStatus OnChangeStatus;
 
         public void Subscribe(IIdleChecker.ChangeStatus callback) { OnChangeStatus += callback; }
 
         public void Unsubscribe(IIdleChecker.ChangeStatus callback) { OnChangeStatus -= callback; }
 
+        public IdleChecker (IUpdateEventHandler eventHandler = null)
+        {
+            this.updateEventHandler = eventHandler;
+        }
+
         public void Initialize()
         {
             lastActivityTime = Time.time;
-            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+
+            if (this.updateEventHandler == null)
+                this.updateEventHandler = DCL.Environment.i.platform.updateEventHandler;
+
+            updateEventHandler?.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         public void SetMaxTime(int time) { maxTime = time; }
@@ -65,7 +75,7 @@ namespace DCL
 
         public void Dispose()
         {
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
     }
 }

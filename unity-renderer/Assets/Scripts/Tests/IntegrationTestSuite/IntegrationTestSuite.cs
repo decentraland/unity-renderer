@@ -33,10 +33,11 @@ namespace Tests
         [UnityTearDown]
         protected virtual IEnumerator TearDown()
         {
-            Environment.Dispose();
             PoolManager.i?.Dispose();
             DataStore.Clear();
-            yield break;
+
+            yield return null;
+            Environment.Dispose();
         }
     }
 }
