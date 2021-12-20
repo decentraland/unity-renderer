@@ -572,7 +572,8 @@ namespace DCL.Skybox
 
             if (!selectedConfiguration.useAvatarRealtimeLightColor)
             {
-                selectedConfiguration.avatarConstantLightColor = EditorGUILayout.ColorField("Light Color", selectedConfiguration.avatarConstantLightColor, GUILayout.Width(400));
+                //selectedConfiguration.avatarLightColorGradient = EditorGUILayout.ColorField("Light Color", selectedConfiguration.avatarLightColorGradient, GUILayout.Width(400));
+                RenderColorGradientField(selectedConfiguration.avatarLightColorGradient, "Light Color", 0, 24);
                 EditorGUILayout.Separator();
             }
         }

@@ -40,7 +40,7 @@ namespace DCL.Skybox
         public bool useAvatarRealtimeDLDirection = true;
         public Vector3 avatarLightConstantDir = new Vector3(-18f, 144f, -72f);
         public bool useAvatarRealtimeLightColor = true;
-        public Color avatarConstantLightColor = Color.white;
+        public Gradient avatarLightColorGradient = new Gradient();
 
         // Fog Properties
         public bool useFog = false;
@@ -143,7 +143,7 @@ namespace DCL.Skybox
             // Apply Avatar Light Color
             if (!useAvatarRealtimeLightColor || directionalLightGO == null || !useDirectionalLight)
             {
-                Shader.SetGlobalColor("_LightColor", avatarConstantLightColor);
+                Shader.SetGlobalColor("_LightColor", avatarLightColorGradient.Evaluate(normalizedDayTime));
             }
             else
             {

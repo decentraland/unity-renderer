@@ -8,7 +8,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Reflection Resolution", fileName = "ReflectionResolutionControlController")]
     public class RefectionResolutionControlController : SpinBoxSettingsControlController
     {
-        public override object GetStoredValue() { return currentQualitySetting.reflectionResolution; }
+
+        public override object GetStoredValue() { return (int)currentQualitySetting.reflectionResolution; }
 
         public override void UpdateSetting(object newValue)
         {
