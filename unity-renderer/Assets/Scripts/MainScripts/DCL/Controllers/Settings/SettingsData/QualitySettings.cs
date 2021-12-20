@@ -24,10 +24,6 @@ namespace DCL.SettingsCommon
 
         public enum ReflectionResolution
         {
-            Res_16,
-            Res_32,
-            Res_64,
-            Res_128,
             Res_256,
             Res_512,
             Res_1024,

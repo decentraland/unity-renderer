@@ -21,10 +21,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6c6ff18655a62554196a6a3295860e1f, type: 2}
   isBeta: 0
   spinBoxLabels:
-  - 16
-  - 32
-  - 64
-  - 128
   - 256
   - 512
   - 1024

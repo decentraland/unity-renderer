@@ -18,18 +18,6 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 
             switch (currentQualitySetting.reflectionResolution)
             {
-                case QualitySettings.ReflectionResolution.Res_16:
-                    DataStore.i.skyboxConfig.reflectionResolution.Set(16);
-                    break;
-                case QualitySettings.ReflectionResolution.Res_32:
-                    DataStore.i.skyboxConfig.reflectionResolution.Set(32);
-                    break;
-                case QualitySettings.ReflectionResolution.Res_64:
-                    DataStore.i.skyboxConfig.reflectionResolution.Set(64);
-                    break;
-                case QualitySettings.ReflectionResolution.Res_128:
-                    DataStore.i.skyboxConfig.reflectionResolution.Set(128);
-                    break;
                 case QualitySettings.ReflectionResolution.Res_256:
                     DataStore.i.skyboxConfig.reflectionResolution.Set(256);
                     break;
