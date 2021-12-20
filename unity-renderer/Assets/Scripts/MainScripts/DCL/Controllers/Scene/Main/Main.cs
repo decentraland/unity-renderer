@@ -92,7 +92,7 @@ namespace DCL
             pluginSystem = PluginSystemFactory.Create();
         }
 
-        protected virtual void SetupEnvironment()
+        protected virtual void SetupServices()
         {
             Environment.Setup(ServiceLocatorFactory.CreateDefault());
         }
