@@ -45,7 +45,7 @@ namespace DCL.Controllers
                 SetEnabled(false);
         }
 
-        public WorldBlockersController(IBlockerInstanceHandler blockerInstanceHandler = null) //ISceneHandler sceneHandler = null, ICullingController cullingController = null)
+        public WorldBlockersController(IBlockerInstanceHandler blockerInstanceHandler = null)
         {
             this.blockerInstanceHandler = blockerInstanceHandler;
         }

@@ -12,7 +12,7 @@ namespace DCL
             OnGui
         }
 
-        public void AddListener( EventType eventType, Action action );
-        public void RemoveListener( EventType eventType, Action action );
+        void AddListener( EventType eventType, Action action );
+        void RemoveListener( EventType eventType, Action action );
     }
 }
