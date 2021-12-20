@@ -25,7 +25,7 @@ namespace DCL.Components
         private readonly GetAnchorPointsHandler getAnchorPointsHandler = new GetAnchorPointsHandler();
         private ISceneBoundsChecker sceneBoundsChecker => Environment.i?.world?.sceneBoundsChecker;
 
-        private Vector2Int? currentCords = null;
+        private Vector2Int? currentCoords = null;
         private bool isInsideScene = true;
         private float lastBoundariesCheckTime = 0;
 
@@ -106,7 +106,7 @@ namespace DCL.Components
 
         IEnumerator ComponentUpdate()
         {
-            currentCords = null;
+            currentCoords = null;
 
             while (true)
             {
@@ -141,11 +141,11 @@ namespace DCL.Components
         {
             bool result = isInsideScene;
             Vector2Int coords = Utils.WorldToGridPosition(position);
-            if (currentCords == null || currentCords != coords)
+            if (currentCoords == null || currentCoords != coords)
             {
                 result = scene.IsInsideSceneBoundaries(coords, position.y);
             }
-            currentCords = coords;
+            currentCoords = coords;
             isInsideScene = result;
             return result;
         }
