@@ -10,7 +10,7 @@ namespace DCL.Components
 {
     internal class AvatarAttachHandler : IDisposable
     {
-        private const float BOUNDARIES_CHECK_INTERVAL = 0.7f;
+        private const float BOUNDARIES_CHECK_INTERVAL = 5 * 60f;
 
         public AvatarAttachComponent.Model model { internal set; get; } = new AvatarAttachComponent.Model();
         public IParcelScene scene { private set; get; }
