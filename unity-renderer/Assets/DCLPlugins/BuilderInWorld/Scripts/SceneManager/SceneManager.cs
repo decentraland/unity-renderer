@@ -493,6 +493,7 @@ namespace DCL.Builder
         internal void ExitEditMode()
         {
             currentState = State.IDLE;
+            DataStore.i.HUDs.loadingHUD.visible.Set(true);
             initialLoadingController.Hide(true);
             inputController.inputTypeMode = InputTypeMode.GENERAL;
             CommonScriptableObjects.allUIHidden.Set(false);
