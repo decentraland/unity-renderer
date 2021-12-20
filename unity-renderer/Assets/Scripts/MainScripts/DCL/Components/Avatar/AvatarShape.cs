@@ -41,12 +41,24 @@ namespace DCL
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
+        private Avatar avatar;
+        private LOD avatarLOD;
+
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-            avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
-            
+            avatarLOD = new LOD(avatarContainer);
+            avatar = new Avatar(
+                new AvatarCurator(new WearableItemResolver()),
+                new Loader(new WearableLoaderFactory(), avatarContainer),
+                GetComponentInChildren<AvatarAnimatorLegacy>(),
+                new Visibility(avatarContainer),
+                avatarLOD,
+                new SimpleGPUSkinning(),
+                new GPUSkinningThrottler_New());
+            //avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
+
             if (avatarReporterController == null)
             {
                 avatarReporterController = new AvatarReporterController(Environment.i.world.state);
@@ -101,9 +113,17 @@ namespace DCL
                     entity.gameObject.transform.localRotation, true);
             }
 
-            avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
-
-            yield return new WaitUntil(() => avatarDone || avatarFailed);
+            var wearableItems = model.wearables.ToList();
+            wearableItems.Add(model.bodyShape);
+            //TODO: Resolve cancellation token
+            yield return avatar.Load(wearableItems, new AvatarSettings
+                               {
+                                   bodyshapeId = model.bodyShape,
+                                   eyesColor = model.eyeColor,
+                                   skinColor = model.skinColor,
+                                   hairColor = model.hairColor,
+                               })
+                               .ToCoroutine();
 
             onPointerDown.Initialize(
                 new OnPointerDown.Model()
@@ -172,7 +192,7 @@ namespace DCL
                 otherPlayers.Add(player.id, player);
                 avatarReporterController.ReportAvatarRemoved();
             }
-            
+
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
 
             player.playerName.SetIsTalking(model.talking);

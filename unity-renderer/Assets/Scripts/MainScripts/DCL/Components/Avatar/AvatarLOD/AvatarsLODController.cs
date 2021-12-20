@@ -92,21 +92,9 @@ namespace DCL
             UpdateLODsBillboardOrientation();
         }
 
-        internal void UpdateLODsBillboard()
+        internal void UpdateLODsBillboardOrientation()
         {
-            foreach (var kvp in lodControllers)
-            {
-                Player player = kvp.Value.player;
-
-                if (!IsInFrontOfCamera(player.worldPosition))
-                    continue;
-
-                Vector3 previousForward = player.forwardDirection;
-                Vector3 lookAtDir = (cameraPosition - player.worldPosition).normalized;
-
-                lookAtDir.y = previousForward.y;
-                player.renderer.SetImpostorForward(lookAtDir);
-            }
+            //Debug.Log("TODO"); // Move to a component or the LOD itself
         }
 
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)

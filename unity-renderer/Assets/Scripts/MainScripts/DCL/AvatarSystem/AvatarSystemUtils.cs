@@ -216,5 +216,7 @@ namespace AvatarSystem
                 result.Add(bodyshapeLoader.feetRenderer);
             return result;
         }
+
+        public static bool IsValidFor(this IWearableLoader loader, WearableItem wearableItem) { return loader.wearable.id == wearableItem.id; }
     }
 }

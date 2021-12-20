@@ -86,7 +86,7 @@ namespace Tests.AvatarLODController
             controller.SetLOD2();
             Assert.Fail();
         }
-        
+
         [UnityTest]
         public IEnumerator AffectAvatarColliderBasedOnVisibility()
         {

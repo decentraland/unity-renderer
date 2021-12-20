@@ -85,12 +85,12 @@ namespace Tests.AvatarsLODController
         {
             IAvatarLODController lodController = null;
             controller.Configure()
-                .CreateLodController(Arg.Any<Player>())
-                .Returns(x =>
-                {
-                    lodController = Substitute.For<IAvatarLODController>();
-                    return lodController;
-                });
+                      .CreateLodController(Arg.Any<Player>())
+                      .Returns(x =>
+                      {
+                          lodController = Substitute.For<IAvatarLODController>();
+                          return lodController;
+                      });
             controller.enabled = true;
 
             controller.RegisterAvatar("player0", CreateMockPlayer("player0"));

@@ -77,33 +77,7 @@ namespace DCL
             else
                 player?.playerName.Hide();
         }
-
-        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade, float transitionDuration = TRANSITION_DURATION)
-        {
-            CoroutineStarter.Stop(currentTransition);
-            currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade, transitionDuration));
-        }
-
-        internal IEnumerator Transition(float targetAvatarFade, float targetImpostorFade, float transitionDuration = TRANSITION_DURATION)
-        {
-            while (!player.renderer.isReady)
-            {
-                yield return null;
-            }
-
-            player.renderer.SetAvatarFade(avatarFade);
-            player.renderer.SetImpostorFade(impostorFade);
-            player.renderer.SetRendererEnabled(true);
-            player.renderer.SetImpostorVisibility(true);
-
-            while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
-            {
-                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, (1f / transitionDuration) * Time.deltaTime);
-                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, (1f / transitionDuration) * Time.deltaTime);
-                player.renderer.SetAvatarFade(avatarFade);
-                player.renderer.SetImpostorFade(impostorFade);
-                yield return null;
-            }
+        public void UpdateImpostorTint(float distanceToMainPlayer) { player.avatar.SetImpostorTint(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer)); }
 
         public void Dispose() { }
     }
