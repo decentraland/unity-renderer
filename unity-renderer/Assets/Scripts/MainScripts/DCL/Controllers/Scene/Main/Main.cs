@@ -22,6 +22,7 @@ namespace DCL
         protected IKernelCommunication kernelCommunication;
 
         private PluginSystem pluginSystem;
+        private LoadingBridge loadingScreenBridge;
 
         protected virtual void Awake()
         {
@@ -41,6 +42,9 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
+                
+                loadingScreenBridge = SceneReferences.i.bridgeGameObject.GetComponent<LoadingBridge>();
+                loadingScreenBridge.OnLoadingScreenVisibleStateChange += OnLoadingScreenVisibleStateChange;
             }
 
             SetupPlugins();
@@ -63,6 +67,15 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
+        }
+
+        void OnLoadingScreenVisibleStateChange(bool loadingScreenIsVisible)
+        {
+            if (loadingScreenIsVisible)
+            {
+                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
+                loadingScreenBridge.OnLoadingScreenVisibleStateChange -= OnLoadingScreenVisibleStateChange;
+            }
         }
 
         protected virtual void SetupPlugins()

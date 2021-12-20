@@ -12,7 +12,7 @@ public class LoadingBridge : MonoBehaviour
         public bool showTips = false;
     }
 
-    private bool prewarmedShaderVariants = false;
+    public event Action<bool> OnLoadingScreenVisibleStateChange;
 
     public void SetLoadingScreen(string jsonMessage)
     {
@@ -23,10 +23,6 @@ public class LoadingBridge : MonoBehaviour
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
         DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
 
-        if (!prewarmedShaderVariants)
-        {
-            Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-            prewarmedShaderVariants = true;
-        }
+        OnLoadingScreenVisibleStateChange?.Invoke(payload.isVisible);
     }
 }
