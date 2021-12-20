@@ -138,7 +138,7 @@ public class WearableItem
         for (var i = 0; i < data.representations.Length; i++)
         {
             var representation = data.representations[i];
-            var containsGameJs = representation.contents.Any(pair => pair.key.EndsWith("game.js"));
+            var containsGameJs = representation.contents?.Any(pair => pair.key.EndsWith("game.js")) ?? false;
             if (containsGameJs) return true;
         }
         
