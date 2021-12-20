@@ -8,7 +8,7 @@ namespace AvatarSystem
 {
     public class WearableItemResolver : IWearableItemResolver
     {
-        private readonly CancellationTokenSource disposeCTS = new CancellationTokenSource();
+        private CancellationTokenSource disposeCTS = new CancellationTokenSource();
         private readonly Dictionary<string, WearableItem> wearablesRetrieved = new Dictionary<string, WearableItem>();
 
         public async UniTask<WearableItem[]> Resolve(IEnumerable<string> wearableId, CancellationToken ct = default) { return await UniTask.WhenAll(wearableId.Select(x => Resolve(x, ct))); }
@@ -49,7 +49,9 @@ namespace AvatarSystem
         public void Dispose()
         {
             disposeCTS.Cancel();
+            disposeCTS = new CancellationTokenSource();
             Forget(wearablesRetrieved.Keys.ToList());
+            wearablesRetrieved.Clear();
         }
     }
 }

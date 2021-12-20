@@ -11,27 +11,32 @@ namespace AvatarSystem
     public class Loader : ILoader
     {
         public GameObject bodyshapeContainer => bodyshapeLoader?.rendereable?.container;
-        public Renderer combinedRenderer { get; private set; }
+        public SkinnedMeshRenderer combinedRenderer { get; private set; }
         public Renderer eyesRenderer { get; private set; }
         public Renderer eyebrowsRenderer { get; private set; }
         public Renderer mouthRenderer { get; private set; }
+        public ILoader.Status status { get; private set; } = ILoader.Status.Idle;
 
         private readonly IWearableLoaderFactory wearableLoaderFactory;
         private readonly GameObject container;
 
         private IBodyshapeLoader bodyshapeLoader;
         private readonly Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>();
-
-        public ILoader.Status status { get; private set; } = ILoader.Status.Idle;
+        private readonly AvatarMeshCombinerHelper avatarMeshCombiner;
 
         public Loader(IWearableLoaderFactory wearableLoaderFactory, GameObject container)
         {
             this.wearableLoaderFactory = wearableLoaderFactory;
             this.container = container;
+
+            avatarMeshCombiner = new AvatarMeshCombinerHelper();
+            avatarMeshCombiner.prepareMeshForGpuSkinning = true;
+            avatarMeshCombiner.uploadMeshToGpu = true;
         }
 
         public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
         {
+            //TODO rethink cancellation and handle it gracefully
             if (ct.IsCancellationRequested)
             {
                 Dispose();
@@ -39,17 +44,14 @@ namespace AvatarSystem
             }
 
             status = ILoader.Status.Loading;
-            // TODO Reuse loaders with wearables that are already loaded
-            ClearLoaders();
 
-            // Get new loaders
-            bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
-            for (int i = 0; i < wearables.Count; i++)
+            List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
+
+            if (bodyshapeLoader == null || !bodyshapeLoader.IsValidFor(bodyshape))
             {
-                WearableItem wearable = wearables[i];
-                loaders.Add(wearable.data.category, wearableLoaderFactory.GetWearableLoader(wearable));
+                toCleanUp.Add(bodyshapeLoader);
+                bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
             }
-
             await bodyshapeLoader.Load(container, settings, ct);
             if (ct.IsCancellationRequested)
             {
@@ -61,6 +63,22 @@ namespace AvatarSystem
             {
                 status = ILoader.Status.Failed_Mayor;
                 return;
+            }
+
+            for (int i = 0; i < wearables.Count; i++)
+            {
+                WearableItem wearable = wearables[i];
+                IWearableLoader loader = null;
+                if (loaders.TryGetValue(wearable.data.category, out IWearableLoader existentLoader))
+                {
+                    loaders.Remove(wearable.data.category);
+                    if (existentLoader.IsValidFor(wearable))
+                        loader = existentLoader;
+                    else
+                        toCleanUp.Add(existentLoader);
+                }
+                loader ??= wearableLoaderFactory.GetWearableLoader(wearable);
+                loaders.Add(wearable.data.category, loader);
             }
 
             await UniTask.WhenAll(loaders.Values.Select(x => x.Load(container, settings, ct)));
@@ -83,7 +101,21 @@ namespace AvatarSystem
             (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(bodyshape.id, wearables);
             var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
 
-            if (!MergeAvatar(activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out Renderer combinedRenderer))
+            for (int i = 0; i < toCleanUp.Count; i++)
+            {
+                toCleanUp[i]?.Dispose();
+            }
+
+            // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
+            // once that's fixed we can remove this wait
+            await UniTask.WaitForEndOfFrame(ct);
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
+                return;
+            }
+
+            if (!MergeAvatar(activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out SkinnedMeshRenderer combinedRenderer))
             {
                 status = ILoader.Status.Failed_Mayor;
                 //TODO Dispose properly
@@ -102,12 +134,11 @@ namespace AvatarSystem
             container.SetActive(false);
         }
 
-        private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers, out Renderer renderer)
+        private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers, out SkinnedMeshRenderer renderer)
         {
             renderer = null;
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             var featureFlags = DataStore.i.featureFlags.flags.Get();
-            var avatarMeshCombiner = new AvatarMeshCombinerHelper();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
 
             bool success = avatarMeshCombiner.Combine(bodyshapeLoader.upperBodyRenderer, renderersToCombine.ToArray());
@@ -150,6 +181,7 @@ namespace AvatarSystem
 
         public void Dispose()
         {
+            avatarMeshCombiner.Dispose();
             status = ILoader.Status.Idle;
             ClearLoaders();
         }

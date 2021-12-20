@@ -18,7 +18,7 @@ namespace AvatarSystem
         }
 
         GameObject bodyshapeContainer { get; }
-        Renderer combinedRenderer { get; }
+        SkinnedMeshRenderer combinedRenderer { get; }
         Renderer eyesRenderer { get; }
         Renderer eyebrowsRenderer { get; }
         Renderer mouthRenderer { get; }

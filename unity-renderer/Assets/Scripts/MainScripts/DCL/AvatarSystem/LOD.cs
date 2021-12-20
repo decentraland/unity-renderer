@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace AvatarSystem
 {
@@ -20,7 +18,6 @@ namespace AvatarSystem
         public int lodIndex { get; private set; } = -1;
 
         private readonly GameObject impostorContainer;
-        private readonly ILazyTextureObserver impostorTextureObserver;
 
         private IEnumerable<Renderer> facialFeatures;
         private Renderer combinedAvatar;
@@ -30,27 +27,21 @@ namespace AvatarSystem
 
         private CancellationTokenSource transitionCTS;
 
-        public LOD(GameObject impostorContainer, ILazyTextureObserver impostorTextureObserver)
+        public LOD(GameObject impostorContainer)
         {
             this.impostorContainer = impostorContainer;
-            this.impostorTextureObserver = impostorTextureObserver;
             impostorRenderer = CreateImpostor();
             impostorRenderer.enabled = false;
 
             impostorMeshFilter = impostorRenderer.GetComponent<MeshFilter>();
             AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
-            impostorTextureObserver.AddListener(OnTextureUpdate);
-        }
-        private void OnTextureUpdate(Texture2D texture)
-        {
-            if (texture == null)
-            {
-                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
-            }
-            AvatarRendererHelpers.SetImpostorTexture(texture, impostorMeshFilter.mesh, impostorRenderer.material);
         }
 
-        public void SetDependencies(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures)
+        public void SetImpostorTexture(Texture2D texture) { AvatarRendererHelpers.SetImpostorTexture(texture, impostorMeshFilter.mesh, impostorRenderer.material); }
+
+        public void SetImpostorTint(Color color) { AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, color); }
+
+        public void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures)
         {
             this.combinedAvatar = combinedAvatar;
             this.facialFeatures = facialFeatures;
@@ -94,10 +85,8 @@ namespace AvatarSystem
             combinedAvatar.enabled = true;
             impostorRenderer.enabled = true;
             float targetAvatarAlpha = lodIndex <= 1 ? 1f : 0f;
-            Debug.Log($"Start: {targetAvatarAlpha}/{avatarAlpha}");
             while (!Mathf.Approximately(targetAvatarAlpha, avatarAlpha))
             {
-                Debug.Log($"{targetAvatarAlpha}/{avatarAlpha}");
                 if (ct.IsCancellationRequested)
                     return;
                 avatarAlpha = Mathf.MoveTowards(avatarAlpha, targetAvatarAlpha, (1f / TRANSITION_DURATION) * Time.deltaTime);
@@ -152,9 +141,20 @@ namespace AvatarSystem
         public void Dispose()
         {
             transitionCTS?.Cancel();
-            impostorTextureObserver?.RemoveListener(OnTextureUpdate);
             if (impostorRenderer != null)
                 Object.Destroy(impostorRenderer.gameObject);
         }
+    }
+
+    public class NoLODs : ILOD
+    {
+        public int lodIndex { get; }
+
+        public void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures) { }
+        public void SetLodIndex(int lodIndex, bool inmediate = false) { }
+        public void SetImpostorTexture(Texture2D texture) { }
+        public void SetImpostorTint(Color color) { }
+
+        public void Dispose() { }
     }
 }

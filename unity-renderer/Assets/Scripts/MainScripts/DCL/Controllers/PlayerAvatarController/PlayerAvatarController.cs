@@ -4,6 +4,7 @@ using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
+using GPUSkinning;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
 
@@ -33,7 +34,14 @@ public class PlayerAvatarController : MonoBehaviour
         DataStore.i.common.isPlayerRendererLoaded.Set(false);
         playerAvatarAnalytics = new PlayerAvatarAnalytics(Analytics.i, CommonScriptableObjects.playerCoords);
 
-        avatar = new AvatarSystem.Avatar(new WearableItemResolver(), new Loader(new WearableLoaderFactory(), avatarContainer), GetComponentInChildren<AvatarAnimatorLegacy>(), new Visibility(avatarContainer), new LOD(avatarContainer, userProfile.bodySnapshotObserver));
+        avatar = new AvatarSystem.Avatar(
+            new AvatarCurator(new WearableItemResolver()),
+            new Loader(new WearableLoaderFactory(), avatarContainer),
+            GetComponentInChildren<AvatarAnimatorLegacy>(),
+            new Visibility(avatarContainer),
+            new NoLODs(),
+            new SimpleGPUSkinning(),
+            new GPUSkinningThrottler_New());
 
         if ( UserProfileController.i != null )
         {
@@ -98,24 +106,26 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void OnUserProfileOnUpdate(UserProfile profile)
     {
-        StopAllCoroutines();
-        StartCoroutine(LoadingRoutine(profile));
+        avatarLoadingCts?.Cancel();
+        avatarLoadingCts?.Dispose();
+        avatarLoadingCts = new CancellationTokenSource();
+        LoadingRoutine(profile, avatarLoadingCts.Token);
     }
 
-    private IEnumerator LoadingRoutine(UserProfile profile)
+    private async UniTaskVoid LoadingRoutine(UserProfile profile, CancellationToken ct)
     {
-        avatarLoadingCts?.Cancel();
-        avatarLoadingCts = new CancellationTokenSource();
         var wearableItems = profile.avatar.wearables.ToList();
         wearableItems.Add(profile.avatar.bodyShape);
-        yield return avatar.Load(wearableItems, new AvatarSettings
-                           {
-                               bodyshapeId = profile.avatar.bodyShape,
-                               eyesColor = profile.avatar.eyeColor,
-                               skinColor = profile.avatar.skinColor,
-                               hairColor = profile.avatar.hairColor,
-                           }, avatarLoadingCts.Token)
-                           .ToCoroutine();
+        await avatar.Load(wearableItems, new AvatarSettings
+        {
+            bodyshapeId = profile.avatar.bodyShape,
+            eyesColor = profile.avatar.eyeColor,
+            skinColor = profile.avatar.skinColor,
+            hairColor = profile.avatar.hairColor,
+        }, ct);
+
+        if (ct.IsCancellationRequested || avatar.status != IAvatar.Status.Loaded)
+            return;
 
         if (avatar.status == IAvatar.Status.Failed )
         {
@@ -137,5 +147,9 @@ public class PlayerAvatarController : MonoBehaviour
         userProfile.OnAvatarExpressionSet -= OnAvatarExpression;
     }
 
-    private void OnDestroy() { avatar?.Dispose(); }
+    private void OnDestroy()
+    {
+        avatarLoadingCts?.Cancel();
+        avatar?.Dispose();
+    }
 }

@@ -16,10 +16,13 @@ namespace AvatarSystem
         }
 
         Status status { get; }
+        Bounds bounds { get; }
 
         UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default);
         void SetVisibility(bool visible);
         void SetExpression(string expressionId, long timestamps);
         void SetLODLevel(int lodIndex);
+        void SetImpostorTexture(Texture2D impostorTexture);
+        public void SetImpostorTint(Color color);
     }
 }

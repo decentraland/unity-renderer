@@ -7,7 +7,9 @@ namespace AvatarSystem
     public interface ILOD : IDisposable
     {
         int lodIndex { get; }
-        void SetDependencies(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures);
+        void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures);
         void SetLodIndex(int lodIndex, bool inmediate = false);
+        void SetImpostorTexture(Texture2D texture);
+        void SetImpostorTint(Color color);
     }
 }

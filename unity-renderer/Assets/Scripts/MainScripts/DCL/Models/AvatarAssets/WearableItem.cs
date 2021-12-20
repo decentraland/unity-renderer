@@ -49,6 +49,12 @@ public class WearableItem
 
     private readonly Dictionary<string, string> cachedI18n = new Dictionary<string, string>();
 
+    public bool TryGetRepresentation(string bodyshapeId, out Representation representation)
+    {
+        representation = GetRepresentation(bodyshapeId);
+        return representation != null;
+    }
+
     public Representation GetRepresentation(string bodyShapeType)
     {
         if (data?.representations == null)

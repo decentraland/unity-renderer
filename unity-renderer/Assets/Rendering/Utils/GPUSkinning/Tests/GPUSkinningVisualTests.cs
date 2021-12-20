@@ -69,7 +69,8 @@ public class GPUSkinningVisualTests : VisualTestsBase
         gpuSkinningState.time = 0.5f;
         gpuSkinningAnim.Sample();
 
-        SimpleGPUSkinning gpuSkinning = new SimpleGPUSkinning(gpuSkinningCombiner.renderer);
+        SimpleGPUSkinning gpuSkinning = new SimpleGPUSkinning();
+        gpuSkinning.Prepare(gpuSkinningCombiner.renderer);
         yield return null;
         gpuSkinning.Update();
 

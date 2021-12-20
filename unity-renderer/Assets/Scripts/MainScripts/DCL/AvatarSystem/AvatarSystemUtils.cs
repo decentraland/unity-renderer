@@ -20,7 +20,7 @@ namespace AvatarSystem
         public static readonly int DitherFade = Shader.PropertyToID("_DitherFade");
         public static readonly string SSAO_OFF_KEYWORD = "_SSAO_OFF";
 
-        public static bool IsCategoryRequired(string category) { return true; }
+        public static bool IsCategoryRequired(string category) { return WearableLiterals.Categories.NEEDED_CATEGORIES.Contains(category); }
 
         public static bool UseAssetBundles()
         {

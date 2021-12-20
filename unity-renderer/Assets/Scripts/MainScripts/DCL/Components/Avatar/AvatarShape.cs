@@ -2,8 +2,14 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
+using System.Linq;
+using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Models;
+using GPUSkinning;
 using UnityEngine;
+using Avatar = AvatarSystem.Avatar;
+using LOD = AvatarSystem.LOD;
 
 namespace DCL
 {
@@ -15,7 +21,7 @@ namespace DCL
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
-        public AvatarRenderer avatarRenderer;
+        public GameObject avatarContainer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
 
@@ -67,7 +73,7 @@ namespace DCL
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
 
-            avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
+            //avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -131,13 +137,6 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
-            
-            KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            if (config.features.enableAvatarLODs)
-                                avatarRenderer.InitializeImpostor();
-                        });
         }
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
@@ -162,7 +161,7 @@ namespace DCL
             player.name = model.name;
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
-            player.renderer = avatarRenderer;
+            player.avatar = avatar;
             player.onPointerDownCollider = onPointerDown;
 
             if (isNew)
@@ -177,7 +176,7 @@ namespace DCL
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
 
             player.playerName.SetIsTalking(model.talking);
-            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
+            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatar.bounds.max.y));
         }
 
         private void Update()
@@ -224,7 +223,12 @@ namespace DCL
             player = null;
         }
 
-        void OnImpostorAlphaValueUpdate(float newAlphaValue) { avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f; }
+        void OnImpostorAlphaValueUpdate(float newAlphaValue)
+        {
+            Debug.Log("TODO");
+            return;
+            avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f;
+        }
 
         public override void Cleanup()
         {
@@ -237,7 +241,7 @@ namespace DCL
                 player = null;
             }
 
-            avatarRenderer.CleanupAvatar();
+            avatar.Dispose();
 
             if (poolableObject != null)
             {

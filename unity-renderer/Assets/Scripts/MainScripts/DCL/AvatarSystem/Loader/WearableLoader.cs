@@ -22,17 +22,17 @@ namespace AvatarSystem
 
         public async UniTask Load( GameObject container, AvatarSettings settings, CancellationToken ct = default)
         {
-            if (ct.IsCancellationRequested)
-            {
-                Dispose();
-                return;
-            }
-
             bool bodyshapeDirty = currentSettings.bodyshapeId != settings.bodyshapeId;
             currentSettings = settings;
             if (status == IWearableLoader.Status.Succeeded && !bodyshapeDirty)
             {
-                PrepareMaterials(currentSettings.skinColor, currentSettings.hairColor);
+                AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
+                return;
+            }
+
+            if (ct.IsCancellationRequested)
+            {
+                Dispose();
                 return;
             }
 
@@ -41,6 +41,7 @@ namespace AvatarSystem
             WearableItem.Representation representation = wearable.GetRepresentation(settings.bodyshapeId);
             if (representation == null)
             {
+                Debug.Log($"No representation for {settings.bodyshapeId} of {wearable.id}");
                 status = IWearableLoader.Status.Failed;
                 if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
                     await FallbackToDefault(ct);
@@ -62,7 +63,7 @@ namespace AvatarSystem
             if (rendereable != null)
             {
                 status = IWearableLoader.Status.Succeeded;
-                PrepareMaterials(currentSettings.skinColor, currentSettings.hairColor);
+                AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
                 return;
             }
 
@@ -82,20 +83,6 @@ namespace AvatarSystem
         {
             status = IWearableLoader.Status.Failed;
             //TODO load a default wearable
-        }
-
-        private void PrepareMaterials(Color skinColor, Color hairColor)
-        {
-            foreach (Renderer renderer in rendereable.renderers)
-            {
-                foreach (Material material in renderer.materials)
-                {
-                    if (material.name.ToLower().Contains("skin"))
-                        material.SetColor(AvatarSystemUtils._BaseColor, skinColor);
-                    else if (material.name.ToLower().Contains("hair"))
-                        material.SetColor(AvatarSystemUtils._BaseColor, hairColor);
-                }
-            }
         }
 
         public void Dispose() { retriever?.Dispose(); }

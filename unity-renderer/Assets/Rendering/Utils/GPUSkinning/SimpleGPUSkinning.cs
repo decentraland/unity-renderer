@@ -8,6 +8,7 @@ namespace GPUSkinning
     {
         Renderer renderer { get; }
         void Update();
+        void Prepare(SkinnedMeshRenderer skr, bool encodeBindPoses = false);
     }
 
     public static class GPUSkinningUtils
@@ -50,12 +51,12 @@ namespace GPUSkinning
         private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
         private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
 
-        public Renderer renderer { get; }
+        public Renderer renderer { get; private set; }
 
         private Transform[] bones;
         private Matrix4x4[] boneMatrices;
 
-        public SimpleGPUSkinning (SkinnedMeshRenderer skr, bool encodeBindPoses = true)
+        public void Prepare(SkinnedMeshRenderer skr, bool encodeBindPoses = false)
         {
             if ( encodeBindPoses )
                 GPUSkinningUtils.EncodeBindPosesIntoMesh(skr);

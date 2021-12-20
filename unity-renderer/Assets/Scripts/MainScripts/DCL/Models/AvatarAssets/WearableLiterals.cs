@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 public static class WearableLiterals
@@ -16,6 +17,8 @@ public static class WearableLiterals
 
     public static class Categories
     {
+        public static readonly ReadOnlyCollection<string> NEEDED_CATEGORIES = new ReadOnlyCollection<string>(new List<string> { UPPER_BODY, LOWER_BODY, EYES, EYEBROWS, MOUTH });
+
         public const string BODY_SHAPE = "body_shape";
         public const string UPPER_BODY = "upper_body";
         public const string LOWER_BODY = "lower_body";

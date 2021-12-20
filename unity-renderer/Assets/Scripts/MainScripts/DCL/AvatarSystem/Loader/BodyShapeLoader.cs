@@ -30,6 +30,10 @@ namespace AvatarSystem
 
         public BodyShapeLoader(IRetrieverFactory retrieverFactory, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
         {
+            Assert.IsNotNull(bodyshape);
+            Assert.IsNotNull(eyes);
+            Assert.IsNotNull(eyebrows);
+            Assert.IsNotNull(mouth);
             Assert.AreEqual(WearableLiterals.Categories.BODY_SHAPE, bodyshape.data.category);
             Assert.AreEqual(WearableLiterals.Categories.EYES, eyes.data.category);
             Assert.AreEqual(WearableLiterals.Categories.EYEBROWS, eyebrows.data.category);
@@ -46,8 +50,14 @@ namespace AvatarSystem
             mouthRetriever = retrieverFactory.GetFacialFeatureRetriever();
         }
 
-        public async UniTask Load( GameObject container, AvatarSettings avatarSettings, CancellationToken ct = default)
+        public async UniTask Load(GameObject container, AvatarSettings avatarSettings, CancellationToken ct = default)
         {
+            if (status == IWearableLoader.Status.Succeeded)
+            {
+                PrepareMaterials(avatarSettings);
+                return;
+            }
+
             if (ct.IsCancellationRequested)
             {
                 Dispose();
@@ -64,8 +74,6 @@ namespace AvatarSystem
             }
 
             (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
-
-            AvatarSystemUtils.PrepareMaterialColors(rendereable, avatarSettings.skinColor, avatarSettings.hairColor);
 
             (string eyesMainTextureUrl, string eyesMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, eyes);
             (string eyebrowsMainTextureUrl, string eyebrowsMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, eyebrows);
@@ -86,19 +94,27 @@ namespace AvatarSystem
             eyesRenderer.material.SetTexture(AvatarSystemUtils._EyesTexture, eyesResult.main);
             if (eyesResult.mask != null)
                 eyesRenderer.material.SetTexture(AvatarSystemUtils._IrisMask, eyesResult.mask);
-            eyesRenderer.material.SetColor(AvatarSystemUtils._EyeTint, avatarSettings.eyesColor);
 
             eyebrowsRenderer.material = new Material(Resources.Load<Material>("Eyebrow Material"));
             eyebrowsRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, eyebrowsResult.main);
             if (eyebrowsResult.mask != null)
                 eyebrowsRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, eyebrowsResult.mask);
-            eyebrowsRenderer.material.SetColor(AvatarSystemUtils._BaseColor, avatarSettings.hairColor);
 
             mouthRenderer.material = new Material(Resources.Load<Material>("Mouth Material"));
             mouthRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, mouthResult.main);
             if (mouthResult.mask != null)
                 mouthRenderer.material.SetTexture(AvatarSystemUtils._TintMask, mouthResult.mask);
-            mouthRenderer.material.SetColor(AvatarSystemUtils._BaseColor, avatarSettings.skinColor);
+
+            PrepareMaterials(avatarSettings);
+            status = IWearableLoader.Status.Succeeded;
+        }
+
+        private void PrepareMaterials(AvatarSettings avatarSettings)
+        {
+            AvatarSystemUtils.PrepareMaterialColors(rendereable, avatarSettings.skinColor, avatarSettings.hairColor);
+            eyesRenderer?.material.SetColor(AvatarSystemUtils._EyeTint, avatarSettings.eyesColor);
+            eyebrowsRenderer?.material.SetColor(AvatarSystemUtils._BaseColor, avatarSettings.hairColor);
+            mouthRenderer?.material.SetColor(AvatarSystemUtils._BaseColor, avatarSettings.skinColor);
         }
 
         private async UniTask<Rendereable> LoadWearable(GameObject container, CancellationToken ct)

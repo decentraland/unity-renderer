@@ -89,7 +89,7 @@ namespace DCL
             cameraForward = CommonScriptableObjects.cameraForward.Get();
 
             UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
-            UpdateLODsBillboard();
+            UpdateLODsBillboardOrientation();
         }
 
         internal void UpdateLODsBillboard()
@@ -131,14 +131,13 @@ namespace DCL
                     lodController.SetInvisible();
                     continue;
                 }
-
                 if (avatarsCount < maxAvatars)
                 {
                     lodController.SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
                     if (distance < simpleAvatarDistance)
-                        lodController.SetFullAvatar();
+                        lodController.SetLOD0();
                     else
-                        lodController.SetSimpleAvatar();
+                        lodController.SetLOD1();
                     avatarsCount++;
 
                     if (mainCamera == null)
@@ -151,7 +150,7 @@ namespace DCL
                 lodController.SetNameVisible(false);
                 if (impostorCount < maxImpostors)
                 {
-                    lodController.SetImpostor();
+                    lodController.SetLOD2();
                     lodController.UpdateImpostorTint(distance);
                     impostorCount++;
                     continue;
