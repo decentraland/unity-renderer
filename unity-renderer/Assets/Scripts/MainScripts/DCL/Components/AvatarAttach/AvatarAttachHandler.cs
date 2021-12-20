@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    internal class AvatarAttachHandler
+    internal class AvatarAttachHandler : IDisposable
     {
         private const float BOUNDARIES_CHECK_INTERVAL = 0.7f;
 
@@ -62,7 +63,7 @@ namespace DCL.Components
             }
         }
 
-        public void CleanUp()
+        public void Dispose()
         {
             Detach();
             getAnchorPointsHandler.OnAvatarRemoved -= Detach;

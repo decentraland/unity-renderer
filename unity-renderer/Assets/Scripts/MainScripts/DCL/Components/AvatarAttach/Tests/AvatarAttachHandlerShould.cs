@@ -25,7 +25,7 @@ namespace AvatarAttach_Tests
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = "Temptation" });
             handler.DidNotReceive().Detach();
             handler.DidNotReceive().Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
-            handler.CleanUp();
+            handler.Dispose();
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace AvatarAttach_Tests
 
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = "Temptation" });
             handler.Received(1).Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
-            handler.CleanUp();
+            handler.Dispose();
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace AvatarAttach_Tests
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = "" });
             handler.Received(1).Detach();
             handler.DidNotReceive().Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
-            handler.CleanUp();
+            handler.Dispose();
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace AvatarAttach_Tests
 
             DataStore.i.player.otherPlayers.Remove(userId);
             handler.Received(1).Detach();
-            handler.CleanUp();
+            handler.Dispose();
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace AvatarAttach_Tests
             handler.OnModelUpdated(new AvatarAttachComponent.Model() { avatarId = userId });
             handler.Received(1).Attach(Arg.Any<string>(), Arg.Any<AvatarAnchorPointIds>());
             handler.Received(1).Attach(Arg.Any<IAvatarAnchorPoints>(), Arg.Any<AvatarAnchorPointIds>());
-            handler.CleanUp();
+            handler.Dispose();
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace AvatarAttach_Tests
             Assert.AreEqual(targetPosition, entityGo.transform.position);
             Assert.AreEqual(targetRotation.eulerAngles, entityGo.transform.rotation.eulerAngles);
 
-            handler.CleanUp();
+            handler.Dispose();
             Object.Destroy(entityGo);
         }
 
@@ -139,7 +139,7 @@ namespace AvatarAttach_Tests
 
             Assert.AreEqual(EnvironmentSettings.MORDOR, entityGo.transform.position);
 
-            handler.CleanUp();
+            handler.Dispose();
             Object.Destroy(entityGo);
         }
     }
