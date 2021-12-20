@@ -15,7 +15,7 @@ namespace DCL.SettingsCommon.SettingsControllers
 
         [SerializeField] internal BooleanVariable autoQualityEnabled;
         [SerializeField] internal PerformanceMetricsDataVariable performanceMetricsData;
-        internal QualitySettingsData qualitySettings => Settings.i.autoqualitySettings;
+        internal QualitySettingsData qualitySettings => Settings.i.autoQualitySettings;
 
         internal int currentQualityIndex;
         private Coroutine settingsCheckerCoroutine;
