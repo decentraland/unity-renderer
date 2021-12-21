@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Audio;
 
 namespace DCL.SettingsCommon
@@ -13,7 +13,7 @@ namespace DCL.SettingsCommon
         private string autoQualitySettingsPath = "ScriptableObjects/AutoQualitySettingsData";
         private string autoQualitySettingsEnabledPath = "ScriptableObjects/AutoQualityEnabled";
         private string audioMixerPath = "AudioMixer";
-        
+
         private GeneralSettings defaultGeneralSettings = new GeneralSettings
         {
             mouseSensitivity = 0.6f,
@@ -27,7 +27,9 @@ namespace DCL.SettingsCommon
             profanityChatFiltering = true,
             nightMode = false,
             hideUI = false,
-            showAvatarNames = true
+            showAvatarNames = true,
+            dynamicProceduralSkybox = true,
+            skyboxTime = 0.0f
         };
 
         private AudioSettings defaultAudioSettings = new AudioSettings
@@ -59,14 +61,14 @@ namespace DCL.SettingsCommon
             var autoQualitySettings = Resources.Load<QualitySettingsData>(autoQualitySettingsPath);
             var autoQualitySettingsEnabled = Resources.Load<BooleanVariable>(autoQualitySettingsEnabledPath);
             var audioMixer = Resources.Load<AudioMixer>(audioMixerPath);
-            
+
             return new Settings(graphicsQualitySettingsPreset,
-                    autoQualitySettings,
-                    autoQualitySettingsEnabled,
-                    audioMixer,
-                    CreateGraphicsQualityRepository(graphicsQualitySettingsPreset),
-                    CreateGeneralSettingsRepository(), 
-                    CreateAudioSettingsRepository());
+                autoQualitySettings,
+                autoQualitySettingsEnabled,
+                audioMixer,
+                CreateGraphicsQualityRepository(graphicsQualitySettingsPreset),
+                CreateGeneralSettingsRepository(),
+                CreateAudioSettingsRepository());
         }
 
         private ProxySettingsRepository<AudioSettings> CreateAudioSettingsRepository()
