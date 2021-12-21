@@ -44,9 +44,9 @@ namespace DCL
             if (!renderingEnabled || DataStore.i.common.isSignUpFlow.Get() || DataStore.i.HUDs.loadingHUD.visible.Get())
                 return;
 
-            Utils.LockCursor();
+            //Utils.LockCursor();
 #if !WEB_PLATFORM
-            OnMouseLock?.Invoke();
+            //OnMouseLock?.Invoke();
 #endif
         }
 
