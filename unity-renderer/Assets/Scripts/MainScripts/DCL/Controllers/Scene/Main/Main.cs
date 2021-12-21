@@ -124,7 +124,7 @@ namespace DCL
 
         protected virtual void OnDestroy()
         {
-            DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
+            DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
             
             DataStore.i.common.isWorldBeingDestroyed.Set(true);
             
