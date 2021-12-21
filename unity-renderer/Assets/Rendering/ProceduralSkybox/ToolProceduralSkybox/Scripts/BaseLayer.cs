@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL.Skybox
 {
@@ -18,7 +19,8 @@ namespace DCL.Skybox
         public float fadingInTime = 1;
         public float fadingOutTime = 1;
 
-        public float tintercentage;
+        [FormerlySerializedAs("tintercentage")]
+        public float tintPercentage;
         public List<TransitioningFloat> renderDistance;
 
         public Texture2D texture;
@@ -27,7 +29,8 @@ namespace DCL.Skybox
         public Gradient color;
         public Vector2 tiling;
 
-        public Vector2 flipBookRowsAndColumns = Vector2.one;
+        [FormerlySerializedAs("flipBookRowsAndColumns")]
+        public Vector2 flipbookRowsAndColumns = Vector2.one;
         public float flipbookAnimSpeed = 1;
 
         // Offset
@@ -37,17 +40,20 @@ namespace DCL.Skybox
         public List<TransitioningVector2> satelliteWidthHeight;
 
         // Rotations
-        public List<TransitioningFloat> rotation_float;
-        public List<TransitioningVector3> cubemapRotations;
+        [FormerlySerializedAs("rotation_float")]
+        public List<TransitioningFloat> rotations_float;
+        [FormerlySerializedAs("cubemapRotations")]
+        public List<TransitioningVector3> rotations_Vector3;
 
         public Vector3 speed_Vector3;
-        public Vector2 speed_Vec2;
-        public float speed;
+        [FormerlySerializedAs("speed_Vec2")]
+        public Vector2 speed_Vector2;
+        [FormerlySerializedAs("speed")]
+        public float speed_float;
         public float normalIntensity;
 
         // Particles
         public bool particleExpanded;
-        //public bool useParticles;
         public Vector2 particleTiling = Vector2.one;
         public Vector2 particlesOffset = Vector2.zero;
         public List<TransitioningVector3> particleRotation = new List<TransitioningVector3>();
@@ -76,14 +82,14 @@ namespace DCL.Skybox
         {
             enabled = true;
             tiling = new Vector2(1, 1);
-            speed_Vec2 = new Vector2(0, 0);
+            speed_Vector2 = new Vector2(0, 0);
             speed_Vector3 = new Vector3(0, 0, 0);
             nameInEditor = name;
             offset = new List<TransitioningVector2>();
             renderDistance = new List<TransitioningFloat>();
-            rotation_float = new List<TransitioningFloat>();
+            rotations_float = new List<TransitioningFloat>();
             satelliteWidthHeight = new List<TransitioningVector2>();
-            cubemapRotations = new List<TransitioningVector3>();
+            rotations_Vector3 = new List<TransitioningVector3>();
             color = new Gradient();
             movementTypeCubemap = MovementType.Speed;
 

@@ -54,35 +54,13 @@ namespace DCL.Skybox
         public bool useDirectionalLight = true;
         public DirectionalLightAttributes directionalLightLayer = new DirectionalLightAttributes();
 
-        // Slots
-        public List<SkyboxSlots> slots = new List<SkyboxSlots>();
-
         // Layers
         public List<TextureLayer> layers = new List<TextureLayer>();
 
         // Timeline Tags
         public List<TimelineTagsDuration> timelineTags = new List<TimelineTagsDuration>();
 
-        // Environment Reflection
-        public float timeToCreateCubemap;
-        public bool useCustomReflection;
-
         private float cycleTime = 24;
-
-        [ContextMenu("Fill layers array")]
-        public void FillTextureLayersWithSlotValues()
-        {
-            for (int i = 0; i < slots.Count; i++)
-            {
-                for (int j = 0; j < slots[i].layers.Count; j++)
-                {
-                    TextureLayer temp = slots[i].layers[j];
-                    layers.Add(temp);
-                }
-            }
-        }
-
-        public void AddSlots(int slotID) { slots.Add(new SkyboxSlots(slotID)); }
 
         public void ApplyOnMaterial(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, Light directionalLightGO = null, float cycleTime = 24)
         {
@@ -513,8 +491,7 @@ namespace DCL.Skybox
                 selectedMat.SetTexture("_cubemap_" + layerNum, layer.cubemap);
                 selectedMat.SetTexture("_normals_" + layerNum, null);
                 selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-                //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
-                selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+                selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintPercentage / 100);
                 selectedMat.SetFloat("_normalIntensity_" + layerNum, 0);
                 selectedMat.SetVector("_distortIntAndSize_" + layerNum, Vector2.zero);
                 selectedMat.SetVector("_distortSpeedAndSharp_" + layerNum, Vector4.zero);
@@ -530,7 +507,7 @@ namespace DCL.Skybox
             // Set cubemap rotation. (Shader variable reused)   
             if (layer.movementTypeCubemap == MovementType.PointBased)
             {
-                Vector3 currentRotation = GetTransitionValue(layer.cubemapRotations, normalizedLayerTime * 100);
+                Vector3 currentRotation = GetTransitionValue(layer.rotations_Vector3, normalizedLayerTime * 100);
                 selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(currentRotation.x, currentRotation.y, currentRotation.z, 0));
                 selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(0, 0, 0, 0));
             }
@@ -558,10 +535,10 @@ namespace DCL.Skybox
                 float rot = 0;
                 if (layer.layerType == LayerType.Planar)
                 {
-                    rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                    rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
                 }
 
-                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vec2.x, layer.speed_Vec2.y, rot));
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vector2.x, layer.speed_Vector2.y, rot));
 
                 // Tiling and Offset
                 Vector4 t = new Vector4(layer.tiling.x, layer.tiling.y, 0, 0);
@@ -573,7 +550,7 @@ namespace DCL.Skybox
                 float rot = 0;
                 if (layer.layerType == LayerType.Planar)
                 {
-                    rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                    rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
                 }
 
                 selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(0, 0, rot));
@@ -587,15 +564,13 @@ namespace DCL.Skybox
 
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-            //Fade time
-            //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
-            selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+            selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintPercentage / 100);
 
             // Reset Particle related Params
-            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipBookRowsAndColumns);
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipbookRowsAndColumns);
             selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.flipbookAnimSpeed, 0, 0, 0));
             selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, Vector4.zero);
 
@@ -610,8 +585,6 @@ namespace DCL.Skybox
 
         void ApplySatelliteTextureLayer(Material selectedMat, float dayTime, float normalizedLayerTime, int layerNum, TextureLayer layer, bool changeAlllValues = true)
         {
-            //selectedMat.SetFloat("_RenderDistance_" + layerNum, GetTransitionValue(layer.renderDistance, normalizedLayerTime * 100, 0.0f));
-
             selectedMat.SetTexture("_tex_" + layerNum, layer.texture);
             selectedMat.SetTexture("_normals_" + layerNum, layer.textureNormal);
             selectedMat.SetTexture("_cubemap_" + layerNum, null);
@@ -627,8 +600,8 @@ namespace DCL.Skybox
 
 
                 // speed and Rotation
-                float rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
-                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vec2.x, layer.speed_Vec2.y, rot));
+                float rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
+                selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(layer.speed_Vector2.x, layer.speed_Vector2.y, rot));
             }
             else
             {
@@ -639,21 +612,19 @@ namespace DCL.Skybox
                 selectedMat.SetVector("_tilingAndOffset_" + layerNum, t);
 
                 // speed and Rotation
-                float rot = GetTransitionValue(layer.rotation_float, normalizedLayerTime * 100);
+                float rot = GetTransitionValue(layer.rotations_float, normalizedLayerTime * 100);
                 selectedMat.SetVector("_speedAndRotation_" + layerNum, new Vector4(0, 0, rot));
             }
 
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-            //Fade time
-            //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // normal intensity
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
             // Tint
-            selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+            selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintPercentage / 100);
 
             // Reset Particle related Params
-            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipBookRowsAndColumns);
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipbookRowsAndColumns);
             selectedMat.SetVector("_particlesMainParameters_" + layerNum, new Vector4(layer.flipbookAnimSpeed, 0, 0, 0));
             selectedMat.SetVector("_particlesSecondaryParameters_" + layerNum, Vector4.zero);
 
@@ -674,16 +645,14 @@ namespace DCL.Skybox
 
             // Time frame
             selectedMat.SetVector("_timeFrame_" + layerNum, new Vector4(layer.timeSpan_start, layer.timeSpan_End));
-            //Fade time
-            //selectedMat.SetFloat("_fadeTime_" + layerNum, 1);
             // Tint
-            selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintercentage / 100);
+            selectedMat.SetFloat("_lightIntensity_" + layerNum, layer.tintPercentage / 100);
 
             // Particles
             selectedMat.SetTexture("_tex_" + layerNum, layer.texture);
             selectedMat.SetTexture("_normals_" + layerNum, layer.textureNormal);
             selectedMat.SetFloat("_normalIntensity_" + layerNum, layer.normalIntensity);
-            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipBookRowsAndColumns);
+            selectedMat.SetVector("_rowAndCollumns_" + layerNum, layer.flipbookRowsAndColumns);
             selectedMat.SetColor("_color_" + layerNum, layer.color.Evaluate(normalizedLayerTime));
             selectedMat.SetVector("_tilingAndOffset_" + layerNum, new Vector4(layer.particleTiling.x, layer.particleTiling.y, layer.particlesOffset.x, layer.particlesOffset.y));
             selectedMat.SetVector("_speedAndRotation_" + layerNum, GetTransitionValue(layer.particleRotation, normalizedLayerTime * 100));
@@ -697,30 +666,30 @@ namespace DCL.Skybox
 
         #region Transition Values Utility Methods
 
-        float GetTransitionValue(List<TransitioningFloat> _list, float percentage, float defaultVal = 0)
+        float GetTransitionValue(List<TransitioningFloat> list, float percentage, float defaultVal = 0)
         {
-            if (_list == null || _list.Count < 1)
+            if (list == null || list.Count < 1)
             {
                 return defaultVal;
             }
 
-            if (_list.Count == 1)
+            if (list.Count == 1)
             {
-                return _list[0].value;
+                return list[0].value;
             }
 
-            TransitioningFloat min = _list[0], max = _list[0];
+            TransitioningFloat min = list[0], max = list[0];
 
 
-            for (int i = 0; i < _list.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (percentage <= _list[i].percentage)
+                if (percentage <= list[i].percentage)
                 {
-                    max = _list[i];
+                    max = list[i];
 
                     if ((i - 1) > 0)
                     {
-                        min = _list[i - 1];
+                        min = list[i - 1];
                     }
 
                     break;
@@ -731,33 +700,33 @@ namespace DCL.Skybox
             return Mathf.Lerp(min.value, max.value, t);
         }
 
-        Vector2 GetTransitionValue(List<TransitioningVector2> _list, float percentage, Vector2 defaultVal = default(Vector2))
+        Vector2 GetTransitionValue(List<TransitioningVector2> list, float percentage, Vector2 defaultVal = default(Vector2))
         {
             Vector2 offset = defaultVal;
 
-            if (_list == null || _list.Count == 0)
+            if (list == null || list.Count == 0)
             {
                 return offset;
             }
 
-            if (_list.Count == 1)
+            if (list.Count == 1)
             {
-                offset = _list[0].value;
+                offset = list[0].value;
                 return offset;
             }
 
 
-            TransitioningVector2 min = _list[0], max = _list[0];
+            TransitioningVector2 min = list[0], max = list[0];
 
-            for (int i = 0; i < _list.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (percentage <= _list[i].percentage)
+                if (percentage <= list[i].percentage)
                 {
-                    max = _list[i];
+                    max = list[i];
 
                     if ((i - 1) > 0)
                     {
-                        min = _list[i - 1];
+                        min = list[i - 1];
                     }
 
                     break;
@@ -769,33 +738,33 @@ namespace DCL.Skybox
             return offset;
         }
 
-        Vector3 GetTransitionValue(List<TransitioningVector3> _list, float percentage)
+        Vector3 GetTransitionValue(List<TransitioningVector3> list, float percentage)
         {
             Vector3 offset = new Vector3(0, 0, 0);
 
-            if (_list == null || _list.Count == 0)
+            if (list == null || list.Count == 0)
             {
                 return offset;
             }
 
-            if (_list.Count == 1)
+            if (list.Count == 1)
             {
-                offset = _list[0].value;
+                offset = list[0].value;
                 return offset;
             }
 
 
-            TransitioningVector3 min = _list[0], max = _list[0];
+            TransitioningVector3 min = list[0], max = list[0];
 
-            for (int i = 0; i < _list.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (percentage <= _list[i].percentage)
+                if (percentage <= list[i].percentage)
                 {
-                    max = _list[i];
+                    max = list[i];
 
                     if ((i - 1) > 0)
                     {
-                        min = _list[i - 1];
+                        min = list[i - 1];
                     }
 
                     break;

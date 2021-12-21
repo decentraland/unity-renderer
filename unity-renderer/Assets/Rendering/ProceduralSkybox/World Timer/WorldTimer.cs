@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 namespace DCL.ServerTime
 {
-    public class WorldTimer : Singleton<WorldTimer>
+    public class WorldTimer
     {
         public delegate void OnTimeUpdated(DateTime serverTime);
         public event OnTimeUpdated OnTimeChanged;

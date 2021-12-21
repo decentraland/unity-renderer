@@ -36,7 +36,7 @@ namespace DCL.Skybox
 
         // Reflection probe
         private ReflectionProbe skyboxProbe;
-        bool probeParented = false;
+        private bool probeParented = false;
         private float reflectionUpdateTime = 1;                                 // In Mins
         private ReflectionProbeRuntime runtimeReflectionObj;
 
@@ -72,8 +72,8 @@ namespace DCL.Skybox
             GetOrCreateEnvironmentProbe();
 
             // Get current time from the server
-            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
-            WorldTimer.i.OnTimeChanged += GetTimeFromTheServer;
+            GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
+            DataStore.i.worldTimer.OnTimeChanged += GetTimeFromTheServer;
 
             // Update config whenever skybox config changed in data store. Can be used for both testing and runtime
             DataStore.i.skyboxConfig.objectUpdated.OnChange += UpdateConfig;
@@ -322,7 +322,7 @@ namespace DCL.Skybox
             // Convert minutes in seconds and then normalize with cycle time
             timeNormalizationFactor = lifecycleDuration * 60 / cycleTime;
 
-            GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+            GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
             return true;
         }
 
@@ -399,7 +399,7 @@ namespace DCL.Skybox
             configuration = newConfiguration;
 
             // Apply material as per number of Slots.
-            MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(configuration.slots.Count);
+            MaterialReferenceContainer.Mat_Layer matLayer = MaterialReferenceContainer.i.GetMat_LayerForLayers(5);
             if (matLayer == null)
             {
                 matLayer = MaterialReferenceContainer.i.materials[0];
@@ -449,7 +449,7 @@ namespace DCL.Skybox
 
             if (syncCounter >= syncAfterCount)
             {
-                GetTimeFromTheServer(WorldTimer.i.GetCurrentTime());
+                GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
                 syncCounter = 0;
             }
 
@@ -474,7 +474,7 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useProceduralSkybox.Set(false);
             DataStore.i.skyboxConfig.objectUpdated.OnChange -= UpdateConfig;
 
-            WorldTimer.i.OnTimeChanged -= GetTimeFromTheServer;
+            DataStore.i.worldTimer.OnTimeChanged -= GetTimeFromTheServer;
             configuration.OnTimelineEvent -= Configuration_OnTimelineEvent;
             KernelConfig.i.OnChange -= KernelConfig_OnChange;
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
