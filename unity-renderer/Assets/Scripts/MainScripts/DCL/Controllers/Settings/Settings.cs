@@ -1,78 +1,64 @@
 using System;
 using DCL.Helpers;
 using DCL.Interface;
-using UnityEngine;
 using UnityEngine.Audio;
 
 namespace DCL.SettingsCommon
 {
-    public class Settings : Singleton<Settings>
+    public class Settings
     {
-        const string QUALITY_SETTINGS_KEY = "Settings.Quality";
-        const string GENERAL_SETTINGS_KEY = "Settings.General";
-        const string AUDIO_SETTINGS_KEY = "Settings.Audio";
+        public static Settings i { get; private set; }
+
         public event Action OnResetAllSettings;
+        
         public QualitySettingsData qualitySettingsPresets => qualitySettingsPreset;
-
-        public ISettingsRepository<QualitySettings> qualitySettings;
-        public ISettingsRepository<GeneralSettings> generalSettings;
-        public ISettingsRepository<AudioSettings> audioSettings;
-
-        private static QualitySettingsData qualitySettingsPreset = null;
-
-        public QualitySettingsData autoqualitySettings = null;
+        public QualitySettingsData autoQualitySettings;
         public QualitySettings lastValidAutoqualitySet;
 
-        private readonly BooleanVariable autosettingsEnabled = null;
+        public readonly ISettingsRepository<QualitySettings> qualitySettings;
+        public readonly ISettingsRepository<GeneralSettings> generalSettings;
+        public readonly ISettingsRepository<AudioSettings> audioSettings;
+        
+        private readonly QualitySettingsData qualitySettingsPreset;
+        private readonly BooleanVariable autoQualitySettingsEnabled;
         private readonly AudioMixer audioMixer;
 
-        public Settings()
+        private bool isDisposed;
+
+        public static void CreateSharedInstance(ISettingsFactory settingsFactory)
         {
-            if (qualitySettingsPreset == null)
-            {
-                qualitySettingsPreset = Resources.Load<QualitySettingsData>("ScriptableObjects/QualitySettingsData");
-            }
-
-            if (autoqualitySettings == null)
-            {
-                autoqualitySettings = Resources.Load<QualitySettingsData>("ScriptableObjects/AutoQualitySettingsData");
-                lastValidAutoqualitySet = autoqualitySettings[autoqualitySettings.Length / 2];
-            }
-
-            if (autosettingsEnabled == null)
-                autosettingsEnabled = Resources.Load<BooleanVariable>("ScriptableObjects/AutoQualityEnabled");
-
-            qualitySettings = new ProxySettingsRepository<QualitySettings>(
-                new PlayerPrefsQualitySettingsRepository(
-                    new PlayerPrefsSettingsByKey(QUALITY_SETTINGS_KEY),
-                    qualitySettingsPreset.defaultPreset),
-                new SettingsModule<QualitySettings>(
-                    QUALITY_SETTINGS_KEY,
-                    qualitySettingsPreset.defaultPreset));
-            generalSettings = new ProxySettingsRepository<GeneralSettings>(
-                new PlayerPrefsGeneralSettingsRepository(
-                    new PlayerPrefsSettingsByKey(GENERAL_SETTINGS_KEY),
-                    GetDefaultGeneralSettings()),
-                new SettingsModule<GeneralSettings>(
-                    GENERAL_SETTINGS_KEY,
-                    GetDefaultGeneralSettings()));
-            audioSettings = new ProxySettingsRepository<AudioSettings>(
-                new PlayerPrefsAudioSettingsRepository(
-                    new PlayerPrefsSettingsByKey(AUDIO_SETTINGS_KEY),
-                    GetDefaultAudioSettings()),
-                new SettingsModule<AudioSettings>(
-                    AUDIO_SETTINGS_KEY,
-                    GetDefaultAudioSettings()));
-
-            SubscribeToVirtualAudioMixerEvents();
-            audioMixer = Resources.Load<AudioMixer>("AudioMixer");
+            if (i != null && !i.isDisposed) return;
+            i = settingsFactory.Build();
         }
 
-        public void Dispose() { UnsubscribeFromVirtualAudioMixerEvents(); }
+        public Settings(QualitySettingsData qualitySettingsPreset,
+            QualitySettingsData autoQualitySettings,
+            BooleanVariable autoQualitySettingsEnabled,
+            AudioMixer audioMixer,
+            ISettingsRepository<QualitySettings> graphicsQualitySettingsRepository,
+            ISettingsRepository<GeneralSettings> generalSettingsRepository,
+            ISettingsRepository<AudioSettings> audioSettingsRepository)
+        {
+            this.qualitySettingsPreset = qualitySettingsPreset;
+            this.autoQualitySettings = autoQualitySettings;
+            this.autoQualitySettingsEnabled = autoQualitySettingsEnabled;
+            this.audioMixer = audioMixer;
+            qualitySettings = graphicsQualitySettingsRepository;
+            generalSettings = generalSettingsRepository;
+            audioSettings = audioSettingsRepository;
+
+            SubscribeToVirtualAudioMixerEvents();
+        }
+
+        public void Dispose()
+        {
+            UnsubscribeFromVirtualAudioMixerEvents();
+            isDisposed = true;
+        }
 
         public void LoadDefaultSettings()
         {
-            autosettingsEnabled.Set(false);
+            autoQualitySettingsEnabled.Set(false);
 
             qualitySettings.Reset();
             generalSettings.Reset();
@@ -86,51 +72,16 @@ namespace DCL.SettingsCommon
             OnResetAllSettings?.Invoke();
         }
 
-        private GeneralSettings GetDefaultGeneralSettings()
-        {
-            return new GeneralSettings
-            {
-                mouseSensitivity = 0.6f,
-                scenesLoadRadius = 4,
-                avatarsLODDistance = 16,
-                maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
-                voiceChatVolume = 1,
-                voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
-                autoqualityOn = false,
-                namesOpacity = 0.5f,
-                profanityChatFiltering = true,
-                nightMode = false,
-                hideUI = false,
-                showAvatarNames = true,
-                dynamicProceduralSkybox = true,
-                skyboxTime = 0.0f
-            };
-        }
-
-        private AudioSettings GetDefaultAudioSettings()
-        {
-            return new AudioSettings()
-            {
-                masterVolume = 1f,
-                voiceChatVolume = 1f,
-                avatarSFXVolume = 1f,
-                uiSFXVolume = 1f,
-                sceneSFXVolume = 1f,
-                musicVolume = 1f,
-                chatSFXEnabled = true
-            };
-        }
-
         /// <summary>
         /// Apply the auto quality setting by its index on the array
         /// </summary>
         /// <param name="index">Index within the autoQualitySettings array</param>
         public void ApplyAutoQualitySettings(int index)
         {
-            if (index < 0 || index >= autoqualitySettings.Length)
+            if (index < 0 || index >= autoQualitySettings.Length)
                 return;
 
-            lastValidAutoqualitySet = autoqualitySettings[index];
+            lastValidAutoqualitySet = autoQualitySettings[index];
 
             var qualiltyData = qualitySettings.Data;
 

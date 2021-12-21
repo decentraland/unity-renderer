@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using DCL.Camera;
+using DCL.SettingsCommon;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -25,6 +26,8 @@ public class IntegrationTestSuite_Legacy
         //              like this.
         CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
         CommonScriptableObjects.rendererState.Set(true);
+        
+        Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
         legacySystems = SetUp_LegacySystems();
 
@@ -66,6 +69,8 @@ public class IntegrationTestSuite_Legacy
 
     protected IEnumerator TearDown_LegacySystems()
     {
+        Settings.i.Dispose();
+        
         foreach ( var go in legacySystems )
         {
             UnityEngine.Object.Destroy(go);

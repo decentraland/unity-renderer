@@ -768,5 +768,7 @@ namespace DCL
             isDestroyed = true;
             CleanupAvatar();
         }
+        
+        public Transform[] GetBones() => bodyShapeController?.bones;
     }
 }
