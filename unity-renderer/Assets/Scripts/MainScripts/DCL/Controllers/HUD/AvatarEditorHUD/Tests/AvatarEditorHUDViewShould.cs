@@ -259,6 +259,17 @@ namespace AvatarEditorHUD_Tests
 
             Assert.IsTrue( itemToggleObject.smartItemBadge.activeSelf);
         }
+        
+        [Test]
+        public void HideSmartIconWhenIsNormalNFT()
+        {
+            var smartNft = CreateDummyNFT("rare");
+
+            var selector = controller.myView.selectorsByCategory[smartNft.data.category];
+            var itemToggleObject = (NFTItemToggle) selector.itemToggles[smartNft.id];
+
+            Assert.IsFalse( itemToggleObject.smartItemBadge.activeSelf);
+        }
 
         private WearableItem CreateDummyNFT(string rarity)
         {
