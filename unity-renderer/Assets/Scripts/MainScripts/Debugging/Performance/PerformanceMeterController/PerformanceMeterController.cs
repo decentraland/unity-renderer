@@ -229,6 +229,7 @@ namespace DCL
                 + "\n * Quality Settings -> Camera Draw Distance -> " + Settings.i.qualitySettings.Data.cameraDrawDistance
                 + "\n * Quality Settings -> Detail Object Culling Enabled -> " + Settings.i.qualitySettings.Data.enableDetailObjectCulling
                 + "\n * Quality Settings -> Detail Object Culling Limit -> " + Settings.i.qualitySettings.Data.detailObjectCullingLimit
+                + "\n * Quality Settings -> Reflection Quality -> " + Settings.i.qualitySettings.Data.reflectionResolution
             );
 
             // Step 2 - report processed data
@@ -253,7 +254,7 @@ namespace DCL
 #if !UNITY_WEBGL && UNITY_EDITOR
             string targetFilePath = Application.persistentDataPath + "/PerformanceMeterRawFrames.txt";
             Log("Data report step 3 - Trying to dump raw samples JSON at: " + targetFilePath);
-            System.IO.File.WriteAllText (targetFilePath, rawSamplesJSON);
+            System.IO.File.WriteAllText(targetFilePath, rawSamplesJSON);
 #endif
 
             Log(rawSamplesJSON);
