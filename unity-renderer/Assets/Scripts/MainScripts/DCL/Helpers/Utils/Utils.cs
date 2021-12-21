@@ -412,7 +412,7 @@ namespace DCL.Helpers
         // NOTE: This should come from browser's pointerlockchange callback
         public static void BrowserSetCursorState(bool locked)
         {
-            if (!locked && !requestedUnlock)
+            /*if (!locked && !requestedUnlock)
             {
                 Cursor.lockState = CursorLockMode.None;
             }
@@ -420,7 +420,7 @@ namespace DCL.Helpers
             isCursorLocked = locked;
             Cursor.visible = !locked;
             requestedUnlock = false;
-            requestedLock = false;
+            requestedLock = false;*/
         }
 
         #endregion
