@@ -173,18 +173,15 @@ namespace DCL.Components
 
                     state.clipReference = unityState.clip;
 
+                    unityState.enabled = state.playing;
+
                     if (state.shouldReset)
                         ResetAnimation(state);
 
-                    if (state.playing)
+                    
+                    if (state.playing && !animComponent.IsPlaying(state.clip))
                     {
-                        if (!animComponent.IsPlaying(state.clip))
-                            animComponent.Play(state.clip);
-                    }
-                    else
-                    {
-                        if (animComponent.IsPlaying(state.clip))
-                            animComponent.Stop(state.clip);
+                        animComponent.Play(state.clip);
                     }
                 }
             }
