@@ -357,6 +357,7 @@ namespace DCL.Helpers
 
         public static void LockCursor()
         {
+            /*
 #if WEB_PLATFORM
             //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
             //             behaviour using strategy pattern instead of this.
@@ -376,7 +377,7 @@ namespace DCL.Helpers
             Cursor.lockState = CursorLockMode.Locked;
             lockedInFrame = Time.frameCount;
 
-            EventSystem.current?.SetSelectedGameObject(null);
+            EventSystem.current?.SetSelectedGameObject(null);*/
         }
 
         public static void UnlockCursor()
