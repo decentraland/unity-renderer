@@ -44,6 +44,8 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
+                
+                DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
 
             SetupPlugins();
@@ -66,6 +68,16 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
+        }
+
+        void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
+        {
+            if (newVisibleValue)
+            {
+                // Prewarm shader variants
+                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
+                DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            }
         }
 
         protected virtual void SetupPlugins()
@@ -112,6 +124,8 @@ namespace DCL
 
         protected virtual void OnDestroy()
         {
+            DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            
             DataStore.i.common.isWorldBeingDestroyed.Set(true);
             
             pluginSystem?.Dispose();
