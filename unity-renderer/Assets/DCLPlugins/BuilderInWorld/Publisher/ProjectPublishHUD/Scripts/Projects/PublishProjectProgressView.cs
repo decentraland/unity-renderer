@@ -74,6 +74,8 @@ namespace DCL.Builder
             closeButton.onClick.AddListener(Close);
             cancelButton.onClick.AddListener(Close);
             publishButton.onClick.AddListener(ConfirmPublish);
+
+            gameObject.SetActive(false);
         }
 
         public override void Dispose()

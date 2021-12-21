@@ -74,6 +74,8 @@ public class LandPublisherView : MonoBehaviour, ILandPublisherView
 
         sceneNameInput.characterLimit = sceneNameCharLimit;
         sceneDescriptionInput.characterLimit = sceneDescriptionCharLimit;
+
+        gameObject.SetActive(false);
     }
 
     private void OnDestroy()

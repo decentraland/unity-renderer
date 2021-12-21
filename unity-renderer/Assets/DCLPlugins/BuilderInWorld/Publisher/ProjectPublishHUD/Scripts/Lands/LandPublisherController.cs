@@ -4,7 +4,6 @@ using UnityEngine;
 
 public interface ILandPublisherController
 {
-    event Action OnCancel;
     event Action<IBuilderScene> OnConfirm;
 
     /// <summary>
@@ -24,7 +23,6 @@ public interface ILandPublisherController
     /// <param name="scene"></param>
     void StartPublishFlow(IBuilderScene scene);
     void Dispose();
-    void SetPublicationScreenshot(Texture2D sceneScreenshot);
 }
 
 public class LandPublisherController : ILandPublisherController

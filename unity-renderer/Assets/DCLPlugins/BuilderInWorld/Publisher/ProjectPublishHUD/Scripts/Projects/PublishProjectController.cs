@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
@@ -7,6 +8,11 @@ namespace DCL.Builder
 {
     public interface IPublishProjectController
     {
+        /// <summary>
+        /// The publish has been confirmed
+        /// </summary>
+        event Action<IBuilderScene> OnConfirm;
+
         /// <summary>
         /// Start the publish flow for a project
         /// </summary>
@@ -19,7 +25,9 @@ namespace DCL.Builder
 
     public class PublishProjectController : IPublishProjectController
     {
-        private const string DETAIL_PREFAB_PATH = "Project/PublishDetailView";
+        public event Action<IBuilderScene> OnConfirm;
+
+        private const string DETAIL_PREFAB_PATH = "Project/PublishPopupView";
         private const string PROGRESS_PREFAB_PATH = "Project/PublishProgressView";
         private const string SUCCESS_PREFAB_PATH = "Project/PublishSuccessView";
 
@@ -48,6 +56,7 @@ namespace DCL.Builder
             progressView = GameObject.Instantiate(Resources.Load<PublishProjectProgressView>(PROGRESS_PREFAB_PATH));
             succesView = GameObject.Instantiate(Resources.Load<PublishProjectSuccesView>(SUCCESS_PREFAB_PATH));
             Initialize();
+
         }
 
         public void Initialize()
@@ -124,6 +133,7 @@ namespace DCL.Builder
 
         private void StartPublish()
         {
+            OnConfirm?.Invoke(sceneToPublish);
             projectPublishState = ProjectPublishState.PUBLISH_IN_PROGRESS;
 
             progressView.PublishStarted();

@@ -45,6 +45,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7760303965025470677}
+  - component: {fileID: 503770954694585770}
   - component: {fileID: 6573818665162730673}
   - component: {fileID: 4938047713691835513}
   - component: {fileID: 3609957360204875174}
@@ -75,6 +76,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &503770954694585770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245484659168163697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65ae6d5f912649848961b4d3592c6ffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  closeButton: {fileID: 682579929077748862}
+  cancelButton: {fileID: 3716945456214858889}
+  publishButton: {fileID: 7332119117094515289}
+  errorTextView: {fileID: 3676865775528725773}
+  modal: {fileID: 4367016427517474380}
+  errorGameObject: {fileID: 6603177596504003669}
+  confirmGameObject: {fileID: 3794900522135726971}
+  progressGameObject: {fileID: 395057836656770844}
+  loadingBar: {fileID: 8440536544566038101}
 --- !u!223 &6573818665162730673
 Canvas:
   m_ObjectHideFlags: 0
@@ -593,7 +615,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 165309144805719353}
-  - component: {fileID: 3406138050556532128}
   m_Layer: 5
   m_Name: PublishProgressView
   m_TagString: Untagged
@@ -621,27 +642,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3406138050556532128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3820943156279996220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65ae6d5f912649848961b4d3592c6ffc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  closeButton: {fileID: 682579929077748862}
-  cancelButton: {fileID: 3716945456214858889}
-  publishButton: {fileID: 7332119117094515289}
-  errorTextView: {fileID: 3676865775528725773}
-  modal: {fileID: 4367016427517474380}
-  errorGameObject: {fileID: 6603177596504003669}
-  confirmGameObject: {fileID: 3794900522135726971}
-  progressGameObject: {fileID: 395057836656770844}
-  loadingBar: {fileID: 8440536544566038101}
 --- !u!1 &4150620865886732636
 GameObject:
   m_ObjectHideFlags: 0
@@ -1994,6 +1994,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4990c344ef2c364479f41edc020cc44a, type: 3}
+--- !u!224 &4441362204559741119 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5465467337468258617, guid: 4990c344ef2c364479f41edc020cc44a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8537662652878076294}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &163538216750382989 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8376378469326636555, guid: 4990c344ef2c364479f41edc020cc44a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8537662652878076294}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4367016427517474380 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5395625437086076874, guid: 4990c344ef2c364479f41edc020cc44a,
@@ -2006,15 +2018,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f28a3d54821709e4a9a251d575c0bffe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &163538216750382989 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8376378469326636555, guid: 4990c344ef2c364479f41edc020cc44a,
-    type: 3}
-  m_PrefabInstance: {fileID: 8537662652878076294}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &4441362204559741119 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5465467337468258617, guid: 4990c344ef2c364479f41edc020cc44a,
-    type: 3}
-  m_PrefabInstance: {fileID: 8537662652878076294}
-  m_PrefabAsset: {fileID: 0}

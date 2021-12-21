@@ -57,8 +57,7 @@ namespace DCL.Builder
             //We check if there is a project associated with the land, if there is we load the manifest
             if (!string.IsNullOrEmpty(scene.projectId))
             {
-                var projectManifest = GetProjectById(builderAPIController, scene.projectId);
-                manifest = await projectManifest;
+                manifest = await GetProjectById(builderAPIController, scene.projectId);
 
                 //If there is no project associated, we continue to looking
                 if (manifest != null)
@@ -72,8 +71,7 @@ namespace DCL.Builder
             //We look if the scene has been published with a stateful definition
             if (scene.HasContent(BIWSettings.BUILDER_SCENE_STATE_DEFINITION_FILE_NAME))
             {
-                var statefulManifest = GetManifestByStatefullDefinition(parcelSize, landCoords, scene);
-                manifest = await statefulManifest;
+                manifest = await GetManifestByStatefullDefinition(parcelSize, landCoords, scene);
 
                 //If we can't create a manifest from the stateful definition, we continue to looking
                 if (manifest != null)
@@ -85,8 +83,7 @@ namespace DCL.Builder
             }
 
             //We try to look for coordinates manifest
-            var manifestByCoords = GetManifestByCoordinates(builderAPIController, landCoords);
-            manifest = await manifestByCoords;
+            manifest = await GetManifestByCoordinates(builderAPIController, landCoords);
 
             //If we can't find a project associated with the land coords, we continue to looking
             if (manifest != null)

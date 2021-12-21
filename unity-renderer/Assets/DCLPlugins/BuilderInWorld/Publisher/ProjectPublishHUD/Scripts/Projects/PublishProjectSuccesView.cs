@@ -51,6 +51,8 @@ namespace DCL.Builder
             base.Awake();
             okButton.onClick.AddListener(OkButtonPressed);
             modal.OnCloseAction += Close;
+
+            gameObject.SetActive(false);
         }
 
         public override void Dispose()

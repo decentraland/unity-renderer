@@ -1115,7 +1115,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2119454007863564057}
-  - component: {fileID: 7963047347403645079}
   m_Layer: 5
   m_Name: View
   m_TagString: Untagged
@@ -1144,29 +1143,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7963047347403645079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3036600926543512860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cc7fc3e141a7a0438cf1a210787799f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cancelButton: {fileID: 3222226339789059753}
-  publishButton: {fileID: 8854763543283374201}
-  publishButtonText: {fileID: 5272146794808576244}
-  sceneNameInput: {fileID: 3601030681145661581}
-  sceneNameValidationText: {fileID: 4961191534390801398}
-  sceneDescriptionInput: {fileID: 305320365001782591}
-  sceneScreenshot: {fileID: 1475606947937869915}
-  sceneNameCharCounterText: {fileID: 1502082085498666476}
-  sceneNameCharLimit: 30
-  sceneDescriptionCharCounterText: {fileID: 6512768396876277845}
-  sceneDescriptionCharLimit: 140
 --- !u!1 &3189958393269131224
 GameObject:
   m_ObjectHideFlags: 0
@@ -2101,11 +2077,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4085545792492054779}
+  - component: {fileID: 2630502565216691108}
   - component: {fileID: 592786475866246303}
   - component: {fileID: 1695496598005136471}
   - component: {fileID: 6996834602700711304}
   m_Layer: 5
-  m_Name: LandPublisherView2
+  m_Name: LandPublisherView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2131,6 +2108,29 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &2630502565216691108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4776134086099474271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cc7fc3e141a7a0438cf1a210787799f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cancelButton: {fileID: 3222226339789059753}
+  publishButton: {fileID: 8854763543283374201}
+  publishButtonText: {fileID: 5272146794808576244}
+  sceneNameInput: {fileID: 3601030681145661581}
+  sceneNameValidationText: {fileID: 4961191534390801398}
+  sceneDescriptionInput: {fileID: 305320365001782591}
+  sceneScreenshot: {fileID: 1475606947937869915}
+  sceneNameCharCounterText: {fileID: 1502082085498666476}
+  sceneNameCharLimit: 30
+  sceneDescriptionCharCounterText: {fileID: 6512768396876277845}
+  sceneDescriptionCharLimit: 140
 --- !u!223 &592786475866246303
 Canvas:
   m_ObjectHideFlags: 0

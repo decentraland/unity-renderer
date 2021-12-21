@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace DCL.Builder
@@ -60,6 +61,9 @@ namespace DCL.Builder
         public event Action OnCancel;
         public event Action<PublishInfo> OnPublishButtonPressed;
 
+        [Header("Map Renderer")]
+        public PublishMapView mapView;
+
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button publishButton;
 
@@ -70,7 +74,6 @@ namespace DCL.Builder
         [SerializeField] internal Button zoomInButton;
         [SerializeField] internal Button zoomOutButton;
         [SerializeField] internal Button resetToLandButton;
-        [SerializeField] internal Image mapImage;
 
         [SerializeField] internal RawImage sceneScreenshotImage;
 
@@ -103,6 +106,12 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.AddListener( (() => OnProjectRotateLeft?.Invoke()));
             rotateRightButton.onClick.AddListener( (() => OnProjectRotateRight?.Invoke()));
+
+            landsDropDown.onValueChanged.AddListener(LandSelectedFromDropDown);
+
+            mapView.OnParcelClicked += LandSelectedFromMap;
+
+            gameObject.SetActive(false);
         }
 
         public override void Dispose()
@@ -110,12 +119,42 @@ namespace DCL.Builder
             base.Dispose();
 
             modal.OnCloseAction -= CancelPublish;
+            mapView.OnParcelClicked -= LandSelectedFromMap;
 
             cancelButton.onClick.RemoveAllListeners();
             publishButton.onClick.RemoveAllListeners();
 
+            landsDropDown.onValueChanged.RemoveAllListeners();
+
             rotateLeftButton.onClick.RemoveAllListeners();
             rotateRightButton.onClick.RemoveAllListeners();
+        }
+
+        private void LandSelectedFromDropDown(int index)
+        {
+            //We set the map to the main land
+            Vector2Int coordsToHighlight = landsDropdownDictionary[landsDropDown.options[index].text].baseCoords;
+            mapView.GoToCoords(coordsToHighlight);
+        }
+
+        private void LandSelectedFromMap(Vector2Int coords)
+        {
+            foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
+            {
+                foreach (Vector2Int landParcel in land.parcels)
+                {
+                    if (landParcel == coords)
+                    {
+                        string text = GetLandText(land.name, landParcel);
+                        for (int i = 0 ; i < landsDropDown.options.Count; i++)
+                        {
+                            if (text == landsDropDown.options[i].text)
+                                landsDropDown.SetValueWithoutNotify(i);
+                        }
+                    }
+                }
+            }
+            mapView.GoToCoords(coords);
         }
 
         public void SetProjectToPublish(BuilderScene scene)
@@ -132,6 +171,10 @@ namespace DCL.Builder
 
             //We fill the land drop down
             FillLandDropDown();
+
+            //We set the map to the main land
+            Vector2Int coordsToHighlight = landsDropdownDictionary[landsDropDown.options[landsDropDown.value].text].baseCoords;
+            mapView.GoToCoords(coordsToHighlight);
         }
 
         private string GetScreenshotText(Vector2Int[] parcels)
@@ -147,23 +190,41 @@ namespace DCL.Builder
             List<TMP_Dropdown.OptionData> landsOption =  new List<TMP_Dropdown.OptionData>();
             foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
             {
-                TMP_Dropdown.OptionData landData = new TMP_Dropdown.OptionData();
-                string text = land.name + " " + land.baseCoords.x + "," + land.baseCoords.y;
-                landData.text = text;
-                landsOption.Add(landData);
-                landsDropdownDictionary.Add(text, land);
+                foreach (Vector2Int landParcel in land.parcels)
+                {
+                    string text = GetLandText(land.name, landParcel);
+
+                    if (landsDropdownDictionary.ContainsKey(text))
+                        continue;
+
+                    TMP_Dropdown.OptionData landData = new TMP_Dropdown.OptionData();
+                    landData.text = text;
+                    landsOption.Add(landData);
+                    landsDropdownDictionary.Add(text, land);
+                }
             }
 
             landsDropDown.options = landsOption;
         }
 
-        public void Show() { modal.Show(); }
+        internal string GetLandText(string landName, Vector2Int landParcel) { return landName + " (" + landParcel.x + "," + landParcel.y + ")"; }
 
-        public void Hide() { modal.Hide(); }
+        public void Show()
+        {
+            gameObject.SetActive(true);
+            modal.Show();
+            mapView.SetVisible(true);
+        }
+
+        public void Hide()
+        {
+            modal.Hide();
+            mapView.SetVisible(false);
+        }
 
         private void PublishButtonPressed()
         {
-            modal.Hide();
+            Hide();
             PublishInfo publishInfo = new PublishInfo();
             publishInfo.name = nameInputField.GetValue();
             publishInfo.description = descriptionInputField.GetValue();
@@ -176,7 +237,7 @@ namespace DCL.Builder
 
         private void CancelButtonPressed()
         {
-            modal.Hide();
+            Hide();
             CancelPublish();
         }
 
