@@ -501,9 +501,8 @@ namespace DCL
             animator.SetIdleFrame();
             animator.animation.Sample();
 
-            gpuSkinning = new SimpleGPUSkinning(
-                avatarMeshCombiner.renderer,
-                false); // Bind poses are encoded by the AvatarMeshCombiner before making the mesh unreadable.
+            gpuSkinning = new SimpleGPUSkinning();
+            gpuSkinning.Prepare(avatarMeshCombiner.renderer); // Bind poses are encoded by the AvatarMeshCombiner before making the mesh unreadable.
 
             gpuSkinningThrottler = new GPUSkinningThrottler(gpuSkinning);
             gpuSkinningThrottler.SetThrottling(gpuSkinningFramesBetweenUpdates);
