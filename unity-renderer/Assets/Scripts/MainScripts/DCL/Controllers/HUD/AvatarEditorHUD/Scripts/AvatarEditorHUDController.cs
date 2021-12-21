@@ -43,6 +43,7 @@ public class AvatarEditorHUDController : IHUD
     private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     private bool avatarIsDirty = false;
+    private float lastTimeOwnedWearablesChecked = 0;
 
     public AvatarEditorHUDView view;
 
@@ -103,11 +104,18 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadOwnedWereables(UserProfile userProfile)
     {
-        if (ownedWearablesAlreadyLoaded || ownedWearablesRemainingRequests <= 0 || string.IsNullOrEmpty(userProfile.userId))
+        // If there is more than 1 minute that we have checked the owned wearables, we try it again
+        // This is done in order to retrieved the wearables after you has claimed them
+        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked+60 &&
+            (ownedWearablesAlreadyLoaded || 
+            ownedWearablesRemainingRequests <= 0)) || 
+            string.IsNullOrEmpty(userProfile.userId))
             return;
 
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
+        lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
+        
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
