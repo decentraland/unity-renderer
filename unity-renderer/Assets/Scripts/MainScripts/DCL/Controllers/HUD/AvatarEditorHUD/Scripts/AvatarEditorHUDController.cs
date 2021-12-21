@@ -104,9 +104,6 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadOwnedWereables(UserProfile userProfile)
     {
-        if(string.IsNullOrEmpty(userProfile.userId))
-            return;
-        
         // If there is more than 1 minute that we have checked the owned wearables, we try it again
         // This is done in order to retrieved the wearables after you has claimed them
         if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked+60 &&
@@ -117,10 +114,11 @@ public class AvatarEditorHUDController : IHUD
 
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
+        lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
+        
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
-                             lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
                              ownedWearablesAlreadyLoaded = true;
                              this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
                              LoadUserProfile(userProfile, true);
