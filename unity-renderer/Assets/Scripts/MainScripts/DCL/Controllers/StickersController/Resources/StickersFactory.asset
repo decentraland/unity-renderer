@@ -31,3 +31,9 @@ MonoBehaviour:
   - id: footstepLand
     stickerPrefab: {fileID: 7577078904277244474, guid: f9829acce8807ec4eac1e907760ae260,
       type: 3}
+  - id: snowflakes
+    stickerPrefab: {fileID: 8946916107192316977, guid: ba6db9461f5c89841aee145095dc7b29,
+      type: 3}
+  - id: hohoho
+    stickerPrefab: {fileID: 2517955516116662209, guid: 03e7f4b3949a29f4190a223edadc6e59,
+      type: 3}

@@ -36,6 +36,9 @@ public enum DCLAction_Trigger
     Expression_Clap = 205,
     Expression_ThrowMoney = 206,
     Expression_SendKiss = 207,
+    Expression_Dance = 208,
+    Expression_Hohoho = 209,
+    Expression_Snowfall = 210,
 
     //Builder In World 4xx
     BuildEditModeChange = 408,
