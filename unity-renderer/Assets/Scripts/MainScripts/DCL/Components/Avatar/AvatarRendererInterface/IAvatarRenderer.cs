@@ -25,5 +25,6 @@ namespace DCL
         void SetSSAOEnabled(bool enabled);
         void SetImpostorColor(Color newColor);
         void SetThrottling(int framesBetweenUpdates);
+        Transform[] GetBones();
     }
 }

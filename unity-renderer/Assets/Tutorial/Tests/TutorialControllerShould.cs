@@ -7,6 +7,7 @@ using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 using static DCL.Tutorial.TutorialController;
+using Object = UnityEngine.Object;
 
 namespace DCL.Tutorial_Tests
 {
@@ -528,9 +529,12 @@ namespace DCL.Tutorial_Tests
         private void CreateAndConfigureTutorial()
         {
             tutorialController = new TutorialController();
-            tutorialController.tutorialView = tutorialController.CreateTutorialView();
             tutorialView = tutorialController.tutorialView;
-            tutorialView.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialSettings>("TutorialConfigurationForTests"));
+
+            // NOTE(Brian): Avoid AudioListener warning
+            tutorialView.gameObject.AddComponent<AudioListener>();
+
+            tutorialView.configuration = Object.Instantiate(Resources.Load<TutorialSettings>("TutorialConfigurationForTests"));
             tutorialView.ConfigureView(tutorialController);
             tutorialController.SetConfiguration(tutorialView.configuration);
             tutorialController = tutorialView.tutorialController;
@@ -553,7 +557,7 @@ namespace DCL.Tutorial_Tests
         {
             foreach (var step in currentSteps)
             {
-                GameObject.Destroy(step);
+                Object.Destroy(step);
             }
 
             tutorialController.Dispose();

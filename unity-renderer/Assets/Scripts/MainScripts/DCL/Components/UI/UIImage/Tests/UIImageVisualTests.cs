@@ -13,15 +13,13 @@ public class UIImageVisualTests : UIVisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator UIImageVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UIImageTest1()); }
+    public IEnumerator UIImageVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UIImageTest1()); }
 
     [UnityTest]
     [VisualTest]
     [Category("Visual Tests")]
     public IEnumerator UIImageTest1()
     {
-        yield return InitUIVisualTestScene("UIImageTest");
-
         string mainContainerId = "herodes";
         yield return CreateUIComponent<UIContainerRect, UIContainerRect.Model>(CLASS_ID.UI_CONTAINER_RECT, new UIContainerRect.Model
         {
@@ -58,6 +56,6 @@ public class UIImageVisualTests : UIVisualTestsBase
             isPointerBlocker = true,
         }, "testUIImage");
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 0f));
+        yield return VisualTestUtils.TakeSnapshot("UIImageTest", camera, new Vector3(0f, 2f, 0f));
     }
 }

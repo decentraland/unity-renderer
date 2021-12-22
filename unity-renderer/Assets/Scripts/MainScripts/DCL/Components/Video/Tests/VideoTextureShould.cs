@@ -22,10 +22,14 @@ namespace Tests
     {
         private Func<IVideoPluginWrapper> originalVideoPluginBuilder;
 
+        private ISceneController sceneController => DCL.Environment.i.world.sceneController;
+        private ParcelScene scene;
+
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
 
+            scene = TestUtils.CreateTestScene();
             IVideoPluginWrapper pluginWrapper = new VideoPluginWrapper_Mock();
             originalVideoPluginBuilder = DCLVideoTexture.videoPluginWrapperBuilder;
             DCLVideoTexture.videoPluginWrapperBuilder = () => pluginWrapper;

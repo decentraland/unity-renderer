@@ -2,17 +2,18 @@ using NUnit.Framework;
 using System.Collections;
 using System.Linq;
 using DCL;
+using DCL.Helpers;
 
 public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
 {
+    private UserProfileController userProfileController;
     private PlayerInfoCardHUDView view;
     private UserProfile userProfile;
-    protected override bool justSceneSetUp => true;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        
+
         DataStore.i.settings.profanityChatFilteringEnabled.Set(true);
 
         view = PlayerInfoCardHUDView.CreateView();
@@ -24,7 +25,8 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.RARE);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.UNIQUE);
 
-        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel {userId = "userId"});
+        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
+        userProfileController.AddUserProfileToCatalog(new UserProfileModel { userId = "userId" });
 
         userProfile = UserProfileController.userProfilesCatalog.Get("userId");
         userProfile.UpdateData(new UserProfileModel
@@ -46,6 +48,7 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        UnityEngine.Object.Destroy(userProfileController.gameObject);
         UnityEngine.Object.Destroy(view.gameObject);
         yield return base.TearDown();
     }

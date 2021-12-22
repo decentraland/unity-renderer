@@ -17,6 +17,7 @@ public class AssetCatalogBridge : MonoBehaviour
     public static AssetCatalogBridge i { get; internal set; }
 
     private SceneAssetPackDictionary sceneAssetPackCatalogValue;
+
     public SceneAssetPackDictionary sceneAssetPackCatalog
     {
         get
@@ -31,6 +32,7 @@ public class AssetCatalogBridge : MonoBehaviour
     }
 
     private SceneObjectDictionary sceneObjectCatalogValue;
+
     public SceneObjectDictionary sceneObjectCatalog
     {
         get
@@ -82,7 +84,6 @@ public class AssetCatalogBridge : MonoBehaviour
         JObject jObject = (JObject)JsonConvert.DeserializeObject(payload);
         if (jObject["ok"].ToObject<bool>())
         {
-
             JArray array = JArray.Parse(jObject["data"].ToString());
 
             foreach (JObject item in array)
@@ -119,7 +120,7 @@ public class AssetCatalogBridge : MonoBehaviour
     {
         AddScenesObjectToSceneCatalog(JsonConvert.DeserializeObject<SceneObject[]>(payload));
     }
-    
+
     public void AddScenesObjectToSceneCatalog(SceneObject[] sceneObjects)
     {
         foreach (var sceneObject in sceneObjects)

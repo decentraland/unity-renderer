@@ -8,6 +8,7 @@ public class NFTItemToggle : ItemToggle
     [SerializeField] internal Button infoButton;
     [SerializeField] internal Button closeInfoButton;
     [SerializeField] internal Button sellButton;
+    [SerializeField] internal GameObject smartItemBadge;
 
     private static event Action OnHideAllInfos;
 
@@ -27,6 +28,7 @@ public class NFTItemToggle : ItemToggle
     {
         base.Initialize(w, isSelected, amount);
         nftItemInfo.SetModel(NFTItemInfo.Model.FromWearableItem(wearableItem));
+        smartItemBadge.SetActive(w.IsSmart());
     }
 
     protected override void SetSelection(bool isSelected)

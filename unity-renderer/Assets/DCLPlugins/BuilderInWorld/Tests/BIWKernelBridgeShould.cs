@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using NUnit.Framework;
@@ -11,7 +13,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
 {
     private BuilderInWorldBridge biwBridge;
     private BIWEntityHandler entityHandler;
-    private GameObject dummyGameObject;
+    private ParcelScene scene;
 
     private bool messageReceived = false;
 
@@ -19,19 +21,21 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
+
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
         entityHandler.EnterEditMode(scene);
 
-        dummyGameObject = new GameObject();
-        biwBridge = Utils.GetOrCreateComponent<BuilderInWorldBridge>(dummyGameObject);
+        biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();
 
         WebInterface.OnMessageFromEngine += MessageReceived;
     }
 
     protected override IEnumerator TearDown()
     {
-        GameObject.Destroy(dummyGameObject);
+        Object.Destroy(biwBridge.gameObject);
         WebInterface.OnMessageFromEngine -= MessageReceived;
         yield return base.TearDown();
     }

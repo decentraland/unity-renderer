@@ -201,7 +201,7 @@ namespace DCL.Tutorial
 
             if (runningStep != null)
             {
-                GameObject.Destroy(runningStep.gameObject);
+                UnityEngine.Object.Destroy(runningStep.gameObject);
                 runningStep = null;
             }
 

@@ -12,7 +12,7 @@ namespace Tests.BuildModeHUDControllers
     {
         private DragAndDropSceneObjectController dragAndDropSceneObjectController;
         private GameObject mockedGameObject;
-        private AssetCatalogBridge catalogBridge;
+        private AssetCatalogBridge assetCatalogBridge;
         private CatalogItem item;
 
         [SetUp]
@@ -24,9 +24,9 @@ namespace Tests.BuildModeHUDControllers
             var view = Substitute.For<IDragAndDropSceneObjectView>();
             view.Configure().GetGeneralCanvas().Returns(canvas);
             dragAndDropSceneObjectController.Initialize(Substitute.For<ISceneCatalogController>(), view);
-            catalogBridge = mockedGameObject.AddComponent<AssetCatalogBridge>();
+            assetCatalogBridge = mockedGameObject.AddComponent<AssetCatalogBridge>();
 
-            item = BIWTestUtils.CreateTestCatalogLocalSingleObject();
+            item = BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
             item.thumbnailURL = "";
         }
 
@@ -35,8 +35,8 @@ namespace Tests.BuildModeHUDControllers
         {
             BIWCatalogManager.ClearCatalog();
             AssetCatalogBridge.i.ClearCatalog();
-            GameObject.Destroy(catalogBridge);
-            GameObject.Destroy(mockedGameObject);
+            Object.Destroy(assetCatalogBridge);
+            Object.Destroy(mockedGameObject);
         }
 
         [Test]

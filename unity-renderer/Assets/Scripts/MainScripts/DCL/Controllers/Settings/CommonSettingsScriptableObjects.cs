@@ -7,5 +7,8 @@ namespace DCL.SettingsCommon
 
         private static BooleanVariable detailObjectCullingDisabledValue;
         public static BooleanVariable detailObjectCullingDisabled => CommonScriptableObjects.GetOrLoad(ref detailObjectCullingDisabledValue, "ScriptableObjects/DetailObjectCullingDisabled");
+
+        private static BooleanVariable dynamicSkyboxDisabledValue;
+        public static BooleanVariable dynamicSkyboxDisabled => CommonScriptableObjects.GetOrLoad(ref dynamicSkyboxDisabledValue, "ScriptableObjects/DynamicSkyboxDisabled");
     }
 }

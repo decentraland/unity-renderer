@@ -15,7 +15,7 @@ namespace Tests
         [VisualTest]
         [Explicit]
         [Category("Explicit")]
-        public IEnumerator MouthWithMask_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(MouthWithMask()); }
+        public IEnumerator MouthWithMask_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(MouthWithMask()); }
 
         [UnityTest]
         [VisualTest]
@@ -23,8 +23,6 @@ namespace Tests
         [Explicit("Something is wrong with the avatar renderer material")]
         public IEnumerator MouthWithMask()
         {
-            yield return InitVisualTestsScene("AvatarShapeVisualTests_MouthWithMask");
-
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             var model = AvatarShapeTestHelpers.GetTestAvatarModel("Avatar #1", "TestAvatar_MaskMouth.json");
             AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, model);
@@ -32,11 +30,11 @@ namespace Tests
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
 
-            VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
+            VisualTestUtils.RepositionVisualTestsCamera(camera, camPos, camTarget);
 
             yield return new WaitUntil(() => avatar.everythingIsLoaded, 20);
 
-            yield return VisualTestHelpers.TakeSnapshot();
+            yield return VisualTestUtils.TakeSnapshot("AvatarShapeVisualTests_MouthWithMask", camera);
         }
     }
 }

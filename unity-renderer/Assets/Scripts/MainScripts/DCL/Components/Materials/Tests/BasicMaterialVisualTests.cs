@@ -12,7 +12,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator CastShadowFalseShouldWork_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(CastShadowFalseShouldWork()); }
+    public IEnumerator CastShadowFalseShouldWork_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(CastShadowFalseShouldWork()); }
 
     [UnityTest]
     [VisualTest]
@@ -20,10 +20,8 @@ public class BasicMaterialVisualTests : VisualTestsBase
     [Category("Explicit")]
     public IEnumerator CastShadowFalseShouldWork()
     {
-        yield return InitVisualTestsScene("BasicMaterialVisualTests_CastShadowFalseShouldWork");
-
         Vector3 camTarget = new Vector3(5, 1, 5);
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget + new Vector3(5, 1, 5), camTarget);
+        VisualTestUtils.RepositionVisualTestsCamera(camera, camTarget + new Vector3(5, 1, 5), camTarget);
 
         BasicMaterial basicMaterialComponent = TestUtils.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {
@@ -34,14 +32,14 @@ public class BasicMaterialVisualTests : VisualTestsBase
 
         yield return new WaitForAllMessagesProcessed();
 
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("BasicMaterialVisualTests_CastShadowFalseShouldWork", camera);
     }
 
     [UnityTest]
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator CastShadowTrueShouldWork_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(CastShadowTrueShouldWork()); }
+    public IEnumerator CastShadowTrueShouldWork_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(CastShadowTrueShouldWork()); }
 
     [UnityTest]
     [VisualTest]
@@ -49,10 +47,8 @@ public class BasicMaterialVisualTests : VisualTestsBase
     [Category("Explicit")]
     public IEnumerator CastShadowTrueShouldWork()
     {
-        yield return InitVisualTestsScene("BasicMaterialVisualTests_CastShadowTrueShouldWork");
-
         Vector3 camTarget = new Vector3(5, 1, 5);
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget + new Vector3(5, 1, 5), camTarget);
+        VisualTestUtils.RepositionVisualTestsCamera(camera, camTarget + new Vector3(5, 1, 5), camTarget);
 
         BasicMaterial basicMaterialComponent = TestUtils.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {
@@ -63,6 +59,6 @@ public class BasicMaterialVisualTests : VisualTestsBase
 
         yield return new WaitForAllMessagesProcessed();
 
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("BasicMaterialVisualTests_CastShadowTrueShouldWork", camera);
     }
 }

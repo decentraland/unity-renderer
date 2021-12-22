@@ -4,6 +4,8 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,11 +19,14 @@ namespace AvatarShape_Tests
         private AvatarModel avatarModel;
         private BaseDictionary<string, WearableItem> catalog;
         private AvatarRenderer avatarRenderer;
+        private ParcelScene scene;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+
+            scene = TestUtils.CreateTestScene();
 
             avatarModel = new AvatarModel()
             {
@@ -283,11 +288,14 @@ namespace AvatarShape_Tests
         private AvatarRenderer avatarRenderer;
         private AvatarAnimatorLegacy animator;
 
+        private ParcelScene scene;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
 
+            scene = TestUtils.CreateTestScene();
             avatarModel = new AvatarModel()
             {
                 name = " test",
