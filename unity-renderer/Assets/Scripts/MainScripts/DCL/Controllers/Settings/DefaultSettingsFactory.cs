@@ -10,8 +10,6 @@ namespace DCL.SettingsCommon
         const string AUDIO_SETTINGS_KEY = "Settings.Audio";
 
         private string graphicsQualitySettingsPresetPath = "ScriptableObjects/QualitySettingsData";
-        private string autoQualitySettingsPath = "ScriptableObjects/AutoQualitySettingsData";
-        private string autoQualitySettingsEnabledPath = "ScriptableObjects/AutoQualityEnabled";
         private string audioMixerPath = "AudioMixer";
 
         private GeneralSettings defaultGeneralSettings = new GeneralSettings
@@ -22,7 +20,6 @@ namespace DCL.SettingsCommon
             maxNonLODAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR,
             voiceChatVolume = 1,
             voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
-            autoqualityOn = false,
             namesOpacity = 0.5f,
             profanityChatFiltering = true,
             nightMode = false,
@@ -58,13 +55,9 @@ namespace DCL.SettingsCommon
         public Settings Build()
         {
             var graphicsQualitySettingsPreset = Resources.Load<QualitySettingsData>(graphicsQualitySettingsPresetPath);
-            var autoQualitySettings = Resources.Load<QualitySettingsData>(autoQualitySettingsPath);
-            var autoQualitySettingsEnabled = Resources.Load<BooleanVariable>(autoQualitySettingsEnabledPath);
             var audioMixer = Resources.Load<AudioMixer>(audioMixerPath);
 
             return new Settings(graphicsQualitySettingsPreset,
-                autoQualitySettings,
-                autoQualitySettingsEnabled,
                 audioMixer,
                 CreateGraphicsQualityRepository(graphicsQualitySettingsPreset),
                 CreateGeneralSettingsRepository(),

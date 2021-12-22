@@ -5,7 +5,6 @@ namespace DCL.SettingsCommon
 {
     public class PlayerPrefsGeneralSettingsRepository : ISettingsRepository<GeneralSettings>
     {
-        public const string AUTO_QUALITY_ON = "autoqualityOn";
         public const string PROFANITY_CHAT_FILTERING = "profanityChatFiltering";
         public const string MOUSE_SENSITIVITY = "mouseSensitivity";
         public const string NAMES_OPACITY = "namesOpacity";
@@ -46,7 +45,6 @@ namespace DCL.SettingsCommon
 
         public void Save()
         {
-            settingsByKey.SetBool(AUTO_QUALITY_ON, currentSettings.autoqualityOn);
             settingsByKey.SetBool(PROFANITY_CHAT_FILTERING, currentSettings.profanityChatFiltering);
             settingsByKey.SetFloat(MOUSE_SENSITIVITY, currentSettings.mouseSensitivity);
             settingsByKey.SetFloat(NAMES_OPACITY, currentSettings.namesOpacity);
@@ -67,7 +65,6 @@ namespace DCL.SettingsCommon
 
             try
             {
-                settings.autoqualityOn = settingsByKey.GetBool(AUTO_QUALITY_ON, defaultSettings.autoqualityOn);
                 settings.profanityChatFiltering = settingsByKey.GetBool(PROFANITY_CHAT_FILTERING,
                     defaultSettings.profanityChatFiltering);
                 settings.mouseSensitivity = settingsByKey.GetFloat(MOUSE_SENSITIVITY, defaultSettings.mouseSensitivity);
