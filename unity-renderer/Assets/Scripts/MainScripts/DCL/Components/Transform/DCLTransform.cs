@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Net.Configuration;
 using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
@@ -9,15 +8,12 @@ namespace DCL.Components
     public class DCLTransform : IEntityComponent
     {
         [System.Serializable]
-        public class Model : BaseModel
+        public class Model : DCLTransformModel
         {
-            public Vector3 position = Vector3.zero;
-            public Quaternion rotation = Quaternion.identity;
-            public Vector3 scale = Vector3.one;
-
             public override BaseModel GetDataFromJSON(string json)
             {
-                MessageDecoder.DecodeTransform(json, ref DCLTransform.model);
+                DCLTransformModel model = DCLTransform.model;
+                MessageDecoder.DecodeTransform(json, ref model);
                 return DCLTransform.model;
             }
         }
