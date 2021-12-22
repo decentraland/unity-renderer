@@ -28,27 +28,30 @@ namespace DCL
             public MappingPair[] EP_12;
         }
 
-        private const string KERNEL_RELATIVE_PATH = "/../../../explorer/kernel"; // This has to be set manually according to the local paths 
+        private const string KERNEL_RELATIVE_PATH = "/../../../kernel"; // This has to be set manually according to the local paths 
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Default Empty Parcels")]
         public static void DumpEmptyParcels_Default() { DumpEmptyParcels(); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Halloween Empty Parcels")]
-        public static void DumpEmptyParcels_Halloween() { DumpEmptyParcels("empty-scenes-halloween"); }
+        public static void DumpEmptyParcels_Halloween() { DumpEmptyParcels("halloween"); }
+        
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump XMas Empty Parcels")]
+        public static void DumpEmptyParcels_XMas() { DumpEmptyParcels("xmas"); }
 
-        public static void DumpEmptyParcels(string folderName = "empty-scenes")
+        public static void DumpEmptyParcels(string folderName = "common")
         {
-            string indexJsonPath = Application.dataPath;
+            string mappingsJsonPath = Application.dataPath;
 
-            indexJsonPath += KERNEL_RELATIVE_PATH + $"/static/loader/{folderName}/index.json";
+            mappingsJsonPath += KERNEL_RELATIVE_PATH + $"/public/empty-scenes/{folderName}/mappings.json";
 
-            if (!File.Exists(indexJsonPath))
+            if (!File.Exists(mappingsJsonPath))
             {
-                Debug.LogError("Index.json path doesn't exists! Make sure to 'make watch' first so it gets generated.");
+                Debug.LogError($"mappings.json not founs at '{mappingsJsonPath}'! Make sure to run 'make empty-parcels' and then 'make watch'");
                 return;
             }
 
-            string emptyScenes = File.ReadAllText(indexJsonPath);
+            string emptyScenes = File.ReadAllText(mappingsJsonPath);
             var es = JsonUtility.FromJson<EmptyParcels>(emptyScenes);
 
             List<MappingPair> mappings = new List<MappingPair>();
@@ -67,7 +70,7 @@ namespace DCL
             mappings.AddRange(es.EP_12);
 
             string emptyScenesResourcesPath = Application.dataPath;
-            emptyScenesResourcesPath += KERNEL_RELATIVE_PATH + $"/static/loader/{folderName}";
+            emptyScenesResourcesPath += KERNEL_RELATIVE_PATH + $"/public/empty-scenes/{folderName}";
 
             string customBaseUrl = "file://" + emptyScenesResourcesPath;
 
