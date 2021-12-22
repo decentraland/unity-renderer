@@ -29,12 +29,16 @@ namespace DCL
 
             tracker.AddDeltaTime(Time.deltaTime);
 
-            performanceMetricsDataVariable?.Set(tracker.CurrentFPSCount(), tracker.CurrentHiccupCount(), tracker.HiccupsSum, tracker.GetTotalSeconds());
+            performanceMetricsDataVariable.Set(tracker.CurrentFPSCount(), 
+                tracker.CurrentHiccupCount(),
+                tracker.HiccupsSum, 
+                tracker.GetTotalSeconds());
 
             encodedSamples[currentIndex++] = (char)deltaInMs;
 
             if (currentIndex == SAMPLES_SIZE)
             {
+                Debug.Log($"fps: {tracker.CurrentFPSCount()}");
                 currentIndex = 0;
                 Report(new string(encodedSamples));
             }
