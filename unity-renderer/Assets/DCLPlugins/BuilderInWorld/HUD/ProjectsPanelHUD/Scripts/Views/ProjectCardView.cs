@@ -172,7 +172,6 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     public void Dispose()
     {
-        CoroutineStarter.Stop(animationCoroutine);
         AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
         editorButton.onClick.RemoveAllListeners();
         CoroutineStarter.Stop(animRectTransformCoroutine);
