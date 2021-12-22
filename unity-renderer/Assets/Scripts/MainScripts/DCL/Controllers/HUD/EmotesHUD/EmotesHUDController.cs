@@ -40,6 +40,8 @@ public class EmotesHUDController : IHUD
         }
         else
         {
+            // Avoid locking cursor. It produces undesired mouse locking the first time you gain focus in the window
+            // during loading screen or first avatar creation
             //DCL.Helpers.Utils.LockCursor();
             ownUserProfile.snapshotObserver.RemoveListener(view.UpdateAvatarSprite);
         }
