@@ -10,6 +10,7 @@ namespace DCL.FPSDisplay
             new FPSColor(Color.green, FPSEvaluation.GREAT),
             new FPSColor(Color.white, FPSEvaluation.GOOD),
             new FPSColor(Color.yellow, FPSEvaluation.BAD),
+            new FPSColor(new Color(0.9764706f, 0.4117647f, 0.05490196f), FPSEvaluation.WORSE),
             new FPSColor(Color.red, FPSEvaluation.UNBEARABLE),
         };
 
