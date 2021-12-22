@@ -18,7 +18,7 @@ namespace DCL
 
         public void Update()
         {
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_WEBGL
             if (!CommonScriptableObjects.focusState.Get())
                 return;
 #endif
@@ -28,8 +28,6 @@ namespace DCL
             var deltaInMs = Time.deltaTime * 1000;
 
             tracker.AddDeltaTime(Time.deltaTime);
-
-            Debug.LogWarning($"fps: {tracker.CurrentFPSCount()}");
 
             performanceMetricsDataVariable.Set(tracker.CurrentFPSCount(), 
                 tracker.CurrentHiccupCount(),
