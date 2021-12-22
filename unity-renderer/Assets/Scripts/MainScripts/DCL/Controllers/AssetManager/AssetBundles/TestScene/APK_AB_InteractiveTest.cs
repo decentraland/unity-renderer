@@ -1,7 +1,8 @@
-using DCL;
+using System;
 using System.Collections.Generic;
-using DCL.Helpers;
+using DCL;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class APK_AB_InteractiveTest : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class APK_AB_InteractiveTest : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Z))
         {
             if (string.IsNullOrEmpty(baseUrl))
-                baseUrl = new System.Uri(Application.dataPath + "/../AssetBundles").AbsoluteUri + "/";
+                baseUrl = new Uri(Application.dataPath + "/../AssetBundles").AbsoluteUri + "/";
 
             Generate(baseUrl, fileToLoad);
         }

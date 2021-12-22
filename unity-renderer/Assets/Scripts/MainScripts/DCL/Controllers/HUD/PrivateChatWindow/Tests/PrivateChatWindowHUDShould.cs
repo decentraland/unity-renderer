@@ -3,6 +3,7 @@ using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using NSubstitute;
 using UnityEngine.TestTools;
 
@@ -14,13 +15,13 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     private UserProfileModel ownProfileModel;
     private UserProfileModel testProfileModel;
 
-    protected override bool justSceneSetUp => true;
+    private UserProfileController userProfileController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        UserProfileController.i.ClearProfilesCatalog();
+        userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
 
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
 
@@ -32,11 +33,11 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         testProfileModel = new UserProfileModel();
         testProfileModel.userId = "my-user-id-2";
         testProfileModel.name = "TEST_USER";
-        UserProfileController.i.AddUserProfileToCatalog(testProfileModel);
+        userProfileController.AddUserProfileToCatalog(testProfileModel);
 
         //NOTE(Brian): This profile is added by the LoadProfile message in the normal flow.
         //             Adding this here because its used by the chat flow in ChatMessageToChatEntry.
-        UserProfileController.i.AddUserProfileToCatalog(ownProfileModel);
+        userProfileController.AddUserProfileToCatalog(ownProfileModel);
     }
 
     private void InitializeChatWindowController(IChatController chatController)
@@ -50,6 +51,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        UnityEngine.Object.Destroy(userProfileController.gameObject);
         controller.Dispose();
         yield return base.TearDown();
     }
@@ -102,17 +104,14 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
-        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
         Assert.AreEqual("message1", GetViewEntryModel(0).bodyText);
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
-        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
         Assert.AreEqual("message2", GetViewEntryModel(1).bodyText);
 
         Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
-        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
         Assert.AreEqual("message3", GetViewEntryModel(2).bodyText);
     }

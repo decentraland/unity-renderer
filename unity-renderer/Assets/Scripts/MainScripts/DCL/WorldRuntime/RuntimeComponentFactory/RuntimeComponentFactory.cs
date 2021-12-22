@@ -11,9 +11,9 @@ namespace DCL
 {
     public class RuntimeComponentFactory : IRuntimeComponentFactory
     {
-        private delegate IComponent ComponentBuilder(int classId);
+        protected delegate IComponent ComponentBuilder(int classId);
 
-        private Dictionary<int, ComponentBuilder> builders = new Dictionary<int, ComponentBuilder>();
+        protected Dictionary<int, ComponentBuilder> builders = new Dictionary<int, ComponentBuilder>();
 
         public IPoolableComponentFactory poolableComponentFactory { get; private set; }
 
@@ -31,6 +31,7 @@ namespace DCL
 
             // Transform
             builders.Add((int) CLASS_ID_COMPONENT.TRANSFORM, BuildComponent<DCLTransform>);
+            builders.Add((int) CLASS_ID_COMPONENT.AVATAR_ATTACH, BuildComponent<AvatarAttachComponent>);
 
             // Shapes
             builders.Add((int) CLASS_ID.BOX_SHAPE, BuildComponent<BoxShape>);
@@ -91,7 +92,7 @@ namespace DCL
 
         private IComponent BuildPoolableComponent(int classId) { return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId); }
 
-        private T BuildComponent<T>(int classId)
+        protected T BuildComponent<T>(int classId)
             where T : IComponent, new()
         {
             return new T();

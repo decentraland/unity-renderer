@@ -14,7 +14,7 @@ namespace Tests.BuildModeHUDControllers
             firstPersonModeController = new FirstPersonModeController();
             firstPersonModeController.Initialize(
                 Substitute.For<IFirstPersonModeView>(),
-                Substitute.For< ITooltipController>());
+                Substitute.For<ITooltipController>());
         }
 
         [TearDown]

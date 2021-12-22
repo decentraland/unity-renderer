@@ -14,7 +14,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         {
             yield return base.SetUp();
             component = CreateTestGameObject("controllerHolder").AddComponent<AutoQualitySettingsComponent>();
-            Settings.i.autoqualitySettings = ScriptableObject.CreateInstance<QualitySettingsData>();
+            Settings.i.autoQualitySettings = ScriptableObject.CreateInstance<QualitySettingsData>();
             component.qualitySettings.Set(new []
             {
                 Settings.i.qualitySettings.Data,

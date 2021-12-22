@@ -90,7 +90,7 @@ public interface IPlacesSubSectionComponentView
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
-    internal const string PLACE_CARDS_POOL_NAME = "PlaceCardsPool";
+    internal const string PLACE_CARDS_POOL_NAME = "Places_PlaceCardsPool";
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
@@ -123,8 +123,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void Start()
     {
-        ConfigurePlaceCardModal();
-        ConfigurePlaceCardsPool();
+        placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
+        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, 200);
 
         places.RemoveItems();
 
@@ -155,14 +155,27 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         this.places.ExtractItems();
         placeCardsPool.ReleaseAll();
-        List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
+
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
+            places,
+            placeCardsPool,
+            OnFriendHandlerAdded,
+            OnInfoClicked,
+            OnJumpInClicked);
+
         this.places.SetItems(placeComponentsToAdd);
         placesNoDataText.gameObject.SetActive(places.Count == 0);
     }
 
     public void AddPlaces(List<PlaceCardComponentModel> places)
     {
-        List<BaseComponentView> placeComponentsToAdd = InstantiateAndConfigurePlaceCards(places);
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
+            places,
+            placeCardsPool,
+            OnFriendHandlerAdded,
+            OnInfoClicked,
+            OnJumpInClicked);
+
         foreach (var place in placeComponentsToAdd)
         {
             this.places.AddItem(place);
@@ -183,53 +196,10 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        ConfigurePlaceCard(placeModal, placeInfo);
+        ExplorePlacesHelpers.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
     public void HidePlaceModal() { placeModal.Hide(); }
 
     public void RestartScrollViewPosition() { scrollView.verticalNormalizedPosition = 1; }
-
-    internal void ConfigurePlaceCardModal()
-    {
-        placeModal = Instantiate(placeCardModalPrefab);
-        placeModal.Hide(true);
-    }
-
-    internal void ConfigurePlaceCardsPool()
-    {
-        placeCardsPool = PoolManager.i.GetPool(PLACE_CARDS_POOL_NAME);
-        if (placeCardsPool == null)
-        {
-            placeCardsPool = PoolManager.i.AddPool(
-                PLACE_CARDS_POOL_NAME,
-                Instantiate(placeCardPrefab).gameObject,
-                maxPrewarmCount: 200,
-                isPersistent: true);
-        }
-    }
-
-    internal List<BaseComponentView> InstantiateAndConfigurePlaceCards(List<PlaceCardComponentModel> places)
-    {
-        List<BaseComponentView> instantiatedPlaces = new List<BaseComponentView>();
-
-        foreach (PlaceCardComponentModel placeInfo in places)
-        {
-            PlaceCardComponentView placeGO = placeCardsPool.Get().gameObject.GetComponent<PlaceCardComponentView>();
-            ConfigurePlaceCard(placeGO, placeInfo);
-            OnFriendHandlerAdded?.Invoke(placeGO.friendsHandler);
-            instantiatedPlaces.Add(placeGO);
-        }
-
-        return instantiatedPlaces;
-    }
-
-    internal void ConfigurePlaceCard(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo)
-    {
-        placeCard.Configure(placeInfo);
-        placeCard.onInfoClick?.RemoveAllListeners();
-        placeCard.onInfoClick?.AddListener(() => OnInfoClicked?.Invoke(placeInfo));
-        placeCard.onJumpInClick?.RemoveAllListeners();
-        placeCard.onJumpInClick?.AddListener(() => OnJumpInClicked?.Invoke(placeInfo.hotSceneInfo));
-    }
 }

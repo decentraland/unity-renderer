@@ -15,8 +15,6 @@ namespace DCL
         void Dispose();
         void Update();
         void LateUpdate();
-
-        void EnsureEntityPool(); // TODO: Move to PoolManagerFactory
         void ParseQuery(object payload, string sceneId);
         void SendSceneMessage(string payload);
         event Action<string> OnReadyScene;

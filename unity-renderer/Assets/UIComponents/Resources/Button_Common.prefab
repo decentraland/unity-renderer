@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 8360437818873036568}
   - component: {fileID: 7887689455078732951}
   - component: {fileID: 1442316120381234285}
+  - component: {fileID: 1727543226122190079}
   m_Layer: 5
   m_Name: Button_Common
   m_TagString: Untagged
@@ -465,3 +466,17 @@ MonoBehaviour:
   model:
     text: CLICK ME!
     icon: {fileID: 21300000, guid: 877d19aa5b7d74c25862a30311503ed4, type: 3}
+--- !u!114 &1727543226122190079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5466927874646222343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 0

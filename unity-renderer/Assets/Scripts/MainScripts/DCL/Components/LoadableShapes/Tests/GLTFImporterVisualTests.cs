@@ -13,7 +13,7 @@ public class GLTFImporterVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator ProcessTextureOffsetAndScale_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(ProcessTextureOffsetAndScale()); }
+    public IEnumerator ProcessTextureOffsetAndScale_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(ProcessTextureOffsetAndScale()); }
 
     [UnityTest]
     [VisualTest]
@@ -21,8 +21,6 @@ public class GLTFImporterVisualTests : VisualTestsBase
     [Explicit]
     public IEnumerator ProcessTextureOffsetAndScale()
     {
-        yield return InitVisualTestsScene("GLTFImporterVisualTests_ProcessTextureOffsetAndScale");
-
         GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/PlaneUVsOffset/planeUVsOffset.glb", out IDCLEntity entity);
 
         yield return gltfShape.routine;
@@ -32,17 +30,17 @@ public class GLTFImporterVisualTests : VisualTestsBase
         Vector3 camPos = new Vector3(0f, 2f, 5f);
         Vector3 camTarget = new Vector3(7.5f, 0f, 10f);
 
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
+        VisualTestUtils.RepositionVisualTestsCamera(camera, camPos, camTarget);
         yield return new WaitForAllMessagesProcessed();
 
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("GLTFImporterVisualTests_ProcessTextureOffsetAndScale", camera);
     }
 
     [UnityTest]
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator ProcessTexturesUVs_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(ProcessTexturesUVs()); }
+    public IEnumerator ProcessTexturesUVs_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(ProcessTexturesUVs()); }
 
     [UnityTest]
     [VisualTest]
@@ -50,8 +48,6 @@ public class GLTFImporterVisualTests : VisualTestsBase
     [Explicit]
     public IEnumerator ProcessTexturesUVs()
     {
-        yield return InitVisualTestsScene("GLTFImporterVisualTests_ProcessTexturesUVs");
-
         GLTFShape gltfShape = TestUtils.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/PlaneUVsMultichannel/PlaneUVsMultichannel.glb", out IDCLEntity entity);
 
         yield return gltfShape.routine;
@@ -61,9 +57,9 @@ public class GLTFImporterVisualTests : VisualTestsBase
         Vector3 camPos = new Vector3(0f, 2f, 5f);
         Vector3 camTarget = new Vector3(7.5f, 0f, 10f);
 
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
+        VisualTestUtils.RepositionVisualTestsCamera(camera, camPos, camTarget);
         yield return new WaitForAllMessagesProcessed();
 
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("GLTFImporterVisualTests_ProcessTexturesUVs", camera);
     }
 }

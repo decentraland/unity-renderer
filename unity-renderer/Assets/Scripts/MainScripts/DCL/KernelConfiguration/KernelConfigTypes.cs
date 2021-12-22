@@ -22,7 +22,7 @@ namespace KernelConfigurationTypes
         }
         public Features Clone()
         {
-            Features clone = (Features) this.MemberwiseClone();
+            Features clone = (Features)this.MemberwiseClone();
             return clone;
         }
     }
@@ -41,7 +41,7 @@ namespace KernelConfigurationTypes
 
         public Comms Clone()
         {
-            Comms clone = (Comms) this.MemberwiseClone();
+            Comms clone = (Comms)this.MemberwiseClone();
             return clone;
         }
     }
@@ -60,7 +60,7 @@ namespace KernelConfigurationTypes
 
         public Profiles Clone()
         {
-            Profiles clone = (Profiles) this.MemberwiseClone();
+            Profiles clone = (Profiles)this.MemberwiseClone();
             return clone;
         }
     }
@@ -83,7 +83,7 @@ namespace KernelConfigurationTypes
 
         public WorldRange Clone()
         {
-            WorldRange clone = (WorldRange) this.MemberwiseClone();
+            WorldRange clone = (WorldRange)this.MemberwiseClone();
             return clone;
         }
         public WorldRange(int xMin, int yMin, int xMax, int yMax)
@@ -107,7 +107,7 @@ namespace KernelConfigurationTypes
         public bool sceneDebugPanelEnabled = false;
         public string sceneDebugPanelTargetSceneId = string.Empty;
         public string sceneLimitsWarningSceneId = string.Empty;
-        
+
         public bool Equals(Debugging other)
         {
             return sceneDebugPanelEnabled == other?.sceneDebugPanelEnabled &&
@@ -117,7 +117,30 @@ namespace KernelConfigurationTypes
 
         public Debugging Clone()
         {
-            Debugging clone = (Debugging) this.MemberwiseClone();
+            Debugging clone = (Debugging)this.MemberwiseClone();
+            return clone;
+        }
+    }
+
+    [Serializable]
+    public class ProceduralSkybox
+    {
+        public string configToLoad = "Generic_Skybox";
+        public float lifecycleDuration = 120;
+        public float fixedTime = -1;
+        public bool disableReflection = false;
+        public float updateReflectionTime = -1;     // in mins
+
+        public bool Equals(ProceduralSkybox other)
+        {
+            return configToLoad == other?.configToLoad &&
+                   lifecycleDuration == other?.lifecycleDuration &&
+                   fixedTime == other?.fixedTime;
+        }
+
+        public ProceduralSkybox Clone()
+        {
+            ProceduralSkybox clone = (ProceduralSkybox)this.MemberwiseClone();
             return clone;
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -11,6 +12,14 @@ namespace AssetPromiseKeeper_GLTF_Tests
 {
     public class AnyAssetPromiseShould : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         [UnityTest]
         public IEnumerator BeSetupCorrectlyAfterLoad()
         {
@@ -168,7 +177,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
                 {
                     Assert.IsFalse(forgottenPromises[promiseHash], "Success on forgotten promise shouldn't be called");
                 };
-                prom.OnFailEvent += (asset) =>
+                prom.OnFailEvent += (asset, error) =>
                 {
                     Assert.IsFalse(forgottenPromises[promiseHash], "Fail on forgotten promise shouldn't be called");
                 };

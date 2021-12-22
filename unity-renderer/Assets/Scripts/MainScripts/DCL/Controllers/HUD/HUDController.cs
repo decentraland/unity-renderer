@@ -84,8 +84,6 @@ public class HUDController : IHUDController
 
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
-    public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
-
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
 
     public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
@@ -151,12 +149,6 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.PROFILE_HUD:
                 CreateHudElement(configuration, hudElementId);
-                if (profileHud != null)
-                {
-                    //TODO This coupling might introduce a race condition if kernel configures this HUD before AvatarEditorHUD
-                    profileHud?.AddBackpackWindow(avatarEditorHud);
-                }
-
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement(configuration, hudElementId);
@@ -270,11 +262,8 @@ public class HUDController : IHUDController
                             {
                                 taskbarHud.OnAddVoiceChat();
                             }
-
-                            taskbarHud.SetQuestsPanelStatus(config.enableQuestPanel);
                         }
 
-                        taskbarHud.AddSettingsWindow(settingsPanelHud);
                         OnTaskbarCreation?.Invoke();
                     }
                 }
@@ -299,20 +288,10 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.CONTROLS_HUD:
                 CreateHudElement(configuration, hudElementId);
-                taskbarHud?.AddControlsMoreOption();
-                break;
-            case HUDElementID.EXPLORE_HUD:
-                CreateHudElement(configuration, hudElementId);
-                if (exploreHud != null)
-                {
-                    exploreHud.Initialize(FriendsController.i);
-                    taskbarHud?.AddExploreWindow(exploreHud);
-                }
-
                 break;
             case HUDElementID.HELP_AND_SUPPORT_HUD:
                 CreateHudElement(configuration, hudElementId);
-                taskbarHud?.AddHelpAndSupportWindow(helpAndSupportHud);
+                settingsPanelHud?.AddHelpAndSupportWindow(helpAndSupportHud);
                 break;
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 CreateHudElement(configuration, hudElementId);

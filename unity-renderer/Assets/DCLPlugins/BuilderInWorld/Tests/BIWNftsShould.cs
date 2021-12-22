@@ -32,7 +32,7 @@ public class BIWNftsShould : IntegrationTestSuite
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        scene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene();
+        scene = TestUtils.CreateTestScene();
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         BIWCatalogManager.Init();
         BIWTestUtils.CreateNFT();

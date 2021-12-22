@@ -59,7 +59,7 @@ public class BIWSceneBoundariesShould : IntegrationTestSuite
     {
         //Arrange
         WebRequestController.Create();
-        ParcelScene scene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene();
+        ParcelScene scene = TestUtils.CreateTestScene();
 
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
         var biwStyle = new SceneBoundsFeedbackStyle_BIW();

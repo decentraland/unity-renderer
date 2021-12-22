@@ -1,5 +1,6 @@
-﻿using DCL.Helpers;
-using UnityEngine;
+﻿using System;
+using DCL.Helpers;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -15,7 +16,7 @@ namespace DCL.Components
             entity.Cleanup();
         }
 
-        public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)
+        public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper, Exception> OnFail)
         {
             if (string.IsNullOrEmpty(src))
                 return;

@@ -42,7 +42,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = Environment.i.world.sceneController.CreateTestScene() as ParcelScene;
+            scene = TestUtils.CreateTestScene();
         }
 
         [UnityTest]
@@ -186,7 +186,6 @@ namespace Tests
 
             // 3. Save the mesh GO reference
             Transform shapeInstanceRootTransform = entity1.meshRootGameObject.transform.GetChild(0);
-            Debug.Log("saved mesh GO: ", shapeInstanceRootTransform);
 
             // 4. Remove shape so that it returns to its pool
             entity1.RemoveSharedComponent(typeof(BaseShape));

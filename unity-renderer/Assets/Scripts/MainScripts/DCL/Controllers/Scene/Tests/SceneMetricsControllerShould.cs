@@ -36,7 +36,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     {
         yield return base.SetUp();
 
-        scene = (ParcelScene)Environment.i.world.sceneController.CreateTestScene();
+        scene = TestUtils.CreateTestScene();
         scene.contentProvider = new ContentProvider_Dummy();
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
     }
@@ -157,8 +157,6 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
         {
             src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
         };
-
-        CommonScriptableObjects.rendererState.Set(true);
 
         NFTShape component = TestUtils.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
         Debug.Log(scene.metricsCounter.GetModel());

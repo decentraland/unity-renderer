@@ -377,15 +377,9 @@ public class AvatarEditorHUDView : MonoBehaviour
         avatarEditorCanvasGroup.blocksRaycasts = visible;
 
         if (visible && !isOpen)
-        {
-            AudioScriptableObjects.dialogOpen.Play(true);
             OnSetVisibility?.Invoke(visible);
-        }
         else if (!visible && isOpen)
-        {
-            AudioScriptableObjects.dialogClose.Play(true);
             OnSetVisibility?.Invoke(visible);
-        }
 
         isOpen = visible;
     }
@@ -435,4 +429,24 @@ public class AvatarEditorHUDView : MonoBehaviour
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
 
     public void ShowCollectiblesLoadingRetry(bool isActive) { collectiblesItemSelector.ShowRetryLoading(isActive); }
+
+    public void SetExitButtonActive(bool isActive) { exitButton.gameObject.SetActive(isActive); }
+
+    public void SetAsFullScreenMenuMode(Transform parentTransform)
+    {
+        if (parentTransform == null)
+            return;
+
+        transform.SetParent(parentTransform);
+        transform.localScale = Vector3.one;
+        SetExitButtonActive(false);
+
+        RectTransform rectTransform = transform as RectTransform;
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.localPosition = Vector2.zero;
+        rectTransform.offsetMax = new Vector2(0f, 50f);
+        rectTransform.offsetMin = Vector2.zero;
+    }
 }

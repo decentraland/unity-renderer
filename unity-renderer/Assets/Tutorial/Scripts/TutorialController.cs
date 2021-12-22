@@ -1,10 +1,10 @@
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Helpers;
 
 namespace DCL.Tutorial
 {
@@ -52,12 +52,11 @@ namespace DCL.Tutorial
         public event Action OnTutorialEnabled;
         public event Action OnTutorialDisabled;
 
-        private const string PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED = "VoiceChatFeatureShowed";
+        private const string PLAYER_PREFS_START_MENU_SHOWED = "StartMenuFeatureShowed";
 
         internal TutorialSettings configuration;
         internal TutorialView tutorialView;
 
-        internal bool isRunning = false;
         internal bool openedFromDeepLink = false;
         internal bool playerIsInGenesisPlaza = false;
         internal TutorialStep runningStep = null;
@@ -66,6 +65,7 @@ namespace DCL.Tutorial
         internal TutorialPath currentPath;
         internal int currentStepNumber;
         internal TutorialType tutorialType = TutorialType.Initial;
+        internal int nextStepsToSkip = 0;
 
         private Coroutine executeStepsCoroutine;
         private Coroutine teacherMovementCoroutine;
@@ -96,10 +96,10 @@ namespace DCL.Tutorial
             i = this;
             ShowTeacher3DModel(false);
 
-            if (CommonScriptableObjects.isTaskbarHUDInitialized.Get())
-                IsTaskbarHUDInitialized_OnChange(true, false);
+            if (DataStore.i.settings.isInitialized.Get())
+                IsSettingsHUDInitialized_OnChange(true, false);
             else
-                CommonScriptableObjects.isTaskbarHUDInitialized.OnChange += IsTaskbarHUDInitialized_OnChange;
+                DataStore.i.settings.isInitialized.OnChange += IsSettingsHUDInitialized_OnChange;
 
             if (configuration.debugRunTutorial)
             {
@@ -115,12 +115,12 @@ namespace DCL.Tutorial
         {
             SetTutorialDisabled();
 
-            CommonScriptableObjects.isTaskbarHUDInitialized.OnChange -= IsTaskbarHUDInitialized_OnChange;
+            DataStore.i.settings.isInitialized.OnChange -= IsSettingsHUDInitialized_OnChange;
 
             if (hudController != null &&
-                hudController.taskbarHud != null)
+                hudController.settingsPanelHud != null)
             {
-                hudController.taskbarHud.moreMenu.OnRestartTutorial -= MoreMenu_OnRestartTutorial;
+                hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
             }
 
             NotificationsController.disableWelcomeNotification = false;
@@ -140,7 +140,7 @@ namespace DCL.Tutorial
             TutorialInitializationMessage msg = JsonUtility.FromJson<TutorialInitializationMessage>(json);
 
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
-            if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED) == 1)
+            if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_START_MENU_SHOWED) == 1)
                 return;
 
             SetupTutorial(false.ToString(), msg.enableNewTutorialCamera, TutorialType.Initial, true);
@@ -153,7 +153,7 @@ namespace DCL.Tutorial
         /// </summary>
         internal void SetupTutorial(string fromDeepLink, string enableNewTutorialCamera, TutorialType tutorialType, bool userAlreadyDidTheTutorial = false)
         {
-            if (isRunning)
+            if (DataStore.i.common.isTutorialRunning.Get())
                 return;
 
             if (Convert.ToBoolean(enableNewTutorialCamera))
@@ -163,7 +163,7 @@ namespace DCL.Tutorial
                 configuration.eagleCamRotationActived = false;
             }
 
-            isRunning = true;
+            DataStore.i.common.isTutorialRunning.Set(true);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
             CommonScriptableObjects.allUIHidden.Set(false);
@@ -171,7 +171,7 @@ namespace DCL.Tutorial
             openedFromDeepLink = Convert.ToBoolean(fromDeepLink);
             this.tutorialType = tutorialType;
 
-            hudController?.taskbarHud?.ShowTutorialOption(false);
+            hudController?.settingsPanelHud?.SetTutorialButtonEnabled(false);
             hudController?.profileHud?.HideProfileMenu();
 
             NotificationsController.disableWelcomeNotification = true;
@@ -201,12 +201,12 @@ namespace DCL.Tutorial
 
             if (runningStep != null)
             {
-                GameObject.Destroy(runningStep.gameObject);
+                UnityEngine.Object.Destroy(runningStep.gameObject);
                 runningStep = null;
             }
 
             tutorialReset = false;
-            isRunning = false;
+            DataStore.i.common.isTutorialRunning.Set(false);
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
@@ -218,7 +218,7 @@ namespace DCL.Tutorial
 
             NotificationsController.disableWelcomeNotification = false;
 
-            hudController?.taskbarHud?.ShowTutorialOption(true);
+            hudController?.settingsPanelHud?.SetTutorialButtonEnabled(true);
 
             CommonScriptableObjects.tutorialActive.Set(false);
 
@@ -233,7 +233,7 @@ namespace DCL.Tutorial
         /// <param name="stepIndex">First step to be executed.</param>
         public IEnumerator StartTutorialFromStep(int stepIndex)
         {
-            if (!isRunning)
+            if (!DataStore.i.common.isTutorialRunning.Get())
                 yield break;
 
             if (runningStep != null)
@@ -337,9 +337,9 @@ namespace DCL.Tutorial
         /// <summary>
         /// Finishes the current running step, skips all the next ones and completes the tutorial.
         /// </summary>
-        public void SkipTutorial()
+        public void SkipTutorial(bool ignoreStatsSending = false)
         {
-            if (!configuration.debugRunTutorial && configuration.sendStats)
+            if (!ignoreStatsSending && !configuration.debugRunTutorial && configuration.sendStats)
             {
                 SendSkipTutorialSegmentStats(
                     configuration.tutorialVersion,
@@ -355,8 +355,56 @@ namespace DCL.Tutorial
             CoroutineStarter.Start(StartTutorialFromStep(skipIndex));
 
             hudController?.taskbarHud?.SetVisibility(true);
-            hudController?.profileHud?.SetBackpackButtonVisibility(true);
         }
+
+        /// <summary>
+        /// Jump to a specific step.
+        /// </summary>
+        /// <param name="stepIndex">Step to jump.</param>
+        public void GoToSpecificStep(string stepName)
+        {
+            int stepIndex = 0;
+            switch (tutorialType)
+            {
+                case TutorialType.Initial:
+                    if (userAlreadyDidTheTutorial)
+                    {
+                        stepIndex = configuration.stepsFromUserThatAlreadyDidTheTutorial.FindIndex(x => x.name == stepName);
+                    }
+                    else if (playerIsInGenesisPlaza || tutorialReset)
+                    {
+                        if (tutorialReset)
+                        {
+                            stepIndex = configuration.stepsFromReset.FindIndex(x => x.name == stepName);
+                        }
+                        else
+                        {
+                            stepIndex = configuration.stepsOnGenesisPlaza.FindIndex(x => x.name == stepName);
+                        }
+                    }
+                    else if (openedFromDeepLink)
+                    {
+                        stepIndex = configuration.stepsFromDeepLink.FindIndex(x => x.name == stepName);
+                    }
+                    break;
+                case TutorialType.BuilderInWorld:
+                    stepIndex = configuration.stepsFromBuilderInWorld.FindIndex(x => x.name == stepName);
+                    break;
+            }
+
+            nextStepsToSkip = 0;
+
+            if (stepIndex >= 0)
+                CoroutineStarter.Start(StartTutorialFromStep(stepIndex));
+            else
+                SkipTutorial(true);
+        }
+
+        /// <summary>
+        /// Set the number of steps that will be skipped in the next iteration.
+        /// </summary>
+        /// <param name="skippedSteps">Number of steps to skip.</param>
+        public void SetNextSkippedSteps(int skippedSteps) { nextStepsToSkip = skippedSteps; }
 
         /// <summary>
         /// Activate/deactivate the eagle eye camera.
@@ -427,11 +475,17 @@ namespace DCL.Tutorial
             elapsedTimeInCurrentStep = 0f;
             for (int i = startingStepIndex; i < steps.Count; i++)
             {
+                if (nextStepsToSkip > 0)
+                {
+                    nextStepsToSkip--;
+                    continue;
+                }
+
                 var stepPrefab = steps[i];
 
                 // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
-                if (stepPrefab is TutorialStep_Tooltip_UsersAround &&
-                    CommonScriptableObjects.voiceChatDisabled.Get())
+                if (stepPrefab is TutorialStep_Tooltip_ExploreButton &&
+                    !DataStore.i.exploreV2.isInitialized.Get())
                     continue;
 
                 if (stepPrefab.letInstantiation)
@@ -439,6 +493,7 @@ namespace DCL.Tutorial
                 else
                     runningStep = steps[i];
 
+                runningStep.gameObject.name = runningStep.gameObject.name.Replace("(Clone)", "");
                 currentStepIndex = i;
 
                 elapsedTimeInCurrentStep = Time.realtimeSinceStartup;
@@ -451,12 +506,6 @@ namespace DCL.Tutorial
                         tutorialPath,
                         i + 1,
                         runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""));
-                }
-
-                if (tutorialPath == TutorialPath.FromUserThatAlreadyDidTheTutorial &&
-                    runningStep is TutorialStep_Tooltip)
-                {
-                    ((TutorialStep_Tooltip) runningStep).OverrideSetMaxTimeToHide(true);
                 }
 
                 runningStep.OnStepStart();
@@ -521,18 +570,18 @@ namespace DCL.Tutorial
             }
         }
 
-        private void IsTaskbarHUDInitialized_OnChange(bool current, bool previous)
+        private void IsSettingsHUDInitialized_OnChange(bool current, bool previous)
         {
             if (current &&
                 hudController != null &&
-                hudController.taskbarHud != null)
+                hudController.settingsPanelHud != null)
             {
-                hudController.taskbarHud.moreMenu.OnRestartTutorial -= MoreMenu_OnRestartTutorial;
-                hudController.taskbarHud.moreMenu.OnRestartTutorial += MoreMenu_OnRestartTutorial;
+                hudController.settingsPanelHud.OnRestartTutorial -= OnRestartTutorial;
+                hudController.settingsPanelHud.OnRestartTutorial += OnRestartTutorial;
             }
         }
 
-        internal void MoreMenu_OnRestartTutorial()
+        internal void OnRestartTutorial()
         {
             SetTutorialDisabled();
             tutorialReset = true;

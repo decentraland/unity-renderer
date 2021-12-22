@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class TestHelpers_Friends
 {
-    public static IEnumerator FakeAddFriend(FriendsController_Mock controller, FriendsHUDView hudView, string id, FriendshipAction action = FriendshipAction.APPROVED)
+    public static IEnumerator FakeAddFriend(UserProfileController userProfileController, FriendsController_Mock controller, FriendsHUDView hudView, string id, FriendshipAction action = FriendshipAction.APPROVED)
     {
         UserProfileModel model = new UserProfileModel()
         {
@@ -11,7 +11,7 @@ public static class TestHelpers_Friends
             name = id,
         };
 
-        UserProfileController.i.AddUserProfileToCatalog(model);
+        userProfileController.AddUserProfileToCatalog(model);
         controller.RaiseUpdateFriendship(id, action);
         yield return new WaitUntil(() => hudView.friendsList.creationQueue.Count == 0);
     }

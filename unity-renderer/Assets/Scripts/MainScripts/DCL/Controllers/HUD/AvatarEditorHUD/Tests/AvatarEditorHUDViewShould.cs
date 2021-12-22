@@ -3,6 +3,8 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -11,17 +13,14 @@ namespace AvatarEditorHUD_Tests
     public class AvatarEditorHUDViewShould : IntegrationTestSuite_Legacy
     {
         private UserProfile userProfile;
+        private CatalogController catalogController;
         private AvatarEditorHUDController_Mock controller;
         private BaseDictionary<string, WearableItem> catalog;
-
-        protected override bool justSceneSetUp => true;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-
-            yield return base.SetUp_CharacterController();
 
             Setup_AvatarEditorHUDController();
 
@@ -31,6 +30,7 @@ namespace AvatarEditorHUD_Tests
 
         protected override IEnumerator TearDown()
         {
+            Object.Destroy(catalogController.gameObject);
             controller.Dispose();
             yield return base.TearDown();
         }
@@ -49,6 +49,7 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
+            catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
@@ -116,13 +117,16 @@ namespace AvatarEditorHUD_Tests
         [TestCase("urn:decentraland:off-chain:base-avatars:bee_t_shirt")]
         [TestCase("urn:decentraland:off-chain:base-avatars:m_mountainshoes.glb")]
         [TestCase("urn:decentraland:off-chain:base-avatars:moptop")]
-        public void NotAdd_BaseWearables_ToCollectibles(string wearableId) { Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId)); }
+        public void NotAdd_BaseWearables_ToCollectibles(string wearableId)
+        {
+            Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
+        }
 
         [Test]
         [TestCase("urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body")]
         public void Add_Exclusives_ToCollectibles(string wearableId)
         {
-            userProfile.SetInventory(new[] { wearableId });
+            userProfile.SetInventory(new[] {wearableId});
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -152,7 +156,9 @@ namespace AvatarEditorHUD_Tests
 
             var originalName = selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
 
-            Assert.IsTrue(itemToggleObject.name.Contains(originalName)); //Comparing names because PrefabUtility.GetOutermostPrefabInstanceRoot(itemToggleObject) is returning null
+            Assert.IsTrue(
+                itemToggleObject.name
+                    .Contains(originalName)); //Comparing names because PrefabUtility.GetOutermostPrefabInstanceRoot(itemToggleObject) is returning null
         }
 
         [Test]
@@ -166,14 +172,15 @@ namespace AvatarEditorHUD_Tests
             Assert.NotNull(nftInfo);
             Assert.AreEqual(dummyItem.GetName(), nftInfo.name.text);
             Assert.AreEqual(dummyItem.description, nftInfo.description.text);
-            Assert.AreEqual($"{dummyItem.issuedId} / {dummyItem.GetIssuedCountFromRarity(dummyItem.rarity)}", nftInfo.minted.text);
+            Assert.AreEqual($"{dummyItem.issuedId} / {dummyItem.GetIssuedCountFromRarity(dummyItem.rarity)}",
+                nftInfo.minted.text);
         }
 
         [Test]
         public void NotShowAmmountIfOnlyOneItemIsPossesed()
         {
             var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
-            userProfile.SetInventory(new[] { wearableId });
+            userProfile.SetInventory(new[] {wearableId});
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -185,7 +192,8 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject.activeSelf);
+            Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject
+                .activeSelf);
         }
 
         [Test]
@@ -208,7 +216,8 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY].itemToggles[wearableId];
+            var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY]
+                .itemToggles[wearableId];
 
             Assert.IsTrue(itemToggle.amountContainer.gameObject.activeSelf);
             Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
@@ -240,6 +249,28 @@ namespace AvatarEditorHUD_Tests
             Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
         }
 
+        [Test]
+        public void MarkNFTAsSmart()
+        {
+            var smartNft = CreateSmartNFT();
+
+            var selector = controller.myView.selectorsByCategory[smartNft.data.category];
+            var itemToggleObject = (NFTItemToggle) selector.itemToggles[smartNft.id];
+
+            Assert.IsTrue( itemToggleObject.smartItemBadge.activeSelf);
+        }
+        
+        [Test]
+        public void HideSmartIconWhenIsNormalNFT()
+        {
+            var smartNft = CreateDummyNFT("rare");
+
+            var selector = controller.myView.selectorsByCategory[smartNft.data.category];
+            var itemToggleObject = (NFTItemToggle) selector.itemToggles[smartNft.id];
+
+            Assert.IsFalse( itemToggleObject.smartItemBadge.activeSelf);
+        }
+
         private WearableItem CreateDummyNFT(string rarity)
         {
             var dummyItem = new WearableItem()
@@ -251,19 +282,19 @@ namespace AvatarEditorHUD_Tests
                 data = new WearableItem.Data()
                 {
                     category = WearableLiterals.Categories.EYES,
-                    tags = new[] { WearableLiterals.Tags.EXCLUSIVE },
+                    tags = new[] {WearableLiterals.Tags.EXCLUSIVE},
                     representations = new[]
                     {
                         new WearableItem.Representation()
                         {
-                            bodyShapes = new[] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE },
+                            bodyShapes = new[] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE},
                         }
                     }
                 },
-                i18n = new[] { new i18n() { code = "en", text = "Dummy Item" } }
+                i18n = new[] {new i18n() {code = "en", text = "Dummy Item"}}
             };
 
-            userProfile.SetInventory(new[] { dummyItem.id });
+            userProfile.SetInventory(new[] {dummyItem.id});
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -272,6 +303,47 @@ namespace AvatarEditorHUD_Tests
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
+                }
+            });
+
+            catalog.Remove(dummyItem.id);
+            catalog.Add(dummyItem.id, dummyItem);
+            return dummyItem;
+        }
+
+        private WearableItem CreateSmartNFT()
+        {
+            var dummyItem = new WearableItem
+            {
+                id = "smartItem",
+                rarity = "epic",
+                description = "My Description",
+                issuedId = 1,
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.EYES,
+                    tags = new[] {WearableLiterals.Tags.EXCLUSIVE},
+                    representations = new[]
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new[] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE},
+                            contents = new[] {new WearableItem.MappingPair {key = "game.js", hash = "hash"}}
+                        }
+                    }
+                },
+                i18n = new[] {new i18n {code = "en", text = "Smart Item"}}
+            };
+
+            userProfile.SetInventory(new[] {dummyItem.id});
+            userProfile.UpdateData(new UserProfileModel
+            {
+                name = "name",
+                email = "mail",
+                avatar = new AvatarModel()
+                {
+                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                    wearables = new List<string>()
                 }
             });
 

@@ -29,9 +29,11 @@ namespace DCL.Camera
         internal Dictionary<CameraMode.ModeId, CameraStateBase> cachedModeToVirtualCamera;
 
         public delegate void CameraBlendStarted();
+
         public event CameraBlendStarted onCameraBlendStarted;
 
         public delegate void CameraBlendFinished();
+
         public event CameraBlendFinished onCameraBlendFinished;
 
         private bool wasBlendingLastFrame;
@@ -47,7 +49,7 @@ namespace DCL.Camera
         [HideInInspector]
         public System.Action<CameraMode.ModeId> onSetCameraMode;
 
-        private void Start()
+        private void Awake()
         {
             cameraTransform = this.camera.transform;
 
@@ -62,7 +64,7 @@ namespace DCL.Camera
             {
                 while (iterator.MoveNext())
                 {
-                    iterator.Current.Value.Init(camera);
+                    iterator.Current.Value.Initialize(camera);
                 }
             }
 
@@ -85,7 +87,7 @@ namespace DCL.Camera
             if (visibleState == prevVisibleState)
                 return;
 
-            camera.enabled = !visibleState;
+            camera.enabled = !visibleState && CommonScriptableObjects.rendererState.Get();
         }
 
         public bool TryGetCameraStateByType<T>(out CameraStateBase searchedCameraState)
@@ -98,11 +100,12 @@ namespace DCL.Camera
                     return true;
                 }
             }
+
             searchedCameraState = null;
             return false;
         }
 
-        private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled; }
+        private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled && !CommonScriptableObjects.isFullscreenHUDOpen; }
 
         private void CameraBlocked_OnChange(bool current, bool previous)
         {
@@ -132,7 +135,7 @@ namespace DCL.Camera
 
             DCL.Interface.WebInterface.ReportCameraChanged(newMode);
 
-            onSetCameraMode.Invoke(newMode);
+            onSetCameraMode?.Invoke(newMode);
         }
 
         public CameraStateBase GetCameraMode( CameraMode.ModeId mode ) { return cameraModes.FirstOrDefault( x => x.cameraModeId == mode ); }
@@ -184,6 +187,17 @@ namespace DCL.Camera
 
         private void OnDestroy()
         {
+            if (cachedModeToVirtualCamera != null)
+            {
+                using (var iterator = cachedModeToVirtualCamera.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        iterator.Current.Value.Cleanup();
+                    }
+                }
+            }
+
             worldOffset.OnChange -= OnWorldReposition;
             cameraChangeAction.OnTriggered -= OnCameraChangeAction;
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;

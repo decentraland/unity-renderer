@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -272,7 +273,7 @@ namespace DCL
                 if (promise.isForgotten)
                     continue;
 
-                promise.ForceFail();
+                promise.ForceFail(new Exception("Promise is forgotten"));
                 Forget(promise);
                 CleanPromise(promise);
 

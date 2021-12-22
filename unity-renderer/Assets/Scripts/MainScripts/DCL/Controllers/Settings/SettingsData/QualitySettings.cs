@@ -22,6 +22,14 @@ namespace DCL.SettingsCommon
             HIGH
         }
 
+        public enum ReflectionResolution
+        {
+            Res_256,
+            Res_512,
+            Res_1024,
+            Res_2048
+        }
+
         public string displayName;
 
         [Tooltip("Base resolution level")] public BaseResolution baseResolution;
@@ -44,7 +52,8 @@ namespace DCL.SettingsCommon
         [Tooltip("Resolution of the main light shadowmap texture")]
         public UnityEngine.Rendering.Universal.ShadowResolution shadowResolution;
 
-        [Tooltip("Camera Far")] [Range(40, 500)]
+        [Tooltip("Camera Far")]
+        [Range(40, 500)]
         public float cameraDrawDistance;
 
         [Tooltip("Enable bloom post process")] public bool bloom;
@@ -55,7 +64,8 @@ namespace DCL.SettingsCommon
         [Tooltip("Enable color grading post process")]
         public bool colorGrading;
 
-        [Tooltip("Shadow Distance")] [Range(30, 100)]
+        [Tooltip("Shadow Distance")]
+        [Range(30, 100)]
         public float shadowDistance;
 
         [Tooltip("Enable culling for detail objects in the viewport.")]
@@ -70,5 +80,7 @@ namespace DCL.SettingsCommon
 
         [Tooltip("Amount of HQ Avatars visible at any time")]
         public int maxHQAvatars;
+
+        public ReflectionResolution reflectionResolution;
     }
 }
