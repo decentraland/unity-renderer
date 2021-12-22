@@ -336,6 +336,8 @@ namespace DCL.Builder
             if (currentState != State.IDLE || targetScene == null)
                 return;
 
+            DataStore.i.exploreV2.isOpen.Set(false);
+
             sceneToEditId = targetScene.manifest.project.scene_id;
             sceneToEdit = targetScene;
 

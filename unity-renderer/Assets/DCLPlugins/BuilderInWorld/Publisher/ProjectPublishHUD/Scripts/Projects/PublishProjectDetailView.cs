@@ -185,10 +185,10 @@ namespace DCL.Builder
             FillLandDropDown();
 
             //We set the map to the main land
-            CoroutineStarter.Start(WaitForSecond());
+            StartCoroutine(WaitFrameToPositionMap());
         }
 
-        IEnumerator WaitForSecond()
+        IEnumerator WaitFrameToPositionMap()
         {
             yield return null;
             Vector2Int coordsToHighlight = landsDropdownDictionary[landsDropDown.options[landsDropDown.value].text].baseCoords;
@@ -230,8 +230,9 @@ namespace DCL.Builder
         public void Show()
         {
             gameObject.SetActive(true);
-            modal.Show();
             mapView.SetVisible(true);
+            modal.Show();
+      
         }
 
         public void Hide()
