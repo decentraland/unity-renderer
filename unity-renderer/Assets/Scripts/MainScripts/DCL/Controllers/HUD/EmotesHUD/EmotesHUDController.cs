@@ -40,7 +40,7 @@ public class EmotesHUDController : IHUD
         }
         else
         {
-            DCL.Helpers.Utils.LockCursor();
+            //DCL.Helpers.Utils.LockCursor();
             ownUserProfile.snapshotObserver.RemoveListener(view.UpdateAvatarSprite);
         }
     }
