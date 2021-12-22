@@ -139,7 +139,7 @@ namespace DCL
             }
         }
 
-        public static void DecodeTransform(string payload, ref DCLTransform.Model model)
+        public static void DecodeTransform(string payload, ref DCLTransformModel model)
         {
 #if UNITY_EDITOR
             DumpMessage(payload, TRANSFORM_FILENAME, ref transformDumpStr, ref transformCount);
