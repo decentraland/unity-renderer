@@ -336,7 +336,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var rotationToApply = new Vector3(0, 180, 0);
 
         //Act
-        godMode.EntitiesTransformByGizmos(rotationToApply);
+        godMode.EntitiesTransfromByGizmos(rotationToApply);
 
         //Assert
         Assert.AreEqual(entity.GetEulerRotation(), rotationToApply);
