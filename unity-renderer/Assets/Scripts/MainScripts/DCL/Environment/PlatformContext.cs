@@ -7,6 +7,7 @@ namespace DCL
     /// Context related to specific platform handling.
     /// Memory, rendering, input, IO and debug systems belong here.
     /// </summary>
+    [System.Obsolete("This is kept for retrocompatibilty and will be removed in the future. Use Environment.i.serviceLocator instead.")]
     public class PlatformContext
     {
         public ServiceLocator serviceLocator;

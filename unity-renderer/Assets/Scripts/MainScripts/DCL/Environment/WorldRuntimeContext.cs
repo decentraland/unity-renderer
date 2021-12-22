@@ -6,6 +6,7 @@ namespace DCL
     /// <summary>
     /// Context related to all the systems involved in the execution of decentraland scenes.
     /// </summary>
+    [System.Obsolete("This is kept for retrocompatibilty and will be removed in the future. Use Environment.i.serviceLocator instead.")]
     public class WorldRuntimeContext
     {
         private ServiceLocator serviceLocator;
