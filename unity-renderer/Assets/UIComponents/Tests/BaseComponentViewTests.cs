@@ -41,4 +41,24 @@ public class BaseComponentViewTests
         // Assert
         Assert.IsFalse(baseComponent.isVisible, "The base component should not be visible.");
     }
+
+    [Test]
+    public void FocusComponentCorrectly()
+    {
+        // Act
+        baseComponent.OnFocus();
+
+        // Assert
+        Assert.IsTrue(baseComponent.isFocused, "The base component should be focused.");
+    }
+
+    [Test]
+    public void UnfocusComponentCorrectly()
+    {
+        // Act
+        baseComponent.OnLoseFocus();
+
+        // Assert
+        Assert.IsFalse(baseComponent.isFocused, "The base component should be unfocused.");
+    }
 }

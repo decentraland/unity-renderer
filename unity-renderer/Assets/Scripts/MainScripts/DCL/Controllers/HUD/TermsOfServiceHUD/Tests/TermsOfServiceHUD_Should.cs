@@ -4,8 +4,6 @@ using UnityEngine.TestTools;
 
 public class TermsOfServiceHUD_Should : IntegrationTestSuite_Legacy
 {
-    protected override bool justSceneSetUp => true;
-
     private TermsOfServiceHUDController controller;
     private TermsOfServiceHUDView view;
 

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
@@ -9,9 +10,12 @@ namespace DCL.Components.Video.Plugin
         public void Remove(string id) { WebGLVideoPlugin.WebVideoPlayerRemove(id); }
         public void TextureUpdate(string id) { WebGLVideoPlugin.WebVideoPlayerTextureUpdate(id); }
 
-        public int GetTexture(string id)
+        public Texture2D PrepareTexture(string id)
         {
-            return WebGLVideoPlugin.WebVideoPlayerTextureGet(id);
+            Texture2D texture = new Texture2D(1, 1);
+            texture.UpdateExternalTexture((IntPtr)WebGLVideoPlugin.WebVideoPlayerTextureGet(id));
+            texture.Apply();
+            return texture;
         }
 
         public void Play(string id, float startTime) { WebGLVideoPlugin.WebVideoPlayerPlay(id, startTime); }

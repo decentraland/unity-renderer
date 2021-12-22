@@ -1,21 +1,27 @@
-﻿using DCL.Helpers;
+﻿using System;
+using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using NSubstitute;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
 {
     private const string MOCK_MODIFIER_KEY = "MockModifier";
     private AvatarModifierArea avatarModifierArea;
     private AvatarModifier mockAvatarModifier;
+    public ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        scene = TestUtils.CreateTestScene();
         var entity = TestUtils.CreateSceneEntity(scene);
+
         AvatarModifierArea.Model model = new AvatarModifierArea.Model
         {
             area = new BoxTriggerArea { box = new Vector3(10, 10, 10) },

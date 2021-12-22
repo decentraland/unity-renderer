@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -11,6 +12,15 @@ namespace Tests
 {
     public class MaterialTransitionControllerTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+            CommonScriptableObjects.rendererState.Set(true);
+        }
+
         [UnityTest]
         [Category("Explicit")]
         [Explicit("Test is too slow")]
@@ -122,7 +132,7 @@ namespace Tests
                         Assert.IsTrue(c.placeholder == null,
                             "placeholder must be null because we're not using holograms with parametric shapes.");
 
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new DCL.WaitUntil( () => c == null, 5.0f);
 
                         Assert.IsTrue(c == null, "MaterialTransitionController should be destroyed by now!");
 

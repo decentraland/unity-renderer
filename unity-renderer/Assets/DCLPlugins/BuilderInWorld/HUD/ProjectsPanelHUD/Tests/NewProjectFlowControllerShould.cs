@@ -9,7 +9,7 @@ using UnityEngine;
 public class NewProjectFlowControllerShould
 {
     private NewProjectFlowController newProjectFlowController;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -24,7 +24,7 @@ public class NewProjectFlowControllerShould
     {
         //Act
         newProjectFlowController.NewProject();
-        
+
         //Assert
         Assert.IsFalse(string.IsNullOrEmpty(newProjectFlowController.projectData.id));
         Assert.AreEqual(newProjectFlowController.projectData.eth_address, UserProfile.GetOwnUserProfile().ethAddress);
@@ -35,13 +35,13 @@ public class NewProjectFlowControllerShould
     {
         //Arrange
         newProjectFlowController.NewProject();
-        
+
         //Act
-        newProjectFlowController.SetTitleAndDescription("Title","Description");
-        
+        newProjectFlowController.SetTitleAndDescription("Title", "Description");
+
         //Assert
-        Assert.AreEqual("Title",newProjectFlowController.projectData.title);
-        Assert.AreEqual("Description",newProjectFlowController.projectData.description);
+        Assert.AreEqual("Title", newProjectFlowController.projectData.title);
+        Assert.AreEqual("Description", newProjectFlowController.projectData.description);
     }
 
     [Test]
@@ -49,13 +49,13 @@ public class NewProjectFlowControllerShould
     {
         //Arrange
         newProjectFlowController.NewProject();
-        
+
         //Act
-        newProjectFlowController.SetRowsAndColumns(2,2);
-        
+        newProjectFlowController.SetRowsAndColumns(2, 2);
+
         //Assert
-        Assert.AreEqual(2,newProjectFlowController.projectData.rows);
-        Assert.AreEqual(2,newProjectFlowController.projectData.cols);
+        Assert.AreEqual(2, newProjectFlowController.projectData.rows);
+        Assert.AreEqual(2, newProjectFlowController.projectData.cols);
     }
 
     [Test]
@@ -65,13 +65,13 @@ public class NewProjectFlowControllerShould
         bool eventCalled = false;
         newProjectFlowController.OnNewProjectCrated += (x) => { eventCalled = true; };
         newProjectFlowController.NewProject();
-        
+
         //Act
         newProjectFlowController.NewProjectCreated();
-        
+
         //Assert
-        Assert.GreaterOrEqual(DateTime.Now,newProjectFlowController.projectData.created_at);
-        Assert.GreaterOrEqual(DateTime.Now,newProjectFlowController.projectData.updated_at);
+        Assert.GreaterOrEqual(DateTime.UtcNow, newProjectFlowController.projectData.created_at);
+        Assert.GreaterOrEqual(DateTime.UtcNow, newProjectFlowController.projectData.updated_at);
         Assert.IsTrue(eventCalled);
     }
 }

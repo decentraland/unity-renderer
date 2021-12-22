@@ -138,7 +138,7 @@ namespace DCL
 
                         texturePromise = new AssetPromise_Texture(contentsUrl, unityWrap, unitySamplingMode, storeDefaultTextureInAdvance: true);
                         texturePromise.OnSuccessEvent += (x) => texture = x.texture;
-                        texturePromise.OnFailEvent += (x) => { texture = null; };
+                        texturePromise.OnFailEvent += (x, error) => { texture = null; };
 
                         AssetPromiseKeeper_Texture.i.Keep(texturePromise);
                         yield return texturePromise;
@@ -147,7 +147,7 @@ namespace DCL
             }
         }
 
-        private int refCount;
+        protected int refCount;
 
         public virtual void AttachTo(PBRMaterial material) { AddRefCount(); }
 

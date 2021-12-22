@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,14 +23,11 @@ namespace DCL.FPSDisplay
             lastPlayerCount = otherPlayers.Count();
             otherPlayers.OnAdded += OnOtherPlayersModified;
             otherPlayers.OnRemoved += OnOtherPlayersModified;
-            
+
             StartCoroutine(UpdateLabelLoop());
         }
-        
-        private void OnOtherPlayersModified(string playerName, Player player)
-        {
-            lastPlayerCount = otherPlayers.Count();
-        }
+
+        private void OnOtherPlayersModified(string playerName, Player player) { lastPlayerCount = otherPlayers.Count(); }
 
         private void OnDisable()
         {
@@ -62,6 +59,13 @@ namespace DCL.FPSDisplay
 
             string NO_DECIMALS = "##";
             string TWO_DECIMALS = "##.00";
+
+            // Procedural Skybox debug
+            targetText += $"Config: {DataStore.i.skyboxConfig.configToLoad.Get()}\n";
+            targetText += $"Duration: {DataStore.i.skyboxConfig.lifecycleDuration.Get()}\n";
+            targetText += $"Game Time: {DataStore.i.skyboxConfig.currentVirtualTime.Get()}\n";
+            targetText += $"UTC Time: {DataStore.i.worldTimer.GetCurrentTime().ToString()}\n";
+
             targetText += $"Nearby players: {lastPlayerCount}\n";
             targetText += $"Hiccups in the last 1000 frames: {performanceData.Get().hiccupCount}\n";
             targetText += $"Hiccup loss: {(100.0f * performanceData.Get().hiccupSum / performanceData.Get().totalSeconds).ToString(TWO_DECIMALS)}% ({performanceData.Get().hiccupSum.ToString(TWO_DECIMALS)} in {performanceData.Get().totalSeconds.ToString(TWO_DECIMALS)} secs)\n";

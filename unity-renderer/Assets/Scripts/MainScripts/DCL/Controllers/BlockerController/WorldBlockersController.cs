@@ -39,6 +39,7 @@ namespace DCL.Controllers
 
         public void Initialize(ISceneHandler sceneHandler, IBlockerInstanceHandler blockerInstanceHandler)
         {
+            enabled = true;
             this.blockerInstanceHandler = blockerInstanceHandler;
             this.sceneHandler = sceneHandler;
 
@@ -114,6 +115,8 @@ namespace DCL.Controllers
 
             if (blockersParent != null)
                 Object.Destroy(blockersParent.gameObject);
+
+            enabled = false;
         }
 
         internal void SetupWorldBlockers(HashSet<Vector2Int> allLoadedParcelCoords)

@@ -44,7 +44,7 @@ namespace DCL
                 webRequestOp.Dispose();
         }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
+        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             // Reuse the already-stored default texture, we duplicate it and set the needed config afterwards in AddToLibrary()
             if (library.Contains(idWithDefaultTexSettings) && !UsesDefaultWrapAndFilterMode())
@@ -63,18 +63,18 @@ namespace DCL
                         {
                             asset.texture = DownloadHandlerTexture.GetContent(webRequestResult.webRequest);
                             if (TextureUtils.IsQuestionMarkPNG(asset.texture))
-                                OnFail?.Invoke();
+                                OnFail?.Invoke(new Exception("The texture is a question mark"));
                             else
                                 OnSuccess?.Invoke();
                         }
                         else
                         {
-                            OnFail?.Invoke();
+                            OnFail?.Invoke(new Exception("The texture asset is null"));
                         }
                     },
                     OnFail: (webRequestResult) =>
                     {
-                        OnFail?.Invoke();
+                        OnFail?.Invoke(new Exception($"Texture promise failed: {webRequestResult?.webRequest?.error}"));
                     });
             }
             else

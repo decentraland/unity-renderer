@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace DCL.SettingsCommon
@@ -21,11 +21,12 @@ namespace DCL.SettingsCommon
         private const string SHADOW_RESOLUTION = "shadowResolution";
         private const string SSAO_QUALITY = "ssaoQuality";
         private const string MAX_HQ_AVATARS = "maxHQAvatars";
+        private const string REFLECTION_RESOLUTION = "reflectionResolution";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly QualitySettings defaultSettings;
         private QualitySettings currentSettings;
-        
+
         public event Action<QualitySettings> OnChanged;
 
         public PlayerPrefsQualitySettingsRepository(
@@ -41,15 +42,13 @@ namespace DCL.SettingsCommon
 
         public void Apply(QualitySettings settings)
         {
-            if (currentSettings.Equals(settings)) return;
+            if (currentSettings.Equals(settings))
+                return;
             currentSettings = settings;
             OnChanged?.Invoke(currentSettings);
         }
 
-        public void Reset()
-        {
-            Apply(defaultSettings);
-        }
+        public void Reset() { Apply(defaultSettings); }
 
         public void Save()
         {
@@ -69,6 +68,7 @@ namespace DCL.SettingsCommon
             settingsByKey.SetEnum(SHADOW_RESOLUTION, currentSettings.shadowResolution);
             settingsByKey.SetEnum(SSAO_QUALITY, currentSettings.ssaoQuality);
             settingsByKey.SetInt(MAX_HQ_AVATARS, currentSettings.maxHQAvatars);
+            settingsByKey.SetEnum(REFLECTION_RESOLUTION, currentSettings.reflectionResolution);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -76,7 +76,7 @@ namespace DCL.SettingsCommon
         private QualitySettings Load()
         {
             var settings = defaultSettings;
-            
+
             try
             {
                 settings.displayName = settingsByKey.GetString(DISPLAY_NAME, defaultSettings.displayName);
@@ -95,6 +95,7 @@ namespace DCL.SettingsCommon
                 settings.shadowResolution = settingsByKey.GetEnum(SHADOW_RESOLUTION, defaultSettings.shadowResolution);
                 settings.ssaoQuality = settingsByKey.GetEnum(SSAO_QUALITY, defaultSettings.ssaoQuality);
                 settings.maxHQAvatars = settingsByKey.GetInt(MAX_HQ_AVATARS, defaultSettings.maxHQAvatars);
+                settings.reflectionResolution = settingsByKey.GetEnum(REFLECTION_RESOLUTION, defaultSettings.reflectionResolution);
             }
             catch (Exception e)
             {

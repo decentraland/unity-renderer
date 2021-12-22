@@ -15,6 +15,7 @@ public class ShowHideAnimator : MonoBehaviour
     public bool isVisible => animator.GetBool(visibleParamHash);
 
     private Animator animatorValue;
+
     private Animator animator
     {
         get
@@ -27,6 +28,7 @@ public class ShowHideAnimator : MonoBehaviour
             return animatorValue;
         }
     }
+
     private int? visibleParamHashValue = null;
 
     private int visibleParamHash
@@ -43,7 +45,9 @@ public class ShowHideAnimator : MonoBehaviour
     public void Show(bool instant = false)
     {
         animator.speed = animSpeedFactor;
-        animator.SetBool(visibleParamHash, true);
+
+        if ( animator.isActiveAndEnabled )
+            animator.SetBool(visibleParamHash, true);
 
         if (instant)
             animator.Update(10);
@@ -52,7 +56,9 @@ public class ShowHideAnimator : MonoBehaviour
     public void Hide(bool instant = false)
     {
         animator.speed = animSpeedFactor;
-        animator.SetBool(visibleParamHash, false);
+
+        if ( animator.isActiveAndEnabled )
+            animator.SetBool(visibleParamHash, false);
 
         if (instant)
             animator.Update(10);

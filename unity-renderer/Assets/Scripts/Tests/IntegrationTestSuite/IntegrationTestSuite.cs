@@ -25,6 +25,9 @@ namespace Tests
                 worldRuntimeBuilder: CreateRuntimeContext,
                 hudBuilder: HUDContextFactory.CreateDefault
             );
+
+            AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
+
             yield break;
         }
 

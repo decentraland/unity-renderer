@@ -1,5 +1,6 @@
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Tests.BuildModeHUDControllers
 {
@@ -15,7 +16,10 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown() { builderInWorldLoadingController.Dispose(); }
+        public void TearDown()
+        {
+            builderInWorldLoadingController.Dispose();
+        }
 
         [Test]
         public void ShowCorrectly()

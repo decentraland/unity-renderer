@@ -16,12 +16,35 @@ using Environment = DCL.Environment;
 
 public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
 {
+    private BuilderInWorldBridge biwBridge;
     private SceneManager mainController;
     private IBuilderAPIController apiSubstitute;
+    private ParcelScene scene;
+
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.Add(MainSceneFactory.CreateBridges());
+        result.Add(MainSceneFactory.CreateEnvironment());
+        result.AddRange(MainSceneFactory.CreatePlayerSystems());
+        result.Add(MainSceneFactory.CreateNavMap());
+        result.Add(MainSceneFactory.CreateAudioHandler());
+        result.Add(MainSceneFactory.CreateHudController());
+        result.Add(MainSceneFactory.CreateMouseCatcher());
+        result.Add(MainSceneFactory.CreateSettingsController());
+        result.Add(MainSceneFactory.CreateEventSystem());
+        result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
+        return result;
+    }
+
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
+
+        biwBridge = MainSceneFactory.CreateBuilderInWorldBridge();
+
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController = new SceneManager();
         apiSubstitute = Substitute.For<IBuilderAPIController>();
@@ -35,16 +58,15 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void OpenNewProjectDetails()
     {
         //Arrange
-        GameObject dummyGO = new GameObject("DummyGO");
         mainController.builderInWorldBridge.builderProjectPayload.isNewEmptyProject = true;
-        
+
         //Act
         mainController.OpenNewProjectDetails();
 
         //Assert
         mainController.context.cameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
-    
+
     [Test]
     public void StartExitModeScreenShot()
     {
@@ -57,7 +79,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Assert
         mainController.context.cameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
-    
+
 
     [Test]
     public void SetFlagProperlyWhenBuilderInWorldIsEntered()
@@ -69,8 +91,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
 
         // Act
         mainController.StartFlowWithPermission(scene, "Test");
-        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntity");
+        scene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         // Assert
@@ -86,8 +107,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.StartFlowWithPermission(scene, "Test");
-        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntity");
+        scene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         // Act
@@ -101,8 +121,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     public void FindSceneToEdit()
     {
         // Arrange
-        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
-        createdScene.CreateEntity("TestEntity");
+        scene.CreateEntity("TestEntity");
         Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
         CommonScriptableObjects.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
 
@@ -136,7 +155,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
         mainController.sceneToEdit = scene;
-        
+
         // Act
         mainController.GetCatalog();
         resultOkPromise.Resolve(true);
@@ -167,7 +186,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.NewSceneAdded(mockedScene);
 
         // Assert
-        Assert.AreSame(mainController.sceneToEdit, base.scene);
+        Assert.AreSame(mainController.sceneToEdit, scene);
     }
 
     [Test]
@@ -188,19 +207,22 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     {
         // Arrange
         Parcel parcel = new Parcel();
-        parcel.x = base.scene.sceneData.basePosition.x;
-        parcel.y = base.scene.sceneData.basePosition.y;
+        parcel.x = scene.sceneData.basePosition.x;
+        parcel.y = scene.sceneData.basePosition.y;
 
-        Vector2Int parcelCoords = new Vector2Int(base.scene.sceneData.basePosition.x, base.scene.sceneData.basePosition.y);
+        Vector2Int parcelCoords = new Vector2Int(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
         Land land = new Land();
         land.parcels = new List<Parcel>() { parcel };
 
         LandWithAccess landWithAccess = new LandWithAccess(land);
-        Scene scene = new Scene();
-        scene.parcelsCoord = new Vector2Int[] { parcelCoords };
-        scene.deploymentSource = Scene.Source.SDK;
 
-        landWithAccess.scenes = new List<Scene>() { scene };
+        {
+            Scene scene = new Scene();
+            scene.parcelsCoord = new Vector2Int[] { parcelCoords };
+            scene.deploymentSource = Scene.Source.SDK;
+            landWithAccess.scenes = new List<Scene>() { scene };
+        }
+
         var lands = new LandWithAccess[]
         {
             landWithAccess
@@ -208,7 +230,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         DataStore.i.builderInWorld.landsWithAccess.Set(lands);
 
         // Act
-        var result = mainController.IsParcelSceneDeployedFromSDK(base.scene);
+        var result = mainController.IsParcelSceneDeployedFromSDK(scene);
 
         // Assert
         Assert.IsTrue(result);
@@ -222,8 +244,8 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         Promise<bool> resultOkPromise = new Promise<bool>();
         mainController.context.builderAPIController.Configure().GetCompleteCatalog(Arg.Any<string>()).Returns(resultOkPromise);
         mainController.sceneToEdit = Substitute.For<IParcelScene>();
-        mainController.sceneToEdit.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene{id = "Test id"});
-        
+        mainController.sceneToEdit.Configure().sceneData.Returns(new LoadParcelScenesMessage.UnityParcelScene { id = "Test id" });
+
         // Act
         mainController.GetCatalog();
         resultOkPromise.Resolve(true);
@@ -250,7 +272,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         // Assert
         Assert.AreNotEqual(mainController.currentState, SceneManager.State.IDLE);
     }
-    
+
     [Test]
     public void ExitAfterTeleport()
     {
@@ -288,9 +310,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
-        DataStore.i.builderInWorld.catalogItemDict.Clear();
-        AssetCatalogBridge.i.ClearCatalog();
-        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
+        UnityEngine.Object.Destroy(biwBridge.gameObject);
         mainController.context.Dispose();
         mainController.Dispose();
         SceneManager.BYPASS_LAND_OWNERSHIP_CHECK = false;

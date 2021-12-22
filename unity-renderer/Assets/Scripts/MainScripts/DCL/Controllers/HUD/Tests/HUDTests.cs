@@ -3,25 +3,29 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Helpers;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
     public class HUDControllerShould : IntegrationTestSuite_Legacy
     {
-        protected override bool justSceneSetUp => true;
-
         private IHUDController hudController = null;
+        private FriendsController friendsController;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+
+            friendsController = TestUtils.CreateComponentWithGameObject<FriendsController>("FriendsController");
             hudController = DCL.Environment.i.hud.controller;
             hudController.Cleanup();
+            yield return null;
         }
 
         protected override IEnumerator TearDown()
         {
+            UnityEngine.Object.Destroy(friendsController.gameObject);
             hudController.Cleanup();
             yield return base.TearDown();
         }

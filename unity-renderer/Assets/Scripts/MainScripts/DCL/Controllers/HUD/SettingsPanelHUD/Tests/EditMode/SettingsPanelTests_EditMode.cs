@@ -1,3 +1,4 @@
+using DCL.HelpAndSupportHUD;
 using DCL.SettingsPanelHUD;
 using DCL.SettingsPanelHUD.Sections;
 using DCL.SettingsPanelHUD.Widgets;
@@ -15,6 +16,7 @@ namespace SettingsPanelTests
         private ISettingsSectionController newSectionController;
         private SettingsSectionModel newSectionConfig;
         private Sprite testSprite;
+        private HelpAndSupportHUDController helpAndSupportHUDController;
 
         [SetUp]
         public void SetUp()
@@ -37,6 +39,7 @@ namespace SettingsPanelTests
         {
             Object.DestroyImmediate(testSprite);
             panelController.sections.Clear();
+            helpAndSupportHUDController?.Dispose();
         }
 
         [Test]
@@ -75,6 +78,15 @@ namespace SettingsPanelTests
 
             // Assert
             newSectionView.Received(1).SetActive(true);
+        }
+
+        [Test]
+        public void AddHelpAndSupportWindowProperly()
+        {
+            helpAndSupportHUDController = new HelpAndSupportHUDController();
+            panelController.AddHelpAndSupportWindow(helpAndSupportHUDController);
+
+            Assert.IsTrue(helpAndSupportHUDController.view.gameObject.activeSelf, "Help and Support window is disabled!");
         }
     }
 }

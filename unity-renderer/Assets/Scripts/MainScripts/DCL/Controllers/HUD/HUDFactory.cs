@@ -77,9 +77,6 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CONTROLS_HUD:
                 hudElement = new ControlsHUDController();
                 break;
-            case HUDElementID.EXPLORE_HUD:
-                hudElement = new ExploreHUDController();
-                break;
             case HUDElementID.HELP_AND_SUPPORT_HUD:
                 hudElement = new HelpAndSupportHUDController();
                 break;

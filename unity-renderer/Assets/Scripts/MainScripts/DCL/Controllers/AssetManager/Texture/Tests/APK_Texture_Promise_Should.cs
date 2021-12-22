@@ -128,7 +128,7 @@ namespace AssetPromiseKeeper_Texture_Tests
             bool failed = false;
             bool succeeded = false;
             prom.OnSuccessEvent += (x) => succeeded = true;
-            prom.OnFailEvent += (x) => failed = true;
+            prom.OnFailEvent += (x, error) => failed = true;
 
             keeper.Keep(prom);
             yield return prom;

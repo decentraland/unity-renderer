@@ -43,7 +43,7 @@ public static class BIWTestUtils
             sceneReferences.Configure().mainCamera.Returns(Camera.main);
 
             sceneReferences.When( x => x.Dispose())
-                           .Do( x => Object.Destroy(gameObjectToDestroy));
+                .Do( x => Object.Destroy(gameObjectToDestroy));
         }
 
         return sceneReferences;
@@ -125,7 +125,7 @@ public static class BIWTestUtils
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
-        ISceneReferences sceneReferences =    CreateMocekdInitialSceneReference();
+        ISceneReferences sceneReferences = CreateMocekdInitialSceneReference();
 
         foreach (var mock in mocks)
         {
@@ -232,43 +232,43 @@ public static class BIWTestUtils
 
     public static CatalogItemAdapter CreateCatalogItemAdapter(GameObject gameObject)
     {
-        CatalogItemAdapter adapter = Utils.GetOrCreateComponent<CatalogItemAdapter>(gameObject);
+        CatalogItemAdapter adapter = gameObject.GetOrCreateComponent<CatalogItemAdapter>();
         adapter.onFavoriteColor = Color.white;
         adapter.offFavoriteColor = Color.white;
-        adapter.favImg = Utils.GetOrCreateComponent<Image>(gameObject);
+        adapter.favImg = gameObject.GetOrCreateComponent<Image>();
         adapter.smartItemGO = gameObject;
         adapter.lockedGO = gameObject;
-        adapter.canvasGroup = Utils.GetOrCreateComponent<CanvasGroup>(gameObject);
+        adapter.canvasGroup = gameObject.GetOrCreateComponent<CanvasGroup>();
 
         GameObject newGameObject = new GameObject();
         newGameObject.transform.SetParent(gameObject.transform);
-        adapter.thumbnailImg = Utils.GetOrCreateComponent<RawImage>(newGameObject);
+        adapter.thumbnailImg = newGameObject.GetOrCreateComponent<RawImage>();
         return adapter;
     }
 
-    public static void CreateTestCatalogLocalMultipleFloorObjects()
+    public static void CreateTestCatalogLocalMultipleFloorObjects(AssetCatalogBridge assetCatalog)
     {
         BIWCatalogManager.Init();
-        AssetCatalogBridge.i.ClearCatalog();
+        assetCatalog.ClearCatalog();
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
 
         if (File.Exists(jsonPath))
         {
             string jsonValue = File.ReadAllText(jsonPath);
-            AssetCatalogBridge.i.AddFullSceneObjectCatalog(jsonValue);
+            assetCatalog.AddFullSceneObjectCatalog(jsonValue);
         }
     }
 
-    public static CatalogItem CreateTestCatalogLocalSingleObject()
+    public static CatalogItem CreateTestCatalogLocalSingleObject(AssetCatalogBridge assetCatalog)
     {
         BIWCatalogManager.Init();
-        AssetCatalogBridge.i.ClearCatalog();
+        assetCatalog.ClearCatalog();
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/sceneObjectCatalog.json";
 
         if (File.Exists(jsonPath))
         {
             string jsonValue = File.ReadAllText(jsonPath);
-            AssetCatalogBridge.i.AddFullSceneObjectCatalog(jsonValue);
+            assetCatalog.AddFullSceneObjectCatalog(jsonValue);
             CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
             return item;
         }
@@ -276,16 +276,16 @@ public static class BIWTestUtils
         return null;
     }
 
-    public static void CreateTestSmartItemCatalogLocalSingleObject()
+    public static void CreateTestSmartItemCatalogLocalSingleObject(AssetCatalogBridge assetCatalog)
     {
         BIWCatalogManager.Init();
-        AssetCatalogBridge.i.ClearCatalog();
+        assetCatalog.ClearCatalog();
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/smartItemSceneObjectCatalog.json";
 
         if (File.Exists(jsonPath))
         {
             string jsonValue = File.ReadAllText(jsonPath);
-            AssetCatalogBridge.i.AddFullSceneObjectCatalog(jsonValue);
+            assetCatalog.AddFullSceneObjectCatalog(jsonValue);
         }
     }
 

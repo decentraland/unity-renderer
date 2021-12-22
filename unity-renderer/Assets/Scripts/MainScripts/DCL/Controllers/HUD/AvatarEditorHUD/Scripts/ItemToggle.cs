@@ -98,7 +98,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private void OnThumbnailReady(Asset_Texture texture)
     {
-        loadingAnimator.SetTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
+        SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
 
         if (thumbnail.sprite != null)
             Destroy(thumbnail.sprite);
@@ -128,13 +128,13 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
         if (url == loadedThumbnailURL)
         {
-            loadingAnimator.SetTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
+            SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
             return;
         }
 
         if (wearableItem == null || string.IsNullOrEmpty(url))
         {
-            loadingAnimator.SetTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
+            SetLoadingAnimationTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
             return;
         }
 
@@ -142,6 +142,14 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         var newLoadedThumbnailPromise = ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
         ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
         loadedThumbnailPromise = newLoadedThumbnailPromise;
+    }
+
+    private void SetLoadingAnimationTrigger(int id)
+    {
+        if (!loadingAnimator.isInitialized || loadingAnimator.runtimeAnimatorController == null)
+            return;
+
+        loadingAnimator.SetTrigger(id);
     }
 
     private void ForgetThumbnail()

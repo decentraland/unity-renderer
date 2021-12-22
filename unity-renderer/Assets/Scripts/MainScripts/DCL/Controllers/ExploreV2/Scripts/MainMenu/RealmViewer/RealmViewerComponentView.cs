@@ -1,5 +1,7 @@
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public interface IRealmViewerComponentView
 {
@@ -19,6 +21,7 @@ public interface IRealmViewerComponentView
 public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
+    [SerializeField] internal HorizontalLayoutGroup horizontalLayoutGroup;
     [SerializeField] internal TMP_Text realm;
     [SerializeField] internal TMP_Text numberOfusers;
 
@@ -48,6 +51,8 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
             return;
 
         realm.text = newRealm;
+
+        RebuildLayouts();
     }
 
     public void SetNumberOfUsers(int newNumberOfUsers)
@@ -59,5 +64,13 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
 
         float formattedUsersCount = newNumberOfUsers >= 1000 ? (newNumberOfUsers / 1000f) : newNumberOfUsers;
         numberOfusers.text = newNumberOfUsers >= 1000 ? $"{formattedUsersCount}k" : $"{formattedUsersCount}";
+
+        RebuildLayouts();
+    }
+
+    internal void RebuildLayouts()
+    {
+        if (horizontalLayoutGroup != null)
+            Utils.ForceRebuildLayoutImmediate(horizontalLayoutGroup.transform as RectTransform);
     }
 }

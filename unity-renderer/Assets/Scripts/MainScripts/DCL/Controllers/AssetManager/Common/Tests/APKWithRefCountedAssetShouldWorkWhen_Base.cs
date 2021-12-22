@@ -41,7 +41,7 @@ namespace AssetPromiseKeeper_Tests
                 (x) => { calledSuccess = true; };
 
             prom.OnFailEvent +=
-                (x) => { calledFail = true; };
+                (x, error) => { calledFail = true; };
 
             keeper.Keep(prom);
             keeper.Forget(prom);

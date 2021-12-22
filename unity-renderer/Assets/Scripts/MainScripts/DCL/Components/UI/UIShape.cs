@@ -240,8 +240,12 @@ namespace DCL.Components
                 if ( !isLayoutDirty )
                     continue;
 
-                if (CommonScriptableObjects.sceneID.Get() != scene.sceneData.id)
-                    continue;
+                // When running tests this is empty.
+                if (!string.IsNullOrEmpty(CommonScriptableObjects.sceneID))
+                {
+                    if (CommonScriptableObjects.sceneID.Get() != scene.sceneData.id)
+                        continue;
+                }
 
                 RefreshAll();
             }
