@@ -466,7 +466,10 @@ namespace DCL.Rendering
         /// <summary>
         /// Returns true if the culling loop is running
         /// </summary>
-        public bool IsRunning() { return updateCoroutine != null; }
+        public bool IsRunning()
+        {
+            return updateCoroutine != null;
+        }
 
         /// <summary>
         /// Draw debug gizmos on the scene view.

@@ -52,6 +52,7 @@ public class IntegrationTestSuite_Legacy
         var result = ServiceLocatorFactory.CreateDefault();
         result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
+        result.Register<ICullingController>(() => Substitute.For<ICullingController>());
         return result;
     }
 
