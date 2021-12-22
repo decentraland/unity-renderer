@@ -1,6 +1,7 @@
 using DCL;
 using System.Collections;
 using NSubstitute;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Tests
@@ -25,6 +26,9 @@ namespace AssetPromiseKeeper_Tests
         [UnityTearDown]
         protected virtual IEnumerator TearDown()
         {
+            // If the asset bundles cache is not cleared, the tests are going to stop working on successive runs
+            Caching.ClearCache();
+
             Environment.Dispose();
             keeper.Cleanup();
             yield break;
