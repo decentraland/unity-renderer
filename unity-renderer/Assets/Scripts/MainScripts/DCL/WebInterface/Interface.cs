@@ -1185,16 +1185,13 @@ namespace DCL.Interface
             Application.OpenURL(url);
 #endif
         }
-        
-        
+
         public static void StartIsolatedMode(IsolatedConfig config) { MessageFromEngine("StartIsolatedMode", JsonConvert.SerializeObject(config)); }
 
         public static void StopIsolatedMode(IsolatedConfig config) { MessageFromEngine("StopIsolatedMode", JsonConvert.SerializeObject(config)); }
 
         public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
-
-        public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
-
+        
         public static void SendReportPlayer(string playerName) { SendMessage("ReportPlayer", playerName); }
 
         public static void SendBlockPlayer(string userId)
