@@ -47,7 +47,7 @@ namespace DCL
 
             if (!File.Exists(mappingsJsonPath))
             {
-                Debug.LogError($"mappings.json not founs at '{mappingsJsonPath}'! Make sure to run 'make empty-parcels' and then 'make watch'");
+                Debug.LogError($"mappings.json not found at '{mappingsJsonPath}'! Make sure to run 'make empty-parcels' and then 'make watch'");
                 return;
             }
 
