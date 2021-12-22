@@ -1,0 +1,16 @@
+{
+    "name": "DCLTransformModel",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
