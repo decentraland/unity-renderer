@@ -29,6 +29,8 @@ namespace DCL
 
             tracker.AddDeltaTime(Time.deltaTime);
 
+            Debug.LogWarning($"fps: {tracker.CurrentFPSCount()}");
+
             performanceMetricsDataVariable.Set(tracker.CurrentFPSCount(), 
                 tracker.CurrentHiccupCount(),
                 tracker.HiccupsSum, 
@@ -38,7 +40,6 @@ namespace DCL
 
             if (currentIndex == SAMPLES_SIZE)
             {
-                Debug.Log($"fps: {tracker.CurrentFPSCount()}");
                 currentIndex = 0;
                 Report(new string(encodedSamples));
             }
