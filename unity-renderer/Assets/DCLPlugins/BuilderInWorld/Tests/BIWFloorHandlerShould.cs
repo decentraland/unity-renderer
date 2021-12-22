@@ -18,6 +18,8 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     private BIWFloorHandler biwFloorHandler;
     private BIWCreatorController biwCreatorController;
     private IBuilderScene builderScene;
+    private ParcelScene scene;
+    private AssetCatalogBridge assetCatalogBridge;
 
     protected override IEnumerator SetUp()
     {
