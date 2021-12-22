@@ -23,17 +23,20 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
                 {
                     var settings = cullingController.GetSettingsCopy();
 
-                    settings.rendererProfile = CullingControllerProfile.Lerp(
-                        cullingControllerSettingsData.rendererProfileMin,
-                        cullingControllerSettingsData.rendererProfileMax,
-                        currentQualitySetting.detailObjectCullingLimit / 100.0f);
+                    if ( settings != null )
+                    {
+                        settings.rendererProfile = CullingControllerProfile.Lerp(
+                            cullingControllerSettingsData.rendererProfileMin,
+                            cullingControllerSettingsData.rendererProfileMax,
+                            currentQualitySetting.detailObjectCullingLimit / 100.0f);
 
-                    settings.skinnedRendererProfile = CullingControllerProfile.Lerp(
-                        cullingControllerSettingsData.skinnedRendererProfileMin,
-                        cullingControllerSettingsData.skinnedRendererProfileMax,
-                        currentQualitySetting.detailObjectCullingLimit / 100.0f);
+                        settings.skinnedRendererProfile = CullingControllerProfile.Lerp(
+                            cullingControllerSettingsData.skinnedRendererProfileMin,
+                            cullingControllerSettingsData.skinnedRendererProfileMax,
+                            currentQualitySetting.detailObjectCullingLimit / 100.0f);
 
-                    cullingController.SetSettings(settings);
+                        cullingController.SetSettings(settings);
+                    }
                 }
             }
         }
