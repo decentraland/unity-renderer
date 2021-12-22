@@ -40,7 +40,7 @@ namespace MessaginPerformanceTests
         {
             string[] messages = GetMessagesFromFile(MessageDecoder.TRANSFORM_FILENAME);
             int count = messages.Length;
-            DCL.Components.DCLTransform.Model transformModel = new DCL.Components.DCLTransform.Model();
+            DCL.Components.DCLTransformModel transformModel = new DCL.Components.DCLTransform.Model();
 
             Measure.Method(() =>
                    {
