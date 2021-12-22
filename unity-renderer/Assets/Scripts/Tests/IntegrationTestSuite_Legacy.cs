@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using DCL.Camera;
+using DCL.Controllers;
+using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
 using UnityEngine;
@@ -41,8 +43,6 @@ public class IntegrationTestSuite_Legacy
 
         yield return SetUp_Camera();
 
-        //TODO(Brian): Remove when the init layer is ready
-        Environment.i.platform.cullingController.Stop();
         AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
         yield break;
     }
@@ -54,7 +54,6 @@ public class IntegrationTestSuite_Legacy
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         return result;
     }
-
 
     protected virtual List<GameObject> SetUp_LegacySystems()
     {
