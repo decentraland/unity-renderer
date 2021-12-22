@@ -156,7 +156,19 @@ namespace DCL.Builder
             }
             mapView.GoToCoords(coords);
         }
-
+        
+        [ContextMenu("-150,-150")]
+        public void CenterIn150()
+        {
+            mapView.GoToCoords(Vector2Int.one * -150);    
+        }
+        
+        [ContextMenu("Reset View")]
+        public void CenterInZero()
+        {
+            mapView.GoToCoords(Vector2Int.zero);    
+        }
+        
         public void SetProjectToPublish(BuilderScene scene)
         {
             this.scene = scene;
@@ -173,6 +185,12 @@ namespace DCL.Builder
             FillLandDropDown();
 
             //We set the map to the main land
+            CoroutineStarter.Start(WaitForSecond());
+        }
+
+        IEnumerator WaitForSecond()
+        {
+            yield return null;
             Vector2Int coordsToHighlight = landsDropdownDictionary[landsDropDown.options[landsDropDown.value].text].baseCoords;
             mapView.GoToCoords(coordsToHighlight);
         }

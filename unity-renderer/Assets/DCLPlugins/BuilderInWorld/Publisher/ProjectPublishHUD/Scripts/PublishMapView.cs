@@ -29,6 +29,8 @@ namespace DCL.Builder
 
         private bool isVisible = false;
 
+        private Vector2 offset = Vector2.zero;
+
         void Start()
         {
             mapMetadata = MinimapMetadata.GetMetadata();
@@ -70,7 +72,7 @@ namespace DCL.Builder
             MapRenderer.i.HighlightLandsInRed(landsToHighlight);
         }
 
-        public void GoToCoords(Vector2Int coords) { MapRenderer.i.atlas.CenterToTile(coords); }
+        public void GoToCoords(Vector2Int coords) { MapRenderer.i.atlas.CenterToTile(coords,offset); }
 
         internal void SetVisible(bool visible)
         {
