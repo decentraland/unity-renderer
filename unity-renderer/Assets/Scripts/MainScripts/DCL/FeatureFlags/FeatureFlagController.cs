@@ -12,6 +12,9 @@ public class FeatureFlagController : IFeatureFlagController
 
     public void AddBridgeComponent(GameObject gameObjectToAddBridge)
     {
+        if (gameObjectToAddBridge == null)
+            return;
+
         if (featureFlagBridgeComponent != null)
             Dispose();
 

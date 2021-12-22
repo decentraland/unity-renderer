@@ -4,6 +4,7 @@ using System.Linq;
 using DCL;
 using DCL.Helpers;
 using GPUSkinning;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -30,15 +31,14 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator Basic_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(Basic()); }
+    public IEnumerator Basic_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(Basic()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
     public IEnumerator Basic()
     {
         //Arrange
-        yield return InitVisualTestsScene("GPUSkinningVisualTests_Basic");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.5f, 1.8f, 11), new Vector3(7.5f, 1.75f, 8));
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(7.5f, 1.8f, 11), new Vector3(7.5f, 1.75f, 8));
 
         AnimationClip animationClip = Resources.Load<AnimationClip>("Male/dab");
 
@@ -74,7 +74,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
         gpuSkinning.Update();
 
         //Assert
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("GPUSkinningVisualTests_Basic", camera);
     }
 
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject container, AvatarMeshCombinerHelper combiner)
@@ -88,7 +88,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
         bool succeeded = false;
         bool failed = false;
 
-        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, x => failed = true);
+        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, (x, e) => failed = true);
 
         yield return new WaitUntil(() => succeeded || failed);
 

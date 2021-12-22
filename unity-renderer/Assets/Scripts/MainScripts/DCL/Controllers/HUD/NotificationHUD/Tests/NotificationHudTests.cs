@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.NotificationModel;
@@ -10,11 +12,13 @@ namespace Tests
     {
         private NotificationHUDController controller;
 
+        private ParcelScene scene;
+
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             controller = new NotificationHUDController();
-            sceneInitialized = false;
+            scene = TestUtils.CreateTestScene();
         }
 
         protected override IEnumerator TearDown()

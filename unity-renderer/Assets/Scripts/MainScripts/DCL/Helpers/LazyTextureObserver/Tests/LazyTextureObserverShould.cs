@@ -13,7 +13,7 @@ public class LazyTextureObserverShould
     public class TextureLoader_Mock : ITextureLoader
     {
         public event Action<Texture2D> OnSuccess;
-        public event Action OnFail;
+        public event Action<Exception> OnFail;
 
         private Texture2D texture;
 
@@ -25,7 +25,7 @@ public class LazyTextureObserverShould
                 texture = Texture2D.whiteTexture;
             else
             {
-                OnFail?.Invoke();
+                OnFail?.Invoke(new Exception("Uri is not white or black"));
                 return;
             }
 
@@ -271,7 +271,7 @@ public class LazyTextureObserverShould
         bool failCalled = false;
 
         textureLoader.OnSuccess += (x) => successCalled = true;
-        textureLoader.OnFail += () => failCalled = true;
+        textureLoader.OnFail += error => failCalled = true;
 
         // Act
         lazyTextureObserver.RefreshWithUri("failed url");

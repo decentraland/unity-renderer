@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Linq;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -12,6 +13,14 @@ namespace Tests
 {
     public class AnimatorTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         [UnityTest]
         public IEnumerator CreateAnimationComponent()
         {

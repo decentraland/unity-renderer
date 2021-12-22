@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using DCL.Camera;
 using UnityEngine;
@@ -12,11 +13,15 @@ namespace DCL.Camera
         protected Transform cameraTransform;
         public CameraMode.ModeId cameraModeId;
 
-        public virtual void Init(UnityEngine.Camera camera)
+        public virtual void Initialize(UnityEngine.Camera camera)
         {
             this.camera = camera;
             this.cameraTransform = this.camera.transform;
             gameObject.SetActive(false);
+        }
+
+        public virtual void Cleanup()
+        {
         }
 
         public virtual void OnSelect() { gameObject.SetActive(true); }

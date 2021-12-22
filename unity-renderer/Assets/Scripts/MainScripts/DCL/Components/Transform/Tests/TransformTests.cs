@@ -1,4 +1,6 @@
+using System.Collections;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -8,6 +10,14 @@ namespace Tests
 {
     public class TransformTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
+        }
+
         [Test]
         public void TransformUpdate()
         {

@@ -1,6 +1,6 @@
-﻿using System;
 using DCL.Helpers;
 using DCL.QuestsController;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +11,9 @@ namespace DCL.Huds.QuestsPanel
         internal IQuestsPanelHUDView view;
         internal IQuestsController questsController;
         private static BaseDictionary<string, QuestModel> quests => DataStore.i.Quests.quests;
+
+        BaseVariable<bool> questsPanelVisible => DataStore.i.HUDs.questsPanelVisible;
+        BaseVariable<Transform> configureQuestInFullscreenMenu => DataStore.i.exploreV2.configureQuestInFullscreenMenu;
 
         public void Initialize(IQuestsController newQuestsController)
         {
@@ -23,10 +26,15 @@ namespace DCL.Huds.QuestsPanel
             quests.OnRemoved += OnQuestRemoved;
             quests.OnSet += OnQuestSet;
 
-            DataStore.i.HUDs.questsPanelVisible.OnChange -= OnQuestPanelVisibleChanged;
-            DataStore.i.HUDs.questsPanelVisible.OnChange += OnQuestPanelVisibleChanged;
+            questsPanelVisible.OnChange -= OnQuestPanelVisibleChanged;
+            questsPanelVisible.OnChange += OnQuestPanelVisibleChanged;
+
+            configureQuestInFullscreenMenu.OnChange += ConfigureQuestInFullscreenMenuChanged;
+            ConfigureQuestInFullscreenMenuChanged(configureQuestInFullscreenMenu.Get(), null);
 
             OnQuestSet(quests.Get());
+
+            DataStore.i.Quests.isInitialized.Set(true);
         }
 
         private void OnQuestPanelVisibleChanged(bool current, bool previous) { SetViewActive(current); }
@@ -60,19 +68,9 @@ namespace DCL.Huds.QuestsPanel
             }
         }
 
-        public void SetVisibility(bool visible) { DataStore.i.HUDs.questsPanelVisible.Set(visible); }
+        public void SetVisibility(bool visible) { questsPanelVisible.Set(visible); }
 
-        private void SetViewActive(bool visible)
-        {
-            if ( CommonScriptableObjects.rendererState.Get() )
-            {
-                if (visible)
-                    Utils.UnlockCursor();
-                else
-                    Utils.LockCursor();
-            }
-            view?.SetVisibility(visible);
-        }
+        private void SetViewActive(bool visible) { view?.SetVisibility(visible); }
 
         internal virtual IQuestsPanelHUDView CreateView() => QuestsPanelHUDView.Create();
 
@@ -84,7 +82,10 @@ namespace DCL.Huds.QuestsPanel
             quests.OnAdded -= OnQuestAdded;
             quests.OnRemoved -= OnQuestRemoved;
             quests.OnSet -= OnQuestSet;
-            DataStore.i.HUDs.questsPanelVisible.OnChange -= OnQuestPanelVisibleChanged;
+            questsPanelVisible.OnChange -= OnQuestPanelVisibleChanged;
+            configureQuestInFullscreenMenu.OnChange -= ConfigureQuestInFullscreenMenuChanged;
         }
+
+        private void ConfigureQuestInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) { view.SetAsFullScreenMenuMode(currentParentTransform); }
     }
 }

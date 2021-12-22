@@ -355,7 +355,7 @@ public class BIWGodMode : BIWMode
         if (buttonID == 1)
         {
             mouseSecondaryBtnPressed = true;
-            freeCameraController.StartDectectingMovement();
+            freeCameraController.StartDetectingMovement();
         }
 
         if (buttonID != 0)

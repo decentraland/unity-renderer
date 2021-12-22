@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -22,7 +23,7 @@ namespace Tests.BuildModeHUDControllers
         public void SetParcelSceneCorrectly()
         {
             // Arrange
-            IParcelScene testParcelScene = DCL.Environment.i.world.sceneController.CreateTestScene();
+            IParcelScene testParcelScene = TestUtils.CreateTestScene();
 
             // Act
             sceneLimitsController.SetParcelScene((ParcelScene) testParcelScene);
@@ -57,7 +58,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateInfoCorrectly()
         {
             // Arrange
-            sceneLimitsController.SetParcelScene(scene);
+            sceneLimitsController.SetParcelScene(TestUtils.CreateTestScene());
 
             // Act
             sceneLimitsController.UpdateInfo();

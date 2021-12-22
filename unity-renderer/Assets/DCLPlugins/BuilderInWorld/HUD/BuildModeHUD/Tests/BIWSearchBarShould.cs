@@ -4,11 +4,12 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
-public class BIWSearchBarShould : MonoBehaviour
+public class BIWSearchBarShould
 {
     private SceneCatalogController sceneCatalogController;
     private BIWSearchBarController biwSearchBarController;
     private GameObject gameObjectToUse;
+    private AssetCatalogBridge assetCatalogBridge;
 
     [SetUp]
     public void SetUp()
@@ -19,19 +20,20 @@ public class BIWSearchBarShould : MonoBehaviour
             Substitute.For<ISceneCatalogView>(),
             Substitute.For<IQuickBarController>());
         biwSearchBarController = sceneCatalogController.biwSearchBarController;
+
         gameObjectToUse = new GameObject("_TestObject");
-        gameObjectToUse.AddComponent<AssetCatalogBridge>();
+        assetCatalogBridge = gameObjectToUse.AddComponent<AssetCatalogBridge>();
     }
 
     [TearDown]
     public void TearDown()
     {
-        AssetCatalogBridge.i.ClearCatalog();
         BIWCatalogManager.ClearCatalog();
         BIWCatalogManager.Dispose();
         sceneCatalogController.Dispose();
+
         if (gameObjectToUse != null)
-            GameObject.Destroy(gameObjectToUse);
+            Object.Destroy(gameObjectToUse);
     }
 
     [Test]
@@ -56,7 +58,7 @@ public class BIWSearchBarShould : MonoBehaviour
     {
         // Arrange
         string nameToFilter = "dirt";
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.FilterAssets(nameToFilter);
@@ -70,7 +72,7 @@ public class BIWSearchBarShould : MonoBehaviour
     {
         // Arrange
         string nameToFilter = "sand";
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.FilterAssets(nameToFilter);
@@ -84,7 +86,7 @@ public class BIWSearchBarShould : MonoBehaviour
     {
         // Arrange
         string nameToFilter = "decorations";
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.FilterAssets(nameToFilter);
@@ -98,7 +100,7 @@ public class BIWSearchBarShould : MonoBehaviour
     {
         // Arrange
         string nameToFilter = "structure";
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.FilterAssets(nameToFilter);
@@ -112,7 +114,7 @@ public class BIWSearchBarShould : MonoBehaviour
     {
         // Arrange
         string nameToFilter = "fantasy";
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.FilterAssets(nameToFilter);
@@ -126,7 +128,7 @@ public class BIWSearchBarShould : MonoBehaviour
     {
         // Arrange
         string nameToFilter = "wood";
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.FilterAssets(nameToFilter);
@@ -139,7 +141,7 @@ public class BIWSearchBarShould : MonoBehaviour
     public void FilterBySmartItem()
     {
         // Arrange
-        BIWTestUtils.CreateTestSmartItemCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestSmartItemCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.ChangeSmartItemFilter();
@@ -153,7 +155,7 @@ public class BIWSearchBarShould : MonoBehaviour
     public void FilterBySmartItemNoResult()
     {
         // Arrange
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
 
         // Act
         biwSearchBarController.ChangeSmartItemFilter();

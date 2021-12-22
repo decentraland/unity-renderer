@@ -74,9 +74,12 @@ public class BuilderInWorldEditor : IBIWEditor
 
         List<GameObject> grounds = new List<GameObject>();
 
-        for (int i = 0; i < sceneReferences.groundVisual.transform.transform.childCount; i++)
+        if (sceneReferences.groundVisual != null)
         {
-            grounds.Add(sceneReferences.groundVisual.transform.transform.GetChild(i).gameObject);
+            for (int i = 0; i < sceneReferences.groundVisual.transform.transform.childCount; i++)
+            {
+                grounds.Add(sceneReferences.groundVisual.transform.transform.GetChild(i).gameObject);
+            }
         }
 
         groundVisualsGO = grounds.ToArray();

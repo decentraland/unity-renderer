@@ -109,6 +109,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     [Header("Project References")]
     [SerializeField] internal Color syncColor;
+
     [SerializeField] internal Color desyncColor;
     [SerializeField] private Texture2D defaultThumbnail;
     [SerializeField] private GameObject projectSceneCardViewPrefab;
@@ -214,6 +215,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
                     break;
                 }
             }
+
             if (isSync)
                 syncImage.color = syncColor;
             else
@@ -237,7 +239,6 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
         CoroutineStarter.Stop(animRectTransformCoroutine);
         CoroutineStarter.Stop(animContainerCoroutine);
-
         if (scenesAreVisible)
         {
             layoutGroup.padding.bottom = 18;
@@ -309,7 +310,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
         thumbnailPromise = new AssetPromise_Texture(projectThumbnailUrl);
         thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => SetThumbnail((Texture2D) null);
+        thumbnailPromise.OnFailEvent += (texture, error) => SetThumbnail(null);
 
         loadingImgGameObject.SetActive(true);
         thumbnail.enabled = false;

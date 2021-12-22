@@ -1166,7 +1166,7 @@ MonoBehaviour:
     button: {fileID: 8899024452345124865}
   - expressionId: fistpump
     button: {fileID: 6920979846287350269}
-  - expressionId: robot
+  - expressionId: dance
     button: {fileID: 7079493532869316107}
   - expressionId: raiseHand
     button: {fileID: 8496611908133421776}

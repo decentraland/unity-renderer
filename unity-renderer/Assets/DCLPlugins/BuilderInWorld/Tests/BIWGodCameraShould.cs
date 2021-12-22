@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.Camera;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -14,10 +15,13 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
 {
     private FreeCameraMovement freeCameraMovement;
     private GameObject gameObject;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
 
         freeCameraMovement = Resources.FindObjectsOfTypeAll<FreeCameraMovement>().FirstOrDefault();
         gameObject = freeCameraMovement.gameObject;

@@ -20,7 +20,10 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown() { quickBarController.Dispose(); }
+        public void TearDown()
+        {
+            quickBarController.Dispose();
+        }
 
         [Test]
         [TestCase(0)]

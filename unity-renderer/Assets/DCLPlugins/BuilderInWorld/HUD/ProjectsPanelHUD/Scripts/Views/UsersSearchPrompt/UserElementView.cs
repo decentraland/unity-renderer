@@ -84,8 +84,8 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
         if (profileModel.snapshots?.face256 != null)
         {
             thumbnailPromise = new AssetPromise_Texture(profileModel.snapshots.face256);
-            thumbnailPromise.OnSuccessEvent += (asset => SetThumbnail(asset.texture));
-            thumbnailPromise.OnFailEvent += (asset => ClearThumbnail());
+            thumbnailPromise.OnSuccessEvent += asset => SetThumbnail(asset.texture);
+            thumbnailPromise.OnFailEvent += (asset, error) => ClearThumbnail();
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
 

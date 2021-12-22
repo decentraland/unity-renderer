@@ -4,6 +4,7 @@ namespace DCL
 {
     public class DataStore_BuilderInWorld
     {
+        public readonly BaseVariable<bool> isInitialized = new BaseVariable<bool>(false);
         public readonly BaseDictionary<string, CatalogItem> catalogItemDict = new BaseDictionary<string, CatalogItem>();
         public readonly BaseDictionary<string, CatalogItem> currentSceneCatalogItemDict = new BaseDictionary<string, CatalogItem>();
         public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();

@@ -11,7 +11,7 @@ namespace DCL.Components
 
         public IDCLEntity entity;
 
-        public abstract void Load(string url, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail);
+        public abstract void Load(string url, Action<LoadWrapper> OnSuccess, Action<LoadWrapper, Exception> OnFail);
         public abstract void Unload();
     }
 }
