@@ -12,15 +12,12 @@ namespace DCL.SettingsCommon
         public event Action OnResetAllSettings;
         
         public QualitySettingsData qualitySettingsPresets => qualitySettingsPreset;
-        public QualitySettingsData autoQualitySettings;
-        public QualitySettings lastValidAutoqualitySet;
 
         public readonly ISettingsRepository<QualitySettings> qualitySettings;
         public readonly ISettingsRepository<GeneralSettings> generalSettings;
         public readonly ISettingsRepository<AudioSettings> audioSettings;
         
         private readonly QualitySettingsData qualitySettingsPreset;
-        private readonly BooleanVariable autoQualitySettingsEnabled;
         private readonly AudioMixer audioMixer;
 
         private bool isDisposed;
@@ -32,16 +29,12 @@ namespace DCL.SettingsCommon
         }
 
         public Settings(QualitySettingsData qualitySettingsPreset,
-            QualitySettingsData autoQualitySettings,
-            BooleanVariable autoQualitySettingsEnabled,
             AudioMixer audioMixer,
             ISettingsRepository<QualitySettings> graphicsQualitySettingsRepository,
             ISettingsRepository<GeneralSettings> generalSettingsRepository,
             ISettingsRepository<AudioSettings> audioSettingsRepository)
         {
             this.qualitySettingsPreset = qualitySettingsPreset;
-            this.autoQualitySettings = autoQualitySettings;
-            this.autoQualitySettingsEnabled = autoQualitySettingsEnabled;
             this.audioMixer = audioMixer;
             qualitySettings = graphicsQualitySettingsRepository;
             generalSettings = generalSettingsRepository;
@@ -58,8 +51,6 @@ namespace DCL.SettingsCommon
 
         public void LoadDefaultSettings()
         {
-            autoQualitySettingsEnabled.Set(false);
-
             qualitySettings.Reset();
             generalSettings.Reset();
             audioSettings.Reset();
@@ -70,25 +61,6 @@ namespace DCL.SettingsCommon
             LoadDefaultSettings();
             SaveSettings();
             OnResetAllSettings?.Invoke();
-        }
-
-        /// <summary>
-        /// Apply the auto quality setting by its index on the array
-        /// </summary>
-        /// <param name="index">Index within the autoQualitySettings array</param>
-        public void ApplyAutoQualitySettings(int index)
-        {
-            if (index < 0 || index >= autoQualitySettings.Length)
-                return;
-
-            lastValidAutoqualitySet = autoQualitySettings[index];
-
-            var qualiltyData = qualitySettings.Data;
-
-            lastValidAutoqualitySet.baseResolution = qualiltyData.baseResolution;
-            lastValidAutoqualitySet.fpsCap = qualiltyData.fpsCap;
-
-            qualitySettings.Apply(lastValidAutoqualitySet);
         }
 
         private void SubscribeToVirtualAudioMixerEvents()

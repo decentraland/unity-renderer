@@ -20,7 +20,6 @@ MonoBehaviour:
     array:
     - controls:
         array:
-        - {fileID: 11400000, guid: f2d4336c9b55f99469978e3d75f1a6dc, type: 2}
         - {fileID: 11400000, guid: 0dec4eaa63d118d4aa002a638dbf7c71, type: 2}
         - {fileID: 11400000, guid: 0dbebd3806af28a4085597717331a448, type: 2}
         - {fileID: 11400000, guid: a287f0c30564e0346a5b6a88d4962fca, type: 2}
