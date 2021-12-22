@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using TMPro;
+using UnityEngine;
 
 namespace DCL.FPSDisplay
 {
@@ -14,7 +14,7 @@ namespace DCL.FPSDisplay
             new FPSColor(Color.red, FPSEvaluation.UNBEARABLE),
         };
 
-        public static void DisplayColor(Text label, float fps)
+        public static void DisplayColor(TextMeshProUGUI label, float fps)
         {
             for (int i = 0; i < coloring.Length; i++)
             {

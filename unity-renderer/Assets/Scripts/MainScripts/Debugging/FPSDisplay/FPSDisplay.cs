@@ -1,6 +1,6 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.FPSDisplay
 {
@@ -9,7 +9,7 @@ namespace DCL.FPSDisplay
     {
         private const float REFRESH_SECONDS = 0.1f;
 
-        [SerializeField] private Text label;
+        [SerializeField] private TextMeshProUGUI label;
         [SerializeField] private PerformanceMetricsDataVariable performanceData;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
