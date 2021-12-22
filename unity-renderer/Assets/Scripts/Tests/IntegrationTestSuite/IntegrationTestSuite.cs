@@ -16,19 +16,14 @@ namespace Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
+            DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
+            DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+            AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
+            PoolManager.enablePrewarm = false;
+
             ServiceLocator serviceLocator = DCL.Tests.ServiceLocatorFactory.CreateMocked();
             InitializeServices(serviceLocator);
             Environment.Setup(serviceLocator);
-
-            AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
-            DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
-            DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
-
-            var sceneController = serviceLocator.Get<ISceneController>();
-            sceneController.prewarmSceneMessagesPool = false;
-            sceneController.prewarmEntitiesPool = false;
-            sceneController.prewarmShaders = false;
-
             yield break;
         }
 

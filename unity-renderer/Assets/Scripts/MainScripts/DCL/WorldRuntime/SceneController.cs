@@ -42,23 +42,21 @@ namespace DCL
 
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
-            if (prewarmSceneMessagesPool)
+            // TODO(Brian): Move this later to Main.cs
+            if ( !EnvironmentSettings.RUNNING_TESTS )
             {
-                for (int i = 0; i < 100000; i++)
+                if (prewarmSceneMessagesPool)
                 {
-                    sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
+                    for (int i = 0; i < 100000; i++)
+                    {
+                        sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
+                    }
                 }
-            }
 
-            if (prewarmEntitiesPool)
-            {
-                PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
-            }
-
-            if ( prewarmShaders )
-            {
-                // Warmup some shader variants
-                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
+                if (prewarmEntitiesPool)
+                {
+                    PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
+                }
             }
         }
 
@@ -839,7 +837,6 @@ namespace DCL
 
         public bool prewarmSceneMessagesPool { get; set; } = true;
         public bool prewarmEntitiesPool { get; set; } = true;
-        public bool prewarmShaders { get; set; } = true;
 
         private bool sceneSortDirty = false;
         private bool positionDirty = true;
