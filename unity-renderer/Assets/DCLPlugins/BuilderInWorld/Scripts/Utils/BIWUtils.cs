@@ -26,7 +26,74 @@ public static partial class BIWUtils
 {
     private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    public static LoadParcelScenesMessage.UnityParcelScene AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
+    public static ILand CreateILandFromManifest(IManifest manifest, Vector2Int initialCoord)
+    {
+        ILand land = new ILand();
+        land.sceneId = manifest.project.scene_id;
+        land.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
+
+        land.mappingsResponse = new MappingsResponse();
+        land.mappingsResponse.parcel_id = land.sceneId;
+        land.mappingsResponse.root_cid = land.sceneId;
+        land.mappingsResponse.contents = new List<ContentServerUtils.MappingPair>();
+
+        land.sceneJsonData = new SceneJsonData();
+        land.sceneJsonData.main = "bin/game.js";
+        land.sceneJsonData.scene = new SceneParcels();
+        land.sceneJsonData.scene.@base = initialCoord.x + "," + initialCoord.y;
+
+        int amountOfParcels = manifest.project.rows * manifest.project.cols;
+        land.sceneJsonData.scene.parcels = new string[amountOfParcels];
+
+        int baseX = initialCoord.x;
+        int baseY = initialCoord.y;
+
+        int currentPositionInRow = 0;
+        for (int i = 0; i < amountOfParcels; i++ )
+        {
+            land.sceneJsonData.scene.parcels[i] = baseX + "," + baseY;
+            currentPositionInRow++;
+            baseX++;
+            if (currentPositionInRow >= manifest.project.rows)
+            {
+                baseX = initialCoord.x;
+                baseY++;
+                currentPositionInRow = 0;
+            }
+        }
+
+        return land;
+    }
+
+    public static ILand CreateILandFromParcelScene(IParcelScene scene)
+    {
+        ILand land = new ILand();
+        land.sceneId = scene.sceneData.id;
+        land.baseUrl = scene.sceneData.baseUrl;
+        land.baseUrlBundles = scene.sceneData.baseUrlBundles;
+
+        land.mappingsResponse = new MappingsResponse();
+        land.mappingsResponse.parcel_id = land.sceneId;
+        land.mappingsResponse.root_cid = land.sceneId;
+        land.mappingsResponse.contents = scene.sceneData.contents;
+
+        land.sceneJsonData = new SceneJsonData();
+        land.sceneJsonData.main = "bin/game.js";
+        land.sceneJsonData.scene = new SceneParcels();
+        land.sceneJsonData.scene.@base = scene.sceneData.basePosition.ToString();
+        land.sceneJsonData.scene.parcels = new string[scene.sceneData.parcels.Length];
+
+        int count = 0;
+        foreach (Vector2Int parcel in scene.sceneData.parcels)
+        {
+            land.sceneJsonData.scene.parcels[count] = parcel.x + "," + parcel.y;
+            count++;
+        }
+
+        return land;
+    }
+
+    public static void AddSceneMappings(Dictionary<string, string> contents, string baseUrl, LoadParcelScenesMessage.UnityParcelScene data)
     {
         if (data == null)
             data = new LoadParcelScenesMessage.UnityParcelScene();
@@ -53,7 +120,6 @@ public static partial class BIWUtils
             if (!found)
                 data.contents.Add(mappingPair);
         }
-        return data;
     }
 
     public static void RemoveAssetsFromCurrentScene()
@@ -106,7 +172,7 @@ public static partial class BIWUtils
     public static Manifest CreateManifestFromProject(ProjectData projectData)
     {
         Manifest manifest = new Manifest();
-        manifest.version = 10;
+        manifest.version = BIWSettings.MANIFEST_VERSION;
         manifest.project = projectData;
         manifest.scene = CreateEmtpyBuilderScene(projectData.rows * projectData.cols);
 
@@ -132,9 +198,27 @@ public static partial class BIWUtils
         return scene;
     }
 
-    public static Manifest CreateEmptyDefaultBuilderManifest(string landCoordinates)
+    public static Manifest CreateEmptyDefaultBuilderManifest(Vector2Int size, string landCoordinates)
     {
         Manifest manifest = new Manifest();
+        manifest.version = BIWSettings.MANIFEST_VERSION;
+
+        //We create a new project data for the scene
+        ProjectData projectData = new ProjectData();
+        projectData.id = Guid.NewGuid().ToString();
+        projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
+        projectData.title = "Builder " + landCoordinates;
+        projectData.description = "Scene created from the explorer builder";
+        projectData.creation_coords = landCoordinates;
+        projectData.rows = size.x;
+        projectData.cols = size.y;
+        projectData.updated_at = DateTime.Now;
+        projectData.created_at = DateTime.Now;
+
+        manifest.project = projectData;
+
+        //We create an empty scene
+        manifest.scene = CreateEmtpyBuilderScene(size.x + size.y);
         return manifest;
     }
 
@@ -505,8 +589,18 @@ public static partial class BIWUtils
             },
             OnFail: (webRequestResult) =>
             {
-                Debug.Log(webRequestResult.webRequest.error);
-                callPromise.Reject(webRequestResult.webRequest.error);
+                try
+                {
+                    byte[] byteArray = webRequestResult.GetResultData();
+                    string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
+                    callPromise?.Resolve(result);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(webRequestResult.webRequest.error);
+                    callPromise.Reject(webRequestResult.webRequest.error);
+                }
             },
             headers: headers);
 

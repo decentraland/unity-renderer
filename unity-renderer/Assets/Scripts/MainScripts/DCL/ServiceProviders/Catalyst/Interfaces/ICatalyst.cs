@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 
 /// <summary>
@@ -10,6 +11,13 @@ public interface ICatalyst : IDisposable
     /// url for content server
     /// </summary>
     public string contentUrl { get; }
+
+    /// <summary>
+    /// This will get the file from the specified hash
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    UniTask<string> GetContent(string hash);
 
     /// <summary>
     /// get scenes deployed in parcels

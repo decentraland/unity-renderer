@@ -202,7 +202,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         });
     }
 
-    private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartEditorFromManifest(manifest); }
+    private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartFlowFromProject(manifest); }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
 

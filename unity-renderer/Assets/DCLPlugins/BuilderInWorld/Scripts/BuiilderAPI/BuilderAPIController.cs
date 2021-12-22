@@ -7,6 +7,7 @@ using System.Net.Http;
 using DCL;
 using DCL.Builder;
 using DCL.Builder.Manifest;
+using DCL.Configuration;
 using DCL.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,7 +22,8 @@ public class BuilderAPIController : IBuilderAPIController
     internal const string CATALOG_ENDPOINT = "/assetPacks";
     internal const string ASSETS_ENDPOINT = "/assets?";
     internal const string GET_PROJECTS_ENDPOINT = "/projects";
-    internal const string PROJECT_MANIFEST_ENDPOINT = "/projects/{ID}/manifest";
+    internal const string PROJECT_MANIFEST_ID_ENDPOINT = "/projects/{ID}/manifest";
+    internal const string PROJECT_MANIFEST_COORDS_ENDPOINT = "/manifests";
     internal const string PROJECT_THUMBNAIL_ENDPOINT = "/projects/{ID}/media";
 
     internal const string API_KO_RESPONSE_ERROR = "API response is KO";
@@ -146,7 +148,7 @@ public class BuilderAPIController : IBuilderAPIController
 
     }
 
-    public Promise<bool> SetManifest(Manifest manifest)
+    public Promise<bool> SetManifest(IManifest manifest)
     {
         Promise<bool> fullPromise = new Promise<bool>();
 
@@ -159,7 +161,7 @@ public class BuilderAPIController : IBuilderAPIController
 
         byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
 
-        string endpoint = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", manifest.project.id);
+        string endpoint = PROJECT_MANIFEST_ID_ENDPOINT.Replace("{ID}", manifest.project.id);
         var promise =  CallUrl(PUT, endpoint, "", myData, "application/json");
 
         promise.Then(result =>
@@ -209,7 +211,7 @@ public class BuilderAPIController : IBuilderAPIController
     {
         Promise<Manifest> fullNewProjectPromise = new Promise<Manifest>();
 
-        string url = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", idProject);
+        string url = PROJECT_MANIFEST_ID_ENDPOINT.Replace("{ID}", idProject);
         var promise =  CallUrl(GET, url);
 
         promise.Then(result =>
@@ -218,15 +220,71 @@ public class BuilderAPIController : IBuilderAPIController
 
             try
             {
-                manifest = JsonConvert.DeserializeObject<Manifest>(result);
+                var x = JObject.Parse(result);
+
+                //We check if the object contains the version attribute, if it contains it it is a manifest
+                if (x["version"] != null)
+                {
+                    manifest = JsonConvert.DeserializeObject<Manifest>(result);
+                    fullNewProjectPromise.Resolve(manifest);
+                }
+                else
+                {
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
+                    if (!response.ok)
+                        fullNewProjectPromise.Reject(BIWSettings.PROJECT_NOT_FOUND);
+                }
             }
             catch (Exception e)
             {
                 fullNewProjectPromise.Reject(e.Message);
-                return;
             }
+        });
+        promise.Catch(error =>
+        {
+            fullNewProjectPromise.Reject(error);
+        });
+        return fullNewProjectPromise;
+    }
 
-            fullNewProjectPromise.Resolve(manifest);
+    public Promise<Manifest> GetManifestByCoords(string landCoords)
+    {
+        Promise<Manifest> fullNewProjectPromise = new Promise<Manifest>();
+
+        string callParams =  "?creation_coords_eq=" + landCoords;
+        var promise =  CallUrl(GET, PROJECT_MANIFEST_COORDS_ENDPOINT, callParams );
+
+        promise.Then(result =>
+        {
+            Manifest manifest = null;
+
+            try
+            {
+                var x = JObject.Parse(result);
+
+                //We check if the object contains the version attribute, if it contains it it is a manifest
+                //The API has two version , one with the APIResponse and one who don't
+                if (x["version"] != null)
+                {
+                    manifest = JsonConvert.DeserializeObject<Manifest>(result);
+                    fullNewProjectPromise.Resolve(manifest);
+                }
+                else if (x["data"].First["version"] != null)
+                {
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
+                    manifest = JsonConvert.DeserializeObject<Manifest[]>(response.data.ToString())[0];
+                    fullNewProjectPromise.Resolve(manifest);
+                }
+                else
+                {
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(result);
+                    fullNewProjectPromise.Reject(BIWSettings.PROJECT_NOT_FOUND);
+                }
+            }
+            catch (Exception e)
+            {
+                fullNewProjectPromise.Reject(e.Message);
+            }
         });
         promise.Catch(error =>
         {
@@ -248,7 +306,7 @@ public class BuilderAPIController : IBuilderAPIController
         string jsonManifest = JsonConvert.SerializeObject(builderManifest, dateFormatSettings);
         byte[] myData = System.Text.Encoding.UTF8.GetBytes(BIWUrlUtils.GetManifestJSON(jsonManifest));
 
-        string endpoint = PROJECT_MANIFEST_ENDPOINT.Replace("{ID}", newProject.id);
+        string endpoint = PROJECT_MANIFEST_ID_ENDPOINT.Replace("{ID}", newProject.id);
         var promise =  CallUrl(PUT, endpoint, "", myData, "application/json");
 
         promise.Then(result =>
@@ -369,16 +427,5 @@ public class BuilderAPIController : IBuilderAPIController
     {
         //TODO: Implement functionality
         return null;
-    }
-
-    public void UpdateProjectManifest(Manifest manifest)
-    {
-        //TODO: Implement functionality
-    }
-
-    public void CreateEmptyProjectWithCoords(string coords)
-    {
-        Manifest manifest = BIWUtils.CreateEmptyDefaultBuilderManifest(coords);
-        //TODO: Implement functionality
     }
 }

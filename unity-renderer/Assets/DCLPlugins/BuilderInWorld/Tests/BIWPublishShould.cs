@@ -28,12 +28,12 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
             biwPublishController,
             biwEntityHandler
         );
-
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         biwPublishController.Initialize(context);
         biwEntityHandler.Initialize(context);
 
-        biwPublishController.EnterEditMode(scene);
-        biwEntityHandler.EnterEditMode(scene);
+        biwPublishController.EnterEditMode(builderScene);
+        biwEntityHandler.EnterEditMode(builderScene);
     }
 
     [Test]

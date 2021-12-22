@@ -14,8 +14,6 @@ namespace DCL.Builder
 {
     public static class ManifestTranslator
     {
-        private const string NFT_ETHEREUM_PROTOCOL = "ethereum://";
-
         private static readonly Dictionary<string, int> idToHumanReadableDictionary = new Dictionary<string, int>()
         {
 
@@ -34,7 +32,78 @@ namespace DCL.Builder
             { "Script", (int) CLASS_ID_COMPONENT.SMART_ITEM }
         };
 
-        public static StatelessManifest SceneToStatelessManifest(ParcelScene scene)
+        public static WebBuilderScene StatelessToWebBuilderScene(StatelessManifest manifest, Vector2Int parcelSize)
+        {
+            WebBuilderScene builderScene = new WebBuilderScene();
+            builderScene.id = Guid.NewGuid().ToString();
+
+            BuilderGround ground = new BuilderGround();
+            List<string> namesList = new List<string>();
+            //We iterate all the entities to create its counterpart in the builder manifest
+            foreach (Entity entity in manifest.entities)
+            {
+                BuilderEntity builderEntity = new BuilderEntity();
+                builderEntity.id = entity.id;
+                string entityName = builderEntity.id;
+
+                // Iterate the entity components to transform them to the builder format
+                foreach (Component entityComponent in entity.components)
+                {
+                    BuilderComponent builderComponent = new BuilderComponent();
+                    builderComponent.id = Guid.NewGuid().ToString();
+                    builderComponent.type = entityComponent.type;
+                    builderComponent.data = entityComponent.value;
+                    builderEntity.components.Add(builderComponent.id);
+
+                    if (entityComponent.type == "NFTShape")
+                    {
+                        NFTShape.Model model = JsonConvert.DeserializeObject<NFTShape.Model>(entityComponent.value.ToString());
+                        builderComponent.data = JsonConvert.SerializeObject(GetWebBuilderRepresentationOfNFT(model));
+
+                        //This is the name format that is used by builder, we will have a different name in unity due to DCLName component
+                        entityName = "nft";
+                    }
+
+                    if (entityComponent.type ==  "GLTFShape")
+                    {
+                        var gltfModel = JsonConvert.DeserializeObject<GLTFShape.Model>(builderComponent.data.ToString());
+
+                        //We get the associated asset to the GLFTShape and add it to the scene 
+                        var asset = AssetCatalogBridge.i.sceneObjectCatalog.Get(gltfModel.assetId);
+                        if (!builderScene.assets.ContainsKey(asset.id))
+                            builderScene.assets.Add(asset.id, asset);
+
+                        //If the asset is a floor, we handle this situation for builder 
+                        if (asset.category == BIWSettings.FLOOR_CATEGORY)
+                        {
+                            ground.assetId = asset.id;
+                            ground.componentId = builderComponent.id;
+                            builderEntity.disableGizmos = true;
+                        }
+
+                        entityName = asset.name;
+                    }
+
+                    if (!builderScene.components.ContainsKey(builderComponent.id))
+                        builderScene.components.Add(builderComponent.id, builderComponent);
+                }
+
+                // We need to give to each entity a unique name so we search for a unique name there
+                // Also, since the name of the entity will be used in the code, we need to ensure that the it doesn't have special characters or spaces
+                builderEntity.name = GetCleanUniqueName(namesList, entityName);
+
+                if (!builderScene.entities.ContainsKey(builderEntity.id))
+                    builderScene.entities.Add(builderEntity.id, builderEntity);
+            }
+
+            //We add the limits to the scene, the current metrics are calculated in the builder
+            builderScene.limits = BIWUtils.GetSceneMetricsLimits(parcelSize.x + parcelSize.y);
+            builderScene.ground = ground;
+
+            return builderScene;
+        }
+
+        public static StatelessManifest ParcelSceneToStatelessManifest(ParcelScene scene)
         {
             StatelessManifest manifest = new StatelessManifest();
             manifest.schemaVersion = 1;
@@ -66,7 +135,7 @@ namespace DCL.Builder
             return manifest;
         }
 
-        public static WebBuilderScene TranslateSceneToManifest(ParcelScene scene)
+        public static WebBuilderScene ParcelSceneToWebBuilderScene(ParcelScene scene)
         {
             WebBuilderScene builderScene = new WebBuilderScene();
             builderScene.id = Guid.NewGuid().ToString();
@@ -154,9 +223,8 @@ namespace DCL.Builder
                         componentType = "NFTShape";
 
                         // This is a special case where we are assigning the builder url field for NFTs because builder model data is different
-                        NFTShapeBuilderRepresentantion representantion;
-                        representantion.url = JsonConvert.DeserializeObject<NFTShape.Model>(builderComponent.data.ToString()).src;
-                        builderComponent.data = JsonConvert.SerializeObject(representantion);
+                        NFTShape.Model model = JsonConvert.DeserializeObject<NFTShape.Model>(builderComponent.data.ToString());
+                        builderComponent.data = JsonConvert.SerializeObject(GetWebBuilderRepresentationOfNFT(model));
 
                         //This is the name format that is used by builder, we will have a different name in unity due to DCLName component
                         entityName = "nft";
@@ -193,6 +261,13 @@ namespace DCL.Builder
             return builderScene;
         }
 
+        private static NFTShapeBuilderRepresentantion GetWebBuilderRepresentationOfNFT(NFTShape.Model model)
+        {
+            NFTShapeBuilderRepresentantion representantion = new NFTShapeBuilderRepresentantion();
+            representantion.url = model.src;
+            return representantion;
+        }
+
         private static string GetCleanUniqueName(List<string> namesList, string currentName)
         {
             //We clean the name to don't include special characters
@@ -218,7 +293,7 @@ namespace DCL.Builder
             return newName;
         }
 
-        public static ParcelScene TranslateManifestToScene(Manifest.Manifest manifest)
+        public static ParcelScene ManifestToParcelScene(Manifest.Manifest manifest)
         {
             GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.id);
             ParcelScene scene = parcelGameObject.AddComponent<ParcelScene>();
@@ -304,7 +379,7 @@ namespace DCL.Builder
                         case "NFTShape":
                             //Builder use a different way to load the NFT so we convert it to our system
                             string url = JsonConvert.DeserializeObject<string>(component.data.ToString());
-                            string assedId = url.Replace(NFT_ETHEREUM_PROTOCOL, "");
+                            string assedId = url.Replace(BIWSettings.NFT_ETHEREUM_PROTOCOL, "");
                             int index = assedId.IndexOf("/", StringComparison.Ordinal);
                             string partToremove = assedId.Substring(index);
                             assedId = assedId.Replace(partToremove, "");

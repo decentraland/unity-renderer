@@ -26,7 +26,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
-    public event Action<string, string, string> OnSaveSceneInfoAction;
     public event Action<string, string, string> OnConfirmPublishAction;
     public event Action OnStartExitAction;
     public event Action OnLogoutAction;
@@ -57,7 +56,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
     private Coroutine publishProgressCoroutine = null;
     private float timeFromLastClickOnExtraButtons = 0f;
     internal IContext context;
-    
+
     public void Initialize(IContext context)
     {
         this.context = context;
@@ -79,7 +78,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
         ConfigureQuickBarController();
     }
 
-    public void Initialize(BuildModeHUDInitializationModel controllers,IContext context)
+    public void Initialize(BuildModeHUDInitializationModel controllers, IContext context)
     {
         this.context = context;
         this.controllers = controllers;
@@ -194,11 +193,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
 
-    private void ConfigureNewProjectDetailsController()
-    {
-        controllers.newProjectDetailsController.OnCancel += CancelNewProjectDetails;
-        controllers.newProjectDetailsController.OnConfirm += SaveSceneInfo;
-    }
+    private void ConfigureNewProjectDetailsController() { controllers.newProjectDetailsController.OnCancel += CancelNewProjectDetails; }
 
     private void ConfigurePublicationDetailsController()
     {
@@ -212,53 +207,15 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
-    public void SetBuilderProjectInfo(string projectName, string projectDescription)
+    public void NewSceneForLand(IBuilderScene sceneWithSceenshot)
     {
-        if (!string.IsNullOrEmpty(projectName))
-        {
-            controllers.newProjectDetailsController.SetCustomPublicationInfo(projectName, projectDescription);
-            controllers.publicationDetailsController.SetCustomPublicationInfo(projectName, projectDescription);
-        }
-        else
-        {
-            controllers.newProjectDetailsController.SetDefaultPublicationInfo();
-            controllers.publicationDetailsController.SetDefaultPublicationInfo();
-        }
-    }
-
-    public void NewProjectStart(Texture2D screenshot)
-    {
-        controllers.newProjectDetailsController.SetPublicationScreenshot(screenshot);
-
-        // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
-        //controllers.newProjectDetailsController.SetActive(true); 
-        SaveSceneInfo();
-    }
-
-    public void SaveSceneInfo()
-    {
-        Texture2D newSceneScreenshotTexture = context.cameraController.GetLastScreenshot();
-        string newSceneName = controllers.newProjectDetailsController.GetSceneName();
-        string newSceneDescription = controllers.newProjectDetailsController.GetSceneDescription();
-
-        controllers.publicationDetailsController.SetCustomPublicationInfo(newSceneName, newSceneDescription);
-        controllers.newProjectDetailsController.SetActive(false);
-
-        OnSaveSceneInfoAction?.Invoke(
-            newSceneName,
-            newSceneDescription,
-            newSceneScreenshotTexture != null ? Convert.ToBase64String(newSceneScreenshotTexture.EncodeToJPG(90)) : "");
+        //TODO: Implement welcome panel
+        controllers.newProjectDetailsController.SetActive(true);
     }
 
     internal void CancelNewProjectDetails() { controllers.newProjectDetailsController.SetActive(false); }
 
-    public void SetBuilderProjectScreenshot(Texture2D screenshot)
-    {
-        controllers.publicationDetailsController.SetPublicationScreenshot(screenshot);
-        controllers.newProjectDetailsController.SetPublicationScreenshot(screenshot);
-    }
-
-    public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
+    public void PublishStart(IBuilderScene scene) { controllers.publicationDetailsController.SetActive(true); }
 
     public void ConfigureConfirmationModal(string title, string subTitle, string cancelButtonText, string confirmButtonText)
     {

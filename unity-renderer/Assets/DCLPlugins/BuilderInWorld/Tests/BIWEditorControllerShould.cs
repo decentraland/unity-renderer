@@ -43,12 +43,13 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
         mainController.InitController(controller);
-        
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+
         // Act
-        mainController.EnterEditMode(scene);
+        mainController.EnterEditMode(builderScene);
 
         // Assert
-        controller.Received(1).EnterEditMode(scene);
+        controller.Received(1).EnterEditMode(builderScene);
     }
 
     [Test]
@@ -56,8 +57,9 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         mainController.InitController(controller);
-        mainController.EnterEditMode(scene);
+        mainController.EnterEditMode(builderScene);
 
         // Act
         mainController.ExitEditMode();
@@ -71,8 +73,9 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         mainController.InitController(controller);
-        mainController.EnterEditMode(scene);
+        mainController.EnterEditMode(builderScene);
 
         // Act
         mainController.OnGUI();
@@ -86,8 +89,9 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         mainController.InitController(controller);
-        mainController.EnterEditMode(scene);
+        mainController.EnterEditMode(builderScene);
 
         // Act
         mainController.LateUpdate();
@@ -115,8 +119,9 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         IBIWController controller = Substitute.For<IBIWController>();
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
         mainController.InitController(controller);
-        mainController.EnterEditMode(scene);
+        mainController.EnterEditMode(builderScene);
 
         // Act
         mainController.Update();
@@ -132,7 +137,8 @@ public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
         BIWCatalogManager.Init();
         BIWTestUtils.CreateTestCatalogLocalMultipleFloorObjects();
         ((EditorContext) mainController.context.editorContext).floorHandlerReference = Substitute.For<IBIWFloorHandler>();
-        mainController.sceneToEdit = scene;
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+        mainController.sceneToEdit = builderScene;
         mainController.EnterBiwControllers();
 
         // Act

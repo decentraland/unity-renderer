@@ -21,7 +21,9 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
-        entityHandler.EnterEditMode(scene);
+        var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
+
+        entityHandler.EnterEditMode(builderScene);
 
         dummyGameObject = new GameObject();
         biwBridge = Utils.GetOrCreateComponent<BuilderInWorldBridge>(dummyGameObject);
@@ -129,8 +131,12 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     [Test]
     public void TestStartStatefullScene()
     {
+        //Arrange
+        ILand land = new ILand();
+        land.sceneId = "ds";
+
         //Act
-        biwBridge.StartKernelEditMode(scene);
+        biwBridge.StartIsolatedMode(land);
 
         //Assert
         CheckMessageReceived();
@@ -140,7 +146,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestEndStatefullScene()
     {
         //Act
-        biwBridge.ExitKernelEditMode(scene);
+        biwBridge.StopIsolatedMode();
 
         //Assert
         CheckMessageReceived();

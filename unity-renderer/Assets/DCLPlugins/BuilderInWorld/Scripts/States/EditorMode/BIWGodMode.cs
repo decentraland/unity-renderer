@@ -103,7 +103,7 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
         gizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
-        
+
         multiSelectionInputAction.OnStarted -= MultiSelectionInputStart;
         multiSelectionInputAction.OnFinished -= MultiSelectionInputEnd;
 
@@ -151,15 +151,9 @@ public class BIWGodMode : BIWMode
         }
     }
 
-    private void MultiSelectionInputStart(DCLAction_Hold action)
-    {
-        ChangeSnapTemporaryActivated();
-    }
-    
-    private void MultiSelectionInputEnd(DCLAction_Hold action)
-    {
-        ChangeSnapTemporaryDeactivated();
-    }
+    private void MultiSelectionInputStart(DCLAction_Hold action) { ChangeSnapTemporaryActivated(); }
+
+    private void MultiSelectionInputEnd(DCLAction_Hold action) { ChangeSnapTemporaryDeactivated(); }
 
     internal void CheckOutlineEntitiesInSquareSelection(Vector3 mousePosition)
     {
@@ -702,7 +696,7 @@ public class BIWGodMode : BIWMode
             if (selectedEntities.Count > 0 )
                 gizmoManager.ShowGizmo();
         }
-        //TODO: Free-Movement tool, This could be re-enabled in the future so let the code there 
+        // Note: Free-Movement tool, This could be re-enabled in the future so let the code there 
         // else
         // {
         //     gizmoManager.HideGizmo(true);
