@@ -34,7 +34,7 @@ namespace DCL
             }
 
             i = this;
-            
+
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!disableSceneDependencies)
@@ -44,8 +44,8 @@ namespace DCL
             {
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
-                SetupEnvironment();
-                
+                SetupServices();
+
                 DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
 
@@ -117,7 +117,7 @@ namespace DCL
         protected virtual void OnDestroy()
         {
             DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
-            
+
             DataStore.i.common.isWorldBeingDestroyed.Set(true);
 
             pluginSystem?.Dispose();
