@@ -25,12 +25,13 @@ public class IntegrationTestSuite_Legacy
     {
         DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+        AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
         //              like this.
         CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
         CommonScriptableObjects.rendererState.Set(true);
-        
+
         Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
         legacySystems = SetUp_LegacySystems();
@@ -42,9 +43,6 @@ public class IntegrationTestSuite_Legacy
         SetUp_SceneController();
 
         yield return SetUp_Camera();
-
-        AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = double.MaxValue;
-        yield break;
     }
 
     protected virtual ServiceLocator InitializeServiceLocator()
@@ -66,7 +64,7 @@ public class IntegrationTestSuite_Legacy
     protected IEnumerator TearDown_LegacySystems()
     {
         Settings.i.Dispose();
-        
+
         foreach ( var go in legacySystems )
         {
             UnityEngine.Object.Destroy(go);
