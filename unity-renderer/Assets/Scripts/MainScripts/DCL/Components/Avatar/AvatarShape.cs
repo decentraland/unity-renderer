@@ -35,12 +35,14 @@ namespace DCL
         private Player player = null;
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
+        private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
+
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
             avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
-            
+
             if (avatarReporterController == null)
             {
                 avatarReporterController = new AvatarReporterController(Environment.i.world.state);
@@ -90,8 +92,10 @@ namespace DCL
             {
                 initializedPosition = true;
 
+                float characterHeight = DCLCharacterController.i != null ? DCLCharacterController.i.characterController.height : 0.8f;
+
                 avatarMovementController.MoveTo(
-                    entity.gameObject.transform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2,
+                    entity.gameObject.transform.localPosition - Vector3.up * characterHeight / 2,
                     entity.gameObject.transform.localRotation, true);
             }
 
@@ -131,14 +135,15 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
-            
+
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            if (config.features.enableAvatarLODs)
-                                avatarRenderer.InitializeImpostor();
-                        });
+                .Then(config =>
+                {
+                    if (config.features.enableAvatarLODs)
+                        avatarRenderer.InitializeImpostor();
+                });
         }
+
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
         private void PlayerPointerEnter() { playerName?.SetForceShow(true); }
 
@@ -170,11 +175,13 @@ namespace DCL
                 player.playerName = playerName;
                 player.playerName.SetName(player.name);
                 player.playerName.Show();
+                player.anchorPoints = anchorPoints;
                 otherPlayers.Add(player.id, player);
                 avatarReporterController.ReportAvatarRemoved();
             }
-            
+
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
+            anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatarRenderer.maxY));
@@ -253,6 +260,7 @@ namespace DCL
                 entity.OnTransformChange = null;
                 entity = null;
             }
+
             avatarReporterController.ReportAvatarRemoved();
         }
 

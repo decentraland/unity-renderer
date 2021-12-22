@@ -6,20 +6,19 @@ namespace ExploreV2Analytics
 {
     public interface IExploreV2Analytics
     {
-        void SendExploreMainMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method);
-        void SendExploreSectionVisibility(ExploreSection section, bool isVisible);
+        void SendStartMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method);
+        void SendStartMenuSectionVisibility(ExploreSection section, bool isVisible);
         void SendEventTeleport(string eventId, string eventName, Vector2Int coords);
         void SendClickOnEventInfo(string eventId, string eventName);
         void SendPlaceTeleport(string placeId, string placeName, Vector2Int coords);
         void SendClickOnPlaceInfo(string placeId, string placeName);
-        bool anyActionExecutedFromLastOpen { get; set; }
 
     }
 
     public class ExploreV2Analytics : IExploreV2Analytics
     {
-        private const string EXPLORE_MAIN_MENU_VIBILILITY = "explore_main_menu_visibility";
-        private const string EXPLORE_SECTION_VISIBILITY = "explore_section_visibility";
+        private const string START_MENU_VIBILILITY = "start_menu_visibility";
+        private const string START_MENU_SECTION_VISIBILITY = "start_menu_section_visibility";
         private const string EXPLORE_EVENT_TELEPORT = "explore_event_teleport";
         private const string EXPLORE_CLICK_EVENT_INFO = "explore_click_event_info";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
@@ -27,11 +26,8 @@ namespace ExploreV2Analytics
 
         private static DateTime? exploreMainMenuSetVisibleTimeStamp = null;
         private static DateTime? exploreSectionSetVisibleTimeStamp = null;
-        private static bool anyActionExecutedFromLastOpenValue = false;
 
-        public bool anyActionExecutedFromLastOpen { get => anyActionExecutedFromLastOpenValue; set => anyActionExecutedFromLastOpenValue = value; }
-
-        public void SendExploreMainMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method)
+        public void SendStartMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("visible", isVisible.ToString());
@@ -46,14 +42,12 @@ namespace ExploreV2Analytics
                     data.Add("open_duration_ms", (DateTime.Now - exploreMainMenuSetVisibleTimeStamp.Value).TotalMilliseconds.ToString());
                     exploreMainMenuSetVisibleTimeStamp = null;
                 }
-
-                data.Add("any_action_after_close", anyActionExecutedFromLastOpenValue.ToString());
             }
 
-            GenericAnalytics.SendAnalytic(EXPLORE_MAIN_MENU_VIBILILITY, data);
+            GenericAnalytics.SendAnalytic(START_MENU_VIBILILITY, data);
         }
 
-        public void SendExploreSectionVisibility(ExploreSection section, bool isVisible)
+        public void SendStartMenuSectionVisibility(ExploreSection section, bool isVisible)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("section", section.ToString());
@@ -70,7 +64,7 @@ namespace ExploreV2Analytics
                 }
             }
 
-            GenericAnalytics.SendAnalytic(EXPLORE_SECTION_VISIBILITY, data);
+            GenericAnalytics.SendAnalytic(START_MENU_SECTION_VISIBILITY, data);
         }
 
         public void SendEventTeleport(string eventId, string eventName, Vector2Int coords)

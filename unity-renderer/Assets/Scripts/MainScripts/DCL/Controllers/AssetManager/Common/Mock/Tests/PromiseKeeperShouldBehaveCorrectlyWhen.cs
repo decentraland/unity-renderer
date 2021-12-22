@@ -97,7 +97,7 @@ namespace AssetPromiseKeeper_Mock_Tests
                 asset = x;
                 masterSuccessCalled = true;
             };
-            prom.OnFailEvent += (x) => { masterFailCalled = true; };
+            prom.OnFailEvent += (x, error) => { masterFailCalled = true; };
 
             AssetPromise_Mock_Alt_Loading_Approach prom2 = new AssetPromise_Mock_Alt_Loading_Approach();
             prom2.idGenerator = id;

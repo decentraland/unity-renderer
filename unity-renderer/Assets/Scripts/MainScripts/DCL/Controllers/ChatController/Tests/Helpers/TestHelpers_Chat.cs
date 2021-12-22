@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class TestHelpers_Chat
 {
-    private static void FakePrivateChatMessage(IChatController controller, string sender, string recipient, string message)
+    private static void FakePrivateChatMessage(UserProfileController userProfileController, IChatController controller, string sender, string recipient, string message)
     {
         if (!UserProfileController.userProfilesCatalog.Get(recipient))
         {
@@ -13,7 +13,7 @@ public static class TestHelpers_Chat
                 name = recipient + "-name",
             };
 
-            UserProfileController.i.AddUserProfileToCatalog(model);
+            userProfileController.AddUserProfileToCatalog(model);
         }
 
         if (!UserProfileController.userProfilesCatalog.Get(sender))
@@ -24,7 +24,7 @@ public static class TestHelpers_Chat
                 name = sender + "-name",
             };
 
-            UserProfileController.i.AddUserProfileToCatalog(model);
+            userProfileController.AddUserProfileToCatalog(model);
         }
 
         var msg = new ChatMessage()
@@ -39,15 +39,15 @@ public static class TestHelpers_Chat
         controller.AddMessageToChatWindow(JsonUtility.ToJson(msg));
     }
 
-    public static void FakePrivateChatMessageTo(IChatController controller, string recipientUserId, string message)
+    public static void FakePrivateChatMessageTo(UserProfileController userProfileController, IChatController controller, string recipientUserId, string message)
     {
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
-        FakePrivateChatMessage(controller, ownProfile.userId, recipientUserId, message);
+        FakePrivateChatMessage(userProfileController, controller, ownProfile.userId, recipientUserId, message);
     }
 
-    public static void FakePrivateChatMessageFrom(IChatController controller, string senderUserId, string message)
+    public static void FakePrivateChatMessageFrom(UserProfileController userProfileController, IChatController controller, string senderUserId, string message)
     {
         UserProfile ownProfile = UserProfile.GetOwnUserProfile();
-        FakePrivateChatMessage(controller, senderUserId, ownProfile.userId ?? string.Empty, message);
+        FakePrivateChatMessage(userProfileController, controller, senderUserId, ownProfile.userId ?? string.Empty, message);
     }
 }

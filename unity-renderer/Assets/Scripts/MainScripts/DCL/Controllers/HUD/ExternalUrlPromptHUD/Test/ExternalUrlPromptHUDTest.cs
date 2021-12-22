@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using DCL.Controllers;
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -7,11 +9,13 @@ namespace Tests
     public class ExternalUrlPromptHUDShould : IntegrationTestSuite_Legacy
     {
         private ExternalUrlPromptHUDController controller;
+        private ParcelScene scene;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             controller = new ExternalUrlPromptHUDController();
+            scene = TestUtils.CreateTestScene();
         }
 
         protected override IEnumerator TearDown()

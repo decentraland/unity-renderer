@@ -114,6 +114,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
 
     [Header("Configuration")]
+    [SerializeField] internal Sprite defaultPicture;
     [SerializeField] internal PlaceCardComponentModel model;
 
     public FriendsHandler friendsHandler { get; set; }
@@ -123,6 +124,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
+
+    internal bool thumbnailFromMarketPlaceRequested = false;
 
     public override void Awake()
     {
@@ -160,6 +163,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public override void RefreshControl()
     {
+        thumbnailFromMarketPlaceRequested = false;
+
         if (model == null)
             return;
 
@@ -236,6 +241,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void SetPlacePicture(Sprite sprite)
     {
+        if (sprite == null && defaultPicture != null)
+            sprite = defaultPicture;
+
         model.placePictureSprite = sprite;
 
         if (placeImage == null)
@@ -246,6 +254,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void SetPlacePicture(Texture2D texture)
     {
+        if (texture == null && defaultPicture != null)
+        {
+            SetPlacePicture(defaultPicture);
+            return;
+        }
+
         model.placePictureTexture = texture;
 
         if (!Application.isPlaying)
@@ -259,6 +273,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void SetPlacePicture(string uri)
     {
+        if (string.IsNullOrEmpty(uri) && defaultPicture != null)
+        {
+            SetPlacePicture(defaultPicture);
+            return;
+        }
+
         model.placePictureUri = uri;
 
         if (!Application.isPlaying)
@@ -333,9 +353,18 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal void OnPlaceImageLoaded(Sprite sprite)
     {
         if (sprite != null)
+        {
             SetPlacePicture(sprite);
-        else
+        }
+        else if (!thumbnailFromMarketPlaceRequested)
+        {
+            thumbnailFromMarketPlaceRequested = true;
             SetPlacePicture(MapUtils.GetMarketPlaceThumbnailUrl(model.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR));
+        }
+        else
+        {
+            SetPlacePicture(sprite: null);
+        }
     }
 
     internal void InitializeFriendsTracker()

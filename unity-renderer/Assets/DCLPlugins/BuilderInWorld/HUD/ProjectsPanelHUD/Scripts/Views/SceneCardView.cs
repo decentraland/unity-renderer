@@ -250,7 +250,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
         thumbnailPromise = new AssetPromise_Texture(thumbnailUrl);
         thumbnailPromise.OnSuccessEvent += texture => ((ISceneCardView)this).SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => ((ISceneCardView)this).SetThumbnail((Texture2D) null);
+        thumbnailPromise.OnFailEvent += (texture, error) => ((ISceneCardView)this).SetThumbnail((Texture2D) null);
 
         AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
     }

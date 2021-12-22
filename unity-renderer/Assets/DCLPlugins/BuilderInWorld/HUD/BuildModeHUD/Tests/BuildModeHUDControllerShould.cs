@@ -4,6 +4,7 @@ using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Collections.Generic;
 using DCL.Builder;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace Tests.BuildModeHUDControllers
@@ -42,7 +43,10 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown() { }
+        public void TearDown()
+        {
+            builderEditorHudController.Dispose();
+        }
 
         [Test]
         public void CreateBuildModeControllersCorrectly()
@@ -115,6 +119,8 @@ namespace Tests.BuildModeHUDControllers
 
             //builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetPublicationScreenshot(testScreenshot);
             //builderEditorHudController.controllers.newProjectDetailsController.Received(1).SetActive(true);
+
+            Object.Destroy(testScreenshot);
         }
 
         [Test]
@@ -168,11 +174,11 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1)
-                                      .Configure(
-                                          Arg.Any<string>(),
-                                          Arg.Any<string>(),
-                                          Arg.Any<string>(),
-                                          Arg.Any<string>());
+                .Configure(
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>());
             builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
         }
 
@@ -266,13 +272,15 @@ namespace Tests.BuildModeHUDControllers
         public void SetParcelSceneCorrectly()
         {
             // Arrange
-            ParcelScene testParcelScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
+            ParcelScene testParcelScene = TestUtils.CreateComponentWithGameObject<ParcelScene>("_ParcelScene");
 
             // Act
             builderEditorHudController.SetParcelScene(testParcelScene);
 
             // Assert
             builderEditorHudController.controllers.inspectorController.sceneLimitsController.Received(1).SetParcelScene(testParcelScene);
+
+            Object.Destroy(testParcelScene.gameObject);
         }
 
         [Test]
@@ -424,13 +432,15 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             BIWEntity testEntity = new BIWEntity();
-            ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
+            ParcelScene testScene = TestUtils.CreateComponentWithGameObject<ParcelScene>("_ParcelScene");
 
             // Act
             builderEditorHudController.EntityInformationSetEntity(testEntity, testScene);
 
             // Assert
             builderEditorHudController.controllers.entityInformationController.Received(1).SetEntity(testEntity, testScene);
+
+            Object.Destroy(testScene.gameObject);
         }
 
         [Test]

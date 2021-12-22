@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
-using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -11,6 +10,7 @@ using WaitUntil = UnityEngine.WaitUntil;
 
 public class WearablesVisualTests : VisualTestsBase
 {
+    private CatalogController catalogController;
     private BaseDictionary<string, WearableItem> catalog;
     private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
     private readonly HashSet<AvatarMeshCombinerHelper> toCleanUpCombiners = new HashSet<AvatarMeshCombinerHelper>();
@@ -21,6 +21,8 @@ public class WearablesVisualTests : VisualTestsBase
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         toCleanUp.Clear();
 
@@ -32,67 +34,64 @@ public class WearablesVisualTests : VisualTestsBase
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator EmissiveWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearable()); }
+    public IEnumerator EmissiveWearable_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(EmissiveWearable()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
     public IEnumerator EmissiveWearable()
     {
         //Arrange
-        yield return InitVisualTestsScene("WearableVisualTests_EmissiveWearable");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
         const string EMISSIVE_WEARABLE_ID = "urn:decentraland:ethereum:collections-v1:dc_niftyblocksmith:blocksmith_feet";
 
         //Act
         yield return LoadWearable(EMISSIVE_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(EMISSIVE_WEARABLE_ID, new Vector3(8, 1, 8)));
 
         //Assert
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("WearableVisualTests_EmissiveWearable", camera);
     }
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator AlphaBlendWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearable()); }
+    public IEnumerator AlphaBlendWearable_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(AlphaBlendWearable()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
     public IEnumerator AlphaBlendWearable()
     {
         //Arrange
-        yield return InitVisualTestsScene("WearableVisualTests_AlphaBlendWearable");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
         const string ALPHA_BLEND_WEARABLE_ID = "urn:decentraland:ethereum:collections-v1:community_contest:cw_raver_eyewear";
 
         //Act
         yield return LoadWearable(ALPHA_BLEND_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(ALPHA_BLEND_WEARABLE_ID, new Vector3(8, -0.65f, 8.5f)));
 
         //Assert
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("WearableVisualTests_AlphaBlendWearable", camera);
     }
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator AlphaTestWearable_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaTestWearable()); }
+    public IEnumerator AlphaTestWearable_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(AlphaTestWearable()); }
 
     [UnityTest, VisualTest]
-    [Category("Visual Tests")]
+    [Explicit, Category("Explicit")]
     public IEnumerator AlphaTestWearable()
     {
         //Arrange
-        yield return InitVisualTestsScene("WearableVisualTests_AlphaTestWearable");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(8, 1.8f, 9), new Vector3(8, 1.75f, 8));
         const string ALPHA_TEST_WEARABLE_ID = "urn:decentraland:ethereum:collections-v1:tech_tribal_marc0matic:techtribal_beast_mask";
 
         //Act
         yield return LoadWearable(ALPHA_TEST_WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(ALPHA_TEST_WEARABLE_ID, new Vector3(8, -0.75f, 8)));
 
         //Assert
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("WearableVisualTests_AlphaTestWearable", camera);
     }
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator AlphaBlendWearableWithTransparentBaseColor_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaBlendWearableWithTransparentBaseColor()); }
+    public IEnumerator AlphaBlendWearableWithTransparentBaseColor_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(AlphaBlendWearableWithTransparentBaseColor()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
@@ -101,48 +100,45 @@ public class WearablesVisualTests : VisualTestsBase
         //Arrange
         const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0";
 
-        yield return InitVisualTestsScene("WearableVisualTests_AlphaBlendWearableWithTransparentBaseColor");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.78f, 1.68f, 8.5f), new Vector3(8, 1.75f, 8));
-        VisualTestController.i.camera.fieldOfView = 30;
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(7.78f, 1.68f, 8.5f), new Vector3(8, 1.75f, 8));
+        camera.fieldOfView = 30;
 
         //Act
         yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(WEARABLE_ID, new Vector3(8, -0.75f, 8)));
 
         //Assert
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("WearableVisualTests_AlphaBlendWearableWithTransparentBaseColor", camera);
     }
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator EmissiveWearableWithNoEmissionMap_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(EmissiveWearableWithNoEmissionMap()); }
+    public IEnumerator EmissiveWearableWithNoEmissionMap_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(EmissiveWearableWithNoEmissionMap()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
     public IEnumerator EmissiveWearableWithNoEmissionMap()
     {
         //Arrange
-        yield return InitVisualTestsScene("WearableVisualTests_EmissiveWearableWithNoEmissionMap");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(7.75f, 1.8f, 8.75f), new Vector3(8, 1.75f, 8));
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(7.75f, 1.8f, 8.75f), new Vector3(8, 1.75f, 8));
         const string WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0";
 
         //Act
         yield return LoadWearable(WEARABLE_ID, WearableLiterals.BodyShapes.MALE, CreateTestGameObject(WEARABLE_ID, new Vector3(8, -0.75f, 8)));
 
         //Assert
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("WearableVisualTests_EmissiveWearableWithNoEmissionMap", camera);
     }
 
     [UnityTest, VisualTest]
     [Explicit, Category("Explicit")]
-    public IEnumerator SkinAndHairMaterialsAreNotReplacedIncorrectly_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(SkinAndHairMaterialsAreNotReplacedIncorrectly()); }
+    public IEnumerator SkinAndHairMaterialsAreNotReplacedIncorrectly_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(SkinAndHairMaterialsAreNotReplacedIncorrectly()); }
 
     [UnityTest, VisualTest]
     [Category("Visual Tests")]
     public IEnumerator SkinAndHairMaterialsAreNotReplacedIncorrectly()
     {
         //Arrange
-        yield return InitVisualTestsScene("WearableVisualTests_SkinAndHairMaterialsAreNotReplacedIncorrectly");
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(8f, 1.8f, 9.3f), new Vector3(8, 1.75f, 8));
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(8f, 1.8f, 9.3f), new Vector3(8, 1.75f, 8));
         const string JACKET_ID = "urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_jacket";
         const string HAT_ID = "urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_hat";
         GameObject holderHat = CreateTestGameObject(HAT_ID, new Vector3(8, -0.75f, 8));
@@ -156,10 +152,11 @@ public class WearablesVisualTests : VisualTestsBase
         Assert.IsFalse(holderJacket.GetComponentsInChildren<SkinnedMeshRenderer>().Any(renderer => renderer.materials.Any(material => material.name.ToLower().Contains("hair"))));
 
         //Assert
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("WearableVisualTests_SkinAndHairMaterialsAreNotReplacedIncorrectly", camera);
     }
 
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject holder) => LoadWearable(wearableId, bodyShapeId, holder, CreateCombiner());
+
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject holder, AvatarMeshCombinerHelper combiner)
     {
         catalog.TryGetValue(wearableId, out WearableItem wearableItem);
@@ -171,7 +168,7 @@ public class WearablesVisualTests : VisualTestsBase
         bool succeeded = false;
         bool failed = false;
 
-        wearable.Load(bodyShapeId, holder.transform, x => succeeded = true, x => failed = true);
+        wearable.Load(bodyShapeId, holder.transform, x => succeeded = true, (x, e) => failed = true);
 
         yield return new WaitUntil(() => succeeded || failed);
 
@@ -203,6 +200,8 @@ public class WearablesVisualTests : VisualTestsBase
 
     protected override IEnumerator TearDown()
     {
+        Object.Destroy(catalogController.gameObject);
+
         foreach (AvatarMeshCombinerHelper combiner in toCleanUpCombiners)
         {
             combiner.Dispose();

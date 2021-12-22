@@ -41,10 +41,10 @@ namespace DCL
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {
                 var buttonId = (WebInterface.ACTION_BUTTON)i;
-                
-                if (buttonId == WebInterface.ACTION_BUTTON.ANY) 
+
+                if (buttonId == WebInterface.ACTION_BUTTON.ANY)
                     continue;
-                
+
                 InputController_Legacy.i.AddListener(buttonId, OnButtonEvent);
             }
 
@@ -57,12 +57,17 @@ namespace DCL
             }
 
             RetrieveCamera();
+
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         private IRaycastPointerClickHandler clickHandler;
 
         public void Update()
         {
+            if ( charCamera == null )
+                RetrieveCamera();
+
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null)
                 return;
 
@@ -202,7 +207,9 @@ namespace DCL
         {
             if (lastHoveredObject == null)
             {
-                interactionHoverCanvasController.SetHoverState(false);
+                if ( interactionHoverCanvasController != null )
+                    interactionHoverCanvasController.SetHoverState(false);
+
                 return;
             }
 
@@ -224,10 +231,10 @@ namespace DCL
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {
                 var buttonId = (WebInterface.ACTION_BUTTON)i;
-                
-                if (buttonId == WebInterface.ACTION_BUTTON.ANY) 
+
+                if (buttonId == WebInterface.ACTION_BUTTON.ANY)
                     continue;
-                
+
                 InputController_Legacy.i.RemoveListener(buttonId, OnButtonEvent);
             }
 
@@ -241,6 +248,8 @@ namespace DCL
                 OnPointerHoverStarts -= CursorController.i.SetHoverCursor;
                 OnPointerHoverEnds -= CursorController.i.SetNormalCursor;
             }
+
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         void RetrieveCamera()
@@ -292,7 +301,7 @@ namespace DCL
 
             if (string.IsNullOrEmpty(worldState.currentSceneId))
                 return;
-            
+
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 
@@ -332,10 +341,10 @@ namespace DCL
         private void ProcessButtonDown(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, bool enablePointerEvent, LayerMask pointerEventLayer, int globalLayer)
         {
             IWorldState worldState = Environment.i.world.state;
-            
+
             if (string.IsNullOrEmpty(worldState.currentSceneId))
                 return;
-            
+
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 

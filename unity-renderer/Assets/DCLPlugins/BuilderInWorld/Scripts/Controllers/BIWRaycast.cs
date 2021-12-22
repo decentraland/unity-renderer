@@ -132,8 +132,13 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
     public Vector3 GetFloorPointAtMouse(Vector3 mousePosition)
     {
+        Camera camera = context.sceneReferences.mainCamera;
+
+        if ( camera == null )
+            return Vector3.zero;
+
         RaycastHit hit;
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+        UnityEngine.Ray ray = camera.ScreenPointToRay(mousePosition);
 
         if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
             return hit.point;
@@ -173,5 +178,4 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
     private bool IsGizmoHit(RaycastHit hit) { return hit.collider.gameObject.GetComponent<BIWGizmosAxis>() != null; }
 
     #endregion
-
 }

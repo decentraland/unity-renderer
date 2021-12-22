@@ -21,11 +21,12 @@ public enum DCLAction_Trigger
     ToggleUIVisibility = 123,
     ToggleControlsHud = 124,
     ToggleSettings = 125,
-    ToggleExploreHud = 126,
+    ToggleStartMenu = 126,
     ToggleVoiceChatRecording = 127,
     ToggleAvatarEditorHud = 128,
     ToggleQuestsPanelHud = 129,
     ToggleAvatarNamesHud = 130,
+    TogglePlacesAndEventsHud = 131,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -35,6 +36,9 @@ public enum DCLAction_Trigger
     Expression_Clap = 205,
     Expression_ThrowMoney = 206,
     Expression_SendKiss = 207,
+    Expression_Dance = 208,
+    Expression_Hohoho = 209,
+    Expression_Snowfall = 210,
 
     //Builder In World 4xx
     BuildEditModeChange = 408,
@@ -195,7 +199,6 @@ public class InputController : MonoBehaviour
                     if (allUIHidden)
                         break;
                     InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleFriends:
                     if (allUIHidden)
@@ -226,9 +229,12 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleSettings:
                     InputProcessor.FromKey(action, KeyCode.P, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
-                case DCLAction_Trigger.ToggleExploreHud:
+                case DCLAction_Trigger.ToggleStartMenu:
                     if (allUIHidden)
                         break;
+                    InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.None);
+                    break;
+                case DCLAction_Trigger.TogglePlacesAndEventsHud:
                     InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
@@ -641,6 +647,9 @@ public static class InputProcessor
 
     public static bool FocusIsInInputField()
     {
+        if (EventSystem.current == null)
+            return false;
+
         if (EventSystem.current.currentSelectedGameObject != null &&
             (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null ||
              EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null))

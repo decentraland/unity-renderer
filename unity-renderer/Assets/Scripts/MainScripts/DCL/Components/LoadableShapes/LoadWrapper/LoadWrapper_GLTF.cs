@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.Assertions;
 
 namespace DCL.Components
@@ -16,9 +13,9 @@ namespace DCL.Components
         public ContentProvider customContentProvider;
 
         private Action<Rendereable> successWrapperEvent;
-        private Action failWrapperEvent;
+        private Action<Exception> failWrapperEvent;
 
-        public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail)
+        public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper, Exception> OnFail)
         {
             if (loadHelper != null)
             {
@@ -55,21 +52,21 @@ namespace DCL.Components
             this.entity.OnCleanupEvent -= OnEntityCleanup;
             this.entity.OnCleanupEvent += OnEntityCleanup;
 
-            successWrapperEvent = (x) => OnSuccessWrapper(OnSuccess);
-            failWrapperEvent = () => OnFailWrapper(OnFail);
+            successWrapperEvent = x => OnSuccessWrapper(OnSuccess);
+            failWrapperEvent = error => OnFailWrapper(OnFail, error); 
 
             loadHelper.OnSuccessEvent += successWrapperEvent;
             loadHelper.OnFailEvent += failWrapperEvent;
             loadHelper.Load(targetUrl);
         }
 
-        private void OnFailWrapper(Action<LoadWrapper> OnFail)
+        private void OnFailWrapper(Action<LoadWrapper, Exception> OnFail, Exception exception)
         {
             alreadyLoaded = true;
             loadHelper.OnSuccessEvent -= successWrapperEvent;
             loadHelper.OnFailEvent -= failWrapperEvent;
             this.entity.OnCleanupEvent -= OnEntityCleanup;
-            OnFail?.Invoke(this);
+            OnFail?.Invoke(this, exception);
         }
 
         private void OnSuccessWrapper(Action<LoadWrapper> OnSuccess)

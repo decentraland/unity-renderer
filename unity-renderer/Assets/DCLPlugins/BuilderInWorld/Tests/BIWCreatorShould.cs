@@ -4,6 +4,7 @@ using System.Linq;
 using DCL;
 using DCL.Builder;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -16,13 +17,18 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private BIWCreatorController biwCreatorController;
     private IContext context;
+    private ParcelScene scene;
+    private AssetCatalogBridge assetCatalogBridge;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
+        scene = TestUtils.CreateTestScene();
+
         biwCreatorController = new BIWCreatorController();
         entityHandler = new BIWEntityHandler();
+        assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
 
         context = BIWTestUtils.CreateContextWithGenericMocks(
             entityHandler,
@@ -42,7 +48,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -61,7 +67,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -84,7 +90,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -100,7 +106,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -117,7 +123,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         // Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         biwCreatorController.CreateCatalogItem(item);
         BIWEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
@@ -134,7 +140,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
         biwCreatorController.CreateCatalogItem(item);
         BIWEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
@@ -152,7 +158,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -184,6 +190,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         yield return new DCL.WaitUntil( () => GLTFComponent.downloadingCount == 0 );
         yield return null;
 
+        Object.Destroy( assetCatalogBridge.gameObject );
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
 

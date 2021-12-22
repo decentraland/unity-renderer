@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -12,12 +13,15 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
     private const string ENTITY_ID = "1";
     BIWEntity entity;
     BIWEntityHandler entityHandler;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
         entityHandler = new BIWEntityHandler();
         entityHandler.Initialize(BIWTestUtils.CreateMockedContextForTestScene());
+
+        scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);

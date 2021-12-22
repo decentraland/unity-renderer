@@ -1,49 +1,81 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
+using UnityEngine.Rendering.Universal;
 
 public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
-    protected override string TEST_SCENE_NAME => "MainVisualTest";
-    protected override bool enableSceneIntegrityChecker => false;
+    protected ParcelScene scene;
+    protected Camera camera;
+    private AnisotropicFiltering originalAnisoSetting;
+
+    protected override WorldRuntimeContext CreateRuntimeContext()
+    {
+        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks(
+            new WorldState(),
+            new RuntimeComponentFactory()
+        );
+    }
+
+    protected override PlatformContext CreatePlatformContext()
+    {
+        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
+            WebRequestController.Create(),
+            new ServiceProviders()
+        );
+    }
+
+    protected override MessagingContext CreateMessagingContext()
+    {
+        return DCL.Tests.MessagingContextFactory.CreateMocked();
+    }
+
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.Add(MainSceneFactory.CreateEnvironment());
+        return result;
+    }
 
     protected override IEnumerator SetUp()
     {
+        yield return base.SetUp();
+        originalAnisoSetting = QualitySettings.anisotropicFiltering;
         QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
-        VisualTestHelpers.SetSSAOActive(false);
-        yield break;
-    }
 
-    public IEnumerator InitVisualTestsScene(string testName)
-    {
-        yield return InitScene();
-        yield return null;
+        VisualTestUtils.SetSSAOActive(false);
+        scene = TestUtils.CreateTestScene();
 
-        //TODO(Brian): This is to wait for SceneController.Awake(). We should remove this
-        //             When the entry point is refactored.
+        DCL.Environment.i.world.state.currentSceneId = scene.sceneData.id;
+
+        VisualTestUtils.snapshotIndex = 0;
+
         RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
 
-        Environment.i.world.sceneBoundsChecker.Stop();
-        Environment.i.world.blockersController.SetEnabled(false);
-
-        base.SetUp_Renderer();
-
-        VisualTestHelpers.currentTestName = testName.Replace(".", "_");
-        VisualTestHelpers.snapshotIndex = 0;
-
-        DCLCharacterController.i.PauseGravity();
-        DCLCharacterController.i.enabled = false;
-
         // Position character inside parcel (0,0)
-        TestUtils.SetCharacterPosition(new Vector3(0, 2f, 0f));
+        camera = TestUtils.CreateComponentWithGameObject<Camera>("CameraContainer");
+        camera.clearFlags = CameraClearFlags.Skybox;
+        camera.allowHDR = true;
+        camera.GetUniversalAdditionalCameraData().renderPostProcessing = true;
+        camera.GetUniversalAdditionalCameraData().volumeLayerMask = LayerMask.GetMask("PostProcessing");
+        camera.GetUniversalAdditionalCameraData().renderShadows = true;
 
-        yield return null;
+        UnityEngine.RenderSettings.fog = true;
+        UnityEngine.RenderSettings.fogMode = FogMode.Linear;
+        UnityEngine.RenderSettings.fogStartDistance = 100;
+        UnityEngine.RenderSettings.fogEndDistance = 110;
+
+        VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(0, 2, 0));
     }
 
     protected override IEnumerator TearDown()
     {
-        QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+        Object.Destroy(camera.gameObject);
+        Object.Destroy(scene.gameObject);
+        QualitySettings.anisotropicFiltering = originalAnisoSetting;
         yield return base.TearDown();
     }
 }

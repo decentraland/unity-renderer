@@ -1,6 +1,5 @@
 using System;
 using DCL;
-using UnityEngine;
 
 namespace NFTShape_Internal
 {
@@ -32,7 +31,7 @@ namespace NFTShape_Internal
             }
         }
 
-        public void FetchAndSetHQAsset(string url, Action onSuccess, Action onFail)
+        public void FetchAndSetHQAsset(string url, Action onSuccess, Action<Exception> onFail)
         {
             hqGifPromise = new AssetPromise_Gif(url);
 
@@ -41,10 +40,10 @@ namespace NFTShape_Internal
                 gifPlayer?.SetGif(asset);
                 onSuccess?.Invoke();
             };
-            hqGifPromise.OnFailEvent += (asset) =>
+            hqGifPromise.OnFailEvent += (asset, error) =>
             {
                 hqGifPromise = null;
-                onFail?.Invoke();
+                onFail?.Invoke(error);
             };
 
             AssetPromiseKeeper_Gif.i.Keep(hqGifPromise);

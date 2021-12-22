@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -10,7 +11,14 @@ namespace Tests
     {
         private MinimapHUDController controller;
         DCL.NavmapView navmapView;
-        protected override bool justSceneSetUp => true;
+
+        protected override List<GameObject> SetUp_LegacySystems()
+        {
+            List<GameObject> result = new List<GameObject>();
+            result.Add(MainSceneFactory.CreateNavMap());
+            return result;
+        }
+
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -18,7 +26,7 @@ namespace Tests
             yield return base.SetUp();
 
             controller = new MinimapHUDController();
-            navmapView = Object.FindObjectOfType<DCL.NavmapView>();
+            navmapView = Object.FindObjectOfType<NavmapView>();
         }
 
         protected override IEnumerator TearDown()
@@ -64,15 +72,15 @@ namespace Tests
         {
             const string sceneName = "SCENE_NAME";
             MinimapMetadata.GetMetadata()
-                           .AddSceneInfo(
-                               new MinimapMetadata.MinimapSceneInfo
-                               {
-                                   parcels = new List<Vector2Int>
-                                   {
-                                       new Vector2Int(-77, -77)
-                                   },
-                                   name = sceneName
-                               });
+                .AddSceneInfo(
+                    new MinimapMetadata.MinimapSceneInfo
+                    {
+                        parcels = new List<Vector2Int>
+                        {
+                            new Vector2Int(-77, -77)
+                        },
+                        name = sceneName
+                    });
             CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77, -77));
             Assert.AreEqual(sceneName, navmapView.currentSceneNameText.text);
             Assert.AreEqual("-77,-77", navmapView.currentSceneCoordsText.text);

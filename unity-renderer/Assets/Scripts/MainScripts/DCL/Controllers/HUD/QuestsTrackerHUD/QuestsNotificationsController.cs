@@ -11,6 +11,7 @@ namespace DCL.Huds.QuestsTracker
         public static float DEFAULT_NOTIFICATION_DURATION { get; set; } = 2.5f;
 
         internal readonly Queue<IQuestNotification> notificationsQueue = new Queue<IQuestNotification>();
+        private IQuestNotification currentNotification;
 
         [SerializeField] private GameObject questCompletedPrefab;
         [SerializeField] private GameObject rewardObtainedPrefab;
@@ -44,13 +45,31 @@ namespace DCL.Huds.QuestsTracker
         }
 
         public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
+
         public void Dispose()
         {
-            if (!isDestroyed)
-                Destroy(gameObject);
+            if (isDestroyed)
+                return;
+
+            Destroy(gameObject);
         }
 
-        private void OnDestroy() { isDestroyed = true; }
+        public void ClearAllNotifications()
+        {
+            foreach ( var noti in notificationsQueue )
+            {
+                noti.Dispose();
+            }
+
+            if ( currentNotification != null )
+                currentNotification.Dispose();
+        }
+
+        private void OnDestroy()
+        {
+            ClearAllNotifications();
+            isDestroyed = true;
+        }
 
         private IEnumerator ProcessSectionsNotificationQueue()
         {
@@ -59,9 +78,11 @@ namespace DCL.Huds.QuestsTracker
                 if (notificationsQueue.Count > 0)
                 {
                     IQuestNotification notification = notificationsQueue.Dequeue();
+                    currentNotification = notification;
                     notification.Show();
                     yield return notification.Waiter();
                     notification.Dispose();
+                    currentNotification = null;
                 }
 
                 yield return WaitForSecondsCache.Get(NOTIFICATIONS_SEPARATION);

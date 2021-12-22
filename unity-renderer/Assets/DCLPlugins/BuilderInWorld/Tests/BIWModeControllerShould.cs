@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
+using DCL.Controllers;
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -9,6 +11,15 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 {
     private BIWModeController biwModeController;
     private IContext context;
+    private ParcelScene scene;
+
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.AddRange(MainSceneFactory.CreatePlayerSystems());
+        result.Add(MainSceneFactory.CreateMouseCatcher());
+        return result;
+    }
 
     protected override IEnumerator SetUp()
     {
@@ -28,6 +39,8 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
         biwModeController.Initialize(context);
         actionController.Initialize(context);
+
+        scene = TestUtils.CreateTestScene();
 
         biwModeController.EnterEditMode(builderScene);
         actionController.EnterEditMode(builderScene);

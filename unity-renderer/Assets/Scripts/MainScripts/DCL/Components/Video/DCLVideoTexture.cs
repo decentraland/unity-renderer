@@ -103,10 +103,7 @@ namespace DCL.Components
 
             if (texture == null)
             {
-                while (texturePlayer.texture == null && !texturePlayer.isError)
-                {
-                    yield return null;
-                }
+                yield return new WaitUntil(() => texturePlayer == null || ((texturePlayer.texture != null && texturePlayer.isReady) || texturePlayer.isError));
 
                 if (texturePlayer.isError)
                 {
@@ -155,7 +152,6 @@ namespace DCL.Components
                 texturePlayer.SetLoop(model.loop);
             }
         }
-
         private void Initialize(DCLVideoClip dclVideoClip)
         {
             string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;

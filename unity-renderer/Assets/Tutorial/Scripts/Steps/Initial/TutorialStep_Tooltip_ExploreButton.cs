@@ -1,4 +1,4 @@
-using System.Collections;
+using DCL.Helpers;
 
 namespace DCL.Tutorial
 {
@@ -7,30 +7,26 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_Tooltip_ExploreButton : TutorialStep_Tooltip
     {
+        private const string PLAYER_PREFS_START_MENU_SHOWED = "StartMenuFeatureShowed";
+        private const int TEACHER_CANVAS_SORT_ORDER_START = 5;
+
         public override void OnStepStart()
         {
             base.OnStepStart();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.exploreHud != null)
-            {
-                tutorialController.hudController.exploreHud.OnOpen += ExploreHud_OnOpen;
-                tutorialController.hudController.exploreHud.OnClose += ExploreHud_OnClose;
-            }
+            DataStore.i.exploreV2.isOpen.OnChange += ExploreV2IsOpenChanged;
+
+            tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
         }
 
         public override void OnStepFinished()
         {
             base.OnStepFinished();
 
-            if (tutorialController != null &&
-                tutorialController.hudController != null &&
-                tutorialController.hudController.exploreHud != null)
-            {
-                tutorialController.hudController.exploreHud.OnOpen -= ExploreHud_OnOpen;
-                tutorialController.hudController.exploreHud.OnClose -= ExploreHud_OnClose;
-            }
+            // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
+            PlayerPrefsUtils.SetInt(PLAYER_PREFS_START_MENU_SHOWED, 1);
+
+            DataStore.i.exploreV2.isOpen.OnChange -= ExploreV2IsOpenChanged;
         }
 
         protected override void SetTooltipPosition()
@@ -39,24 +35,17 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.taskbarHud != null &&
-                tutorialController.hudController.taskbarHud.exploreTooltipReference)
+                tutorialController.hudController.profileHud != null &&
+                tutorialController.hudController.profileHud.tutorialTooltipReference)
             {
-                tooltipTransform.position = tutorialController.hudController.taskbarHud.exploreTooltipReference.position;
+                tooltipTransform.position = tutorialController.hudController.profileHud.tutorialTooltipReference.position;
             }
         }
 
-        internal void ExploreHud_OnOpen()
+        internal void ExploreV2IsOpenChanged(bool current, bool previous)
         {
-            isRelatedFeatureActived = true;
-            stepIsFinished = true;
-            tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
-        }
-
-        internal void ExploreHud_OnClose()
-        {
-            if (isRelatedFeatureActived)
-                isRelatedFeatureActived = false;
+            if (current)
+                stepIsFinished = true;
         }
     }
 }

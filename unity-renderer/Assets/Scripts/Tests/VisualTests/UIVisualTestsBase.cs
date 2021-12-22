@@ -9,19 +9,12 @@ public class UIVisualTestsBase : VisualTestsBase
 {
     protected string screenSpaceId;
 
-    protected IEnumerator InitUIVisualTestScene(string testName)
+    protected override IEnumerator SetUp()
     {
-        VisualTestHelpers.snapshotIndex = 0;
-        VisualTestHelpers.currentTestName = testName;
-
-        yield return InitScene();
+        yield return base.SetUp();
 
         //NOTE(Brian): If we don't wait a frame, RenderingController.Awake sets the rendering state back to false.
         yield return null;
-
-        RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
-
-        base.SetUp_Renderer();
 
         // Create UIScreenSpace
         UIScreenSpace screenSpace = TestUtils.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
@@ -31,11 +24,11 @@ public class UIVisualTestsBase : VisualTestsBase
 
         // The canvas has to be in ScreenSpaceCamera mode to be able to render the UI correctly for the snapshots
         screenSpace.canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        screenSpace.canvas.worldCamera = VisualTestController.i.camera;
+        screenSpace.canvas.worldCamera = camera;
         screenSpace.canvas.planeDistance = 1;
 
         // The camera should only render UI to decrease conflict chance with future ground changes, etc.
-        VisualTestController.i.camera.cullingMask = 1 << LayerMask.NameToLayer("UI");
+        camera.cullingMask = 1 << LayerMask.NameToLayer("UI");
 
         int id = GameViewUtils.AddOrGetCustomSize(GameViewUtils.GameViewSizeType.FixedResolution, UnityEditor.GameViewSizeGroupType.Standalone, 1280, 720, "Test Resolution");
         GameViewUtils.SetSize(id);

@@ -54,7 +54,7 @@ public interface IGridContainerComponentView
     /// <param name="prefab">Prefab to create items</param>
     /// <param name="amountOfItems">Amounts of items to be created</param>
     void SetItems(BaseComponentView prefab, int amountOfItems);
-    
+
     /// <summary>
     /// Set the items of the grid. All previously existing items will be removed.
     /// </summary>
@@ -123,9 +123,9 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             return;
 
         //We only do this if we don't have items, this is done because the editor doesn't call awake method
-        if(instantiatedItems.Count == 0)
+        if (instantiatedItems.Count == 0)
             RegisterCurrentInstantiatedItems();
-        
+
         SetConstraint(model.constraint);
         SetItemSize(model.itemSize);
         SetConstraintCount(model.constraintCount);
@@ -179,7 +179,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         if (model.adaptVerticallyItemSizeToContainer  && model.adaptHorizontallyItemSizeToContainer)
         {
-           CalculateAutoSize(out newSizeToApply);
+            CalculateAutoSize(out newSizeToApply);
         }
         else if (model.adaptVerticallyItemSizeToContainer)
         {
@@ -230,22 +230,22 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
     {
         float height = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.height : ((RectTransform)transform).rect.height;
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
-        
+
         int amountsOfHorizontalItemsPerRow =  instantiatedItems.Count / model.constraintCount;
         int amountsOfVerticalItemsPerColumn =  instantiatedItems.Count / amountsOfHorizontalItemsPerRow;
-        
+
         float extraSpaceToRemoveX = model.spaceBetweenItems.x * (amountsOfHorizontalItemsPerRow - 1);
         float extraSpaceToRemoveY = model.spaceBetweenItems.y * (amountsOfVerticalItemsPerColumn - 1);
 
-        float itemWidth = model.recommendedWidthForFlexibleItems; 
+        float itemWidth = model.recommendedWidthForFlexibleItems;
         float itemHeight = model.recommendedHeightForFlexibleItems;
 
         if (itemWidth * amountsOfHorizontalItemsPerRow + extraSpaceToRemoveX >= width)
-            itemWidth = width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX; 
-        
+            itemWidth = width / amountsOfHorizontalItemsPerRow - extraSpaceToRemoveX;
+
         if (itemWidth < model.minWidthForFlexibleItems)
             itemWidth = model.minWidthForFlexibleItems;
-        
+
         if (itemHeight * amountsOfVerticalItemsPerColumn + extraSpaceToRemoveY >= height)
             itemHeight = height / amountsOfVerticalItemsPerColumn - extraSpaceToRemoveY;
 
@@ -258,14 +258,14 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
             itemHeight = minValue;
             itemWidth = minValue;
         }
-        
+
         newSizeToApply = new Vector2(
             itemWidth,
             itemHeight);
 
         currentItemsPerRow = model.constraintCount;
     }
-    
+
     internal void CalculateHorizontalSizeForFixedColumnConstraint(out Vector2 newSizeToApply)
     {
         float width = externalParentToAdaptSize != null ? externalParentToAdaptSize.rect.width : ((RectTransform)transform).rect.width;
@@ -354,7 +354,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         SetItemSize(model.itemSize);
     }
-    
+
     public void SetItems(List<BaseComponentView> items)
     {
         RemoveItems();
@@ -465,6 +465,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
                 DestroyImmediate(child.gameObject);
         }
 
-        ResizeGridContainer();
+        SetItemSize(model.itemSize);
+        SetConstraintCount(model.constraintCount);
     }
 }

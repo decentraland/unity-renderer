@@ -9,6 +9,7 @@ using DCL;
 using DCL.Builder;
 using DCL.Camera;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Models;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -25,6 +26,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     private BIWEntity entity;
     private BIWEntityHandler entityHandler;
     private IContext context;
+    private ParcelScene scene;
 
     protected override IEnumerator SetUp()
     {
@@ -32,6 +34,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         entityHandler = new BIWEntityHandler();
         context = BIWTestUtils.CreateMockedContextForTestScene();
         entityHandler.Initialize(context);
+
+        scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
         var builderScene = BIWTestUtils.CreateBuilderSceneFromParcelScene(scene);
@@ -433,7 +437,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     public void GetNameFromCatalog()
     {
         //Arrange
-        BIWTestUtils.CreateTestCatalogLocalSingleObject();
+        var assetCatalogBridge = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
+        BIWTestUtils.CreateTestCatalogLocalSingleObject(assetCatalogBridge);
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
@@ -441,6 +446,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.AreSame(name, item.name);
+
+        Object.Destroy(assetCatalogBridge.gameObject);
     }
 
     [Test]
