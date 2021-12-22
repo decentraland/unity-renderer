@@ -30,7 +30,7 @@ namespace DCL
             return data;
         }
 
-        public void Unregister<T>(ServiceBuilder data) where T : IService
+        public void Unregister<T>() where T : IService
         {
             Type type = typeof(T);
             Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );

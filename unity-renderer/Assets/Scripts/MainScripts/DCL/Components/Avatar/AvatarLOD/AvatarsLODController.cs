@@ -73,7 +73,6 @@ namespace DCL
             if (!enabled || lodControllers.ContainsKey(id))
                 return;
 
-            Debug.Log("Registering avatar... " + id);
             lodControllers.Add(id, CreateLodController(player));
         }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using DCL.Camera;
 using DCL.SettingsCommon;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -48,7 +49,10 @@ public class IntegrationTestSuite_Legacy
 
     protected virtual ServiceLocator InitializeServiceLocator()
     {
-        return ServiceLocatorFactory.CreateDefault();
+        var result = ServiceLocatorFactory.CreateDefault();
+        result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
+        result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
+        return result;
     }
 
 

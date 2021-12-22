@@ -251,8 +251,6 @@ namespace Tests.AvatarsLODController
         [Test]
         public void HideCharacterClippingAvatars()
         {
-            Debug.Log("Start");
-
             DataStore.i.avatarsLOD.maxAvatars.Set(2);
             controller.enabled = true;
 
@@ -270,13 +268,11 @@ namespace Tests.AvatarsLODController
 
             // Place at normal distance
             avatar.worldPosition = cameraPosition + Vector3.forward * (simpleAvatarDistance * 0.25f);
-            Debug.Log("Update blah");
             controller.Update();
             avatarPlayerController.Received().SetFullAvatar();
 
             // Place super close to the main player
             avatar.worldPosition = cameraPosition + Vector3.forward * 0.75f;
-            Debug.Log("Update blah 2");
             controller.Update();
             avatarPlayerController.Received().SetInvisible();
         }
