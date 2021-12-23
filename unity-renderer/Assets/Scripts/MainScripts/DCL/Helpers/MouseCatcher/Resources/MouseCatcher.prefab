@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c245db61ee375ee40ae6157b20e73e6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unlockInputAction: {fileID: 11400000, guid: 8d33228242d030841a39985073d18769, type: 2}
   OnPointerDownTarget:
     serializedVersion: 2
     m_Bits: 512

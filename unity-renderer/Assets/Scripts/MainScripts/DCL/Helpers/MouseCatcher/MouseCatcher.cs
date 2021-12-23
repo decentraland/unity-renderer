@@ -2,37 +2,46 @@
 #define WEB_PLATFORM
 #endif
 
+using System;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
-using DCL.Helpers;
 
 namespace DCL
 {
     public interface IMouseCatcher
     {
-        event System.Action OnMouseUnlock;
-        event System.Action OnMouseLock;
+        event Action OnMouseUnlock;
+        event Action OnMouseLock;
         bool isLocked { get; }
     }
 
     public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler
     {
+        [SerializeField] private InputAction_Trigger unlockInputAction;
+
         public bool isLocked => Utils.isCursorLocked;
         bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
 
-        public event System.Action OnMouseUnlock;
-        public event System.Action OnMouseLock;
-        public event System.Action OnMouseDown;
+        public event Action OnMouseUnlock;
+        public event Action OnMouseLock;
+        public event Action OnMouseDown;
 
         //Default OnPointerEvent
         public LayerMask OnPointerDownTarget = 1 << 9;
 
-        void Update()
+        private void Start()
         {
-            if (Input.GetMouseButtonDown(1))
-                UnlockCursor();
-            
+            unlockInputAction.OnTriggered += HandleUnlockInput;
+        }
+
+        private void OnDestroy()
+        {
+            unlockInputAction.OnTriggered -= HandleUnlockInput;
+        }
+
+        private void Update()
+        {
 #if !WEB_PLATFORM
             //Browser is changing this automatically
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -91,5 +100,7 @@ namespace DCL
         }
 
         #endregion
+
+        private void HandleUnlockInput(DCLAction_Trigger action) => UnlockCursor();
     }
 }

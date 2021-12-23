@@ -13,6 +13,7 @@ public enum DCLAction_Trigger
 {
     //Remember to explicitly assign the value to each entry so we minimize issues with serialization + conflicts
     CameraChange = 100,
+    CursorUnlock = 101,
 
     ToggleNavMap = 110,
     ToggleFriends = 120,
@@ -194,6 +195,9 @@ public class InputController : MonoBehaviour
                         InputProcessor.FromKey(action, KeyCode.V,
                             modifiers: InputProcessor.Modifier.NeedsPointerLocked |
                                        InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.CursorUnlock:
+                    InputProcessor.FromMouseButton(action, 1, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Trigger.ToggleNavMap:
                     if (allUIHidden)
