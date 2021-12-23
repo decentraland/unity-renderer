@@ -30,6 +30,9 @@ namespace DCL
 
         void Update()
         {
+            if (Input.GetMouseButtonDown(1))
+                UnlockCursor();
+            
 #if !WEB_PLATFORM
             //Browser is changing this automatically
             if (Input.GetKeyDown(KeyCode.Escape))

@@ -370,9 +370,9 @@ namespace DCL.Helpers
             }
             requestedLock = true;
 #else
-            isCursorLocked = true;
             Cursor.visible = false;
 #endif
+            isCursorLocked = true;
             Cursor.lockState = CursorLockMode.Locked;
             lockedInFrame = Time.frameCount;
 
@@ -394,9 +394,9 @@ namespace DCL.Helpers
             }
             requestedUnlock = true;
 #else
-            isCursorLocked = false;
             Cursor.visible = true;
 #endif
+            isCursorLocked = false;
             Cursor.lockState = CursorLockMode.None;
 
             EventSystem.current?.SetSelectedGameObject(null);
