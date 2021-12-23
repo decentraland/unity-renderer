@@ -1,3 +1,5 @@
+using System.Linq;
+using DCL.Controllers;
 using DCL.Interface;
 using UnityEngine;
 using DCL.Helpers;
@@ -17,13 +19,17 @@ namespace DCL.Components
         public event System.Action OnPointerExitReport;
         private bool isHovering = false;
 
+        private bool passportEnabled = true;
+        private bool onClickReportEnabled = true;
+        private Player player;
+
         public WebInterface.ACTION_BUTTON GetActionButton() { return model.GetActionButton(); }
 
         public void SetHoverState(bool state)
         {
             bool isHoveringDirty = state != isHovering;
             isHovering = state;
-            eventHandler.SetFeedbackState(model.showFeedback, state, model.button, model.hoverText);
+            eventHandler.SetFeedbackState(model.showFeedback, state && passportEnabled, model.button, model.hoverText);
             if (!isHoveringDirty)
                 return;
             if (isHovering)
@@ -49,10 +55,11 @@ namespace DCL.Components
             CollidersManager.i.RemoveEntityCollider(entity, collider);
         }
 
-        public void Initialize(OnPointerEvent.Model model, IDCLEntity entity)
+        public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, Player player)
         {
             this.model = model;
             this.entity = entity;
+            this.player = player;
 
             if (eventHandler == null)
                 eventHandler = new OnPointerEventHandler();
@@ -65,7 +72,7 @@ namespace DCL.Components
 
         public bool IsVisible() { return true; }
 
-        public bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
+        public bool ShouldReportPassportInputEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
             return IsAtHoverDistance(hit.distance) &&
                    (model.button == "ANY" || buttonId.ToString() == model.button);
@@ -76,28 +83,18 @@ namespace DCL.Components
             if (!enabled)
                 return;
 
-            if (ShouldReportEvent(buttonId, hit))
+            if (passportEnabled && ShouldReportPassportInputEvent(buttonId, hit))
             {
-                string meshName = null;
-
-                if (hit.collider != null)
-                    meshName = eventHandler.GetMeshName(hit.collider);
-
-                WebInterface.ReportOnPointerDownEvent(
-                    buttonId,
-                    entity.scene.sceneData.id,
-                    model.uuid,
-                    entity.entityId,
-                    meshName,
-                    ray,
-                    hit.point,
-                    hit.normal,
-                    hit.distance);
-
                 eventHandler.SetFeedbackState(model.showFeedback, false, model.button, model.hoverText);
-                enabled = false;
+                passportEnabled = false;
 
                 OnPointerDownReport?.Invoke();
+            }
+
+            if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId))
+            {
+                string playerSceneId = CommonScriptableObjects.sceneID.Get();
+                WebInterface.ReportAvatarClick(playerSceneId, player.id, ray, hit.distance);
             }
         }
 
@@ -105,20 +102,61 @@ namespace DCL.Components
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
         {
-            if (enabled || newState)
+            if (passportEnabled || newState)
                 return;
 
-            enabled = true;
+            passportEnabled = true;
         }
         public void SetColliderEnabled(bool newEnabledState)
         {
             collider.enabled = newEnabledState;
         }
+        
+        public void SetPassportEnabled(bool newEnabledState)
+        {
+            passportEnabled = newEnabledState;
+            eventHandler?.SetFeedbackState(model.showFeedback, false, model.button, model.hoverText);
+            isHovering = false;
+        }
+
+        public void SetOnClickReportEnabled(bool newEnabledState)
+        {
+            onClickReportEnabled = newEnabledState;
+        }        
 
         public Transform GetTransform() { return transform; }
 
-        public void OnPoolRelease() { eventHandler.Dispose(); }
+        public void OnPoolRelease()
+        {
+            eventHandler.Dispose();
+            player = null;
+        }
 
         public void OnPoolGet() { }
+        
+        private bool ShouldReportOnClickEvent(WebInterface.ACTION_BUTTON buttonId)
+        {
+            if (buttonId != WebInterface.ACTION_BUTTON.POINTER)
+            {
+                return false;
+            }
+            
+            if (player == null)
+            {
+                return false;
+            }
+
+            string playerSceneId = CommonScriptableObjects.sceneID.Get();
+
+            if (string.IsNullOrEmpty(playerSceneId))
+            {
+                return false;
+            }
+            
+            IParcelScene playerScene = Environment.i.world.state.GetScene(playerSceneId);
+            Vector2Int avatarCoords = Utils.WorldToGridPosition(CommonScriptableObjects.worldOffset + player.worldPosition);
+
+            return playerScene?.sceneData.parcels.Contains(avatarCoords) ?? false;
+        }
     }
 }
