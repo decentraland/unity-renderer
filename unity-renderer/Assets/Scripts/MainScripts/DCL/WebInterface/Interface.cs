@@ -1535,11 +1535,11 @@ namespace DCL.Interface
             SendMessage("ReportAvatarState", avatarSceneChangedPayload);
         }
 
-        public static void ReportAvatarClick(string sceneId, string userId, Ray ray, float distance)
+        public static void ReportAvatarClick(string sceneId, string userId, Vector3 rayOrigin, Vector3 rayDirection, float distance)
         {
             avatarOnClickPayload.userId = userId;
-            avatarOnClickPayload.ray.origin = ray.origin;
-            avatarOnClickPayload.ray.direction = ray.direction;
+            avatarOnClickPayload.ray.origin = rayOrigin;
+            avatarOnClickPayload.ray.direction = rayDirection;
             avatarOnClickPayload.ray.distance = distance;
 
             SendSceneEvent(sceneId, "playerClicked", avatarOnClickPayload);

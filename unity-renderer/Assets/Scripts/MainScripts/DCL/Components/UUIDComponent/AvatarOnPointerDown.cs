@@ -21,7 +21,7 @@ namespace DCL.Components
 
         private bool passportEnabled = true;
         private bool onClickReportEnabled = true;
-        private Player player;
+        private Player avatarPlayer;
 
         public WebInterface.ACTION_BUTTON GetActionButton() { return model.GetActionButton(); }
 
@@ -59,7 +59,7 @@ namespace DCL.Components
         {
             this.model = model;
             this.entity = entity;
-            this.player = player;
+            this.avatarPlayer = player;
 
             if (eventHandler == null)
                 eventHandler = new OnPointerEventHandler();
@@ -91,10 +91,14 @@ namespace DCL.Components
                 OnPointerDownReport?.Invoke();
             }
 
-            if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId))
+            if (onClickReportEnabled && ShouldReportOnClickEvent(buttonId, out IParcelScene playerScene))
             {
-                string playerSceneId = CommonScriptableObjects.sceneID.Get();
-                WebInterface.ReportAvatarClick(playerSceneId, player.id, ray, hit.distance);
+                WebInterface.ReportAvatarClick(
+                    playerScene.sceneData.id, 
+                    avatarPlayer.id, 
+                    WorldStateUtils.ConvertUnityToScenePosition(ray.origin, playerScene), 
+                    ray.direction,
+                    hit.distance);
             }
         }
 
@@ -129,19 +133,21 @@ namespace DCL.Components
         public void OnPoolRelease()
         {
             eventHandler.Dispose();
-            player = null;
+            avatarPlayer = null;
         }
 
         public void OnPoolGet() { }
         
-        private bool ShouldReportOnClickEvent(WebInterface.ACTION_BUTTON buttonId)
+        private bool ShouldReportOnClickEvent(WebInterface.ACTION_BUTTON buttonId, out IParcelScene playerScene)
         {
+            playerScene = null;
+            
             if (buttonId != WebInterface.ACTION_BUTTON.POINTER)
             {
                 return false;
             }
             
-            if (player == null)
+            if (avatarPlayer == null)
             {
                 return false;
             }
@@ -152,11 +158,9 @@ namespace DCL.Components
             {
                 return false;
             }
-            
-            IParcelScene playerScene = Environment.i.world.state.GetScene(playerSceneId);
-            Vector2Int avatarCoords = Utils.WorldToGridPosition(CommonScriptableObjects.worldOffset + player.worldPosition);
 
-            return playerScene?.sceneData.parcels.Contains(avatarCoords) ?? false;
+            playerScene = WorldStateUtils.GetCurrentScene();
+            return playerScene?.IsInsideSceneBoundaries(PositionUtils.UnityToWorldPosition(avatarPlayer.worldPosition)) ?? false;
         }
     }
 }
