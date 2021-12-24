@@ -608,6 +608,7 @@ namespace DCL.Skybox
             {
                 // Tiling and Offset
                 Vector2 currentOffset = GetTransitionValue(layer.offset, normalizedLayerTime * 100);
+                Debug.Log("Skybox config:: layer: " + layer.nameInEditor + ",  " + normalizedLayerTime * 100);
                 Vector2 currentWidthHeight = GetTransitionValue(layer.satelliteWidthHeight, normalizedLayerTime * 100, new Vector2(1, 1));
                 Vector4 t = new Vector4(currentWidthHeight.x, currentWidthHeight.y, currentOffset.x, currentOffset.y);
                 selectedMat.SetVector(SkyboxShaderUtils.GetLayerProperty("_tilingAndOffset_" + layerNum), t);

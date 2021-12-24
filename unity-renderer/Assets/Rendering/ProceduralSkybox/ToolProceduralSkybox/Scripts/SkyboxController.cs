@@ -422,6 +422,8 @@ namespace DCL.Skybox
 
         private void Configuration_OnTimelineEvent(string tag, bool enable, bool trigger) { OnTimelineEvent?.Invoke(tag, enable, trigger); }
 
+        bool applyTime;
+        float lastTime = 0;
         // Update is called once per frame
         public void Update()
         {
@@ -451,15 +453,22 @@ namespace DCL.Skybox
             {
                 GetTimeFromTheServer(DataStore.i.worldTimer.GetCurrentTime());
                 syncCounter = 0;
+
+                Debug.Log("Skybox config:: time resets ");
             }
 
-            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
+            if (lastTime < timeOfTheDay)
+            {
+                configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
+                lastTime = timeOfTheDay;
+            }
 
             // Cycle resets
             if (timeOfTheDay >= cycleTime)
             {
                 timeOfTheDay = 0.01f;
                 configuration.CycleResets();
+                lastTime = 0;
             }
 
         }
