@@ -28,8 +28,8 @@ namespace DCL
         GameObject lastHoveredObject = null;
         GameObject newHoveredGO = null;
 
-        IPointerInputEvent newHoveredInputEvent = null;
-        IPointerInputEvent[] lastHoveredEventList = null;
+        IPointerEvent newHoveredInputEvent = null;
+        IPointerEvent[] lastHoveredEventList = null;
 
         RaycastHit hitInfo;
         PointerEventData uiGraphicRaycastPointerEventData = new PointerEventData(null);
@@ -131,7 +131,7 @@ namespace DCL
                 UnhoverLastHoveredObject(hoverController);
 
                 lastHoveredObject = newHoveredGO;
-                lastHoveredEventList = newHoveredGO.GetComponents<IPointerInputEvent>();
+                lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
                 OnPointerHoverStarts?.Invoke();
             }
 
@@ -140,20 +140,25 @@ namespace DCL
             {
                 for (int i = 0; i < lastHoveredEventList.Length; i++)
                 {
-                    IPointerInputEvent e = lastHoveredEventList[i];
+                    if (lastHoveredEventList[i] is IPointerInputEvent e)
+                    {
+                        bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
 
-                    bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
+                        bool isClick = e.GetEventType() == PointerInputEventType.CLICK;
+                        bool isDown = e.GetEventType() == PointerInputEventType.DOWN;
+                        bool isUp = e.GetEventType() == PointerInputEventType.UP;
 
-                    bool isClick = e.GetEventType() == PointerInputEventType.CLICK;
-                    bool isDown = e.GetEventType() == PointerInputEventType.DOWN;
-                    bool isUp = e.GetEventType() == PointerInputEventType.UP;
-
-                    if (isUp && eventButtonIsPressed)
-                        e.SetHoverState(true);
-                    else if ((isDown || isClick) && !eventButtonIsPressed)
-                        e.SetHoverState(true);
+                        if (isUp && eventButtonIsPressed)
+                            e.SetHoverState(true);
+                        else if ((isDown || isClick) && !eventButtonIsPressed)
+                            e.SetHoverState(true);
+                        else
+                            e.SetHoverState(false);
+                    }
                     else
-                        e.SetHoverState(false);
+                    {
+                        lastHoveredEventList[i].SetHoverState(true);
+                    }
                 }
             }
 
@@ -466,7 +471,7 @@ namespace DCL
             }
         }
 
-        bool AreSameEntity(IPointerInputEvent pointerInputEvent, ColliderInfo colliderInfo) { return pointerInputEvent != null && colliderInfo.entity != null && pointerInputEvent.entity == colliderInfo.entity; }
+        bool AreSameEntity(IPointerEvent pointerInputEvent, ColliderInfo colliderInfo) { return pointerInputEvent != null && colliderInfo.entity != null && pointerInputEvent.entity == colliderInfo.entity; }
 
         bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
         {

@@ -17,15 +17,19 @@ namespace DCL.Components
         UP
     }
 
-    public interface IPointerInputEvent : IMonoBehaviour
+    public interface IPointerEvent : IMonoBehaviour
     {
-        void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
-        PointerInputEventType GetEventType();
         IDCLEntity entity { get; }
-        WebInterface.ACTION_BUTTON GetActionButton();
         void SetHoverState(bool state);
         bool IsAtHoverDistance(float distance);
         bool IsVisible();
+    }
+
+    public interface IPointerInputEvent : IPointerEvent
+    {
+        void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
+        PointerInputEventType GetEventType();
+        WebInterface.ACTION_BUTTON GetActionButton();
     }
 
     public class OnPointerEventHandler : IDisposable
