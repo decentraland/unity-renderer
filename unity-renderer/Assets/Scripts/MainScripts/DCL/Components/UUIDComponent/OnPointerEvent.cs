@@ -17,7 +17,7 @@ namespace DCL.Components
         UP
     }
 
-    public interface IPointerEvent : IMonoBehaviour
+    public interface IPointerInputEvent : IMonoBehaviour
     {
         void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
         PointerEventType GetEventType();
@@ -72,7 +72,7 @@ namespace DCL.Components
         public void Dispose() { eventColliders.Dispose(); }
     }
 
-    public class OnPointerEvent : UUIDComponent, IPointerEvent
+    public class OnPointerEvent : UUIDComponent, IPointerInputEvent
     {
         public static bool enableInteractionHoverFeedback = true;
 

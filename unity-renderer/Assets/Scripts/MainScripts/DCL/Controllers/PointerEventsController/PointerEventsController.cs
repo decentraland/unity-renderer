@@ -20,7 +20,7 @@ namespace DCL
 
         InteractionHoverCanvasController hoverController;
         RaycastHitInfo lastPointerDownEventHitInfo;
-        IPointerEvent pointerUpEvent;
+        IPointerInputEvent pointerInputUpEvent;
         IRaycastHandler raycastHandler = new RaycastHandler();
 
         Camera charCamera;
@@ -28,8 +28,8 @@ namespace DCL
         GameObject lastHoveredObject = null;
         GameObject newHoveredGO = null;
 
-        IPointerEvent newHoveredEvent = null;
-        IPointerEvent[] lastHoveredEventList = null;
+        IPointerInputEvent newHoveredInputEvent = null;
+        IPointerInputEvent[] lastHoveredEventList = null;
 
         RaycastHit hitInfo;
         PointerEventData uiGraphicRaycastPointerEventData = new PointerEventData(null);
@@ -112,9 +112,9 @@ namespace DCL
             }
 
             if (CollidersManager.i.GetColliderInfo(hitInfo.collider, out ColliderInfo info))
-                newHoveredEvent = info.entity.gameObject.GetComponentInChildren<IPointerEvent>();
+                newHoveredInputEvent = info.entity.gameObject.GetComponentInChildren<IPointerInputEvent>();
             else
-                newHoveredEvent = hitInfo.collider.GetComponentInChildren<IPointerEvent>();
+                newHoveredInputEvent = hitInfo.collider.GetComponentInChildren<IPointerInputEvent>();
 
             clickHandler = null;
 
@@ -124,14 +124,14 @@ namespace DCL
                 return;
             }
 
-            newHoveredGO = newHoveredEvent.GetTransform().gameObject;
+            newHoveredGO = newHoveredInputEvent.GetTransform().gameObject;
 
             if (newHoveredGO != lastHoveredObject)
             {
                 UnhoverLastHoveredObject(hoverController);
 
                 lastHoveredObject = newHoveredGO;
-                lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
+                lastHoveredEventList = newHoveredGO.GetComponents<IPointerInputEvent>();
                 OnPointerHoverStarts?.Invoke();
             }
 
@@ -140,7 +140,7 @@ namespace DCL
             {
                 for (int i = 0; i < lastHoveredEventList.Length; i++)
                 {
-                    IPointerEvent e = lastHoveredEventList[i];
+                    IPointerInputEvent e = lastHoveredEventList[i];
 
                     bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
 
@@ -158,15 +158,15 @@ namespace DCL
             }
 
             newHoveredGO = null;
-            newHoveredEvent = null;
+            newHoveredInputEvent = null;
         }
 
         private bool EventObjectCanBeHovered(ColliderInfo colliderInfo, float distance)
         {
-            return newHoveredEvent != null &&
-                   newHoveredEvent.IsAtHoverDistance(distance) &&
-                   newHoveredEvent.IsVisible() &&
-                   AreSameEntity(newHoveredEvent, colliderInfo);
+            return newHoveredInputEvent != null &&
+                   newHoveredInputEvent.IsAtHoverDistance(distance) &&
+                   newHoveredInputEvent.IsVisible() &&
+                   AreSameEntity(newHoveredInputEvent, colliderInfo);
         }
 
         private void ResolveGenericRaycastHandlers(IRaycastPointerHandler raycastHandlerTarget)
@@ -240,7 +240,7 @@ namespace DCL
 
             lastHoveredObject = null;
             newHoveredGO = null;
-            newHoveredEvent = null;
+            newHoveredInputEvent = null;
             lastHoveredEventList = null;
 
             if (CursorController.i != null)
@@ -309,7 +309,7 @@ namespace DCL
             RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, worldState.loadedScenes[worldState.currentSceneId]);
             raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
-            if (pointerUpEvent != null)
+            if (pointerInputUpEvent != null)
             {
                 // Raycast for pointer event components
                 RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, worldState.loadedScenes[worldState.currentSceneId]);
@@ -319,10 +319,10 @@ namespace DCL
 
                 if (!isOnClickComponentBlocked && isSameEntityThatWasPressed && enablePointerEvent)
                 {
-                    pointerUpEvent.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
+                    pointerInputUpEvent.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                 }
 
-                pointerUpEvent = null;
+                pointerInputUpEvent = null;
             }
 
             ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, worldState.currentSceneId);
@@ -368,11 +368,11 @@ namespace DCL
                 else
                     hitGameObject = collider.gameObject;
 
-                var events = hitGameObject.GetComponentsInChildren<IPointerEvent>();
+                var events = hitGameObject.GetComponentsInChildren<IPointerInputEvent>();
 
                 for (var i = 0; i < events.Length; i++)
                 {
-                    IPointerEvent e = events[i];
+                    IPointerInputEvent e = events[i];
                     bool areSameEntity = AreSameEntity(e, info);
 
                     switch (e.GetEventType())
@@ -387,9 +387,9 @@ namespace DCL
                             break;
                         case PointerEventType.UP:
                             if (areSameEntity && enablePointerEvent)
-                                pointerUpEvent = e;
+                                pointerInputUpEvent = e;
                             else
-                                pointerUpEvent = null;
+                                pointerInputUpEvent = null;
                             break;
                     }
                 }
@@ -466,7 +466,7 @@ namespace DCL
             }
         }
 
-        bool AreSameEntity(IPointerEvent pointerEvent, ColliderInfo colliderInfo) { return pointerEvent != null && colliderInfo.entity != null && pointerEvent.entity == colliderInfo.entity; }
+        bool AreSameEntity(IPointerInputEvent pointerInputEvent, ColliderInfo colliderInfo) { return pointerInputEvent != null && colliderInfo.entity != null && pointerInputEvent.entity == colliderInfo.entity; }
 
         bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
         {
