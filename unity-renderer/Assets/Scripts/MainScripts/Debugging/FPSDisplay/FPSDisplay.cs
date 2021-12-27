@@ -10,8 +10,10 @@ namespace DCL.FPSDisplay
     public class FPSDisplay : MonoBehaviour
     {
         private const float REFRESH_SECONDS = 0.1f;
+        [SerializeField] private Vector2 labelPadding = new Vector2(12,12);
 
         [SerializeField] private TextMeshProUGUI label;
+        [SerializeField] private RectTransform background;
         [SerializeField] private PerformanceMetricsDataVariable performanceData;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
@@ -21,6 +23,8 @@ namespace DCL.FPSDisplay
         private Promise<KernelConfigModel> kernelConfigPromise;
         private string currentNetwork;
         private string currentRealmValue;
+        
+        private Vector2 minSize = Vector2.zero;
 
         private void OnEnable()
         {
@@ -73,6 +77,7 @@ namespace DCL.FPSDisplay
             while (true)
             {
                 UpdateLabel();
+                UpdateBackgroundSize();
 
                 yield return new WaitForSeconds(REFRESH_SECONDS);
             }
@@ -92,10 +97,9 @@ namespace DCL.FPSDisplay
             string NO_DECIMALS = "##";
             string TWO_DECIMALS = "##.00";
 
-            string fpsColor = GetHexColor(FPSColoring.GetDisplayColor(fps));
+            Color fpsColor = FPSColoring.GetDisplayColor(fps);
 
-            targetText += SetColor(GetHexColor(Color.gray));
-            
+            targetText += SetColor(GetHexColor(Color.white));
             targetText += AddTitle("Skybox");
             targetText += AddLine($"Config: {DataStore.i.skyboxConfig.configToLoad.Get()}");
             targetText += AddLine($"Duration: {DataStore.i.skyboxConfig.lifecycleDuration.Get()}");
@@ -104,22 +108,37 @@ namespace DCL.FPSDisplay
             targetText += AddEmptyLine();
             
             targetText += AddTitle("General");
-            targetText += AddLine($"Network: {currentNetwork}");
-            targetText += AddLine($"Realm: {currentRealmValue}");
+            targetText += AddLine($"Network: {currentNetwork.ToUpper()}");
+            targetText += AddLine($"Realm: {currentRealmValue.ToUpper()}");
             targetText += AddLine($"Nearby players: {lastPlayerCount}");
             targetText += AddEmptyLine();
             
-            targetText += AddTitle("Fps");
-            targetText += AddColorLine($"Hiccups in the last 1000 frames: {performanceData.Get().hiccupCount}", fpsColor);
-            targetText += AddColorLine($"Hiccup loss: {(100.0f * performanceData.Get().hiccupSum / performanceData.Get().totalSeconds).ToString(TWO_DECIMALS)}% ({performanceData.Get().hiccupSum.ToString(TWO_DECIMALS)} in {performanceData.Get().totalSeconds.ToString(TWO_DECIMALS)} secs)", fpsColor);
-            targetText += AddColorLine($"Bad Frames Percentile: {((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%", fpsColor);
-            targetText += AddColorLine($"Current {msFormatted} ms (fps: {fpsFormatted})", fpsColor);
+            targetText += SetColor(GetHexColor(fpsColor));
+            targetText += AddTitle("FPS");
+            targetText += AddLine($"Hiccups in the last 1000 frames: {performanceData.Get().hiccupCount}");
+            targetText += AddLine($"Hiccup loss: {(100.0f * performanceData.Get().hiccupSum / performanceData.Get().totalSeconds).ToString(TWO_DECIMALS)}% ({performanceData.Get().hiccupSum.ToString(TWO_DECIMALS)} in {performanceData.Get().totalSeconds.ToString(TWO_DECIMALS)} secs)");
+            targetText += AddLine($"Bad Frames Percentile: {((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%");
+            targetText += AddLine($"Current {msFormatted} ms (fps: {fpsFormatted})");
 
             if (label.text != targetText)
             {
                 label.text = targetText;
             }
+        }
+        private void UpdateBackgroundSize()
+        {
+            var labelSize = label.GetPreferredValues();
+            var tempMinSize = labelSize + labelPadding;
+            tempMinSize.x = Mathf.Max(tempMinSize.x, minSize.x);
+            tempMinSize.y = Mathf.Max(tempMinSize.y, minSize.y);
 
+            if (tempMinSize != minSize)
+            {
+                background.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tempMinSize.x);
+                background.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tempMinSize.y);
+
+                minSize = tempMinSize;
+            }
         }
         private static string GetHexColor(Color color) { return $"#{ColorUtility.ToHtmlStringRGB(color)}"; }
 
@@ -128,9 +147,7 @@ namespace DCL.FPSDisplay
         private string AddTitle(string text) { return $"<size=110%>{text}<size=100%><br>"; }
 
         private string AddLine(string text) { return $"{text}<br>"; }
-
-        private string AddColorLine(string text, string hex) { return $"<color={hex}>{text}</color><br>"; }
-
+        
         private string AddEmptyLine() { return "<br>"; }
     }
 }
