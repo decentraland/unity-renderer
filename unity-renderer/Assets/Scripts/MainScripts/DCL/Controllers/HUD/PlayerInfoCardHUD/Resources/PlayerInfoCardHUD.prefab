@@ -3865,7 +3865,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8009380997048099331
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5335,6 +5335,7 @@ MonoBehaviour:
   acceptRequestButton: {fileID: 1762011679204458899}
   rejectRequestButton: {fileID: 8222752109087741449}
   description: {fileID: 2054052090072748133}
+  activeSinceText: {fileID: 0}
   wearablesContainer: {fileID: 2054052089085003672}
   emptyCollectiblesImage: {fileID: 898686569454117456}
   reportPlayerButton: {fileID: 1594900637515709357}
