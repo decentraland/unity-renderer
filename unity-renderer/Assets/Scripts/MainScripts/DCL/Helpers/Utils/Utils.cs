@@ -352,15 +352,27 @@ namespace DCL.Helpers
         private static int lockedInFrame = -1;
         public static bool LockedThisFrame() => lockedInFrame == Time.frameCount;
 
+        private static bool isCursorLocked;
         //NOTE(Brian): Made as an independent flag because the CI doesn't work well with the Cursor.lockState check.
-        public static bool isCursorLocked { get; private set; } = false;
+        public static bool IsCursorLocked
+        {
+            get => isCursorLocked;
+            private set
+            {
+                if (isCursorLocked == value) return;
+                isCursorLocked = value;
+                OnCursorLockChanged?.Invoke(isCursorLocked);
+            }
+        }
+
+        public static event Action<bool> OnCursorLockChanged; 
 
         public static void LockCursor()
         {
 #if WEB_PLATFORM
             //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
             //             behaviour using strategy pattern instead of this.
-            if (isCursorLocked)
+            if (IsCursorLocked)
             {
                 return;
             }
@@ -372,7 +384,7 @@ namespace DCL.Helpers
 #else
             Cursor.visible = false;
 #endif
-            isCursorLocked = true;
+            IsCursorLocked = true;
             Cursor.lockState = CursorLockMode.Locked;
             lockedInFrame = Time.frameCount;
 
@@ -384,7 +396,7 @@ namespace DCL.Helpers
 #if WEB_PLATFORM
             //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
             //             behaviour using strategy pattern instead of this.
-            if (!isCursorLocked)
+            if (!IsCursorLocked)
             {
                 return;
             }
@@ -396,7 +408,7 @@ namespace DCL.Helpers
 #else
             Cursor.visible = true;
 #endif
-            isCursorLocked = false;
+            IsCursorLocked = false;
             Cursor.lockState = CursorLockMode.None;
 
             EventSystem.current?.SetSelectedGameObject(null);
@@ -417,7 +429,7 @@ namespace DCL.Helpers
                 Cursor.lockState = CursorLockMode.None;
             }
 
-            isCursorLocked = locked;
+            IsCursorLocked = locked;
             Cursor.visible = !locked;
             requestedUnlock = false;
             requestedLock = false;

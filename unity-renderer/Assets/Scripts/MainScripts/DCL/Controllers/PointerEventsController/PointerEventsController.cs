@@ -297,7 +297,7 @@ namespace DCL
                 if (Utils.LockedThisFrame())
                     return;
 
-                if (!Utils.isCursorLocked || !renderingEnabled)
+                if (!Utils.IsCursorLocked || !renderingEnabled)
                     return;
             }
 

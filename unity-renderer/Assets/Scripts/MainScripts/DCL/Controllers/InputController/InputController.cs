@@ -524,7 +524,7 @@ public static class InputProcessor
     /// <returns></returns>
     public static bool PassModifiers(Modifier modifiers)
     {
-        if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && !DCL.Helpers.Utils.isCursorLocked)
+        if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && !DCL.Helpers.Utils.IsCursorLocked)
             return false;
 
         if (IsModifierSet(modifiers, Modifier.FocusNotInInput) && FocusIsInInputField())

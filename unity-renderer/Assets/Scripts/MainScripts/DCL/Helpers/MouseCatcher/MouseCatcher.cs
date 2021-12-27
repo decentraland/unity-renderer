@@ -20,7 +20,7 @@ namespace DCL
     {
         [SerializeField] private InputAction_Trigger unlockInputAction;
 
-        public bool isLocked => Utils.isCursorLocked;
+        public bool isLocked => Utils.IsCursorLocked;
         bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
 
         public event Action OnMouseUnlock;
