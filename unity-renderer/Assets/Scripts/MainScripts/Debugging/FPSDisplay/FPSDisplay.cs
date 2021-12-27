@@ -144,7 +144,7 @@ namespace DCL.FPSDisplay
 
         private string SetColor(string color) { return $"<color={color}>"; }
 
-        private string AddTitle(string text) { return $"<size=110%>{text}<size=100%><br>"; }
+        private string AddTitle(string text) { return $"<voffset=0.1em><u><size=110%>{text}<size=100%></u></voffset><br>"; }
 
         private string AddLine(string text) { return $"{text}<br>"; }
         
