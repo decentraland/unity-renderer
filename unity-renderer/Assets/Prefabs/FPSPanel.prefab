@@ -35,8 +35,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -6, y: 6}
-  m_SizeDelta: {x: 90.1516, y: 190.6761}
+  m_AnchoredPosition: {x: -12, y: 12}
+  m_SizeDelta: {x: 148.0191, y: 126.0009}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &5238879484207625851
 CanvasRenderer:
@@ -216,7 +216,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 297.3695, y: 305.6057}
+  m_SizeDelta: {x: 301.6244, y: 307.3076}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &1994528194573935870
 CanvasRenderer:
@@ -240,7 +240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.8}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -336,7 +336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e375249fd9cc6f540ba8cd92e248972d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  labelPadding: {x: 12, y: 12}
+  labelPadding: {x: 24, y: 24}
   label: {fileID: 1619290350810090377}
   background: {fileID: 3860873241709818942}
   performanceData: {fileID: 11400000, guid: 38cb55938716a6c4c84605022422df76, type: 2}
