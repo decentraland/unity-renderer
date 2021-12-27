@@ -144,9 +144,9 @@ namespace DCL
 
                     bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
 
-                    bool isClick = e.GetEventType() == PointerEventType.CLICK;
-                    bool isDown = e.GetEventType() == PointerEventType.DOWN;
-                    bool isUp = e.GetEventType() == PointerEventType.UP;
+                    bool isClick = e.GetEventType() == PointerInputEventType.CLICK;
+                    bool isDown = e.GetEventType() == PointerInputEventType.DOWN;
+                    bool isUp = e.GetEventType() == PointerInputEventType.UP;
 
                     if (isUp && eventButtonIsPressed)
                         e.SetHoverState(true);
@@ -377,15 +377,15 @@ namespace DCL
 
                     switch (e.GetEventType())
                     {
-                        case PointerEventType.CLICK:
+                        case PointerInputEventType.CLICK:
                             if (areSameEntity && enablePointerEvent)
                                 e.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                             break;
-                        case PointerEventType.DOWN:
+                        case PointerInputEventType.DOWN:
                             if (areSameEntity && enablePointerEvent)
                                 e.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
                             break;
-                        case PointerEventType.UP:
+                        case PointerInputEventType.UP:
                             if (areSameEntity && enablePointerEvent)
                                 pointerInputUpEvent = e;
                             else

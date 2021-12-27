@@ -101,7 +101,7 @@ namespace DCL.Components
             }
         }
 
-        public PointerEventType GetEventType() { return PointerEventType.DOWN; }
+        public PointerInputEventType GetEventType() { return PointerInputEventType.DOWN; }
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
         {

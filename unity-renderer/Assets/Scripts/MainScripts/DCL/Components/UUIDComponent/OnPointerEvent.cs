@@ -9,7 +9,7 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public enum PointerEventType
+    public enum PointerInputEventType
     {
         NONE,
         CLICK,
@@ -20,7 +20,7 @@ namespace DCL.Components
     public interface IPointerInputEvent : IMonoBehaviour
     {
         void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
-        PointerEventType GetEventType();
+        PointerInputEventType GetEventType();
         IDCLEntity entity { get; }
         WebInterface.ACTION_BUTTON GetActionButton();
         void SetHoverState(bool state);
@@ -167,6 +167,6 @@ namespace DCL.Components
 
         public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit) { }
 
-        public virtual PointerEventType GetEventType() { return PointerEventType.NONE; }
+        public virtual PointerInputEventType GetEventType() { return PointerInputEventType.NONE; }
     }
 }
