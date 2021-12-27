@@ -46,6 +46,8 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     [SerializeField] internal Button rejectRequestButton;
 
     [Header("Passport")] [SerializeField] internal TextMeshProUGUI description;
+    [SerializeField] internal TMP_Text creationDateText;
+    [SerializeField] internal GameObject creationDateRoot;
 
     [Header("Trade")] [SerializeField] private RectTransform wearablesContainer;
     [SerializeField] private GameObject emptyCollectiblesImage;
@@ -265,5 +267,16 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     {
         if (mouseCatcher != null)
             mouseCatcher.OnMouseDown -= OnPointerDown;
+    }
+
+    public void ShowActivationDate(DateTime creationTime)
+    {
+        creationDateRoot.SetActive(true);
+        creationDateText.text = creationTime.ToString("MMMM yyyy");
+    }
+
+    public void HideActivationDate()
+    {
+        creationDateRoot.SetActive(false);
     }
 }

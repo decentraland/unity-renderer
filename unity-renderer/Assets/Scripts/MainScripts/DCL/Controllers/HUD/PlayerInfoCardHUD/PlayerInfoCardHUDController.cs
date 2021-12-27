@@ -1,9 +1,14 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 
 public class PlayerInfoCardHUDController : IHUD
 {
@@ -22,6 +27,7 @@ public class PlayerInfoCardHUDController : IHUD
     private readonly IWearableCatalogBridge wearableCatalogBridge;
     private readonly RegexProfanityFilter profanityFilter;
     private readonly DataStore dataStore;
+    private readonly ICatalyst catalyst;
     private readonly List<string> loadedWearables = new List<string>();
 
     public PlayerInfoCardHUDController(IFriendsController friendsController,
@@ -29,7 +35,8 @@ public class PlayerInfoCardHUDController : IHUD
         IUserProfileBridge userProfileBridge,
         IWearableCatalogBridge wearableCatalogBridge,
         RegexProfanityFilter profanityFilter,
-        DataStore dataStore)
+        DataStore dataStore,
+        ICatalyst catalyst)
     {
         this.friendsController = friendsController;
         view = PlayerInfoCardHUDView.CreateView();
@@ -41,6 +48,7 @@ public class PlayerInfoCardHUDController : IHUD
         this.wearableCatalogBridge = wearableCatalogBridge;
         this.profanityFilter = profanityFilter;
         this.dataStore = dataStore;
+        this.catalyst = catalyst;
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
         OnCurrentPlayerIdChanged(currentPlayerId, null);
 
@@ -152,11 +160,32 @@ public class PlayerInfoCardHUDController : IHUD
         view.SetIsBlocked(IsBlocked(userProfile.userId));
         LoadAndShowWearables(userProfile);
         UpdateFriendshipInteraction();
+        view.HideActivationDate();
+
+        GetProfileFromCatalyst(userProfile)
+            .Then(catalystProfile =>
+            {
+                if (catalystProfile == null) return;
+                view.ShowActivationDate(catalystProfile.GetActivationDate());
+            });
 
         if (viewingUserProfile != null)
             viewingUserProfile.snapshotObserver.RemoveListener(view.SetFaceSnapshot);
         userProfile.snapshotObserver.AddListener(view.SetFaceSnapshot);
         viewingUserProfile = userProfile;
+    }
+
+    private Promise<CatalystProfileSchema> GetProfileFromCatalyst(UserProfile userProfile)
+    {
+        var promise = new Promise<CatalystProfileSchema>();
+        // TODO: get this from a provider (ie: UserProfileBridge) instead of parsing everything here?
+        catalyst.GetEntities(CatalystEntitiesType.PROFILE, new[] {userProfile.ethAddress})
+            .Then(profileRawData =>
+            {
+                var catalystProfileSchema = JsonConvert.DeserializeObject<CatalystProfileListSchema>(profileRawData);
+                promise.Resolve(catalystProfileSchema?.FirstOrDefault());
+            }).Catch(error => promise.Reject(error));
+        return promise;
     }
 
     public void SetVisibility(bool visible)
@@ -284,5 +313,40 @@ public class PlayerInfoCardHUDController : IHUD
     private bool IsProfanityFilteringEnabled()
     {
         return dataStore.settings.profanityChatFilteringEnabled.Get();
+    }
+    
+    class CatalystProfileListSchema : ICollection<CatalystProfileSchema>
+    {
+        private readonly List<CatalystProfileSchema> profiles = new List<CatalystProfileSchema>();
+        
+        public IEnumerator<CatalystProfileSchema> GetEnumerator() => profiles.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public void Add(CatalystProfileSchema item) => profiles.Add(item);
+
+        public void Clear() => profiles.Clear();
+
+        public bool Contains(CatalystProfileSchema item) => profiles.Contains(item);
+
+        public void CopyTo(CatalystProfileSchema[] array, int arrayIndex) => profiles.CopyTo(array, arrayIndex);
+
+        public bool Remove(CatalystProfileSchema item) => profiles.Remove(item);
+
+        public int Count => profiles.Count;
+        public bool IsReadOnly => false;
+    }
+
+    class CatalystProfileSchema
+    { 
+        public ulong timestamp;
+
+        public DateTime GetActivationDate()
+        {
+            var dateOffset = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            return dateOffset
+                .AddMilliseconds(timestamp)
+                .ToLocalTime();
+        }
     }
 }

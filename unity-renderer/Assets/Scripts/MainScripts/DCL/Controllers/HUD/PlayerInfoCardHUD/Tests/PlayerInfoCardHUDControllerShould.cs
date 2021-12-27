@@ -19,6 +19,7 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private FriendsController_Mock friendsController;
     private IUserProfileBridge userProfileBridge;
     private RegexProfanityFilter profanityFilter;
+    private ICatalyst catalyst;
 
     protected override IEnumerator SetUp()
     {
@@ -42,12 +43,16 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 
         friendsController = new FriendsController_Mock();
 
+        catalyst = Substitute.For<ICatalyst>();
+        GivenCatalystProfileResponse("");
+
         controller = new PlayerInfoCardHUDController(friendsController,
             currentPlayerIdData,
             userProfileBridge,
             wearableCatalogBridge,
             profanityFilter,
-            dataStore);
+            dataStore,
+            catalyst);
     }
 
     protected override IEnumerator TearDown()
@@ -182,6 +187,29 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(description, controller.view.description.text);
     }
 
+    [TestCase("[{\"timestamp\": 1639512154651, \"version\": \"v3\"}]", "December 2021")]
+    [TestCase("[{\"timestamp\": 1546516882564}]", "January 2019")]
+    public void ShowActivationDate(string catalystProfileData, string expectedDate)
+    {
+        GivenCatalystProfileResponse(catalystProfileData);
+        
+        WhenViewingUserUpdates();
+
+        Assert.AreEqual(expectedDate, controller.view.creationDateText.text);
+        Assert.IsTrue(controller.view.creationDateRoot.activeSelf);
+    }
+
+    [TestCase("[]")]
+    [TestCase("")]
+    public void HideActivationDateWhenDataIsInvalid(string catalystProfileData)
+    {
+        GivenCatalystProfileResponse(catalystProfileData);
+        
+        WhenViewingUserUpdates();
+        
+        Assert.IsFalse(controller.view.creationDateRoot.activeSelf);
+    }
+
     private void WhenViewingUserUpdates()
     {
         viewingUserProfile.UpdateData(new UserProfileModel
@@ -279,5 +307,12 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
     private void GivenProfanityFilteringAvailability(bool enabled)
     {
         dataStore.settings.profanityChatFilteringEnabled.Set(enabled);
+    }
+    
+    private void GivenCatalystProfileResponse(string json)
+    {
+        var catalystPromiseResolved = new Promise<string>();
+        catalystPromiseResolved.Resolve(json);
+        catalyst.GetEntities(Arg.Any<string>(), Arg.Any<string[]>()).Returns(catalystPromiseResolved);
     }
 }

@@ -7,6 +7,7 @@ using DCL.SettingsPanelHUD;
 using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class HUDFactory : IHUDFactory
 {
@@ -42,7 +43,8 @@ public class HUDFactory : IHUDFactory
                     new UserProfileWebInterfaceBridge(),
                     new WearablesCatalogControllerBridge(),
                     ProfanityFilterSharedInstances.regexFilter,
-                    DataStore.i);
+                    DataStore.i,
+                    Environment.i.platform.serviceProviders.catalyst);
                 break;
             case HUDElementID.AIRDROPPING:
                 hudElement = new AirdroppingHUDController();
