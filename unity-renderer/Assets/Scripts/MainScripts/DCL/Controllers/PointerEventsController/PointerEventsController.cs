@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Models;
 using Ray = UnityEngine.Ray;
 
@@ -112,9 +113,9 @@ namespace DCL
             }
 
             if (CollidersManager.i.GetColliderInfo(hitInfo.collider, out ColliderInfo info))
-                newHoveredInputEvent = info.entity.gameObject.GetComponentInChildren<IPointerInputEvent>();
+                newHoveredInputEvent = info.entity.gameObject.GetComponentInChildren<IPointerEvent>();
             else
-                newHoveredInputEvent = hitInfo.collider.GetComponentInChildren<IPointerInputEvent>();
+                newHoveredInputEvent = hitInfo.collider.GetComponentInChildren<IPointerEvent>();
 
             clickHandler = null;
 
@@ -123,7 +124,7 @@ namespace DCL
                 UnhoverLastHoveredObject(hoverController);
                 return;
             }
-
+            
             newHoveredGO = newHoveredInputEvent.GetTransform().gameObject;
 
             if (newHoveredGO != lastHoveredObject)
@@ -131,7 +132,11 @@ namespace DCL
                 UnhoverLastHoveredObject(hoverController);
 
                 lastHoveredObject = newHoveredGO;
-                lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
+
+                lastHoveredEventList = newHoveredInputEvent.entity.gameObject.transform.Cast<Transform>()
+                                                           .Select(child => child.GetComponent<IPointerEvent>())
+                                                           .Where(pointerComponent => pointerComponent != null)
+                                                           .ToArray();
                 OnPointerHoverStarts?.Invoke();
             }
 
@@ -142,6 +147,11 @@ namespace DCL
                 {
                     if (lastHoveredEventList[i] is IPointerInputEvent e)
                     {
+                        if (lastHoveredEventList[i].GetTransform().gameObject != newHoveredGO)
+                        {
+                            continue;
+                        }
+                        
                         bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
 
                         bool isClick = e.GetEventType() == PointerInputEventType.CLICK;
