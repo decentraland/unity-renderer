@@ -285,6 +285,9 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
+  avatarEditorTintColor: {r: 0.1652067, g: 0.9716981, b: 0, a: 1}
+  avatarEditorLightDir: {x: -18, y: 144, z: -72}
+  avatarEditorLightColor: {r: 1, g: 0.013207495, b: 0.013207495, a: 1}
   useFog: 1
   fogMode: 1
   fogColor:

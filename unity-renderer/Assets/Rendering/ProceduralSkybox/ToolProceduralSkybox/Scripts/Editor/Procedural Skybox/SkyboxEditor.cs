@@ -1458,8 +1458,7 @@ namespace DCL.Skybox
             // If in play mode, call avatar color from skybox controller class
             if (Application.isPlaying && SkyboxController.i != null)
             {
-                SkyboxController.i.ApplyAvatarInWorldColor(GetNormalizedDayTime());
-                SkyboxController.i.ApplyAvatarInEditorColor();
+                SkyboxController.i.ApplyAvatarColor(GetNormalizedDayTime());
             }
         }
 

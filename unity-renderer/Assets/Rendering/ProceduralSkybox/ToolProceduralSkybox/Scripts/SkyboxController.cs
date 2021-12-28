@@ -93,19 +93,6 @@ namespace DCL.Skybox
             DataStore.i.skyboxConfig.useDynamicSkybox.OnChange += UseDynamicSkybox_OnChange;
             DataStore.i.skyboxConfig.fixedTime.OnChange += FixedTime_OnChange;
             DataStore.i.skyboxConfig.reflectionResolution.OnChange += ReflectionResolution_OnChange;
-            DataStore.i.skyboxConfig.avatarMatProfile.OnChange += AvatarMatProfile_OnChange;
-        }
-
-        private void AvatarMatProfile_OnChange(AvatarMaterialProfile current, AvatarMaterialProfile previous)
-        {
-            if (current == AvatarMaterialProfile.InEditor)
-            {
-                configuration.ApplyEditorAvatarColor();
-            }
-            else
-            {
-                configuration.ApplyInWorldAvatarColor(GetNormalizedDayTime(), directionalLight.gameObject);
-            }
         }
 
         private void FixedTime_OnChange(float current, float previous)
@@ -467,7 +454,7 @@ namespace DCL.Skybox
             }
             float normalizedDayTime = GetNormalizedDayTime();
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
-            ApplyAvatarInWorldColor(normalizedDayTime);
+            ApplyAvatarColor(normalizedDayTime);
 
             // Cycle resets
             if (timeOfTheDay >= cycleTime)
@@ -504,7 +491,7 @@ namespace DCL.Skybox
             {
                 timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
-                ApplyAvatarInWorldColor(GetNormalizedDayTime());
+                ApplyAvatarColor(GetNormalizedDayTime());
             }
         }
 
@@ -569,17 +556,13 @@ namespace DCL.Skybox
             newConfig.OnTimelineEvent += Configuration_OnTimelineEvent;
         }
 
-        public void ApplyAvatarInWorldColor(float normalizedDayTime)
+        public void ApplyAvatarColor(float normalizedDayTime)
         {
             if (DataStore.i.skyboxConfig.avatarMatProfile.Get() == AvatarMaterialProfile.InWorld)
             {
                 configuration.ApplyInWorldAvatarColor(normalizedDayTime, directionalLight.gameObject);
             }
-        }
-
-        public void ApplyAvatarInEditorColor()
-        {
-            if (DataStore.i.skyboxConfig.avatarMatProfile.Get() == AvatarMaterialProfile.InEditor)
+            else
             {
                 configuration.ApplyEditorAvatarColor();
             }
