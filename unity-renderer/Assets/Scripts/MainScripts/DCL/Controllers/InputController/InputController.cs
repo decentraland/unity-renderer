@@ -242,25 +242,32 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
-                    InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Alpha1,
+                        modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_FistPump:
-                    InputProcessor.FromKey(action, KeyCode.Alpha2, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Alpha2,
+                        modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_Robot:
-                    InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Alpha3,
+                        modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_RaiseHand:
-                    InputProcessor.FromKey(action, KeyCode.Alpha4, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Alpha4,
+                        modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_Clap:
-                    InputProcessor.FromKey(action, KeyCode.Alpha5, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Alpha5,
+                        modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_ThrowMoney:
-                    InputProcessor.FromKey(action, KeyCode.Alpha6, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Alpha6,
+                        modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.Expression_SendKiss:
-                    InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Alpha7,
+                        modifiers: InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Trigger.BuildEditModeChange:
                     InputProcessor.FromKey(action, KeyCode.K, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -377,10 +384,12 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Hold.Sprint:
-                    InputProcessor.FromKey(action, InputSettings.WalkButtonKeyCode, InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, InputSettings.WalkButtonKeyCode,
+                        InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Hold.Jump:
-                    InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode, InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode,
+                        InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Hold.FreeCameraMode:
                     //Disable until the fine-tuning is ready
@@ -448,10 +457,12 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Measurable.CharacterXAxis:
-                    InputProcessor.FromAxis(action, "Horizontal", InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromAxis(action, "Horizontal", 
+                        InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Measurable.CharacterYAxis:
-                    InputProcessor.FromAxis(action, "Vertical", InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromAxis(action, "Vertical",
+                        InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;
                 case DCLAction_Measurable.CameraXAxis:
                     InputProcessor.FromAxis(action, "Mouse X", InputProcessor.Modifier.NeedsPointerLocked);
@@ -488,6 +499,7 @@ public static class InputProcessor
         None = 0b0000000, // No modifier needed
         NeedsPointerLocked = 0b0000001, // The pointer must be locked to the game
         FocusNotInInput = 0b0000010, // The game focus cannot be in an input field
+        NotInStartMenu = 0b0000100 // The game focus cannot be in full-screen start menu
     }
 
     /// <summary>
@@ -530,8 +542,13 @@ public static class InputProcessor
         if (IsModifierSet(modifiers, Modifier.FocusNotInInput) && FocusIsInInputField())
             return false;
 
+        if (IsModifierSet(modifiers, Modifier.NotInStartMenu) && IsStartMenuVisible())
+            return false;
+
         return true;
     }
+
+    private static bool IsStartMenuVisible() => DataStore.i.exploreV2.isOpen.Get();
 
     /// <summary>
     /// Process an input action mapped to a keyboard key.
