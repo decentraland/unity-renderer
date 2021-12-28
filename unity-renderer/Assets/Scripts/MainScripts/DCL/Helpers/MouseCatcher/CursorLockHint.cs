@@ -1,4 +1,6 @@
-﻿using DCL.Helpers;
+﻿using System;
+using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -8,7 +10,10 @@ namespace DCL
         private bool hasBeenShown;
 
         [SerializeField] private ShowHideAnimator toastRoot;
+        [SerializeField] private float duration;
         
+        private Coroutine hideRoutine;
+
         private void Start()
         {
             Utils.OnCursorLockChanged += HandleCursorLockChanges;
@@ -24,8 +29,27 @@ namespace DCL
             if (!isLocked) return;
             if (hasBeenShown) return;
             if (toastRoot.isVisible) return;
+            toastRoot.gameObject.SetActive(true);
             toastRoot.Show();
             hasBeenShown = true;
+            HideToastAfterDelay();
+        }
+
+        private void HideToastAfterDelay()
+        {
+            if (hideRoutine != null)
+                StopCoroutine(hideRoutine);
+            hideRoutine = StartCoroutine(Wait(duration, () =>
+            {
+                toastRoot.Hide();
+                hideRoutine = null;
+            }));
+        }
+
+        private IEnumerator Wait(float delay, Action onFinishCallback)
+        {
+            yield return new WaitForSeconds(delay);
+            onFinishCallback.Invoke();
         }
     }
 }

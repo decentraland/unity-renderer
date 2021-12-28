@@ -220,6 +220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toastRoot: {fileID: 4696139973615041447}
+  duration: 3
 --- !u!1 &6455763930528195619
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,7 +259,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 60}
   m_SizeDelta: {x: 416, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &2362763467044640860
