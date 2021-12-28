@@ -369,7 +369,10 @@ public class TaskbarHUDController : IHUD
         if (mouseCatcher.isLocked)
             return;
 
-        view.chatButton.SetToggleState(true);
+        // this gives focus to chat input field and breaks the InputProcessor.Modifier.FocusNotInInput functionality
+        // when pressing escape and not having cursor locked
+        // like moving the character around without cursor locking
+        //view.chatButton.SetToggleState(true);
         view.chatButton.SetToggleState(false, false);
         worldChatWindowHud.view.chatHudView.ResetInputField();
         worldChatWindowHud.view.ActivatePreview();

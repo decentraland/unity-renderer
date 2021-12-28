@@ -377,10 +377,10 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Hold.Sprint:
-                    InputProcessor.FromKey(action, InputSettings.WalkButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromKey(action, InputSettings.WalkButtonKeyCode, InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Hold.Jump:
-                    InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromKey(action, InputSettings.JumpButtonKeyCode, InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Hold.FreeCameraMode:
                     //Disable until the fine-tuning is ready
@@ -448,10 +448,10 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Measurable.CharacterXAxis:
-                    InputProcessor.FromAxis(action, "Horizontal", InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromAxis(action, "Horizontal", InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Measurable.CharacterYAxis:
-                    InputProcessor.FromAxis(action, "Vertical", InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromAxis(action, "Vertical", InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Measurable.CameraXAxis:
                     InputProcessor.FromAxis(action, "Mouse X", InputProcessor.Modifier.NeedsPointerLocked);
