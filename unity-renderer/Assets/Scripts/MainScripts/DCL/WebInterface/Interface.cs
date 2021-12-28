@@ -784,6 +784,8 @@ namespace DCL.Interface
         private static HeadersPayload headersPayload = new HeadersPayload();
         private static AvatarStateBase avatarStatePayload = new AvatarStateBase();
         private static AvatarStateSceneChanged avatarSceneChangedPayload = new AvatarStateSceneChanged();
+        private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
+        private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1525,5 +1527,17 @@ namespace DCL.Interface
             avatarSceneChangedPayload.sceneId = sceneId;
             SendMessage("ReportAvatarState", avatarSceneChangedPayload);
         }
+        
+        public static void ReportOnPointerHoverEnterEvent(string sceneId, string uuid)
+        {
+            onPointerHoverEnterEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onPointerHoverEnterEvent);
+        }
+ 
+        public static void ReportOnPointerHoverExitEvent(string sceneId, string uuid)
+        {
+            onPointerHoverExitEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onPointerHoverExitEvent);
+        }   
     }
 }
