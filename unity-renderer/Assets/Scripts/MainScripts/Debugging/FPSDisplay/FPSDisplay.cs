@@ -6,24 +6,23 @@ using Variables.RealmsInfo;
 
 namespace DCL.FPSDisplay
 {
-
     public class FPSDisplay : MonoBehaviour
     {
         private const float REFRESH_SECONDS = 0.1f;
-        [SerializeField] private Vector2 labelPadding = new Vector2(12,12);
+        [SerializeField] private Vector2 labelPadding = new Vector2(12, 12);
 
         [SerializeField] private TextMeshProUGUI label;
         [SerializeField] private RectTransform background;
         [SerializeField] private PerformanceMetricsDataVariable performanceData;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private int lastPlayerCount = 0;
+        private int lastPlayerCount;
         private CurrentRealmVariable currentRealm => DataStore.i.realm.playerRealm;
 
         private Promise<KernelConfigModel> kernelConfigPromise;
         private string currentNetwork;
         private string currentRealmValue;
-        
+
         private Vector2 minSize = Vector2.zero;
 
         private void OnEnable()
@@ -37,19 +36,14 @@ namespace DCL.FPSDisplay
 
             SetupKernelConfig();
             SetupRealm();
+
             StartCoroutine(UpdateLabelLoop());
         }
+
         private void SetupRealm()
         {
             currentRealm.OnChange += UpdateRealm;
             UpdateRealm(currentRealm.Get(), null);
-        }
-        private void UpdateRealm(CurrentRealmModel current, CurrentRealmModel previous)
-        {
-            if (current != null)
-            {
-                currentRealmValue = current.serverName;
-            }
         }
 
         private void SetupKernelConfig()
@@ -58,6 +52,12 @@ namespace DCL.FPSDisplay
             kernelConfigPromise.Catch(Debug.Log);
             kernelConfigPromise.Then(OnKernelConfigChanged);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
+        }
+
+        private void UpdateRealm(CurrentRealmModel current, CurrentRealmModel previous)
+        {
+            if (current == null) return;
+            currentRealmValue = current.serverName;
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { OnKernelConfigChanged(current); }
@@ -69,6 +69,10 @@ namespace DCL.FPSDisplay
         {
             otherPlayers.OnAdded -= OnOtherPlayersModified;
             otherPlayers.OnRemoved -= OnOtherPlayersModified;
+            currentRealm.OnChange -= UpdateRealm;
+            kernelConfigPromise.Dispose();
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+
             StopAllCoroutines();
         }
 
@@ -99,26 +103,26 @@ namespace DCL.FPSDisplay
 
             Color fpsColor = FPSColoring.GetDisplayColor(fps);
 
-            targetText += SetColor(GetHexColor(Color.white));
-            targetText += AddTitle("Skybox");
-            targetText += AddLine($"Config: {DataStore.i.skyboxConfig.configToLoad.Get()}");
-            targetText += AddLine($"Duration: {DataStore.i.skyboxConfig.lifecycleDuration.Get()}");
-            targetText += AddLine($"Game Time: {DataStore.i.skyboxConfig.currentVirtualTime.Get()}");
-            targetText += AddLine($"UTC Time: {DataStore.i.worldTimer.GetCurrentTime().ToString()}");
-            targetText += AddEmptyLine();
-            
-            targetText += AddTitle("General");
-            targetText += AddLine($"Network: {currentNetwork.ToUpper()}");
-            targetText += AddLine($"Realm: {currentRealmValue.ToUpper()}");
-            targetText += AddLine($"Nearby players: {lastPlayerCount}");
-            targetText += AddEmptyLine();
-            
-            targetText += SetColor(GetHexColor(fpsColor));
-            targetText += AddTitle("FPS");
-            targetText += AddLine($"Hiccups in the last 1000 frames: {performanceData.Get().hiccupCount}");
-            targetText += AddLine($"Hiccup loss: {(100.0f * performanceData.Get().hiccupSum / performanceData.Get().totalSeconds).ToString(TWO_DECIMALS)}% ({performanceData.Get().hiccupSum.ToString(TWO_DECIMALS)} in {performanceData.Get().totalSeconds.ToString(TWO_DECIMALS)} secs)");
-            targetText += AddLine($"Bad Frames Percentile: {((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%");
-            targetText += AddLine($"Current {msFormatted} ms (fps: {fpsFormatted})");
+            targetText += GetColor(GetHexColor(Color.white));
+            targetText += GetTitle("Skybox");
+            targetText += GetLine($"Config: {DataStore.i.skyboxConfig.configToLoad.Get()}");
+            targetText += GetLine($"Duration: {DataStore.i.skyboxConfig.lifecycleDuration.Get()}");
+            targetText += GetLine($"Game Time: {DataStore.i.skyboxConfig.currentVirtualTime.Get().ToString(TWO_DECIMALS)}");
+            targetText += GetLine($"UTC Time: {DataStore.i.worldTimer.GetCurrentTime().ToString()}");
+            targetText += GetEmptyLine();
+
+            targetText += GetTitle("General");
+            targetText += GetLine($"Network: {currentNetwork.ToUpper()}");
+            targetText += GetLine($"Realm: {currentRealmValue.ToUpper()}");
+            targetText += GetLine($"Nearby players: {lastPlayerCount}");
+            targetText += GetEmptyLine();
+
+            targetText += GetColor(GetHexColor(fpsColor));
+            targetText += GetTitle("FPS");
+            targetText += GetLine($"Hiccups in the last 1000 frames: {performanceData.Get().hiccupCount}");
+            targetText += GetLine($"Hiccup loss: {(100.0f * performanceData.Get().hiccupSum / performanceData.Get().totalSeconds).ToString(TWO_DECIMALS)}% ({performanceData.Get().hiccupSum.ToString(TWO_DECIMALS)} in {performanceData.Get().totalSeconds.ToString(TWO_DECIMALS)} secs)");
+            targetText += GetLine($"Bad Frames Percentile: {((performanceData.Get().hiccupCount) / 10.0f).ToString(NO_DECIMALS)}%");
+            targetText += GetLine($"Current {msFormatted} ms (fps: {fpsFormatted})");
 
             if (label.text != targetText)
             {
@@ -142,12 +146,12 @@ namespace DCL.FPSDisplay
         }
         private static string GetHexColor(Color color) { return $"#{ColorUtility.ToHtmlStringRGB(color)}"; }
 
-        private string SetColor(string color) { return $"<color={color}>"; }
+        private string GetColor(string color) { return $"<color={color}>"; }
 
-        private string AddTitle(string text) { return $"<voffset=0.1em><u><size=110%>{text}<size=100%></u></voffset><br>"; }
+        private string GetTitle(string text) { return $"<voffset=0.1em><u><size=110%>{text}<size=100%></u></voffset><br>"; }
 
-        private string AddLine(string text) { return $"{text}<br>"; }
-        
-        private string AddEmptyLine() { return "<br>"; }
+        private string GetLine(string text) { return $"{text}<br>"; }
+
+        private string GetEmptyLine() { return "<br>"; }
     }
 }
