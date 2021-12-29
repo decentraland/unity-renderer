@@ -27,6 +27,7 @@ namespace DCL
         private void HandleCursorLockChanges(bool isLocked)
         {
             if (!isLocked) return;
+            if (DataStore.i.camera.panning.Get()) return;
             if (hasBeenShown) return;
             if (toastRoot.isVisible) return;
             toastRoot.gameObject.SetActive(true);
