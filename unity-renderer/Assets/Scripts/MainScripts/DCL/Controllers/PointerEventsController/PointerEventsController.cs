@@ -556,9 +556,9 @@ namespace DCL
         private void HideOrShowCursor(bool isCursorLocked)
         {
             if (isCursorLocked)
-                CursorController.i.Show();
+                CursorController.i?.Show();
             else
-                CursorController.i.Hide();
+                CursorController.i?.Hide();
         }
     }
 }
