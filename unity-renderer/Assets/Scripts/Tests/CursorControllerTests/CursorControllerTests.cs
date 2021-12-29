@@ -57,6 +57,8 @@ namespace Tests
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
+            Utils.LockCursor();
+            
             cursorController = TestUtils.CreateComponentWithGameObject<CursorController>("CursorController");
             cursorController.normalCursor = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector3.zero);
             cursorController.normalCursor.name = "Normal";
@@ -86,6 +88,7 @@ namespace Tests
             Object.Destroy(cursorController.hoverCursor);
             Object.Destroy(cursorController.gameObject);
             Object.Destroy(mainCamera.gameObject);
+            Utils.UnlockCursor();
             yield return base.TearDown();
         }
 
