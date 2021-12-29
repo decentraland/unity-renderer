@@ -381,9 +381,8 @@ namespace DCL.Helpers
                 return;
             }
             requestedLock = true;
-#else
-            Cursor.visible = false;
 #endif
+            Cursor.visible = false;
             IsCursorLocked = true;
             Cursor.lockState = CursorLockMode.Locked;
             lockedInFrame = Time.frameCount;
@@ -405,9 +404,8 @@ namespace DCL.Helpers
                 return;
             }
             requestedUnlock = true;
-#else
-            Cursor.visible = true;
 #endif
+            Cursor.visible = true;
             IsCursorLocked = false;
             Cursor.lockState = CursorLockMode.None;
 
