@@ -16,7 +16,7 @@ namespace DCL
         bool isLocked { get; }
     }
 
-    public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
+    public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private InputAction_Trigger unlockInputAction;
 
@@ -116,12 +116,6 @@ namespace DCL
         private void HandleUnlockInput(DCLAction_Trigger action)
         {
             UnlockCursor();
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (eventData.button == PointerEventData.InputButton.Right)
-                UnlockCursor();
         }
     }
 }
