@@ -555,7 +555,7 @@ namespace DCL
 
         private void HideOrShowCursor(bool isCursorLocked)
         {
-            if (isCursorLocked && !DataStore.i.camera.panning.Get())
+            if (isCursorLocked)
                 CursorController.i.Show();
             else
                 CursorController.i.Hide();
