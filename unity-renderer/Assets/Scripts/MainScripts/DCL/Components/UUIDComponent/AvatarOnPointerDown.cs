@@ -120,5 +120,10 @@ namespace DCL.Components
         public void OnPoolRelease() { eventHandler.Dispose(); }
 
         public void OnPoolGet() { }
+
+        public bool ShouldShowHoverFeedback()
+        {
+            return enabled && model.showFeedback;
+        }
     }
 }

@@ -124,7 +124,7 @@ namespace DCL
                 UnhoverLastHoveredObject(hoverController);
                 return;
             }
-            
+
             newHoveredGO = newHoveredInputEvent.GetTransform().gameObject;
 
             if (newHoveredGO != lastHoveredObject)
@@ -137,21 +137,19 @@ namespace DCL
                                                            .Select(child => child.GetComponent<IPointerEvent>())
                                                            .Where(pointerComponent => pointerComponent != null)
                                                            .ToArray();
+
                 OnPointerHoverStarts?.Invoke();
             }
 
             // OnPointerDown/OnClick and OnPointerUp should display their hover feedback at different moments
             if (lastHoveredEventList != null && lastHoveredEventList.Length > 0)
             {
+                bool isEntityShowingHoverFeedback = false;
+                
                 for (int i = 0; i < lastHoveredEventList.Length; i++)
                 {
                     if (lastHoveredEventList[i] is IPointerInputEvent e)
                     {
-                        if (lastHoveredEventList[i].GetTransform().gameObject != newHoveredGO)
-                        {
-                            continue;
-                        }
-                        
                         bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(e.GetActionButton());
 
                         bool isClick = e.GetEventType() == PointerInputEventType.CLICK;
@@ -159,11 +157,19 @@ namespace DCL
                         bool isUp = e.GetEventType() == PointerInputEventType.UP;
 
                         if (isUp && eventButtonIsPressed)
+                        {
                             e.SetHoverState(true);
+                            isEntityShowingHoverFeedback = isEntityShowingHoverFeedback || e.ShouldShowHoverFeedback();
+                        }
                         else if ((isDown || isClick) && !eventButtonIsPressed)
+                        {
                             e.SetHoverState(true);
-                        else
+                            isEntityShowingHoverFeedback = isEntityShowingHoverFeedback || e.ShouldShowHoverFeedback();
+                        }
+                        else if (!isEntityShowingHoverFeedback)
+                        {
                             e.SetHoverState(false);
+                        }
                     }
                     else
                     {

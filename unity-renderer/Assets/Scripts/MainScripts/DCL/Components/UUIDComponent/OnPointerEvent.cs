@@ -30,6 +30,7 @@ namespace DCL.Components
         void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
         PointerInputEventType GetEventType();
         WebInterface.ACTION_BUTTON GetActionButton();
+        bool ShouldShowHoverFeedback();
     }
 
     public class OnPointerEventHandler : IDisposable
@@ -159,6 +160,12 @@ namespace DCL.Components
         {
             this.model = newModel ?? new Model();
             return null;
+        }
+
+        public bool ShouldShowHoverFeedback()
+        {
+            Model model = this.model as Model;
+            return model.showFeedback;
         }
 
         void OnDestroy()
