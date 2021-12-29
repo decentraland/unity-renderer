@@ -72,6 +72,7 @@ namespace DCL
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left) return;
             OnMouseDown?.Invoke();
             LockCursor();
         }
