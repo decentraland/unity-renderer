@@ -138,6 +138,12 @@ namespace DCL
                                                            .Where(pointerComponent => pointerComponent != null)
                                                            .ToArray();
 
+                // NOTE: this case is for the Avatar, since it hierarchy differs from other ECS components
+                if (lastHoveredEventList?.Length == 0)
+                {
+                    lastHoveredEventList = newHoveredGO.GetComponents<IPointerEvent>();
+                }
+                
                 OnPointerHoverStarts?.Invoke();
             }
 
