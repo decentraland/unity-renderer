@@ -16,7 +16,7 @@ namespace DCL
         bool isLocked { get; }
     }
 
-    public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler
+    public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private InputAction_Trigger unlockInputAction;
 
@@ -72,9 +72,14 @@ namespace DCL
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left) return;
             OnMouseDown?.Invoke();
             LockCursor();
+        }
+        
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Right)
+                UnlockCursor();
         }
 
         #region BROWSER_ONLY
@@ -102,6 +107,9 @@ namespace DCL
 
         #endregion
 
-        private void HandleUnlockInput(DCLAction_Trigger action) => UnlockCursor();
+        private void HandleUnlockInput(DCLAction_Trigger action)
+        {
+            UnlockCursor();
+        }
     }
 }

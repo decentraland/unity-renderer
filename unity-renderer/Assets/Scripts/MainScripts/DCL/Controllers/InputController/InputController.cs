@@ -197,7 +197,7 @@ public class InputController : MonoBehaviour
                                        InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.CursorUnlock:
-                    InputProcessor.FromMouseButton(action, 1, InputProcessor.Modifier.NeedsPointerLocked);
+                    InputProcessor.FromMouseButtonUp(action, 1, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Trigger.ToggleNavMap:
                     if (allUIHidden)
@@ -583,6 +583,16 @@ public static class InputProcessor
             return;
 
         if (Input.GetMouseButton(mouseButtonIdx))
+            action.RaiseOnTriggered();
+    }
+    
+    public static void FromMouseButtonUp(InputAction_Trigger action, int mouseButtonIdx,
+        Modifier modifiers = Modifier.None)
+    {
+        if (!PassModifiers(modifiers))
+            return;
+
+        if (Input.GetMouseButtonUp(mouseButtonIdx))
             action.RaiseOnTriggered();
     }
 
