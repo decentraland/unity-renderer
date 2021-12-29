@@ -19,7 +19,7 @@ namespace DCL.Components
             }
         }
 
-        private OnPointerEventColliders pointerEventColliders;
+        internal OnPointerEventColliders pointerEventColliders;
 
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
