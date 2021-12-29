@@ -285,9 +285,9 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
-  avatarEditorTintColor: {r: 0.1652067, g: 0.9716981, b: 0, a: 1}
-  avatarEditorLightDir: {x: -18, y: 144, z: -72}
-  avatarEditorLightColor: {r: 1, g: 0.013207495, b: 0.013207495, a: 1}
+  avatarEditorTintColor: {r: 0.6431373, g: 0.57254905, b: 0.5411765, a: 1}
+  avatarEditorLightDir: {x: -81, y: 0, z: -72}
+  avatarEditorLightColor: {r: 0.8392157, g: 0.8392157, b: 0.8392157, a: 1}
   useFog: 1
   fogMode: 1
   fogColor:
@@ -484,7 +484,7 @@ MonoBehaviour:
     movementTypePlanar_Radial: 0
     movementTypeSatellite: 0
   - slotID: 0
-    renderType: 0
+    renderType: 1
     layerType: 1
     enabled: 1
     nameInEditor: Stars
