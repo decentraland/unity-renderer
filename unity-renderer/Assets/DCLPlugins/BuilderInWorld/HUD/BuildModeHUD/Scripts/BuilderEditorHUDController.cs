@@ -53,7 +53,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     internal BuildModeHUDInitializationModel controllers;
 
-    private Coroutine publishProgressCoroutine = null;
     private float timeFromLastClickOnExtraButtons = 0f;
     internal IContext context;
 
@@ -306,17 +305,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
-    }
-
-    public void PublishEnd(bool isOk, string message)
-    {
-        if (publishProgressCoroutine != null)
-        {
-            CoroutineStarter.Stop(publishProgressCoroutine);
-            publishProgressCoroutine = null;
-        }
-
-        controllers.publishPopupController.PublishEnd(isOk, message);
     }
 
     public void SetGizmosActive(string gizmos) { controllers.topActionsButtonsController.SetGizmosActive(gizmos); }

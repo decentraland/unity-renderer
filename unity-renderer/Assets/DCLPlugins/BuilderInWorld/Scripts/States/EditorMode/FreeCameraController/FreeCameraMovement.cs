@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL.Camera
@@ -11,9 +12,6 @@ namespace DCL.Camera
         private const float CAMERA_MOVEMENT_THRESHOLD = 0.001f;
 
         private const float CAMERA_MOVEMENT_DEACTIVATE_INPUT_MAGNITUD = 0.001f;
-
-        private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
-        private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
 
         public float focusDistance = 5f;
 
@@ -471,10 +469,7 @@ namespace DCL.Camera
 
         public void SetPosition(Vector3 position) { transform.position = position; }
 
-        public void LookAt(Transform transformToLookAt)
-        {
-            LookAt(transformToLookAt.position);
-        }
+        public void LookAt(Transform transformToLookAt) { LookAt(transformToLookAt.position); }
 
         public void LookAt(Vector3 pointToLookAt)
         {
@@ -562,10 +557,7 @@ namespace DCL.Camera
             pitch = transform.eulerAngles.x;
         }
 
-        public void SetResetConfiguration(Vector3 position, Transform lookAt)
-        {
-            SetResetConfiguration(position, lookAt.position);
-        }
+        public void SetResetConfiguration(Vector3 position, Transform lookAt) { SetResetConfiguration(position, lookAt.position); }
 
         public void SetResetConfiguration(Vector3 position, Vector3 pointToLook)
         {
@@ -580,9 +572,11 @@ namespace DCL.Camera
             direction = Vector3.zero;
         }
 
-        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = CoroutineStarter.Start(TakeSceneScreenshotCoroutine(onSuccess)); }
+        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = CoroutineStarter.Start(TakeSceneScreenshotCoroutine(BIWSettings.SCENE_SNAPSHOT_WIDTH_RES, BIWSettings.SCENE_SNAPSHOT_HEIGHT_RES, onSuccess)); }
 
-        private IEnumerator TakeSceneScreenshotCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
+        public void TakeSceneScreenshot(  Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IFreeCameraMovement.OnSnapshotsReady onSuccess) { takeScreenshotCoroutine = CoroutineStarter.Start(TakeSceneScreenshotFromPositionCoroutine(camPosition, pointToLookAt, onSuccess, width, height)); }
+
+        private IEnumerator TakeSceneScreenshotCoroutine(int width, int height, IFreeCameraMovement.OnSnapshotsReady callback)
         {
             UnityEngine.Camera camera = UnityEngine.Camera.main;
             if (screenshotCamera != null)
@@ -593,27 +587,27 @@ namespace DCL.Camera
 
             yield return null;
 
-            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, width, height);
             camera.targetTexture = current;
             callback?.Invoke(sceneScreenshot);
         }
 
-        public void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromResetPositionCoroutine(onSuccess)); }
+        public void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromPositionCoroutine(originalCameraPosition, originalCameraPointToLookAt, onSuccess, BIWSettings.SCENE_SNAPSHOT_WIDTH_RES, BIWSettings.SCENE_SNAPSHOT_HEIGHT_RES)); }
 
-        private IEnumerator TakeSceneScreenshotFromResetPositionCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
+        private IEnumerator TakeSceneScreenshotFromPositionCoroutine(Vector3 positionToTakePhoto, Vector3 pointTolookAt, IFreeCameraMovement.OnSnapshotsReady callback, int width, int height)
         {
             // Store current camera position/direction
             Vector3 currentPos = transform.position;
             Vector3 currentLookAt = transform.forward;
-            SetPosition(originalCameraPosition);
-            transform.LookAt(originalCameraPointToLookAt);
+            SetPosition(positionToTakePhoto);
+            transform.LookAt(pointTolookAt);
 
             var current = camera.targetTexture;
             camera.targetTexture = null;
 
             yield return null;
 
-            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+            Texture2D sceneScreenshot = ScreenshotFromCamera(camera, width, height);
             camera.targetTexture = current;
             callback?.Invoke(sceneScreenshot);
 

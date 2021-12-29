@@ -6,6 +6,7 @@ using DCL.Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace DCL.Builder
 {
@@ -15,33 +16,29 @@ namespace DCL.Builder
 
         [Header("References")]
         [SerializeField] internal ScrollRect scrollRect;
-        [SerializeField] Transform scrollRectContentTransform;
+        [SerializeField] RectTransform scrollRectContentTransform;
 
-        InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
         Transform mapRendererMinimapParent;
         Vector3 atlasOriginalPosition;
-        
+
         private bool isVisible = false;
 
-        private Vector2 offset = Vector2.zero;
+        private Vector2 initialOffset = Vector2.zero;
 
         void Start()
         {
             scrollRect.onValueChanged.AddListener((x) =>
             {
+                Debug.Log("x " + x.x + "   y " + x.y);
                 if (isVisible)
                     MapRenderer.i.atlas.UpdateCulling();
             });
 
-
             MapRenderer.OnParcelClicked += ParcelSelect;
         }
 
-        private void OnDestroy()
-        {
-            MapRenderer.OnParcelClicked -= ParcelSelect;
-        }
+        private void OnDestroy() { MapRenderer.OnParcelClicked -= ParcelSelect; }
 
         internal void UpdateOwnedLands()
         {
@@ -56,7 +53,22 @@ namespace DCL.Builder
             MapRenderer.i.HighlightLandsInRed(landsToHighlight);
         }
 
-        public void GoToCoords(Vector2Int coords) { MapRenderer.i.atlas.CenterToTile(coords,offset); }
+        public void GoToCoords(Vector2Int coords)
+        {
+            //Reset scroll
+            Debug.Log("Before Scroll " + scrollRect.horizontalNormalizedPosition + "   Vertical " + scrollRect.verticalNormalizedPosition);
+
+            // scrollRect.horizontalNormalizedPosition = 0.5f;
+            // scrollRect.verticalNormalizedPosition = 0.5f;
+            // scrollRect.normalizedPosition = new Vector2(0.5f,0.5f);
+
+            // Debug.Log("After Scroll " + scrollRect.horizontalNormalizedPosition + "   Vertical " + scrollRect.verticalNormalizedPosition);
+            scrollRectContentTransform.anchoredPosition = new Vector2(-1219, -1596);
+
+            Debug.Log("After Anchored " + scrollRect.horizontalNormalizedPosition + "   Vertical " + scrollRect.verticalNormalizedPosition);
+
+            MapRenderer.i.atlas.CenterToTile(coords);
+        }
 
         internal void SetVisible(bool visible)
         {

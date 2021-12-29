@@ -5,7 +5,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Configuration;
 using TMPro;
 using UnityEngine;
@@ -88,6 +90,16 @@ namespace DCL.Helpers
             t.offsetMax = Vector2.one;
             t.sizeDelta = Vector2.zero;
             t.anchoredPosition = Vector2.zero;
+        }
+
+        public static byte[] ObjectToByteArray(object obj)
+        {
+            if (obj == null)
+                return null;
+            BinaryFormatter bf = new BinaryFormatter();
+            using MemoryStream ms = new MemoryStream();
+            bf.Serialize(ms, obj);
+            return ms.ToArray();
         }
 
         public static void SetToCentered(this RectTransform t)
@@ -280,7 +292,7 @@ namespace DCL.Helpers
         {
             if (obj is Transform)
                 return;
-            
+
 #if UNITY_EDITOR
             if (Application.isPlaying)
                 UnityEngine.Object.Destroy(obj);

@@ -18,7 +18,7 @@ public class BIWGodModeDynamicVariables : ScriptableObject
     [Header("Editor Design")]
     public float initialEagleCameraHeight = 10f;
     public float initialEagleCameraDistance = 10f;
-    public float initialEagleCameraLookAtHeight = 0f;
+    public float aerialScreenshotHeight = 15f;
 
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;

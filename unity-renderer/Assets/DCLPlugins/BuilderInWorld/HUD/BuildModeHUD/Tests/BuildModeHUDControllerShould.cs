@@ -42,10 +42,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            builderEditorHudController.Dispose();
-        }
+        public void TearDown() { builderEditorHudController.Dispose(); }
 
         [Test]
         public void CreateBuildModeControllersCorrectly()
@@ -161,11 +158,11 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1)
-                .Configure(
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>());
+                                      .Configure(
+                                          Arg.Any<string>(),
+                                          Arg.Any<string>(),
+                                          Arg.Any<string>(),
+                                          Arg.Any<string>());
             builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
         }
 
@@ -227,7 +224,8 @@ namespace Tests.BuildModeHUDControllers
             string testErrorMessage = "Test text";
 
             // Act
-            builderEditorHudController.PublishEnd(isOk, testErrorMessage);
+            // TODO: Reimplement
+            // builderEditorHudController.PublishEnd(isOk, testErrorMessage);
 
             // Assert
             builderEditorHudController.controllers.publishPopupController.Received(1).PublishEnd(isOk, testErrorMessage);

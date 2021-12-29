@@ -647,11 +647,11 @@ namespace DCL.Interface
                 {
                     ProcessQueuedMessages();
                 }
-            } 
+            }
             get => OnMessage;
         }
         private static Action<string, string> OnMessage;
-        
+
         private static bool hasQueuedMessages = false;
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
@@ -1174,9 +1174,9 @@ namespace DCL.Interface
                 timestamp = timestamp
             });
         }
-        
+
         public static void ReportMotdClicked() { SendMessage("MotdConfirmClicked"); }
-        
+
         public static void OpenURL(string url)
         {
 #if UNITY_WEBGL
@@ -1186,12 +1186,14 @@ namespace DCL.Interface
 #endif
         }
 
+        public static void PublishStatefulScene(ProtocolV2.PublishPayload payload) { MessageFromEngine("PublishSceneState", JsonConvert.SerializeObject(payload)); }
+
         public static void StartIsolatedMode(IsolatedConfig config) { MessageFromEngine("StartIsolatedMode", JsonConvert.SerializeObject(config)); }
 
         public static void StopIsolatedMode(IsolatedConfig config) { MessageFromEngine("StopIsolatedMode", JsonConvert.SerializeObject(config)); }
 
         public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
-        
+
         public static void SendReportPlayer(string playerName) { SendMessage("ReportPlayer", playerName); }
 
         public static void SendBlockPlayer(string userId)

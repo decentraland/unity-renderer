@@ -21,20 +21,15 @@ namespace DCL.Builder
         public event Action<PublishInfo> OnPublishButtonPressed;
 
         /// <summary>
-        /// If the rotate left button is pressed this action will be called
+        /// If the rotation of the project is changed, this event will be fired
         /// </summary>
-        public event Action OnProjectRotateLeft;
-
-        /// <summary>
-        /// If the rotate right button is pressed this action will be called
-        /// </summary>
-        public event Action OnProjectRotateRight;
+        public event Action<PublishInfo.ProjectRotation>  OnProjectRotateChange;
 
         /// <summary>
         /// Set the project to publish
         /// </summary>
         /// <param name="scene"></param>
-        void SetProjectToPublish(BuilderScene scene);
+        void SetProjectToPublish(IBuilderScene scene);
 
         /// <summary>
         /// This will show the detail modal 
@@ -56,8 +51,7 @@ namespace DCL.Builder
     {
         private const string SCREENSHOT_TEXT =  @"{0} parcel = {1}x{2}m";
 
-        public event Action OnProjectRotateLeft;
-        public event Action OnProjectRotateRight;
+        public event Action<PublishInfo.ProjectRotation> OnProjectRotateChange;
         public event Action OnCancel;
         public event Action<PublishInfo> OnPublishButtonPressed;
 
@@ -67,13 +61,8 @@ namespace DCL.Builder
         [SerializeField] internal Button cancelButton;
         [SerializeField] internal Button publishButton;
 
-        //TODO: This functionality will be implemented in the future
         [SerializeField] internal Button rotateLeftButton;
         [SerializeField] internal Button rotateRightButton;
-
-        [SerializeField] internal Button zoomInButton;
-        [SerializeField] internal Button zoomOutButton;
-        [SerializeField] internal Button resetToLandButton;
 
         [SerializeField] internal RawImage sceneScreenshotImage;
 
@@ -85,8 +74,9 @@ namespace DCL.Builder
 
         [SerializeField] internal TMP_Dropdown landsDropDown;
 
-        internal BuilderScene scene;
+        internal IBuilderScene scene;
         internal Dictionary<string, LandWithAccess> landsDropdownDictionary = new Dictionary<string, LandWithAccess>();
+        private PublishInfo.ProjectRotation projectRotation = PublishInfo.ProjectRotation.NORTH;
 
         public override void RefreshControl()
         {
@@ -104,8 +94,8 @@ namespace DCL.Builder
             cancelButton.onClick.AddListener(CancelButtonPressed);
             publishButton.onClick.AddListener(PublishButtonPressed);
 
-            rotateLeftButton.onClick.AddListener( (() => OnProjectRotateLeft?.Invoke()));
-            rotateRightButton.onClick.AddListener( (() => OnProjectRotateRight?.Invoke()));
+            rotateLeftButton.onClick.AddListener( RotateLeft);
+            rotateRightButton.onClick.AddListener( RotateRight);
 
             landsDropDown.onValueChanged.AddListener(LandSelectedFromDropDown);
 
@@ -128,6 +118,45 @@ namespace DCL.Builder
 
             rotateLeftButton.onClick.RemoveAllListeners();
             rotateRightButton.onClick.RemoveAllListeners();
+        }
+
+        private void RotateLeft()
+        {
+            projectRotation--;
+            if (projectRotation < 0)
+                projectRotation = PublishInfo.ProjectRotation.WEST;
+            SetRotation(projectRotation);
+        }
+
+        private void RotateRight()
+        {
+            projectRotation++;
+            if (projectRotation > PublishInfo.ProjectRotation.WEST)
+                projectRotation = PublishInfo.ProjectRotation.NORTH;
+            SetRotation(projectRotation);
+        }
+
+        private void SetRotation(PublishInfo.ProjectRotation rotation)
+        {
+            float zRotation = 0;
+            switch (rotation)
+            {
+                case PublishInfo.ProjectRotation.NORTH:
+                    zRotation = 0;
+                    break;
+                case PublishInfo.ProjectRotation.EAST:
+                    zRotation = 90;
+                    break;
+                case PublishInfo.ProjectRotation.SOUTH:
+                    zRotation = 180;
+                    break;
+                case PublishInfo.ProjectRotation.WEST:
+                    zRotation = 270;
+                    break;
+            }
+
+            sceneScreenshotImage.rectTransform.rotation = Quaternion.Euler(0, 0, zRotation);
+            OnProjectRotateChange?.Invoke(rotation);
         }
 
         private void LandSelectedFromDropDown(int index)
@@ -156,25 +185,19 @@ namespace DCL.Builder
             }
             mapView.GoToCoords(coords);
         }
-        
+
         [ContextMenu("-150,-150")]
-        public void CenterIn150()
-        {
-            mapView.GoToCoords(Vector2Int.one * -150);    
-        }
-        
+        public void CenterIn150() { mapView.GoToCoords(Vector2Int.one * -150); }
+
         [ContextMenu("Reset View")]
-        public void CenterInZero()
-        {
-            mapView.GoToCoords(Vector2Int.zero);    
-        }
-        
-        public void SetProjectToPublish(BuilderScene scene)
+        public void CenterInZero() { mapView.GoToCoords(Vector2Int.zero); }
+
+        public void SetProjectToPublish(IBuilderScene scene)
         {
             this.scene = scene;
 
             //We set the screenshot
-            sceneScreenshotImage.texture = scene.sceneScreenshotTexture;
+            sceneScreenshotImage.texture = scene.aerialScreenshotTexture;
 
             //We set the scene info
             nameInputField.SetText(scene.manifest.project.title);
@@ -185,7 +208,7 @@ namespace DCL.Builder
             FillLandDropDown();
 
             //We set the map to the main land
-            StartCoroutine(WaitFrameToPositionMap());
+            CoroutineStarter.Start(WaitFrameToPositionMap());
         }
 
         IEnumerator WaitFrameToPositionMap()
@@ -232,7 +255,7 @@ namespace DCL.Builder
             gameObject.SetActive(true);
             mapView.SetVisible(true);
             modal.Show();
-      
+
         }
 
         public void Hide()
@@ -245,9 +268,10 @@ namespace DCL.Builder
         {
             Hide();
             PublishInfo publishInfo = new PublishInfo();
-            publishInfo.name = nameInputField.GetValue();
-            publishInfo.description = descriptionInputField.GetValue();
-            publishInfo.landToPublish = landsDropdownDictionary[landsDropDown.options[landsDropDown.value].text];
+            scene.manifest.project.title = nameInputField.GetValue();
+            scene.manifest.project.description = descriptionInputField.GetValue();
+            publishInfo.landsToPublish = new LandWithAccess[1];
+            publishInfo.landsToPublish[0] = landsDropdownDictionary[landsDropDown.options[landsDropDown.value].text];
 
             OnPublishButtonPressed?.Invoke(publishInfo);
         }

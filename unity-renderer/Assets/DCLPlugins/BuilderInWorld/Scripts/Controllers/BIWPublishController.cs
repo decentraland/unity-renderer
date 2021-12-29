@@ -8,16 +8,12 @@ public class BIWPublishController : BIWController, IBIWPublishController
     private IBIWEntityHandler entityHandler;
     private IBIWCreatorController creatorController;
 
-    private BuilderInWorldBridge builderInWorldBridge;
-
     private int checkerSceneLimitsOptimizationCounter = 0;
 
     private const int FRAMES_BEETWEN_UPDATES = 10;
     private const string FEEDBACK_MESSAGE_ENTITY_ERROR = "Some entities have errors (marked as pink cubes).";
     private const string FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES = "Some entities are outside of the Scene boundaries.";
     private const string FEEDBACK_MESSAGE_TOO_MANY_ENTITIES = "Too many entities in the scene. Check scene limits.";
-
-    private float startPublishingTimestamp = 0;
 
     public override void Initialize(IContext context)
     {
@@ -27,15 +23,8 @@ public class BIWPublishController : BIWController, IBIWPublishController
         creatorController = context.editorContext.creatorController;
 
         if (context.editorContext.editorHUD != null)
-        {
             context.editorContext.editorHUD.OnPublishAction += StartPublishFlow;
-            context.editorContext.editorHUD.OnConfirmPublishAction += StartPublishScene;
-        }
 
-        builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
-
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnPublishEnd += PublishEnd;
     }
 
     public override void Update()
@@ -57,13 +46,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
         base.Dispose();
 
         if ( context.editorContext.editorHUD != null)
-        {
             context.editorContext.editorHUD.OnPublishAction -= StartPublishFlow;
-            context.editorContext.editorHUD.OnConfirmPublishAction -= StartPublishScene;
-        }
-
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnPublishEnd -= PublishEnd;
     }
 
     public bool CanPublish()
@@ -114,22 +97,21 @@ public class BIWPublishController : BIWController, IBIWPublishController
         context.cameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
             builderScene.sceneScreenshotTexture = sceneSnapshot;
-            context.publisher.StartPublish(builderScene);
+            if (builderScene.sceneType == IBuilderScene.SceneType.PROJECT)
+            {
+                //If it is a project, we took an aerial view of the scene too
+                context.cameraController.TakeSceneAerialScreenshot( sceneToEdit, (aerialSceenshot) =>
+                {
+                    builderScene.aerialScreenshotTexture = aerialSceenshot;
+                    context.publisher.StartPublish(builderScene);
+                });
+            }
+            else
+            {
+                context.publisher.StartPublish(builderScene);
+            }
         });
-    }
 
-    private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)
-    {
-        startPublishingTimestamp = Time.realtimeSinceStartup;
-        BIWAnalytics.StartScenePublish(sceneToEdit.metricsCounter.GetModel());
-        builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot);
-    }
 
-    private void PublishEnd(bool isOk, string message)
-    {
-        if ( context.editorContext.editorHUD != null)
-            context.editorContext.editorHUD.PublishEnd(isOk, message);
-        string successString = isOk ? "Success" : message;
-        BIWAnalytics.EndScenePublish(sceneToEdit.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
     }
 }

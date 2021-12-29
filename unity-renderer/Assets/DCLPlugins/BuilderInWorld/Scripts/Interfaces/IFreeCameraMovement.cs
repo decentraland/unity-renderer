@@ -95,6 +95,16 @@ namespace DCL.Camera
         void TakeSceneScreenshot(OnSnapshotsReady onSuccess);
 
         /// <summary>
+        /// Take screenshot from the point looking at another point with a specific width and height
+        /// </summary>
+        /// <param name="camPosition"></param>
+        /// <param name="pointToLookAt"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="onSuccess"></param>
+        void TakeSceneScreenshot(    Vector3 camPosition, Vector3 pointToLookAt, int width, int height, OnSnapshotsReady onSuccess);
+
+        /// <summary>
         /// Take screenshot from the initial position
         /// </summary>
         /// <param name="onSuccess"></param>

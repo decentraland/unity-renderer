@@ -93,6 +93,7 @@ namespace DCL.Builder
 
         public void ShowConfirmPopUp()
         {
+            gameObject.SetActive(true);
             modal.Show();
             errorGameObject.SetActive(false);
             confirmGameObject.SetActive(true);
@@ -105,6 +106,7 @@ namespace DCL.Builder
             OnViewClosed?.Invoke();
         }
 
+        [ContextMenu("Start Deployment")]
         public void ConfirmPublish() { OnPublishConfirmButtonPressed?.Invoke(); }
 
         public void PublishStarted()
@@ -112,7 +114,7 @@ namespace DCL.Builder
             currentProgress = 0;
 
             Show();
-            loadingBar.SetActive(true);
+            progressGameObject.SetActive(true);
             errorGameObject.SetActive(false);
             confirmGameObject.SetActive(false);
             if (fakeProgressCoroutine != null)
@@ -125,7 +127,7 @@ namespace DCL.Builder
 
         public void PublishError(string message)
         {
-            loadingBar.SetActive(false);
+            progressGameObject.SetActive(false);
             errorGameObject.SetActive(true);
             confirmGameObject.SetActive(false);
 
@@ -138,14 +140,17 @@ namespace DCL.Builder
         {
             while (true)
             {
-                float newPercentage = Mathf.Clamp(
-                    currentProgress + UnityEngine.Random.Range(1f, 10f),
+                float newPercentage = UnityEngine.Random.Range(1f, 15f);
+                currentProgress += newPercentage;
+
+                currentProgress = Mathf.Clamp(
                     currentProgress,
+                    currentProgress - newPercentage,
                     99f);
 
-                SetPercentage(newPercentage);
+                SetPercentage(currentProgress);
 
-                yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.5f));
+                yield return new WaitForSeconds(UnityEngine.Random.Range(0.15f, 0.65f));
             }
         }
     }

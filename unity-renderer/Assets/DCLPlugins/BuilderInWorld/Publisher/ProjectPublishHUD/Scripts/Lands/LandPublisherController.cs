@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ILandPublisherController
 {
-    event Action<IBuilderScene> OnConfirm;
+    event Action<IBuilderScene> OnPublishPressed;
 
     /// <summary>
     /// Init the controller with the default view
@@ -28,7 +28,7 @@ public interface ILandPublisherController
 public class LandPublisherController : ILandPublisherController
 {
     public event Action OnCancel;
-    public event Action<IBuilderScene> OnConfirm;
+    public event Action<IBuilderScene> OnPublishPressed;
 
     internal const string PREFAB_PATH = "Land/LandPublisherView";
     internal const string DEFAULT_SCENE_NAME = "My new place";
@@ -87,7 +87,7 @@ public class LandPublisherController : ILandPublisherController
         sceneToPublish.manifest.project.description = landPublisherView.GetSceneDescription();
 
         SetActive(false);
-        OnConfirm?.Invoke(sceneToPublish);
+        OnPublishPressed?.Invoke(sceneToPublish);
     }
 
     public void ValidatePublicationInfo(string sceneName)

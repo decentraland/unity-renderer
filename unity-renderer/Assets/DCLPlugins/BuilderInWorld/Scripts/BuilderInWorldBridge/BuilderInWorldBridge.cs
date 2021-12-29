@@ -7,9 +7,9 @@ using DCL.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using DCL.Builder;
 using UnityEngine;
 using static ProtocolV2;
-using Environment = DCL.Environment;
 
 /// <summary>
 /// This class will handle all the messages that will be sent to kernel.
@@ -26,7 +26,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     //This is done for optimization purposes, recreating new objects can increase garbage collection
     private TransformComponent entityTransformComponentModel = new TransformComponent();
 
-    private StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
+    private PublishPayload payload = new PublishPayload();
     private ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     private EntityPayload entityPayload = new EntityPayload();
     private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
@@ -247,13 +247,15 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.StopIsolatedMode(config);
     }
 
-    public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
+    public void PublishScene(Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest )
     {
-        storeSceneState.payload.title = sceneName;
-        storeSceneState.payload.description = sceneDescription;
-        storeSceneState.payload.screenshot = sceneScreenshot;
+        payload.filesToDecode = filesToDecode;
+        payload.files = files;
+        payload.metadata = metadata;
+        payload.pointers = metadata.scene.parcels;
+        payload.statelessManifest = statelessManifest;
 
-        WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, storeSceneState);
+        WebInterface.PublishStatefulScene(payload);
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -277,4 +279,5 @@ public class BuilderInWorldBridge : MonoBehaviour
     }
 
     #endregion
+
 }

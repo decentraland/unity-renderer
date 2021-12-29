@@ -107,6 +107,7 @@ public class CatalystSceneEntityMetadata
     public Source source;
     public SpawnPoint[] spawnPoints;
     public string owner;
+    public string main;
     public string[] tags;
     public string[] requiredPermissions;
 }

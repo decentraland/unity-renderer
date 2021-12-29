@@ -23,7 +23,7 @@ namespace DCL.Builder
         /// Shows the view with the project data
         /// </summary>
         /// <param name="publishedProject"></param>
-        void ProjectPublished(BuilderScene publishedProject);
+        void ProjectPublished(IBuilderScene publishedProject);
 
         /// <summary>
         /// Dispose the view
@@ -70,8 +70,9 @@ namespace DCL.Builder
 
         public void Close() { OnViewClose?.Invoke(); }
 
-        public void ProjectPublished(BuilderScene publishedProject)
+        public void ProjectPublished(IBuilderScene publishedProject)
         {
+            gameObject.SetActive(true);
             modal.Show();
 
             subTitleTextView.text = GetSubTitleText(publishedProject);
@@ -80,7 +81,7 @@ namespace DCL.Builder
 
         public void Hide() { modal.Hide(); }
 
-        internal string GetSubTitleText(BuilderScene scene)
+        internal string GetSubTitleText(IBuilderScene scene)
         {
             string title = scene.manifest.project.title;
             string posX = scene.scene.sceneData.basePosition.x.ToString();

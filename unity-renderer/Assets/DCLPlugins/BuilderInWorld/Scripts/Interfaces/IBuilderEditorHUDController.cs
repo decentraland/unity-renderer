@@ -54,7 +54,6 @@ public interface IBuilderEditorHUDController
     void HideExtraBtns();
     void ShowSceneLimitsPassed();
     void SceneSaved();
-    void PublishEnd(bool isOk, string message);
     void SetPublishBtnAvailability(bool canPublish, string feedbackMessage);
     void SetRedoButtonInteractable(bool canRedoAction);
     void SetUndoButtonInteractable(bool canUndoAction);

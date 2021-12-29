@@ -12,6 +12,16 @@ namespace DCL.Configuration
 
         public const string BASE_URL_BUILDER_PROJECT_THUMBNAIL = "https://builder-api.decentraland.{ENV}/v1/projects/{id}/media/";
 
+        //Deployment constants
+        public const string DEPLOYMENT_DEFINITION_FILE = "scene-state-definition.json";
+        public const string DEPLOYMENT_SCENE_FILE = "scene.json";
+        public const string DEPLOYMENT_MODELS_FOLDER = "models";
+        public const string DEPLOYMENT_BUNDLED_GAME_FILE = "bin/game.js";
+        public const string DEPLOYMENT_SCENE_THUMBNAIL = "thumbnail.png";
+        public const string DEPLOYMENT_ASSETS = "scene-assets.json";
+        public const string DEPLOYMENT_SOURCE_TYPE = "builder-in-world";
+
+        //Layers
         public static readonly LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
         public static readonly LayerMask DEFAULT_LAYER_INDEX = LayerMask.NameToLayer("Default");
         public static readonly LayerMask COLLIDER_SELECTION_LAYER_INDEX = LayerMask.NameToLayer("OnBuilderPointerClick");
@@ -21,6 +31,14 @@ namespace DCL.Configuration
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
 
+        // Screenshot settings
+        public const int SCENE_SNAPSHOT_WIDTH_RES = 854;
+        public const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
+
+        public const int AERIAL_SCREENSHOT_WIDTH = 120;
+        public const int AERIAL_SCREENSHOT_HEIGHT = 120;
+
+        // Identifiers
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
         public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";
         public const string FLOOR_CATEGORY = "ground";

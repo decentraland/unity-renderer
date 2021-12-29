@@ -42,18 +42,13 @@ namespace DCL
 
         public void CenterToTile(Vector2 tilePosition)
         {
-            CenterToTile(tilePosition,Vector2.zero);
-        }
-
-        public void CenterToTile(Vector2 tilePosition, Vector2 offset)
-        {
             if (viewport == null)
                 return;
 
             Vector3 center = viewport.transform.TransformPoint(viewport.rect.center);
             Vector3 delta = center - container.transform.TransformPoint(MapUtils.GetTileToLocalPosition(tilePosition.x, tilePosition.y));
 
-            container.transform.position += delta + new Vector3(offset.x, offset.y,0);
+            container.transform.position += delta;
             UpdateCulling();
         }
 
