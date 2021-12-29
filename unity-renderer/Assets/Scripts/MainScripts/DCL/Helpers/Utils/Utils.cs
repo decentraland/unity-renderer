@@ -426,9 +426,9 @@ namespace DCL.Helpers
             {
                 Cursor.lockState = CursorLockMode.None;
             }
-            //
+            
             // IsCursorLocked = locked;
-            // Cursor.visible = !locked;
+            Cursor.visible = !locked;
             requestedUnlock = false;
             requestedLock = false;
         }
