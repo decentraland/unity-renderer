@@ -13,11 +13,13 @@ public class CursorController : MonoBehaviour
 
     public void Show()
     {
+        if (cursorImage == null) return;
         cursorImage.gameObject.SetActive(true);
     }
 
     public void Hide()
     {
+        if (cursorImage == null) return;
         cursorImage.gameObject.SetActive(false);
     }
 
