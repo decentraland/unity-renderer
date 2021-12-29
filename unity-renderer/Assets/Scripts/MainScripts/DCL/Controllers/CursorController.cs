@@ -11,6 +11,16 @@ public class CursorController : MonoBehaviour
 
     void Awake() { i = this; }
 
+    public void Show()
+    {
+        cursorImage.gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        cursorImage.gameObject.SetActive(false);
+    }
+
     public void SetNormalCursor()
     {
         cursorImage.sprite = normalCursor;
