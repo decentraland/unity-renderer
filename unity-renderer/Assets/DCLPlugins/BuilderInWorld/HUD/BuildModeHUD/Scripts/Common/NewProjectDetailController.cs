@@ -20,6 +20,9 @@ namespace DCL.Builder
         private INewProjectDetailView view;
 
         public void SetActive(bool isActive) { }
-        public void Initialize(INewProjectDetailView missing_name) { throw new System.NotImplementedException(); }
+        public void Initialize(INewProjectDetailView missing_name)
+        {
+            //TODO: implement functionality in the future
+        }
     }
 }

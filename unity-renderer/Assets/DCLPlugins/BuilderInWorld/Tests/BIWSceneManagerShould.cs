@@ -59,11 +59,15 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void StartExitModeScreenShot()
+    [TestCase(IBuilderScene.SceneType.LAND)]
+    [TestCase(IBuilderScene.SceneType.PROJECT)]
+    public void StartExitModeScreenShot(IBuilderScene.SceneType sceneType)
     {
         // Arrange
         mainController.context.editorContext.saveController.Configure().GetSaveTimes().Returns(2);
-
+        builderScene.Configure().sceneType.Returns(sceneType);
+        mainController.sceneToEdit = builderScene;
+        
         // Act
         mainController.StartExitMode();
 

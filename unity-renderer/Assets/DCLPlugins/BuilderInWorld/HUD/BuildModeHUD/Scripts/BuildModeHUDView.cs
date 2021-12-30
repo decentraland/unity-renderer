@@ -51,7 +51,6 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
     [SerializeField] internal EntityInformationView entityInformationView;
     [SerializeField] internal FirstPersonModeView firstPersonModeView;
     [SerializeField] internal ShortcutsView shortcutsView;
-    [SerializeField] internal PublishPopupView publishPopupView;
     [SerializeField] internal DragAndDropSceneObjectView dragAndDropSceneObjectView;
     [SerializeField] internal PublishBtnView publishBtnView;
     [SerializeField] internal InspectorBtnView inspectorBtnView;
@@ -85,7 +84,6 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         this.controllers.entityInformationController.Initialize(entityInformationView);
         this.controllers.firstPersonModeController.Initialize(firstPersonModeView, this.controllers.tooltipController);
         this.controllers.shortcutsController.Initialize(shortcutsView);
-        this.controllers.publishPopupController.Initialize(publishPopupView);
         this.controllers.dragAndDropSceneObjectController.Initialize(this.controllers.sceneCatalogController, dragAndDropSceneObjectView);
         this.controllers.publishBtnController.Initialize(publishBtnView, this.controllers.tooltipController, this.controllers.feedbackTooltipController);
         this.controllers.inspectorBtnController.Initialize(inspectorBtnView, this.controllers.tooltipController);
@@ -94,6 +92,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         this.controllers.buildModeConfirmationModalController.Initialize(buildModeConfirmationModalView);
         this.controllers.topActionsButtonsController.Initialize(topActionsButtonsView, this.controllers.tooltipController);
         this.controllers.saveHUDController.Initialize(saveView);
+        this.controllers.newProjectDetailsController.Initialize(newProjectDetailsView);
     }
 
     private void OnDestroy()
@@ -105,7 +104,6 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         controllers.entityInformationController.Dispose();
         controllers.firstPersonModeController.Dispose();
         controllers.shortcutsController.Dispose();
-        controllers.publishPopupController.Dispose();
         controllers.dragAndDropSceneObjectController.Dispose();
         controllers.publishBtnController.Dispose();
         controllers.inspectorBtnController.Dispose();

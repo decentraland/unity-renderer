@@ -303,10 +303,10 @@ public static partial class BIWUtils
         int maxX = int.MinValue;
         int maxY = int.MinValue;
 
-        if (parcelScene.sceneData == null || parcelScene.sceneData.parcels == null)
+        if (parcelScene?.sceneData == null || parcelScene?.sceneData.parcels == null)
             return Vector3.zero;
 
-        foreach (Vector2Int vector in parcelScene.sceneData.parcels)
+        foreach (Vector2Int vector in parcelScene?.sceneData.parcels)
         {
             totalX += vector.x;
             totalZ += vector.y;

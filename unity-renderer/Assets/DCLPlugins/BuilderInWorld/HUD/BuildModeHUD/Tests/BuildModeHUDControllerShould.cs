@@ -24,7 +24,6 @@ namespace Tests.BuildModeHUDControllers
                 entityInformationController = Substitute.For<IEntityInformationController>(),
                 firstPersonModeController = Substitute.For<IFirstPersonModeController>(),
                 shortcutsController = Substitute.For<IShortcutsController>(),
-                publishPopupController = Substitute.For<IPublishPopupController>(),
                 dragAndDropSceneObjectController = Substitute.For<IDragAndDropSceneObjectController>(),
                 publishBtnController = Substitute.For<IPublishBtnController>(),
                 inspectorBtnController = Substitute.For<IInspectorBtnController>(),
@@ -54,7 +53,6 @@ namespace Tests.BuildModeHUDControllers
             builderEditorHudController.controllers.entityInformationController = null;
             builderEditorHudController.controllers.firstPersonModeController = null;
             builderEditorHudController.controllers.shortcutsController = null;
-            builderEditorHudController.controllers.publishPopupController = null;
             builderEditorHudController.controllers.dragAndDropSceneObjectController = null;
             builderEditorHudController.controllers.publishBtnController = null;
             builderEditorHudController.controllers.inspectorBtnController = null;
@@ -74,7 +72,6 @@ namespace Tests.BuildModeHUDControllers
             Assert.NotNull(builderEditorHudController.controllers.entityInformationController, "The entityInformationController is null!");
             Assert.NotNull(builderEditorHudController.controllers.firstPersonModeController, "The firstPersonModeController is null!");
             Assert.NotNull(builderEditorHudController.controllers.shortcutsController, "The shortcutsController is null!");
-            Assert.NotNull(builderEditorHudController.controllers.publishPopupController, "The publishPopupController is null!");
             Assert.NotNull(builderEditorHudController.controllers.dragAndDropSceneObjectController, "The dragAndDropSceneObjectController is null!");
             Assert.NotNull(builderEditorHudController.controllers.publishBtnController, "The publishBtnController is null!");
             Assert.NotNull(builderEditorHudController.controllers.inspectorBtnController, "The inspectorBtnController is null!");
@@ -151,37 +148,6 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void ConfirmPublicationDetailsCorrectly()
-        {
-            // Act
-            builderEditorHudController.ConfirmPublicationDetails();
-
-            // Assert
-            builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1)
-                                      .Configure(
-                                          Arg.Any<string>(),
-                                          Arg.Any<string>(),
-                                          Arg.Any<string>(),
-                                          Arg.Any<string>());
-            builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
-        }
-
-        [Test]
-        public void ConfirmPublishModalCorrectly()
-        {
-            // Arrange
-            bool publishConfirmed = false;
-            builderEditorHudController.OnConfirmPublishAction += (sceneName, sceneDesc, sceneScreenshot) => { publishConfirmed = true; };
-
-            // Act
-            builderEditorHudController.ConfirmPublishModal(BuildModeModalType.PUBLISH);
-
-            // Assert
-            builderEditorHudController.controllers.publishPopupController.Received(1).PublishStart();
-            Assert.IsTrue(publishConfirmed, "publishConfirmed is false!");
-        }
-
-        [Test]
         public void ExitStartCorrectly()
         {
             // Act
@@ -213,22 +179,6 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             Assert.IsTrue(exitConfirmed, "exitConfirmed is false!");
-        }
-
-        [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void PublishEndCorrectly(bool isOk)
-        {
-            // Arrange
-            string testErrorMessage = "Test text";
-
-            // Act
-            // TODO: Reimplement
-            // builderEditorHudController.PublishEnd(isOk, testErrorMessage);
-
-            // Assert
-            builderEditorHudController.controllers.publishPopupController.Received(1).PublishEnd(isOk, testErrorMessage);
         }
 
         [Test]
@@ -528,22 +478,6 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             Assert.AreEqual(isVisible, builderEditorHudController.isEntityListVisible);
             builderEditorHudController.view.Received(1).SetVisibilityOfInspector(isVisible);
-        }
-
-        [Test]
-        public void ConfigureConfirmationModalCorrectly()
-        {
-            // Arrange
-            string testTitle = "test title";
-            string testSubTitle = "test subTitle";
-            string testCancelText = "test cancel";
-            string testConfirmText = "test confirm";
-
-            // Act
-            builderEditorHudController.ConfigureConfirmationModal(testTitle, testSubTitle, testCancelText, testConfirmText);
-
-            // Assert
-            builderEditorHudController.controllers.buildModeConfirmationModalController.Received(1).Configure(testTitle, testSubTitle, testCancelText, testConfirmText);
         }
     }
 }

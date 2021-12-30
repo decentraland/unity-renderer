@@ -94,7 +94,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             entityInformationController = new EntityInformationController(),
             firstPersonModeController = new FirstPersonModeController(),
             shortcutsController = new ShortcutsController(),
-            publishPopupController = new PublishPopupController(),
             dragAndDropSceneObjectController = new DragAndDropSceneObjectController(),
             publishBtnController = new PublishBtnController(),
             inspectorBtnController = new InspectorBtnController(),
@@ -212,57 +211,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             confirmButtonText);
     }
 
-    internal void ConfirmPublicationDetails()
-    {
-        UnsubscribeConfirmationModal();
-
-        controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
-
-        ConfigureConfirmationModal(
-            BIWSettings.PUBLISH_MODAL_TITLE,
-            BIWSettings.PUBLISH_MODAL_SUBTITLE,
-            BIWSettings.PUBLISH_MODAL_CANCEL_BUTTON,
-            BIWSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
-
-        controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
-    }
-
-    internal void CancelPublishModal(BuildModeModalType modalType)
-    {
-        if (modalType != BuildModeModalType.PUBLISH)
-            return;
-
-        controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.PUBLISH);
-
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
-    }
-
-    internal void ConfirmPublishModal(BuildModeModalType modalType)
-    {
-        if (modalType != BuildModeModalType.PUBLISH)
-            return;
-
-        //TODO: Publish scene
-        //context.publisher.Publish();
-    }
-
-    private IEnumerator FakePublishProgress()
-    {
-        while (true)
-        {
-            float newPercentage = Mathf.Clamp(
-                controllers.publishPopupController.currentProgress + UnityEngine.Random.Range(10f, 30f),
-                controllers.publishPopupController.currentProgress,
-                99f);
-
-            controllers.publishPopupController.SetPercentage(newPercentage);
-
-            yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.5f));
-        }
-    }
-
     public void ExitStart()
     {
         if (controllers.buildModeConfirmationModalController.IsViewActive())
@@ -301,9 +249,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     private void UnsubscribeConfirmationModal()
     {
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
     }
 

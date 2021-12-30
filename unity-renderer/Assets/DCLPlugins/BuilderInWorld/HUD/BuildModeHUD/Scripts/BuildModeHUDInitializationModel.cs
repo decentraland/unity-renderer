@@ -9,7 +9,6 @@ public class BuildModeHUDInitializationModel
     public IEntityInformationController entityInformationController;
     public IFirstPersonModeController firstPersonModeController;
     public IShortcutsController shortcutsController;
-    public IPublishPopupController publishPopupController;
     public IDragAndDropSceneObjectController dragAndDropSceneObjectController;
     public IPublishBtnController publishBtnController;
     public IInspectorBtnController inspectorBtnController;
