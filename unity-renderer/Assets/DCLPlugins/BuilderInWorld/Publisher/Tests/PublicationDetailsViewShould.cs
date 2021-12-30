@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Tests.BuildModeHUDViews
+namespace Tests.PublisherTest
 {
     public class PublicationDetailsViewShould
     {
