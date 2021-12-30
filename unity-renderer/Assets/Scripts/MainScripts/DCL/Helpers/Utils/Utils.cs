@@ -7,12 +7,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Configuration;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace DCL.Helpers
 {
@@ -117,8 +119,8 @@ namespace DCL.Helpers
                 CoroutineStarter.Start(ForceUpdateLayoutRoutine(rt));
             else
             {
-                Utils.InverseTransformChildTraversal<RectTransform>(
-                    (x) => { Utils.ForceRebuildLayoutImmediate(x); },
+                InverseTransformChildTraversal<RectTransform>(
+                    (x) => { ForceRebuildLayoutImmediate(x); },
                     rt);
             }
         }
@@ -155,8 +157,8 @@ namespace DCL.Helpers
         {
             yield return null;
 
-            Utils.InverseTransformChildTraversal<RectTransform>(
-                (x) => { Utils.ForceRebuildLayoutImmediate(x); },
+            InverseTransformChildTraversal<RectTransform>(
+                (x) => { ForceRebuildLayoutImmediate(x); },
                 rt);
         }
 
@@ -198,7 +200,7 @@ namespace DCL.Helpers
             }
         }
 
-        public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
+        public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : Component
         {
             T component = gameObject.GetComponent<T>();
 
@@ -215,7 +217,7 @@ namespace DCL.Helpers
             //NOTE(Brian): This closure is called when the download is a success.
             void SuccessInternal(IWebRequestAsyncOperation request) { OnSuccess?.Invoke(DownloadHandlerTexture.GetContent(request.webRequest)); }
 
-            var asyncOp = DCL.Environment.i.platform.webRequest.GetTexture(
+            var asyncOp = Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
                 OnSuccess: SuccessInternal,
                 OnFail: OnFail,
@@ -230,7 +232,7 @@ namespace DCL.Helpers
             {
                 JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
             }
-            catch (System.ArgumentException e)
+            catch (ArgumentException e)
             {
                 Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
                 return false;
@@ -239,7 +241,7 @@ namespace DCL.Helpers
             return true;
         }
 
-        public static T FromJsonWithNulls<T>(string json) { return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json); }
+        public static T FromJsonWithNulls<T>(string json) { return JsonConvert.DeserializeObject<T>(json); }
 
         public static T SafeFromJson<T>(string json)
         {
@@ -253,7 +255,7 @@ namespace DCL.Helpers
                 {
                     returningValue = JsonUtility.FromJson<T>(json);
                 }
-                catch (System.ArgumentException e)
+                catch (ArgumentException e)
                 {
                     Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
                 }
@@ -264,7 +266,7 @@ namespace DCL.Helpers
             return returningValue;
         }
 
-        public static GameObject AttachPlaceholderRendererGameObject(UnityEngine.Transform targetTransform)
+        public static GameObject AttachPlaceholderRendererGameObject(Transform targetTransform)
         {
             var placeholderRenderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<MeshRenderer>();
 
@@ -276,16 +278,16 @@ namespace DCL.Helpers
             return placeholderRenderer.gameObject;
         }
 
-        public static void SafeDestroy(UnityEngine.Object obj)
+        public static void SafeDestroy(Object obj)
         {
             if (obj is Transform)
                 return;
             
 #if UNITY_EDITOR
             if (Application.isPlaying)
-                UnityEngine.Object.Destroy(obj);
+                Object.Destroy(obj);
             else
-                UnityEngine.Object.DestroyImmediate(obj, false);
+                Object.DestroyImmediate(obj, false);
 #else
                 UnityEngine.Object.Destroy(obj);
 #endif
@@ -345,7 +347,7 @@ namespace DCL.Helpers
             public static T GetFromJsonArray(string jsonArray)
             {
                 string newJson = $"{{ \"value\": {jsonArray}}}";
-                return JsonUtility.FromJson<Utils.DummyJsonUtilityFromArray<T>>(newJson).value;
+                return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
             }
         }
 
@@ -422,10 +424,7 @@ namespace DCL.Helpers
         // NOTE: This should come from browser's pointerlockchange callback
         public static void BrowserSetCursorState(bool locked)
         {
-            if (!locked && !requestedUnlock)
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
+            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
             
             IsCursorLocked = locked;
             Cursor.visible = !locked;
@@ -439,7 +438,7 @@ namespace DCL.Helpers
         {
             foreach (Transform child in transform)
             {
-                UnityEngine.Object.Destroy(child.gameObject);
+                Object.Destroy(child.gameObject);
             }
         }
 
