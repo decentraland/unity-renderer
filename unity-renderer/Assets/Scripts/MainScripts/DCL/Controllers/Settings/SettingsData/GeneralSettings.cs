@@ -10,7 +10,6 @@ namespace DCL.SettingsCommon
         public float mouseSensitivity;
         public float voiceChatVolume;
         public VoiceChatAllow voiceChatAllow;
-        public bool autoqualityOn;
         public float scenesLoadRadius;
         public float avatarsLODDistance;
         public float maxNonLODAvatars;

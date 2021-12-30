@@ -131,6 +131,7 @@ namespace DCL.Configuration
         public static readonly Vector3 MORDOR = new Vector3(10000, 10000, 10000);
         public static readonly int MORDOR_SCALAR = 10000;
         public const float UNINITIALIZED_FLOAT = 999999f;
+        public static readonly string AVATAR_GLOBAL_SCENE_ID = "dcl-gs-avatars";
     }
 
     public static class InputSettings

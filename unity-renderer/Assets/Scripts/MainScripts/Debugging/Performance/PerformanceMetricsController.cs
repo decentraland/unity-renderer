@@ -18,7 +18,7 @@ namespace DCL
 
         public void Update()
         {
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_WEBGL
             if (!CommonScriptableObjects.focusState.Get())
                 return;
 #endif
@@ -29,7 +29,10 @@ namespace DCL
 
             tracker.AddDeltaTime(Time.deltaTime);
 
-            performanceMetricsDataVariable?.Set(tracker.CurrentFPSCount(), tracker.CurrentHiccupCount(), tracker.HiccupsSum, tracker.GetTotalSeconds());
+            performanceMetricsDataVariable.Set(tracker.CurrentFPSCount(), 
+                tracker.CurrentHiccupCount(),
+                tracker.HiccupsSum, 
+                tracker.GetTotalSeconds());
 
             encodedSamples[currentIndex++] = (char)deltaInMs;
 

@@ -120,6 +120,11 @@ namespace DCL.Components
             graphicRaycaster = canvasGameObject.AddComponent<GraphicRaycaster>();
 
             canvas.sortingOrder = -1;
+            
+            if (scene.isPersistent && scene.sceneData.id != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
+            {
+                canvas.sortingOrder -= 1;
+            }
 
             // We create a middleman-gameobject to change the size of the parcel-devs accessible canvas, to have its bottom limit at the taskbar height, etc.
             GameObject resizedPanel = new GameObject("ResizeUIArea");
