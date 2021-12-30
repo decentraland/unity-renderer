@@ -378,11 +378,6 @@ namespace DCL.Helpers
             {
                 return;
             }
-            // if (requestedUnlock || requestedLock)
-            // {
-            //     return;
-            // }
-            // requestedLock = true;
 #endif
             Cursor.visible = false;
             IsCursorLocked = true;
@@ -401,11 +396,6 @@ namespace DCL.Helpers
             {
                 return;
             }
-            // if (requestedUnlock || requestedLock)
-            // {
-            //     return;
-            // }
-            // requestedUnlock = true;
 #endif
             Cursor.visible = true;
             IsCursorLocked = false;
@@ -418,9 +408,6 @@ namespace DCL.Helpers
 
         //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
         //             behaviour using strategy pattern instead of this.
-        private static bool requestedUnlock = false;
-        private static bool requestedLock = false;
-
         // NOTE: This should come from browser's pointerlockchange callback
         public static void BrowserSetCursorState(bool locked)
         {
@@ -428,8 +415,6 @@ namespace DCL.Helpers
             
             IsCursorLocked = locked;
             Cursor.visible = !locked;
-            requestedUnlock = false;
-            requestedLock = false;
         }
 
         #endregion
