@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using GPUSkinning;
+using UnityEngine;
 using UnityGLTF.Cache;
 
 namespace UnityGLTF
@@ -14,6 +16,8 @@ namespace UnityGLTF
         /// and the data gets cleaned up when the ref counts goes to 0.
         /// </summary>
         private RefCountedCacheData cachedData;
+        
+        // private List<SimpleGPUSkinning> gpuSkinnings = new List<SimpleGPUSkinning>();
 
         public RefCountedCacheData CachedData
         {
@@ -51,9 +55,30 @@ namespace UnityGLTF
 
             InstantiatedGLTFObject newGltfObjectComponent = duplicatedObject.GetComponent<InstantiatedGLTFObject>();
             newGltfObjectComponent.CachedData = CachedData;
+            
+            // newGltfObjectComponent.SetupGPUSkinning();
 
             return newGltfObjectComponent;
         }
+        
+        /*public void SetupGPUSkinning()
+        {
+            gpuSkinnings.Clear();
+            
+            SkinnedMeshRenderer[] renderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            for (var i = 0; i < renderers.Length; i++)
+            {
+                gpuSkinnings.Add(new SimpleGPUSkinning(renderers[i] as SkinnedMeshRenderer, true, 1, 3));
+            }
+        }
+
+        private void LateUpdate()
+        {
+            for (var i = 0; i < gpuSkinnings.Count; i++)
+            {
+                gpuSkinnings[i].Update();
+            }
+        }*/
 
         private void OnDestroy()
         {

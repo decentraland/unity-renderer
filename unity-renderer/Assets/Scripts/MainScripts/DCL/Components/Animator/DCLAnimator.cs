@@ -1,11 +1,8 @@
-using System;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
-using DCL.Controllers;
-using GPUSkinning;
 
 namespace DCL.Components
 {
@@ -41,7 +38,6 @@ namespace DCL.Components
         public Animation animComponent = null;
 
         private string lastLoadedModelSrc;
-        private List<SimpleGPUSkinning> gpuSkinnings = new List<SimpleGPUSkinning>();
 
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
@@ -109,27 +105,6 @@ namespace DCL.Components
             {
                 animationShape.OnLoaded -= OnShapeLoaded;
                 animationShape.OnLoaded += OnShapeLoaded;
-            }
-
-            SetupGPUSkinning(shapeEntity.renderers);
-            // entity.meshesInfo.UpdateRenderersCollection();
-        }
-
-        private void SetupGPUSkinning(Renderer[] renderers)
-        {
-            gpuSkinnings.Clear();
-            for (var i = 0; i < renderers.Length; i++)
-            {
-                if (renderers[i] is SkinnedMeshRenderer)
-                    gpuSkinnings.Add(new SimpleGPUSkinning(renderers[i] as SkinnedMeshRenderer, true, 1, 3));
-            }
-        }
-
-        private void LateUpdate()
-        {
-            for (var i = 0; i < gpuSkinnings.Count; i++)
-            {
-                gpuSkinnings[i].Update();
             }
         }
 

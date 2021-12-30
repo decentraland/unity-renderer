@@ -73,6 +73,9 @@ namespace DCL.Components
 
             for (var i = 0; i < meshRenderers.Length; i++)
             {
+                /*if(meshRenderers[i].enabled && !shouldBeVisible)
+                    Debug.Log("PRAVS - TURNING RENDERER OFF!!!", meshRenderers[i].gameObject);*/
+                    
                 meshRenderers[i].enabled = shouldBeVisible;
 
                 if (meshRenderers[i].transform.childCount > 0)

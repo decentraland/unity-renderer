@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using DCL;
+using GPUSkinning;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -1617,7 +1618,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual IEnumerator ConstructPrimitiveMaterials(GLTFMesh mesh, int meshId, int primitiveIndex)
+        protected virtual IEnumerator ConstructPrimitiveMaterials(GLTFMesh mesh, int meshId, int primitiveIndex, bool isSkinnedMesh = false)
         {
             var primitive = mesh.Primitives[primitiveIndex];
             int materialIndex = primitive.Material != null ? primitive.Material.Id : -1;
@@ -1630,7 +1631,7 @@ namespace UnityGLTF
             if (useMaterialTransition && initialVisibility)
             {
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
+                var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController, isSkinnedMesh);
 
                 if (asyncCoroutineHelper != null)
                 {
@@ -1648,7 +1649,7 @@ namespace UnityGLTF
                     renderer.sharedMaterial = LoadingTextureMaterial;
                 }
 
-                yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
+                yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null, isSkinnedMesh);
 
                 if (LoadingTextureMaterial == null)
                 {
@@ -1696,25 +1697,28 @@ namespace UnityGLTF
                         skinnedMeshRenderer.sharedMesh = curMesh;
                         skinnedMeshRenderer.quality = SkinQuality.Auto;
                         renderer = skinnedMeshRenderer;
-                        renderer.enabled = initialVisibility;
 
                         if (HasBones(skin))
                         {
                             yield return SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh);
                         }
-
-                        OnRendererCreated?.Invoke(skinnedMeshRenderer);
                     }
                     else
                     {
                         meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
                         renderer = meshRenderer;
-                        renderer.enabled = initialVisibility;
-
-                        OnRendererCreated?.Invoke(meshRenderer);
                     }
-
+                    
                     yield return ConstructPrimitiveMaterials(mesh, meshId, i);
+                    yield return null;
+                    /*if (skinnedMeshRenderer != null)
+                    {
+                        new SimpleGPUSkinning(skinnedMeshRenderer, true, 1, 3);
+                        renderer = primitiveObj.GetComponent<MeshRenderer>();
+                    }*/
+                    
+                    renderer.enabled = initialVisibility;
+                    OnRendererCreated?.Invoke(renderer);
                 }
                 else
                 {
@@ -1741,7 +1745,7 @@ namespace UnityGLTF
             }
         }
 
-        IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
+        IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController, bool isSkinnedMesh = false)
         {
             bool shouldUseDefaultMaterial = primitive.Material == null;
 
@@ -1750,7 +1754,7 @@ namespace UnityGLTF
             if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
                 (!shouldUseDefaultMaterial && _assetCache.MaterialCache[materialIndex] == null))
             {
-                yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex);
+                yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex, isSkinnedMesh);
             }
 
             MaterialCacheData materialCacheData =
@@ -1770,10 +1774,20 @@ namespace UnityGLTF
             if (matController != null)
             {
                 matController.OnDidFinishLoading(material);
+                
+                /*if (IsDebugMaterial(material.name))
+                {
+                    Debug.Log("PRAVS - Set up material - A: " + material.name, matController.placeholderRenderer.gameObject);
+                }*/
             }
             else
             {
                 renderer.sharedMaterial = material;
+
+                /*if (IsDebugMaterial(material.name))
+                {
+                    Debug.Log("PRAVS - Set up material - B: " + material.name, renderer.gameObject);
+                }*/
             }
         }
 
@@ -2107,7 +2121,7 @@ namespace UnityGLTF
             return areValid;
         }
 
-        protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex)
+        protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex, bool isSkinnedMesh = false)
         {
             IUniformMap mapper;
             const string specGlossExtName = KHR_materials_pbrSpecularGlossinessExtensionFactory.EXTENSION_NAME;
@@ -2135,8 +2149,20 @@ namespace UnityGLTF
             MaterialCacheData materialWrapper = new MaterialCacheData();
             materialWrapper.GLTFMaterial = def;
 
+            if(mapper.Material.name == "Wcoat_MAT")
+                Debug.Log("PRAVS - ConstructMaterial - WEARABLE COAT!!!! - is skinned? " + isSkinnedMesh);
+            
+            if(isSkinnedMesh)
+                mapper.Material.EnableKeyword("_GPU_SKINNING");
+
+            // bool isDebugMaterial = IsDebugMaterial(mapper.Material.name);
+            
             // Add the material before-hand so it gets freed if the importing is cancelled.
-            string materialCRC = mapper.Material.ComputeCRC().ToString();
+            string materialCRC = GenerateMaterialCachingKey(mapper.Material);
+            
+            /*if(isDebugMaterial)
+                Debug.Log($"PRAVS - ConstructMaterial - 1 - {mapper.Material.name} - CRC: {materialCRC} - GPU-S enabled? {mapper.Material.IsKeywordEnabled("_GPU_SKINNING")}");*/
+            
             materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
             materialWrapper.CachedMaterial.IncreaseRefCount();
 
@@ -2249,7 +2275,10 @@ namespace UnityGLTF
 
             mapper.EmissiveFactor = def.EmissiveFactor;
 
-            materialCRC = mapper.Material.ComputeCRC().ToString();
+            materialCRC = GenerateMaterialCachingKey(mapper.Material);
+            
+            /*if(isDebugMaterial)
+                Debug.Log($"PRAVS - ConstructMaterial - 2 - {mapper.Material.name} - CRC: {materialCRC} - GPU-S enabled? {mapper.Material.IsKeywordEnabled("_GPU_SKINNING")}");*/
 
             if ( !addMaterialsToPersistentCaching )
             {
@@ -2260,17 +2289,48 @@ namespace UnityGLTF
 
             if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(materialCRC))
             {
+                /*if(isDebugMaterial)
+                    Debug.Log($"PRAVS - ConstructMaterial - 3A - {mapper.Material.name} - CRC: {materialCRC} - GPU-S enabled? {mapper.Material.IsKeywordEnabled("_GPU_SKINNING")}");*/
+                
                 materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
                 materialWrapper.CachedMaterial.IncreaseRefCount();
                 PersistentAssetCache.MaterialCacheByCRC.Add(materialCRC, materialWrapper.CachedMaterial);
             }
             else
             {
+                /*if(isDebugMaterial)
+                    Debug.Log($"PRAVS - ConstructMaterial - 3B - {mapper.Material.name} - CRC: {materialCRC} - GPU-S enabled? {mapper.Material.IsKeywordEnabled("_GPU_SKINNING")}");*/
+                
                 Object.Destroy( mapper.Material );
                 materialWrapper.CachedMaterial = PersistentAssetCache.MaterialCacheByCRC[materialCRC];
                 materialWrapper.CachedMaterial.IncreaseRefCount();
             }
         }
+        
+        string GenerateMaterialCachingKey(Material mat)
+        {
+            return mat.ComputeCRC().ToString() + Shader.PropertyToID(string.Join("", mat.shaderKeywords)).ToString();
+        }
+        
+        /*string[] debugMaterials = new []
+        {
+            "AtlasSolid",
+            "AvatarSkin_MAT",
+            "Picasso_TX",
+            "AvatarsMaskMouth_MAT",
+            "AvatarMaskEyes_MAT",
+            "AvatarSkin_MAT.001",
+            "Painted_TShirt_MAT",
+            "Pants",
+            "AvatarEyes_MAT",
+            "AvatarMouth_MAT",
+            "AvatarWearable_MAT",
+            "sporty_hat_male_material"
+        };
+        bool IsDebugMaterial(string materialName)
+        {  
+            return debugMaterials.Contains(materialName);
+        }*/
 
         protected virtual int GetTextureSourceId(GLTFTexture texture) { return texture.Source.Id; }
 

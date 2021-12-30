@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityGLTF.Cache;
 
@@ -25,8 +23,6 @@ namespace DCL.Helpers
         public static Dictionary<string, Shader> shaderByHash = new Dictionary<string, Shader>();
 
         private static Shader mainShader;
-
-        public static string ComputeHash(Material mat) { return mat.ComputeCRC().ToString(); }
 
         static Shader EnsureMainShader()
         {
@@ -65,15 +61,17 @@ namespace DCL.Helpers
 
             if ((cachingFlags & Mode.CACHE_MATERIALS) != 0)
             {
-                int crc = mat.ComputeCRC();
-                string hash = crc.ToString();
+                string hash = GenerateMaterialCachingKey(mat);
 
+                /*if(IsDebugMaterial(mat.name))
+                    Debug.Log($"PRAVS - ProcessSingleMaterial - {mat.name} - CRC: {hash} - GPU-S enabled? {mat.IsKeywordEnabled("_GPU_SKINNING")}");*/
+                
                 RefCountedMaterialData refCountedMat;
 
                 if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(hash))
                 {
 #if UNITY_EDITOR
-                    materialCopy.name += $" (crc: {materialCopy.ComputeCRC()})";
+                    materialCopy.name += $" (crc: {materialCopy.ComputeCRC().ToString() + Shader.PropertyToID(string.Join("", materialCopy.shaderKeywords)).ToString()})";
 #endif
                     PersistentAssetCache.MaterialCacheByCRC.Add(hash, new RefCountedMaterialData(hash, materialCopy));
                 }
@@ -85,6 +83,32 @@ namespace DCL.Helpers
 
             return materialCopy;
         }
+
+        static string GenerateMaterialCachingKey(Material mat)
+        {
+            return mat.ComputeCRC().ToString() + Shader.PropertyToID(string.Join("", mat.shaderKeywords)).ToString();
+        }
+        
+        /*static bool IsDebugMaterial(string materialName)
+        {
+            string[] debugMaterials = new []
+            {
+                "AtlasSolid",
+                "AvatarSkin_MAT",
+                "Picasso_TX",
+                "AvatarsMaskMouth_MAT",
+                "AvatarMaskEyes_MAT",
+                "AvatarSkin_MAT.001",
+                "Painted_TShirt_MAT",
+                "Pants",
+                "AvatarEyes_MAT",
+                "AvatarMouth_MAT",
+                "AvatarWearable_MAT",
+                "sporty_hat_male_material"
+            };
+            
+            return debugMaterials.Contains(materialName);
+        }*/
 
         public static IEnumerator Process(List<Renderer> renderers, bool enableRenderers = true, Mode cachingFlags = Mode.CACHE_EVERYTHING)
         {

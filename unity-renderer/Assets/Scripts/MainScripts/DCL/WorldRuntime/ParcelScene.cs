@@ -460,6 +460,8 @@ namespace DCL.Controllers
                 classId = model.GetClassIdFromType();
             }
 
+            Debug.Log($"PRAVS - EntityComponentCreateOrUpdateWithModel - entity: {entityId} - classID: {classId} - data: {data as string}");
+            
             if (!entity.components.ContainsKey(classId))
             {
                 var factory = Environment.i.world.componentFactory;

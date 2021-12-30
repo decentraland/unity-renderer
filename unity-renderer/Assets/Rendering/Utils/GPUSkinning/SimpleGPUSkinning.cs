@@ -51,6 +51,7 @@ namespace GPUSkinning
 
     public class SimpleGPUSkinning : IGPUSkinning
     {
+        private const string GPU_SKINNING_KEYWORD = "_GPU_SKINNING";
         private static readonly int BONE_MATRICES = Shader.PropertyToID("_Matrices");
         private static readonly int BIND_POSES = Shader.PropertyToID("_BindPoses");
         private static readonly int RENDERER_WORLD_INVERSE = Shader.PropertyToID("_WorldInverse");
@@ -60,8 +61,10 @@ namespace GPUSkinning
         private Transform[] bones;
         private Matrix4x4[] boneMatrices;
 
+        private bool isAvatar = false;
         public SimpleGPUSkinning (SkinnedMeshRenderer skr, bool encodeBindPoses = true, int bone01DataUVChannel = -1, int bone23DataUVChannel = 1)
         {
+            isAvatar = bone01DataUVChannel == -1;
             Bounds targetBounds = new Bounds(new Vector3(0, 0, 0), new Vector3(1000, 1000, 1000));
             
             if ( encodeBindPoses )
@@ -77,23 +80,40 @@ namespace GPUSkinning
             meshFilter.sharedMesh = skr.sharedMesh;
 
             renderer = go.AddComponent<MeshRenderer>();
+            renderer.enabled = skr.enabled;
             
             // TODO: Find a way of using sharedMaterials here, maybe caching 1 "shareable" material with the GPU_SKINNING
             // keyword enabled? otherwise, if we use always sharedMaterials here, all the non-skinned meshes break
-            renderer.materials = skr.materials;
+            // renderer.materials = isAvatar ? skr.sharedMaterials : skr.materials;
+            Material[] materials;
+            // if (isAvatar)
+            // {
+                renderer.sharedMaterials = skr.sharedMaterials;
+                materials = renderer.sharedMaterials;
+                /*renderer.sharedMaterials = skr.sharedMaterials;
+                materials = renderer.materials;*/
+            // }
+            // else
+            // {
+            //     renderer.materials = skr.sharedMaterials;
+            //     materials = renderer.materials;
+            // }
             
-            for (var i = 0; i < renderer.materials.Length; i++)
+            for (var i = 0; i < materials.Length; i++)
             {
-                var material = renderer.materials[i];
+                var material = materials[i];
                 
                 InitializeShaderMatrix(material, BIND_POSES);
                 material.SetMatrixArray(BIND_POSES, skr.sharedMesh.bindposes.ToArray());
-                material.EnableKeyword("_GPU_SKINNING");
+                
+                // WEARABLES SHOULD ALREADY HAVE THIS KEYWORD ON FROM THE GLTFSceneImporter...
+                // if(material.name != "AvatarSkin_MAT" && material.name != "AvatarWearable_MAT")
+                /*if(isAvatar)
+                    material.EnableKeyword(GPU_SKINNING_KEYWORD); // at GLTFSceneImporter.ConstructMaterial()*/
             }
 
             bones = skr.bones;
             
-            bool isAvatar = bone01DataUVChannel == -1;
             if (isAvatar)
             {
                 meshFilter.mesh.bounds = new Bounds(new Vector3(0, 2, 0), new Vector3(1, 3, 1));
@@ -106,6 +126,9 @@ namespace GPUSkinning
             UpdateMatrices();
 
             Object.Destroy(skr);
+
+            go.name += "-GPUSkinned";
+            // Debug.Log("PRAVS - Destroyed SkinnedMeshRenderer in object", go);
         }
 
         public void Update()
@@ -125,11 +148,10 @@ namespace GPUSkinning
                 boneMatrices[i] = bone.localToWorldMatrix;
             }
 
-            // TODO: Find a way of using sharedMaterials here, maybe caching 1 "shareable" material with the GPU_SKINNING
-            // keyword enabled? otherwise, if we use always sharedMaterials here, all the non-skinned meshes break
-            for (int index = 0; index < renderer.materials.Length; index++)
+            Material[] materials = renderer.sharedMaterials;
+            for (int index = 0; index < materials.Length; index++)
             {
-                Material material = renderer.materials[index];
+                Material material = materials[index];
                 
                 InitializeShaderMatrix(material, BONE_MATRICES);
                 material.SetMatrix(RENDERER_WORLD_INVERSE, renderer.transform.worldToLocalMatrix);

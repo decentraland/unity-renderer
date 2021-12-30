@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using DCL.Helpers;
 using DCL.Models;
+using GPUSkinning;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityGLTF;
@@ -57,6 +58,20 @@ namespace DCL
             if (asset?.container != null)
             {
                 asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
+                
+                // TOKY RABBIT QmYwQSzqEFgYowPW38BgSqVB2q44j8RtmLUu4BnuGcoHMY
+                // Setup GPU Skinning
+                int count = asset.renderers.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    if (asset.renderers[i] is SkinnedMeshRenderer)
+                    {
+                        var rendererGO = asset.renderers[i].gameObject;
+                        new SimpleGPUSkinning(asset.renderers[i] as SkinnedMeshRenderer, true, 1, 3);
+                        asset.renderers[i] = rendererGO.GetComponent<MeshRenderer>();
+                    }
+                }
+                
                 settings.ApplyAfterLoad(asset.container.transform);
             }
         }
@@ -106,7 +121,7 @@ namespace DCL
             // TODO(Brian): SilentForget nulls this. Remove this line after fixing the GLTF cancellation. 
             if ( asset == null )
                 return;
-
+            
             asset.renderers.Add(r);
         }
 
@@ -165,13 +180,9 @@ namespace DCL
         protected override Asset_GLTF GetAsset(object id)
         {
             if (settings.forceNewInstance)
-            {
                 return ((AssetLibrary_GLTF)library).GetCopyFromOriginal(id);
-            }
-            else
-            {
-                return base.GetAsset(id);
-            }
+            
+            return base.GetAsset(id);
         }
 
         // NOTE: master promise are silently forgotten. We should make sure that they are loaded anyway since
