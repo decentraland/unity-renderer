@@ -35,7 +35,7 @@ namespace DCL.Builder
             projectPublisher.Initialize();
             progressController.Initialize();
 
-            landPublisher.OnPublishPressed += PublishPressedDeployment;
+            landPublisher.OnPublishPressed += PublishLandScene;
             projectPublisher.OnPublishPressed += ConfirmDeployment;
             progressController.OnConfirm += StartDeployment;
 
@@ -47,7 +47,7 @@ namespace DCL.Builder
 
         public void Dipose()
         {
-            landPublisher.OnPublishPressed -= PublishPressedDeployment;
+            landPublisher.OnPublishPressed -= PublishLandScene;
             projectPublisher.OnPublishPressed -= ConfirmDeployment;
             progressController.OnConfirm -= StartDeployment;
 
@@ -75,7 +75,20 @@ namespace DCL.Builder
             }
         }
 
-        internal void PublishPressedDeployment(IBuilderScene scene) { ConfirmDeployment(scene, null); }
+        internal void PublishLandScene(IBuilderScene scene)
+        {
+            List<LandWithAccess> landWithAccesses = new List<LandWithAccess>();
+            foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
+            {
+                if (land.scenes.FirstOrDefault()?.projectId == scene.manifest.project.id)
+                    landWithAccesses.Add(land);
+            }
+
+            PublishInfo publishInfo = new PublishInfo();
+            publishInfo.rotation = PublishInfo.ProjectRotation.NORTH;
+            publishInfo.landsToPublish = landWithAccesses.ToArray();
+            ConfirmDeployment(scene, publishInfo);
+        }
 
         internal void ConfirmDeployment(IBuilderScene scene, PublishInfo info)
         {

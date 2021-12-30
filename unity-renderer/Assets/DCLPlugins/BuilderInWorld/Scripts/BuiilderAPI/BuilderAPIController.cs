@@ -293,9 +293,9 @@ public class BuilderAPIController : IBuilderAPIController
         return fullNewProjectPromise;
     }
 
-    public Promise<Manifest> CreateNewProject(ProjectData newProject)
+    public Promise<ProjectData> CreateNewProject(ProjectData newProject)
     {
-        Promise<Manifest> fullNewProjectPromise = new Promise<Manifest>();
+        Promise<ProjectData> fullNewProjectPromise = new Promise<ProjectData>();
         Manifest builderManifest = BIWUtils.CreateManifestFromProject(newProject);
 
         JsonSerializerSettings dateFormatSettings = new JsonSerializerSettings
@@ -313,7 +313,7 @@ public class BuilderAPIController : IBuilderAPIController
         {
             var apiResponse = apiResponseResolver.GetResponseFromCall(result);
             if (apiResponse.ok)
-                fullNewProjectPromise.Resolve((Manifest)apiResponse.data);
+                fullNewProjectPromise.Resolve(JsonConvert.DeserializeObject<ProjectData>(apiResponse.data.ToString()));
             else
                 fullNewProjectPromise.Reject(apiResponse.error);
         });

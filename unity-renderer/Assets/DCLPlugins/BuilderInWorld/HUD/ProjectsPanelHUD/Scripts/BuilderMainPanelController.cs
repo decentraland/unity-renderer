@@ -198,14 +198,20 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
     private void CreateNewProject(ProjectData project)
     {
-        Promise<Manifest> projectPromise = context.builderAPIController.CreateNewProject(project);
+        Promise<ProjectData> projectPromise = context.builderAPIController.CreateNewProject(project);
 
-        projectPromise.Then( OpenEditorFromManifest);
+        projectPromise.Then( OpenEditorFromProjectData);
 
         projectPromise.Catch( errorString =>
         {
             BIWUtils.ShowGenericNotification(CREATING_PROJECT_ERROR + errorString);
         });
+    }
+
+    private void OpenEditorFromProjectData(ProjectData projectData)
+    {
+        var manifest = BIWUtils.CreateManifestFromProject(projectData);
+        OpenEditorFromManifest(manifest);
     }
 
     private void OpenEditorFromManifest(Manifest manifest) { context.sceneManager.StartFlowFromProject(manifest); }
@@ -370,9 +376,9 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         try
         {
             ISceneData[] places = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                .Aggregate((i, j) => i.Concat(j))
-                .ToArray();
+                                       .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                                       .Aggregate((i, j) => i.Concat(j))
+                                       .ToArray();
 
             if (sendPlayerOpenPanelEvent)
                 PanelOpenEvent(lands);

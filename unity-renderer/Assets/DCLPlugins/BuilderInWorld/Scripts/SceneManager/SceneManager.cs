@@ -273,12 +273,21 @@ namespace DCL.Builder
                     }
                 });
 
-                if (context.editorContext.editorHUD != null)
+                if (context.editorContext.editorHUD == null )
+                    return;
+
+                if (sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
                     context.editorContext.editorHUD.ConfigureConfirmationModal(
                         BIWSettings.EXIT_MODAL_TITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
+                else
+                    context.editorContext.editorHUD.ConfigureConfirmationModal(
+                        BIWSettings.EXIT_MODAL_TITLE,
+                        BIWSettings.EXIT_MODAL_SUBTITLE,
+                        BIWSettings.EXIT_MODAL_CANCEL_BUTTON,
+                        BIWSettings.EXIT_MODAL_CONFIRM_BUTTON);
             }
             else
             {
