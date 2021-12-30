@@ -43,6 +43,11 @@ namespace DCL.Skybox
         public bool useAvatarRealtimeLightColor = true;
         public Gradient avatarLightColorGradient = new Gradient();
 
+        // Avatar Editor Color
+        public Color avatarEditorTintColor = Color.white;
+        public Vector3 avatarEditorLightDir = new Vector3(-18f, 144f, -72f);
+        public Color avatarEditorLightColor = Color.white;
+
         // Fog Properties
         public bool useFog = false;
         public FogMode fogMode = FogMode.ExponentialSquared;
@@ -98,38 +103,6 @@ namespace DCL.Skybox
                 RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Skybox;
             }
 
-            // Apply Avatar Color 
-            if (useAvatarGradient)
-            {
-                Shader.SetGlobalColor(ShaderUtils.TintColor, avatarTintGradient.Evaluate(normalizedDayTime));
-            }
-            else
-            {
-                Shader.SetGlobalColor(ShaderUtils.TintColor, avatarTintColor);
-            }
-
-            // Apply Avatar Light Direction
-            if (!useAvatarRealtimeDLDirection || directionalLightGO == null || !useDirectionalLight)
-            {
-                Shader.SetGlobalVector(ShaderUtils.LightDir, avatarLightConstantDir / 180);
-            }
-            else
-            {
-                Vector3 tempDir = directionalLightGO.transform.rotation.eulerAngles;
-                Shader.SetGlobalVector(ShaderUtils.LightDir, tempDir / 180);
-            }
-
-            // Apply Avatar Light Color
-            if (!useAvatarRealtimeLightColor || directionalLightGO == null || !useDirectionalLight)
-            {
-                Shader.SetGlobalColor(ShaderUtils.LightColor, avatarLightColorGradient.Evaluate(normalizedDayTime));
-            }
-            else
-            {
-                Shader.SetGlobalColor(ShaderUtils.LightColor, directionalLightLayer.lightColor.Evaluate(normalizedDayTime));
-            }
-
-
             //Fog Values
             RenderSettings.fog = useFog;
             if (useFog)
@@ -169,6 +142,46 @@ namespace DCL.Skybox
             CheckAndFireTimelineEvents(dayTime);
 
             ApplyAllSlots(selectedMat, dayTime, normalizedDayTime, slotCount, cycleTime);
+        }
+
+        public void ApplyInWorldAvatarColor(float normalizedDayTime, GameObject directionalLightGO)
+        {
+            if (useAvatarGradient)
+            {
+                Shader.SetGlobalColor(ShaderUtils.TintColor, avatarTintGradient.Evaluate(normalizedDayTime));
+            }
+            else
+            {
+                Shader.SetGlobalColor(ShaderUtils.TintColor, avatarTintColor);
+            }
+
+            // Apply Avatar Light Direction
+            if (!useAvatarRealtimeDLDirection || directionalLightGO == null || !useDirectionalLight)
+            {
+                Shader.SetGlobalVector(ShaderUtils.LightDir, avatarLightConstantDir / 180);
+            }
+            else
+            {
+                Vector3 tempDir = directionalLightGO.transform.rotation.eulerAngles;
+                Shader.SetGlobalVector(ShaderUtils.LightDir, tempDir / 180);
+            }
+
+            // Apply Avatar Light Color
+            if (!useAvatarRealtimeLightColor || directionalLightGO == null || !useDirectionalLight)
+            {
+                Shader.SetGlobalColor(ShaderUtils.LightColor, avatarLightColorGradient.Evaluate(normalizedDayTime));
+            }
+            else
+            {
+                Shader.SetGlobalColor(ShaderUtils.LightColor, directionalLightLayer.lightColor.Evaluate(normalizedDayTime));
+            }
+        }
+
+        public void ApplyEditorAvatarColor()
+        {
+            Shader.SetGlobalColor(ShaderUtils.TintColor, avatarEditorTintColor);
+            Shader.SetGlobalVector(ShaderUtils.LightDir, avatarEditorLightDir / 180);
+            Shader.SetGlobalColor(ShaderUtils.LightColor, avatarEditorLightColor);
         }
 
         void ApplyAllSlots(Material selectedMat, float dayTime, float normalizedDayTime, int slotCount = 5, float cycleTime = 24)
