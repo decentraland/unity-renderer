@@ -40,16 +40,14 @@ namespace DCL
             unlockInputAction.OnTriggered -= HandleUnlockInput;
         }
 
-        private void Update()
+        /*private void Update()
         {
-#if !WEB_PLATFORM
             //Browser is changing this automatically
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 UnlockCursor();
             }
-#endif
-        }
+        }*/
 
         public void LockCursor()
         {
