@@ -424,6 +424,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.dragStartedPoint = Vector3.zero;
         var mousePosition = new Vector3(100, 100, 100);
         var initialGameObjectPosition = mockedGameObject.transform.position;
+        godMode.raycastController = Substitute.For<IBIWRaycastController>();
         godMode.raycastController.Configure().GetFloorPointAtMouse(Arg.Any<Vector3>()).Returns(Vector3.one);
         
         //Act
