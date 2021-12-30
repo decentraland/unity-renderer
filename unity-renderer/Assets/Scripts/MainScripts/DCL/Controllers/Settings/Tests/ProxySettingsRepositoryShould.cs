@@ -26,7 +26,6 @@ namespace DCL.SettingsCommon.Tests
             var latestRepository = GivenSettingsRepositoryWithNoData();
             var editedSettings = new GeneralSettings
             {
-                autoqualityOn = true,
                 namesOpacity = 0.75f,
                 mouseSensitivity = 0.1f,
                 profanityChatFiltering = true,
@@ -48,13 +47,11 @@ namespace DCL.SettingsCommon.Tests
         {
             var latestEditedSettings = new GeneralSettings
             {
-                autoqualityOn = true,
                 namesOpacity = 0.75f,
                 mouseSensitivity = 0.1f,
             };
             var fallbackEditedSettings = new GeneralSettings
             {
-                autoqualityOn = true,
                 namesOpacity = 0.23f,
                 mouseSensitivity = 0.7f,
                 profanityChatFiltering = false,
@@ -77,7 +74,6 @@ namespace DCL.SettingsCommon.Tests
         {
             var latestEditedSettings = new GeneralSettings
             {
-                autoqualityOn = true,
                 namesOpacity = 0.75f,
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.VERIFIED_ONLY
             };
@@ -94,7 +90,6 @@ namespace DCL.SettingsCommon.Tests
             
             var settings = proxyRepository.Data;
             
-            Assert.AreEqual(latestEditedSettings.autoqualityOn, settings.autoqualityOn);
             Assert.AreEqual(latestEditedSettings.namesOpacity, settings.namesOpacity);
             Assert.AreEqual(latestEditedSettings.voiceChatAllow, settings.voiceChatAllow);
             Assert.AreEqual(defaultSettings.profanityChatFiltering, settings.profanityChatFiltering);
@@ -123,7 +118,6 @@ namespace DCL.SettingsCommon.Tests
                 maxNonLODAvatars = 1,
                 voiceChatVolume = 1,
                 voiceChatAllow = GeneralSettings.VoiceChatAllow.ALL_USERS,
-                autoqualityOn = false,
                 namesOpacity = 0.5f,
                 profanityChatFiltering = true
             };
@@ -145,8 +139,6 @@ namespace DCL.SettingsCommon.Tests
         private IPlayerPrefsSettingsByKey GivenDataStoredInPrefs(GeneralSettings settings)
         {
             var prefsByKey = Substitute.For<IPlayerPrefsSettingsByKey>();
-            prefsByKey.GetBool(PlayerPrefsGeneralSettingsRepository.AUTO_QUALITY_ON,
-                Arg.Any<bool>()).Returns(settings.autoqualityOn);
             prefsByKey.GetBool(PlayerPrefsGeneralSettingsRepository.PROFANITY_CHAT_FILTERING,
                 Arg.Any<bool>()).Returns(settings.profanityChatFiltering);
             prefsByKey.GetFloat(PlayerPrefsGeneralSettingsRepository.MOUSE_SENSITIVITY,

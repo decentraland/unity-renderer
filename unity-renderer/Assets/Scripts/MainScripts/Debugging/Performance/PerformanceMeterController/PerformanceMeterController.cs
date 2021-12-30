@@ -212,7 +212,6 @@ namespace DCL
                 + "\n * System Info -> Device Name -> " + SystemInfo.deviceName
                 + "\n * System Info -> Graphics Device Name -> " + SystemInfo.graphicsDeviceName
                 + "\n * System Info -> System RAM Size -> " + SystemInfo.systemMemorySize
-                + "\n * General Settings -> Auto Quality ON -> " + Settings.i.generalSettings.Data.autoqualityOn
                 + "\n * General Settings -> Scenes Load Radius -> " + Settings.i.generalSettings.Data.scenesLoadRadius
                 + "\n * Quality Settings -> FPSCap -> " + Settings.i.qualitySettings.Data.fpsCap
                 + "\n * Quality Settings -> Bloom -> " + Settings.i.qualitySettings.Data.bloom
