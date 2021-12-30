@@ -8,6 +8,12 @@ namespace DCL.Builder
     {
         void Initialize(IContext context);
         void Dipose();
+        
+        /// <summary>
+        /// This will start the publish flow for the given scene.
+        /// This handle all possible situations of the scene
+        /// </summary>
+        /// <param name="scene"></param>
         void StartPublish(IBuilderScene scene);
     }
 }

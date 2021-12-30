@@ -416,8 +416,6 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    // [Explicit("This test fails because camera lerps to the expected target and is not positioned correctly")]
-    // [Category("Explicit")]
     public void DragEditionGameObject()
     {
         //Arrange

@@ -58,6 +58,7 @@ namespace DCL.Builder
                 onSuccess?.Invoke(sceneSnapshot);
             });
         }
+        
         public void TakeSceneAerialScreenshot(IParcelScene parcelScene, IFreeCameraMovement.OnSnapshotsReady onSuccess)
         {
             Vector3 pointToLookAt = BIWUtils.CalculateUnityMiddlePoint(parcelScene);

@@ -13,17 +13,17 @@ namespace DCL.Builder
         /// <summary>
         /// If the publish is canceled this action will be called
         /// </summary>
-        public event Action OnCancel;
+        event Action OnCancel;
 
         /// <summary>
         /// If the publish button is pressed this action will be called
         /// </summary>
-        public event Action<PublishInfo> OnPublishButtonPressed;
+        event Action<PublishInfo> OnPublishButtonPressed;
 
         /// <summary>
         /// If the rotation of the project is changed, this event will be fired
         /// </summary>
-        public event Action<PublishInfo.ProjectRotation>  OnProjectRotateChange;
+        event Action<PublishInfo.ProjectRotation>  OnProjectRotateChange;
 
         /// <summary>
         /// Set the project to publish
@@ -255,7 +255,6 @@ namespace DCL.Builder
             gameObject.SetActive(true);
             mapView.SetVisible(true);
             modal.Show();
-
         }
 
         public void Hide()

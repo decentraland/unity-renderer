@@ -7,16 +7,30 @@ namespace DCL.Builder
 {
     public interface IPublishProgressController
     {
+        /// <summary>
+        /// Fired when the user confirm the deployment
+        /// </summary>
         event Action OnConfirm;
 
         void Initialize();
 
         void Dispose();
 
+        /// <summary>
+        /// This will show the confirmation pop up
+        /// </summary>
         void ShowConfirmDeploy();
 
+        /// <summary>
+        /// This is called when the deployment has succeed
+        /// </summary>
+        /// <param name="publishedScene"></param>
         void DeploySuccess(IBuilderScene publishedScene);
 
+        /// <summary>
+        /// This is called when the deployment has failed with the error as parameter
+        /// </summary>
+        /// <param name="error"></param>
         void DeployError(string error);
     }
 

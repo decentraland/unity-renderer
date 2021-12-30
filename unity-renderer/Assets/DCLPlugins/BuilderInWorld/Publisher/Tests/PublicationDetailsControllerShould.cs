@@ -55,7 +55,8 @@ namespace Tests.PublisherTest
             landPublisherController.isValidated = isValidated;
 
             bool isPublishClicked = false;
-            //TODO: reeimplmentar
+            //TODO: This will be reimplement when we have the definitive publish flow 
+            
             // publicationDetailsController.OnConfirm += () => isPublishClicked = true;
             //
             // // Act
@@ -116,7 +117,7 @@ namespace Tests.PublisherTest
         [Test]
         public void GetSceneNameCorrectly()
         {
-            //TODO: reeimplmentar
+            //TODO: This will be reimplement when we have the definitive publish flow 
             // Act
             // publicationDetailsController.GetSceneName();
 
@@ -128,7 +129,7 @@ namespace Tests.PublisherTest
         public void GetSceneDescriptionCorrectly()
         {
             // Act
-            //TODO: reeimplmentar
+            //TODO: This will be reimplement when we have the definitive publish flow 
             // publicationDetailsController.GetSceneDescription();
 
             // Assert
@@ -139,7 +140,7 @@ namespace Tests.PublisherTest
         public void GetSceneScreenshotTextureCorrectly()
         {
             // Act
-            //TODO: reeimplmentar
+            //TODO: This will be reimplement when we have the definitive publish flow 
             // publicationDetailsController.GetSceneScreenshotTexture();
 
             // Assert

@@ -24,8 +24,6 @@ namespace DCL.Builder
 
         private bool isVisible = false;
 
-        private Vector2 initialOffset = Vector2.zero;
-
         void Start()
         {
             scrollRect.onValueChanged.AddListener((x) =>
@@ -56,17 +54,7 @@ namespace DCL.Builder
         public void GoToCoords(Vector2Int coords)
         {
             //Reset scroll
-            Debug.Log("Before Scroll " + scrollRect.horizontalNormalizedPosition + "   Vertical " + scrollRect.verticalNormalizedPosition);
-
-            // scrollRect.horizontalNormalizedPosition = 0.5f;
-            // scrollRect.verticalNormalizedPosition = 0.5f;
-            // scrollRect.normalizedPosition = new Vector2(0.5f,0.5f);
-
-            // Debug.Log("After Scroll " + scrollRect.horizontalNormalizedPosition + "   Vertical " + scrollRect.verticalNormalizedPosition);
             scrollRectContentTransform.anchoredPosition = new Vector2(-1219, -1596);
-
-            Debug.Log("After Anchored " + scrollRect.horizontalNormalizedPosition + "   Vertical " + scrollRect.verticalNormalizedPosition);
-
             MapRenderer.i.atlas.CenterToTile(coords);
         }
 

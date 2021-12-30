@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Builder;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
@@ -46,8 +47,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestKernelPublishScene()
     {
         //Act
-        //TODO: Reimplement
-        //biwBridge.PublishScene(scene, "Test title", "Test description", "test_screenshot");
+        biwBridge.PublishScene(new Dictionary<string, object>(),new Dictionary<string, object>(), new CatalystSceneEntityMetadata(),new StatelessManifest());
 
         //Assert
         CheckMessageReceived();

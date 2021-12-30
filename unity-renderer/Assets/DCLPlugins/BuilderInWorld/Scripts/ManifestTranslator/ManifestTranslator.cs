@@ -16,7 +16,6 @@ namespace DCL.Builder
     {
         private static readonly Dictionary<string, int> idToHumanReadableDictionary = new Dictionary<string, int>()
         {
-
             { "Transform", (int) CLASS_ID_COMPONENT.TRANSFORM },
 
             { "GLTFShape", (int) CLASS_ID.GLTF_SHAPE },
@@ -132,8 +131,7 @@ namespace DCL.Builder
                     {
                         statelesComponent.value = entityComponent.Value.GetModel();
                     }
-
-
+                    
                     statlesEntity.components.Add(statelesComponent);
                 }
 

@@ -5,9 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Configuration;
 using TMPro;
 using UnityEngine;
@@ -91,17 +89,7 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.zero;
             t.anchoredPosition = Vector2.zero;
         }
-
-        public static byte[] ObjectToByteArray(object obj)
-        {
-            if (obj == null)
-                return null;
-            BinaryFormatter bf = new BinaryFormatter();
-            using MemoryStream ms = new MemoryStream();
-            bf.Serialize(ms, obj);
-            return ms.ToArray();
-        }
-
+        
         public static void SetToCentered(this RectTransform t)
         {
             t.anchorMin = Vector2.one * 0.5f;
