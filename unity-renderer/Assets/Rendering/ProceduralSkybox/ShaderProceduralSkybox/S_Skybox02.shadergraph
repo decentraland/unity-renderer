@@ -13586,7 +13586,7 @@
     },
     "m_Name": "HorizonPlaneColor",
     "m_DefaultReferenceName": "Color_b5aacb707ae84739a515f4f2ab0f6de6",
-    "m_OverrideReferenceName": "_HorizonPlaneColor",
+    "m_OverrideReferenceName": "_horizonPlaneColor",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
@@ -14079,9 +14079,9 @@
     "m_Guid": {
         "m_GuidSerialized": "0bef65aa-7c0f-4090-9b19-e5ab82fc57a5"
     },
-    "m_Name": "SmoothRange",
+    "m_Name": "PlaneSmoothRange",
     "m_DefaultReferenceName": "",
-    "m_OverrideReferenceName": "_smoothRange",
+    "m_OverrideReferenceName": "_planeSmoothRange",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
