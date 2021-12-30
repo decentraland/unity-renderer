@@ -378,11 +378,11 @@ namespace DCL.Helpers
             {
                 return;
             }
-            if (requestedUnlock || requestedLock)
-            {
-                return;
-            }
-            requestedLock = true;
+            // if (requestedUnlock || requestedLock)
+            // {
+            //     return;
+            // }
+            // requestedLock = true;
 #endif
             Cursor.visible = false;
             IsCursorLocked = true;
@@ -401,11 +401,11 @@ namespace DCL.Helpers
             {
                 return;
             }
-            if (requestedUnlock || requestedLock)
-            {
-                return;
-            }
-            requestedUnlock = true;
+            // if (requestedUnlock || requestedLock)
+            // {
+            //     return;
+            // }
+            // requestedUnlock = true;
 #endif
             Cursor.visible = true;
             IsCursorLocked = false;
