@@ -44,7 +44,7 @@ public class LandPublisherView : MonoBehaviour, ILandPublisherView
     [SerializeField] internal TMP_Text sceneDescriptionCharCounterText;
     [SerializeField] internal int sceneDescriptionCharLimit = 140;
 
-    private const string VIEW_PATH = "Common/PublicationDetailsView";
+    private const string VIEW_PATH = "Land/LandPublisherView";
 
     public string currentSceneName => sceneNameInput.text;
 

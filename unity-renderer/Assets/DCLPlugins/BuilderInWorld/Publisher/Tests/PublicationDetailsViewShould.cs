@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Tests.PublisherTest
+namespace Tests.BIWPublisherTest
 {
     public class PublicationDetailsViewShould
     {
@@ -46,13 +46,7 @@ namespace Tests.PublisherTest
         public void PublishCorrectly()
         {
             // Arrange
-            string testName = "Test name";
-            string testDesc = "Test des";
-            landPublisherView.sceneNameInput.text = testName;
-            landPublisherView.sceneDescriptionInput.text = testDesc;
             bool isPublishClicked = false;
-            string sceneNameReceived = "";
-            string sceneDescReceived = "";
 
             landPublisherView.OnPublish += () =>
             {
@@ -64,8 +58,6 @@ namespace Tests.PublisherTest
 
             // Assert
             Assert.IsTrue(isPublishClicked, "isCancelClicked is false!");
-            Assert.AreEqual(testName, sceneNameReceived, "The scene name does not match!");
-            Assert.AreEqual(testDesc, sceneDescReceived, "The scene description does not match!");
         }
 
         [Test]

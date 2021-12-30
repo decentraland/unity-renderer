@@ -2,5 +2,5 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("BuilderInWorldTests")]
 [assembly: InternalsVisibleTo("BuildModeHUDTests")]
-[assembly: InternalsVisibleTo("PublisherTest")]
+[assembly: InternalsVisibleTo("BuilderPublisherTest")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
