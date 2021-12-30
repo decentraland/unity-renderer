@@ -376,10 +376,10 @@ namespace DCL.Helpers
             {
                 return;
             }
-            // if (requestedUnlock || requestedLock)
-            // {
-            //     return;
-            // }
+            if (requestedUnlock || requestedLock)
+            {
+                return;
+            }
             requestedLock = true;
 #endif
             Cursor.visible = false;
@@ -399,10 +399,10 @@ namespace DCL.Helpers
             {
                 return;
             }
-            // if (requestedUnlock || requestedLock)
-            // {
-            //     return;
-            // }
+            if (requestedUnlock || requestedLock)
+            {
+                return;
+            }
             requestedUnlock = true;
 #endif
             Cursor.visible = true;
@@ -422,13 +422,13 @@ namespace DCL.Helpers
         // NOTE: This should come from browser's pointerlockchange callback
         public static void BrowserSetCursorState(bool locked)
         {
-            // if (!locked && !requestedUnlock)
-            // {
-            //     Cursor.lockState = CursorLockMode.None;
-            // }
-            //
-            // IsCursorLocked = locked;
-            // Cursor.visible = !locked;
+            if (!locked && !requestedUnlock)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+            
+            IsCursorLocked = locked;
+            Cursor.visible = !locked;
             requestedUnlock = false;
             requestedLock = false;
         }

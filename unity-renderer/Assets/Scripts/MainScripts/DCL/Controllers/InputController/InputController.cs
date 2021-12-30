@@ -198,7 +198,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.CursorUnlock:
                     InputProcessor.FromMouseButtonUp(action, 1, InputProcessor.Modifier.NeedsPointerLocked);
-                    InputProcessor.FromKey(action, KeyCode.Escape,modifiers: InputProcessor.Modifier.NeedsPointerLocked);
+#if !WEB_PLATFORM
+                    InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.NeedsPointerLocked);
+#endif
                     break;
                 case DCLAction_Trigger.ToggleNavMap:
                     if (allUIHidden)
