@@ -498,13 +498,21 @@ namespace DCL.Skybox
             RenderTexture("Texture", ref selectedConfiguration.horizonMask);
 
             // Horizon mask values
-            RenderVector3Field("Horizon Mask Values", ref selectedConfiguration.horizonMaskValues);
+            RenderVector4Field("Horizon Mask Values", ref selectedConfiguration.horizonMaskValues);
 
             // Horizon Plane color
             RenderColorGradientField(selectedConfiguration.horizonPlaneColor, "Horizon Plane Color", 0, 24);
 
             // Horizon Height
             RenderTransitioningFloat(selectedConfiguration.horizonPlaneHeight, "Horizon Plane Height", "%", "value", true, -1, 0);
+
+            EditorGUILayout.Space(10);
+
+            // Plane smooth range
+            RenderVector2Field("Plane Smoothness", ref selectedConfiguration.horizonPlaneSmoothRange);
+            selectedConfiguration.horizonPlaneSmoothRange.x = Mathf.Clamp(selectedConfiguration.horizonPlaneSmoothRange.x, 0, 1);
+            selectedConfiguration.horizonPlaneSmoothRange.y = Mathf.Clamp(selectedConfiguration.horizonPlaneSmoothRange.y, 0, 1);
+
         }
 
         void RenderAmbientLayer()
@@ -1057,6 +1065,18 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
         }
 
+        void RenderSepratedFloatFieldAsSlider(string label, string label1, ref float value1, string label2, ref float value2)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label1, GUILayout.Width(90), GUILayout.ExpandWidth(false));
+            value1 = EditorGUILayout.FloatField("", value1, GUILayout.Width(90));
+            EditorGUILayout.LabelField(label2, GUILayout.Width(90), GUILayout.ExpandWidth(false));
+            value2 = EditorGUILayout.FloatField("", value2, GUILayout.Width(90));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
         void RenderFloatField(string label, ref float value)
         {
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
@@ -1080,6 +1100,15 @@ namespace DCL.Skybox
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             value = EditorGUILayout.Vector3Field("", value, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        void RenderVector4Field(string label, ref Vector4 value)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            value = EditorGUILayout.Vector4Field("", value, GUILayout.Width(300), GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
