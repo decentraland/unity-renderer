@@ -5,9 +5,9 @@ namespace DCL.Components
     internal class CameraModeAreasController
     {
         private CameraMode.ModeId initialCameraMode;
-        private readonly List<CameraModeArea> insideAreasList = new List<CameraModeArea>();
+        private readonly List<ICameraModeArea> insideAreasList = new List<ICameraModeArea>();
 
-        public void AddInsideArea(CameraModeArea area)
+        public void AddInsideArea(ICameraModeArea area)
         {
             if (insideAreasList.Count == 0)
             {
@@ -15,11 +15,11 @@ namespace DCL.Components
                 CommonScriptableObjects.cameraModeInputLocked.Set(true);
             }
 
-            CommonScriptableObjects.cameraMode.Set(area.areaModel.cameraMode);
+            CommonScriptableObjects.cameraMode.Set(area.cameraMode);
             insideAreasList.Add(area);
         }
 
-        public void RemoveInsideArea(CameraModeArea area)
+        public void RemoveInsideArea(ICameraModeArea area)
         {
             int affectingAreasCount = insideAreasList.Count;
 
@@ -36,13 +36,13 @@ namespace DCL.Components
             else if (IsTheActivelyAffectingArea(area))
             {
                 // set camera mode to the previous area the player is in
-                CommonScriptableObjects.cameraMode.Set(insideAreasList[affectingAreasCount - 2].areaModel.cameraMode);
+                CommonScriptableObjects.cameraMode.Set(insideAreasList[affectingAreasCount - 2].cameraMode);
             }
 
             insideAreasList.Remove(area);
         }
 
-        public void ChangeAreaMode(CameraModeArea area, CameraMode.ModeId mode)
+        public void ChangeAreaMode(ICameraModeArea area, CameraMode.ModeId mode)
         {
             if (IsTheActivelyAffectingArea(area))
             {
@@ -56,7 +56,7 @@ namespace DCL.Components
             CommonScriptableObjects.cameraModeInputLocked.Set(false);
         }
 
-        private bool IsTheActivelyAffectingArea(CameraModeArea area)
+        private bool IsTheActivelyAffectingArea(ICameraModeArea area)
         {
             int affectingAreasCount = insideAreasList.Count;
 

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public class CameraModeArea : IEntityComponent
+    public class CameraModeArea : IEntityComponent, ICameraModeArea
     {
         [Serializable]
         public class Model : BaseModel
@@ -40,6 +40,8 @@ namespace DCL.Components
         public Model areaModel { private set; get; } = new Model();
         public IParcelScene areaScene { private set; get; }
         public IDCLEntity areaEntity { private set; get; }
+
+        CameraMode.ModeId ICameraModeArea.cameraMode => areaModel.cameraMode;
 
         IDCLEntity IEntityComponent.entity => areaEntity;
 

@@ -1,0 +1,23 @@
+{
+    "name": "CameraModeAreaTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:78f68309b49af42f9a72c4441bd3b77c",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll",
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
