@@ -32,7 +32,8 @@ namespace DCL.Components
         private static CameraModeAreasController areasController => new CameraModeAreasController();
 
         private ISceneReferences sceneReferences => SceneReferences.i;
-        private IUpdateEventHandler updateEventHandler => Environment.i.platform.updateEventHandler;
+        private Collider playerCollider => sceneReferences?.playerAvatarController.avatarCollider;
+        private IUpdateEventHandler updateEventHandler => Environment.i?.platform.updateEventHandler;
 
         private bool isPlayerInside = false;
 
@@ -70,15 +71,14 @@ namespace DCL.Components
 
         void ICleanable.Cleanup()
         {
-            OnAreaDisabled();
-            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.FixedUpdate, Update);
+            Dispose();
         }
 
         void IEntityComponent.Initialize(IParcelScene scene, IDCLEntity entity)
         {
             areaScene = scene;
             areaEntity = entity;
-            updateEventHandler.AddListener(IUpdateEventHandler.EventType.FixedUpdate, Update);
+            updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         private void OnModelUpdated(Model newModel)
@@ -94,7 +94,24 @@ namespace DCL.Components
 
         private void Update()
         {
-            CheckIfInsideArea();
+            bool playerInside = IsPlayerInsideArea();
+
+            switch (playerInside)
+            {
+                case true when !isPlayerInside:
+                    areasController.AddInsideArea(this);
+                    break;
+                case false when isPlayerInside:
+                    areasController.RemoveInsideArea(this);
+                    break;
+            }
+            isPlayerInside = playerInside;
+        }
+
+        private void Dispose()
+        {
+            OnAreaDisabled();
+            updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
 
         private bool IsPlayerInsideArea()
@@ -120,22 +137,7 @@ namespace DCL.Components
                 return false;
             }
 
-            return colliders.Any(collider => collider == sceneReferences.playerAvatarController.avatarCollider);
-        }
-
-        private void CheckIfInsideArea()
-        {
-            bool playerInside = IsPlayerInsideArea();
-
-            if (playerInside && !isPlayerInside)
-            {
-                areasController.AddInsideArea(this);
-            }
-            if (isPlayerInside)
-            {
-                areasController.RemoveInsideArea(this);
-            }
-            isPlayerInside = playerInside;
+            return colliders.Any(collider => collider == playerCollider);
         }
 
         private void OnAreaDisabled()
