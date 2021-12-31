@@ -59,30 +59,6 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(Vector3.Distance(currentPosition, gameObject.transform.position) >= 0.001f);
     }
 
-    private bool screenshotTaken = false;
-
-    [UnityTest]
-    public IEnumerator TakeScreenshot()
-    {
-        //Arrange
-        freeCameraMovement.gameObject.SetActive(true);
-        var camera = freeCameraMovement.gameObject.AddComponent<Camera>();
-        freeCameraMovement.screenshotCamera = camera;
-
-        //Act
-        freeCameraMovement.TakeSceneScreenshot(AssertScreenShot);
-        yield return new WaitUntil(() => screenshotTaken);
-        GameObject.Destroy(camera);
-    }
-
-    private void AssertScreenShot(Texture2D screenshot)
-    {
-        //Assert
-        Assert.IsNotNull(screenshot);
-
-        screenshotTaken = true;
-    }
-
     protected override IEnumerator TearDown()
     {
         freeCameraMovement.gameObject.SetActive(false);
