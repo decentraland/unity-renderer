@@ -191,5 +191,6 @@ namespace DCL.Configuration
 
         public static int friendsHUDPlayerMenu = LayerMask.NameToLayer("FriendsHUDPlayerMenu");
         public static int playerInfoCardMenu = LayerMask.NameToLayer("PlayerInfoCardMenu");
+        public static int avatarTriggerLayer = LayerMask.NameToLayer("AvatarTriggerDetection");
     }
 }
