@@ -101,46 +101,51 @@ namespace DCL.Builder
 
         internal async void DeployScene(IBuilderScene scene, PublishInfo info)
         {
-            builderSceneToDeploy = scene;
-
-            // Prepare the thumbnail
-            byte[] base64Thumbnail = scene.sceneScreenshotTexture.EncodeToPNG();
-
-            // Prepare the assets
-            List<SceneObject> assets = scene.manifest.scene.assets.Values.ToList();
-
-            // Download the assets files
-            Dictionary<string, object> downloadedFiles = await DownloadAssetFiles(assets);
-
-            //Prepare scene.json
-            CatalystSceneEntityMetadata sceneJson = CreateSceneJson(scene, info);
-
-            //Group all entities files
-            StatelessManifest statelessManifest = ManifestTranslator.ParcelSceneToStatelessManifest(scene.scene);
-
-            Dictionary<string, object> entityFiles = new Dictionary<string, object>
+            try
             {
-                { BIWSettings.DEPLOYMENT_DEFINITION_FILE, statelessManifest },
-                { BIWSettings.DEPLOYMENT_SCENE_FILE, sceneJson },
-                { BIWSettings.DEPLOYMENT_ASSETS, assets },
-            };
+                // We assign the scene to deploy
+                builderSceneToDeploy = scene;
 
-            Dictionary<string, object> entityFilesToDecode = new Dictionary<string, object>
+                // Prepare the thumbnail
+                byte[] thumbnail = scene.sceneScreenshotTexture.EncodeToPNG();
+
+                // Prepare the assets
+                List<SceneObject> assets = scene.manifest.scene.assets.Values.ToList();
+
+                // Download the assets files
+                Dictionary<string, object> downloadedFiles = await DownloadAssetFiles(assets);
+
+                // Prepare scene.json
+                CatalystSceneEntityMetadata sceneJson = CreateSceneJson(scene, info);
+
+                // Group all entities files
+                StatelessManifest statelessManifest = ManifestTranslator.ParcelSceneToStatelessManifest(scene.scene);
+
+                // This files are not encoded
+                Dictionary<string, object> entityFiles = new Dictionary<string, object>
+                {
+                    { BIWSettings.DEPLOYMENT_DEFINITION_FILE, statelessManifest },
+                    { BIWSettings.DEPLOYMENT_SCENE_FILE, sceneJson },
+                    { BIWSettings.DEPLOYMENT_ASSETS, assets },
+                };
+
+                // This file will be encoded automatically
+                Dictionary<string, object> entityFilesToDecode = new Dictionary<string, object>
+                {
+                    { BIWSettings.DEPLOYMENT_SCENE_THUMBNAIL, thumbnail },
+                };
+
+                foreach (var downloadedFile in downloadedFiles)
+                    entityFilesToDecode.Add(downloadedFile.Key, downloadedFile.Value);
+
+                // Sent scene to kernel
+                StartPublishScene(scene, entityFilesToDecode, entityFiles, sceneJson, statelessManifest);
+            }
+            catch (Exception e)
             {
-                { BIWSettings.DEPLOYMENT_SCENE_THUMBNAIL, base64Thumbnail },
-            };
-
-            foreach (var downloadedFile in downloadedFiles)
-                entityFilesToDecode.Add(downloadedFile.Key, downloadedFile.Value);
-
-            //Sent scene to kernel
-            StartPublishScene(scene, entityFilesToDecode, entityFiles, sceneJson, statelessManifest);
-
-            //Remove link to a land if exists
-            scene.manifest.project.creation_coords = null;
-
-            //Update project on the builder server
-            context.builderAPIController.SetManifest(scene.manifest);
+                // If there is a problem while are preparing the files we end the publishing with an error
+                PublishEnd(false, e.Message);
+            }
         }
 
         private void StartPublishScene(IBuilderScene scene, Dictionary<string, object > filesToDecode, Dictionary<string, object > files, CatalystSceneEntityMetadata metadata, StatelessManifest statelessManifest )
@@ -153,10 +158,23 @@ namespace DCL.Builder
         private void PublishEnd(bool isOk, string message)
         {
             if (isOk)
+            {
+                // We notify the success of the deployment
                 progressController.DeploySuccess(builderSceneToDeploy);
-            else
-                progressController.DeployError(message);
+                
+                // Remove link to a land if exists
+                builderSceneToDeploy.manifest.project.creation_coords = null;
 
+                // Update project on the builder server
+                context.builderAPIController.SetManifest(builderSceneToDeploy.manifest);
+            }
+            else
+            {
+                progressController.DeployError(message);
+            }
+
+            builderSceneToDeploy = null;
+            
             string successString = isOk ? "Success" : message;
             BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
         }
