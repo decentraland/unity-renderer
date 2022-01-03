@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -41,8 +42,9 @@ namespace AvatarSystem
                 this.rendereable = rendereable;
             }
 
-            void OnFailEventWrapper()
+            void OnFailEventWrapper(Exception e)
             {
+                //TODO handle exception
                 loaderAssetHelper?.ClearEvents();
                 done = true;
                 rendereable = null;

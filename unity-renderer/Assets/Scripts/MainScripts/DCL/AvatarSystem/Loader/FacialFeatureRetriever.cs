@@ -26,7 +26,11 @@ namespace AvatarSystem
 
             mainTexturePromise = new AssetPromise_Texture(mainTextureUrl);
             mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
-            mainTexturePromise.OnFailEvent += (x) => mainTexture = null;
+            mainTexturePromise.OnFailEvent += (x, exception) =>
+            {
+                //TODO Handle exception
+                mainTexture = null;
+            };
 
             AssetPromiseKeeper_Texture.i.Keep(mainTexturePromise);
 
@@ -34,7 +38,11 @@ namespace AvatarSystem
             {
                 maskTexturePromise = new AssetPromise_Texture(maskTextureUrl);
                 maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
-                maskTexturePromise.OnFailEvent += (x) => maskTexture = null;
+                maskTexturePromise.OnFailEvent += (x, exception) =>
+                {
+                    //TODO Handle exception
+                    maskTexture = null;
+                };
 
                 AssetPromiseKeeper_Texture.i.Keep(maskTexturePromise);
             }

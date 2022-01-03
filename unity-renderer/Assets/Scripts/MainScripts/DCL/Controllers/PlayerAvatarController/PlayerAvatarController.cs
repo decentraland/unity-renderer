@@ -52,7 +52,7 @@ public class PlayerAvatarController : MonoBehaviour
         }
 
         CommonScriptableObjects.rendererState.AddLock(this);
-        
+
 #if UNITY_WEBGL
         fatalErrorReporter = new WebFatalErrorReporter();
 #else
@@ -141,19 +141,20 @@ public class PlayerAvatarController : MonoBehaviour
             //WebInterface.ReportAvatarFatalError();
             return;
         }
- 
+
         IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
+        Debug.Log("TODO: Port Anchor Points");
+        //anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), avatar.bounds.max.y);
 
         var player = new Player()
         {
             id = userProfile.userId,
             name = userProfile.name,
-            renderer = avatarRenderer,
+            avatar = avatar,
             anchorPoints = anchorPoints
         };
         DataStore.i.player.ownPlayer.Set(player);
-        
+
         enableCameraCheck = true;
         avatarCollider.gameObject.SetActive(true);
         CommonScriptableObjects.rendererState.RemoveLock(this);
