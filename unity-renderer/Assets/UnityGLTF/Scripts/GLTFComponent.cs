@@ -38,7 +38,6 @@ namespace UnityGLTF
         public string GLTFUri = null;
         public string idPrefix = null;
 
-        public bool Multithreaded = false;
         public bool UseStream = false;
         public bool UseVisualFeedback = true;
         private bool addMaterialsToPersistentCaching = true;
@@ -277,7 +276,7 @@ namespace UnityGLTF
                     sceneImporter.Collider = Collider;
                     sceneImporter.maximumLod = MaximumLod;
                     sceneImporter.Timeout = Timeout;
-                    sceneImporter.isMultithreaded = Multithreaded;
+                    sceneImporter.isMultithreaded = DataStore.i.gltf.useMultithreading.Get();
                     sceneImporter.useMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
