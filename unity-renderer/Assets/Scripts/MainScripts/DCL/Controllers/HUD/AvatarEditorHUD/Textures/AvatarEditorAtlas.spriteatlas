@@ -32,7 +32,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 935ddd9b29b3345009bfa22069bace25, type: 3}
-    totalSpriteSurfaceArea: 468033
+    totalSpriteSurfaceArea: 463397
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -53,6 +53,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
   - {fileID: 21300000, guid: 73a448e25759f4f1db4acdf472113ecf, type: 3}
   - {fileID: 21300000, guid: 0a7bc003ee72446d8b987131213b19f1, type: 3}
+  - {fileID: 21300000, guid: 0bfef183260d34c50b8d971b1400499e, type: 3}
   - {fileID: 21300000, guid: 8c8891934b1424617b1b798b02fccfc8, type: 3}
   - {fileID: 21300000, guid: 29b3c29329eb84defb2412248b12a449, type: 3}
   - {fileID: 21300000, guid: 3f256ac367a7f4a9baa188f3fc73dd76, type: 3}
@@ -64,9 +65,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d7329df45ca12414f9cc799103d596bf, type: 3}
   - {fileID: 21300000, guid: fb5041354a9234cab900dc6cc03446ea, type: 3}
   - {fileID: 21300000, guid: 57331f65928794d50a05a8610b3a975b, type: 3}
-  - {fileID: 21300000, guid: 9d8cc2b547e50472faaa6e363e8ead79, type: 3}
   - {fileID: 21300000, guid: 2dc807c5b399c4301b1732ad95786f55, type: 3}
-  - {fileID: 21300000, guid: 81f10556854034d878b316ad751b7f71, type: 3}
   - {fileID: 21300000, guid: 946f30660ef2f4261b313ca749c4127c, type: 3}
   - {fileID: 21300000, guid: 09fd8686734544b9eb4a37d61ec2890c, type: 3}
   - {fileID: 21300000, guid: c1bf499699a424df88aa013bd2f32b68, type: 3}
@@ -74,26 +73,21 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2b4d7ff7848124b81bf757259f34eea4, type: 3}
   - {fileID: 21300000, guid: 665a0e081e71c4699b07e587f9578d1d, type: 3}
   - {fileID: 21300000, guid: 15c0a1185bb524f0c9d7b118e081501f, type: 3}
-  - {fileID: 21300000, guid: b68e14a879e2645eb953b4cd0351b9ca, type: 3}
   - {fileID: 21300000, guid: 4454cae867deb4aea91f4d26c5bc88b1, type: 3}
   - {fileID: 21300000, guid: 18cc300911ff74c3c922eb3a9b346f3c, type: 3}
   - {fileID: 21300000, guid: f0288429bd10b4d738028837ef4041db, type: 3}
   - {fileID: 21300000, guid: a3837a59671b94a699e1f72ece4c8d8d, type: 3}
-  - {fileID: 21300000, guid: 2cb905c963fc84b548643e253df03a33, type: 3}
   - {fileID: 21300000, guid: d4ee93e9eb8464972b0fd5598a452f50, type: 3}
-  - {fileID: 21300000, guid: 8581723a4628341c98ccd6e6dfb66ed9, type: 3}
   - {fileID: 21300000, guid: 2a24a45ae661148d2af4bc9f390fdd66, type: 3}
   - {fileID: 21300000, guid: c7f41b8bc4324443a82a0e197610125d, type: 3}
-  - {fileID: 21300000, guid: b79c6f9bd17bf4e95a6ef45cdfd1964a, type: 3}
   - {fileID: 21300000, guid: 59b6b5bb7ec0348ef9f9d2890faa3efe, type: 3}
   - {fileID: 21300000, guid: 84c790cbe3a484378906dc785b6c5995, type: 3}
   - {fileID: 21300000, guid: 866efedbbcc38498f9e6136d65695c9c, type: 3}
   - {fileID: 21300000, guid: 7df132fb4eb304d619c7dd33841261a1, type: 3}
-  - {fileID: 21300000, guid: 0d9caa0d69e334fbc9f9eec2b0e9bea1, type: 3}
   - {fileID: 21300000, guid: 3a17402d714be4824b651c091e883d42, type: 3}
   - {fileID: 21300000, guid: 90e673ad913664a27b245b61ccdf31bf, type: 3}
   - {fileID: 21300000, guid: 0d40d3de4e8af4e7c9c5341e930a45e3, type: 3}
-  - {fileID: 21300000, guid: 9a9214cf3ef9540d1b2ad364f4f1ba1d, type: 3}
+  - {fileID: 21300000, guid: 15e20e3fa5b554b71889a9975ebd4950, type: 3}
   - {fileID: 21300000, guid: 51b361fff7067426a964be4945152c62, type: 3}
   m_PackedSpriteNamesToIndex:
   - ContainerUniqueCard
@@ -106,11 +100,12 @@ SpriteAtlas:
   - TopheadIcon
   - EyesIcon
   - MustacheIcon
-  - WalletIcon
+  - WalletIllustration
   - UniqueHighlighted
   - EarringsIcon
   - UniqueBackground
   - NFTCorner
+  - SkinsIcon
   - CollectiblesIcon
   - CellUniqueFill
   - CardInfoUniqueContainer
@@ -122,9 +117,7 @@ SpriteAtlas:
   - FavIcon
   - CellNFTframe
   - DoneIcon
-  - Spinner
   - FemaleIcon
-  - FavSet
   - HairIcon
   - ContainerCard
   - ShoesIcon
@@ -132,26 +125,21 @@ SpriteAtlas:
   - CardInfoContainer
   - CellNFTUniqueframe
   - HelmetIcon
-  - Ellipse128
   - TiaraIcon
   - EyewareIcon
-  - SaleTagIcon
+  - SaleIcon
   - StarIcon
-  - Button12
   - BottomIcon
-  - CellBright
   - CellGradient
   - CellInfo
-  - Button8
   - ColorSelected
   - EyebrowIcon
   - MouthICon
   - BodyIcon
-  - Button10
   - CellFill
   - MaskIcon
   - UniqueShadow
-  - NFTtIcon
+  - ThirdPartyIcon
   - CellHighlight
   m_RenderDataMap: {}
   m_Tag: AvatarEditorAtlas

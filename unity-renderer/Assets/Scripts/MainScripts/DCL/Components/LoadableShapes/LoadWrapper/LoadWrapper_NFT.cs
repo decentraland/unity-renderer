@@ -1,7 +1,9 @@
+using System;
 using System.Linq;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -28,7 +30,7 @@ namespace DCL.Components
             DataStore.i.sceneWorldObjects.RemoveRendereable(entity, rendereable);
         }
 
-        public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)
+        public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper, Exception> OnFail)
         {
             if (string.IsNullOrEmpty(src))
                 return;

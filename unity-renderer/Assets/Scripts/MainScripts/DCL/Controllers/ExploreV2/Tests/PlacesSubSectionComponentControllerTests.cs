@@ -1,9 +1,9 @@
+using DCL;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using static HotScenesController;
 
 public class PlacesSubSectionComponentControllerTests
@@ -76,6 +76,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         placesSubSectionComponentController.currentPlacesShowed = -1;
         placesSubSectionComponentController.reloadPlaces = true;
+        DataStore.i.exploreV2.isInShowAnimationTransiton.Set(false);
 
         // Act
         placesSubSectionComponentController.RequestAllPlaces();
@@ -104,7 +105,7 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfPlaces = 2;
-        placesSubSectionComponentController.placesFromAPI = CreateTestPlacesFromApi(numberOfPlaces);
+        placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
         placesSubSectionComponentController.OnRequestedPlacesUpdated();
@@ -120,7 +121,7 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfPlaces = 2;
-        placesSubSectionComponentController.placesFromAPI = CreateTestPlacesFromApi(numberOfPlaces);
+        placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
 
         // Act
         placesSubSectionComponentController.LoadPlaces();
@@ -144,26 +145,6 @@ public class PlacesSubSectionComponentControllerTests
     }
 
     [Test]
-    public void CreatePlaceCardModelFromAPIPlaceCorrectly()
-    {
-        // Arrange
-        HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
-
-        // Act
-        PlaceCardComponentModel placeCardModel = placesSubSectionComponentController.CreatePlaceCardModelFromAPIPlace(testPlaceFromAPI);
-
-        // Assert
-        Assert.AreEqual(testPlaceFromAPI.thumbnail, placeCardModel.placePictureUri);
-        Assert.AreEqual(testPlaceFromAPI.name, placeCardModel.placeName);
-        Assert.AreEqual(placesSubSectionComponentController.FormatDescription(testPlaceFromAPI), placeCardModel.placeDescription);
-        Assert.AreEqual(placesSubSectionComponentController.FormatAuthorName(testPlaceFromAPI), placeCardModel.placeAuthor);
-        Assert.AreEqual(testPlaceFromAPI.usersTotalCount, placeCardModel.numberOfUsers);
-        Assert.AreEqual(testPlaceFromAPI.parcels, placeCardModel.parcels);
-        Assert.AreEqual(testPlaceFromAPI.baseCoords, placeCardModel.coords);
-        Assert.AreEqual(testPlaceFromAPI, placeCardModel.hotSceneInfo);
-    }
-
-    [Test]
     public void ShowPlaceDetailedInfoCorrectly()
     {
         // Arrange
@@ -184,7 +165,7 @@ public class PlacesSubSectionComponentControllerTests
         // Arrange
         bool exploreClosed = false;
         placesSubSectionComponentController.OnCloseExploreV2 += () => exploreClosed = true;
-        HotSceneInfo testPlaceFromAPI = CreateTestHotSceneInfo("1");
+        HotSceneInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
         placesSubSectionComponentController.JumpInToPlace(testPlaceFromAPI);
@@ -193,43 +174,5 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().HidePlaceModal();
         Assert.IsTrue(exploreClosed);
         exploreV2Analytics.Received().SendPlaceTeleport(testPlaceFromAPI.id, testPlaceFromAPI.name, testPlaceFromAPI.baseCoords);
-    }
-
-    private List<HotSceneInfo> CreateTestPlacesFromApi(int numberOfPlaces)
-    {
-        List<HotSceneInfo> testPlaces = new List<HotSceneInfo>();
-
-        for (int i = 0; i < numberOfPlaces; i++)
-        {
-            testPlaces.Add(CreateTestHotSceneInfo((i + 1).ToString()));
-        }
-
-        return testPlaces;
-    }
-
-    private HotSceneInfo CreateTestHotSceneInfo(string id)
-    {
-        return new HotSceneInfo
-        {
-            id = id,
-            baseCoords = new Vector2Int(10, 10),
-            creator = "Test Creator",
-            description = "Test Description",
-            name = "Test Name",
-            parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
-            realms = new HotSceneInfo.Realm[]
-            {
-                new HotSceneInfo.Realm
-                {
-                    layer = "Test Layer",
-                    maxUsers = 500,
-                    serverName = "Test Server",
-                    userParcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
-                    usersCount = 50
-                }
-            },
-            thumbnail = "Test Thumbnail",
-            usersTotalCount = 50
-        };
     }
 }

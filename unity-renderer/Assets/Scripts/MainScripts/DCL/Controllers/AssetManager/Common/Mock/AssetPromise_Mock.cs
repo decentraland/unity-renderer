@@ -25,7 +25,7 @@ namespace DCL
             return id;
         }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
+        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             loadTime = 1;
             assetMockCoroutine = CoroutineStarter.Start(MockLoadingCoroutine(OnSuccess, OnFail));
@@ -33,13 +33,13 @@ namespace DCL
 
         protected override void OnCancelLoading() { CoroutineStarter.Stop(assetMockCoroutine); }
 
-        IEnumerator MockLoadingCoroutine(Action OnSuccess, Action OnFail)
+        IEnumerator MockLoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
             yield return WaitForSecondsCache.Get(loadTime);
 
             if (forceFail)
             {
-                OnFail?.Invoke();
+                OnFail?.Invoke(new Exception("Promise was forced to fail"));
             }
             else
             {

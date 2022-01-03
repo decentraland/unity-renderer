@@ -31,6 +31,11 @@ namespace DCL.SettingsPanelHUD
         [SerializeField] private InputAction_Trigger closeAction;
         [SerializeField] private InputAction_Trigger openAction;
 
+        [Header("Others")]
+        [SerializeField] private Button tutorialButton;
+        [SerializeField] private Button reportBugButton;
+        [SerializeField] private Button helpAndSupportButton;
+
         [Header("Animations")]
         [SerializeField] private ShowHideAnimator settingsAnimator;
 
@@ -40,6 +45,9 @@ namespace DCL.SettingsPanelHUD
 
         private IHUD hudController;
         private ISettingsPanelHUDController settingsPanelController;
+
+        public event System.Action OnRestartTutorial;
+        public event System.Action OnHelpAndSupportClicked;
 
         public static SettingsPanelHUDView Create()
         {
@@ -66,6 +74,8 @@ namespace DCL.SettingsPanelHUD
             CreateSections();
             isOpen = !settingsAnimator.hideOnEnable;
             settingsAnimator.Hide(true);
+
+            tutorialButton.onClick.AddListener(() => OnRestartTutorial?.Invoke());
         }
 
         public void Initialize(IHUD hudController, ISettingsPanelHUDController settingsPanelController, SettingsSectionList sections)
@@ -80,6 +90,9 @@ namespace DCL.SettingsPanelHUD
 
             if (settingsAnimator)
                 settingsAnimator.OnWillFinishHide -= OnFinishHide;
+
+            tutorialButton.onClick.RemoveAllListeners();
+            helpAndSupportButton.onClick.RemoveAllListeners();
         }
 
         private void CreateSections()
@@ -120,11 +133,6 @@ namespace DCL.SettingsPanelHUD
 
         public void SetVisibility(bool visible)
         {
-            if (visible && !isOpen)
-                AudioScriptableObjects.dialogOpen.Play(true);
-            else if (isOpen)
-                AudioScriptableObjects.dialogClose.Play(true);
-
             closeAction.OnTriggered -= CloseAction_OnTriggered;
             if (visible)
             {
@@ -142,6 +150,31 @@ namespace DCL.SettingsPanelHUD
             }
 
             isOpen = visible;
+        }
+
+        public void SetAsFullScreenMenuMode(Transform parentTransform)
+        {
+            if (parentTransform == null)
+                return;
+
+            transform.SetParent(parentTransform);
+            transform.localScale = Vector3.one;
+
+            RectTransform rectTransform = transform as RectTransform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.localPosition = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+        }
+
+        public void SetTutorialButtonEnabled(bool isEnabled) { tutorialButton.enabled = isEnabled; }
+
+        public void OnAddHelpAndSupportWindow()
+        {
+            helpAndSupportButton.gameObject.SetActive(true);
+            helpAndSupportButton.onClick.AddListener(() => OnHelpAndSupportClicked?.Invoke());
         }
 
         private void OpenAction_OnTriggered(DCLAction_Trigger action)

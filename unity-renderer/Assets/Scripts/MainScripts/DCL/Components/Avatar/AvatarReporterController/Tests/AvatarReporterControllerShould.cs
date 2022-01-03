@@ -36,7 +36,7 @@ public class AvatarReporterControllerShould
     [Test]
     public void ReportSceneWhenIsSetup()
     {
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarPosition(Vector3.one);
         reporterController.reporter.Received(1).ReportAvatarSceneChange("0", "1", "scene0");
     }
@@ -59,7 +59,7 @@ public class AvatarReporterControllerShould
     [Test]
     public void DontReportSceneAfterAvatarRemoved()
     {
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarRemoved();
         reporterController.reporter.Received(1).ReportAvatarRemoved("0", "1");
         reporterController.ReportAvatarPosition(Vector3.one);
@@ -69,7 +69,7 @@ public class AvatarReporterControllerShould
     [Test]
     public void DontReportSceneIfAvatarDidntMove()
     {
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarPosition(Vector3.one);
         reporterController.reporter.Received(1).ReportAvatarSceneChange("0", "1", "scene0");
         reporterController.ReportAvatarPosition(Vector3.one);
@@ -79,7 +79,7 @@ public class AvatarReporterControllerShould
     [Test]
     public void ReportSceneWhenMovingFromNotLoadedToLoadedScene()
     {
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
         reporterController.reporter.Received(1).ReportAvatarSceneChange("0", "1", null);
         reporterController.ReportAvatarPosition(Vector3.one);
@@ -91,7 +91,7 @@ public class AvatarReporterControllerShould
     {
         var position = new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
 
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarPosition(position);
         reporterController.reporter.Received(1).ReportAvatarSceneChange("0", "1", null);
 
@@ -111,7 +111,7 @@ public class AvatarReporterControllerShould
     [Test]
     public void ReportSceneWhenMovingFromLoadedToLoadedScene()
     {
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarPosition(Vector3.one);
         reporterController.reporter.Received(1).ReportAvatarSceneChange("0", "1", "scene0");
 
@@ -131,7 +131,7 @@ public class AvatarReporterControllerShould
     [Test]
     public void ReportSceneWhenMovingFromLoadedToNotLoadedScene()
     {
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarPosition(Vector3.one);
         reporterController.reporter.Received(1).ReportAvatarSceneChange("0", "1", "scene0");
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
@@ -141,7 +141,7 @@ public class AvatarReporterControllerShould
     [Test]
     public void DontReportSceneWhenMovingFromNotLoadedToNotLoadedScene()
     {
-        reporterController.SetUp(AvatarReporterController.AVATAR_GLOBAL_SCENE, "0", "1");
+        reporterController.SetUp(EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID, "0", "1");
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0));
         reporterController.reporter.Received(1).ReportAvatarSceneChange("0", "1", null);
         reporterController.ReportAvatarPosition(new Vector3(ParcelSettings.PARCEL_SIZE * 2, 0, 0));

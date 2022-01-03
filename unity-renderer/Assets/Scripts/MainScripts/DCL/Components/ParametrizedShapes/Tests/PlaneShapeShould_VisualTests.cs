@@ -12,7 +12,7 @@ public class PlaneShapeShould_VisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator ReceiveShadowsCorrectly_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(ReceiveShadowsCorrectly()); }
+    public IEnumerator ReceiveShadowsCorrectly_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(ReceiveShadowsCorrectly()); }
 
     [UnityTest]
     [VisualTest]
@@ -20,8 +20,6 @@ public class PlaneShapeShould_VisualTests : VisualTestsBase
     [Explicit]
     public IEnumerator ReceiveShadowsCorrectly()
     {
-        yield return InitVisualTestsScene("PlaneShape_ReceiveShadowsCorrectly");
-
         TestUtils.CreateEntityWithBoxShape(scene, Vector3.up);
 
         var planeShape = TestUtils.CreateEntityWithPlaneShape(scene, Vector3.zero);
@@ -32,10 +30,10 @@ public class PlaneShapeShould_VisualTests : VisualTestsBase
         Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
         Vector3 camTarget = Vector3.zero;
 
-        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
+        VisualTestUtils.RepositionVisualTestsCamera(camera, camPos, camTarget);
 
         yield return new WaitForAllMessagesProcessed();
 
-        yield return VisualTestHelpers.TakeSnapshot();
+        yield return VisualTestUtils.TakeSnapshot("PlaneShape_ReceiveShadowsCorrectly", camera);
     }
 }

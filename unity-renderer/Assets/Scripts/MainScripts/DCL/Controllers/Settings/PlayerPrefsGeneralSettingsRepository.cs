@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace DCL.SettingsCommon
 {
     public class PlayerPrefsGeneralSettingsRepository : ISettingsRepository<GeneralSettings>
     {
-        public const string AUTO_QUALITY_ON = "autoqualityOn";
         public const string PROFANITY_CHAT_FILTERING = "profanityChatFiltering";
         public const string MOUSE_SENSITIVITY = "mouseSensitivity";
         public const string NAMES_OPACITY = "namesOpacity";
@@ -14,11 +13,13 @@ namespace DCL.SettingsCommon
         public const string AVATARS_LOD_DISTANCE = "avatarsLODDistance";
         public const string MAX_NON_LOAD_AVATARS = "maxNonLODAvatars";
         public const string VOICE_CHAT_ALLOW = "voiceChatAllow";
+        public const string PROCEDURAL_SKYBOX_MODE = "ProceduralSkyboxMode";
+        public const string SKYBOX_TIME = "skyboxTime";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly GeneralSettings defaultSettings;
         private GeneralSettings currentSettings;
-        
+
         public event Action<GeneralSettings> OnChanged;
 
         public PlayerPrefsGeneralSettingsRepository(
@@ -34,19 +35,16 @@ namespace DCL.SettingsCommon
 
         public void Apply(GeneralSettings settings)
         {
-            if (currentSettings.Equals(settings)) return;
+            if (currentSettings.Equals(settings))
+                return;
             currentSettings = settings;
             OnChanged?.Invoke(currentSettings);
         }
 
-        public void Reset()
-        {
-            Apply(defaultSettings);
-        }
+        public void Reset() { Apply(defaultSettings); }
 
         public void Save()
         {
-            settingsByKey.SetBool(AUTO_QUALITY_ON, currentSettings.autoqualityOn);
             settingsByKey.SetBool(PROFANITY_CHAT_FILTERING, currentSettings.profanityChatFiltering);
             settingsByKey.SetFloat(MOUSE_SENSITIVITY, currentSettings.mouseSensitivity);
             settingsByKey.SetFloat(NAMES_OPACITY, currentSettings.namesOpacity);
@@ -55,6 +53,8 @@ namespace DCL.SettingsCommon
             settingsByKey.SetFloat(AVATARS_LOD_DISTANCE, currentSettings.avatarsLODDistance);
             settingsByKey.SetFloat(MAX_NON_LOAD_AVATARS, currentSettings.maxNonLODAvatars);
             settingsByKey.SetEnum(VOICE_CHAT_ALLOW, currentSettings.voiceChatAllow);
+            settingsByKey.SetBool(PROCEDURAL_SKYBOX_MODE, currentSettings.dynamicProceduralSkybox);
+            settingsByKey.SetFloat(SKYBOX_TIME, currentSettings.skyboxTime);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -62,10 +62,9 @@ namespace DCL.SettingsCommon
         private GeneralSettings Load()
         {
             var settings = defaultSettings;
-            
+
             try
             {
-                settings.autoqualityOn = settingsByKey.GetBool(AUTO_QUALITY_ON, defaultSettings.autoqualityOn);
                 settings.profanityChatFiltering = settingsByKey.GetBool(PROFANITY_CHAT_FILTERING,
                     defaultSettings.profanityChatFiltering);
                 settings.mouseSensitivity = settingsByKey.GetFloat(MOUSE_SENSITIVITY, defaultSettings.mouseSensitivity);
@@ -75,6 +74,8 @@ namespace DCL.SettingsCommon
                 settings.avatarsLODDistance = settingsByKey.GetFloat(AVATARS_LOD_DISTANCE, defaultSettings.avatarsLODDistance);
                 settings.maxNonLODAvatars = settingsByKey.GetFloat(MAX_NON_LOAD_AVATARS, defaultSettings.maxNonLODAvatars);
                 settings.voiceChatAllow = settingsByKey.GetEnum(VOICE_CHAT_ALLOW, defaultSettings.voiceChatAllow);
+                settings.dynamicProceduralSkybox = settingsByKey.GetBool(PROCEDURAL_SKYBOX_MODE, defaultSettings.dynamicProceduralSkybox);
+                settings.skyboxTime = settingsByKey.GetFloat(SKYBOX_TIME, defaultSettings.skyboxTime);
             }
             catch (Exception e)
             {

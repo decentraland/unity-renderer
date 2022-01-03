@@ -12,15 +12,13 @@ public class UIScrollRectVisualTests : UIVisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator UIScrollRectVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UIScrollRectTest1()); }
+    public IEnumerator UIScrollRectVisualTests_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(UIScrollRectTest1()); }
 
     [UnityTest]
     [VisualTest]
     [Category("Visual Tests")]
     public IEnumerator UIScrollRectTest1()
     {
-        yield return InitUIVisualTestScene("UIScrollRectTest");
-
         yield return CreateUIComponent<UIScrollRect, UIScrollRect.Model>(CLASS_ID.UI_SLIDER_SHAPE, new UIScrollRect.Model
         {
             parentComponent = screenSpaceId,
@@ -53,7 +51,7 @@ public class UIScrollRectVisualTests : UIVisualTestsBase
             fontSize = 10f
         }, "textInput");
 
-        yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 0f));
+        yield return VisualTestUtils.TakeSnapshot("UIScrollRectTest", camera, new Vector3(0f, 2f, 0f));
     }
 
     // Our current architecture for UIInputText/UIText does not represent the one from the SDK

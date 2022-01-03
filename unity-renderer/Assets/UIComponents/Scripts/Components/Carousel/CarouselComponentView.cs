@@ -316,7 +316,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         int numberOfInitialJumps = 1)
     {
         StopCarousel();
-        itemsCoroutine = CoroutineStarter.Start(RunCarouselCoroutine(fromIndex, startInmediately, direction, changeDirectionAfterFirstTransition, numberOfInitialJumps));
+
+        if (isActiveAndEnabled)
+            itemsCoroutine = StartCoroutine(RunCarouselCoroutine(fromIndex, startInmediately, direction, changeDirectionAfterFirstTransition, numberOfInitialJumps));
     }
 
     public void StopCarousel()
@@ -324,7 +326,8 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         if (itemsCoroutine == null)
             return;
 
-        CoroutineStarter.Stop(itemsCoroutine);
+        StopCoroutine(itemsCoroutine);
+
         itemsCoroutine = null;
         isInTransition = false;
     }
@@ -417,7 +420,9 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
     internal void ResizeAllItems()
     {
-        itemsScroll.horizontalNormalizedPosition = 0f;
+        if (itemsScroll.horizontalNormalizedPosition != 0f)
+            itemsScroll.horizontalNormalizedPosition = 0f;
+
         if (model.automaticTransition)
             StartCarousel();
 
@@ -453,8 +458,19 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
         bool continueCarrousel = true;
         while (gameObject.activeInHierarchy && itemsContainer.childCount > 1 && continueCarrousel)
         {
+            float elapsedTime = 0f;
+
             if (!startInmediately)
-                yield return new WaitForSeconds(model.timeBetweenItems);
+            {
+                while (elapsedTime < model.timeBetweenItems)
+                {
+                    if (!model.pauseOnFocus || (model.pauseOnFocus && !isFocused))
+                        elapsedTime += Time.deltaTime;
+
+                    yield return null;
+                }
+
+            }
 
             if (instantiatedItems.Count > 0)
             {

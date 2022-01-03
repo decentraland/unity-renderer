@@ -11,4 +11,5 @@ public class Player
     public IAvatar avatar;
     public IAvatarOnPointerDownCollider onPointerDownCollider;
     public IPlayerName playerName;
+    public IAvatarAnchorPoints anchorPoints;
 }

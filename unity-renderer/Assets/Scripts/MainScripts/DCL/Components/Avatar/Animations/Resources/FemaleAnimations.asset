@@ -29,7 +29,7 @@ MonoBehaviour:
     id: fistpump
   - clip: {fileID: 7400000, guid: 2f2047d4c8513bf419cd0d03692ddfa4, type: 2}
     id: robot
-  - clip: {fileID: 7400000, guid: c77bc5c02a2e048fcb89ea929cd40b01, type: 2}
+  - clip: {fileID: 7400000, guid: 2bc887428537da942a51e429ecc8d964, type: 2}
     id: raiseHand
   - clip: {fileID: 7400000, guid: a9e42f25626414f52bac71a3fbae289e, type: 2}
     id: clap
@@ -55,3 +55,15 @@ MonoBehaviour:
     id: dab
   - clip: {fileID: 7400000, guid: 2fbc1acf78dbfae4cbc82cfcaa2d6242, type: 2}
     id: headexplode
+  - clip: {fileID: 7400000, guid: 2b13c53240afd3544ab8ae540126186e, type: 2}
+    id: dance
+  - clip: {fileID: 7400000, guid: 55d92aab28fd8aa4bb5276b859402565, type: 2}
+    id: snowfall
+  - clip: {fileID: 7400000, guid: c9d790909990ed64ca2326c86e1c4033, type: 2}
+    id: hohoho
+  - clip: {fileID: 7400000, guid: 19ca4695c461be14eabf22802d26c434, type: 2}
+    id: crafting
+  - clip: {fileID: 7400000, guid: 6a12fe7f3598e7c4cbf02a207488314c, type: 2}
+    id: snowballhit
+  - clip: {fileID: 7400000, guid: 4b450ac229af40043857d0ed27200535, type: 2}
+    id: snowballthrow

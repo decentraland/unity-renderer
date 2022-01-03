@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using DCL;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -10,10 +11,13 @@ using Assert = UnityEngine.Assertions.Assert;
 
 public class BasicMaterialShould : IntegrationTestSuite_Legacy
 {
+    private ParcelScene scene;
+
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
         Environment.i.world.sceneBoundsChecker.Stop();
     }
 

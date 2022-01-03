@@ -18,10 +18,29 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
     private IContext context;
+    private ParcelScene scene;
+
+    protected override List<GameObject> SetUp_LegacySystems()
+    {
+        List<GameObject> result = new List<GameObject>();
+        result.Add(MainSceneFactory.CreateBridges());
+        result.Add(MainSceneFactory.CreateEnvironment());
+        result.AddRange(MainSceneFactory.CreatePlayerSystems());
+        result.Add(MainSceneFactory.CreateNavMap());
+        result.Add(MainSceneFactory.CreateAudioHandler());
+        result.Add(MainSceneFactory.CreateHudController());
+        result.Add(MainSceneFactory.CreateMouseCatcher());
+        result.Add(MainSceneFactory.CreateSettingsController());
+        result.Add(MainSceneFactory.CreateEventSystem());
+        result.Add(MainSceneFactory.CreateInteractionHoverCanvas());
+        return result;
+    }
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
+        scene = TestUtils.CreateTestScene();
 
         TestUtils.CreateSceneEntity(scene, ENTITY_ID);
 

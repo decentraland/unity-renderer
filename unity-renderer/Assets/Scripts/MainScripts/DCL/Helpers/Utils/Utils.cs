@@ -278,6 +278,9 @@ namespace DCL.Helpers
 
         public static void SafeDestroy(UnityEngine.Object obj)
         {
+            if (obj is Transform)
+                return;
+            
 #if UNITY_EDITOR
             if (Application.isPlaying)
                 UnityEngine.Object.Destroy(obj);

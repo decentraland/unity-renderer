@@ -4,11 +4,20 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 {
+    private ParcelScene scene;
+
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
+    }
+
     [UnityTest]
     public IEnumerator OBJShapeUpdate()
     {

@@ -5,12 +5,21 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
 
 public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 {
+    private ParcelScene scene;
+
+    protected override IEnumerator SetUp()
+    {
+        yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
+    }
+
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
@@ -56,7 +65,8 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         sceneAssetPack.assets.Add(sceneObject);
 
-        AssetCatalogBridge.i.AddSceneAssetPackToCatalog(sceneAssetPack);
+        var catalog = TestUtils.CreateComponentWithGameObject<AssetCatalogBridge>("AssetCatalogBridge");
+        catalog.AddSceneAssetPackToCatalog(sceneAssetPack);
 
         TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
@@ -68,15 +78,15 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
 
-        if (!(gltfShape is LoadWrapper_GLTF))
-            Assert.Fail();
-
+        Assert.IsTrue(gltfShape is LoadWrapper_GLTF);
 
         LoadWrapper_GLTF gltfWrapper = (LoadWrapper_GLTF) gltfShape;
         ContentProvider customContentProvider = AssetCatalogBridge.i.GetContentProviderForAssetIdInSceneObjectCatalog(mockupAssetId);
         Assert.AreEqual(customContentProvider.baseUrl, gltfWrapper.customContentProvider.baseUrl);
         Assert.AreEqual(mockupKey, gltfWrapper.customContentProvider.contents[0].file);
         Assert.AreEqual(mockupValue, gltfWrapper.customContentProvider.contents[0].hash);
+
+        Object.Destroy( catalog.gameObject );
     }
 
     [UnityTest]

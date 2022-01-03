@@ -78,9 +78,9 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
             SetThumbnail(x);
         };
 
-        loadedThumbnailPromise.OnFailEvent += x =>
+        loadedThumbnailPromise.OnFailEvent += (x, error) =>
         {
-            Debug.Log($"Error downloading: {url}");
+            Debug.Log($"Error downloading: {url}, Exception: {error}");
             SetLoadingActive(false);
         };
 

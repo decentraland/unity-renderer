@@ -20,7 +20,6 @@ MonoBehaviour:
     array:
     - controls:
         array:
-        - {fileID: 11400000, guid: f2d4336c9b55f99469978e3d75f1a6dc, type: 2}
         - {fileID: 11400000, guid: 0dec4eaa63d118d4aa002a638dbf7c71, type: 2}
         - {fileID: 11400000, guid: 0dbebd3806af28a4085597717331a448, type: 2}
         - {fileID: 11400000, guid: a287f0c30564e0346a5b6a88d4962fca, type: 2}
@@ -29,6 +28,7 @@ MonoBehaviour:
         - {fileID: 11400000, guid: 6bc8110cbd37eac4483f2998f09e4d04, type: 2}
         - {fileID: 11400000, guid: 4197993d78854a848889813dbc0a011b, type: 2}
         - {fileID: 11400000, guid: d11af08d45b874130b0f17a8c938b96a, type: 2}
+        - {fileID: 11400000, guid: fdd8600a488ddf04595c29113482d6c1, type: 2}
     - controls:
         array:
         - {fileID: 11400000, guid: fc068c982b76bd1459b0b6a7692aed00, type: 2}

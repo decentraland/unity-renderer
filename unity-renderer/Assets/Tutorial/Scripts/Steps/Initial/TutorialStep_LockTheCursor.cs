@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEngine;
 
 namespace DCL.Tutorial
 {
@@ -15,7 +14,6 @@ namespace DCL.Tutorial
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
             tutorialController?.hudController?.taskbarHud?.SetVisibility(false);
-            tutorialController?.hudController?.profileHud?.SetBackpackButtonVisibility(false);
         }
 
         public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mouseCatcher == null || mouseCatcher.isLocked); }

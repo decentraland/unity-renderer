@@ -18,7 +18,6 @@ MonoBehaviour:
   controlController: {fileID: 11400000, guid: f5207ba17f0679e4ea06b00617cae350, type: 2}
   flagsThatDisableMe:
   - {fileID: 11400000, guid: fdeb14ee220a14e40a71ecf4fc17b0c3, type: 2}
-  - {fileID: 11400000, guid: 1e39f6d2504a10449895477e0118ad88, type: 2}
   flagsThatDeactivateMe: []
   isBeta: 0
   spinBoxLabels:

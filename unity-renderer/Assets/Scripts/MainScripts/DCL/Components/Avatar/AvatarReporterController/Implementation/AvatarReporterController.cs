@@ -1,12 +1,11 @@
 using System.Linq;
 using DCL;
+using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
 
 public class AvatarReporterController : IAvatarReporterController
 {
-    public const string AVATAR_GLOBAL_SCENE = "dcl-gs-avatars";
-
     private string entityId;
     private string avatarId;
     private string lastSceneId;
@@ -26,7 +25,7 @@ public class AvatarReporterController : IAvatarReporterController
     void IAvatarReporterController.SetUp(string sceneId, string entityId, string avatarId)
     {
         // NOTE: do not report avatars that doesn't belong to the global scene
-        if (sceneId != AVATAR_GLOBAL_SCENE)
+        if (sceneId != EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID)
             return;
 
         this.entityId = entityId;
@@ -45,7 +44,7 @@ public class AvatarReporterController : IAvatarReporterController
         if (wasInLoadedScene && !HasMoved(position))
             return;
 
-        Vector2Int coords = Utils.WorldToGridPosition(position);
+        Vector2Int coords = Utils.WorldToGridPosition(CommonScriptableObjects.worldOffset + position);
 
         if (wasInLoadedScene && lastCoords == coords)
         {

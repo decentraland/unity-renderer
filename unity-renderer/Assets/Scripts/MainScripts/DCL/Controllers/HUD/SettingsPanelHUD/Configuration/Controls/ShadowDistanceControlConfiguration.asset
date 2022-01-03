@@ -18,7 +18,6 @@ MonoBehaviour:
   controlController: {fileID: 11400000, guid: 44a001676401ebb44828c2bbd3538c34, type: 2}
   flagsThatDisableMe:
   - {fileID: 11400000, guid: fdeb14ee220a14e40a71ecf4fc17b0c3, type: 2}
-  - {fileID: 11400000, guid: 1e39f6d2504a10449895477e0118ad88, type: 2}
   flagsThatDeactivateMe: []
   isBeta: 0
   sliderMinValue: 30

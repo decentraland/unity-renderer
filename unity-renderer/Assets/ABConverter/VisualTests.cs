@@ -13,10 +13,10 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
-        static readonly string BASELINE_IMAGES_PATH = AssetBundlesVisualTestHelpers.baselineImagesPath;
-        static readonly string TEST_IMAGES_PATH = AssetBundlesVisualTestHelpers.testImagesPath;
+        static readonly string BASELINE_IMAGES_PATH = AssetBundlesVisualTestUtils.baselineImagesPath;
+        static readonly string TEST_IMAGES_PATH = AssetBundlesVisualTestUtils.testImagesPath;
         static readonly string SCENE_NAME = "Assets/ABConverter/VisualTestScene.unity";
-        
+
         static string abPath = Application.dataPath + "/../AssetBundles/";
         static int skippedAssets = 0;
 
@@ -51,8 +51,8 @@ namespace DCL.ABConverter
             yield return new WaitUntil(() => scene.isLoaded);
 
             // Update visual tests path that will be used internally for the snapshots
-            AssetBundlesVisualTestHelpers.baselineImagesPath += "ABConverter/";
-            AssetBundlesVisualTestHelpers.testImagesPath += "ABConverter/";
+            AssetBundlesVisualTestUtils.baselineImagesPath += "ABConverter/";
+            AssetBundlesVisualTestUtils.testImagesPath += "ABConverter/";
             skippedAssets = 0;
 
             var gltfs = LoadAndInstantiateAllGltfAssets();
@@ -68,7 +68,7 @@ namespace DCL.ABConverter
             // Take prewarm snapshot to make sure the scene is correctly loaded
             yield return TakeObjectSnapshot(new GameObject(), $"ABConverter_Warmup.png");
 
-            AssetBundlesVisualTestHelpers.generateBaseline = true;
+            AssetBundlesVisualTestUtils.generateBaseline = true;
 
             foreach (GameObject go in gltfs)
             {
@@ -84,7 +84,7 @@ namespace DCL.ABConverter
                 go.SetActive(false);
             }
 
-            AssetBundlesVisualTestHelpers.generateBaseline = false;
+            AssetBundlesVisualTestUtils.generateBaseline = false;
 
             var abs = LoadAndInstantiateAllAssetBundles();
 
@@ -109,9 +109,9 @@ namespace DCL.ABConverter
 
                 yield return TakeObjectSnapshot(go, testName);
 
-                bool result = AssetBundlesVisualTestHelpers.TestSnapshot(
-                    AssetBundlesVisualTestHelpers.baselineImagesPath + testName,
-                    AssetBundlesVisualTestHelpers.testImagesPath + testName,
+                bool result = AssetBundlesVisualTestUtils.TestSnapshot(
+                    AssetBundlesVisualTestUtils.baselineImagesPath + testName,
+                    AssetBundlesVisualTestUtils.testImagesPath + testName,
                     95,
                     false);
 
@@ -135,8 +135,8 @@ namespace DCL.ABConverter
             }
 
             // Reset visual tests path
-            AssetBundlesVisualTestHelpers.baselineImagesPath = BASELINE_IMAGES_PATH;
-            AssetBundlesVisualTestHelpers.testImagesPath = TEST_IMAGES_PATH;
+            AssetBundlesVisualTestUtils.baselineImagesPath = BASELINE_IMAGES_PATH;
+            AssetBundlesVisualTestUtils.testImagesPath = TEST_IMAGES_PATH;
 
             Debug.Log("Visual Test Detection: Finished converted assets testing...skipped assets: " + skippedAssets);
             OnFinish?.Invoke(skippedAssets);
@@ -172,7 +172,7 @@ namespace DCL.ABConverter
 
             Vector3 cameraPosition = new Vector3(mergedBounds.min.x - offset.x, mergedBounds.max.y + offset.y, mergedBounds.min.z - offset.z);
 
-            yield return AssetBundlesVisualTestHelpers.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
+            yield return AssetBundlesVisualTestUtils.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
 
             targetGO.transform.localScale = originalScale;
         }

@@ -63,40 +63,50 @@ namespace DCL
 
         public override object GetId() { return id; }
 
-        protected override void OnLoad(Action OnSuccess, Action OnFail)
+        protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            gltfComponent = asset.container.AddComponent<GLTFComponent>();
-            gltfComponent.throttlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;
-            gltfComponent.Initialize(webRequestController);
-
-            GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
+            try
             {
-                useVisualFeedback = settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION,
-                initialVisibility = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE,
-                shaderOverride = settings.shaderOverride,
-                addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
-                forceGPUOnlyMesh = settings.forceGPUOnlyMesh
-            };
+                gltfComponent = asset.container.AddComponent<GLTFComponent>();
+                gltfComponent.throttlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;
+                gltfComponent.Initialize(webRequestController);
 
-            gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
-                false, tmpSettings, FileToHash);
-
-            gltfComponent.sceneImporter.OnMeshCreated += MeshCreated;
-            gltfComponent.sceneImporter.OnRendererCreated += RendererCreated;
-
-            gltfComponent.OnSuccess += () =>
-            {
-                if ( asset != null )
+                GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
                 {
-                    asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
-                }
+                    useVisualFeedback = settings.visibleFlags ==
+                                        AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION,
+                    initialVisibility = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE,
+                    shaderOverride = settings.shaderOverride,
+                    addMaterialsToPersistentCaching =
+                        (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
+                    forceGPUOnlyMesh = settings.forceGPUOnlyMesh
+                };
 
-                OnSuccess.Invoke();
-            };
+                gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
+                    false, tmpSettings, FileToHash);
 
-            gltfComponent.OnFail += OnFail;
+                gltfComponent.sceneImporter.OnMeshCreated += MeshCreated;
+                gltfComponent.sceneImporter.OnRendererCreated += RendererCreated;
 
-            asset.name = fileName;
+                gltfComponent.OnSuccess += () =>
+                {
+                    if (asset != null)
+                    {
+                        asset.totalTriangleCount =
+                            MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
+                    }
+
+                    OnSuccess.Invoke();
+                };
+
+                gltfComponent.OnFail += OnFail;
+
+                asset.name = fileName;
+            }
+            catch (Exception error)
+            {
+                OnFail?.Invoke(error);
+            }
         }
 
         private void RendererCreated(Renderer r)

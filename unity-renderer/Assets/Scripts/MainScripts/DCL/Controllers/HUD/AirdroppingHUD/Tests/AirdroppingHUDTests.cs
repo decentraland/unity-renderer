@@ -4,8 +4,6 @@ using UnityEngine.TestTools;
 
 public class AirdroppingHUDController_Should : IntegrationTestSuite_Legacy
 {
-    protected override bool justSceneSetUp => true;
-
     private AirdroppingHUDController controller;
     private AirdroppingHUDController.Model model_2Item;
     private AirdroppingHUDController.Model model_0Item;

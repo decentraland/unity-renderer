@@ -24,7 +24,9 @@ namespace DCL
 
         public void RemoveListener( IUpdateEventHandler.EventType eventType, Action action )
         {
-            Assert.IsTrue( dispatcher != null, "Dispatcher is null! This should never happen!");
+            if ( dispatcher == null )
+                return;
+
             dispatcher.eventCollections[eventType].Remove(action);
         }
 

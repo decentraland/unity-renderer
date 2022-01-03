@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using DCL;
 using DCL.Components;
 using NUnit.Framework;
 using UnityEngine;
@@ -38,7 +37,7 @@ namespace AvatarShape_Tests
             //Act
             bool succeeded = false;
             bool failed = false;
-            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, x => failed = true);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, (x, e) => failed = true);
             yield return new WaitUntil(() => succeeded || failed);
 
             //Assert
@@ -73,7 +72,7 @@ namespace AvatarShape_Tests
             bool failed = false;
             RendereableAssetLoadHelper.LoadingType cacheLoadingType = RendereableAssetLoadHelper.defaultLoadingType;
             RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_ONLY;
-            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, x => failed = true);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, (x, e) => failed = true);
             yield return new WaitUntil(() => succeeded || failed);
             RendereableAssetLoadHelper.defaultLoadingType = cacheLoadingType;
 
