@@ -53,6 +53,6 @@ namespace DCL
         public DataStore_Settings settings => i.Get<DataStore_Settings>();
         public DataStore_SkyboxConfig skyboxConfig => i.Get<DataStore_SkyboxConfig>();
         public ServerTime.WorldTimer worldTimer => i.Get<ServerTime.WorldTimer>();
-
+        public DataStore_GLTF gltf => i.Get<DataStore_GLTF>();
     }
 }
