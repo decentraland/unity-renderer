@@ -85,7 +85,7 @@ namespace DCL.Skybox
             selectedMat.SetTexture(SkyboxShaderUtils.HorizonMask, horizonMask);
             selectedMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, new Vector4(horizonMaskTiling.x, horizonMaskTiling.y, horizonMaskOffset.x, horizonMaskOffset.y));
             selectedMat.SetColor(SkyboxShaderUtils.HorizonPlaneColor, horizonPlaneColor.Evaluate(normalizedDayTime));
-            selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, GetTransitionValue(horizonPlaneHeight, percentage, -1f));
+            selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, GetTransitionValue(horizonPlaneHeight, percentage, 0.0f));
             selectedMat.SetVector(SkyboxShaderUtils.PlaneSmoothRange, horizonPlaneSmoothRange);
 
 
