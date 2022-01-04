@@ -27,6 +27,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
     {
         i = this;
         mainCamera = Camera.main;
+        backgroundTransform.gameObject.SetActive(false);
     }
 
     public void Setup(string button, string feedbackText, IDCLEntity entity)
@@ -60,6 +61,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
         }
 
         hoverIcon.SetActive(true);
+        backgroundTransform.gameObject.SetActive(true);
     }
 
     public void SetHoverState(bool hoverState)
