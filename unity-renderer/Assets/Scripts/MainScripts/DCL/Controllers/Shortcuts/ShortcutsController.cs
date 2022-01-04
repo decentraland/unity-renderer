@@ -66,6 +66,7 @@ public class ShortcutsController : IDisposable
     private void ToggleStartMenuTriggered(DCLAction_Trigger action)
     {
         bool value = !DataStore.i.exploreV2.isOpen.Get();
+        if (DataStore.i.common.isSignUpFlow.Get()) return;
 
         if (value)
         {

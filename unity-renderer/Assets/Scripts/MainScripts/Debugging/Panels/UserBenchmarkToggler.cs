@@ -6,7 +6,7 @@ namespace DCL
 {
     public class UserBenchmarkToggler : MonoBehaviour
     {
-        const string SHORTCUT_TEXT = "P = Toggle Panel";
+        const string SHORTCUT_TEXT = "[Y] Debug Panel [P] Settings [I] Backpack";
 
         public UserBenchmarkController userBenchmarkController;
         Text text;
@@ -19,7 +19,7 @@ namespace DCL
 
         void Update()
         {
-            if (Input.GetKeyUp(KeyCode.P))
+            if (Input.GetKeyUp(KeyCode.Y))
             {
                 TogglePanel();
             }

@@ -328,19 +328,24 @@ namespace DCL.Skybox
 
         void GetTimeFromTheServer(DateTime serverTime)
         {
+            DateTime serverTimeNoTicks = new DateTime(serverTime.Year, serverTime.Month, serverTime.Day, serverTime.Hour, serverTime.Minute, serverTime.Second, serverTime.Millisecond);
+            long elapsedTicks = serverTime.Ticks - serverTimeNoTicks.Ticks;
+
+            float miliseconds = serverTime.Millisecond + (elapsedTicks / 10000);
+
             // Convert miliseconds to seconds
-            double seconds = serverTime.Second + (serverTime.Millisecond / 1000);
+            float seconds = serverTime.Second + (miliseconds / 1000);
 
             // Convert seconds to minutes
-            double minutes = serverTime.Minute + (seconds / 60);
+            float minutes = serverTime.Minute + (seconds / 60);
 
             // Convert minutes to hour (in float format)
-            double totalTimeInMins = serverTime.Hour * 60 + minutes;
+            float totalTimeInMins = serverTime.Hour * 60 + minutes;
 
-            double timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
-            double percentageSkyboxtime = timeInCycle - (int)timeInCycle;
+            float timeInCycle = (totalTimeInMins / lifecycleDuration) + 1;
+            float percentageSkyboxtime = timeInCycle - (int)timeInCycle;
 
-            timeOfTheDay = (float)percentageSkyboxtime * cycleTime;
+            timeOfTheDay = percentageSkyboxtime * cycleTime;
         }
 
         /// <summary>
@@ -442,8 +447,6 @@ namespace DCL.Skybox
             }
 
             timeOfTheDay += Time.deltaTime / timeNormalizationFactor;
-            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
-            DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
 
             syncCounter++;
 
@@ -453,6 +456,8 @@ namespace DCL.Skybox
                 syncCounter = 0;
             }
 
+            timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
+            DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
             configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
 
             // Cycle resets
