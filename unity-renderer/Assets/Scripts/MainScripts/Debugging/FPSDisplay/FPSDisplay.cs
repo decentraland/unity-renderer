@@ -20,8 +20,8 @@ namespace DCL.FPSDisplay
         private CurrentRealmVariable currentRealm => DataStore.i.realm.playerRealm;
 
         private Promise<KernelConfigModel> kernelConfigPromise;
-        private string currentNetwork;
-        private string currentRealmValue;
+        private string currentNetwork = "";
+        private string currentRealmValue = "";
 
         private Vector2 minSize = Vector2.zero;
 
