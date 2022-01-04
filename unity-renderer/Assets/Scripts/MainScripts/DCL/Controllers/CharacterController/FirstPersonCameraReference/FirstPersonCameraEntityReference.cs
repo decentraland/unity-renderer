@@ -1,4 +1,3 @@
-using System;
 using DCL.Camera;
 using UnityEngine;
 
@@ -15,10 +14,11 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         if (cameraPosition != null)
         {
             transform.position = cameraPosition.position;
-            firstPersonParent = cameraPosition;
         }
 
         initialParent = transform.parent;
+        
+        firstPersonParent = cameraController.GetCamera().transform;
 
         // Listen to changes on the camera mode
         CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
