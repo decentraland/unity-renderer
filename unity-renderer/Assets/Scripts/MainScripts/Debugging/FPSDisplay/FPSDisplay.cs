@@ -20,8 +20,8 @@ namespace DCL.FPSDisplay
         private CurrentRealmVariable currentRealm => DataStore.i.realm.playerRealm;
 
         private Promise<KernelConfigModel> kernelConfigPromise;
-        private string currentNetwork = "";
-        private string currentRealmValue = "";
+        private string currentNetwork = string.Empty;
+        private string currentRealmValue = string.Empty;
 
         private Vector2 minSize = Vector2.zero;
 
@@ -57,11 +57,11 @@ namespace DCL.FPSDisplay
         private void UpdateRealm(CurrentRealmModel current, CurrentRealmModel previous)
         {
             if (current == null) return;
-            currentRealmValue = current.serverName;
+            currentRealmValue = current.serverName ?? string.Empty;
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { OnKernelConfigChanged(current); }
-        private void OnKernelConfigChanged(KernelConfigModel kernelConfig) { currentNetwork = kernelConfig.network; }
+        private void OnKernelConfigChanged(KernelConfigModel kernelConfig) { currentNetwork = kernelConfig.network ?? string.Empty; }
 
         private void OnOtherPlayersModified(string playerName, Player player) { lastPlayerCount = otherPlayers.Count(); }
 
