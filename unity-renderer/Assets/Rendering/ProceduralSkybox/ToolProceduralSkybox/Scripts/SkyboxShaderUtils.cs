@@ -19,6 +19,7 @@ namespace DCL.Skybox
         public static readonly int HorizonPlaneColor = Shader.PropertyToID("_horizonPlaneColor");
         public static readonly int HorizonPlaneHeight = Shader.PropertyToID("_horizonPlaneHeigth");
         public static readonly int PlaneSmoothRange = Shader.PropertyToID("_planeSmoothRange");
+        public static readonly int FogIntensity = Shader.PropertyToID("_fogIntesity");
 
         static SkyboxShaderUtils() { CacheShaderProperties(); }
 

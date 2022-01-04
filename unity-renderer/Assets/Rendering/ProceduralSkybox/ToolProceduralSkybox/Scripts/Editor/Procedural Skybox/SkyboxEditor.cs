@@ -32,12 +32,14 @@ namespace DCL.Skybox
         private bool showDLLayer;
         private bool showAvatarLayer;
         private bool showTimelineTags;
+        private bool showHorizonLayer;
         private MaterialReferenceContainer.Mat_Layer matLayer = null;
 
         private GUIStyle foldoutStyle;
         private GUIStyle renderingMarkerStyle;
         private GUIStyle configurationStyle;
         private GUIStyle percentagePartStyle;
+        private GUIStyle customLabelStyle;
 
         private List<string> renderingOrderList;
 
@@ -102,6 +104,18 @@ namespace DCL.Skybox
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
             GUILayout.Space(32);
+
+            showHorizonLayer = EditorGUILayout.Foldout(showHorizonLayer, "Horizon Layer", true);
+            if (showHorizonLayer)
+            {
+                EditorGUI.indentLevel++;
+                RenderHorizonMaskValues();
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+            GUILayout.Space(32);
+
             showAmbienLayer = EditorGUILayout.Foldout(showAmbienLayer, "Ambient Layer", true);
             if (showAmbienLayer)
             {
@@ -277,6 +291,12 @@ namespace DCL.Skybox
             {
                 percentagePartStyle = new GUIStyle();
                 percentagePartStyle.alignment = TextAnchor.MiddleCenter;
+            }
+
+            if (customLabelStyle == null)
+            {
+                customLabelStyle = new GUIStyle(EditorStyles.label);
+                customLabelStyle.wordWrap = true;
             }
         }
 
@@ -481,24 +501,26 @@ namespace DCL.Skybox
             RenderColorGradientField(selectedConfiguration.skyColor, "Sky Color", 0, 24);
             RenderColorGradientField(selectedConfiguration.horizonColor, "Horizon Color", 0, 24);
             RenderColorGradientField(selectedConfiguration.groundColor, "Ground Color", 0, 24);
-            RenderHorizonLayer();
-        }
-
-        void RenderHorizonLayer()
-        {
             EditorGUILayout.Separator();
             RenderTransitioningFloat(selectedConfiguration.horizonHeight, "Horizon Height", "%", "value", true, -1, 1);
 
             EditorGUILayout.Space(10);
             RenderTransitioningFloat(selectedConfiguration.horizonWidth, "Horizon Width", "%", "value", true, -1, 1);
+        }
 
-            EditorGUILayout.Separator();
-
+        void RenderHorizonMaskValues()
+        {
             // Horizon Mask
             RenderTexture("Texture", ref selectedConfiguration.horizonMask);
 
             // Horizon mask values
-            RenderVector4Field("Horizon Mask Values", ref selectedConfiguration.horizonMaskValues);
+            EditorGUILayout.LabelField("Horizon Mask Values", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            // Tiling
+            RenderVector2Field("Tiling", ref selectedConfiguration.horizonMaskTiling);
+            // Offset
+            RenderVector2Field("Offset", ref selectedConfiguration.horizonMaskOffset);
+            EditorGUI.indentLevel--;
 
             // Horizon Plane color
             RenderColorGradientField(selectedConfiguration.horizonPlaneColor, "Horizon Plane Color", 0, 24);
@@ -509,10 +531,7 @@ namespace DCL.Skybox
             EditorGUILayout.Space(10);
 
             // Plane smooth range
-            RenderVector2Field("Plane Smoothness", ref selectedConfiguration.horizonPlaneSmoothRange);
-            selectedConfiguration.horizonPlaneSmoothRange.x = Mathf.Clamp(selectedConfiguration.horizonPlaneSmoothRange.x, 0, 1);
-            selectedConfiguration.horizonPlaneSmoothRange.y = Mathf.Clamp(selectedConfiguration.horizonPlaneSmoothRange.y, 0, 1);
-
+            RenderMinMaxSlider("Plane Smoothness", ref selectedConfiguration.horizonPlaneSmoothRange.x, ref selectedConfiguration.horizonPlaneSmoothRange.y, 0, 1);
         }
 
         void RenderAmbientLayer()
@@ -581,6 +600,8 @@ namespace DCL.Skybox
                         RenderFloatField("Density: ", ref selectedConfiguration.fogDensity);
                         break;
                 }
+
+                RenderFloatFieldAsSlider("Fog Intensity", ref selectedConfiguration.fogIntensityOnLayer, 0, 1);
             }
 
         }
@@ -1065,18 +1086,6 @@ namespace DCL.Skybox
             EditorGUILayout.Separator();
         }
 
-        void RenderSepratedFloatFieldAsSlider(string label, string label1, ref float value1, string label2, ref float value2)
-        {
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label1, GUILayout.Width(90), GUILayout.ExpandWidth(false));
-            value1 = EditorGUILayout.FloatField("", value1, GUILayout.Width(90));
-            EditorGUILayout.LabelField(label2, GUILayout.Width(90), GUILayout.ExpandWidth(false));
-            value2 = EditorGUILayout.FloatField("", value2, GUILayout.Width(90));
-            GUILayout.EndHorizontal();
-            EditorGUILayout.Separator();
-        }
-
         void RenderFloatField(string label, ref float value)
         {
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
@@ -1089,8 +1098,10 @@ namespace DCL.Skybox
         void RenderFloatFieldAsSlider(string label, ref float value, float min, float max)
         {
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(120), GUILayout.ExpandWidth(false));
+            EditorGUILayout.BeginVertical();
             value = EditorGUILayout.Slider(value, min, max, GUILayout.Width(200));
+            EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
@@ -1136,6 +1147,17 @@ namespace DCL.Skybox
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
             tex = (Cubemap)EditorGUILayout.ObjectField(tex, typeof(Cubemap), false, GUILayout.Width(200));
+            GUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
+        }
+
+        void RenderMinMaxSlider(string label, ref float minVal, ref float maxVal, float minLimit, float maxLimit)
+        {
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(minVal.ToString("f3"), GUILayout.Width(55), GUILayout.ExpandWidth(false));
+            EditorGUILayout.MinMaxSlider(ref minVal, ref maxVal, minLimit, maxLimit, GUILayout.Width(150));
+            EditorGUILayout.LabelField(maxVal.ToString("f3"), GUILayout.Width(150), GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
             EditorGUILayout.Separator();
         }
@@ -1289,7 +1311,7 @@ namespace DCL.Skybox
         void RenderTransitioningFloat(List<TransitioningFloat> list, string label, string percentTxt, string valueText, bool slider = false, float min = 0, float max = 1, float layerStartTime = 0, float layerEndTime = 24)
         {
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
-            EditorGUILayout.LabelField(label, GUILayout.Width(120), GUILayout.ExpandWidth(false));
+            EditorGUILayout.LabelField(label, customLabelStyle, GUILayout.Width(120), GUILayout.ExpandWidth(false));
             EditorGUILayout.BeginVertical();
 
             if (list.Count == 0)

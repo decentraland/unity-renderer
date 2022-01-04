@@ -24,7 +24,8 @@ namespace DCL.Skybox
 
         // Horizon Layer
         public Texture2D horizonMask;
-        public Vector4 horizonMaskValues = new Vector4(0, 0, 0, 0);
+        public Vector2 horizonMaskTiling = new Vector2(0, 0);
+        public Vector2 horizonMaskOffset = new Vector2(0, 0);
         public Gradient horizonPlaneColor = new Gradient();
         public List<TransitioningFloat> horizonPlaneHeight = new List<TransitioningFloat>();
         public Vector2 horizonPlaneSmoothRange = new Vector2(0, 0);
@@ -51,6 +52,7 @@ namespace DCL.Skybox
         public float fogDensity = 0.05f;
         public float fogStartDistance = 0;
         public float fogEndDistance = 300;
+        public float fogIntensityOnLayer = 0.0f;
 
         // DirectionalLight Properties
         public bool useDirectionalLight = true;
@@ -81,7 +83,7 @@ namespace DCL.Skybox
             selectedMat.SetFloat(SkyboxShaderUtils.HorizonHeight, GetTransitionValue(horizonHeight, percentage, 0f));
             selectedMat.SetFloat(SkyboxShaderUtils.HorizonWidth, GetTransitionValue(horizonWidth, percentage, 0f));
             selectedMat.SetTexture(SkyboxShaderUtils.HorizonMask, horizonMask);
-            selectedMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, horizonMaskValues);
+            selectedMat.SetVector(SkyboxShaderUtils.HorizonMaskValues, new Vector4(horizonMaskTiling.x, horizonMaskTiling.y, horizonMaskOffset.x, horizonMaskOffset.y));
             selectedMat.SetColor(SkyboxShaderUtils.HorizonPlaneColor, horizonPlaneColor.Evaluate(normalizedDayTime));
             selectedMat.SetFloat(SkyboxShaderUtils.HorizonPlaneHeight, GetTransitionValue(horizonPlaneHeight, percentage, -1f));
             selectedMat.SetVector(SkyboxShaderUtils.PlaneSmoothRange, horizonPlaneSmoothRange);
@@ -148,6 +150,12 @@ namespace DCL.Skybox
                         RenderSettings.fogDensity = fogDensity;
                         break;
                 }
+
+                selectedMat.SetFloat(SkyboxShaderUtils.FogIntensity, fogIntensityOnLayer);
+            }
+            else
+            {
+                selectedMat.SetFloat(SkyboxShaderUtils.FogIntensity, 0);
             }
 
             //Directional List
