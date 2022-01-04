@@ -459,8 +459,6 @@ namespace DCL.Controllers
                 OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
                 classId = model.GetClassIdFromType();
             }
-
-            Debug.Log($"PRAVS - EntityComponentCreateOrUpdateWithModel - entity: {entityId} - classID: {classId} - data: {data as string}");
             
             if (!entity.components.ContainsKey(classId))
             {
@@ -473,7 +471,7 @@ namespace DCL.Controllers
                     OnComponentAdded?.Invoke(newComponent);
 
                     newComponent.Initialize(this, entity);
-
+                    
                     if (data is string json)
                     {
                         newComponent.UpdateFromJSON(json);

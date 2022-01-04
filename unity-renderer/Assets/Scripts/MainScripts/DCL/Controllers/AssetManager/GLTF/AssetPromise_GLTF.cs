@@ -59,6 +59,8 @@ namespace DCL
             {
                 asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
                 
+                // TODO: Find a way of setupping this in the master object in the library, to avoid running this logic
+                // on every object re-usage
                 // TOKY RABBIT QmYwQSzqEFgYowPW38BgSqVB2q44j8RtmLUu4BnuGcoHMY
                 // Setup GPU Skinning
                 int count = asset.renderers.Count;
@@ -69,6 +71,7 @@ namespace DCL
                         var rendererGO = asset.renderers[i].gameObject;
                         new SimpleGPUSkinning(asset.renderers[i] as SkinnedMeshRenderer, true, 1, 3);
                         asset.renderers[i] = rendererGO.GetComponent<MeshRenderer>();
+                        // TODO: Should we also update the CullingObjectsTracker? or is that done automatically?
                     }
                 }
                 

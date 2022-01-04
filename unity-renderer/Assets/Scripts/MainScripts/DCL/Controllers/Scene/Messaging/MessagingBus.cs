@@ -181,11 +181,6 @@ namespace DCL
                         if (!(m is QueuedSceneMessage_Scene sceneMessage))
                             continue;
 
-                        // if (sceneMessage.payload is Protocol.EntityComponentCreateOrUpdate parsedPayload)
-                        // {
-                        //     Debug.Log($"PRAVS - Scene Message - method: {sceneMessage.method} - payload: {parsedPayload.json} - message: {sceneMessage.message}");
-                        // }
-
                         if (handler.ProcessMessage(sceneMessage, out msgYieldInstruction))
                         {
 #if UNITY_EDITOR
