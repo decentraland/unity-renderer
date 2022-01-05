@@ -134,6 +134,10 @@ namespace DCL.Components
                 return false;
 
             bool isVisible = false;
+            
+            // TODO: Improve this, it happens with GPUSkinning mesh switching
+            if (entity.meshesInfo.renderers[0] == null)
+                entity.meshesInfo.UpdateRenderersCollection();
 
             if (entity.meshesInfo != null &&
                 entity.meshesInfo.renderers != null &&

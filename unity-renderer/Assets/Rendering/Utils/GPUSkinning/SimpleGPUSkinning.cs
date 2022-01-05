@@ -112,7 +112,9 @@ namespace GPUSkinning
                 
                 // WEARABLES SHOULD ALREADY HAVE THIS KEYWORD ON FROM THE GLTFSceneImporter...
                 // if(material.name != "AvatarSkin_MAT" && material.name != "AvatarWearable_MAT")
-                if(isAvatar)
+                
+                // We shouldn't be needing this EnableKeyword if the one at GLTFSceneImporter works well...
+                //if(isAvatar)
                     material.EnableKeyword(GPU_SKINNING_KEYWORD); // at GLTFSceneImporter.ConstructMaterial()
             }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
 using DCL.Models;
@@ -64,15 +65,21 @@ namespace DCL
                 // TOKY RABBIT QmYwQSzqEFgYowPW38BgSqVB2q44j8RtmLUu4BnuGcoHMY
                 // Setup GPU Skinning
                 int count = asset.renderers.Count;
+                List<SimpleGPUSkinning> gpuSkinnings = new List<SimpleGPUSkinning>();
                 for (var i = 0; i < count; i++)
                 {
                     if (asset.renderers[i] is SkinnedMeshRenderer)
                     {
                         var rendererGO = asset.renderers[i].gameObject;
-                        new SimpleGPUSkinning(asset.renderers[i] as SkinnedMeshRenderer, true, 1, 3);
+                        gpuSkinnings.Add(new SimpleGPUSkinning(asset.renderers[i] as SkinnedMeshRenderer, true, 1, 3));
                         asset.renderers[i] = rendererGO.GetComponent<MeshRenderer>();
                         // TODO: Should we also update the CullingObjectsTracker? or is that done automatically?
                     }
+                }
+
+                if (gpuSkinnings.Count > 0)
+                {
+                    asset.container.gameObject.GetComponentInChildren<InstantiatedGLTFObject>(true).gpuSkinnings = gpuSkinnings;
                 }
                 
                 settings.ApplyAfterLoad(asset.container.transform);

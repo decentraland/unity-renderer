@@ -17,7 +17,7 @@ namespace UnityGLTF
         /// </summary>
         private RefCountedCacheData cachedData;
         
-        // private List<SimpleGPUSkinning> gpuSkinnings = new List<SimpleGPUSkinning>();
+        public List<SimpleGPUSkinning> gpuSkinnings;
 
         public RefCountedCacheData CachedData
         {
@@ -70,15 +70,18 @@ namespace UnityGLTF
             {
                 gpuSkinnings.Add(new SimpleGPUSkinning(renderers[i] as SkinnedMeshRenderer, true, 1, 3));
             }
-        }
+        }*/
 
         private void LateUpdate()
         {
-            for (var i = 0; i < gpuSkinnings.Count; i++)
+            if (gpuSkinnings == null) return;
+            
+            int count = gpuSkinnings.Count;
+            for (var i = 0; i < count; i++)
             {
                 gpuSkinnings[i].Update();
             }
-        }*/
+        }
 
         private void OnDestroy()
         {
