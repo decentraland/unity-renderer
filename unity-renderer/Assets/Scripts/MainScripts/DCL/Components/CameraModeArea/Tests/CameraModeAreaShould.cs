@@ -54,6 +54,41 @@ namespace Tests
         }
 
         [Test]
+        public void ValidateCameraMode()
+        {
+            Vector3 areaPosition = new Vector3(100, 0, 100);
+            Vector3 areaSize = new Vector3(10, 10, 10);
+            const CameraMode.ModeId targetMode = CameraMode.ModeId.BuildingToolGodMode;
+
+            CameraModeArea component = CreateArea(areaPosition, areaSize, targetMode, 1 << (int)CameraMode.ModeId.FirstPerson);
+
+            CameraMode.ModeId initialMode = CommonScriptableObjects.cameraMode.Get();
+
+            // player inside area
+            SetPlayerPosition(areaPosition);
+            component.Update();
+            Assert.IsTrue(component.isPlayerInside);
+            Assert.AreNotEqual(targetMode, CommonScriptableObjects.cameraMode.Get());
+
+            // enable mode and update component
+            component.validCameraModes = (1 << (int)CameraMode.ModeId.BuildingToolGodMode);
+            component.OnModelUpdated(new CameraModeArea.Model()
+            {
+                area = new CameraModeArea.Model.Area()
+                {
+                    box = areaSize
+                },
+                cameraMode = targetMode
+            });
+
+            Assert.IsTrue(component.isPlayerInside);
+            Assert.AreEqual(targetMode, CommonScriptableObjects.cameraMode.Get());
+
+            Object.Destroy(component.areaEntity.gameObject);
+            component.Dispose();
+        }
+
+        [Test]
         public void ChangeModeOnAreaEnterAndExit()
         {
             Vector3 areaPosition = new Vector3(100, 0, 100);
@@ -242,7 +277,7 @@ namespace Tests
             smallArea.Dispose();
         }
 
-        private CameraModeArea CreateArea(Vector3 position, Vector3 size, CameraMode.ModeId mode)
+        private CameraModeArea CreateArea(Vector3 position, Vector3 size, CameraMode.ModeId mode, int validModeMask = -1)
         {
             GameObject entityGO = new GameObject("Entity");
             entityGO.transform.position = position;
@@ -252,6 +287,7 @@ namespace Tests
 
             CameraModeArea component = new CameraModeArea();
             component.Initialize(scene, entity, Substitute.For<IUpdateEventHandler>(), playerCollider);
+            component.validCameraModes = validModeMask;
             component.OnModelUpdated(new CameraModeArea.Model()
             {
                 cameraMode = mode,

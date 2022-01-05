@@ -33,6 +33,7 @@ namespace DCL.Components
 
         private Collider playerCollider;
         internal IUpdateEventHandler updateEventHandler;
+        internal int validCameraModes = 1 << (int)CameraMode.ModeId.FirstPerson | 1 << (int)CameraMode.ModeId.ThirdPerson;
 
         internal bool isPlayerInside = false;
 
@@ -82,6 +83,11 @@ namespace DCL.Components
 
         internal void OnModelUpdated(in Model newModel)
         {
+            if (!IsValidCameraMode(newModel.cameraMode))
+            {
+                newModel.cameraMode = CommonScriptableObjects.cameraMode.Get();
+            }
+
             bool cameraModeChanged = newModel.cameraMode != areaModel.cameraMode;
             areaModel = newModel;
 
@@ -121,6 +127,14 @@ namespace DCL.Components
         {
             OnAreaDisabled();
             updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        }
+
+        private bool IsValidCameraMode(in CameraMode.ModeId mode)
+        {
+            if (validCameraModes == -1)
+                return true;
+
+            return ((1 << (int)mode) & validCameraModes) != 0;
         }
 
         private bool IsPlayerInsideArea()
