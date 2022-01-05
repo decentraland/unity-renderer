@@ -27,10 +27,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
 
+    internal RendererState rendererState => CommonScriptableObjects.rendererState;
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
     internal BaseVariable<bool> isInitialized => DataStore.i.exploreV2.isInitialized;
+    internal BaseVariable<bool> isPlacesAndEventsSectionInitialized => DataStore.i.exploreV2.isPlacesAndEventsSectionInitialized;
     internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
@@ -45,6 +47,18 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Initialize()
     {
+        // It waits for the world is up before starting to initialize the Start Menu
+        rendererState.OnChange += Initialize_Internal;
+        Initialize_Internal(rendererState.Get(), false);
+    }
+
+    internal void Initialize_Internal(bool currentRendererState, bool previousRendererState)
+    {
+        if (!currentRendererState)
+            return;
+
+        rendererState.OnChange -= Initialize_Internal;
+
         exploreV2Analytics = CreateAnalyticsController();
         view = CreateView();
         SetVisibility(false);
@@ -67,7 +81,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
 
-        view.OnInitialized += CreateControllers;
         view.OnSectionOpen += OnSectionOpen;
 
         isOpen.OnChange += IsOpenChanged;
@@ -76,6 +89,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentSectionIndex.OnChange += CurrentSectionIndexChanged;
         CurrentSectionIndexChanged(currentSectionIndex.Get(), 0);
 
+        isPlacesAndEventsSectionInitialized.OnChange += IsPlacesAndEventsSectionInitializedChanged;
+        IsPlacesAndEventsSectionInitializedChanged(isPlacesAndEventsSectionInitialized.Get(), false);
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
 
@@ -107,8 +122,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         isInitialized.Set(true);
     }
 
-    internal void CreateControllers()
+    internal void InitializePlacesAndEventsSection()
     {
+        if (placesAndEventsSectionController != null)
+            return;
+
         placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(view.currentPlacesAndEventsSection, exploreV2Analytics);
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
@@ -138,13 +156,15 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Dispose()
     {
+        rendererState.OnChange -= Initialize_Internal;
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
+        isPlacesAndEventsSectionInitialized.OnChange -= IsPlacesAndEventsSectionInitializedChanged;
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
-        isAvatarEditorInitialized.OnChange += IsAvatarEditorInitializedChanged;
+        isAvatarEditorInitialized.OnChange -= IsAvatarEditorInitializedChanged;
         avatarEditorVisible.OnChange -= AvatarEditorVisibleChanged;
         isNavmapInitialized.OnChange -= IsNavMapInitializedChanged;
         navmapVisible.OnChange -= NavmapVisibleChanged;
@@ -159,7 +179,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
             view.OnAfterShowAnimation -= OnAfterShowAnimation;
-            view.OnInitialized -= CreateControllers;
             view.OnSectionOpen -= OnSectionOpen;
             view.Dispose();
         }
@@ -219,6 +238,14 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     }
 
     internal void OnAfterShowAnimation() { CommonScriptableObjects.isFullscreenHUDOpen.Set(true); }
+
+    internal void IsPlacesAndEventsSectionInitializedChanged(bool current, bool previous)
+    {
+        view.SetSectionActive(ExploreSection.Explore, current);
+
+        if (current)
+            InitializePlacesAndEventsSection();
+    }
 
     internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
     {
