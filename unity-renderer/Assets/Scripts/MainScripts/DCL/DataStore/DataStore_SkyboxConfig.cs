@@ -1,5 +1,11 @@
 namespace DCL
 {
+    public enum AvatarMaterialProfile
+    {
+        InWorld,
+        InEditor
+    }
+
     public class DataStore_SkyboxConfig
     {
         public BaseVariable<bool> objectUpdated = new BaseVariable<bool>(false);
@@ -13,5 +19,6 @@ namespace DCL
         public BaseVariable<bool> useDynamicSkybox = new BaseVariable<bool>(true);
         public BaseVariable<float> fixedTime = new BaseVariable<float>(0);
         public BaseVariable<int> reflectionResolution = new BaseVariable<int>(256);
+        public BaseVariable<AvatarMaterialProfile> avatarMatProfile = new BaseVariable<AvatarMaterialProfile>(AvatarMaterialProfile.InWorld);
     }
 }
