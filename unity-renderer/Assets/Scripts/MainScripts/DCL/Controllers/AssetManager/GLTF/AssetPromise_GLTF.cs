@@ -2,9 +2,11 @@ using System;
 using System.Linq;
 using DCL.Helpers;
 using DCL.Models;
+using MainScripts.DCL.GLTF;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityGLTF;
+using UnityGLTF.Scripts;
 
 namespace DCL
 {
@@ -16,7 +18,7 @@ namespace DCL
         protected ContentProvider provider = null;
         public string fileName { get; private set; }
 
-        GLTFComponent gltfComponent = null;
+        IGLTFComponent gltfComponent = null;
         IWebRequestController webRequestController = null;
 
         object id = null;
@@ -67,9 +69,13 @@ namespace DCL
         {
             try
             {
+#if UNIT_WEBGL
                 gltfComponent = asset.container.AddComponent<GLTFComponent>();
-                gltfComponent.throttlingCounter = AssetPromiseKeeper_GLTF.i.throttlingCounter;
-                gltfComponent.Initialize(webRequestController);
+#else
+                gltfComponent = asset.container.AddComponent<GLTFComponentAsync>();
+#endif
+                gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
+                gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
                 GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
                 {
@@ -84,9 +90,6 @@ namespace DCL
 
                 gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
                     false, tmpSettings, FileToHash);
-
-                gltfComponent.sceneImporter.OnMeshCreated += MeshCreated;
-                gltfComponent.sceneImporter.OnRendererCreated += RendererCreated;
 
                 gltfComponent.OnSuccess += () =>
                 {
