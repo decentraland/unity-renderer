@@ -77,7 +77,7 @@ namespace DCL.Components
 
         void IEntityComponent.Initialize(IParcelScene scene, IDCLEntity entity)
         {
-            Initialize(scene, entity, Environment.i.platform.updateEventHandler, SceneReferences.i.playerAvatarController.avatarCollider);
+            Initialize(scene, entity, Environment.i.platform.updateEventHandler, DataStore.i.player.playerCollider.Get());
         }
 
         internal void OnModelUpdated(in Model newModel)
