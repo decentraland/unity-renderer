@@ -175,11 +175,11 @@ namespace Tests
             const CameraMode.ModeId bigAreaMode = CameraMode.ModeId.BuildingToolGodMode;
 
             Vector3 mediumAreaSize = new Vector3(5, 1, 1);
-            Vector3 mediumAreaPos = new Vector3(2, 0, 0);
+            Vector3 mediumAreaPos = (bigAreaPos + Vector3.right * bigAreaSize.x * 0.5f) + Vector3.left * mediumAreaSize.x * 0.5f;
             const CameraMode.ModeId mediumAreaMode = CameraMode.ModeId.FirstPerson;
 
             Vector3 smallAreaSize = new Vector3(1, 1, 1);
-            Vector3 smallAreaPos = new Vector3(4, 0, 0);
+            Vector3 smallAreaPos = (bigAreaPos + Vector3.right * bigAreaSize.x * 0.5f) + Vector3.left * smallAreaSize.x * 0.5f;
             const CameraMode.ModeId smallAreaMode = CameraMode.ModeId.ThirdPerson;
 
             CameraModeArea bigArea = CreateArea(bigAreaPos, bigAreaSize, bigAreaMode);
@@ -188,6 +188,51 @@ namespace Tests
 
             CameraMode.ModeId initialMode = CommonScriptableObjects.cameraMode.Get();
 
+            // move player to the beginning of big area
+            SetPlayerPosition(bigAreaPos + Vector3.left * bigAreaSize.x * 0.5f);
+            bigArea.Update();
+            mediumArea.Update();
+            smallArea.Update();
+
+            Assert.IsTrue(bigArea.isPlayerInside);
+            Assert.IsFalse(mediumArea.isPlayerInside);
+            Assert.IsFalse(smallArea.isPlayerInside);
+            Assert.AreEqual(bigAreaMode, CommonScriptableObjects.cameraMode.Get());
+
+            // move player to the beginning of medium area
+            SetPlayerPosition(mediumAreaPos + Vector3.left * mediumAreaSize.x * 0.5f);
+            bigArea.Update();
+            mediumArea.Update();
+            smallArea.Update();
+
+            Assert.IsTrue(bigArea.isPlayerInside);
+            Assert.IsTrue(mediumArea.isPlayerInside);
+            Assert.IsFalse(smallArea.isPlayerInside);
+            Assert.AreEqual(mediumAreaMode, CommonScriptableObjects.cameraMode.Get());
+
+            // move player to the beginning of small area
+            SetPlayerPosition(smallAreaPos + Vector3.left * smallAreaSize.x * 0.5f);
+            bigArea.Update();
+            mediumArea.Update();
+            smallArea.Update();
+
+            Assert.IsTrue(bigArea.isPlayerInside);
+            Assert.IsTrue(mediumArea.isPlayerInside);
+            Assert.IsTrue(smallArea.isPlayerInside);
+            Assert.AreEqual(smallAreaMode, CommonScriptableObjects.cameraMode.Get());
+
+            // move player outside all areas
+            SetPlayerPosition(smallAreaPos + Vector3.right * (playerCollider.size.x + 1 + smallAreaSize.x * 0.5f));
+            bigArea.Update();
+            mediumArea.Update();
+            smallArea.Update();
+
+            Assert.IsFalse(bigArea.isPlayerInside);
+            Assert.IsFalse(mediumArea.isPlayerInside);
+            Assert.IsFalse(smallArea.isPlayerInside);
+            Assert.AreEqual(initialMode, CommonScriptableObjects.cameraMode.Get());
+
+            // cleanup test
             Object.Destroy(bigArea.areaEntity.gameObject);
             Object.Destroy(mediumArea.areaEntity.gameObject);
             Object.Destroy(smallArea.areaEntity.gameObject);
