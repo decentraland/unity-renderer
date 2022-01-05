@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UnityGLTF.Cache
 {
@@ -16,7 +17,7 @@ namespace UnityGLTF.Cache
         /// <summary>
         /// Materials used by this GLTF node.
         /// </summary>
-        public MaterialCacheData[] MaterialCache { get; set; }
+        public Dictionary<int, MaterialCacheData> MaterialCache { get; set; }
 
         /// <summary>
         /// Textures used by this GLTF node.
@@ -52,7 +53,7 @@ namespace UnityGLTF.Cache
             }
 
             // Destroy the cached materials
-            for (int i = 0; i < MaterialCache.Length; i++)
+            for (int i = 0; i < MaterialCache.Count; i++)
             {
                 if (MaterialCache[i] != null)
                 {

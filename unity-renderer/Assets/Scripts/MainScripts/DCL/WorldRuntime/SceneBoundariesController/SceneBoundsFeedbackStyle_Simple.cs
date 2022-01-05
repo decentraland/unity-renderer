@@ -26,6 +26,16 @@ namespace DCL.Controllers
 
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
 
+                bool nameIsMarked = meshesInfo.renderers[i].gameObject.name.Contains("-OutsideSceneBounds");
+                if (isInsideBoundaries && nameIsMarked)
+                {
+                    meshesInfo.renderers[i].gameObject.name = meshesInfo.renderers[i].gameObject.name.Replace("-OutsideSceneBounds", "");
+                }
+                else if (!isInsideBoundaries && !nameIsMarked)
+                {
+                    meshesInfo.renderers[i].gameObject.name += "-OutsideSceneBounds";
+                }
+
                 if (isInsideBoundaries && disabledRenderers.Contains(meshesInfo.renderers[i]))
                     disabledRenderers.Remove( meshesInfo.renderers[i]);
                 else if (!isInsideBoundaries && !disabledRenderers.Contains(meshesInfo.renderers[i]))

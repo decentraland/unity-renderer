@@ -94,8 +94,7 @@ namespace GPUSkinning
             // {
                 renderer.sharedMaterials = skr.sharedMaterials;
                 materials = renderer.sharedMaterials;
-                /*renderer.sharedMaterials = skr.sharedMaterials;
-                materials = renderer.materials;*/
+                // materials = renderer.materials;
             // }
             // else
             // {
@@ -114,7 +113,7 @@ namespace GPUSkinning
                 // if(material.name != "AvatarSkin_MAT" && material.name != "AvatarWearable_MAT")
                 
                 // We shouldn't be needing this EnableKeyword if the one at GLTFSceneImporter works well...
-                //if(isAvatar)
+                if(isAvatar)
                     material.EnableKeyword(GPU_SKINNING_KEYWORD); // at GLTFSceneImporter.ConstructMaterial()
             }
 
