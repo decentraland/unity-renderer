@@ -127,15 +127,21 @@ namespace DCL
 
             var wearableItems = model.wearables.ToList();
             wearableItems.Add(model.bodyShape);
-            //TODO: Resolve cancellation token
-            yield return avatar.Load(wearableItems, new AvatarSettings
-                               {
-                                   bodyshapeId = model.bodyShape,
-                                   eyesColor = model.eyeColor,
-                                   skinColor = model.skinColor,
-                                   hairColor = model.hairColor,
-                               })
-                               .ToCoroutine();
+            if (avatar.status != IAvatar.Status.Loaded || needsLoading)
+            {
+                loadingCts?.Cancel();
+                loadingCts = new CancellationTokenSource();
+                yield return avatar.Load(wearableItems, new AvatarSettings
+                {
+                    playerName = model.name,
+                    bodyshapeId = model.bodyShape,
+                    eyesColor = model.eyeColor,
+                    skinColor = model.skinColor,
+                    hairColor = model.hairColor,
+                }, loadingCts.Token);
+            }
+
+            avatar.SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);
 
             onPointerDown.Initialize(
                 new OnPointerDown.Model()
