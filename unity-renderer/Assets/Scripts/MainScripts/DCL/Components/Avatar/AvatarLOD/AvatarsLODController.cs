@@ -119,9 +119,9 @@ namespace DCL
                     lodController.SetInvisible();
                     continue;
                 }
+
                 if (avatarsCount < maxAvatars)
                 {
-                    lodController.SetThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
                     if (distance < simpleAvatarDistance)
                         lodController.SetLOD0();
                     else

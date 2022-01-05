@@ -3,6 +3,7 @@ using DCL.Components;
 using DCL.Interface;
 using System.Collections;
 using System.Linq;
+using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Models;
@@ -44,6 +45,8 @@ namespace DCL
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
         private Avatar avatar;
         private LOD avatarLOD;
+        private AvatarModel currentAvatar = null;
+        private CancellationTokenSource loadingCts;
 
         private void Awake()
         {
@@ -94,6 +97,12 @@ namespace DCL
             DisablePassport();
 
             var model = (AvatarModel) newModel;
+
+            bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
+            currentAvatar = model;
+
+            if (string.IsNullOrEmpty(model.bodyShape) || model.wearables.Count == 0)
+                yield break;
 #if UNITY_EDITOR
             gameObject.name = $"Avatar Shape {model.name}";
 #endif
@@ -267,6 +276,7 @@ namespace DCL
                 player = null;
             }
 
+            loadingCts?.Cancel();
             avatar.Dispose();
 
             if (poolableObject != null)

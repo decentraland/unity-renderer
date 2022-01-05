@@ -7,6 +7,14 @@ namespace AvatarSystem
 {
     public class WearableLoader : IWearableLoader
     {
+        // This should be a service
+        internal static IWearableItemResolver defaultWearablesResolver = new WearableItemResolver();
+        static WearableLoader()
+        {
+            // Prewarm default wearables
+            defaultWearablesResolver.Resolve(WearableLiterals.DefaultWearables.GetDefaultWearables());
+        }
+
         public WearableItem wearable { get; }
         public Rendereable rendereable => retriever?.rendereable;
         public IWearableLoader.Status status { get; private set; }
@@ -20,7 +28,7 @@ namespace AvatarSystem
             this.retriever = retriever;
         }
 
-        public async UniTask Load( GameObject container, AvatarSettings settings, CancellationToken ct = default)
+        public async UniTask Load(GameObject container, AvatarSettings settings, CancellationToken ct = default)
         {
             bool bodyshapeDirty = currentSettings.bodyshapeId != settings.bodyshapeId;
             currentSettings = settings;
@@ -38,51 +46,60 @@ namespace AvatarSystem
 
             retriever.Dispose();
 
-            WearableItem.Representation representation = wearable.GetRepresentation(settings.bodyshapeId);
-            if (representation == null)
-            {
-                Debug.Log($"No representation for {settings.bodyshapeId} of {wearable.id}");
-                status = IWearableLoader.Status.Failed;
-                if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
-                    await FallbackToDefault(ct);
-
-                if (ct.IsCancellationRequested)
-                {
-                    Dispose();
-                }
-                return;
-            }
-
-            await retriever.Retrieve(container, wearable.GetContentProvider(settings.bodyshapeId), wearable.baseUrlBundles, representation.mainFile, ct);
+            await LoadWearable(container, wearable, settings.bodyshapeId, ct);
             if (ct.IsCancellationRequested)
             {
                 Dispose();
                 return;
             }
 
+            // Succeeded
             if (rendereable != null)
             {
-                status = IWearableLoader.Status.Succeeded;
                 AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
+                status = IWearableLoader.Status.Succeeded;
                 return;
             }
 
-            status = IWearableLoader.Status.Failed;
-
+            //Try getting a default if category is needed
             if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
             {
-                await FallbackToDefault(ct);
-                if (ct.IsCancellationRequested)
-                {
-                    Dispose();
-                }
+                Debug.Log($"Failed loading {wearable.id} for bodyshape {settings.bodyshapeId}");
+                await FallbackToDefault(container, ct);
             }
+
+            if (rendereable != null)
+                status = IWearableLoader.Status.Defaulted;
+            else
+                status = IWearableLoader.Status.Failed;
+
         }
 
-        private async UniTask FallbackToDefault(CancellationToken ct)
+        private async UniTask FallbackToDefault(GameObject container, CancellationToken ct)
         {
-            status = IWearableLoader.Status.Failed;
-            //TODO load a default wearable
+            if (ct.IsCancellationRequested)
+                return;
+
+            string wearableId = WearableLiterals.DefaultWearables.GetDefaultWearable(currentSettings.bodyshapeId, wearable.data.category);
+            Debug.Log($"Falling back {wearable.id} to wearable {wearableId}");
+
+            WearableItem defaultWearable = await defaultWearablesResolver.Resolve(wearableId, ct);
+            if (ct.IsCancellationRequested)
+                return;
+
+            await LoadWearable(container, defaultWearable, currentSettings.bodyshapeId, ct);
+        }
+
+        private async UniTask LoadWearable(GameObject container, WearableItem wearableToLoad, string bodyshapeId, CancellationToken ct)
+        {
+            WearableItem.Representation representation = wearableToLoad.GetRepresentation(bodyshapeId);
+            if (representation == null)
+            {
+                Debug.Log($"No representation for {bodyshapeId} of {wearableToLoad.id}");
+                return;
+            }
+
+            await retriever.Retrieve(container, wearableToLoad.GetContentProvider(bodyshapeId), wearableToLoad.baseUrlBundles, representation.mainFile, ct);
         }
 
         public void Dispose() { retriever?.Dispose(); }

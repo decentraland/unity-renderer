@@ -16,11 +16,12 @@ namespace AvatarSystem
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottler gpuSkinningThrottler;
+        private CancellationTokenSource disposeCts = new CancellationTokenSource();
 
-        private bool visible = false;
+        private bool visible = true;
         private int lodIndex = 0;
 
-        public IAvatar.Status status { get; private set; }
+        public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Bounds bounds { get; }
 
         public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler)
@@ -34,9 +35,19 @@ namespace AvatarSystem
             this.gpuSkinningThrottler = gpuSkinningThrottler;
         }
 
+        public AvatarSettings current;
+        /// <summary>
+        /// Starts the loading process for the Avatar. 
+        /// </summary>
+        /// <param name="wearablesIds"></param>
+        /// <param name="settings"></param>
+        /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default)
         {
-            if (ct.IsCancellationRequested)
+            current = settings;
+            CancellationToken linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
+
+            if (linkedCts.IsCancellationRequested)
                 return;
 
             WearableItem bodyshape = null;
@@ -46,19 +57,17 @@ namespace AvatarSystem
             List<WearableItem> wearables = null;
             try
             {
-                (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, ct);
+                (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, linkedCts);
             }
-            catch (Exception e)
+            catch
             {
-                Debug.LogError($"Failed curating avatar with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId}");
-                Debug.LogError(e.ToString());
+                Debug.LogError($"Failed curating avatar with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
                 throw;
             }
 
-            //TODO Maybe we can include GPUSkinning in the loader but the throttling is a problem then.
-            await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, ct);
+            await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCts);
 
-            if (ct.IsCancellationRequested)
+            if (linkedCts.IsCancellationRequested)
             {
                 Dispose();
                 return;
@@ -70,10 +79,12 @@ namespace AvatarSystem
                 return;
             }
 
+            // TODO Fix huge avatar on first frame
+            animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
+
             //TODO GPUSkinning only has to be prepared when the loader has changes
             gpuSkinning.Prepare(loader.combinedRenderer);
             gpuSkinningThrottler.Bind(gpuSkinning);
-            animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
 
             if (loader.status == ILoader.Status.Succeeded || loader.status == ILoader.Status.Failed_Minor)
                 visibility.SetVisible(visible);
@@ -90,20 +101,16 @@ namespace AvatarSystem
 
         public void SetVisibility(bool visible)
         {
-            this.visible = true;
-            visibility.SetVisible(true);
-            return;
             this.visible = visible;
             if (status != IAvatar.Status.Loaded)
                 return;
             visibility.SetVisible(visible);
         }
+
         public void SetExpression(string expressionId, long timestamps) { animator?.PlayExpression(expressionId, timestamps); }
+
         public void SetLODLevel(int lodIndex)
         {
-            this.lodIndex = 0;
-            lod.SetLodIndex(0);
-            return;
             this.lodIndex = lodIndex;
             if (status != IAvatar.Status.Loaded)
                 return;
@@ -116,6 +123,9 @@ namespace AvatarSystem
 
         public void Dispose()
         {
+            status = IAvatar.Status.Idle;
+            disposeCts?.Cancel();
+            disposeCts = new CancellationTokenSource();
             avatarCurator?.Dispose();
             loader?.Dispose();
             lod?.Dispose();

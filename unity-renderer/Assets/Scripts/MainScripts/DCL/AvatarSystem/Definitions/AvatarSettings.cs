@@ -5,6 +5,11 @@ namespace AvatarSystem
     public struct AvatarSettings
     {
         /// <summary>
+        /// Name of the player controlling this avatar (if any)
+        /// </summary>
+        public string playerName;
+
+        /// <summary>
         /// Bodyshape ID of the avatar
         /// </summary>
         public string bodyshapeId;

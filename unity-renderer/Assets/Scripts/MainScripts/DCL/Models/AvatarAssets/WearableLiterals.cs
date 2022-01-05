@@ -79,6 +79,7 @@ public static class WearableLiterals
             { (BodyShapes.FEMALE, Categories.FEET), "urn:decentraland:off-chain:base-avatars:bun_shoes" },
         };
 
+        public static string[] GetDefaultWearables() => defaultWearables.Values.Distinct().ToArray();
         public static string[] GetDefaultWearables(string bodyShapeId) => defaultWearables.Where(x => x.Key.Item1 == bodyShapeId).Select(x => x.Value).ToArray();
 
         public static string GetDefaultWearable(string bodyShapeId, string category)

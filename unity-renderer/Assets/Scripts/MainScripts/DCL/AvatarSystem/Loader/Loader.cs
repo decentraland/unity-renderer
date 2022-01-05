@@ -47,12 +47,14 @@ namespace AvatarSystem
 
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
 
-            if (bodyshapeLoader == null || !bodyshapeLoader.IsValidFor(bodyshape))
+            if (bodyshapeLoader == null || bodyshapeLoader.wearable.id != bodyshape.id)
             {
                 toCleanUp.Add(bodyshapeLoader);
                 bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
             }
+
             await bodyshapeLoader.Load(container, settings, ct);
+
             if (ct.IsCancellationRequested)
             {
                 Dispose();
@@ -65,6 +67,22 @@ namespace AvatarSystem
                 return;
             }
 
+            // Mark for cleanUp unneeded loaders
+            List<string> unnededCategories = new List<string>();
+            foreach ((string category, IWearableLoader existentLoader) in loaders)
+            {
+                if (!wearables.Contains(existentLoader.wearable))
+                {
+                    toCleanUp.Add(existentLoader);
+                    unnededCategories.Add(category);
+                }
+            }
+            for (int index = 0; index < unnededCategories.Count; index++)
+            {
+                loaders.Remove(unnededCategories[index]);
+            }
+
+            // Get loaders for the new set of wearables (reusing current ones already on use)
             for (int i = 0; i < wearables.Count; i++)
             {
                 WearableItem wearable = wearables[i];
@@ -72,12 +90,13 @@ namespace AvatarSystem
                 if (loaders.TryGetValue(wearable.data.category, out IWearableLoader existentLoader))
                 {
                     loaders.Remove(wearable.data.category);
-                    if (existentLoader.IsValidFor(wearable))
+                    if (existentLoader.wearable.id == wearable.id)
                         loader = existentLoader;
                     else
                         toCleanUp.Add(existentLoader);
                 }
-                loader ??= wearableLoaderFactory.GetWearableLoader(wearable);
+                if (loader == null)
+                    loader = wearableLoaderFactory.GetWearableLoader(wearable);
                 loaders.Add(wearable.data.category, loader);
             }
 

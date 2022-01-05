@@ -13,7 +13,6 @@ namespace DCL
         void SetLOD2();
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
-        void SetThrottling(int framesBetweenUpdates);
         void SetNameVisible(bool visible);
     }
 
@@ -36,6 +35,7 @@ namespace DCL
 
             player.onPointerDownCollider.SetColliderEnabled(true);
             player.avatar.SetLODLevel(0);
+            player.avatar.SetVisibility(true);
         }
 
         public void SetLOD1()
@@ -45,6 +45,7 @@ namespace DCL
 
             player.onPointerDownCollider.SetColliderEnabled(true);
             player.avatar.SetLODLevel(1);
+            player.avatar.SetVisibility(true);
         }
 
         public void SetLOD2()
@@ -54,6 +55,7 @@ namespace DCL
 
             player.onPointerDownCollider.SetColliderEnabled(false);
             player.avatar.SetLODLevel(2);
+            player.avatar.SetVisibility(true);
         }
 
         public void SetInvisible()
@@ -65,11 +67,6 @@ namespace DCL
             player.onPointerDownCollider.SetColliderEnabled(false);
         }
 
-        public void SetThrottling(int framesBetweenUpdates)
-        {
-//            Debug.Log("TODO");
-            //player?.renderer?.SetThrottling(framesBetweenUpdates);
-        }
         public void SetNameVisible(bool visible)
         {
             if (visible)

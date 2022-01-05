@@ -8,14 +8,14 @@ namespace AvatarSystem
 {
     public class WearableItemResolver : IWearableItemResolver
     {
-        private CancellationTokenSource disposeCTS = new CancellationTokenSource();
+        private CancellationTokenSource disposeCts = new CancellationTokenSource();
         private readonly Dictionary<string, WearableItem> wearablesRetrieved = new Dictionary<string, WearableItem>();
 
         public async UniTask<WearableItem[]> Resolve(IEnumerable<string> wearableId, CancellationToken ct = default) { return await UniTask.WhenAll(wearableId.Select(x => Resolve(x, ct))); }
 
         public async UniTask<WearableItem> Resolve(string wearableId, CancellationToken ct = default)
         {
-            using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCTS.Token);
+            using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token);
 
             if (wearablesRetrieved.ContainsKey(wearableId))
                 return wearablesRetrieved[wearableId];
@@ -48,8 +48,8 @@ namespace AvatarSystem
 
         public void Dispose()
         {
-            disposeCTS.Cancel();
-            disposeCTS = new CancellationTokenSource();
+            disposeCts.Cancel();
+            disposeCts = new CancellationTokenSource();
             Forget(wearablesRetrieved.Keys.ToList());
             wearablesRetrieved.Clear();
         }

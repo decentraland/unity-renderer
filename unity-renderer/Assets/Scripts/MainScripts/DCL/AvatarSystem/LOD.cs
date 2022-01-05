@@ -64,9 +64,9 @@ namespace AvatarSystem
                 return;
             }
 
-            transitionCTS?.Cancel();
             this.lodIndex = lodIndex;
 
+            transitionCTS?.Cancel();
             transitionCTS = new CancellationTokenSource();
             Transition(transitionCTS.Token);
         }
@@ -141,6 +141,11 @@ namespace AvatarSystem
         public void Dispose()
         {
             transitionCTS?.Cancel();
+            transitionCTS = new CancellationTokenSource();
+        }
+
+        ~LOD()
+        {
             if (impostorRenderer != null)
                 Object.Destroy(impostorRenderer.gameObject);
         }

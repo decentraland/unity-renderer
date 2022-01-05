@@ -108,15 +108,5 @@ namespace Tests.AvatarLODController
             controller.SetLOD2();
             Assert.Fail();
         }
-
-        [Test]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(6)]
-        public void SetAnimationThrottling(int framesBetweenUpdates)
-        {
-            controller.SetThrottling(framesBetweenUpdates);
-            Assert.Fail();
-        }
     }
 }
