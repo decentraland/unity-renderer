@@ -29,13 +29,12 @@ namespace DCL.Components
             }
         }
 
-        private static CameraModeAreasController areasController => new CameraModeAreasController();
+        private static CameraModeAreasController areasController { get; } = new CameraModeAreasController();
 
-        private ISceneReferences sceneReferences => SceneReferences.i;
-        private Collider playerCollider => sceneReferences?.playerAvatarController.avatarCollider;
-        private IUpdateEventHandler updateEventHandler => Environment.i?.platform.updateEventHandler;
+        private Collider playerCollider;
+        internal IUpdateEventHandler updateEventHandler;
 
-        private bool isPlayerInside = false;
+        internal bool isPlayerInside = false;
 
         public Model areaModel { private set; get; } = new Model();
         public IParcelScene areaScene { private set; get; }
@@ -78,12 +77,10 @@ namespace DCL.Components
 
         void IEntityComponent.Initialize(IParcelScene scene, IDCLEntity entity)
         {
-            areaScene = scene;
-            areaEntity = entity;
-            updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            Initialize(scene, entity, Environment.i.platform.updateEventHandler, SceneReferences.i.playerAvatarController.avatarCollider);
         }
 
-        private void OnModelUpdated(Model newModel)
+        internal void OnModelUpdated(in Model newModel)
         {
             bool cameraModeChanged = newModel.cameraMode != areaModel.cameraMode;
             areaModel = newModel;
@@ -94,7 +91,17 @@ namespace DCL.Components
             }
         }
 
-        private void Update()
+        internal void Initialize(in IParcelScene scene, in IDCLEntity entity, in IUpdateEventHandler updateEventHandler, in Collider playerCollider)
+        {
+            areaScene = scene;
+            areaEntity = entity;
+            this.updateEventHandler = updateEventHandler;
+            this.playerCollider = playerCollider;
+
+            updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        }
+
+        internal void Update()
         {
             bool playerInside = IsPlayerInsideArea();
 
@@ -110,7 +117,7 @@ namespace DCL.Components
             isPlayerInside = playerInside;
         }
 
-        private void Dispose()
+        internal void Dispose()
         {
             OnAreaDisabled();
             updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
@@ -132,7 +139,7 @@ namespace DCL.Components
             Quaternion rotation = areaEntity.gameObject.transform.rotation;
 
             Collider[] colliders = Physics.OverlapBox(center, areaModel.area.box * 0.5f, rotation,
-                PhysicsLayers.avatarTriggerLayer, QueryTriggerInteraction.Collide);
+                PhysicsLayers.avatarTriggerMask, QueryTriggerInteraction.Collide);
 
             if (colliders.Length == 0)
             {

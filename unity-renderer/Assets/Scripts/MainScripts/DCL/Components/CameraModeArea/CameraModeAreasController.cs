@@ -7,7 +7,7 @@ namespace DCL.Components
         private CameraMode.ModeId initialCameraMode;
         private readonly List<ICameraModeArea> insideAreasList = new List<ICameraModeArea>();
 
-        public void AddInsideArea(ICameraModeArea area)
+        public void AddInsideArea(in ICameraModeArea area)
         {
             if (insideAreasList.Count == 0)
             {
@@ -19,7 +19,7 @@ namespace DCL.Components
             insideAreasList.Add(area);
         }
 
-        public void RemoveInsideArea(ICameraModeArea area)
+        public void RemoveInsideArea(in ICameraModeArea area)
         {
             int affectingAreasCount = insideAreasList.Count;
 
@@ -42,7 +42,7 @@ namespace DCL.Components
             insideAreasList.Remove(area);
         }
 
-        public void ChangeAreaMode(ICameraModeArea area, CameraMode.ModeId mode)
+        public void ChangeAreaMode(in ICameraModeArea area, in CameraMode.ModeId mode)
         {
             if (IsTheActivelyAffectingArea(area))
             {
@@ -56,7 +56,7 @@ namespace DCL.Components
             CommonScriptableObjects.cameraModeInputLocked.Set(false);
         }
 
-        private bool IsTheActivelyAffectingArea(ICameraModeArea area)
+        private bool IsTheActivelyAffectingArea(in ICameraModeArea area)
         {
             int affectingAreasCount = insideAreasList.Count;
 

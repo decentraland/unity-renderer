@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    public class CameraModelAreasControllerShould
+    public class CameraModeAreasControllerShould
     {
         private CameraModeAreasController controller;
 
