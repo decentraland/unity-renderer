@@ -59,6 +59,22 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
+        avatar = new AvatarSystem.Avatar(
+            new AvatarCurator(new WearableItemResolver()),
+            new Loader(new WearableLoaderFactory(), avatarContainer),
+            avatarContainer.gameObject.GetComponentInChildren<IAnimator>(),
+            new Visibility(avatarContainer),
+            new NoLODs(),
+            new SimpleGPUSkinning(),
+            new GPUSkinningThrottler_New()
+        );
+    }
+
+    public void UpdateModel(AvatarModel newModel, Action onDone)
+    {
+        loadingCts?.Cancel();
+        loadingCts = new CancellationTokenSource();
+        UpdateModelRoutine(newModel, onDone, loadingCts.Token);
     }
 
     private void OnDestroy() { loadingCts?.Cancel(); }
