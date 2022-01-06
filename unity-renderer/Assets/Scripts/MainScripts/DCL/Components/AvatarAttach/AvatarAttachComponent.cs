@@ -30,7 +30,7 @@ namespace DCL.Components
 
         void IEntityComponent.Initialize(IParcelScene scene, IDCLEntity entity)
         {
-            handler.Initialize(scene, entity);
+            handler.Initialize(scene, entity, Environment.i.platform.updateEventHandler);
         }
 
         bool IComponent.IsValid() => true;
