@@ -83,6 +83,9 @@ namespace MainScripts.DCL.GLTF
         private IWebRequestController webRequestController;
         private bool prioritizeDownload = false;
         private string baseUrl = "";
+        
+        private Action<Mesh> meshCreatedCallback;
+        private Action<Renderer> rendererCreatedCallback;
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -384,8 +387,6 @@ namespace MainScripts.DCL.GLTF
 #if UNITY_EDITOR
         // In production it will always be false
         private bool isQuitting = false;
-        private Action<Mesh> meshCreatedCallback;
-        private Action<Renderer> rendererCreatedCallback;
 
         // We need to check if application is quitting in editor
         // to prevent the pool from releasing objects that are
