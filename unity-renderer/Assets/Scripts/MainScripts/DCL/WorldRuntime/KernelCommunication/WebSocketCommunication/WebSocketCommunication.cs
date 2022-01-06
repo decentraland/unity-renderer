@@ -26,30 +26,54 @@ public class WebSocketCommunication : IKernelCommunication
 
     private string StartServer(int port, int maxPort)
     {
+        var debugConfig = GameObject.Find("DebugConfig").GetComponent<DebugConfigComponent>();
+
         if (port > maxPort)
         {
             throw new SocketException((int)SocketError.AddressAlreadyInUse);
         }
-        string wssServerUrl = $"ws://localhost:{port}/";
+        string wssServerUrl;
         string wssServiceId = "dcl";
-        string wssUrl = wssServerUrl + wssServiceId;
         try
         {
-            ws = new WebSocketServer(wssServerUrl);
+            if (debugConfig.webSocketSSL)
+            {
+                wssServerUrl = $"wss://localhost:{port}/";
+                ws = new WebSocketServer(wssServerUrl)
+                {
+                    SslConfiguration =
+                    {
+                        ServerCertificate = CertificateUtils.CreateSelfSignedCert(),
+                        ClientCertificateRequired = false,
+                        CheckCertificateRevocation = false,
+                        ClientCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                    }
+                };                
+            }
+            else
+            {
+                wssServerUrl = $"ws://localhost:{port}/";
+                ws = new WebSocketServer(wssServerUrl);
+            }
+
             ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
             ws.Start();
         }
         catch (InvalidOperationException e)
         {
             ws.Stop();
-            SocketException se = (SocketException)e.InnerException;
-            if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
+            if (!debugConfig.webSocketSSL) // Don't search other ports if we're not using SSL
             {
-                return StartServer(port + 1, maxPort);
+                SocketException se = (SocketException)e.InnerException;
+                if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
+                {
+                    return StartServer(port + 1, maxPort);
+                }
             }
             throw new InvalidOperationException(e.Message, e.InnerException);
         }
 
+        string wssUrl = wssServerUrl + wssServiceId;
         return wssUrl;
     }
 
@@ -57,6 +81,11 @@ public class WebSocketCommunication : IKernelCommunication
     {
         InitMessageTypeToBridgeName();
 
+        var debugConfig = GameObject.Find("DebugConfig").GetComponent<DebugConfigComponent>();
+#if UNITY_STANDALONE && !UNITY_EDITOR
+        debugConfig.webSocketSSL = true; // Standalone without Unity always use SSL
+#endif
+        
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
         string url = StartServer(5000, 5100);

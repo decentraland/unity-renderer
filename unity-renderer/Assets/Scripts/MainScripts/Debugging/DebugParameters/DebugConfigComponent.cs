@@ -35,7 +35,9 @@ namespace DCL
         private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
         private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
 
+        [Header("General Settings")]
         public bool openBrowserWhenStart;
+        public bool webSocketSSL = false;
 
         [Header("Kernel General Settings")]
         public string kernelVersion;
@@ -195,11 +197,36 @@ namespace DCL
                 debugPanelString = SCENE_DEBUG_PANEL + "&";
             }
 
+            if (!webSocketSSL)
+            {
+                if (baseUrl.Contains("play.decentraland.org"))
+                {
+                    Debug.LogError("play.decentraland.org only works with WebSocket SSL, please change the base URL to play.decentraland.zone");
+                    QuitGame();
+                    return;
+                }
+            }
+            else
+            {
+                Debug.Log("[REMINDER] To be able to connect with SSL you should start Chrome with the --ignore-certificate-errors argument specified, or in Firefox set the configuration option `network.websocket.allowInsecureFromHTTPS to true, then use the ws:// rather than the wss:// address.`");                
+            }
+
             Application.OpenURL(
                 $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}");
 #endif
         }
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
+        
+        private void QuitGame()
+        {
+#if UNITY_EDITOR
+            // Application.Quit() does not work in the editor so
+            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
     }
 }
