@@ -8,7 +8,7 @@ using DCL;
 /// GifProcessor: Is in charge of choosing which gif processor tu use (typescript's webworker through GIFProcessingBridge or Unity's plugin UniGif)
 /// for downloading, processing and discarding gifs
 /// </summary>
-public class GifProcessor
+public class GifProcessor : IGifProcessor
 {
     private bool jsGIFProcessingEnabled = false;
     private IWebRequestAsyncOperation webRequestOp;
