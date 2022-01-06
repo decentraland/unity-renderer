@@ -16,27 +16,34 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-#if UNITY_WEBGL
-            var processor = new GifProcessor(url);
-            asset.processor = processor;
-            loadingRoutine = CoroutineStarter.Start(
-                processor.Load(
-                    frames =>
+            var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS;
+#if !UNITY_STANDALONE
+                isAsync = false;
+#endif
+            if (isAsync)
+            {
+                var processor = new GifProcessorAsync(url);
+                asset.processor = processor;
+                UniTask.Run( () => processor.Load(frames =>
                     {
                         asset.frames = frames;
-
                         OnSuccess?.Invoke();
-                    }, OnFail));
-#else
-            var processor = new GifProcessorAsync(url);
-            asset.processor = processor;
-            UniTask.Run( () => processor.Load(frames =>
-                {
-                    asset.frames = frames;
-                    OnSuccess?.Invoke();
-                }, 
-                OnFail)).Forget();
-#endif
+                    }, 
+                    OnFail)).Forget();
+            }
+            else
+            {
+                var processor = new GifProcessor(url);
+                asset.processor = processor;
+                loadingRoutine = CoroutineStarter.Start(
+                    processor.Load(
+                        frames =>
+                        {
+                            asset.frames = frames;
+
+                            OnSuccess?.Invoke();
+                        }, OnFail));
+            }
         }
 
         protected override void OnCancelLoading()

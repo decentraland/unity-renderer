@@ -69,11 +69,19 @@ namespace DCL
         {
             try
             {
-#if UNIT_WEBGL
-                gltfComponent = asset.container.AddComponent<GLTFComponent>();
-#else
-                gltfComponent = asset.container.AddComponent<GLTFComponentAsync>();
+                var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS;
+#if !UNITY_STANDALONE
+                isAsync = false;
 #endif
+                if (isAsync)
+                {
+                    gltfComponent = asset.container.AddComponent<GLTFComponentAsync>();
+                }
+                else
+                {
+                    gltfComponent = asset.container.AddComponent<GLTFComponent>();
+                }
+
                 gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
                 gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);
 
