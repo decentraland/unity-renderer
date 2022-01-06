@@ -66,7 +66,7 @@ namespace UnityGLTF
 
         public enum ColliderType
         {
-            None,g
+            None,
             Box,
             Mesh,
             MeshConvex
