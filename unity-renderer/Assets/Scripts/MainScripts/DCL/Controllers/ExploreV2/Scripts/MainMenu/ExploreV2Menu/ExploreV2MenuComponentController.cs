@@ -159,7 +159,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         rendererState.OnChange -= Initialize_Internal;
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
-        view.currentProfileCard.onClick?.RemoveAllListeners();
+        view?.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
         isPlacesAndEventsSectionInitialized.OnChange -= IsPlacesAndEventsSectionInitializedChanged;
@@ -212,7 +212,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void SetVisibility_Internal(bool visible)
     {
-        if (view == null)
+        if (view == null || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (visible)
@@ -249,7 +249,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
     {
-        if (!isInitialized.Get())
+        if (!isInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (current)
@@ -295,7 +295,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void NavmapVisibleChanged(bool current, bool previous)
     {
-        if (!isNavmapInitialized.Get())
+        if (!isNavmapInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (current)
@@ -321,7 +321,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void BuilderVisibleChanged(bool current, bool previous)
     {
-        if (!isBuilderInitialized.Get())
+        if (!isBuilderInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (current)
@@ -347,7 +347,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void QuestVisibleChanged(bool current, bool previous)
     {
-        if (!isQuestInitialized.Get())
+        if (!isQuestInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (current)
@@ -373,7 +373,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void SettingsVisibleChanged(bool current, bool previous)
     {
-        if (!isSettingsPanelInitialized.Get())
+        if (!isSettingsPanelInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
         if (current)
