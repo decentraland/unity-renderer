@@ -53,7 +53,7 @@ namespace AvatarSystem
             loaderAssetHelper.OnSuccessEvent += OnSuccessWrapper;
             loaderAssetHelper.OnFailEvent += OnFailEventWrapper;
             loaderAssetHelper.Load(mainFile, AvatarSystemUtils.UseAssetBundles() ? RendereableAssetLoadHelper.LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK : RendereableAssetLoadHelper.LoadingType.GLTF_ONLY);
-            await UniTask.WaitUntil(() => done, cancellationToken: ct);
+            await UniTask.WaitUntil(() => done, cancellationToken: ct).SuppressCancellationThrow();
             if (ct.IsCancellationRequested)
             {
                 Dispose();

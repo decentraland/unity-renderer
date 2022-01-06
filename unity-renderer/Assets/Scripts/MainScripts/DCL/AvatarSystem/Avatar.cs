@@ -45,9 +45,9 @@ namespace AvatarSystem
         public async UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default)
         {
             current = settings;
-            CancellationToken linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
+            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
 
-            if (linkedCts.IsCancellationRequested)
+            if (linkedCt.IsCancellationRequested)
                 return;
 
             WearableItem bodyshape = null;
@@ -57,7 +57,7 @@ namespace AvatarSystem
             List<WearableItem> wearables = null;
             try
             {
-                (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, linkedCts);
+                (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, linkedCt);
             }
             catch
             {
@@ -65,9 +65,9 @@ namespace AvatarSystem
                 throw;
             }
 
-            await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCts);
+            await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
-            if (linkedCts.IsCancellationRequested)
+            if (linkedCt.IsCancellationRequested)
             {
                 Dispose();
                 return;

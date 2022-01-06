@@ -1,7 +1,11 @@
-using DCL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using AvatarSystem;
+using Cysharp.Threading.Tasks;
+using GPUSkinning;
 using UnityEngine;
 
 public class CharacterPreviewController : MonoBehaviour
@@ -34,7 +38,6 @@ public class CharacterPreviewController : MonoBehaviour
     private System.Collections.Generic.Dictionary<CameraFocus, Transform> cameraFocusLookUp;
 
     public new Camera camera;
-    public AvatarRenderer avatarRenderer;
 
     public Transform defaultEditingTemplate;
     public Transform faceEditingTemplate;
@@ -42,9 +45,10 @@ public class CharacterPreviewController : MonoBehaviour
     public Transform faceSnapshotTemplate;
     public Transform bodySnapshotTemplate;
 
-    private Coroutine updateModelRoutine;
-
-    private bool avatarLoadFailed = false;
+    [SerializeField] private GameObject avatarContainer;
+    private IAvatar avatar;
+    private AvatarModel currentAvatarModel;
+    private CancellationTokenSource loadingCts = new CancellationTokenSource();
 
     private void Awake()
     {
@@ -57,24 +61,33 @@ public class CharacterPreviewController : MonoBehaviour
         };
     }
 
-    public void UpdateModel(AvatarModel newModel, Action onDone) { updateModelRoutine = CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone)); }
+    private void OnDestroy() { loadingCts?.Cancel(); }
 
-    private void OnDestroy() { CoroutineStarter.Stop(updateModelRoutine); }
-
-    private IEnumerator UpdateModelRoutine(AvatarModel newModel, Action onDone)
+    private async UniTaskVoid UpdateModelRoutine(AvatarModel newModel, Action onDone, CancellationToken ct)
     {
-        bool avatarDone = false;
-        avatarLoadFailed = false;
+        if (newModel.HaveSameWearablesAndColors(currentAvatarModel))
+        {
+            onDone?.Invoke();
+            return;
+        }
 
-        avatarRenderer.ApplyModel(newModel, () => avatarDone = true, () => avatarLoadFailed = true);
+        List<string> wearables = new List<string>(newModel.wearables);
+        wearables.Add(newModel.bodyShape);
+        await avatar.Load(wearables, new AvatarSettings
+        {
+            bodyshapeId = newModel.bodyShape,
+            eyesColor = newModel.eyeColor,
+            hairColor = newModel.hairColor,
+            skinColor = newModel.skinColor
 
-        yield return new DCL.WaitUntil(() => avatarDone || avatarLoadFailed);
+        }, ct);
+
         onDone?.Invoke();
     }
 
     public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed)
     {
-        if (avatarLoadFailed)
+        if (avatar.status != IAvatar.Status.Loaded)
         {
             onFailed?.Invoke();
             return;
@@ -89,7 +102,7 @@ public class CharacterPreviewController : MonoBehaviour
 
         var current = camera.targetTexture;
         camera.targetTexture = null;
-        var avatarAnimator = avatarRenderer.gameObject.GetComponent<AvatarAnimatorLegacy>();
+        var avatarAnimator = avatarContainer.gameObject.GetComponentInChildren<AvatarAnimatorLegacy>();
 
         SetFocus(CameraFocus.FaceSnapshot, false);
         avatarAnimator.Reset();
@@ -164,5 +177,5 @@ public class CharacterPreviewController : MonoBehaviour
         cameraTransitionCoroutine = null;
     }
 
-    public void Rotate(float rotationVelocity) { avatarRenderer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
+    public void Rotate(float rotationVelocity) { avatarContainer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
 }

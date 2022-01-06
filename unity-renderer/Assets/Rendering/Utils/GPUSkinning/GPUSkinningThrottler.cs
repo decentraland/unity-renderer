@@ -46,7 +46,7 @@ namespace GPUSkinning
                 currentFrame++;
                 if (currentFrame % framesBetweenUpdates == 0)
                     gpuSkinning.Update();
-                await UniTask.WaitForEndOfFrame();
+                await UniTask.WaitForEndOfFrame(ct).SuppressCancellationThrow();
             }
         }
         public void Stop() { updateCts?.Cancel(); }

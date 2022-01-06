@@ -24,7 +24,7 @@ namespace AvatarSystem
                 return null;
 
             Promise<WearableItem> promise = CatalogController.RequestWearable(wearableId);
-            await promise.WithCancellation(linkedCts.Token);
+            await promise.WithCancellation(linkedCts.Token).SuppressCancellationThrow();
 
             // Cancelling is irrelevant at this point,
             // either we have the wearable and we have to add it to forget it later

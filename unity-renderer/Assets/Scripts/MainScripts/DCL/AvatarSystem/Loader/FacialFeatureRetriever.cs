@@ -47,7 +47,7 @@ namespace AvatarSystem
                 AssetPromiseKeeper_Texture.i.Keep(maskTexturePromise);
             }
 
-            await mainTexturePromise.WithCancellation(ct);
+            await mainTexturePromise.WithCancellation(ct).SuppressCancellationThrow();
             if (ct.IsCancellationRequested)
             {
                 Dispose();
@@ -56,7 +56,7 @@ namespace AvatarSystem
 
             if (maskTexturePromise != null)
             {
-                await maskTexturePromise.WithCancellation(ct);
+                await maskTexturePromise.WithCancellation(ct).SuppressCancellationThrow();
                 if (ct.IsCancellationRequested)
                 {
                     Dispose();

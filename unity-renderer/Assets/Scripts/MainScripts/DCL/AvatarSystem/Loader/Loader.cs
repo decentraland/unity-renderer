@@ -47,6 +47,16 @@ namespace AvatarSystem
 
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
 
+            void DisposeCleanUpLoaders()
+            {
+                for (int i = 0; i < toCleanUp.Count; i++)
+                {
+                    if (toCleanUp[i] == null)
+                        continue;
+                    toCleanUp[i].Dispose();
+                }
+            }
+
             if (bodyshapeLoader == null || bodyshapeLoader.wearable.id != bodyshape.id)
             {
                 toCleanUp.Add(bodyshapeLoader);
@@ -57,6 +67,7 @@ namespace AvatarSystem
 
             if (ct.IsCancellationRequested)
             {
+                DisposeCleanUpLoaders();
                 Dispose();
                 return;
             }
@@ -103,6 +114,7 @@ namespace AvatarSystem
             await UniTask.WhenAll(loaders.Values.Select(x => x.Load(container, settings, ct)));
             if (ct.IsCancellationRequested)
             {
+                DisposeCleanUpLoaders();
                 Dispose();
                 return;
             }
@@ -120,14 +132,11 @@ namespace AvatarSystem
             (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(bodyshape.id, wearables);
             var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
 
-            for (int i = 0; i < toCleanUp.Count; i++)
-            {
-                toCleanUp[i]?.Dispose();
-            }
+            DisposeCleanUpLoaders();
 
             // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
             // once that's fixed we can remove this wait
-            await UniTask.WaitForEndOfFrame(ct);
+            await UniTask.WaitForEndOfFrame(ct).SuppressCancellationThrow();
             if (ct.IsCancellationRequested)
             {
                 Dispose();

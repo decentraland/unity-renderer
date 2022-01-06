@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using AvatarSystem;
@@ -115,7 +116,6 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnUserProfileOnUpdate(UserProfile profile)
     {
         avatarLoadingCts?.Cancel();
-        avatarLoadingCts?.Dispose();
         avatarLoadingCts = new CancellationTokenSource();
         LoadingRoutine(profile, avatarLoadingCts.Token);
     }
