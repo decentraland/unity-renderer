@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL
@@ -14,6 +16,7 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
+#if UNITY_WEBGL
             var processor = new GifProcessor(url);
             asset.processor = processor;
             loadingRoutine = CoroutineStarter.Start(
@@ -24,9 +27,23 @@ namespace DCL
 
                         OnSuccess?.Invoke();
                     }, OnFail));
+#else
+            var processor = new GifProcessorAsync(url);
+            asset.processor = processor;
+            UniTask.Run( () => processor.Load(frames =>
+                {
+                    asset.frames = frames;
+                    OnSuccess?.Invoke();
+                }, 
+                OnFail)).Forget();
+#endif
         }
 
-        protected override void OnCancelLoading() { CoroutineStarter.Stop(loadingRoutine); }
+        protected override void OnCancelLoading()
+        {
+            if (loadingRoutine != null)
+                CoroutineStarter.Stop(loadingRoutine);
+        }
 
         protected override bool AddToLibrary()
         {

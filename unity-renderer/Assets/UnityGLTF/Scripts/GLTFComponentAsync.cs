@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
 using UnityEngine;
 using UnityGLTF;
@@ -220,7 +221,7 @@ namespace MainScripts.DCL.GLTF
             }
         }
 
-        private async Task LoadAssetCoroutine(GLTFComponent.Settings settings)
+        private async UniTask LoadAssetCoroutine(GLTFComponent.Settings settings)
         {
             if (!string.IsNullOrEmpty(GLTFUri))
             {
@@ -362,13 +363,13 @@ namespace MainScripts.DCL.GLTF
             }
         }
         
-        private async Task WaitUntil(Func<bool> condition)
+        private async UniTask WaitUntil(Func<bool> condition)
         {
-            async Task action()
+            async UniTask action()
             {
                 while (!condition())
                 {
-                    await Task.Delay(5);
+                    await UniTask.Delay(5);
                 }
             }
 

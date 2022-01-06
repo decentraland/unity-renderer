@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
 #if !WINDOWS_UWP
 using System.Threading;
@@ -198,7 +199,7 @@ namespace UnityGLTF
         /// <param name="showSceneObj"></param>
         /// <param name="onLoadComplete">Callback function for when load is completed</param>
         /// <returns></returns>
-        public async Task LoadScene(int sceneIndex = -1, bool showSceneObj = true, Action<GameObject, ExceptionDispatchInfo> onLoadComplete = null)
+        public async UniTask LoadScene(int sceneIndex = -1, bool showSceneObj = true, Action<GameObject, ExceptionDispatchInfo> onLoadComplete = null)
         {
             try
             {
@@ -321,7 +322,7 @@ namespace UnityGLTF
             };
         }
 
-        private async Task ConstructBufferData(Node node, CancellationToken cancellationToken)
+        private async UniTask ConstructBufferData(Node node, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -362,7 +363,7 @@ namespace UnityGLTF
             }
         }
 
-        private async Task ConstructMeshAttributes(GLTFMesh mesh, MeshId meshId)
+        private async UniTask ConstructMeshAttributes(GLTFMesh mesh, MeshId meshId)
         {
             int meshIdIndex = meshId.Id;
 
@@ -395,7 +396,7 @@ namespace UnityGLTF
         static List<string> streamingImagesStaticList = new List<string>();
         List<string> streamingImagesLocalList = new List<string>();
 
-        protected async Task ConstructImageBuffer(GLTFTexture texture, int textureIndex, bool linear)
+        protected async UniTask ConstructImageBuffer(GLTFTexture texture, int textureIndex, bool linear)
         {
             int sourceId = GetTextureSourceId(texture);
             GLTFImage image = _gltfRoot.Images[sourceId];
@@ -439,7 +440,7 @@ namespace UnityGLTF
 
         protected IEnumerator EmptyYieldEnum() { yield break; }
 
-        private async Task LoadJsonStreamOnAThread(string jsonUrl)
+        private async UniTask LoadJsonStreamOnAThread(string jsonUrl)
         {
 #if !WINDOWS_UWP
             // Note (Pato) This is worthless as we dont use the file loader
@@ -465,7 +466,7 @@ namespace UnityGLTF
             _gltfStream.StartPosition = 0;
         }
 
-        private async Task LoadJsonOnAThread()
+        private async UniTask LoadJsonOnAThread()
         {
             Thread parseJsonThread = new Thread(() => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition))
             {
@@ -475,7 +476,7 @@ namespace UnityGLTF
             //RunCoroutineSync(WaitUntilEnum(new WaitUntil(() => !parseJsonThread.IsAlive)));
 
             await WaitUntil(() => !parseJsonThread.IsAlive);
-            
+
             if (_gltfRoot == null)
             {
                 throw new GLTFLoadException("Failed to parse glTF");
@@ -506,7 +507,7 @@ namespace UnityGLTF
         /// </summary>
         /// <param name="sceneIndex">The bufferIndex of scene in gltf file to load</param>
         /// <returns></returns>
-        protected async Task _LoadScene(int sceneIndex = -1, bool showSceneObj = true, CancellationToken cancellationToken = default(CancellationToken))
+        protected async UniTask _LoadScene(int sceneIndex = -1, bool showSceneObj = true, CancellationToken cancellationToken = default(CancellationToken))
         {
             GLTFScene scene;
 
@@ -536,7 +537,7 @@ namespace UnityGLTF
             _lastLoadedScene = CreatedObject;
         }
 
-        protected async Task ConstructBuffer(GLTFBuffer buffer, int bufferIndex)
+        protected async UniTask ConstructBuffer(GLTFBuffer buffer, int bufferIndex)
         {
             if (buffer.Uri == null)
             {
@@ -575,7 +576,7 @@ namespace UnityGLTF
             }
         }
 
-        protected async Task ConstructImage(TextureCreationSettings settings, GLTFImage image, int imageCacheIndex) //, bool markGpuOnly = false, bool linear = true)
+        protected async UniTask ConstructImage(TextureCreationSettings settings, GLTFImage image, int imageCacheIndex) //, bool markGpuOnly = false, bool linear = true)
         {
             if (_assetCache.ImageCache[imageCacheIndex] != null)
                 return;
@@ -594,7 +595,7 @@ namespace UnityGLTF
 
                 BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
                 bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
-                bufferContents.Stream.Read(data, 0, data.Length);
+                await bufferContents.Stream.ReadAsync(data, 0, data.Length);
 
                 await WaitOrContinue();
 
@@ -621,7 +622,9 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async Task ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
+        private int texturesBeingCompressed = 0;
+
+        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
         {
             Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
 
@@ -643,7 +646,7 @@ namespace UnityGLTF
             await WaitOrContinue();
         }
 
-        protected virtual async Task ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
+        protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, Stream stream, int imageCacheIndex)
         {
             if (stream == null)
                 return;
@@ -695,7 +698,7 @@ namespace UnityGLTF
             return dstTex;
         }
 
-        protected virtual async Task ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex)
+        protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex)
         {
             if (_assetCache.MeshCache[meshID][primitiveIndex].MeshAttributes.Count == 0)
             {
@@ -869,7 +872,7 @@ namespace UnityGLTF
             GLTFHelpers.BuildAnimationSamplers(ref samplersByType);
         }
 
-        void ProcessCurves(Transform root, GameObject[] nodes, AnimationClip clip, GLTFAnimation animation, AnimationCacheData animationCache)
+        async UniTask ProcessCurves(Transform root, GameObject[] nodes, AnimationClip clip, GLTFAnimation animation, AnimationCacheData animationCache)
         {
             foreach (AnimationChannel channel in animation.Channels)
             {
@@ -910,7 +913,7 @@ namespace UnityGLTF
                     case GLTFAnimationChannelPath.rotation:
                         propertyNames = new string[] { "localRotation.x", "localRotation.y", "localRotation.z", "localRotation.w" };
 
-                        SetAnimationCurve(clip, relativePath, propertyNames, input, output,
+                        await SetAnimationCurve(clip, relativePath, propertyNames, input, output,
                             samplerCache.Interpolation, typeof(Transform),
                             (data, frame) =>
                             {
@@ -929,7 +932,7 @@ namespace UnityGLTF
                     case GLTFAnimationChannelPath.scale:
                         propertyNames = new string[] { "localScale.x", "localScale.y", "localScale.z" };
 
-                        SetAnimationCurve(clip, relativePath, propertyNames, input, output,
+                        await SetAnimationCurve(clip, relativePath, propertyNames, input, output,
                             samplerCache.Interpolation, typeof(Transform),
                             (data, frame) =>
                             {
@@ -952,7 +955,7 @@ namespace UnityGLTF
             clip.EnsureQuaternionContinuity();
         }
 
-        protected void SetAnimationCurve(
+        protected async UniTask SetAnimationCurve(
             AnimationClip clip,
             string relativePath,
             string[] propertyNames,
@@ -1009,30 +1012,29 @@ namespace UnityGLTF
                 }
             }
 
-            for (var ci = 0; ci < channelCount; ++ci)
-            {
-                // For cubic spline interpolation, the inTangents and outTangents are already explicitly defined.
-                // For the rest, set them appropriately.
-                if (mode != InterpolationType.CUBICSPLINE)
-                {
-                    for (var i = 0; i < keyframes[ci].Length; i++)
-                        SetTangentMode(keyframes[ci], i, mode);
-                }
-
-                if (!optimizeKeyframes)
-                {
-                    // copy all key frames data to animation curve and add it to the clip
-                    AnimationCurve curve = new AnimationCurve(keyframes[ci]);
-                    clip.SetCurve(relativePath, curveType, propertyNames[ci], curve);
-                }
-            }
-
-            if (optimizeKeyframes)
+            await UniTask.Run( () =>
             {
                 for (var ci = 0; ci < channelCount; ++ci)
                 {
-                    keyframes[ci] = OptimizeKeyFrames(keyframes[ci]);
+                    // For cubic spline interpolation, the inTangents and outTangents are already explicitly defined.
+                    // For the rest, set them appropriately.
+                    if (mode != InterpolationType.CUBICSPLINE)
+                    {
+                        for (var i = 0; i < keyframes[ci].Length; i++)
+                            SetTangentMode(keyframes[ci], i, mode);
+                    }
                 }
+            });
+
+            if (optimizeKeyframes)
+            {
+                await UniTask.Run( () =>
+                {
+                    for (var ci = 0; ci < channelCount; ++ci)
+                    {
+                        keyframes[ci] = OptimizeKeyFrames(keyframes[ci]);
+                    }
+                });
 
                 // Setting the curves by the keyframe length order fixes weird index overrun issue:
                 // https://forum.unity.com/threads/animationutility-seteditorcurve-cant-add-curve-with-one-keyfram.247372/
@@ -1045,6 +1047,15 @@ namespace UnityGLTF
                     // copy all key frames data to animation curve and add it to the clip
                     AnimationCurve curve = new AnimationCurve(keyframeCollection);
                     clip.SetCurve(relativePath, curveType, propertyNames[index], curve);
+                }
+            }
+            else
+            {
+                for (var ci = 0; ci < channelCount; ++ci)
+                {
+                    // copy all key frames data to animation curve and add it to the clip
+                    AnimationCurve curve = new AnimationCurve(keyframes[ci]);
+                    clip.SetCurve(relativePath, curveType, propertyNames[ci], curve);
                 }
             }
         }
@@ -1172,7 +1183,7 @@ namespace UnityGLTF
 
         #endregion
 
-        protected virtual async Task ConstructScene(GLTFScene scene, bool showSceneObj, CancellationToken cancellationToken)
+        protected virtual async UniTask ConstructScene(GLTFScene scene, bool showSceneObj, CancellationToken cancellationToken)
         {
             CreatedObject.SetActive(showSceneObj);
             CreatedObject.transform.SetParent(SceneParent, false);
@@ -1223,7 +1234,7 @@ namespace UnityGLTF
 
                     AnimationClip clip = ConstructClip(i, out gltfAnimation, out animationCache);
 
-                    ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
+                    await ProcessCurves(CreatedObject.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
 
                     clip.wrapMode = WrapMode.Loop;
 
@@ -1237,7 +1248,7 @@ namespace UnityGLTF
             }
         }
 
-        async Task LoadAnimationBufferData(GLTFAnimation animation, int animationId)
+        async UniTask LoadAnimationBufferData(GLTFAnimation animation, int animationId)
         {
             var typeMap = new Dictionary<int, string>();
             foreach (var channel in animation.Channels)
@@ -1333,7 +1344,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async Task ConstructNode(Node node, int nodeIndex, CancellationToken cancellationToken, Transform parent = null)
+        protected virtual async UniTask ConstructNode(Node node, int nodeIndex, CancellationToken cancellationToken, Transform parent = null)
         {
             if (_assetCache.NodeCache[nodeIndex] != null)
             {
@@ -1355,10 +1366,22 @@ namespace UnityGLTF
 
             if (node.Children != null)
             {
-                foreach (var child in node.Children)
+                /*foreach (var child in node.Children)
                 {
                     GameObject childObj = await GetNode(child.Id, cancellationToken);
                     childObj.transform.SetParent(nodeObj.transform, false);
+                }*/
+                for (int i = 0; i < node.Children.Count; i++)
+                {
+                    NodeId child = node.Children[i];
+
+                    if (!nodeToParent.ContainsKey(child.Id))
+                    {
+                        nodeToParent.Add(child.Id, nodeIndex);
+                    }
+
+                    // todo blgross: replace with an iterartive solution
+                    await ConstructNode(child.Value, child.Id, cancellationToken, nodeObj.transform);
                 }
             }
 
@@ -1394,11 +1417,13 @@ namespace UnityGLTF
                     {
                         int lodNodeId = lodsextension.MeshIds[i];
 
-                        var lodNodeObj = await GetNode(lodNodeId, cancellationToken);
+                        await ConstructNode(_gltfRoot.Nodes[lodNodeId], lodNodeId, cancellationToken, lodGroupNodeObj.transform);
+
+                        int lodIndex = i + 1;
+                        GameObject lodNodeObj = _assetCache.NodeCache[lodNodeId];
                         lodNodeObj.transform.SetParent(lodGroupNodeObj.transform, false);
 
                         childRenders = lodNodeObj.GetComponentsInChildren<MeshRenderer>();
-                        int lodIndex = i + 1;
                         lods[lodIndex] = new LOD(GetLodCoverage(lodCoverage, lodIndex), childRenders);
                     }
 
@@ -1433,7 +1458,7 @@ namespace UnityGLTF
 
         private bool HasBlendShapes(MeshPrimitive primitive) { return primitive.Targets != null; }
 
-        async Task FindSkeleton(int nodeId, System.Action<int> found)
+        async UniTask FindSkeleton(int nodeId, System.Action<int> found)
         {
             if (nodeToParent.ContainsKey(nodeId))
             {
@@ -1443,7 +1468,7 @@ namespace UnityGLTF
             found.Invoke(nodeId);
         }
 
-        protected virtual async Task SetupBones(Skin skin, MeshPrimitive primitive, SkinnedMeshRenderer renderer, GameObject primitiveObj, Mesh curMesh)
+        protected virtual async UniTask SetupBones(Skin skin, MeshPrimitive primitive, SkinnedMeshRenderer renderer, GameObject primitiveObj, Mesh curMesh)
         {
             var boneCount = skin.Joints.Count;
             Transform[] bones = new Transform[boneCount];
@@ -1533,7 +1558,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async Task ConstructMeshMaterials(GLTFMesh mesh, int meshId)
+        protected virtual async UniTask ConstructMeshMaterials(GLTFMesh mesh, int meshId)
         {
             for (int i = 0; i < mesh.Primitives.Count; ++i)
             {
@@ -1541,7 +1566,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async Task ConstructPrimitiveMaterials(GLTFMesh mesh, int meshId, int primitiveIndex)
+        protected virtual async UniTask ConstructPrimitiveMaterials(GLTFMesh mesh, int meshId, int primitiveIndex)
         {
             var primitive = mesh.Primitives[primitiveIndex];
             int materialIndex = primitive.Material != null ? primitive.Material.Id : -1;
@@ -1572,7 +1597,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async Task ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
+        protected virtual async UniTask ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
         {
             bool isColliderMesh = parent.name.Contains("_collider");
 
@@ -1656,7 +1681,7 @@ namespace UnityGLTF
             }
         }
 
-        async Task DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
+        async UniTask DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
         {
             bool shouldUseDefaultMaterial = primitive.Material == null;
 
@@ -1692,7 +1717,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual async Task ConstructMeshPrimitive(MeshPrimitive primitive, int meshID, int primitiveIndex, int materialIndex)
+        protected virtual async UniTask ConstructMeshPrimitive(MeshPrimitive primitive, int meshID, int primitiveIndex, int materialIndex)
         {
             if (_assetCache.MeshCache[meshID][primitiveIndex] == null)
             {
@@ -1769,9 +1794,9 @@ namespace UnityGLTF
             };
         }
 
-        protected virtual async Task ConstructMaterialImageBuffers(GLTFMaterial def)
+        protected virtual async UniTask ConstructMaterialImageBuffers(GLTFMaterial def)
         {
-            var tasks = new List<Task>(8);
+            var tasks = new List<UniTask>(8);
 
             if (def.PbrMetallicRoughness != null)
             {
@@ -1843,10 +1868,10 @@ namespace UnityGLTF
                 }
             }
 
-            await Task.WhenAll(tasks);
+            await UniTask.WhenAll(tasks);
         }
 
-        private async Task WaitOrContinue()
+        private async UniTask WaitOrContinue()
         {
             if (!skipFrameIfDepletedTimeBudget.keepWaiting)
                 return;
@@ -1854,7 +1879,7 @@ namespace UnityGLTF
             await WaitUntil(() => !skipFrameIfDepletedTimeBudget.keepWaiting);
         }
 
-        private async Task ConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
+        private async UniTask ConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
         {
             MeshPrimitive primitive = meshConstructionData.Primitive;
             int vertexCount = (int) primitive.Attributes[SemanticProperties.POSITION].Value.Count;
@@ -1940,7 +1965,7 @@ namespace UnityGLTF
             return areValid;
         }
 
-        protected virtual async Task ConstructMaterial(GLTFMaterial def, int materialIndex)
+        protected virtual async UniTask ConstructMaterial(GLTFMaterial def, int materialIndex)
         {
             IUniformMap mapper;
             const string specGlossExtName = KHR_materials_pbrSpecularGlossinessExtensionFactory.EXTENSION_NAME;
@@ -2152,7 +2177,7 @@ namespace UnityGLTF
             return settings;
         }
 
-        protected virtual async Task ConstructTexture(GLTFTexture texture, int textureIndex, bool linear)
+        protected virtual async UniTask ConstructTexture(GLTFTexture texture, int textureIndex, bool linear)
         {
             await WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
 
@@ -2208,9 +2233,9 @@ namespace UnityGLTF
 
             _assetCache.TextureCache[textureIndex].CachedTexture = source;
         }
-        private async Task WaitUntil(Func<bool> condition)
+        private async UniTask WaitUntil(Func<bool> condition)
         {
-            async Task action()
+            async UniTask action()
             {
                 while (!condition())
                 {
