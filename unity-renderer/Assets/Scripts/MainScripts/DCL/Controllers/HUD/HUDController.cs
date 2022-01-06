@@ -156,11 +156,7 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.AVATAR_EDITOR:
                 CreateHudElement(configuration, hudElementId);
-                if (avatarEditorHud != null)
-                {
-                    avatarEditorHud.Initialize(ownUserProfile, wearableCatalog);
-                }
-
+                avatarEditorHud?.Initialize(ownUserProfile, wearableCatalog);
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 CreateHudElement(configuration, hudElementId);

@@ -549,6 +549,8 @@ namespace DCL.Skybox
 
         void RenderAvatarColorLayer()
         {
+            EditorGUILayout.LabelField("In World", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             // Avatar Color
             selectedConfiguration.useAvatarGradient = EditorGUILayout.Toggle("Color Gradient", selectedConfiguration.useAvatarGradient, GUILayout.Width(500));
 
@@ -580,6 +582,15 @@ namespace DCL.Skybox
                 RenderColorGradientField(selectedConfiguration.avatarLightColorGradient, "Light Color", 0, 24);
                 EditorGUILayout.Separator();
             }
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.LabelField("In Editor (Backpack)", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            selectedConfiguration.avatarEditorTintColor = EditorGUILayout.ColorField("Tint Color", selectedConfiguration.avatarEditorTintColor, GUILayout.Width(400));
+            RenderVector3Field("Light Direction", ref selectedConfiguration.avatarEditorLightDir);
+            selectedConfiguration.avatarEditorLightColor = EditorGUILayout.ColorField("Light Color", selectedConfiguration.avatarEditorLightColor, GUILayout.Width(400));
+            EditorGUILayout.Separator();
+            EditorGUI.indentLevel--;
         }
 
         void RenderFogLayer()
@@ -1494,6 +1505,12 @@ namespace DCL.Skybox
         {
             EnsureDependencies();
             selectedConfiguration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), matLayer.numberOfSlots, directionalLight);
+
+            // If in play mode, call avatar color from skybox controller class
+            if (Application.isPlaying && SkyboxController.i != null)
+            {
+                SkyboxController.i.ApplyAvatarColor(GetNormalizedDayTime());
+            }
         }
 
         private float GetNormalizedDayTime()

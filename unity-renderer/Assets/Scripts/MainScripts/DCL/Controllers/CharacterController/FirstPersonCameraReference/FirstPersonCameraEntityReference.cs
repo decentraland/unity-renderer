@@ -15,12 +15,10 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         if (cameraPosition != null)
         {
             transform.position = cameraPosition.position;
+            firstPersonParent = cameraPosition;
         }
 
         initialParent = transform.parent;
-
-        if (Camera.main != null)
-            firstPersonParent = Camera.main.transform;
 
         // Listen to changes on the camera mode
         CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
