@@ -107,8 +107,6 @@ namespace DCL.Components
                 return;
             }
 
-            Physics.SyncTransforms();
-
             var anchorPoint = anchorPoints.GetTransform(anchorPointId);
 
             if (IsInsideScene(CommonScriptableObjects.worldOffset + anchorPoint.position))
