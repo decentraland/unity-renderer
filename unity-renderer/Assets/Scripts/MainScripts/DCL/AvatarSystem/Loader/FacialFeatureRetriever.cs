@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -13,58 +14,53 @@ namespace AvatarSystem
         public async UniTask<(Texture main, Texture mask)> Retrieve( string mainTextureUrl, string maskTextureUrl, CancellationToken ct = default)
         {
             if (ct.IsCancellationRequested)
+                throw new OperationCanceledException();
+
+            try
             {
-                Dispose();
-                return (null, null);
-            }
+                AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
+                AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
 
-            AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
-            AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
+                Texture2D mainTexture = null;
+                Texture2D maskTexture = null;
 
-            Texture2D mainTexture = null;
-            Texture2D maskTexture = null;
-
-            mainTexturePromise = new AssetPromise_Texture(mainTextureUrl);
-            mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
-            mainTexturePromise.OnFailEvent += (x, exception) =>
-            {
-                //TODO Handle exception
-                mainTexture = null;
-            };
-
-            AssetPromiseKeeper_Texture.i.Keep(mainTexturePromise);
-
-            if (!string.IsNullOrEmpty(maskTextureUrl))
-            {
-                maskTexturePromise = new AssetPromise_Texture(maskTextureUrl);
-                maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
-                maskTexturePromise.OnFailEvent += (x, exception) =>
+                mainTexturePromise = new AssetPromise_Texture(mainTextureUrl);
+                mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
+                mainTexturePromise.OnFailEvent += (x, exception) =>
                 {
                     //TODO Handle exception
-                    maskTexture = null;
+                    mainTexture = null;
                 };
 
-                AssetPromiseKeeper_Texture.i.Keep(maskTexturePromise);
-            }
+                AssetPromiseKeeper_Texture.i.Keep(mainTexturePromise);
 
-            await mainTexturePromise.WithCancellation(ct).SuppressCancellationThrow();
-            if (ct.IsCancellationRequested)
+                if (!string.IsNullOrEmpty(maskTextureUrl))
+                {
+                    maskTexturePromise = new AssetPromise_Texture(maskTextureUrl);
+                    maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
+                    maskTexturePromise.OnFailEvent += (x, exception) =>
+                    {
+                        //TODO Handle exception
+                        maskTexture = null;
+                    };
+
+                    AssetPromiseKeeper_Texture.i.Keep(maskTexturePromise);
+                }
+
+                // AttachExternalCancellation is needed, otherwise the cancellation takes a frame to effect
+                await mainTexturePromise.ToUniTask(cancellationToken: ct).AttachExternalCancellation(ct);
+                if (maskTexturePromise != null)
+                {
+                    await maskTexturePromise.ToUniTask(cancellationToken: ct).AttachExternalCancellation(ct);
+                }
+
+                return (mainTexture, maskTexture);
+            }
+            catch (OperationCanceledException)
             {
                 Dispose();
-                return (null, null);
+                throw;
             }
-
-            if (maskTexturePromise != null)
-            {
-                await maskTexturePromise.WithCancellation(ct).SuppressCancellationThrow();
-                if (ct.IsCancellationRequested)
-                {
-                    Dispose();
-                    return (null, null);
-                }
-            }
-
-            return (mainTexture, maskTexture);
         }
 
         public void Dispose()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -36,14 +37,7 @@ namespace AvatarSystem
 
         public async UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default)
         {
-            //TODO rethink cancellation and handle it gracefully
-            if (ct.IsCancellationRequested)
-            {
-                Dispose();
-                return;
-            }
-
-            status = ILoader.Status.Loading;
+            ct.ThrowIfCancellationRequested();
 
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
 
@@ -57,109 +51,103 @@ namespace AvatarSystem
                 }
             }
 
-            if (bodyshapeLoader == null || bodyshapeLoader.wearable.id != bodyshape.id)
+            try
             {
-                toCleanUp.Add(bodyshapeLoader);
-                bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
-            }
+                status = ILoader.Status.Loading;
 
-            await bodyshapeLoader.Load(container, settings, ct);
-
-            if (ct.IsCancellationRequested)
-            {
-                DisposeCleanUpLoaders();
-                Dispose();
-                return;
-            }
-
-            if (bodyshapeLoader.status == IWearableLoader.Status.Failed)
-            {
-                status = ILoader.Status.Failed_Mayor;
-                return;
-            }
-
-            // Mark for cleanUp unneeded loaders
-            List<string> unnededCategories = new List<string>();
-            foreach ((string category, IWearableLoader existentLoader) in loaders)
-            {
-                if (!wearables.Contains(existentLoader.wearable))
+                if (bodyshapeLoader == null || bodyshapeLoader.wearable.id != bodyshape.id)
                 {
-                    toCleanUp.Add(existentLoader);
-                    unnededCategories.Add(category);
+                    toCleanUp.Add(bodyshapeLoader);
+                    bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
                 }
-            }
-            for (int index = 0; index < unnededCategories.Count; index++)
-            {
-                loaders.Remove(unnededCategories[index]);
-            }
 
-            // Get loaders for the new set of wearables (reusing current ones already on use)
-            for (int i = 0; i < wearables.Count; i++)
-            {
-                WearableItem wearable = wearables[i];
-                IWearableLoader loader = null;
-                if (loaders.TryGetValue(wearable.data.category, out IWearableLoader existentLoader))
+                await bodyshapeLoader.Load(container, settings, ct);
+
+                if (bodyshapeLoader.status == IWearableLoader.Status.Failed)
                 {
-                    loaders.Remove(wearable.data.category);
-                    if (existentLoader.wearable.id == wearable.id)
-                        loader = existentLoader;
-                    else
+                    status = ILoader.Status.Failed_Mayor;
+                    return;
+                }
+
+                // Mark for cleanUp unneeded loaders
+                List<string> unnededCategories = new List<string>();
+                foreach ((string category, IWearableLoader existentLoader) in loaders)
+                {
+                    if (!wearables.Contains(existentLoader.wearable))
+                    {
                         toCleanUp.Add(existentLoader);
+                        unnededCategories.Add(category);
+                    }
                 }
-                if (loader == null)
-                    loader = wearableLoaderFactory.GetWearableLoader(wearable);
-                loaders.Add(wearable.data.category, loader);
-            }
+                for (int index = 0; index < unnededCategories.Count; index++)
+                {
+                    loaders.Remove(unnededCategories[index]);
+                }
 
-            await UniTask.WhenAll(loaders.Values.Select(x => x.Load(container, settings, ct)));
-            if (ct.IsCancellationRequested)
+                // Get loaders for the new set of wearables (reusing current ones already on use)
+                for (int i = 0; i < wearables.Count; i++)
+                {
+                    WearableItem wearable = wearables[i];
+                    IWearableLoader loader = null;
+                    if (loaders.TryGetValue(wearable.data.category, out IWearableLoader existentLoader))
+                    {
+                        loaders.Remove(wearable.data.category);
+                        if (existentLoader.wearable.id == wearable.id)
+                            loader = existentLoader;
+                        else
+                            toCleanUp.Add(existentLoader);
+                    }
+                    if (loader == null)
+                        loader = wearableLoaderFactory.GetWearableLoader(wearable);
+                    loaders.Add(wearable.data.category, loader);
+                }
+
+                await UniTask.WhenAll(loaders.Values.Select(x => x.Load(container, settings, ct)));
+
+                // Update Status accordingly
+                status = ComposeStatus(loaders);
+                if (status == ILoader.Status.Failed_Mayor)
+                {
+                    Dispose();
+                    return;
+                }
+
+                AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
+                (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(bodyshape.id, wearables);
+                var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
+
+                // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
+                // once that's fixed we can remove this wait
+                // AttachExternalCancellation is needed because cancellation will take a wait to trigger
+                await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
+
+                if (!MergeAvatar(activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out SkinnedMeshRenderer combinedRenderer))
+                {
+                    status = ILoader.Status.Failed_Mayor;
+                    Dispose();
+                    return;
+                }
+
+                this.combinedRenderer = combinedRenderer;
+                eyesRenderer = bodyshapeLoader.eyesRenderer;
+                eyebrowsRenderer = bodyshapeLoader.eyebrowsRenderer;
+                mouthRenderer = bodyshapeLoader.mouthRenderer;
+
+                this.combinedRenderer.enabled = true;
+                eyesRenderer.enabled = true;
+                eyebrowsRenderer.enabled = true;
+                mouthRenderer.enabled = true;
+                container.SetActive(false);
+            }
+            catch (OperationCanceledException e)
+            {
+                Dispose();
+                throw;
+            }
+            finally
             {
                 DisposeCleanUpLoaders();
-                Dispose();
-                return;
             }
-
-            // Update Status accordingly
-            status = ComposeStatus(loaders);
-
-            if (status == ILoader.Status.Failed_Mayor)
-            {
-                //TODO Dispose properly
-                return;
-            }
-
-            AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
-            (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(bodyshape.id, wearables);
-            var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
-
-            DisposeCleanUpLoaders();
-
-            // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
-            // once that's fixed we can remove this wait
-            await UniTask.WaitForEndOfFrame(ct).SuppressCancellationThrow();
-            if (ct.IsCancellationRequested)
-            {
-                Dispose();
-                return;
-            }
-
-            if (!MergeAvatar(activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out SkinnedMeshRenderer combinedRenderer))
-            {
-                status = ILoader.Status.Failed_Mayor;
-                //TODO Dispose properly
-                return;
-            }
-
-            this.combinedRenderer = combinedRenderer;
-            eyesRenderer = bodyshapeLoader.eyesRenderer;
-            eyebrowsRenderer = bodyshapeLoader.eyebrowsRenderer;
-            mouthRenderer = bodyshapeLoader.mouthRenderer;
-
-            this.combinedRenderer.enabled = true;
-            eyesRenderer.enabled = true;
-            eyebrowsRenderer.enabled = true;
-            mouthRenderer.enabled = true;
-            container.SetActive(false);
         }
 
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers, out SkinnedMeshRenderer renderer)

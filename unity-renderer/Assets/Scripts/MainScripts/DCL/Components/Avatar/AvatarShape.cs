@@ -2,10 +2,10 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using AvatarSystem;
-using Cysharp.Threading.Tasks;
 using DCL.Models;
 using GPUSkinning;
 using UnityEngine;
@@ -45,7 +45,7 @@ namespace DCL
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
         private Avatar avatar;
         private LOD avatarLOD;
-        private AvatarModel currentAvatar = null;
+        private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
 
         private void Awake()
@@ -99,7 +99,7 @@ namespace DCL
             var model = (AvatarModel) newModel;
 
             bool needsLoading = !model.HaveSameWearablesAndColors(currentAvatar);
-            currentAvatar = model;
+            currentAvatar.CopyFrom(model);
 
             if (string.IsNullOrEmpty(model.bodyShape) || model.wearables.Count == 0)
                 yield break;

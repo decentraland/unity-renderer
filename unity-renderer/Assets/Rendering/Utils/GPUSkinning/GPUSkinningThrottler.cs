@@ -42,11 +42,12 @@ namespace GPUSkinning
             while (true)
             {
                 if (ct.IsCancellationRequested)
-                    return;
+                    throw new OperationCanceledException();
                 currentFrame++;
                 if (currentFrame % framesBetweenUpdates == 0)
                     gpuSkinning.Update();
-                await UniTask.WaitForEndOfFrame(ct).SuppressCancellationThrow();
+                // AttachExternalCancellation is needed because WaitForEndOfFrame cancellation would take a frame
+                await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
             }
         }
         public void Stop() { updateCts?.Cancel(); }

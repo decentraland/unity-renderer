@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -7,7 +8,7 @@ namespace AvatarSystem
 {
     public class WearableLoader : IWearableLoader
     {
-        // This should be a service
+        // TODO: This should be a service
         internal static IWearableItemResolver defaultWearablesResolver = new WearableItemResolver();
         static WearableLoader()
         {
@@ -22,7 +23,7 @@ namespace AvatarSystem
         private readonly IWearableRetriever retriever;
         private AvatarSettings currentSettings;
 
-        public WearableLoader( IWearableRetriever retriever, WearableItem wearable)
+        public WearableLoader(IWearableRetriever retriever, WearableItem wearable)
         {
             this.wearable = wearable;
             this.retriever = retriever;
@@ -30,55 +31,54 @@ namespace AvatarSystem
 
         public async UniTask Load(GameObject container, AvatarSettings settings, CancellationToken ct = default)
         {
-            bool bodyshapeDirty = currentSettings.bodyshapeId != settings.bodyshapeId;
-            currentSettings = settings;
-            if (status == IWearableLoader.Status.Succeeded && !bodyshapeDirty)
-            {
-                AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
-                return;
-            }
+            ct.ThrowIfCancellationRequested();
 
-            if (ct.IsCancellationRequested)
+            try
+            {
+                bool bodyshapeDirty = currentSettings.bodyshapeId != settings.bodyshapeId;
+                currentSettings = settings;
+                if (status == IWearableLoader.Status.Succeeded && !bodyshapeDirty)
+                {
+                    AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
+                    return;
+                }
+
+                retriever.Dispose();
+
+                await LoadWearable(container, wearable, settings.bodyshapeId, ct);
+
+                // Succeeded
+                if (rendereable != null)
+                {
+                    AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
+                    status = IWearableLoader.Status.Succeeded;
+                    return;
+                }
+
+                //Try getting a default if category is needed
+                if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
+                {
+                    Debug.Log($"Failed loading {wearable.id} for bodyshape {settings.bodyshapeId}");
+                    await FallbackToDefault(container, ct);
+                }
+
+                if (rendereable != null)
+                    status = IWearableLoader.Status.Defaulted;
+                else
+                    status = IWearableLoader.Status.Failed;
+
+            }
+            catch (OperationCanceledException)
             {
                 Dispose();
-                return;
+                throw;
             }
-
-            retriever.Dispose();
-
-            await LoadWearable(container, wearable, settings.bodyshapeId, ct);
-            if (ct.IsCancellationRequested)
-            {
-                Dispose();
-                return;
-            }
-
-            // Succeeded
-            if (rendereable != null)
-            {
-                AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
-                status = IWearableLoader.Status.Succeeded;
-                return;
-            }
-
-            //Try getting a default if category is needed
-            if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
-            {
-                Debug.Log($"Failed loading {wearable.id} for bodyshape {settings.bodyshapeId}");
-                await FallbackToDefault(container, ct);
-            }
-
-            if (rendereable != null)
-                status = IWearableLoader.Status.Defaulted;
-            else
-                status = IWearableLoader.Status.Failed;
-
         }
 
         private async UniTask FallbackToDefault(GameObject container, CancellationToken ct)
         {
             if (ct.IsCancellationRequested)
-                return;
+                throw new OperationCanceledException();
 
             string wearableId = WearableLiterals.DefaultWearables.GetDefaultWearable(currentSettings.bodyshapeId, wearable.data.category);
             Debug.Log($"Falling back {wearable.id} to wearable {wearableId}");
@@ -92,6 +92,8 @@ namespace AvatarSystem
 
         private async UniTask LoadWearable(GameObject container, WearableItem wearableToLoad, string bodyshapeId, CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
+
             WearableItem.Representation representation = wearableToLoad.GetRepresentation(bodyshapeId);
             if (representation == null)
             {

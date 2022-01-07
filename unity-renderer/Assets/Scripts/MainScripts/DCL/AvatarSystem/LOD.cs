@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace AvatarSystem
 {
@@ -80,25 +82,31 @@ namespace AvatarSystem
         private async UniTaskVoid Transition(CancellationToken ct)
         {
             if (ct.IsCancellationRequested)
-                return;
+                throw new OperationCanceledException();
 
-            combinedAvatar.enabled = true;
-            impostorRenderer.enabled = true;
-            float targetAvatarAlpha = lodIndex <= 1 ? 1f : 0f;
-            while (!Mathf.Approximately(targetAvatarAlpha, avatarAlpha))
+            try
             {
-                if (ct.IsCancellationRequested)
-                    return;
-                avatarAlpha = Mathf.MoveTowards(avatarAlpha, targetAvatarAlpha, (1f / TRANSITION_DURATION) * Time.deltaTime);
-                UpdateAlpha(avatarAlpha);
-                await UniTask.NextFrame(ct);
+                combinedAvatar.enabled = true;
+                impostorRenderer.enabled = true;
+                float targetAvatarAlpha = lodIndex <= 1 ? 1f : 0f;
+                while (!Mathf.Approximately(targetAvatarAlpha, avatarAlpha))
+                {
+                    avatarAlpha = Mathf.MoveTowards(avatarAlpha, targetAvatarAlpha, (1f / TRANSITION_DURATION) * Time.deltaTime);
+                    UpdateAlpha(avatarAlpha);
+                    await UniTask.NextFrame(ct);
+                }
+
+                UpdateSSAO(lodIndex);
+                UpdateFacialFeatures(lodIndex);
+
+                combinedAvatar.enabled = avatarAlpha > 0;
+                impostorRenderer.enabled = avatarAlpha == 0;
             }
-
-            UpdateSSAO(lodIndex);
-            UpdateFacialFeatures(lodIndex);
-
-            combinedAvatar.enabled = avatarAlpha > 0;
-            impostorRenderer.enabled = avatarAlpha == 0;
+            catch (OperationCanceledException)
+            {
+                //No disposing required
+                throw;
+            }
         }
 
         private void UpdateAlpha(float avatarAlpha)

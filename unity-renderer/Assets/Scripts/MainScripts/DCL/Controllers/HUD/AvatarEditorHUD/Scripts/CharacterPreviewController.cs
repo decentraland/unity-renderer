@@ -47,7 +47,7 @@ public class CharacterPreviewController : MonoBehaviour
 
     [SerializeField] private GameObject avatarContainer;
     private IAvatar avatar;
-    private AvatarModel currentAvatarModel;
+    private readonly AvatarModel currentAvatarModel = new AvatarModel { wearables = new List<string>() };
     private CancellationTokenSource loadingCts = new CancellationTokenSource();
 
     private void Awake()
@@ -87,6 +87,7 @@ public class CharacterPreviewController : MonoBehaviour
             return;
         }
 
+        currentAvatarModel.CopyFrom(newModel);
         List<string> wearables = new List<string>(newModel.wearables);
         wearables.Add(newModel.bodyShape);
         await avatar.Load(wearables, new AvatarSettings

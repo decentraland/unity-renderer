@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using AvatarSystem;
@@ -17,6 +18,7 @@ public class PlayerAvatarController : MonoBehaviour
     private AvatarSystem.Avatar avatar;
     private CancellationTokenSource avatarLoadingCts = null;
     public GameObject avatarContainer;
+    private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
 
     public Collider avatarCollider;
     public AvatarVisibility avatarVisibility;
@@ -27,10 +29,8 @@ public class PlayerAvatarController : MonoBehaviour
 
     private bool enableCameraCheck = false;
     private Camera mainCamera;
-    private bool avatarWereablesErrors = false;
-    private bool baseWereablesErrors = false;
     private PlayerAvatarAnalytics playerAvatarAnalytics;
-    private IFatalErrorReporter fatalErrorReporter;
+    private IFatalErrorReporter fatalErrorReporter; // TODO?
 
     private void Start()
     {
@@ -122,23 +122,41 @@ public class PlayerAvatarController : MonoBehaviour
 
     private async UniTaskVoid LoadingRoutine(UserProfile profile, CancellationToken ct)
     {
-        var wearableItems = profile.avatar.wearables.ToList();
-        wearableItems.Add(profile.avatar.bodyShape);
-        await avatar.Load(wearableItems, new AvatarSettings
-        {
-            bodyshapeId = profile.avatar.bodyShape,
-            eyesColor = profile.avatar.eyeColor,
-            skinColor = profile.avatar.skinColor,
-            hairColor = profile.avatar.hairColor,
-        }, ct);
-
-        if (ct.IsCancellationRequested || avatar.status != IAvatar.Status.Loaded)
+        if (ct.IsCancellationRequested)
             return;
 
-        if (avatar.status == IAvatar.Status.Failed )
+        if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
         {
-            //TODO Enable
-            //WebInterface.ReportAvatarFatalError();
+            try
+            {
+                currentAvatar.CopyFrom(profile.avatar);
+
+                // We need to wait a frame so the cancellation propagation disposes everything
+                ct.ThrowIfCancellationRequested();
+
+                var wearableItems = profile.avatar.wearables.ToList();
+                wearableItems.Add(profile.avatar.bodyShape);
+                await avatar.Load(wearableItems, new AvatarSettings
+                {
+                    bodyshapeId = profile.avatar.bodyShape,
+                    eyesColor = profile.avatar.eyeColor,
+                    skinColor = profile.avatar.skinColor,
+                    hairColor = profile.avatar.hairColor,
+                }, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+        }
+
+        if (avatar.status != IAvatar.Status.Loaded)
+        {
+            if (avatar.status == IAvatar.Status.Failed )
+            {
+                //TODO Enable
+                //WebInterface.ReportAvatarFatalError();
+            }
             return;
         }
 
