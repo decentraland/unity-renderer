@@ -79,6 +79,7 @@ namespace DCL
         public bool builderInWorld = false;
         public bool enableProceduralSkybox = false;
         public bool soloScene = true;
+        public bool multithreaded = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
         private void Awake()
@@ -90,6 +91,7 @@ namespace DCL
             DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
+            DataStore.i.multithreading.enabled.Set(multithreaded);
         }
 
         private void Start()

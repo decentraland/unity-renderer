@@ -69,7 +69,8 @@ namespace DCL
         {
             try
             {
-                var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS;
+                var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS
+                              && DataStore.i.multithreading.enabled.Get();
 #if !UNITY_STANDALONE
                 isAsync = false;
 #endif
