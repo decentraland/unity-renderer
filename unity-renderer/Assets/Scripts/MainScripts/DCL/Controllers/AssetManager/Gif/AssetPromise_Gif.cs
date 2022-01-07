@@ -16,7 +16,8 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS;
+            var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS 
+                          && DataStore.i.multithreading.enabled.Get();
 #if !UNITY_STANDALONE
                 isAsync = false;
 #endif
