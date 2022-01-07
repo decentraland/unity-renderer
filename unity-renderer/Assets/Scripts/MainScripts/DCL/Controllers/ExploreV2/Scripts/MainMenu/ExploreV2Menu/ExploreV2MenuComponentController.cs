@@ -52,6 +52,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.realm.playerRealm.OnChange += UpdateRealmInfo;
         UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
+        DataStore.i.realm.realmsInfo.OnChange += UpdateAvailableRealmsInfo;
+        UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get(), null);
+
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
@@ -140,9 +143,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     public void Dispose()
     {
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
+        DataStore.i.realm.realmsInfo.OnChange -= UpdateAvailableRealmsInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
-        view.currentProfileCard.onClick?.RemoveAllListeners();
-        view.currentRealmViewer.onLogoClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
@@ -159,6 +161,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (view != null)
         {
+            view.currentProfileCard.onClick?.RemoveAllListeners();
+            view.currentRealmViewer.onLogoClick?.RemoveAllListeners();
             view.OnCloseButtonPressed -= OnCloseButtonPressed;
             view.OnAfterShowAnimation -= OnAfterShowAnimation;
             view.OnInitialized -= CreateControllers;
@@ -366,26 +370,42 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void UpdateRealmInfo(CurrentRealmModel currentRealm, CurrentRealmModel previousRealm)
     {
-        // Get the name of the current realm
-        string currentRealmServer = currentRealm?.serverName;
-        string currentRealmLayer = currentRealm?.layer;
-        string formattedRealmName = currentRealmServer;
-        if (!string.IsNullOrEmpty(currentRealmLayer))
-        {
-            formattedRealmName = $"{formattedRealmName}-{currentRealmLayer}";
-        }
+        if (currentRealm == null)
+            return;
 
-        view.currentRealmViewer.SetRealm(formattedRealmName);
+        // Get the name of the current realm
+        view.currentRealmViewer.SetRealm(currentRealm.serverName);
+        view.currentDimensionSelectorModal.SetCurrentDimension(currentRealm.serverName);
 
         // Calculate number of users in the current realm
         List<RealmModel> realmList = DataStore.i.realm.realmsInfo.Get()?.ToList();
-        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealmServer && (r.layer == null || r.layer == currentRealmLayer));
+        RealmModel currentRealmModel = realmList?.FirstOrDefault(r => r.serverName == currentRealm.serverName);
         int realmUsers = 0;
         if (currentRealmModel != null)
             realmUsers = currentRealmModel.usersCount;
 
         view.currentRealmViewer.SetNumberOfUsers(realmUsers);
-        view.currentDimensionSelectorModal.SetCurrentDimension(formattedRealmName);
+    }
+
+    internal void UpdateAvailableRealmsInfo(RealmModel[] currentRealmList, RealmModel[] previousRealmList)
+    {
+        List<DimensionRowComponentModel> dimensionRows = new List<DimensionRowComponentModel>();
+        CurrentRealmModel currentRealm = DataStore.i.realm.playerRealm.Get();
+
+        if (currentRealmList != null)
+        {
+            foreach (RealmModel realmModel in currentRealmList)
+            {
+                dimensionRows.Add(new DimensionRowComponentModel
+                {
+                    name = realmModel.serverName,
+                    players = realmModel.usersCount,
+                    isConnected = realmModel.serverName == currentRealm.serverName
+                });
+            }
+        }
+
+        view.currentDimensionSelectorModal.SetAvailableDimensions(dimensionRows);
     }
 
     internal void UpdateProfileInfo(UserProfile profile)

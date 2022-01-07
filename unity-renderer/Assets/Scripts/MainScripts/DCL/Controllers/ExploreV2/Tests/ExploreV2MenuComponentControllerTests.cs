@@ -327,11 +327,10 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         string testRealmName = "TestName";
-        string testRealmLayer = "TestLayer";
         DataStore.i.realm.playerRealm.Set(new CurrentRealmModel
         {
             serverName = testRealmName,
-            layer = testRealmLayer
+            layer = null
         });
 
         List<RealmModel> testRealmList = new List<RealmModel>();
@@ -339,7 +338,7 @@ public class ExploreV2MenuComponentControllerTests
         testRealmList.Add(new RealmModel
         {
             serverName = testRealmName,
-            layer = testRealmLayer,
+            layer = null,
             usersCount = testUsersCount
         });
         DataStore.i.realm.realmsInfo.Set(testRealmList.ToArray());
@@ -348,7 +347,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
         //Assert
-        exploreV2MenuView.currentRealmViewer.Received().SetRealm($"{testRealmName}-{testRealmLayer}");
+        exploreV2MenuView.currentRealmViewer.Received().SetRealm(testRealmName);
         exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(testUsersCount);
     }
 

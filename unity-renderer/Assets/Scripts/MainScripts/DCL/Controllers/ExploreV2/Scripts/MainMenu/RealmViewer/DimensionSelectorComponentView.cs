@@ -1,3 +1,4 @@
+using DCL.Interface;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -79,10 +80,16 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     {
         model.currentDimensionName = dimension;
 
-        if (currentDimensionText == null)
-            return;
+        // Set the current dimension in the modal header
+        if (currentDimensionText != null)
+            currentDimensionText.text = $"You are in <b>{dimension}</b>";
 
-        currentDimensionText.text = $"You are in <b>{dimension}</b>";
+        // Search the current dimension in the available ones and set it as connected
+        var instantiatedDimensions = availableDimensions.GetItems();
+        foreach (DimensionRowComponentView dimensionRow in instantiatedDimensions)
+        {
+            dimensionRow.SetAsConnected(dimensionRow.model.name == dimension);
+        }
     }
 
     public void SetAvailableDimensions(List<DimensionRowComponentModel> dimensions)
@@ -92,7 +99,15 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
         {
             DimensionRowComponentView newDimensionRow = GameObject.Instantiate(dimensionRowPrefab);
             newDimensionRow.Configure(dimension);
-            newDimensionRow.onWarpInClick.AddListener(() => Debug.Log($"{newDimensionRow.name} clicked!"));
+            newDimensionRow.onWarpInClick.AddListener(() =>
+            {
+                WebInterface.SendChatMessage(new ChatMessage
+                {
+                    messageType = ChatMessage.Type.NONE,
+                    recipient = string.Empty,
+                    body = $"/changerealm {dimension.name}"
+                });
+            });
             dimensionsToAdd.Add(newDimensionRow);
         }
 
