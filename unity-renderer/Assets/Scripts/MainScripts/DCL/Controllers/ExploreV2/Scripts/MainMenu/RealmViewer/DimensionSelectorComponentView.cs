@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public interface IDimensionSelectorComponentView
 {
@@ -26,9 +26,26 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     [Header("Prefab References")]
     [SerializeField] internal TMP_Text currentDimensionText;
     [SerializeField] internal GridContainerComponentView availableDimensions;
+    [SerializeField] internal Button modalBackgroundButton;
+    [SerializeField] internal ButtonComponentView closeCardButton;
+    [SerializeField] internal InputAction_Trigger closeAction;
 
     [Header("Configuration")]
     [SerializeField] internal DimensionSelectorComponentModel model;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        if (closeCardButton != null)
+            closeCardButton.onClick.AddListener(CloseModal);
+
+        if (closeAction != null)
+            closeAction.OnTriggered += OnCloseActionTriggered;
+
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.AddListener(CloseModal);
+    }
 
     public void Configure(BaseComponentModel newModel)
     {
@@ -43,6 +60,19 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
 
         SetCurrentDimension(model.currentDimensionName);
         availableDimensions.RefreshControl();
+    }
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        if (closeCardButton != null)
+            closeCardButton.onClick.RemoveAllListeners();
+
+        if (closeAction != null)
+            closeAction.OnTriggered -= OnCloseActionTriggered;
+
+        if (modalBackgroundButton != null)
+            modalBackgroundButton.onClick.RemoveAllListeners();
     }
 
     public void SetCurrentDimension(string dimension)
@@ -69,101 +99,7 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
         availableDimensions.SetItems(dimensionsToAdd);
     }
 
-    [ContextMenu("TestUpdateDimensions")]
-    public void TestUpdateDimensions()
-    {
-        SetAvailableDimensions(new List<DimensionRowComponentModel>
-        {
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 1",
-                players = 10,
-                isConnected = false
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 3",
-                players = 30,
-                isConnected = false
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            },
-            new DimensionRowComponentModel
-            {
-                name = "Dimension 2",
-                players = 20,
-                isConnected = true
-            }
-        });
-    }
+    internal void CloseModal() { Hide(); }
+
+    internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
 }

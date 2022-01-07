@@ -383,6 +383,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             realmUsers = currentRealmModel.usersCount;
 
         view.currentRealmViewer.SetNumberOfUsers(realmUsers);
+
+        view.currentRealmViewer.onLogoClick.RemoveAllListeners();
+        view.currentRealmViewer.onLogoClick.AddListener(() => view.ShowDimensionSelectorModal(new DimensionSelectorComponentModel { currentDimensionName = formattedRealmName }));
     }
 
     internal void UpdateProfileInfo(UserProfile profile)

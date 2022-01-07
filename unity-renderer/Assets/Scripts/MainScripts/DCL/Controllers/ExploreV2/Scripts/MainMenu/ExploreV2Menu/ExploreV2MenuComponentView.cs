@@ -116,10 +116,19 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <param name="section">Section to configure.</param>
     /// <param name="featureConfiguratorFlag">Flag used to configurates the feature.</param>
     void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag);
+
+    /// <summary>
+    /// Shows the Dimension Selector modal with the provided information.
+    /// </summary>
+    /// <param name="dimensionSelectorInfo">Dimension Selector (model) to be loaded.</param>
+    void ShowDimensionSelectorModal(DimensionSelectorComponentModel dimensionSelectorInfo);
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
+    [Header("Assets References")]
+    [SerializeField] internal DimensionSelectorComponentView dimensionSelectorModalPrefab;
+
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
     [SerializeField] internal ProfileCardComponentView profileCard;
@@ -139,6 +148,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal RectTransform profileCardTooltipReference;
 
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
+    internal const string DIMENSION_SELECTOR_MODAL_ID = "DimensionSelector_Modal";
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IProfileCardComponentView currentProfileCard => profileCard;
@@ -158,10 +168,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action OnAfterShowAnimation;
 
     internal RectTransform profileCardRectTranform;
+    internal DimensionSelectorComponentView dimensionSelectorModal;
 
     public override void Start()
     {
         profileCardRectTranform = profileCard.GetComponent<RectTransform>();
+        dimensionSelectorModal = ConfigureDimensionSelectorModal();
 
         DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
@@ -171,10 +183,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         OnInitialized?.Invoke();
     }
 
-    public override void Update()
-    {
-        CheckIfProfileCardShouldBeClosed();
-    }
+    public override void Update() { CheckIfProfileCardShouldBeClosed(); }
 
     public override void RefreshControl()
     {
@@ -193,6 +202,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
         closeAction.OnTriggered -= OnCloseActionTriggered;
+
+        if (dimensionSelectorModal != null)
+        {
+            dimensionSelectorModal.Dispose();
+            Destroy(dimensionSelectorModal.gameObject);
+        }
     }
 
     public void SetVisible(bool isActive)
@@ -363,6 +378,34 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         {
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
         }
+    }
+
+    /// <summary>
+    /// Instantiates (if does not already exists) a dimension selector modal from the given prefab.
+    /// </summary>
+    /// <returns>An instance of a dimension modal modal.</returns>
+    internal DimensionSelectorComponentView ConfigureDimensionSelectorModal()
+    {
+        DimensionSelectorComponentView dimensionSelectorModal = null;
+
+        GameObject existingModal = GameObject.Find(DIMENSION_SELECTOR_MODAL_ID);
+        if (existingModal != null)
+            dimensionSelectorModal = existingModal.GetComponent<DimensionSelectorComponentView>();
+        else
+        {
+            dimensionSelectorModal = GameObject.Instantiate(dimensionSelectorModalPrefab);
+            dimensionSelectorModal.name = DIMENSION_SELECTOR_MODAL_ID;
+        }
+
+        dimensionSelectorModal.Hide(true);
+
+        return dimensionSelectorModal;
+    }
+
+    public void ShowDimensionSelectorModal(DimensionSelectorComponentModel dimensionSelectorInfo)
+    {
+        dimensionSelectorModal.Configure(dimensionSelectorInfo);
+        dimensionSelectorModal.Show();
     }
 
     internal static ExploreV2MenuComponentView Create()

@@ -74,7 +74,8 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
         if (playersText == null)
             return;
 
-        playersText.text = numberOfPlayers.ToString();
+        float formattedPlayersCount = numberOfPlayers >= 1000 ? (numberOfPlayers / 1000f) : numberOfPlayers;
+        playersText.text = numberOfPlayers >= 1000 ? $"{formattedPlayersCount}k" : $"{formattedPlayersCount}";
     }
 
     public void SetAsConnected(bool isConnected)

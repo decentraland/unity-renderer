@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 150
+  m_text: 20k
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6b705423dc77d4fceb4122f6d7e571d6, type: 2}
   m_sharedMaterial: {fileID: -1532326820724739884, guid: 6b705423dc77d4fceb4122f6d7e571d6,
@@ -444,7 +444,7 @@ MonoBehaviour:
   connectedMark: {fileID: 4011590442795622596}
   model:
     name: America-Amber
-    players: 150
+    players: 20000
     isConnected: 0
 --- !u!1 &6299302337623997550
 GameObject:

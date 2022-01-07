@@ -6,6 +6,11 @@ using UnityEngine.UI;
 public interface IRealmViewerComponentView
 {
     /// <summary>
+    /// Event that will be triggered when the Logo button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onLogoClick { get; }
+
+    /// <summary>
     /// Set the realm label.
     /// </summary>
     /// <param name="newRealm">New realm.</param>
@@ -24,9 +29,12 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
     [SerializeField] internal HorizontalLayoutGroup horizontalLayoutGroup;
     [SerializeField] internal TMP_Text realm;
     [SerializeField] internal TMP_Text numberOfusers;
+    [SerializeField] internal ButtonComponentView logoButton;
 
     [Header("Configuration")]
     [SerializeField] internal RealmViewerComponentModel model;
+
+    public Button.ButtonClickedEvent onLogoClick => logoButton?.onClick;
 
     public void Configure(BaseComponentModel newModel)
     {
