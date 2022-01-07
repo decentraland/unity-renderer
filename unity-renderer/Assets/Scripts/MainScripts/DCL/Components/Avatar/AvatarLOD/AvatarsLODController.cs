@@ -122,6 +122,7 @@ namespace DCL
 
                 if (avatarsCount < maxAvatars)
                 {
+                    lodController.SetAnimationThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
                     if (distance < simpleAvatarDistance)
                         lodController.SetLOD0();
                     else

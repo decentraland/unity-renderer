@@ -11,6 +11,7 @@ namespace DCL
         void SetLOD0();
         void SetLOD1();
         void SetLOD2();
+        public void SetAnimationThrottling(int framesBetweenUpdates);
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
         void SetNameVisible(bool visible);
@@ -66,6 +67,8 @@ namespace DCL
             player.avatar.SetVisibility(false);
             player.onPointerDownCollider.SetColliderEnabled(false);
         }
+
+        public void SetAnimationThrottling(int framesBetweenUpdates) { player.avatar.SetAnimationThrottling(framesBetweenUpdates); }
 
         public void SetNameVisible(bool visible)
         {

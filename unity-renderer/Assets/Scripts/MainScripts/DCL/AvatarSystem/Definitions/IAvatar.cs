@@ -22,6 +22,7 @@ namespace AvatarSystem
         void SetVisibility(bool visible);
         void SetExpression(string expressionId, long timestamps);
         void SetLODLevel(int lodIndex);
+        void SetAnimationThrottling(int framesBetweenUpdate);
         void SetImpostorTexture(Texture2D impostorTexture);
         public void SetImpostorTint(Color color);
     }

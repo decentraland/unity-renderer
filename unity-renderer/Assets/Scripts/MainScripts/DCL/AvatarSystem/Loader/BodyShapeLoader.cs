@@ -137,7 +137,7 @@ namespace AvatarSystem
 
                 return resultRendereable;
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
                 Dispose();
                 throw;

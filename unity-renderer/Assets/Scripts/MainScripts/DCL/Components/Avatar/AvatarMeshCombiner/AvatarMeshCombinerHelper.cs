@@ -25,6 +25,7 @@ namespace DCL
         public bool useCullOpaqueHeuristic = false;
         public bool prepareMeshForGpuSkinning = false;
         public bool uploadMeshToGpu = true;
+        public bool enableCombinedMesh = true;
 
         private AvatarMeshCombiner.Output? lastOutput;
 
@@ -124,7 +125,7 @@ namespace DCL
             renderer.quality = SkinQuality.Bone4;
             renderer.updateWhenOffscreen = false;
             renderer.skinnedMotionVectors = false;
-            renderer.enabled = true;
+            renderer.enabled = enableCombinedMesh;
 
             if (prepareMeshForGpuSkinning)
                 GPUSkinningUtils.EncodeBindPosesIntoMesh(renderer);

@@ -132,14 +132,8 @@ namespace AvatarSystem
                 eyesRenderer = bodyshapeLoader.eyesRenderer;
                 eyebrowsRenderer = bodyshapeLoader.eyebrowsRenderer;
                 mouthRenderer = bodyshapeLoader.mouthRenderer;
-
-                this.combinedRenderer.enabled = true;
-                eyesRenderer.enabled = true;
-                eyebrowsRenderer.enabled = true;
-                mouthRenderer.enabled = true;
-                container.SetActive(false);
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
                 Dispose();
                 throw;
@@ -156,6 +150,7 @@ namespace AvatarSystem
             var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
+            avatarMeshCombiner.enableCombinedMesh = false;
 
             bool success = avatarMeshCombiner.Combine(bodyshapeLoader.upperBodyRenderer, renderersToCombine.ToArray());
             if (!success)

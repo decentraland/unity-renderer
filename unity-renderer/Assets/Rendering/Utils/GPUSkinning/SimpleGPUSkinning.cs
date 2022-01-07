@@ -71,6 +71,7 @@ namespace GPUSkinning
             meshFilter.sharedMesh = skr.sharedMesh;
 
             renderer = go.AddComponent<MeshRenderer>();
+            renderer.enabled = skr.enabled;
             renderer.sharedMaterials = skr.sharedMaterials;
             foreach (Material material in renderer.sharedMaterials)
             {
@@ -87,7 +88,7 @@ namespace GPUSkinning
 
         public void Update()
         {
-            if (!renderer.isVisible)
+            if (!renderer.gameObject.activeInHierarchy)
                 return;
 
             UpdateMatrices();

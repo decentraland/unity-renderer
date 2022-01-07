@@ -43,7 +43,7 @@ namespace DCL
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        private Avatar avatar;
+        private IAvatar avatar;
         private LOD avatarLOD;
         private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
@@ -57,7 +57,7 @@ namespace DCL
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer),
                 GetComponentInChildren<AvatarAnimatorLegacy>(),
-                new Visibility(avatarContainer),
+                new Visibility(),
                 avatarLOD,
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler_New());

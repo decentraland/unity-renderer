@@ -41,7 +41,7 @@ public class PlayerAvatarController : MonoBehaviour
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer),
             GetComponentInChildren<AvatarAnimatorLegacy>(),
-            new Visibility(avatarContainer),
+            new Visibility(),
             new NoLODs(),
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler_New());
@@ -130,9 +130,6 @@ public class PlayerAvatarController : MonoBehaviour
             try
             {
                 currentAvatar.CopyFrom(profile.avatar);
-
-                // We need to wait a frame so the cancellation propagation disposes everything
-                ct.ThrowIfCancellationRequested();
 
                 var wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);

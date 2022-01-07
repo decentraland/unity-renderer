@@ -4,14 +4,48 @@ namespace AvatarSystem
 {
     public class Visibility : IVisibility
     {
-        public bool composedVisibility { get; private set; }
-        private readonly GameObject container;
+        private Renderer[] renderers = null;
 
-        public Visibility(GameObject container) { this.container = container; }
-        public void SetVisible(bool visible)
+        private bool explicitVisibility = true;
+        private bool loadingReady = true;
+
+        /// <summary>
+        /// Bind a set of renderers, previous renderers will be left as they are 
+        /// </summary>
+        /// <param name="renderers"></param>
+        public void Bind(Renderer[] renderers)
         {
-            composedVisibility = visible;
-            container.SetActive(visible);
+            this.renderers = renderers;
+            UpdateVisibility();
+        }
+
+        public void SetExplicitVisibility(bool explicitVisibility)
+        {
+            this.explicitVisibility = explicitVisibility;
+            UpdateVisibility();
+        }
+
+        public void SetLoadingReady(bool loadingReady)
+        {
+            this.loadingReady = loadingReady;
+            UpdateVisibility();
+        }
+
+        private void UpdateVisibility()
+        {
+            if (renderers == null)
+                return;
+
+            bool visibility = loadingReady && explicitVisibility;
+            for (var i = 0; i < renderers.Length; i++)
+            {
+                renderers[i].enabled = visibility;
+            }
+        }
+
+        public void Dispose()
+        {
+            renderers = null;
         }
     }
 }

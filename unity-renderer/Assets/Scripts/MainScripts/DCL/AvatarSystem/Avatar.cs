@@ -18,7 +18,6 @@ namespace AvatarSystem
         private readonly IGPUSkinningThrottler gpuSkinningThrottler;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
 
-        private bool visible = true;
         private int lodIndex = 0;
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
@@ -51,6 +50,7 @@ namespace AvatarSystem
 
             try
             {
+                visibility.SetLoadingReady(false);
                 WearableItem bodyshape = null;
                 WearableItem eyes = null;
                 WearableItem eyebrows = null;
@@ -74,21 +74,18 @@ namespace AvatarSystem
                     return;
                 }
 
-                // TODO Fix huge avatar on first frame
+                status = IAvatar.Status.Loaded;
+
                 animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
 
-                //TODO GPUSkinning only has to be prepared when the loader has changes
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
 
-                if (loader.status == ILoader.Status.Succeeded || loader.status == ILoader.Status.Failed_Minor)
-                    visibility.SetVisible(visible);
-                else
-                    visibility.SetVisible(false);
+                visibility.Bind(new [] { gpuSkinning.renderer, loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
+                visibility.SetLoadingReady(true);
 
                 lod.Bind(gpuSkinning.renderer, new [] { loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
                 lod.SetLodIndex(lodIndex, true);
-                gpuSkinningThrottler.SetThrottling(lodIndex + 1);
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
@@ -100,24 +97,20 @@ namespace AvatarSystem
             }
         }
 
-        public void SetVisibility(bool visible)
-        {
-            this.visible = visible;
-            if (status != IAvatar.Status.Loaded)
-                return;
-            visibility.SetVisible(visible);
-        }
+        public void SetVisibility(bool visible) { visibility.SetExplicitVisibility(visible); }
 
         public void SetExpression(string expressionId, long timestamps) { animator?.PlayExpression(expressionId, timestamps); }
 
         public void SetLODLevel(int lodIndex)
         {
+            //TODO Fix collision between visibility and LOD setting facial features enable
             this.lodIndex = lodIndex;
             if (status != IAvatar.Status.Loaded)
                 return;
             lod.SetLodIndex(lodIndex);
-            gpuSkinningThrottler.SetThrottling(lodIndex + 1);
         }
+
+        public void SetAnimationThrottling(int framesBetweenUpdate) { gpuSkinningThrottler.SetThrottling(framesBetweenUpdate); }
 
         public void SetImpostorTexture(Texture2D impostorTexture) { lod.SetImpostorTexture(impostorTexture); }
         public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
@@ -129,6 +122,7 @@ namespace AvatarSystem
             disposeCts = new CancellationTokenSource();
             avatarCurator?.Dispose();
             loader?.Dispose();
+            visibility?.Dispose();
             lod?.Dispose();
             gpuSkinningThrottler?.Dispose();
         }

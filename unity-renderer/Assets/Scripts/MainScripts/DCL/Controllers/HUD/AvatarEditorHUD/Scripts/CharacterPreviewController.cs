@@ -63,7 +63,7 @@ public class CharacterPreviewController : MonoBehaviour
             new AvatarCurator(new WearableItemResolver()),
             new Loader(new WearableLoaderFactory(), avatarContainer),
             avatarContainer.gameObject.GetComponentInChildren<IAnimator>(),
-            new Visibility(avatarContainer),
+            new Visibility(),
             new NoLODs(),
             new SimpleGPUSkinning(),
             new GPUSkinningThrottler_New()

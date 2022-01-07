@@ -287,6 +287,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
 
         SetIdleFrame();
+        animation.Sample();
     }
 
     // AvatarSystem entry points
