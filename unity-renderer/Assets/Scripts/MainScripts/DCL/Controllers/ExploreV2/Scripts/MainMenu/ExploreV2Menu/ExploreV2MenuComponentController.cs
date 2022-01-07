@@ -55,6 +55,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
+        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowDimensionSelectorModal);
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         view.OnAfterShowAnimation += OnAfterShowAnimation;
 
@@ -141,6 +142,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view.currentProfileCard.onClick?.RemoveAllListeners();
+        view.currentRealmViewer.onLogoClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
         currentSectionIndex.OnChange -= CurrentSectionIndexChanged;
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
@@ -383,9 +385,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             realmUsers = currentRealmModel.usersCount;
 
         view.currentRealmViewer.SetNumberOfUsers(realmUsers);
-
-        view.currentRealmViewer.onLogoClick.RemoveAllListeners();
-        view.currentRealmViewer.onLogoClick.AddListener(() => view.ShowDimensionSelectorModal(new DimensionSelectorComponentModel { currentDimensionName = formattedRealmName }));
+        view.currentDimensionSelectorModal.SetCurrentDimension(formattedRealmName);
     }
 
     internal void UpdateProfileInfo(UserProfile profile)

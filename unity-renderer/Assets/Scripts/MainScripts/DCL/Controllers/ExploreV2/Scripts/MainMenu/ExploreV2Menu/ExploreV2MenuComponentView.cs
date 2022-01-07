@@ -30,6 +30,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     IRealmViewerComponentView currentRealmViewer { get; }
 
     /// <summary>
+    /// Dimension Selector component.
+    /// </summary>
+    IDimensionSelectorComponentView currentDimensionSelectorModal { get; }
+
+    /// <summary>
     /// Profile card component.
     /// </summary>
     IProfileCardComponentView currentProfileCard { get; }
@@ -118,10 +123,9 @@ public interface IExploreV2MenuComponentView : IDisposable
     void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag);
 
     /// <summary>
-    /// Shows the Dimension Selector modal with the provided information.
+    /// Shows the Dimension Selector modal.
     /// </summary>
-    /// <param name="dimensionSelectorInfo">Dimension Selector (model) to be loaded.</param>
-    void ShowDimensionSelectorModal(DimensionSelectorComponentModel dimensionSelectorInfo);
+    void ShowDimensionSelectorModal();
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
@@ -151,6 +155,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     internal const string DIMENSION_SELECTOR_MODAL_ID = "DimensionSelector_Modal";
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
+    public IDimensionSelectorComponentView currentDimensionSelectorModal => dimensionSelectorModal;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
     public RectTransform currentTopMenuTooltipReference => sectionSelector.GetSection((int) ExploreSection.Explore).pivot;
@@ -170,11 +175,16 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     internal RectTransform profileCardRectTranform;
     internal DimensionSelectorComponentView dimensionSelectorModal;
 
-    public override void Start()
+    public override void Awake()
     {
+        base.Awake();
+
         profileCardRectTranform = profileCard.GetComponent<RectTransform>();
         dimensionSelectorModal = ConfigureDimensionSelectorModal();
+    }
 
+    public override void Start()
+    {
         DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
         CreateSectionSelectorMappings();
@@ -402,11 +412,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         return dimensionSelectorModal;
     }
 
-    public void ShowDimensionSelectorModal(DimensionSelectorComponentModel dimensionSelectorInfo)
-    {
-        dimensionSelectorModal.Configure(dimensionSelectorInfo);
-        dimensionSelectorModal.Show();
-    }
+    public void ShowDimensionSelectorModal() { dimensionSelectorModal.Show(); }
 
     internal static ExploreV2MenuComponentView Create()
     {
