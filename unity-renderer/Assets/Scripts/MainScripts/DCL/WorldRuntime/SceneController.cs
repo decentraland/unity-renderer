@@ -790,14 +790,7 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(globalScene.icon))
             {
-                if (globalScene.icon.StartsWith("http://") || globalScene.icon.StartsWith("https://"))
-                {
-                    newScene.iconUrl = globalScene.icon;
-                }
-                else
-                {
-                    newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
-                }
+                newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
             }
 
             worldState.loadedScenes.Add(newGlobalSceneId, newScene);
