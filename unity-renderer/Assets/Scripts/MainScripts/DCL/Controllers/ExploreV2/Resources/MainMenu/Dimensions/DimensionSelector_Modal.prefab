@@ -1490,6 +1490,8 @@ MonoBehaviour:
   closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   model:
     currentDimensionName: America-Amber
+  colorForEvenRows: {r: 0.9490197, g: 0.9490197, b: 0.9490197, a: 1}
+  colorForOddRows: {r: 0.9803922, g: 0.9803922, b: 0.9803922, a: 1}
 --- !u!1 &8702858345271006806
 GameObject:
   m_ObjectHideFlags: 0

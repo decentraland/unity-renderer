@@ -26,6 +26,12 @@ public interface IDimensionRowComponentView
     /// </summary>
     /// <param name="isConnected">True for showing the connected mark.</param>
     void SetAsConnected(bool isConnected);
+
+    /// <summary>
+    /// Set the background color of the row.
+    /// </summary>
+    /// <param name="color">Color to apply.</param>
+    void SetRowColor(Color color);
 }
 
 public class DimensionRowComponentView : BaseComponentView, IDimensionRowComponentView, IComponentModelConfig
@@ -35,6 +41,7 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
     [SerializeField] internal TMP_Text playersText;
     [SerializeField] internal ButtonComponentView warpInButton;
     [SerializeField] internal GameObject connectedMark;
+    [SerializeField] internal Image backgroundImage;
 
     [Header("Configuration")]
     [SerializeField] internal DimensionRowComponentModel model;
@@ -55,6 +62,7 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
         SetName(model.name);
         SetNumberOfPlayers(model.players);
         SetAsConnected(model.isConnected);
+        SetRowColor(model.backgroundColor);
     }
 
     public void SetName(string name)
@@ -64,7 +72,7 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
         if (nameText == null)
             return;
 
-        nameText.text = name;
+        nameText.text = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name.ToLower());
     }
 
     public void SetNumberOfPlayers(int numberOfPlayers)
@@ -87,5 +95,15 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
 
         connectedMark.SetActive(isConnected);
         warpInButton.gameObject.SetActive(!isConnected);
+    }
+
+    public void SetRowColor(Color color)
+    {
+        model.backgroundColor = color;
+
+        if (backgroundImage == null)
+            return;
+
+        backgroundImage.color = color;
     }
 }

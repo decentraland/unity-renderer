@@ -33,6 +33,8 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
 
     [Header("Configuration")]
     [SerializeField] internal DimensionSelectorComponentModel model;
+    [SerializeField] internal Color colorForEvenRows;
+    [SerializeField] internal Color colorForOddRows;
 
     public override void Awake()
     {
@@ -82,7 +84,7 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
 
         // Set the current dimension in the modal header
         if (currentDimensionText != null)
-            currentDimensionText.text = $"You are in <b>{dimension}</b>";
+            currentDimensionText.text = $"You are in <b>{System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(dimension.ToLower())}</b>";
 
         // Search the current dimension in the available ones and set it as connected
         var instantiatedDimensions = availableDimensions.GetItems();
@@ -95,10 +97,12 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     public void SetAvailableDimensions(List<DimensionRowComponentModel> dimensions)
     {
         List<BaseComponentView> dimensionsToAdd = new List<BaseComponentView>();
+        bool isAnOddRow = true;
         foreach (DimensionRowComponentModel dimension in dimensions)
         {
             DimensionRowComponentView newDimensionRow = GameObject.Instantiate(dimensionRowPrefab);
             newDimensionRow.Configure(dimension);
+            newDimensionRow.SetRowColor(isAnOddRow ? colorForOddRows : colorForEvenRows);
             newDimensionRow.onWarpInClick.AddListener(() =>
             {
                 WebInterface.SendChatMessage(new ChatMessage
@@ -109,6 +113,7 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
                 });
             });
             dimensionsToAdd.Add(newDimensionRow);
+            isAnOddRow = !isAnOddRow;
         }
 
         availableDimensions.SetItems(dimensionsToAdd);
