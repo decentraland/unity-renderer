@@ -621,9 +621,7 @@ namespace UnityGLTF
                 await ConstructUnityTexture(settings, stream, imageCacheIndex);
             }
         }
-
-        private int texturesBeingCompressed = 0;
-
+        
         protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
         {
             Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
@@ -2113,6 +2111,7 @@ namespace UnityGLTF
             {
                 materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
                 materialWrapper.CachedMaterial.IncreaseRefCount();
+                return;
             }
 
             if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(materialCRC))
