@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -86,8 +85,10 @@ namespace GPUSkinning
             renderer = go.AddComponent<MeshRenderer>();
             renderer.enabled = skr.enabled;
             
-            // TODO: Find a way of using sharedMaterials here, maybe caching 1 "shareable" material with the GPU_SKINNING
-            // keyword enabled? otherwise, if we use always sharedMaterials here, all the non-skinned meshes break
+            // TODO: Instead of affecting materials CRC caching at GLTFSceneImporter.ConstructMaterial based
+            // on Skinned meshes, could we detect if a material has a bones matrix already set (from a previous mesh)
+            // and if that bone matrix is from a different armature, THEN change the material to a different cached one?
+            
             // renderer.materials = isAvatar ? skr.sharedMaterials : skr.materials;
             Material[] materials;
             // if (isAvatar)
@@ -128,12 +129,11 @@ namespace GPUSkinning
                 meshFilter.mesh.bounds = targetBounds;
             }
             
-            UpdateMatrices();
+            UpdateMatrices(true);
 
             Object.Destroy(skr);
 
             go.name += "-GPUSkinned";
-            // Debug.Log("PRAVS - Destroyed SkinnedMeshRenderer in object", go);
         }
 
         public void Update()
@@ -143,8 +143,8 @@ namespace GPUSkinning
 
             UpdateMatrices();
         }
-
-        private void UpdateMatrices()
+        
+        private void UpdateMatrices(bool initializeMatrix = false)
         {
             int bonesLength = bones.Length;
             for (int i = 0; i < bonesLength; i++)
@@ -158,8 +158,10 @@ namespace GPUSkinning
             {
                 Material material = materials[index];
                 
-                InitializeShaderMatrix(material, BONE_MATRICES);
+                if(initializeMatrix)
+                    InitializeShaderMatrix(material, BONE_MATRICES);
                 material.SetMatrix(RENDERER_WORLD_INVERSE, renderer.transform.worldToLocalMatrix);
+                
                 material.SetMatrixArray(BONE_MATRICES, boneMatrices);
             }
         }
