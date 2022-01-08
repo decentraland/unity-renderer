@@ -71,6 +71,7 @@ public class DCLWebSocketService : WebSocketBehavior
 
     protected override void OnOpen()
     {
+        Debug.Log("WebSocket Communication Established");
         base.OnOpen();
 
         WebInterface.OnMessageFromEngine += SendMessageToWeb;

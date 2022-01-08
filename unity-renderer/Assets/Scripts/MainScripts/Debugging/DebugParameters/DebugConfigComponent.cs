@@ -8,6 +8,18 @@ namespace DCL
 {
     public class DebugConfigComponent : MonoBehaviour
     {
+        private static DebugConfigComponent sharedInstance;
+        public static DebugConfigComponent i
+        {
+            get
+            {
+                if (sharedInstance == null)
+                    sharedInstance = FindObjectOfType<DebugConfigComponent>();
+                return sharedInstance;
+            }
+            private set => sharedInstance = value;
+        }
+        
         public DebugConfig debugConfig;
 
         public enum DebugPanel
@@ -71,6 +83,9 @@ namespace DCL
 
         private void Awake()
         {
+            if (sharedInstance == null)
+                sharedInstance = this;
+
             DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
             DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
@@ -208,7 +223,7 @@ namespace DCL
             }
             else
             {
-                Debug.Log("[REMINDER] To be able to connect with SSL you should start Chrome with the --ignore-certificate-errors argument specified, or in Firefox set the configuration option `network.websocket.allowInsecureFromHTTPS to true, then use the ws:// rather than the wss:// address.`");                
+                Debug.Log("[REMINDER] To be able to connect with SSL you should start Chrome with the --ignore-certificate-errors argument specified (or enabling the following option: chrome://flags/#allow-insecure-localhost). In Firefox set the configuration option `network.websocket.allowInsecureFromHTTPS` to true, then use the ws:// rather than the wss:// address.");                
             }
 
             Application.OpenURL(

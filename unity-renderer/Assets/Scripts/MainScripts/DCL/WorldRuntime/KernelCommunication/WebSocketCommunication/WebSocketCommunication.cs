@@ -24,10 +24,8 @@ public class WebSocketCommunication : IKernelCommunication
 
     public bool isServerReady => ws.IsListening;
 
-    private string StartServer(int port, int maxPort)
+    private string StartServer(int port, int maxPort, bool withSSL)
     {
-        var debugConfig = GameObject.Find("DebugConfig").GetComponent<DebugConfigComponent>();
-
         if (port > maxPort)
         {
             throw new SocketException((int)SocketError.AddressAlreadyInUse);
@@ -36,7 +34,7 @@ public class WebSocketCommunication : IKernelCommunication
         string wssServiceId = "dcl";
         try
         {
-            if (debugConfig.webSocketSSL)
+            if (withSSL)
             {
                 wssServerUrl = $"wss://localhost:{port}/";
                 ws = new WebSocketServer(wssServerUrl)
@@ -62,12 +60,12 @@ public class WebSocketCommunication : IKernelCommunication
         catch (InvalidOperationException e)
         {
             ws.Stop();
-            if (!debugConfig.webSocketSSL) // Don't search other ports if we're not using SSL
+            if (!withSSL) // Don't search other ports if we're not using SSL
             {
                 SocketException se = (SocketException)e.InnerException;
                 if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
                 {
-                    return StartServer(port + 1, maxPort);
+                    return StartServer(port + 1, maxPort, withSSL);
                 }
             }
             throw new InvalidOperationException(e.Message, e.InnerException);
@@ -77,18 +75,13 @@ public class WebSocketCommunication : IKernelCommunication
         return wssUrl;
     }
 
-    public WebSocketCommunication()
+    public WebSocketCommunication(bool withSSL = false)
     {
         InitMessageTypeToBridgeName();
 
-        var debugConfig = GameObject.Find("DebugConfig").GetComponent<DebugConfigComponent>();
-#if UNITY_STANDALONE && !UNITY_EDITOR
-        debugConfig.webSocketSSL = true; // Standalone without Unity always use SSL
-#endif
-        
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-        string url = StartServer(5000, 5100);
+        string url = StartServer(5000, 5100, withSSL);
 
         Debug.Log("WebSocket Server URL: " + url);
 
