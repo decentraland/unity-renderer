@@ -47,6 +47,7 @@ namespace DCL
         private LOD avatarLOD;
         private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
+        private AssetPromise_Texture bodySnapshotTexturePromise;
 
         private void Awake()
         {
@@ -129,6 +130,7 @@ namespace DCL
             wearableItems.Add(model.bodyShape);
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
+                SetImpostor(model.id);
                 loadingCts?.Cancel();
                 loadingCts = new CancellationTokenSource();
                 yield return avatar.Load(wearableItems, new AvatarSettings
@@ -175,6 +177,22 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+        }
+
+        public void SetImpostor(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return;
+
+            UserProfile userProfile = UserProfileController.GetProfileByUserId(userId);
+            if (userProfile == null)
+                return;
+
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+            bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
+            bodySnapshotTexturePromise.OnSuccessEvent += asset => avatar.SetImpostorTexture(asset.texture);
+            AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
         }
 
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
@@ -284,6 +302,8 @@ namespace DCL
 
             loadingCts?.Cancel();
             avatar.Dispose();
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             if (poolableObject != null)
             {

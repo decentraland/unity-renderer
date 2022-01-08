@@ -36,10 +36,20 @@ namespace AvatarSystem
             impostorRenderer.enabled = false;
 
             impostorMeshFilter = impostorRenderer.GetComponent<MeshFilter>();
-            AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
+            SetImpostorTexture(null);
         }
 
-        public void SetImpostorTexture(Texture2D texture) { AvatarRendererHelpers.SetImpostorTexture(texture, impostorMeshFilter.mesh, impostorRenderer.material); }
+        /// <summary>
+        /// Set the impostor texture (null will take a randomized one)
+        /// </summary>
+        /// <param name="texture"></param>
+        public void SetImpostorTexture(Texture2D texture)
+        {
+            if (texture == null)
+                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
+            else
+                AvatarRendererHelpers.SetImpostorTexture(texture, impostorMeshFilter.mesh, impostorRenderer.material);
+        }
 
         public void SetImpostorTint(Color color) { AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, color); }
 
