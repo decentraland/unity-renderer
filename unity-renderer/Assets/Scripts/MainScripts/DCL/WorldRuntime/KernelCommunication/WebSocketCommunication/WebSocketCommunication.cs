@@ -60,7 +60,7 @@ public class WebSocketCommunication : IKernelCommunication
         catch (InvalidOperationException e)
         {
             ws.Stop();
-            if (!withSSL) // Don't search other ports if we're not using SSL
+            if (withSSL) // Search for available ports only if we're using SSL
             {
                 SocketException se = (SocketException)e.InnerException;
                 if (se is { SocketErrorCode: SocketError.AddressAlreadyInUse })
