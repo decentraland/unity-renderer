@@ -66,6 +66,7 @@ namespace Tests
             cursorController.hoverCursor.name = "Hover";
             cursorController.cursorImage = cursorController.gameObject.AddComponent<Image>();
             cursorController.cursorImage.enabled = false;
+            cursorController.canvasGroup = cursorController.gameObject.AddComponent<CanvasGroup>();
             cursorController.SetNormalCursor();
 
             yield return base.SetUp();

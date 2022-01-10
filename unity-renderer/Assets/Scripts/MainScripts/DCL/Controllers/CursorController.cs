@@ -11,7 +11,7 @@ public class CursorController : MonoBehaviour
     public Image cursorImage;
     public Sprite normalCursor;
     public Sprite hoverCursor;
-    [SerializeField] private CanvasGroup canvasGroup;
+    public CanvasGroup canvasGroup;
 
     private Coroutine alphaRoutine;
 
