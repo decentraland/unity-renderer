@@ -1,14 +1,11 @@
 using DCL;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IExploreV2MenuComponentView : IDisposable
 {
-    /// <summary>
-    /// It will be triggered when the view is fully initialized.
-    /// </summary>
-    event Action OnInitialized;
-
     /// <summary>
     /// It will be triggered when the close button is clicked.
     /// </summary>
@@ -167,7 +164,6 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public RectTransform currentSettingsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Settings).pivot;
     public RectTransform currentProfileCardTooltipReference => profileCardTooltipReference;
 
-    public event Action OnInitialized;
     public event Action<bool> OnCloseButtonPressed;
     public event Action<ExploreSection> OnSectionOpen;
     public event Action OnAfterShowAnimation;
@@ -187,10 +183,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
-        CreateSectionSelectorMappings();
-        ConfigureCloseButton();
+        DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
+        IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
 
-        OnInitialized?.Invoke();
+        ConfigureCloseButton();
+    }
+
+    private void IsInitialized_OnChange(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
+        StartCoroutine(CreateSectionSelectorMappingsAfterDelay());
     }
 
     public override void Update() { CheckIfProfileCardShouldBeClosed(); }
@@ -212,6 +217,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
         closeAction.OnTriggered -= OnCloseActionTriggered;
+        DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
 
         if (dimensionSelectorModal != null)
         {
@@ -226,7 +232,22 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         {
             DataStore.i.exploreV2.isInShowAnimationTransiton.Set(true);
             Show();
-            GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
+
+            ISectionToggle sectionToGo = sectionSelector.GetSection(DataStore.i.exploreV2.currentSectionIndex.Get());
+            if (sectionToGo != null && sectionToGo.IsActive())
+                GoToSection((ExploreSection)DataStore.i.exploreV2.currentSectionIndex.Get());
+            else
+            {
+                List<ISectionToggle> allSections = sectionSelector.GetAllSections();
+                foreach (ISectionToggle section in allSections)
+                {
+                    if (section != null && section.IsActive())
+                    {
+                        section.SelectToggle(true);
+                        break;
+                    }
+                }
+            }
         }
         else
         {
@@ -279,6 +300,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         }
 
         sectionView?.EncapsulateFeature(featureConfiguratorFlag);
+    }
+
+    public IEnumerator CreateSectionSelectorMappingsAfterDelay()
+    {
+        yield return null;
+        CreateSectionSelectorMappings();
     }
 
     internal void CreateSectionSelectorMappings()
