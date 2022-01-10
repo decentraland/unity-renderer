@@ -34,7 +34,7 @@ namespace DCL.Skybox
         private int slotCount;
         private bool overrideByEditor = false;
 
-        // Reflection probe
+        // Reflection probe//
         private ReflectionProbe skyboxProbe;
         private bool probeParented = false;
         private float reflectionUpdateTime = 1;                                 // In Mins
@@ -458,7 +458,10 @@ namespace DCL.Skybox
 
             timeOfTheDay = Mathf.Clamp(timeOfTheDay, 0.01f, cycleTime);
             DataStore.i.skyboxConfig.currentVirtualTime.Set(timeOfTheDay);
-            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
+
+            float normalizedDayTime = GetNormalizedDayTime();
+            configuration.ApplyOnMaterial(selectedMat, timeOfTheDay, normalizedDayTime, slotCount, directionalLight, cycleTime);
+            ApplyAvatarColor(normalizedDayTime);
 
             // Cycle resets
             if (timeOfTheDay >= cycleTime)
@@ -495,6 +498,7 @@ namespace DCL.Skybox
             {
                 timeOfTheDay = Mathf.Clamp(newTime, 0, 24);
                 configuration.ApplyOnMaterial(selectedMat, (float)timeOfTheDay, GetNormalizedDayTime(), slotCount, directionalLight, cycleTime);
+                ApplyAvatarColor(GetNormalizedDayTime());
             }
         }
 
@@ -559,6 +563,18 @@ namespace DCL.Skybox
             newConfig.OnTimelineEvent += Configuration_OnTimelineEvent;
         }
 
+        public void ApplyAvatarColor(float normalizedDayTime)
+        {
+            if (DataStore.i.skyboxConfig.avatarMatProfile.Get() == AvatarMaterialProfile.InWorld)
+            {
+                configuration.ApplyInWorldAvatarColor(normalizedDayTime, directionalLight.gameObject);
+            }
+            else
+            {
+                configuration.ApplyEditorAvatarColor();
+            }
+        }
+
         private double ClampDouble(double timeOfTheDay, double min, float max)
         {
             double result = timeOfTheDay;
@@ -574,5 +590,6 @@ namespace DCL.Skybox
 
             return result;
         }
+
     }
 }

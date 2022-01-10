@@ -106,16 +106,16 @@ public class AvatarEditorHUDController : IHUD
     {
         // If there is more than 1 minute that we have checked the owned wearables, we try it again
         // This is done in order to retrieved the wearables after you has claimed them
-        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked+60 &&
-            (ownedWearablesAlreadyLoaded || 
-            ownedWearablesRemainingRequests <= 0)) || 
+        if ((Time.realtimeSinceStartup < lastTimeOwnedWearablesChecked + 60 &&
+             (ownedWearablesAlreadyLoaded ||
+              ownedWearablesRemainingRequests <= 0)) ||
             string.IsNullOrEmpty(userProfile.userId))
             return;
 
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
         lastTimeOwnedWearablesChecked = Time.realtimeSinceStartup;
-        
+
         CatalogController.RequestOwnedWearables(userProfile.userId)
                          .Then((ownedWearables) =>
                          {
@@ -567,7 +567,7 @@ public class AvatarEditorHUDController : IHUD
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
 
             DCL.Environment.i.messaging.manager.paused = false;
-            currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.inWorld;
+            DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
             currentRenderProfile.avatarProfile.Apply();
             if (prevMouseLockState && DataStore.i.common.isSignUpFlow.Get())
             {
@@ -592,7 +592,7 @@ public class AvatarEditorHUDController : IHUD
 
             LoadOwnedWereables(userProfile);
             DCL.Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
-            currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.avatarEditor;
+            DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
             currentRenderProfile.avatarProfile.Apply();
 
             prevMouseLockState = Utils.isCursorLocked;
