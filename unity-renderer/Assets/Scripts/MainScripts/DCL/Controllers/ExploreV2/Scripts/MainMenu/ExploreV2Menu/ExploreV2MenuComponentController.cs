@@ -444,6 +444,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal bool NeedToRefreshDimensions(RealmModel[] newRealmList)
     {
+        if (newRealmList == null)
+            return true;
+
         bool needToRefresh = false;
         if (newRealmList.Length == currentAvailableDimensions.Count)
         {
