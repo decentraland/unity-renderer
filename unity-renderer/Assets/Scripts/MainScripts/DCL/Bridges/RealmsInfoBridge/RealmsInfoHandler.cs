@@ -21,7 +21,7 @@ namespace DCL
         {
             model = newModel;
             DataStore.i.realm.playerRealm.Set(model.current?.Clone());
-            DataStore.i.realm.realmsInfo.Set(model.realms);
+            DataStore.i.realm.realmsInfo.Set(model.realms, true);
         }
     }
 
