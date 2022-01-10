@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -44,17 +42,11 @@ namespace DCL
         {
             if (hideRoutine != null)
                 StopCoroutine(hideRoutine);
-            hideRoutine = StartCoroutine(Wait(duration, () =>
+            hideRoutine = StartCoroutine(Utils.Wait(duration, () =>
             {
                 toastRoot.Hide();
                 hideRoutine = null;
             }));
-        }
-
-        private IEnumerator Wait(float delay, Action onFinishCallback)
-        {
-            yield return new WaitForSeconds(delay);
-            onFinishCallback.Invoke();
         }
     }
 }
