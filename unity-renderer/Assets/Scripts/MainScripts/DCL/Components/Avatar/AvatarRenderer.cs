@@ -151,6 +151,8 @@ namespace DCL
 
             if (userProfile != null)
             {
+                if (bodySnapshotTexturePromise != null)
+                    AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
                 bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
                 bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, impostorMeshFilter.mesh, impostorRenderer.material);
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
