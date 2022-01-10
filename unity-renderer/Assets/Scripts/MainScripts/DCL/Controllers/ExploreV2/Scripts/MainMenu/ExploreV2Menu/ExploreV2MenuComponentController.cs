@@ -26,6 +26,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
+    internal List<DimensionRowComponentModel> currentAvailableDimensions = new List<DimensionRowComponentModel>();
 
     internal RendererState rendererState => CommonScriptableObjects.rendererState;
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
@@ -417,23 +418,48 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void UpdateAvailableRealmsInfo(RealmModel[] currentRealmList, RealmModel[] previousRealmList)
     {
-        List<DimensionRowComponentModel> dimensionRows = new List<DimensionRowComponentModel>();
+        if (!NeedToRefreshDimensions(currentRealmList))
+            return;
+
+        currentAvailableDimensions.Clear();
         CurrentRealmModel currentRealm = DataStore.i.realm.playerRealm.Get();
 
         if (currentRealmList != null)
         {
             foreach (RealmModel realmModel in currentRealmList)
             {
-                dimensionRows.Add(new DimensionRowComponentModel
+                DimensionRowComponentModel dimensionToAdd = new DimensionRowComponentModel
                 {
                     name = realmModel.serverName,
                     players = realmModel.usersCount,
                     isConnected = realmModel.serverName == currentRealm.serverName
-                });
+                };
+
+                currentAvailableDimensions.Add(dimensionToAdd);
             }
         }
 
-        view.currentDimensionSelectorModal.SetAvailableDimensions(dimensionRows);
+        view.currentDimensionSelectorModal.SetAvailableDimensions(currentAvailableDimensions);
+    }
+
+    internal bool NeedToRefreshDimensions(RealmModel[] newRealmList)
+    {
+        bool needToRefresh = false;
+        if (newRealmList.Length == currentAvailableDimensions.Count)
+        {
+            foreach (RealmModel dimension in newRealmList)
+            {
+                if (!currentAvailableDimensions.Exists(x => x.name == dimension.serverName && x.players == dimension.usersCount))
+                {
+                    needToRefresh = true;
+                    break;
+                }
+            }
+        }
+        else
+            needToRefresh = true;
+
+        return needToRefresh;
     }
 
     internal void UpdateProfileInfo(UserProfile profile)
