@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityGLTF.Cache;
 
@@ -63,8 +64,8 @@ namespace DCL.Helpers
             {
                 string hash = GenerateMaterialCachingKey(mat);
 
-                /*if(IsDebugMaterial(mat.name))
-                    Debug.Log($"PRAVS - ProcessSingleMaterial - {mat.name} - CRC: {hash} - GPU-S enabled? {mat.IsKeywordEnabled("_GPU_SKINNING")}");*/
+                if(IsDebugMaterial(mat.name))
+                    Debug.Log($"PRAVS - ProcessSingleMaterial - {mat.name} - CRC: {hash} - GPU-S enabled? {mat.IsKeywordEnabled("_GPU_SKINNING")}");
                 
                 RefCountedMaterialData refCountedMat;
 
@@ -89,26 +90,15 @@ namespace DCL.Helpers
             return mat.ComputeCRC().ToString() + Shader.PropertyToID(string.Join("", mat.shaderKeywords)).ToString();
         }
         
-        /*static bool IsDebugMaterial(string materialName)
+        static bool IsDebugMaterial(string materialName)
         {
             string[] debugMaterials = new []
             {
-                "AtlasSolid",
-                "AvatarSkin_MAT",
-                "Picasso_TX",
-                "AvatarsMaskMouth_MAT",
-                "AvatarMaskEyes_MAT",
-                "AvatarSkin_MAT.001",
-                "Painted_TShirt_MAT",
-                "Pants",
-                "AvatarEyes_MAT",
-                "AvatarMouth_MAT",
                 "AvatarWearable_MAT",
-                "sporty_hat_male_material"
             };
             
             return debugMaterials.Contains(materialName);
-        }*/
+        }
 
         public static IEnumerator Process(List<Renderer> renderers, bool enableRenderers = true, Mode cachingFlags = Mode.CACHE_EVERYTHING)
         {

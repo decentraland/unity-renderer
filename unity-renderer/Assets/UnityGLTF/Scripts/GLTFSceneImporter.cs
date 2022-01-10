@@ -1734,34 +1734,51 @@ namespace UnityGLTF
             }
         }
 
-        IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController, bool isSkinnedMesh = false)
+        IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialCacheKey, Renderer renderer, MaterialTransitionController matController, bool isSkinnedMesh = false)
         {
             bool shouldUseDefaultMaterial = primitive.Material == null;
-            var rendererGO = renderer.gameObject; // for debugging
-            int rendererInstanceId = isSkinnedMesh ? renderer.GetInstanceID() : -1;
+            int materialCRCModifier = -1;
             
-            if(shouldUseDefaultMaterial)
-                Debug.Log($"Pravs - DownloadAndConstructMaterial - SHOULD USE DEFAULT MATERIAL! - is skinned ? {isSkinnedMesh}", rendererGO);
-
             if (isSkinnedMesh)
             {
-                // To separate GPUSkinning-keyword-enabled materials in the _assetCache.MaterialCache.                
-                // This is to avoid 2 meshes with different armature sharing the same material, as that breaks the GPUSkinning update
-                // TODO: Only apply this for different-armature meshes and not for all GPUSkinner ones, maybe in SimpleGPUSkinning class...
-                materialIndex += rendererInstanceId;
+                materialCRCModifier += 666; // to separate from potential non-skinned GLTFs with 100~ materials
+
+                SkinnedMeshRenderer skr = renderer as SkinnedMeshRenderer;
+                
+                // We need an int representing the armature, to be able to share the material between other skinned meshes with the same armature
+                // So we sum the hashcode of every bone in the armature and use that as an "armature hashcode"
+                // skr.bones.GetHashCode(); doesn't appear to have the same results (material reusing is not observed when logging)
+                // TODO: Apply this CRC modifier in MaterialCachingHelper CRC as well...
+                // TODO: Will this caching change affect AB conversions as well somehow?
+                int bonesHashCodesSum = 0;
+                for (int i = 0; i < skr.bones.Length; i++)
+                {
+                    bonesHashCodesSum += skr.bones[i].GetHashCode();
+                    
+                    // TODO: Check if there can be negative hashCodes. Could we use 'absolute value' hashcodes to change the '!= -1' check inside ConstructMaterial() ?
+                }
+                materialCRCModifier += bonesHashCodesSum;
+                
+                // Debug.Log($"Pravs - DownloadAndConstructMaterial - skinned renderer material CRC Modifier: {materialCRCModifier}");
+                
+                materialCacheKey += materialCRCModifier;
             }
+            
+            // TODO: Is there any case with skinned meshes and "default material" ??
+            // if(shouldUseDefaultMaterial)
+            //     Debug.Log($"Pravs - DownloadAndConstructMaterial - SHOULD USE DEFAULT MATERIAL! - is skinned ? {isSkinnedMesh}");
             
             GLTFMaterial materialToLoad = shouldUseDefaultMaterial ? DefaultMaterial : primitive.Material.Value;
             
             // Searching for a material in the MaterialCache may end up getting a GPUSkinned material for a non-skinned one and vice-versa ???
             if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
-                (!shouldUseDefaultMaterial && (!_assetCache.MaterialCache.ContainsKey(materialIndex) || _assetCache.MaterialCache[materialIndex] == null)))
+                (!shouldUseDefaultMaterial && (!_assetCache.MaterialCache.ContainsKey(materialCacheKey) || _assetCache.MaterialCache[materialCacheKey] == null)))
             {
-                yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex, rendererInstanceId);
+                yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialCacheKey, materialCRCModifier);
             }
 
             MaterialCacheData materialCacheData =
-                materialIndex >= 0 ? _assetCache.MaterialCache[materialIndex] : _defaultLoadedMaterial;
+                materialCacheKey >= 0 ? _assetCache.MaterialCache[materialCacheKey] : _defaultLoadedMaterial;
 
             Material material = materialCacheData.GetContents();
 
@@ -2122,7 +2139,7 @@ namespace UnityGLTF
             return areValid;
         }
 
-        protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex, int rendererInstanceId)
+        protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex, int materialCRCModifier)
         {
             IUniformMap mapper;
             const string specGlossExtName = KHR_materials_pbrSpecularGlossinessExtensionFactory.EXTENSION_NAME;
@@ -2151,14 +2168,14 @@ namespace UnityGLTF
             materialWrapper.GLTFMaterial = def;
 
             // We only send a valid rendererInstanceId in case of a skinnedMesh
-            if (rendererInstanceId != -1)
+            if (materialCRCModifier != -1)
             {
                 mapper.Material.EnableKeyword("_GPU_SKINNING");
                 mapper.Material.name += "-GPUSkinned";
             }
             
             // Add the material before-hand so it gets freed if the importing is cancelled.
-            string materialCRC = GenerateMaterialCachingKey(mapper.Material, rendererInstanceId);
+            string materialCRC = GenerateMaterialCachingKey(mapper.Material, materialCRCModifier);
             
             materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, mapper.Material);
             materialWrapper.CachedMaterial.IncreaseRefCount();
@@ -2272,7 +2289,7 @@ namespace UnityGLTF
 
             mapper.EmissiveFactor = def.EmissiveFactor;
 
-            materialCRC = GenerateMaterialCachingKey(mapper.Material, rendererInstanceId);
+            materialCRC = GenerateMaterialCachingKey(mapper.Material, materialCRCModifier);
             
             if ( !addMaterialsToPersistentCaching )
             {
@@ -2295,9 +2312,9 @@ namespace UnityGLTF
             }
         }
         
-        string GenerateMaterialCachingKey(Material mat, int rendererInstanceId = -1)
+        string GenerateMaterialCachingKey(Material mat, int materialCRCModifier = -1)
         {
-            return mat.ComputeCRC().ToString() + Shader.PropertyToID(string.Join("", mat.shaderKeywords)).ToString() + rendererInstanceId.ToString();
+            return mat.ComputeCRC().ToString() + Shader.PropertyToID(string.Join("", mat.shaderKeywords)).ToString() + materialCRCModifier.ToString();
         }
 
         protected virtual int GetTextureSourceId(GLTFTexture texture) { return texture.Source.Id; }
