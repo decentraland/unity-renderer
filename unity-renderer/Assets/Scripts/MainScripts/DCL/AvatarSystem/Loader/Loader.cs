@@ -144,6 +144,8 @@ namespace AvatarSystem
             }
         }
 
+        public Transform[] GetBones() { return bodyshapeLoader?.upperBodyRenderer?.bones; }
+
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers, out SkinnedMeshRenderer renderer)
         {
             renderer = null;

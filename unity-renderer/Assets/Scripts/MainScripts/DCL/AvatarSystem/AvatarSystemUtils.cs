@@ -10,6 +10,7 @@ namespace AvatarSystem
 {
     public static class AvatarSystemUtils
     {
+        public const float AVATAR_Y_OFFSET = 0.75f;
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
         public static readonly int _BaseColor = Shader.PropertyToID("_BaseColor");
         public static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");

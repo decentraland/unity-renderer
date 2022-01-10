@@ -126,10 +126,16 @@ namespace DCL
             wearableItems.Add(model.bodyShape);
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
+                //TODO Add Collider to the AvatarSystem
+                //TODO Without this the collider could get triggered disabling the avatar container,
+                // this would stop the loading process due to the underlying coroutines of the AssetLoader not starting
+                avatarCollider.gameObject.SetActive(false);
+
                 SetImpostor(model.id);
                 loadingCts?.Cancel();
                 loadingCts = new CancellationTokenSource();
-                yield return avatar.Load(wearableItems, new AvatarSettings
+
+                avatar.Load(wearableItems, new AvatarSettings
                 {
                     playerName = model.name,
                     bodyshapeId = model.bodyShape,
@@ -137,6 +143,9 @@ namespace DCL
                     skinColor = model.skinColor,
                     hairColor = model.hairColor,
                 }, loadingCts.Token);
+
+                // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
+                yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded || avatar.status == IAvatar.Status.Failed);
             }
 
             avatar.SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);
@@ -226,10 +235,13 @@ namespace DCL
             }
 
             avatarReporterController.SetUp(entity.scene.sceneData.id, entity.entityId, player.id);
-            //anchorPoints.Prepare(avatarRenderer.transform, avatarRenderer.GetBones(), avatarRenderer.maxY);
+
+            float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
+
+            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), height);
 
             player.playerName.SetIsTalking(model.talking);
-            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, avatar.bounds.max.y));
+            player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
         }
 
         private void Update()

@@ -21,9 +21,7 @@ namespace AvatarSystem
         private int lodIndex = 0;
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
-
-        //TODO Calculate bounds
-        public Bounds bounds { get; }
+        public Vector3 extents { get; private set; }
 
         public Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottler gpuSkinningThrottler)
         {
@@ -60,9 +58,14 @@ namespace AvatarSystem
                 {
                     (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, linkedCt);
                 }
-                catch
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception e)
                 {
                     Debug.LogError($"Failed curating avatar with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
+                    Debug.LogError(e.ToString());
                     throw;
                 }
 
@@ -74,7 +77,7 @@ namespace AvatarSystem
                     return;
                 }
 
-                status = IAvatar.Status.Loaded;
+                extents = loader.combinedRenderer.localBounds.extents * 2f / 100f;
 
                 animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
 
@@ -114,6 +117,7 @@ namespace AvatarSystem
 
         public void SetImpostorTexture(Texture2D impostorTexture) { lod.SetImpostorTexture(impostorTexture); }
         public void SetImpostorTint(Color color) { lod.SetImpostorTint(color); }
+        public Transform[] GetBones() => loader.GetBones();
 
         public void Dispose()
         {

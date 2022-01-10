@@ -158,8 +158,7 @@ public class PlayerAvatarController : MonoBehaviour
         }
 
         IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-        Debug.Log("TODO: Port Anchor Points");
-        //anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), avatar.bounds.max.y);
+        anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), avatar.extents.y);
 
         var player = new Player()
         {

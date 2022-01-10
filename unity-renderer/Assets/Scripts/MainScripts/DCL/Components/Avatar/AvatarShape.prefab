@@ -68,7 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b2e184f0ec373f4e807d927e1f8aef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementLerpWait: 0
 --- !u!114 &1133411967100239370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,7 +81,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObjectsToToggle:
-  - {fileID: 0}
   - {fileID: 5854254909640412467}
   - {fileID: 5582000225371496597}
 --- !u!1 &5582000225371496597

@@ -40,7 +40,8 @@ namespace AvatarSystem
                     return wearablesRetrieved[wearableId];
 
                 Promise<WearableItem> promise = CatalogController.RequestWearable(wearableId);
-                await promise.WithCancellation(linkedCts.Token).SuppressCancellationThrow();
+                // AttachExternalCancellation is needed because a CustomYieldInstruction requires a frame to operate
+                await promise.WithCancellation(linkedCts.Token).AttachExternalCancellation(linkedCts.Token);
 
                 // Cancelling is irrelevant at this point,
                 // either we have the wearable and we have to add it to forget it later

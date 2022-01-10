@@ -16,7 +16,7 @@ namespace AvatarSystem
         }
 
         Status status { get; }
-        Bounds bounds { get; }
+        Vector3 extents { get; }
 
         UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default);
         void SetVisibility(bool visible);
@@ -24,6 +24,7 @@ namespace AvatarSystem
         void SetLODLevel(int lodIndex);
         void SetAnimationThrottling(int framesBetweenUpdate);
         void SetImpostorTexture(Texture2D impostorTexture);
-        public void SetImpostorTint(Color color);
+        void SetImpostorTint(Color color);
+        Transform[] GetBones();
     }
 }
