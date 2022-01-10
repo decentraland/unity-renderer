@@ -160,7 +160,7 @@ namespace DCL
             MainSceneFactory.CreateBridges();
             MainSceneFactory.CreateMouseCatcher();
             MainSceneFactory.CreatePlayerSystems();
-            MainSceneFactory.CreateEnvironment();
+            CreateEnvironment();
             MainSceneFactory.CreateAudioHandler();
             MainSceneFactory.CreateHudController();
             MainSceneFactory.CreateSettingsController();
@@ -168,5 +168,7 @@ namespace DCL
             MainSceneFactory.CreateEventSystem();
             MainSceneFactory.CreateInteractionHoverCanvas();
         }
+
+        protected virtual void CreateEnvironment() => MainSceneFactory.CreateEnvironment();
     }
 }
