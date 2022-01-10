@@ -21,18 +21,29 @@ public class CursorController : MonoBehaviour
     {
         if (cursorImage == null) return;
         if (cursorImage.gameObject.activeSelf) return;
+        
         cursorImage.gameObject.SetActive(true);
-        if (alphaRoutine != null) StopCoroutine(alphaRoutine);
-        alphaRoutine = StartCoroutine(SetAlpha(0f, 1f, ALPHA_INTERPOLATION_DURATION));
+        
+        if (gameObject.activeSelf)
+        {
+            if (alphaRoutine != null) StopCoroutine(alphaRoutine);
+            alphaRoutine = StartCoroutine(SetAlpha(0f, 1f, ALPHA_INTERPOLATION_DURATION));
+        }
     }
 
     public void Hide()
     {
         if (cursorImage == null) return;
         if (!cursorImage.gameObject.activeSelf) return;
-        if (alphaRoutine != null) StopCoroutine(alphaRoutine);
-        alphaRoutine = StartCoroutine(SetAlpha(1f, 0f, ALPHA_INTERPOLATION_DURATION,
-            () => cursorImage.gameObject.SetActive(false)));
+
+        if (gameObject.activeSelf)
+        {
+            if (alphaRoutine != null) StopCoroutine(alphaRoutine);
+            alphaRoutine = StartCoroutine(SetAlpha(1f, 0f, ALPHA_INTERPOLATION_DURATION,
+                () => cursorImage.gameObject.SetActive(false)));
+        }
+        else
+            cursorImage.gameObject.SetActive(false);
     }
 
     public void SetNormalCursor()
