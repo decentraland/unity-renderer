@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 using Variables.RealmsInfo;
 using DCL;
@@ -99,9 +99,5 @@ public class RealmsInfoTests
         Assert.IsTrue(testModel.realms[0].layer == LAYER_1, "Values are not the same");
         Assert.IsTrue(testModel.realms[1].serverName == SERVER_NAME_2, "Values are not the same");
         Assert.IsTrue(testModel.realms[1].layer == LAYER_2, "Values are not the same");
-
-        onChangeTriggered = false;
-        handler.Set(JsonUtility.ToJson(testModel));
-        Assert.IsFalse(onChangeTriggered, "OnChange shouldn't be triggered");
     }
 }
