@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Interface;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,9 @@ public interface IDimensionSelectorComponentView
 
 public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelectorComponentView, IComponentModelConfig
 {
+    internal const string DIMENSIONS_POOL_NAME = "Dimensions_DimesionsRowsPool";
+    internal const int DIMENSIONS_POOL_PREWARM = 20;
+
     [Header("Assets References")]
     [SerializeField] internal DimensionRowComponentView dimensionRowPrefab;
 
@@ -57,6 +61,7 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     [SerializeField] internal Color colorForActiveSortingArrow;
     [SerializeField] internal Color colorForUnactiveSortingArrow;
 
+    internal Pool dimensionsPool;
     internal DimensionsSorting currentSorting = DimensionsSorting.BY_NUMBER_OF_PLAYERS;
     internal DimensionsSortingDirection currentSortingDirection = DimensionsSortingDirection.DESC;
 
@@ -89,6 +94,7 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
 
+        ConfigureDimensionsPool();
         RefreshSortingArrows();
     }
 
@@ -144,13 +150,17 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
 
     public void SetAvailableDimensions(List<DimensionRowComponentModel> dimensions)
     {
+        availableDimensions.ExtractItems();
+        dimensionsPool.ReleaseAll();
+
         List<BaseComponentView> dimensionsToAdd = new List<BaseComponentView>();
         bool isAnOddRow = true;
         foreach (DimensionRowComponentModel dimension in dimensions)
         {
-            DimensionRowComponentView newDimensionRow = GameObject.Instantiate(dimensionRowPrefab);
+            DimensionRowComponentView newDimensionRow = dimensionsPool.Get().gameObject.GetComponent<DimensionRowComponentView>();
             newDimensionRow.Configure(dimension);
             newDimensionRow.SetRowColor(isAnOddRow ? colorForOddRows : colorForEvenRows);
+            newDimensionRow.onWarpInClick.RemoveAllListeners();
             newDimensionRow.onWarpInClick.AddListener(() =>
             {
                 WebInterface.SendChatMessage(new ChatMessage
@@ -216,4 +226,19 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     internal void CloseModal() { Hide(); }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
+
+    internal void ConfigureDimensionsPool()
+    {
+        dimensionsPool = PoolManager.i.GetPool(DIMENSIONS_POOL_NAME);
+        if (dimensionsPool == null)
+        {
+            dimensionsPool = PoolManager.i.AddPool(
+                DIMENSIONS_POOL_NAME,
+                GameObject.Instantiate(dimensionRowPrefab).gameObject,
+                maxPrewarmCount: DIMENSIONS_POOL_PREWARM,
+                isPersistent: true);
+
+            dimensionsPool.ForcePrewarm();
+        }
+    }
 }
