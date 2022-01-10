@@ -54,7 +54,7 @@ public class ProfileHUDView : MonoBehaviour
     internal RawImage imageAvatarThumbnail;
 
     [SerializeField]
-    internal Button buttonToggleMenu;
+    protected internal Button buttonToggleMenu;
 
     [Header("Texts")]
     [SerializeField]
@@ -68,35 +68,35 @@ public class ProfileHUDView : MonoBehaviour
 
     [Header("Buttons")]
     [SerializeField]
-    internal Button buttonClaimName;
+    protected internal Button buttonClaimName;
 
     [SerializeField]
-    internal Button buttonCopyAddress;
+    protected internal Button buttonCopyAddress;
 
     [SerializeField]
-    internal Button buttonLogOut;
+    protected internal Button buttonLogOut;
 
     [SerializeField]
-    internal Button buttonSignUp;
+    protected internal Button buttonSignUp;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
+    protected internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
+    protected internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
+    protected internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
+    protected internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
 
     [Header("Name Edition")]
     [SerializeField]
-    internal Button_OnPointerDown buttonEditName;
+    protected internal Button_OnPointerDown buttonEditName;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonEditNamePrefix;
+    protected internal Button_OnPointerDown buttonEditNamePrefix;
 
     [SerializeField]
     internal TMP_InputField inputName;
