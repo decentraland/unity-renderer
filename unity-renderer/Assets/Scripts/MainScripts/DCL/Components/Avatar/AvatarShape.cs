@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using AvatarSystem;
+using DCL.Helpers;
 using DCL.Models;
 using GPUSkinning;
 using UnityEngine;
@@ -32,8 +33,6 @@ namespace DCL
 
         private StringVariable currentPlayerInfoCardId;
 
-        private AvatarModel oldModel = new AvatarModel();
-
         public bool everythingIsLoaded;
 
         private Vector3? lastAvatarPosition = null;
@@ -44,25 +43,24 @@ namespace DCL
 
         private IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
         private IAvatar avatar;
-        private LOD avatarLOD;
         private readonly AvatarModel currentAvatar = new AvatarModel { wearables = new List<string>() };
         private CancellationTokenSource loadingCts;
-        private AssetPromise_Texture bodySnapshotTexturePromise;
+        private ILazyTextureObserver currentLazyObserver;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-            avatarLOD = new LOD(avatarContainer);
+            Visibility visibility = new Visibility();
+            LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             avatar = new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
                 new Loader(new WearableLoaderFactory(), avatarContainer),
                 GetComponentInChildren<AvatarAnimatorLegacy>(),
-                new Visibility(),
+                visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
                 new GPUSkinningThrottler_New());
-            //avatarRenderer.OnImpostorAlphaValueUpdate += OnImpostorAlphaValueUpdate;
 
             if (avatarReporterController == null)
             {
@@ -89,8 +87,6 @@ namespace DCL
 
             if (poolableObject != null && poolableObject.isInsidePool)
                 poolableObject.RemoveFromPool();
-
-            //avatarRenderer.OnImpostorAlphaValueUpdate -= OnImpostorAlphaValueUpdate;
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -181,6 +177,7 @@ namespace DCL
 
         public void SetImpostor(string userId)
         {
+            currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             if (string.IsNullOrEmpty(userId))
                 return;
 
@@ -188,11 +185,8 @@ namespace DCL
             if (userProfile == null)
                 return;
 
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
-            bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-            bodySnapshotTexturePromise.OnSuccessEvent += asset => avatar.SetImpostorTexture(asset.texture);
-            AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
+            currentLazyObserver = userProfile.bodySnapshotObserver;
+            currentLazyObserver.AddListener(avatar.SetImpostorTexture);
         }
 
         private void PlayerPointerExit() { playerName?.SetForceShow(false); }
@@ -276,17 +270,9 @@ namespace DCL
 
             everythingIsLoaded = false;
             initializedPosition = false;
-            oldModel = new AvatarModel();
             model = new AvatarModel();
             lastAvatarPosition = null;
             player = null;
-        }
-
-        void OnImpostorAlphaValueUpdate(float newAlphaValue)
-        {
-            Debug.Log("TODO");
-            return;
-            avatarMovementController.movementLerpWait = newAlphaValue > 0.01f ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f;
         }
 
         public override void Cleanup()
@@ -301,9 +287,8 @@ namespace DCL
             }
 
             loadingCts?.Cancel();
+            currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             avatar.Dispose();
-            if (bodySnapshotTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             if (poolableObject != null)
             {

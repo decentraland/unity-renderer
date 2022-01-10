@@ -20,8 +20,9 @@ namespace AvatarSystem
         public int lodIndex { get; private set; } = -1;
 
         private readonly GameObject impostorContainer;
+        private readonly IVisibility visibility;
+        private readonly IAvatarMovementController avatarMovementController;
 
-        private IEnumerable<Renderer> facialFeatures;
         private Renderer combinedAvatar;
         private readonly Renderer impostorRenderer;
         private readonly MeshFilter impostorMeshFilter;
@@ -29,11 +30,13 @@ namespace AvatarSystem
 
         private CancellationTokenSource transitionCTS;
 
-        public LOD(GameObject impostorContainer)
+        public LOD(GameObject impostorContainer, IVisibility visibility, IAvatarMovementController avatarMovementController)
         {
             this.impostorContainer = impostorContainer;
+            this.visibility = visibility;
+            // TODO Once the AvatarMovementController is completly ported into the AvatarSystem we can decouple it from the LOD
+            this.avatarMovementController = avatarMovementController;
             impostorRenderer = CreateImpostor();
-            impostorRenderer.enabled = false;
 
             impostorMeshFilter = impostorRenderer.GetComponent<MeshFilter>();
             SetImpostorTexture(null);
@@ -56,25 +59,24 @@ namespace AvatarSystem
         public void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures)
         {
             this.combinedAvatar = combinedAvatar;
-            this.facialFeatures = facialFeatures;
         }
 
         public void SetLodIndex(int lodIndex, bool inmediate = false)
         {
-            if (lodIndex == this.lodIndex)
-                return;
-
             if (inmediate)
             {
                 avatarAlpha = lodIndex <= 1 ? 1f : 0f;
                 UpdateSSAO(lodIndex);
-                UpdateFacialFeatures(lodIndex);
                 UpdateAlpha(avatarAlpha);
-
-                combinedAvatar.enabled = avatarAlpha > 0;
+                UpdateMovementLerping(lodIndex);
+                visibility.SetCombinedRendererVisibility(lodIndex <= 1);
+                visibility.SetFacialFeaturesVisibility(lodIndex <= 0);
                 impostorRenderer.enabled = avatarAlpha == 0;
                 return;
             }
+
+            if (lodIndex == this.lodIndex)
+                return;
 
             this.lodIndex = lodIndex;
 
@@ -96,7 +98,7 @@ namespace AvatarSystem
 
             try
             {
-                combinedAvatar.enabled = true;
+                visibility.SetCombinedRendererVisibility(true);
                 impostorRenderer.enabled = true;
                 float targetAvatarAlpha = lodIndex <= 1 ? 1f : 0f;
                 while (!Mathf.Approximately(targetAvatarAlpha, avatarAlpha))
@@ -107,9 +109,11 @@ namespace AvatarSystem
                 }
 
                 UpdateSSAO(lodIndex);
-                UpdateFacialFeatures(lodIndex);
+                UpdateMovementLerping(lodIndex);
 
-                combinedAvatar.enabled = avatarAlpha > 0;
+                visibility.SetCombinedRendererVisibility(avatarAlpha > 0);
+                visibility.SetFacialFeaturesVisibility(lodIndex == 0);
+
                 impostorRenderer.enabled = avatarAlpha == 0;
             }
             catch (OperationCanceledException)
@@ -148,13 +152,7 @@ namespace AvatarSystem
             }
         }
 
-        private void UpdateFacialFeatures(int lodIndex)
-        {
-            foreach (Renderer facialFeature in facialFeatures)
-            {
-                facialFeature.enabled = lodIndex == 0;
-            }
-        }
+        private void UpdateMovementLerping(int lodIndex) { avatarMovementController.SetMovementLerpWait(lodIndex >= 2 ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f); }
 
         public void Dispose()
         {

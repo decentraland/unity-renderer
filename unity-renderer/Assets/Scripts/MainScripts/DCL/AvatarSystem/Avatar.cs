@@ -81,7 +81,7 @@ namespace AvatarSystem
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
 
-                visibility.Bind(new [] { gpuSkinning.renderer, loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
+                visibility.Bind(gpuSkinning.renderer,  new [] { loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
                 visibility.SetLoadingReady(true);
 
                 lod.Bind(gpuSkinning.renderer, new [] { loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
