@@ -1,8 +1,21 @@
 using DCL.Interface;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+public enum DimensionsSorting
+{
+    BY_NAME,
+    BY_NUMBER_OF_PLAYERS
+}
+
+public enum DimensionsSortingDirection
+{
+    ASC,
+    DESC
+}
 
 public interface IDimensionSelectorComponentView
 {
@@ -26,6 +39,12 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
 
     [Header("Prefab References")]
     [SerializeField] internal TMP_Text currentDimensionText;
+    [SerializeField] internal ButtonComponentView sortByNameButton;
+    [SerializeField] internal Image sortByNameArrowUp;
+    [SerializeField] internal Image sortByNameArrowDown;
+    [SerializeField] internal ButtonComponentView sortByNumberOfPlayersButton;
+    [SerializeField] internal Image sortByNumberOfPlayersArrowUp;
+    [SerializeField] internal Image sortByNumberOfPlayersArrowDown;
     [SerializeField] internal GridContainerComponentView availableDimensions;
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
@@ -35,10 +54,31 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     [SerializeField] internal DimensionSelectorComponentModel model;
     [SerializeField] internal Color colorForEvenRows;
     [SerializeField] internal Color colorForOddRows;
+    [SerializeField] internal Color colorForActiveSortingArrow;
+    [SerializeField] internal Color colorForUnactiveSortingArrow;
+
+    internal DimensionsSorting currentSorting = DimensionsSorting.BY_NUMBER_OF_PLAYERS;
+    internal DimensionsSortingDirection currentSortingDirection = DimensionsSortingDirection.DESC;
 
     public override void Awake()
     {
         base.Awake();
+
+        if (sortByNameButton != null)
+            sortByNameButton.onClick.AddListener(() =>
+            {
+                ApplySorting(
+                    DimensionsSorting.BY_NAME,
+                    currentSorting != DimensionsSorting.BY_NAME || currentSortingDirection != DimensionsSortingDirection.ASC ? DimensionsSortingDirection.ASC : DimensionsSortingDirection.DESC);
+            });
+
+        if (sortByNameButton != null)
+            sortByNumberOfPlayersButton.onClick.AddListener(() =>
+            {
+                ApplySorting(
+                    DimensionsSorting.BY_NUMBER_OF_PLAYERS,
+                    currentSorting != DimensionsSorting.BY_NUMBER_OF_PLAYERS || currentSortingDirection != DimensionsSortingDirection.ASC ? DimensionsSortingDirection.ASC : DimensionsSortingDirection.DESC);
+            });
 
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
@@ -48,6 +88,8 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
+
+        RefreshSortingArrows();
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -67,6 +109,12 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     public override void Dispose()
     {
         base.Dispose();
+
+        if (sortByNameButton != null)
+            sortByNameButton.onClick.RemoveAllListeners();
+
+        if (sortByNameButton != null)
+            sortByNumberOfPlayersButton.onClick.RemoveAllListeners();
 
         if (closeCardButton != null)
             closeCardButton.onClick.RemoveAllListeners();
@@ -117,6 +165,52 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
         }
 
         availableDimensions.SetItems(dimensionsToAdd);
+
+        ApplySorting(currentSorting, currentSortingDirection);
+    }
+
+    internal void ApplySorting(DimensionsSorting sortBy, DimensionsSortingDirection sortingDirection)
+    {
+        List<BaseComponentView> dimensionsToSort = availableDimensions.ExtractItems();
+
+        switch (sortBy)
+        {
+            case DimensionsSorting.BY_NAME:
+                if (sortingDirection == DimensionsSortingDirection.ASC)
+                    dimensionsToSort = dimensionsToSort
+                        .OrderBy(d => ((DimensionRowComponentView)d).model.name)
+                        .ToList();
+                else
+                    dimensionsToSort = dimensionsToSort
+                        .OrderByDescending(d => ((DimensionRowComponentView)d).model.name)
+                        .ToList();
+                break;
+            case DimensionsSorting.BY_NUMBER_OF_PLAYERS:
+                if (sortingDirection == DimensionsSortingDirection.ASC)
+                    dimensionsToSort = dimensionsToSort
+                        .OrderBy(d => ((DimensionRowComponentView)d).model.players)
+                        .ToList();
+                else
+                    dimensionsToSort = dimensionsToSort
+                        .OrderByDescending(d => ((DimensionRowComponentView)d).model.players)
+                        .ToList();
+                break;
+        }
+
+        availableDimensions.SetItems(dimensionsToSort);
+
+        currentSorting = sortBy;
+        currentSortingDirection = sortingDirection;
+
+        RefreshSortingArrows();
+    }
+
+    internal void RefreshSortingArrows()
+    {
+        sortByNameArrowUp.color = currentSorting == DimensionsSorting.BY_NAME && currentSortingDirection == DimensionsSortingDirection.ASC ? colorForActiveSortingArrow : colorForUnactiveSortingArrow;
+        sortByNameArrowDown.color = currentSorting == DimensionsSorting.BY_NAME && currentSortingDirection == DimensionsSortingDirection.DESC ? colorForActiveSortingArrow : colorForUnactiveSortingArrow;
+        sortByNumberOfPlayersArrowUp.color = currentSorting == DimensionsSorting.BY_NUMBER_OF_PLAYERS && currentSortingDirection == DimensionsSortingDirection.ASC ? colorForActiveSortingArrow : colorForUnactiveSortingArrow;
+        sortByNumberOfPlayersArrowDown.color = currentSorting == DimensionsSorting.BY_NUMBER_OF_PLAYERS && currentSortingDirection == DimensionsSortingDirection.DESC ? colorForActiveSortingArrow : colorForUnactiveSortingArrow;
     }
 
     internal void CloseModal() { Hide(); }
