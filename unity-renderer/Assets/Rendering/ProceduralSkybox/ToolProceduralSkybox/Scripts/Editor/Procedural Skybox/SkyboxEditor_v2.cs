@@ -9,6 +9,7 @@ namespace DCL.Skybox
 {
     public enum SkyboxEditorToolsParts
     {
+        Timeline_Tags,
         BG_Layer,
         Ambient_Layer,
         Avatar_Layer,
@@ -60,6 +61,7 @@ namespace DCL.Skybox
         private float rightPanelWidth;
         private SkyboxEditorToolsParts selectedPart = SkyboxEditorToolsParts.BG_Layer;
         private int baseSkyboxSelectedIndex;
+        private string rightPanelHeadingTxt = "Background Layer";
 
         [MenuItem("Window/Skybox Editor v2")]
         static void Init()
@@ -137,17 +139,19 @@ namespace DCL.Skybox
 
         #region Top Panel
 
+        Vector2 topScroll;
         void RenderTopPanel()
         {
+            topScroll = EditorGUILayout.BeginScrollView(topScroll);
             GUIStyle style = new GUIStyle();
             style.alignment = TextAnchor.MiddleLeft;
 
             style.fixedWidth = position.width - toolSize.toolRightPadding;
-            style.fixedHeight = toolSize.topPanelHeight;
+            //style.fixedHeight = toolSize.topPanelHeight;
             EditorGUILayout.BeginHorizontal(style);
 
             style.fixedWidth = (position.width - toolSize.toolRightPadding) / 2;
-            style.fixedHeight = toolSize.topPanelHeight;
+            //style.fixedHeight = toolSize.topPanelHeight;
             EditorGUILayout.BeginVertical(style);
             RenderProfileControl();
             EditorGUILayout.EndVertical();
@@ -157,6 +161,20 @@ namespace DCL.Skybox
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.EndHorizontal();
+
+            style = new GUIStyle(EditorStyles.toolbarButton);
+            style.alignment = TextAnchor.MiddleCenter;
+            style.fixedWidth = (position.width - toolSize.toolRightPadding) / 2;
+            Rect r = EditorGUILayout.BeginHorizontal(style);
+            if (GUI.Button(r, GUIContent.none))
+            {
+                selectedPart = SkyboxEditorToolsParts.Timeline_Tags;
+                rightPanelHeadingTxt = "Timeline Tags";
+            }
+            EditorGUILayout.LabelField("Timeline Tags");
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.EndScrollView();
         }
 
         private void RenderProfileControl()
@@ -242,8 +260,6 @@ namespace DCL.Skybox
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
 
-            //EditorGUILayout.LabelField((GetNormalizedDayTime() * 100).ToString("f2") + "%", GUILayout.MaxWidth(50));
-
 
         }
 
@@ -259,30 +275,35 @@ namespace DCL.Skybox
             if (GUILayout.Button("BG Layer", EditorStyles.toolbarButton))
             {
                 selectedPart = SkyboxEditorToolsParts.BG_Layer;
+                rightPanelHeadingTxt = "Background Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Ambient Layer", EditorStyles.toolbarButton))
             {
                 selectedPart = SkyboxEditorToolsParts.Ambient_Layer;
+                rightPanelHeadingTxt = "Ambient Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Avatar Layer", EditorStyles.toolbarButton))
             {
                 selectedPart = SkyboxEditorToolsParts.Avatar_Layer;
+                rightPanelHeadingTxt = "Avatar Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Fog Layer", EditorStyles.toolbarButton))
             {
                 selectedPart = SkyboxEditorToolsParts.Fog_Layer;
+                rightPanelHeadingTxt = "Fog Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             if (GUILayout.Button("Directional Light Layer", EditorStyles.toolbarButton))
             {
                 selectedPart = SkyboxEditorToolsParts.Directional_Light_Layer;
+                rightPanelHeadingTxt = "Directional Light Layer";
             }
 
             EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
@@ -303,17 +324,91 @@ namespace DCL.Skybox
             // Loop through texture layer and print the name of all layers
             for (int i = 0; i < selectedConfiguration.layers.Count; i++)
             {
-                Rect r = EditorGUILayout.BeginHorizontal(EditorStyles.toolbarButton);
-                if (GUI.Button(r, GUIContent.none))
+
+                Rect r = EditorGUILayout.BeginHorizontal(toolSize.leftPanelHorizontal);
+
+                selectedConfiguration.layers[i].enabled = EditorGUILayout.Toggle(selectedConfiguration.layers[i].enabled, GUILayout.Width(toolSize.layerActiveCheckboxSize), GUILayout.Height(toolSize.layerActiveCheckboxSize));
+
+                if (GUILayout.Button(selectedConfiguration.layers[i].nameInEditor, GUILayout.Width(toolSize.layerButtonWidth)))
                 {
                     selectedPart = SkyboxEditorToolsParts.Base_Skybox;
                     baseSkyboxSelectedIndex = i;
+                    rightPanelHeadingTxt = selectedConfiguration.layers[i].nameInEditor;
                 }
 
-                EditorGUILayout.LabelField(selectedConfiguration.layers[i].nameInEditor, GUILayout.ExpandWidth(false));
+                selectedConfiguration.layers[i].slotID = EditorGUILayout.Popup(selectedConfiguration.layers[i].slotID, renderingOrderList.ToArray(), GUILayout.Width(toolSize.layerRenderWidth));
+
+                if (i == 0)
+                {
+                    GUI.enabled = false;
+                }
+                if (GUILayout.Button(('\u25B2').ToString()))
+                {
+                    TextureLayer temp = null;
+
+                    if (i >= 1)
+                    {
+                        temp = selectedConfiguration.layers[i - 1];
+                        selectedConfiguration.layers[i - 1] = selectedConfiguration.layers[i];
+                        selectedConfiguration.layers[i] = temp;
+                    }
+                }
+
+                GUI.enabled = true;
+
+                if (i == selectedConfiguration.layers.Count - 1)
+                {
+                    GUI.enabled = false;
+                }
+
+                if (GUILayout.Button(('\u25BC').ToString()))
+                {
+                    TextureLayer temp = null;
+                    if (i < (selectedConfiguration.layers.Count - 1))
+                    {
+                        temp = selectedConfiguration.layers[i + 1];
+                        selectedConfiguration.layers[i + 1] = selectedConfiguration.layers[i];
+                        selectedConfiguration.layers[i] = temp;
+                    }
+                    break;
+                }
+
+                GUI.enabled = true;
+
+                if (GUILayout.Button("-"))
+                {
+                    selectedConfiguration.layers.RemoveAt(i);
+                    break;
+                }
+
+                Color circleColor = Color.green;
+                switch (selectedConfiguration.layers[i].renderType)
+                {
+                    case LayerRenderType.Rendering:
+                        circleColor = Color.green;
+                        break;
+                    case LayerRenderType.NotRendering:
+                        circleColor = Color.gray;
+                        break;
+                    case LayerRenderType.Conflict_Playing:
+                        circleColor = Color.yellow;
+                        break;
+                    case LayerRenderType.Conflict_NotPlaying:
+                        circleColor = Color.red;
+                        break;
+                    default:
+                        break;
+                }
+
+                Color normalContentColor = GUI.color;
+                GUI.color = circleColor;
+
+                EditorGUILayout.LabelField(('\u29BF').ToString(), renderingMarkerStyle, GUILayout.Width(20), GUILayout.Height(20));
+
+                GUI.color = normalContentColor;
                 EditorGUILayout.EndHorizontal();
 
-                //EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
+                EditorGUILayout.Space(toolSize.leftPanelButtonSpace);
             }
         }
 
@@ -323,9 +418,15 @@ namespace DCL.Skybox
 
         private void RenderRightPanel()
         {
+            RenderRightPanelHeading(rightPanelHeadingTxt);
+            EditorGUILayout.Space(20);
+
             rightPanelScrollPos = EditorGUILayout.BeginScrollView(rightPanelScrollPos);
             switch (selectedPart)
             {
+                case SkyboxEditorToolsParts.Timeline_Tags:
+                    RenderTimelineTags();
+                    break;
                 case SkyboxEditorToolsParts.BG_Layer:
                     RenderBackgroundColorLayer();
                     break;
@@ -348,6 +449,17 @@ namespace DCL.Skybox
                     break;
             }
             EditorGUILayout.EndScrollView();
+        }
+
+        void RenderRightPanelHeading(string text)
+        {
+            GUIStyle style = new GUIStyle(EditorStyles.miniBoldLabel);
+            style.normal.background = toolSize.rightPanelHeadingState.backgroundTex;
+            EditorGUILayout.BeginHorizontal(style);
+            style = new GUIStyle(EditorStyles.boldLabel);
+            style.normal.textColor = toolSize.rightPanelHeadingTextColor.textColor;
+            EditorGUILayout.LabelField(text, style);
+            EditorGUILayout.EndHorizontal();
         }
 
         #endregion
@@ -897,6 +1009,15 @@ namespace DCL.Skybox
 
         void RenderTextureLayer(TextureLayer layer)
         {
+            EditorGUILayout.Separator();
+
+            // name In Editor
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Layer Name: ", GUILayout.Width(150), GUILayout.ExpandWidth(false));
+            layer.nameInEditor = EditorGUILayout.TextField(layer.nameInEditor, GUILayout.Width(200), GUILayout.ExpandWidth(false));
+            rightPanelHeadingTxt = layer.nameInEditor;
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.Separator();
 
             // Layer Type

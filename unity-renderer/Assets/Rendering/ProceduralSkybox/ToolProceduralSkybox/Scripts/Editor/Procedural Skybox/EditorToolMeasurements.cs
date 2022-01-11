@@ -21,9 +21,58 @@ namespace DCL.Skybox
         // Left Panel
         public Rect leftPanelPadding;
         public float leftPanelButtonSpace;
+        public float layerButtonWidth = 50;
+        public float layerRenderWidth = 20;
+        public float layerActiveCheckboxSize = 15;
+        public GUIStyle leftPanelHorizontal;
 
         // Right Panel
         [Header("Right Panel")]
         public Rect rightPanelPadding;
+        public GUIStyleStateVar rightPanelHeadingState;
+        public GUIStyleStateVar rightPanelHeadingTextColor;
+
+        private void OnValidate()
+        {
+            // Make new texture and assign to specific style state
+            rightPanelHeadingState.AssignTexture();
+            rightPanelHeadingTextColor.AssignTexture();
+        }
+
+        [ContextMenu("Assign Values")]
+        public void AssignValues()
+        {
+            Texture2D newTex = new Texture2D(28, 28);
+            for (int i = 0; i < newTex.height; i++)
+            {
+                for (int j = 0; j < newTex.width; j++)
+                {
+                    newTex.SetPixel(i, j, Color.blue);
+                }
+            }
+            newTex.Apply();
+            leftPanelHorizontal.hover.background = newTex;
+        }
+    }
+
+    [System.Serializable]
+    public class GUIStyleStateVar
+    {
+        public Color backgroundColor;
+        public Color textColor = Color.white;
+        [SerializeField] public Texture2D backgroundTex;
+
+        public void AssignTexture()
+        {
+            backgroundTex = new Texture2D(28, 28);
+            for (int i = 0; i < backgroundTex.height; i++)
+            {
+                for (int j = 0; j < backgroundTex.width; j++)
+                {
+                    backgroundTex.SetPixel(i, j, backgroundColor);
+                }
+            }
+            backgroundTex.Apply();
+        }
     }
 }
