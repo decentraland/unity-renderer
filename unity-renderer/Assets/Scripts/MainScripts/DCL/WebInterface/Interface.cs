@@ -792,6 +792,8 @@ namespace DCL.Interface
         private static AvatarStateBase avatarStatePayload = new AvatarStateBase();
         private static AvatarStateSceneChanged avatarSceneChangedPayload = new AvatarStateSceneChanged();
         public static AvatarOnClickPayload avatarOnClickPayload = new AvatarOnClickPayload();
+        private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
+        private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1543,6 +1545,18 @@ namespace DCL.Interface
             avatarOnClickPayload.ray.distance = distance;
 
             SendSceneEvent(sceneId, "playerClicked", avatarOnClickPayload);
+        }        
+        
+        public static void ReportOnPointerHoverEnterEvent(string sceneId, string uuid)
+        {
+            onPointerHoverEnterEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onPointerHoverEnterEvent);
         }
+ 
+        public static void ReportOnPointerHoverExitEvent(string sceneId, string uuid)
+        {
+            onPointerHoverExitEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onPointerHoverExitEvent);
+        }   
     }
 }

@@ -633,6 +633,24 @@ namespace DCL.Controllers
                         }
                     }
                     return;
+                case OnPointerHoverEnter.NAME:
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, out IEntityComponent component ))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER );
+                        }
+                    }
+                    return;
+                case OnPointerHoverExit.NAME:
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, out IEntityComponent component ))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT );
+                        }
+                    }
+                    return;
                 case "transform":
                     {
                         if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component ))

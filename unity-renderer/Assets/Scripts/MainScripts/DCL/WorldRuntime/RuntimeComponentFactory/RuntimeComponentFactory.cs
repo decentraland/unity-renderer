@@ -81,6 +81,8 @@ namespace DCL
             builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_UP, BuildUUIDComponent<OnPointerUp>);
             builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_DOWN, BuildUUIDComponent<OnPointerDown>);
             builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_CLICK, BuildUUIDComponent<OnClick>);
+            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, BuildUUIDComponent<OnPointerHoverEnter>);
+            builders.Add((int) CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, BuildUUIDComponent<OnPointerHoverExit>);
 
             // Others
             builders.Add((int) CLASS_ID_COMPONENT.AVATAR_SHAPE, BuildPoolableComponent);
