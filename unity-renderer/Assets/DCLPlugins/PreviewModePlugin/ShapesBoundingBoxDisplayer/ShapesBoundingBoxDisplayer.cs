@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Controllers;
+using DCLPlugins.PreviewModePlugin.Commons;
 
 public class ShapesBoundingBoxDisplayer : IPlugin
 {
@@ -60,7 +61,7 @@ public class ShapesBoundingBoxDisplayer : IPlugin
         }
 
         watchSceneHandler?.Dispose();
-        watchSceneHandler = new WatchSceneHandler(scene);
+        watchSceneHandler = new WatchSceneHandler(scene, new SceneEntitiesTracker());
     }
 
     private void DebugModeVariableOnOnChange(bool current, bool previous)
