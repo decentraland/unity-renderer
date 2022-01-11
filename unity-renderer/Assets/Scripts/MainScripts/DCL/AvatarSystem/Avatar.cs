@@ -106,7 +106,6 @@ namespace AvatarSystem
 
         public void SetLODLevel(int lodIndex)
         {
-            //TODO Fix collision between visibility and LOD setting facial features enable
             this.lodIndex = lodIndex;
             if (status != IAvatar.Status.Loaded)
                 return;

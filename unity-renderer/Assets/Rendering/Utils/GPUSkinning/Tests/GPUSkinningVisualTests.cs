@@ -12,7 +12,6 @@ using UnityEngine.TestTools;
 public class GPUSkinningVisualTests : VisualTestsBase
 {
     private BaseDictionary<string, WearableItem> catalog;
-    private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
     private Material avatarMaterial;
     private Color skinColor;
     private Color hairColor;
@@ -21,7 +20,6 @@ public class GPUSkinningVisualTests : VisualTestsBase
     {
         yield return base.SetUp();
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-        toCleanUp.Clear();
 
         avatarMaterial = Resources.Load<Material>("Materials/Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
@@ -80,36 +78,33 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
     private IEnumerator LoadWearable(string wearableId, string bodyShapeId, GameObject container, AvatarMeshCombinerHelper combiner)
     {
-        catalog.TryGetValue(wearableId, out WearableItem wearableItem);
-        Assert.NotNull(wearableItem);
-
-        WearableController wearable = new WearableController(wearableItem);
-        toCleanUp.Add(wearable);
-
-        bool succeeded = false;
-        bool failed = false;
-
-        wearable.Load(bodyShapeId, container.transform, x => succeeded = true, (x, e) => failed = true);
-
-        yield return new WaitUntil(() => succeeded || failed);
-
-        wearable.SetAssetRenderersEnabled(true);
-        wearable.SetupHairAndSkinColors(skinColor, hairColor);
-
-        var rends = wearable.GetRenderers();
-        combiner.Combine(rends[0], rends.ToArray(), new Material(avatarMaterial));
-
-        combiner.container.transform.SetParent(rends[0].transform.parent);
-        combiner.container.transform.localPosition = rends[0].transform.localPosition;
+        Assert.Fail();
+        // catalog.TryGetValue(wearableId, out WearableItem wearableItem);
+        // Assert.NotNull(wearableItem);
+        //
+        // WearableController wearable = new WearableController(wearableItem);
+        // toCleanUp.Add(wearable);
+        //
+        // bool succeeded = false;
+        // bool failed = false;
+        //
+        // wearable.Load(bodyShapeId, container.transform, x => succeeded = true, (x, e) => failed = true);
+        //
+        // yield return new WaitUntil(() => succeeded || failed);
+        //
+        // wearable.SetAssetRenderersEnabled(true);
+        // wearable.SetupHairAndSkinColors(skinColor, hairColor);
+        //
+        // var rends = wearable.GetRenderers();
+        // combiner.Combine(rends[0], rends.ToArray(), new Material(avatarMaterial));
+        //
+        // combiner.container.transform.SetParent(rends[0].transform.parent);
+        // combiner.container.transform.localPosition = rends[0].transform.localPosition;
+        yield break;
     }
 
     protected override IEnumerator TearDown()
     {
-        foreach (WearableController wearable in toCleanUp)
-        {
-            wearable.CleanUp();
-        }
-
         yield return base.TearDown();
     }
 }

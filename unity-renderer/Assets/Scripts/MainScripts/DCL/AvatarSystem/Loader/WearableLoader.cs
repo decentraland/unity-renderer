@@ -57,10 +57,7 @@ namespace AvatarSystem
 
                 //Try getting a default if category is needed
                 if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
-                {
-                    Debug.Log($"Failed loading {wearable.id} for bodyshape {settings.bodyshapeId}");
                     await FallbackToDefault(container, ct);
-                }
 
                 if (rendereable != null)
                     status = IWearableLoader.Status.Defaulted;
