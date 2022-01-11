@@ -107,12 +107,14 @@ namespace KernelConfigurationTypes
         public bool sceneDebugPanelEnabled = false;
         public string sceneDebugPanelTargetSceneId = string.Empty;
         public string sceneLimitsWarningSceneId = string.Empty;
+        public string shapeBoundingBoxDisplaySceneId = string.Empty;
 
         public bool Equals(Debugging other)
         {
             return sceneDebugPanelEnabled == other?.sceneDebugPanelEnabled &&
                    sceneDebugPanelTargetSceneId == other?.sceneDebugPanelTargetSceneId &&
-                   sceneLimitsWarningSceneId == other?.sceneLimitsWarningSceneId;
+                   sceneLimitsWarningSceneId == other?.sceneLimitsWarningSceneId &&
+                   shapeBoundingBoxDisplaySceneId == other?.shapeBoundingBoxDisplaySceneId;
         }
 
         public Debugging Clone()
