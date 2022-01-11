@@ -1243,7 +1243,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 180, y: 1.5}
+  m_AnchoredPosition: {x: 145, y: 1.5}
   m_SizeDelta: {x: 10, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6086086579827625887
@@ -2156,7 +2156,7 @@ PrefabInstance:
     - target: {fileID: 1442316120381234285, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
         type: 3}
       propertyPath: model.text
-      value: DIMENSIONS
+      value: REALMS
       objectReference: {fileID: 0}
     - target: {fileID: 3725923502685340037, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
         type: 3}
@@ -2166,7 +2166,7 @@ PrefabInstance:
     - target: {fileID: 4469143239268576428, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
         type: 3}
       propertyPath: m_text
-      value: DIMENSIONS
+      value: REALMS
       objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
         type: 3}
