@@ -12,6 +12,7 @@ public class ExploreEventsCommonTests
     public void SetUp()
     {
         eventsSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/EventsSubSection/EventsSubSection")).GetComponent<EventsSubSectionComponentView>();
+        eventsSubSectionComponent.ConfigurePools();
         eventsSubSectionComponent.Start();
 
         testEventCard = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/EventsSubSection/EventCard_Modal")).GetComponent<EventCardComponentView>();

@@ -649,6 +649,13 @@ namespace DCL.Interface
             public string sceneId;
         }
 
+        [System.Serializable]
+        public class AvatarOnClickPayload
+        {
+            public string userId;
+            public RayInfo ray = new RayInfo();
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -784,6 +791,7 @@ namespace DCL.Interface
         private static HeadersPayload headersPayload = new HeadersPayload();
         private static AvatarStateBase avatarStatePayload = new AvatarStateBase();
         private static AvatarStateSceneChanged avatarSceneChangedPayload = new AvatarStateSceneChanged();
+        public static AvatarOnClickPayload avatarOnClickPayload = new AvatarOnClickPayload();
         private static UUIDEvent<EmptyPayload> onPointerHoverEnterEvent = new UUIDEvent<EmptyPayload>();
         private static UUIDEvent<EmptyPayload> onPointerHoverExitEvent = new UUIDEvent<EmptyPayload>();
 
@@ -1519,6 +1527,7 @@ namespace DCL.Interface
             avatarStatePayload.avatarShapeId = avatarId;
             SendMessage("ReportAvatarState", avatarStatePayload);
         }
+
         public static void ReportAvatarSceneChanged(string entityId, string avatarId, string sceneId)
         {
             avatarSceneChangedPayload.type = "SceneChanged";
@@ -1527,6 +1536,16 @@ namespace DCL.Interface
             avatarSceneChangedPayload.sceneId = sceneId;
             SendMessage("ReportAvatarState", avatarSceneChangedPayload);
         }
+
+        public static void ReportAvatarClick(string sceneId, string userId, Vector3 rayOrigin, Vector3 rayDirection, float distance)
+        {
+            avatarOnClickPayload.userId = userId;
+            avatarOnClickPayload.ray.origin = rayOrigin;
+            avatarOnClickPayload.ray.direction = rayDirection;
+            avatarOnClickPayload.ray.distance = distance;
+
+            SendSceneEvent(sceneId, "playerClicked", avatarOnClickPayload);
+        }        
         
         public static void ReportOnPointerHoverEnterEvent(string sceneId, string uuid)
         {

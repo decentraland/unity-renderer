@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -36,8 +36,7 @@ namespace DCL
         /// <param name="targetMaterial">If target material is null, the properties will be applied globally.</param>
         public void Apply(Material targetMaterial = null)
         {
-            if (currentProfile == null)
-                currentProfile = inWorld;
+            CheckAndAssignCurrentProfile();
 
             if (targetMaterial != null)
             {
@@ -50,6 +49,18 @@ namespace DCL
             Shader.SetGlobalVector(ShaderUtils.LightDir, currentProfile.lightDirection);
             Shader.SetGlobalColor(ShaderUtils.LightColor, currentProfile.lightColor);
             Shader.SetGlobalColor(ShaderUtils.TintColor, currentProfile.tintColor);
+        }
+
+        public void CheckAndAssignCurrentProfile()
+        {
+            if (DataStore.i.skyboxConfig.avatarMatProfile.Get() == AvatarMaterialProfile.InWorld)
+            {
+                currentProfile = inWorld;
+            }
+            else
+            {
+                currentProfile = avatarEditor;
+            }
         }
     }
 }
