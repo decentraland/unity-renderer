@@ -54,6 +54,8 @@ public static class ExploreEventsHelpers
                 GameObject.Instantiate(eventCardPrefab).gameObject,
                 maxPrewarmCount: maxPrewarmCount,
                 isPersistent: true);
+
+            pool.ForcePrewarm();
         }
     }
 

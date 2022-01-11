@@ -128,14 +128,23 @@ public interface IEventsSubSectionComponentView
     /// Set the current scroll view position to 1.
     /// </summary>
     void RestartScrollViewPosition();
+
+    /// <summary>
+    /// Configure the needed pools for the events instantiation.
+    /// </summary>
+    void ConfigurePools();
 }
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
 {
     internal const string FEATURED_EVENT_CARDS_POOL_NAME = "Events_FeaturedEventCardsPool";
+    internal const int FEATURED_EVENT_CARDS_POOL_PREWARM = 10;
     internal const string TRENDING_EVENT_CARDS_POOL_NAME = "Events_TrendingEventCardsPool";
+    internal const int TRENDING_EVENT_CARDS_POOL_PREWARM = 12;
     internal const string UPCOMING_EVENT_CARDS_POOL_NAME = "Events_UpcomingEventCardsPool";
+    internal const int UPCOMING_EVENT_CARDS_POOL_PREWARM = 9;
     internal const string GOING_EVENT_CARDS_POOL_NAME = "Events_FeatureGoingEventCardsPool";
+    internal const int GOING_EVENT_CARDS_POOL_PREWARM = 9;
 
     [Header("Assets References")]
     [SerializeField] internal EventCardComponentView eventCardPrefab;
@@ -176,13 +185,17 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void OnEnable() { OnEventsSubSectionEnable?.Invoke(); }
 
+    public void ConfigurePools()
+    {
+        ExploreEventsHelpers.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
+    }
+
     public override void Start()
     {
         eventModal = ExploreEventsHelpers.ConfigureEventCardModal(eventCardModalPrefab);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out featuredEventCardsPool, FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, 10);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out upcomingEventCardsPool, UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out goingEventCardsPool, GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, 100);
 
         featuredEvents.RemoveItems();
         trendingEvents.RemoveItems();
