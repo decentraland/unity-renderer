@@ -66,7 +66,21 @@ namespace DCL.Components
                 }
             }
 
-            if (meshRenderers == null)
+            // TODO: Fix this, it's due to the SkinnedMeshRenderer switching to MeshRenderer when we setup GPUSkinning.
+            bool fetchRenderers = meshRenderers == null;
+            if (!fetchRenderers)
+            {
+                for (var i = 0; i < meshRenderers.Length; i++)
+                {
+                    if (meshRenderers[i] == null)
+                    {
+                        fetchRenderers = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (fetchRenderers)
                 meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
 
             Collider onPointerEventCollider;

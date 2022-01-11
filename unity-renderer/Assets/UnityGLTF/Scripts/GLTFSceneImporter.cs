@@ -1742,23 +1742,12 @@ namespace UnityGLTF
             if (isSkinnedMesh)
             {
                 materialCRCModifier = 666; // to separate from potential non-skinned GLTFs with 100~ materials
-
-                SkinnedMeshRenderer skr = renderer as SkinnedMeshRenderer;
                 
-                // We need an int representing the armature, to be able to share the material between other skinned meshes with the same armature
-                // So we sum the hashcode of every bone in the armature and use that as an "armature hashcode"
-                // skr.bones.GetHashCode(); doesn't appear to have the same results (material reusing is not observed when logging)
+                // By using the skeleton (skr.bones) hashcode (it is calculated based on all the properties/memory composing the skeleton object),
+                // and applying that to the material caching, we are able to share the material between other skinned meshes with the same armature
                 // TODO: Apply this CRC modifier in MaterialCachingHelper CRC as well...
                 // TODO: Will this caching change affect AB conversions as well somehow?
-                int bonesHashCodesSum = 0;
-                for (int i = 0; i < skr.bones.Length; i++)
-                {
-                    bonesHashCodesSum += skr.bones[i].GetHashCode();
-                }
-                materialCRCModifier += bonesHashCodesSum;
-
-                // GameObject rendererGO = renderer.gameObject;
-                // Debug.Log($"Pravs - DownloadAndConstructMaterial - skinned renderer material CRC Modifier: {materialCRCModifier}", rendererGO);
+                materialCRCModifier += (renderer as SkinnedMeshRenderer).bones.GetHashCode();
                 
                 materialCacheKey += materialCRCModifier;
             }
@@ -1780,18 +1769,6 @@ namespace UnityGLTF
                 materialCacheKey >= 0 ? _assetCache.MaterialCache[materialCacheKey] : _defaultLoadedMaterial;
 
             Material material = materialCacheData.GetContents();
-
-            // Genesis plaza bar photos NPC with shared material
-            /*if (material.name.Contains("AvatarWearable_MAT"))
-            {
-                Debug.Log($"PRAVS - DownloadAndConstructMaterial - name: {material.name} - instanceId: {material.GetInstanceID()} - matIndex {materialIndex} - is skinned? {isSkinnedMesh}", rendererGO);
-             
-                if (isSkinnedMesh)
-                {
-                    var bonesLength = (renderer as SkinnedMeshRenderer).bones.Length;
-                    Debug.Log($"PRAVS - bones length: {bonesLength}", rendererGO);
-                }
-            }*/
 
             bool alreadyUsedMaterial = usedMaterials.Contains(material);
 
@@ -2170,7 +2147,7 @@ namespace UnityGLTF
             if (materialCRCModifier != -1)
             {
                 mapper.Material.EnableKeyword("_GPU_SKINNING");
-                mapper.Material.name += "-GPUSkinned-" + materialCRCModifier;
+                mapper.Material.name += "_GPUSkinned_" + materialCRCModifier + "_" + mapper.Material.GetInstanceID();
             }
             
             // Add the material before-hand so it gets freed if the importing is cancelled.
