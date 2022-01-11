@@ -1741,7 +1741,7 @@ namespace UnityGLTF
             
             if (isSkinnedMesh)
             {
-                materialCRCModifier += 666; // to separate from potential non-skinned GLTFs with 100~ materials
+                materialCRCModifier = 666; // to separate from potential non-skinned GLTFs with 100~ materials
 
                 SkinnedMeshRenderer skr = renderer as SkinnedMeshRenderer;
                 
@@ -1754,12 +1754,11 @@ namespace UnityGLTF
                 for (int i = 0; i < skr.bones.Length; i++)
                 {
                     bonesHashCodesSum += skr.bones[i].GetHashCode();
-                    
-                    // TODO: Check if there can be negative hashCodes. Could we use 'absolute value' hashcodes to change the '!= -1' check inside ConstructMaterial() ?
                 }
                 materialCRCModifier += bonesHashCodesSum;
-                
-                // Debug.Log($"Pravs - DownloadAndConstructMaterial - skinned renderer material CRC Modifier: {materialCRCModifier}");
+
+                // GameObject rendererGO = renderer.gameObject;
+                // Debug.Log($"Pravs - DownloadAndConstructMaterial - skinned renderer material CRC Modifier: {materialCRCModifier}", rendererGO);
                 
                 materialCacheKey += materialCRCModifier;
             }
@@ -2171,7 +2170,7 @@ namespace UnityGLTF
             if (materialCRCModifier != -1)
             {
                 mapper.Material.EnableKeyword("_GPU_SKINNING");
-                mapper.Material.name += "-GPUSkinned";
+                mapper.Material.name += "-GPUSkinned-" + materialCRCModifier;
             }
             
             // Add the material before-hand so it gets freed if the importing is cancelled.
