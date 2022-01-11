@@ -27,9 +27,9 @@ public interface IExploreV2MenuComponentView : IDisposable
     IRealmViewerComponentView currentRealmViewer { get; }
 
     /// <summary>
-    /// Dimension Selector component.
+    /// Realm Selector component.
     /// </summary>
-    IDimensionSelectorComponentView currentDimensionSelectorModal { get; }
+    IRealmSelectorComponentView currentRealmSelectorModal { get; }
 
     /// <summary>
     /// Profile card component.
@@ -120,15 +120,15 @@ public interface IExploreV2MenuComponentView : IDisposable
     void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag);
 
     /// <summary>
-    /// Shows the Dimension Selector modal.
+    /// Shows the Realm Selector modal.
     /// </summary>
-    void ShowDimensionSelectorModal();
+    void ShowRealmSelectorModal();
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
     [Header("Assets References")]
-    [SerializeField] internal DimensionSelectorComponentView dimensionSelectorModalPrefab;
+    [SerializeField] internal RealmSelectorComponentView realmSelectorModalPrefab;
 
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
@@ -149,10 +149,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal RectTransform profileCardTooltipReference;
 
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
-    internal const string DIMENSION_SELECTOR_MODAL_ID = "DimensionSelector_Modal";
+    internal const string REALM_SELECTOR_MODAL_ID = "RealmSelector_Modal";
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
-    public IDimensionSelectorComponentView currentDimensionSelectorModal => dimensionSelectorModal;
+    public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
     public RectTransform currentTopMenuTooltipReference => sectionSelector.GetSection((int) ExploreSection.Explore).pivot;
@@ -169,14 +169,14 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action OnAfterShowAnimation;
 
     internal RectTransform profileCardRectTranform;
-    internal DimensionSelectorComponentView dimensionSelectorModal;
+    internal RealmSelectorComponentView realmSelectorModal;
 
     public override void Awake()
     {
         base.Awake();
 
         profileCardRectTranform = profileCard.GetComponent<RectTransform>();
-        dimensionSelectorModal = ConfigureDimensionSelectorModal();
+        realmSelectorModal = ConfigureRealmSelectorModal();
     }
 
     public override void Start()
@@ -219,10 +219,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         closeAction.OnTriggered -= OnCloseActionTriggered;
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
 
-        if (dimensionSelectorModal != null)
+        if (realmSelectorModal != null)
         {
-            dimensionSelectorModal.Dispose();
-            Destroy(dimensionSelectorModal.gameObject);
+            realmSelectorModal.Dispose();
+            Destroy(realmSelectorModal.gameObject);
         }
     }
 
@@ -418,28 +418,28 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     }
 
     /// <summary>
-    /// Instantiates (if does not already exists) a dimension selector modal from the given prefab.
+    /// Instantiates (if does not already exists) a realm selector modal from the given prefab.
     /// </summary>
-    /// <returns>An instance of a dimension modal modal.</returns>
-    internal DimensionSelectorComponentView ConfigureDimensionSelectorModal()
+    /// <returns>An instance of a realm modal modal.</returns>
+    internal RealmSelectorComponentView ConfigureRealmSelectorModal()
     {
-        DimensionSelectorComponentView dimensionSelectorModal = null;
+        RealmSelectorComponentView realmSelectorModal = null;
 
-        GameObject existingModal = GameObject.Find(DIMENSION_SELECTOR_MODAL_ID);
+        GameObject existingModal = GameObject.Find(REALM_SELECTOR_MODAL_ID);
         if (existingModal != null)
-            dimensionSelectorModal = existingModal.GetComponent<DimensionSelectorComponentView>();
+            realmSelectorModal = existingModal.GetComponent<RealmSelectorComponentView>();
         else
         {
-            dimensionSelectorModal = GameObject.Instantiate(dimensionSelectorModalPrefab);
-            dimensionSelectorModal.name = DIMENSION_SELECTOR_MODAL_ID;
+            realmSelectorModal = GameObject.Instantiate(realmSelectorModalPrefab);
+            realmSelectorModal.name = REALM_SELECTOR_MODAL_ID;
         }
 
-        dimensionSelectorModal.Hide(true);
+        realmSelectorModal.Hide(true);
 
-        return dimensionSelectorModal;
+        return realmSelectorModal;
     }
 
-    public void ShowDimensionSelectorModal() { dimensionSelectorModal.Show(); }
+    public void ShowRealmSelectorModal() { realmSelectorModal.Show(); }
 
     internal static ExploreV2MenuComponentView Create()
     {

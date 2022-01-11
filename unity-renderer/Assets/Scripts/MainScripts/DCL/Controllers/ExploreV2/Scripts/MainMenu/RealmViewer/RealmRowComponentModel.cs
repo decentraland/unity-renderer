@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class DimensionRowComponentModel : BaseComponentModel
+public class RealmRowComponentModel : BaseComponentModel
 {
     public string name;
     public int players;

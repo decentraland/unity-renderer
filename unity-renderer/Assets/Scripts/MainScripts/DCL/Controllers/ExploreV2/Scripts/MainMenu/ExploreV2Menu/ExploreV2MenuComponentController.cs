@@ -26,7 +26,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
-    internal List<DimensionRowComponentModel> currentAvailableDimensions = new List<DimensionRowComponentModel>();
+    internal List<RealmRowComponentModel> currentAvailableRealms = new List<RealmRowComponentModel>();
 
     internal RendererState rendererState => CommonScriptableObjects.rendererState;
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
@@ -73,7 +73,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
         view.currentProfileCard.onClick?.AddListener(() => { profileCardIsOpen.Set(!profileCardIsOpen.Get()); });
-        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowDimensionSelectorModal);
+        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
         view.OnCloseButtonPressed += OnCloseButtonPressed;
         view.OnAfterShowAnimation += OnAfterShowAnimation;
 
@@ -404,7 +404,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         // Get the name of the current realm
         view.currentRealmViewer.SetRealm(currentRealm.serverName);
-        view.currentDimensionSelectorModal.SetCurrentDimension(currentRealm.serverName);
+        view.currentRealmSelectorModal.SetCurrentRealm(currentRealm.serverName);
 
         // Calculate number of users in the current realm
         List<RealmModel> realmList = DataStore.i.realm.realmsInfo.Get()?.ToList();
@@ -418,41 +418,41 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void UpdateAvailableRealmsInfo(RealmModel[] currentRealmList, RealmModel[] previousRealmList)
     {
-        if (!NeedToRefreshDimensions(currentRealmList))
+        if (!NeedToRefreshRealms(currentRealmList))
             return;
 
-        currentAvailableDimensions.Clear();
+        currentAvailableRealms.Clear();
         CurrentRealmModel currentRealm = DataStore.i.realm.playerRealm.Get();
 
         if (currentRealmList != null)
         {
             foreach (RealmModel realmModel in currentRealmList)
             {
-                DimensionRowComponentModel dimensionToAdd = new DimensionRowComponentModel
+                RealmRowComponentModel realmToAdd = new RealmRowComponentModel
                 {
                     name = realmModel.serverName,
                     players = realmModel.usersCount,
                     isConnected = realmModel.serverName == currentRealm.serverName
                 };
 
-                currentAvailableDimensions.Add(dimensionToAdd);
+                currentAvailableRealms.Add(realmToAdd);
             }
         }
 
-        view.currentDimensionSelectorModal.SetAvailableDimensions(currentAvailableDimensions);
+        view.currentRealmSelectorModal.SetAvailableRealms(currentAvailableRealms);
     }
 
-    internal bool NeedToRefreshDimensions(RealmModel[] newRealmList)
+    internal bool NeedToRefreshRealms(RealmModel[] newRealmList)
     {
         if (newRealmList == null)
             return true;
 
         bool needToRefresh = false;
-        if (newRealmList.Length == currentAvailableDimensions.Count)
+        if (newRealmList.Length == currentAvailableRealms.Count)
         {
-            foreach (RealmModel dimension in newRealmList)
+            foreach (RealmModel realm in newRealmList)
             {
-                if (!currentAvailableDimensions.Exists(x => x.name == dimension.serverName && x.players == dimension.usersCount))
+                if (!currentAvailableRealms.Exists(x => x.name == realm.serverName && x.players == realm.usersCount))
                 {
                     needToRefresh = true;
                     break;

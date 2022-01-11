@@ -1898,7 +1898,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b106271e087adb64bac5a7b0138b4969, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dimensionSelectorModalPrefab: {fileID: 6536855017403514623, guid: 84f718f114b0a754aa99abab2dc20992,
+  realmSelectorModalPrefab: {fileID: 6536855017403514623, guid: 84f718f114b0a754aa99abab2dc20992,
     type: 3}
   sectionSelector: {fileID: 8087733458050873985}
   profileCard: {fileID: 473306627002153747}

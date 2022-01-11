@@ -6,7 +6,7 @@ public class RealmViewerComponentViewTests
     private RealmViewerComponentView realmViewerComponent;
 
     [SetUp]
-    public void SetUp() { realmViewerComponent = BaseComponentView.Create<RealmViewerComponentView>("MainMenu/Dimensions/DimensionViewer"); }
+    public void SetUp() { realmViewerComponent = BaseComponentView.Create<RealmViewerComponentView>("MainMenu/Realms/RealmViewer"); }
 
     [TearDown]
     public void TearDown()

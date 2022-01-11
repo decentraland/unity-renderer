@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public interface IDimensionRowComponentView
+public interface IRealmRowComponentView
 {
     RealmHandler friendsHandler { get; set; }
 
@@ -37,7 +37,7 @@ public interface IDimensionRowComponentView
     void SetRowColor(Color color);
 }
 
-public class DimensionRowComponentView : BaseComponentView, IDimensionRowComponentView, IComponentModelConfig
+public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, IComponentModelConfig
 {
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
@@ -52,7 +52,7 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
 
     [Header("Configuration")]
     [SerializeField] internal int maxFriendsToShow = 6;
-    [SerializeField] internal DimensionRowComponentModel model;
+    [SerializeField] internal RealmRowComponentModel model;
 
     public RealmHandler friendsHandler { get; set; }
     internal RealmInfoHandler mapInfoHandler { get; set; }
@@ -70,7 +70,7 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
 
     public void Configure(BaseComponentModel newModel)
     {
-        model = (DimensionRowComponentModel)newModel;
+        model = (RealmRowComponentModel)newModel;
 
         InitializeFriendsTracker();
 

@@ -512,10 +512,10 @@ RectTransform:
   m_Father: {fileID: 4827303874560641976}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 44.45, y: -7.5}
-  m_SizeDelta: {x: 0, y: 15}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 44.45, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &4964812605451961751
 CanvasRenderer:
@@ -661,10 +661,10 @@ RectTransform:
   m_Father: {fileID: 4827303874560641976}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 5, y: -7.5}
-  m_SizeDelta: {x: 0, y: 15}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 5, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &7451693012085832869
 CanvasRenderer:
@@ -788,7 +788,7 @@ GameObject:
   - component: {fileID: 2314960794579368015}
   - component: {fileID: 4064337051328439571}
   m_Layer: 5
-  m_Name: DimensionViewer
+  m_Name: RealmViewer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -950,7 +950,7 @@ PrefabInstance:
     - target: {fileID: 6467206373962124139, guid: 88cd164bd30b4c446917e9faee11dd6a,
         type: 3}
       propertyPath: m_Name
-      value: DimensionSelectorButton
+      value: RealmSelectorButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88cd164bd30b4c446917e9faee11dd6a, type: 3}
