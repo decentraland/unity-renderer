@@ -60,14 +60,18 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
     [SerializeField] internal Color colorForOddRows;
     [SerializeField] internal Color colorForActiveSortingArrow;
     [SerializeField] internal Color colorForUnactiveSortingArrow;
+    [SerializeField] internal Color[] friendColors = null;
 
     internal Pool dimensionsPool;
     internal DimensionsSorting currentSorting = DimensionsSorting.BY_NUMBER_OF_PLAYERS;
     internal DimensionsSortingDirection currentSortingDirection = DimensionsSortingDirection.DESC;
+    internal RealmTrackerController friendsTrackerController;
 
     public override void Awake()
     {
         base.Awake();
+
+        friendsTrackerController = new RealmTrackerController(FriendsController.i, friendColors);
 
         if (sortByNameButton != null)
             sortByNameButton.onClick.AddListener(() =>
@@ -150,6 +154,8 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
 
     public void SetAvailableDimensions(List<DimensionRowComponentModel> dimensions)
     {
+        friendsTrackerController?.RemoveAllHandlers();
+
         availableDimensions.ExtractItems();
         dimensionsPool.ReleaseAll();
 
@@ -172,6 +178,8 @@ public class DimensionSelectorComponentView : BaseComponentView, IDimensionSelec
             });
             dimensionsToAdd.Add(newDimensionRow);
             isAnOddRow = !isAnOddRow;
+
+            friendsTrackerController?.AddHandler(newDimensionRow.friendsHandler);
         }
 
         availableDimensions.SetItems(dimensionsToAdd);

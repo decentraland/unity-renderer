@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public interface IDimensionRowComponentView
 {
+    RealmHandler friendsHandler { get; set; }
+
     /// <summary>
     /// Event that will be triggered when the Warp In button is clicked.
     /// </summary>
@@ -36,21 +39,44 @@ public interface IDimensionRowComponentView
 
 public class DimensionRowComponentView : BaseComponentView, IDimensionRowComponentView, IComponentModelConfig
 {
+    [Header("Assets References")]
+    [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
+
     [Header("Prefab References")]
     [SerializeField] internal TMP_Text nameText;
     [SerializeField] internal TMP_Text playersText;
     [SerializeField] internal ButtonComponentView warpInButton;
     [SerializeField] internal GameObject connectedMark;
     [SerializeField] internal Image backgroundImage;
+    [SerializeField] internal GridContainerComponentView friendsGrid;
 
     [Header("Configuration")]
+    [SerializeField] internal int maxFriendsToShow = 6;
     [SerializeField] internal DimensionRowComponentModel model;
 
+    public RealmHandler friendsHandler { get; set; }
+    internal RealmInfoHandler mapInfoHandler { get; set; }
+
     public Button.ButtonClickedEvent onWarpInClick => warpInButton?.onClick;
+
+    internal Dictionary<string, BaseComponentView> currentFriendHeads = new Dictionary<string, BaseComponentView>();
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        CleanFriendHeadsItems();
+    }
 
     public void Configure(BaseComponentModel newModel)
     {
         model = (DimensionRowComponentModel)newModel;
+
+        InitializeFriendsTracker();
+
+        if (mapInfoHandler != null)
+            mapInfoHandler.SetRealmInfo(model.name);
+
         RefreshControl();
     }
 
@@ -63,6 +89,20 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
         SetNumberOfPlayers(model.players);
         SetAsConnected(model.isConnected);
         SetRowColor(model.backgroundColor);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        if (friendsHandler != null)
+        {
+            friendsHandler.OnFriendAddedEvent -= OnFriendAdded;
+            friendsHandler.OnFriendRemovedEvent -= OnFriendRemoved;
+        }
+
+        if (friendsGrid != null)
+            friendsGrid.Dispose();
     }
 
     public void SetName(string name)
@@ -105,5 +145,70 @@ public class DimensionRowComponentView : BaseComponentView, IDimensionRowCompone
             return;
 
         backgroundImage.color = color;
+    }
+
+    internal void InitializeFriendsTracker()
+    {
+        CleanFriendHeadsItems();
+
+        if (mapInfoHandler == null)
+            mapInfoHandler = new RealmInfoHandler();
+
+        if (friendsHandler == null)
+        {
+            friendsHandler = new RealmHandler(mapInfoHandler);
+            friendsHandler.OnFriendAddedEvent += OnFriendAdded;
+            friendsHandler.OnFriendRemovedEvent += OnFriendRemoved;
+        }
+    }
+
+    internal void OnFriendAdded(UserProfile profile, Color backgroundColor)
+    {
+        if (currentFriendHeads.Count == maxFriendsToShow)
+            return;
+
+        if (currentFriendHeads.ContainsKey(profile.userId))
+            return;
+
+        BaseComponentView newFriend = InstantiateAndConfigureFriendHead(
+            new FriendHeadForPlaceCardComponentModel
+            {
+                userProfile = profile,
+                backgroundColor = backgroundColor
+            },
+            friendHeadPrefab);
+
+        if (friendsGrid != null)
+            friendsGrid.AddItem(newFriend);
+
+        currentFriendHeads.Add(profile.userId, newFriend);
+    }
+
+    internal void OnFriendRemoved(UserProfile profile)
+    {
+        if (!currentFriendHeads.ContainsKey(profile.userId))
+            return;
+
+        if (friendsGrid != null)
+            friendsGrid.RemoveItem(currentFriendHeads[profile.userId]);
+
+        currentFriendHeads.Remove(profile.userId);
+    }
+
+    internal void CleanFriendHeadsItems()
+    {
+        if (friendsGrid != null)
+        {
+            friendsGrid.RemoveItems();
+            currentFriendHeads.Clear();
+        }
+    }
+
+    internal BaseComponentView InstantiateAndConfigureFriendHead(FriendHeadForPlaceCardComponentModel friendInfo, FriendHeadForPlaceCardComponentView prefabToUse)
+    {
+        FriendHeadForPlaceCardComponentView friendHeadGO = GameObject.Instantiate(prefabToUse);
+        friendHeadGO.Configure(friendInfo);
+
+        return friendHeadGO;
     }
 }
