@@ -25,6 +25,7 @@ namespace DCL
 
         public bool forceNewInstance;
         public bool forceGPUOnlyMesh = false;
+        public bool applyGPUSkinning = true;
 
         public void ApplyBeforeLoad(Transform t)
         {

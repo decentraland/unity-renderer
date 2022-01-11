@@ -78,6 +78,7 @@ public class WearableController
         loader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
         loader.settings.parent = parent;
         loader.settings.layer = parent.gameObject.layer;
+        loader.settings.applyGPUSkinning = false; // GPUSkinning setup is applied later when combining the avatar meshes
 
         assetRenderers = null;
 

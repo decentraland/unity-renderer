@@ -59,27 +59,30 @@ namespace DCL
             if (asset?.container != null)
             {
                 asset.renderers = asset.container.GetComponentsInChildren<Renderer>(true).ToList();
-                
-                // TODO: Find a way of setupping this in the master object in the library, to avoid running this logic
-                // on every object re-usage
-                // TOKY RABBIT QmYwQSzqEFgYowPW38BgSqVB2q44j8RtmLUu4BnuGcoHMY
-                // Setup GPU Skinning
-                int count = asset.renderers.Count;
-                List<SimpleGPUSkinning> gpuSkinnings = new List<SimpleGPUSkinning>();
-                for (var i = 0; i < count; i++)
-                {
-                    if (asset.renderers[i] is SkinnedMeshRenderer)
-                    {
-                        var rendererGO = asset.renderers[i].gameObject;
-                        gpuSkinnings.Add(new SimpleGPUSkinning(asset.renderers[i] as SkinnedMeshRenderer, true, 1, 3));
-                        asset.renderers[i] = rendererGO.GetComponent<MeshRenderer>();
-                        // TODO: Should we also update the CullingObjectsTracker? or is that done automatically?
-                    }
-                }
 
-                if (gpuSkinnings.Count > 0)
+                if (settings.applyGPUSkinning)
                 {
-                    asset.container.gameObject.GetComponentInChildren<InstantiatedGLTFObject>(true).gpuSkinnings = gpuSkinnings;
+                    // TODO: Find a way of setupping this in the master object in the library, to avoid running this logic
+                    // on every object re-usage
+                
+                    // Setup GPU Skinning
+                    int count = asset.renderers.Count;
+                    List<SimpleGPUSkinning> gpuSkinnings = new List<SimpleGPUSkinning>();
+                    for (var i = 0; i < count; i++)
+                    {
+                        if (asset.renderers[i] is SkinnedMeshRenderer)
+                        {
+                            var rendererGO = asset.renderers[i].gameObject;
+                            gpuSkinnings.Add(new SimpleGPUSkinning(asset.renderers[i] as SkinnedMeshRenderer, true, 1, 3));
+                            asset.renderers[i] = rendererGO.GetComponent<MeshRenderer>();
+                            // TODO: Should we also update the CullingObjectsTracker? or is that done automatically?
+                        }
+                    }
+
+                    if (gpuSkinnings.Count > 0)
+                    {
+                        asset.container.gameObject.GetComponentInChildren<InstantiatedGLTFObject>(true).gpuSkinnings = gpuSkinnings;
+                    }    
                 }
                 
                 settings.ApplyAfterLoad(asset.container.transform);
