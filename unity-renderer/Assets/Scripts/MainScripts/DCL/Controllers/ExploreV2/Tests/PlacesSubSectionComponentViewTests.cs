@@ -13,6 +13,7 @@ public class PlacesSubSectionComponentViewTests
     public void SetUp()
     {
         placesSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesSubSection/PlacesSubSection")).GetComponent<PlacesSubSectionComponentView>();
+        placesSubSectionComponent.ConfigurePools();
         placesSubSectionComponent.Start();
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
