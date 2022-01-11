@@ -55,6 +55,8 @@ namespace DCL.Components
 
             for (int i = 0; i < colliders.Length; i++)
             {
+                if (rendererList[i] == null)
+                    continue;
                 colliders[i] = CreateCollider(rendererList[i]);
             }
         }

@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -20,10 +21,14 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
     Vector3 startPos = new Vector3(5, 2, 15);
     bool alreadyInitialized = false;
 
+    private ParcelScene scene;
+    private ISceneController sceneController => DCL.Environment.i.world.sceneController;
+
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        scene = TestUtils.CreateTestScene();
         Environment.i.world.sceneBoundsChecker.Stop();
     }
 

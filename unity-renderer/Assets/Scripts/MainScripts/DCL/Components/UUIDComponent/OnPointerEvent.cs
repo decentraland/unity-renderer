@@ -45,10 +45,10 @@ namespace DCL.Components
 
         public void SetFeedbackState(bool showFeedback, bool hoverState, string button, string hoverText)
         {
-            if (!enableInteractionHoverFeedback)
-                return;
-
             var hoverCanvasController = InteractionHoverCanvasController.i;
+
+            if (!enableInteractionHoverFeedback || hoverCanvasController == null)
+                return;
 
             hoverCanvasController.enabled = showFeedback;
 

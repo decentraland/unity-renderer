@@ -12,15 +12,16 @@ public class SectionSelectorComponentModel : BaseComponentModel
 [Serializable]
 public class SectionToggleModel
 {
-    public Sprite icon;
-    public string title;
-
     [Header("Visual Configuration When Selected")]
+    public Sprite selectedIcon;
+    public string selectedTitle;
     public Color selectedTextColor;
     public Color selectedImageColor;
     public ColorBlock backgroundTransitionColorsForSelected;
 
     [Header("Visual Configuration When Unselected")]
+    public Sprite unselectedIcon;
+    public string unselectedTitle;
     public Color unselectedTextColor;
     public Color unselectedImageColor;
     public ColorBlock backgroundTransitionColorsForUnselected;

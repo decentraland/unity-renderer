@@ -8,6 +8,9 @@ public class MinimapHUDView : MonoBehaviour
     public const string VIEW_PATH = "MinimapHUD";
     public const string VIEW_OBJECT_NAME = "_MinimapHUD";
 
+    private int START_MENU_HOVER_BOOL = Animator.StringToHash("hover");
+    private int START_MENU_PRESSED_TRIGGER = Animator.StringToHash("pressed");
+
     [Header("Information")] [SerializeField]
     private TextMeshProUGUI sceneNameText;
 
@@ -27,10 +30,6 @@ public class MinimapHUDView : MonoBehaviour
     public static System.Action OnOpenNavmapClicked;
     public InputAction_Trigger toggleNavMapAction;
     [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
-
-    [Header("Tutorial Configuration")]
-    [SerializeField] internal RectTransform minimapTooltipReference;
-    [SerializeField] internal RectTransform usersAroundTooltipReference;
 
     private void Initialize(MinimapHUDController controller)
     {

@@ -7,7 +7,7 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
     public CameraController cameraController;
     public Transform cameraPosition;
 
-    private Transform nextParent, firtPersonParent, initialParent;
+    private Transform nextParent, firstPersonParent, initialParent;
 
     private void Awake()
     {
@@ -15,9 +15,10 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         if (cameraPosition != null)
         {
             transform.position = cameraPosition.position;
+            firstPersonParent = cameraPosition;
         }
+
         initialParent = transform.parent;
-        firtPersonParent = Camera.main.transform;
 
         // Listen to changes on the camera mode
         CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
@@ -44,7 +45,7 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         if (newMode == CameraMode.ModeId.FirstPerson)
         {
             CommonScriptableObjects.cameraForward.OnChange += UpdateForward;
-            nextParent = firtPersonParent;
+            nextParent = firstPersonParent;
 
             if (cameraController != null)
                 cameraController.onCameraBlendFinished += SetNextParent;
@@ -68,6 +69,7 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
             cameraController.onCameraBlendFinished -= SetNextParent;
             cameraController.onCameraBlendStarted -= SetNextParent;
         }
+
         transform.SetParent(nextParent);
     }
 }

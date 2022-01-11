@@ -13,10 +13,13 @@ namespace SceneBoundariesCheckerTests
 {
     public class SceneBoundariesCheckerTests : IntegrationTestSuite_Legacy
     {
+        private ParcelScene scene;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            scene = TestUtils.CreateTestScene();
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;
         }
 

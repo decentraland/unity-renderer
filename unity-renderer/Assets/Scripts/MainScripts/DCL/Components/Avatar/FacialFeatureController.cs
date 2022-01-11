@@ -86,7 +86,7 @@ public class FacialFeatureController : CustomYieldInstruction
         {
             mainTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + mainTextureHash);
             mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
-            mainTexturePromise.OnFailEvent += (x) => mainTexture = null;
+            mainTexturePromise.OnFailEvent += (x, error) => mainTexture = null;
 
             AssetPromiseKeeper_Texture.i.Keep(mainTexturePromise);
         }
@@ -95,7 +95,7 @@ public class FacialFeatureController : CustomYieldInstruction
         {
             maskTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + maskhash);
             maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
-            maskTexturePromise.OnFailEvent += (x) => maskTexture = null;
+            maskTexturePromise.OnFailEvent += (x, error) => maskTexture = null;
 
             AssetPromiseKeeper_Texture.i.Keep(maskTexturePromise);
         }

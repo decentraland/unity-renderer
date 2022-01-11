@@ -148,7 +148,7 @@ public class EntityListAdapter : MonoBehaviour
 
         var newLoadedThumbnailPromise = new AssetPromise_Texture(url);
         newLoadedThumbnailPromise.OnSuccessEvent += SetThumbnail;
-        newLoadedThumbnailPromise.OnFailEvent += x => { Debug.Log($"Error downloading: {url}"); };
+        newLoadedThumbnailPromise.OnFailEvent += (x, error) => { Debug.Log($"Error downloading: {url}, Exception: {error}"); };
         AssetPromiseKeeper_Texture.i.Keep(newLoadedThumbnailPromise);
         AssetPromiseKeeper_Texture.i.Forget(loadedThumbnailPromise);
         loadedThumbnailPromise = newLoadedThumbnailPromise;

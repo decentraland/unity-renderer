@@ -14,11 +14,9 @@ public class KernelConfigModel
     public string kernelVersion = string.Empty;
     public string rendererVersion = string.Empty;
     public Debugging debugConfig = new Debugging();
-    
-    public override bool Equals(object obj)
-    {
-        return obj is KernelConfigModel other && Equals(other);
-    }
+    public ProceduralSkybox proceduralSkyboxConfig = new ProceduralSkybox();
+
+    public override bool Equals(object obj) { return obj is KernelConfigModel other && Equals(other); }
 
     public bool Equals(KernelConfigModel other)
     {
@@ -41,7 +39,8 @@ public class KernelConfigModel
                && network == other.network
                && kernelVersion == other.kernelVersion
                && rendererVersion == other.rendererVersion
-               && debugConfig.Equals(other.debugConfig);
+               && debugConfig.Equals(other.debugConfig)
+               && proceduralSkyboxConfig.Equals(other.proceduralSkyboxConfig);
     }
 
     public KernelConfigModel Clone()
@@ -57,6 +56,7 @@ public class KernelConfigModel
         clone.kernelVersion = kernelVersion;
         clone.rendererVersion = rendererVersion;
         clone.debugConfig = debugConfig.Clone();
+        clone.proceduralSkyboxConfig = proceduralSkyboxConfig.Clone();
         return clone;
     }
 }

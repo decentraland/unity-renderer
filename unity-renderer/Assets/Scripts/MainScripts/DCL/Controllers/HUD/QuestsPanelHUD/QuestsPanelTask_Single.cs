@@ -27,12 +27,17 @@ namespace DCL.Huds.QuestsPanel
             payload = JsonUtility.FromJson<TaskPayload_Single>(task.payload);
 
             jumpInButton.gameObject.SetActive(task.progress < 1 && !string.IsNullOrEmpty(task.coordinates));
-            jumpInDelegate = () => WebInterface.SendChatMessage(new ChatMessage
+            jumpInDelegate = () =>
             {
-                messageType = ChatMessage.Type.NONE,
-                recipient = string.Empty,
-                body = $"/goto {task.coordinates}",
-            });
+                WebInterface.SendChatMessage(new ChatMessage
+                {
+                    messageType = ChatMessage.Type.NONE,
+                    recipient = string.Empty,
+                    body = $"/goto {task.coordinates}",
+                });
+
+                DataStore.i.HUDs.questsPanelVisible.Set(false);
+            };
 
             taskName.text = task.name;
             status.isOn = payload.isDone;

@@ -1,11 +1,17 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEngine.UI.Toggle;
 
 public interface ISectionToggle
 {
+    /// <summary>
+    /// Pivot of the section object.
+    /// </summary>
+    RectTransform pivot { get; }
+
     /// <summary>
     /// Event that will be triggered when the toggle is selected.
     /// </summary>
@@ -38,24 +44,39 @@ public interface ISectionToggle
     /// Set the toggle visuals as unselected.
     /// </summary>
     void SetUnselectedVisuals();
+
+    /// <summary>
+    /// Set the toggle as active or inactive.
+    /// </summary>
+    /// <param name="isActive">Tru for activating.</param>
+    void SetActive(bool isActive);
+
+    /// <summary>
+    /// Check if the toggle is active or not.
+    /// </summary>
+    /// <returns>True if it is actived.</returns>
+    bool IsActive();
 }
 
-public class SectionToggle : MonoBehaviour, ISectionToggle
+public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 {
     [SerializeField] private Toggle toggle;
-    [SerializeField] private TMP_Text sectionText;
-    [SerializeField] private Image sectionImage;
 
     [Header("Visual Configuration When Selected")]
+    [SerializeField] private Image selectedIcon;
+    [SerializeField] private TMP_Text selectedTitle;
     [SerializeField] private ColorBlock backgroundTransitionColorsForSelected;
     [SerializeField] private Color selectedTextColor;
     [SerializeField] private Color selectedImageColor;
 
     [Header("Visual Configuration When Unselected")]
+    [SerializeField] private Image unselectedIcon;
+    [SerializeField] private TMP_Text unselectedTitle;
     [SerializeField] private ColorBlock backgroundTransitionColorsForUnselected;
     [SerializeField] private Color unselectedTextColor;
     [SerializeField] private Color unselectedImageColor;
 
+    public RectTransform pivot => transform as RectTransform;
     public ToggleEvent onSelect => toggle?.onValueChanged;
 
     private void Awake() { ConfigureDefaultOnSelectAction(); }
@@ -66,8 +87,16 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
     {
         return new SectionToggleModel
         {
-            icon = sectionImage.sprite,
-            title = sectionText.text
+            selectedIcon = selectedIcon.sprite,
+            selectedTitle = selectedTitle.text,
+            selectedTextColor = selectedTextColor,
+            selectedImageColor = selectedImageColor,
+            unselectedIcon = unselectedIcon.sprite,
+            unselectedTitle = unselectedTitle.text,
+            backgroundTransitionColorsForSelected = backgroundTransitionColorsForSelected,
+            unselectedTextColor = unselectedTextColor,
+            unselectedImageColor = unselectedImageColor,
+            backgroundTransitionColorsForUnselected = backgroundTransitionColorsForUnselected
         };
     }
 
@@ -76,13 +105,28 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
         if (model == null)
             return;
 
-        if (sectionText != null)
-            sectionText.text = model.title;
-
-        if (sectionImage != null)
+        if (selectedTitle != null)
         {
-            sectionImage.enabled = model.icon != null;
-            sectionImage.sprite = model.icon;
+            selectedTitle.text = model.selectedTitle;
+            selectedTitle.color = model.selectedTextColor;
+        }
+
+        if (unselectedTitle != null)
+        {
+            unselectedTitle.text = model.unselectedTitle;
+            unselectedTitle.color = model.unselectedTextColor;
+        }
+
+        if (selectedIcon != null)
+        {
+            selectedIcon.sprite = model.selectedIcon;
+            selectedIcon.color = model.selectedImageColor;
+        }
+
+        if (unselectedIcon != null)
+        {
+            unselectedIcon.sprite = model.unselectedIcon;
+            unselectedIcon.color = model.unselectedImageColor;
         }
 
         backgroundTransitionColorsForSelected = model.backgroundTransitionColorsForSelected;
@@ -94,6 +138,11 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
         onSelect.RemoveAllListeners();
         ConfigureDefaultOnSelectAction();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        SelectToggle();
     }
 
     public void SelectToggle(bool reselectIfAlreadyOn = false)
@@ -109,17 +158,41 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
     public void SetSelectedVisuals()
     {
+        if (selectedIcon != null)
+            selectedIcon.gameObject.SetActive(true);
+
+        if (unselectedIcon != null)
+            unselectedIcon.gameObject.SetActive(false);
+
+        if (selectedTitle != null)
+            selectedTitle.gameObject.SetActive(true);
+
+        if (unselectedTitle != null)
+            unselectedTitle.gameObject.SetActive(false);
+
         toggle.colors = backgroundTransitionColorsForSelected;
-        sectionText.color = selectedTextColor;
-        sectionImage.color = selectedImageColor;
     }
 
     public void SetUnselectedVisuals()
     {
+        if (selectedIcon != null)
+            selectedIcon.gameObject.SetActive(false);
+
+        if (unselectedIcon != null)
+            unselectedIcon.gameObject.SetActive(true);
+
+        if (selectedTitle != null)
+            selectedTitle.gameObject.SetActive(false);
+
+        if (unselectedTitle != null)
+            unselectedTitle.gameObject.SetActive(true);
+
         toggle.colors = backgroundTransitionColorsForUnselected;
-        sectionText.color = unselectedTextColor;
-        sectionImage.color = unselectedImageColor;
     }
+
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
+
+    public bool IsActive() { return gameObject.activeSelf; }
 
     internal void ConfigureDefaultOnSelectAction()
     {

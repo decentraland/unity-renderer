@@ -60,7 +60,6 @@ namespace DCL.Tutorial
                 controlsHasBeenOpened = true;
 
             tutorialController?.hudController?.taskbarHud?.SetVisibility(true);
-            tutorialController?.hudController?.profileHud?.SetBackpackButtonVisibility(true);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
 

@@ -64,7 +64,7 @@ namespace UnityGLTF
 
         public GameObject loadingPlaceholder;
         public Action OnFinishedLoadingAsset;
-        public Action OnFailedLoadingAsset;
+        public Action<Exception> OnFailedLoadingAsset;
 
         [HideInInspector] public bool alreadyLoadedAsset = false;
         [HideInInspector] public GameObject loadedAssetRootGameObject;
@@ -99,7 +99,7 @@ namespace UnityGLTF
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
-        public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
+        public Action<Exception> OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
         public void Initialize(IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
 
@@ -169,28 +169,28 @@ namespace UnityGLTF
             this.addMaterialsToPersistentCaching = settings.addMaterialsToPersistentCaching;
         }
 
-        private void OnFail_Internal(Exception obj)
+        private void OnFail_Internal(Exception exception)
         {
             if (state == State.FAILED)
                 return;
 
             state = State.FAILED;
-
+            
             CoroutineStarter.Stop(loadingRoutine);
             loadingRoutine = null;
-
+            
             DecrementDownloadCount();
 
-            OnFailedLoadingAsset?.Invoke();
+            OnFailedLoadingAsset?.Invoke(exception);
 
-            if (obj != null)
+            if (exception != null)
             {
-                if (obj is IndexOutOfRangeException)
+                if (exception is IndexOutOfRangeException)
                 {
                     Destroy(gameObject);
                 }
 
-                Debug.Log($"GLTF Failure {obj} ... url = {this.GLTFUri}\n{obj.StackTrace}");
+                Debug.Log($"GLTF Failure {exception} ... url = {this.GLTFUri}\n{exception.StackTrace}");
             }
         }
 
@@ -242,7 +242,8 @@ namespace UnityGLTF
                         // Path.Combine treats paths that start with the separator character
                         // as absolute paths, ignoring the first path passed in. This removes
                         // that character to properly handle a filename written with it.
-                        GLTFUri = GLTFUri.TrimStart(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
+                        GLTFUri = GLTFUri.TrimStart(new[]
+                            {Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar});
                         string fullPath = Path.Combine(Application.streamingAssetsPath, GLTFUri);
                         string directoryPath = URIHelper.GetDirectoryName(fullPath);
                         loader = new GLTFFileLoader(directoryPath);
@@ -282,7 +283,8 @@ namespace UnityGLTF
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.initialVisibility = initialVisibility;
                     sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
-                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get()
+                        .IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
 
                     float time = Time.realtimeSinceStartup;
 
@@ -320,7 +322,6 @@ namespace UnityGLTF
                     }
 
                     state = State.COMPLETED;
-
                     DecrementDownloadCount();
                 }
                 finally
@@ -350,7 +351,7 @@ namespace UnityGLTF
                     if ( state == State.COMPLETED )
                         OnFinishedLoadingAsset?.Invoke();
                     else
-                        OnFailedLoadingAsset?.Invoke();
+                        OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
 
                     Destroy(loadingPlaceholder);
                     Destroy(this);

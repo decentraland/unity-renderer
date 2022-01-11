@@ -78,6 +78,8 @@ public class WelcomeHUDController : IHUD
 
     public void Dispose()
     {
+        StopPopupRoutine();
+
         CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
         CommonScriptableObjects.emailPromptActive.OnChange -= EmailPromptActive_OnChange;
 
@@ -122,6 +124,7 @@ public class WelcomeHUDController : IHUD
             CoroutineStarter.Stop(showPopupDelayedRoutine);
             showPopupDelayedRoutine = null;
         }
+
         isPopupRoutineRunning = false;
     }
 

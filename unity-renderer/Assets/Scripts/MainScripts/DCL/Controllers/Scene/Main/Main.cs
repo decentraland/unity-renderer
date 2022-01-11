@@ -2,6 +2,7 @@ using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.SettingsCommon;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -32,6 +33,8 @@ namespace DCL
             }
 
             i = this;
+            
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
@@ -41,6 +44,8 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
+                
+                DataStore.i.HUDs.loadingHUD.visible.OnChange += OnLoadingScreenVisibleStateChange;
             }
 
             SetupPlugins();
@@ -55,7 +60,11 @@ namespace DCL
             //              IntegrationTestSuite_Legacy base class.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
-                kernelCommunication = new WebSocketCommunication();
+#if UNITY_STANDALONE && !UNITY_EDITOR
+                kernelCommunication = new WebSocketCommunication(true);
+#else
+                kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
+#endif
             }
 #endif
 
@@ -63,6 +72,16 @@ namespace DCL
             // We should re-enable this later as produces a performance regression.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
+        }
+
+        void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
+        {
+            if (newVisibleValue)
+            {
+                // Prewarm shader variants
+                Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
+                DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            }
         }
 
         protected virtual void SetupPlugins()
@@ -104,57 +123,50 @@ namespace DCL
         protected virtual void Update()
         {
             Environment.i.platform.Update();
-            Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-        }
-
-        protected virtual void LateUpdate()
-        {
-            Environment.i.world.sceneController.LateUpdate();
         }
 
         protected virtual void OnDestroy()
         {
+            DataStore.i.HUDs.loadingHUD.visible.OnChange -= OnLoadingScreenVisibleStateChange;
+            
+            DataStore.i.common.isWorldBeingDestroyed.Set(true);
+            
+            pluginSystem?.Dispose();
+
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            pluginSystem?.Dispose();
+            
             kernelCommunication?.Dispose();
         }
 
         protected virtual void InitializeSceneDependencies()
         {
-            var bridges = Init("Bridges");
-            var mouseCatcher = Init("MouseCatcher").GetComponent<MouseCatcher>();
-            var environment = Init("Environment").GetComponent<EnvironmentReferences>();
-            var playerReferences = Init("Player").GetComponent<PlayerReferences>();
+            gameObject.AddComponent<UserProfileController>();
+            gameObject.AddComponent<RenderingController>();
+            gameObject.AddComponent<CatalogController>();
+            gameObject.AddComponent<MinimapMetadataController>();
+            gameObject.AddComponent<ChatController>();
+            gameObject.AddComponent<FriendsController>();
+            gameObject.AddComponent<LoadingFeedbackController>();
+            gameObject.AddComponent<HotScenesController>();
+            gameObject.AddComponent<GIFProcessingBridge>();
+            gameObject.AddComponent<RenderProfileBridge>();
+            gameObject.AddComponent<AssetCatalogBridge>();
+            gameObject.AddComponent<ScreenSizeWatcher>();
+            gameObject.AddComponent<SceneControllerBridge>();
 
-            Init("HUDController");
-            Init("HUDAudioHandler");
-            Init("NavMap");
-            Init("SettingsController");
-
-            SceneReferences.i.Initialize(
-                mouseCatcher,
-                environment.ground,
-                playerReferences.biwCameraRoot,
-                playerReferences.inputController,
-                playerReferences.cursorCanvas,
-                gameObject,
-                playerReferences.avatarController,
-                playerReferences.cameraController,
-                playerReferences.mainCamera,
-                bridges,
-                environment.environmentLight,
-                environment.postProcessVolume,
-                playerReferences.thirdPersonCamera,
-                playerReferences.firstPersonCamera);
-        }
-
-        private static GameObject Init(string name)
-        {
-            GameObject instance = Instantiate(Resources.Load(name)) as GameObject;
-            instance.name = name;
-            return instance;
+            MainSceneFactory.CreateBuilderInWorldBridge(gameObject);
+            MainSceneFactory.CreateBridges();
+            MainSceneFactory.CreateMouseCatcher();
+            MainSceneFactory.CreatePlayerSystems();
+            MainSceneFactory.CreateEnvironment();
+            MainSceneFactory.CreateAudioHandler();
+            MainSceneFactory.CreateHudController();
+            MainSceneFactory.CreateSettingsController();
+            MainSceneFactory.CreateNavMap();
+            MainSceneFactory.CreateEventSystem();
+            MainSceneFactory.CreateInteractionHoverCanvas();
         }
     }
 }

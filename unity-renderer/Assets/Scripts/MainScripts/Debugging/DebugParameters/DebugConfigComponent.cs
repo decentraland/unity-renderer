@@ -8,6 +8,18 @@ namespace DCL
 {
     public class DebugConfigComponent : MonoBehaviour
     {
+        private static DebugConfigComponent sharedInstance;
+        public static DebugConfigComponent i
+        {
+            get
+            {
+                if (sharedInstance == null)
+                    sharedInstance = FindObjectOfType<DebugConfigComponent>();
+                return sharedInstance;
+            }
+            private set => sharedInstance = value;
+        }
+        
         public DebugConfig debugConfig;
 
         public enum DebugPanel
@@ -35,10 +47,12 @@ namespace DCL
         private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
         private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
 
+        [Header("General Settings")]
         public bool openBrowserWhenStart;
+        public bool webSocketSSL = false;
 
         [Header("Kernel General Settings")]
-        public string kernelVersion ;
+        public string kernelVersion;
         public bool useCustomContentServer = false;
 
         public string customContentServerUrl = "http://localhost:1338/";
@@ -63,11 +77,15 @@ namespace DCL
         public bool testWearables = false;
         public bool enableTutorial = false;
         public bool builderInWorld = false;
+        public bool enableProceduralSkybox = false;
         public bool soloScene = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
         private void Awake()
         {
+            if (sharedInstance == null)
+                sharedInstance = this;
+
             DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
             DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
@@ -138,7 +156,7 @@ namespace DCL
                     break;
             }
 
-            if ( !string.IsNullOrEmpty(kernelVersion))
+            if (!string.IsNullOrEmpty(kernelVersion))
             {
                 debugString += $"kernel-version={kernelVersion}&";
             }
@@ -173,7 +191,12 @@ namespace DCL
                 debugString += "ENABLE_BUILDER_IN_WORLD&";
             }
 
-            if ( !string.IsNullOrEmpty(realm))
+            if (enableProceduralSkybox)
+            {
+                debugString += "ENABLE_PROCEDURAL_SKYBOX&";
+            }
+
+            if (!string.IsNullOrEmpty(realm))
             {
                 debugString += $"realm={realm}&";
             }
@@ -189,11 +212,36 @@ namespace DCL
                 debugPanelString = SCENE_DEBUG_PANEL + "&";
             }
 
+            if (!webSocketSSL)
+            {
+                if (baseUrl.Contains("play.decentraland.org"))
+                {
+                    Debug.LogError("play.decentraland.org only works with WebSocket SSL, please change the base URL to play.decentraland.zone");
+                    QuitGame();
+                    return;
+                }
+            }
+            else
+            {
+                Debug.Log("[REMINDER] To be able to connect with SSL you should start Chrome with the --ignore-certificate-errors argument specified (or enabling the following option: chrome://flags/#allow-insecure-localhost). In Firefox set the configuration option `network.websocket.allowInsecureFromHTTPS` to true, then use the ws:// rather than the wss:// address.");                
+            }
+
             Application.OpenURL(
                 $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}");
 #endif
         }
 
         private void OnDestroy() { DataStore.i.wsCommunication.communicationReady.OnChange -= OnCommunicationReadyChangedValue; }
+        
+        private void QuitGame()
+        {
+#if UNITY_EDITOR
+            // Application.Quit() does not work in the editor so
+            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
     }
 }

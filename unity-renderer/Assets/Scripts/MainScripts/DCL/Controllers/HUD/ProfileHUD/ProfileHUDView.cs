@@ -1,3 +1,5 @@
+using DCL;
+using ExploreV2Analytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
@@ -6,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
-internal class ProfileHUDView : MonoBehaviour
+public class ProfileHUDView : MonoBehaviour
 {
     private const int ADDRESS_CHUNK_LENGTH = 6;
     private const int NAME_POSTFIX_LENGTH = 4;
@@ -33,6 +35,9 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField]
     internal InputAction_Trigger closeAction;
 
+    [SerializeField]
+    internal Canvas mainCanvas;
+
     [Header("Hide GOs on claimed name")]
     [SerializeField]
     internal GameObject[] hideOnNameClaimed;
@@ -49,7 +54,7 @@ internal class ProfileHUDView : MonoBehaviour
     internal RawImage imageAvatarThumbnail;
 
     [SerializeField]
-    internal Button buttonToggleMenu;
+    protected internal Button buttonToggleMenu;
 
     [Header("Texts")]
     [SerializeField]
@@ -63,38 +68,35 @@ internal class ProfileHUDView : MonoBehaviour
 
     [Header("Buttons")]
     [SerializeField]
-    internal Button buttonClaimName;
+    protected internal Button buttonClaimName;
 
     [SerializeField]
-    internal Button buttonBackpack;
+    protected internal Button buttonCopyAddress;
 
     [SerializeField]
-    internal Button buttonCopyAddress;
+    protected internal Button buttonLogOut;
 
     [SerializeField]
-    internal Button buttonLogOut;
+    protected internal Button buttonSignUp;
 
     [SerializeField]
-    internal Button buttonSignUp;
+    protected internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
+    protected internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
+    protected internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
-
-    [SerializeField]
-    internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
+    protected internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
 
     [Header("Name Edition")]
     [SerializeField]
-    internal Button_OnPointerDown buttonEditName;
+    protected internal Button_OnPointerDown buttonEditName;
 
     [SerializeField]
-    internal Button_OnPointerDown buttonEditNamePrefix;
+    protected internal Button_OnPointerDown buttonEditNamePrefix;
 
     [SerializeField]
     internal TMP_InputField inputName;
@@ -110,15 +112,15 @@ internal class ProfileHUDView : MonoBehaviour
 
     [Header("Tutorial Config")]
     [SerializeField]
-    internal RectTransform backpackTooltipReference;
+    internal RectTransform tutorialTooltipReference;
 
     [Header("Description")]
     [SerializeField]
     internal TMP_InputField descriptionPreviewInput;
-    
+
     [SerializeField]
     internal TMP_InputField descriptionEditionInput;
-    
+
     [SerializeField]
     internal GameObject charLimitDescriptionContainer;
 
@@ -128,6 +130,8 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField]
     internal GameObject descriptionContainer;
 
+    public RectTransform expandedMenu => mainRootLayout;
+
     private InputAction_Trigger.Triggered closeActionDelegate;
 
     private Coroutine copyToastRoutine = null;
@@ -136,12 +140,13 @@ internal class ProfileHUDView : MonoBehaviour
 
     internal event Action OnOpen;
     internal event Action OnClose;
+    internal bool isStartMenuInitialized = false;
 
     private void Awake()
     {
         closeActionDelegate = (x) => HideMenu();
 
-        buttonToggleMenu.onClick.AddListener(ToggleMenu);
+        buttonToggleMenu.onClick.AddListener(OpenStartMenu);
         buttonCopyAddress.onClick.AddListener(CopyAddress);
         buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
         buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
@@ -176,6 +181,27 @@ internal class ProfileHUDView : MonoBehaviour
         SetDescriptionEnabled(userProfile.hasConnectedWeb3);
         ForceLayoutToRefreshSize();
     }
+
+    internal void OpenStartMenu()
+    {
+        if (isStartMenuInitialized)
+        {
+            if (!DataStore.i.exploreV2.isOpen.Get())
+            {
+                var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+                exploreV2Analytics.SendStartMenuVisibility(
+                    true,
+                    ExploreUIVisibilityMethod.FromClick);
+            }
+            DataStore.i.exploreV2.isOpen.Set(true);
+        }
+        else
+        {
+            ToggleMenu();
+        }
+    }
+
+    public void SetStartMenuButtonActive(bool isActive) { isStartMenuInitialized = isActive; }
 
     internal void ToggleMenu()
     {
@@ -243,10 +269,7 @@ internal class ProfileHUDView : MonoBehaviour
         nonConnectedWalletSection.SetActive(!active);
     }
 
-    private void ForceLayoutToRefreshSize()
-    {
-        LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout);
-    }
+    private void ForceLayoutToRefreshSize() { LayoutRebuilder.ForceRebuildLayoutImmediate(mainRootLayout); }
 
     private void SetActiveUnverifiedNameGOs(bool active)
     {
@@ -310,14 +333,6 @@ internal class ProfileHUDView : MonoBehaviour
 
     private void OnDisable() { closeAction.OnTriggered -= closeActionDelegate; }
 
-    internal void SetBackpackButtonVisibility(bool visible)
-    {
-        if (visible && !buttonBackpack.gameObject.activeSelf)
-            buttonBackpack.gameObject.SetActive(true);
-        else if (!visible && buttonBackpack.gameObject.activeSelf)
-            buttonBackpack.gameObject.SetActive(false);
-    }
-
     internal void ActivateProfileNameEditionMode(bool activate)
     {
         if (profile != null && profile.hasClaimedName)
@@ -352,7 +367,7 @@ internal class ProfileHUDView : MonoBehaviour
         charLimitDescriptionContainer.SetActive(active);
         descriptionEditionInput.gameObject.SetActive(active);
         descriptionPreviewInput.gameObject.SetActive(!active);
-        
+
         if (active)
         {
             descriptionEditionInput.text = descriptionPreviewInput.text;
@@ -365,20 +380,20 @@ internal class ProfileHUDView : MonoBehaviour
         yield return null;
         selectable.Select();
     }
-    
+
     internal void SetDescription(string description)
     {
         descriptionPreviewInput.text = description;
         descriptionEditionInput.text = description;
     }
-    
-    private void UpdateDescriptionCharLimit(string newValue)
+
+    private void UpdateDescriptionCharLimit(string newValue) { textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}"; }
+
+    private void SetDescriptionEnabled(bool enabled) { descriptionContainer.SetActive(enabled); }
+
+    public void SetCardAsFullScreenMenuMode(bool isActive)
     {
-        textCharLimitDescription.text = $"{newValue.Length}/{descriptionPreviewInput.characterLimit}";
-    }
-    
-    private void SetDescriptionEnabled(bool enabled)
-    {
-        descriptionContainer.SetActive(enabled);
+        buttonToggleMenu.gameObject.SetActive(!isActive);
+        mainCanvas.sortingOrder = isActive ? 4 : 1;
     }
 }

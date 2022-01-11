@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL
@@ -114,7 +115,7 @@ namespace DCL
             return currentSceneAndPortableExperiencesIds;
         }
 
-        static IParcelScene GetCurrentScene()
+        public static IParcelScene GetCurrentScene()
         {
             var worldState = Environment.i.world.state;
             string currentSceneId = worldState.currentSceneId;
@@ -128,6 +129,48 @@ namespace DCL
                 return null;
 
             return scene;
+        }
+
+        public static IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
+        {
+            if (data == null)
+            {
+                data = new LoadParcelScenesMessage.UnityParcelScene();
+            }
+
+            if (data.parcels == null)
+            {
+                data.parcels = new Vector2Int[] { data.basePosition };
+            }
+
+            if (string.IsNullOrEmpty(data.id))
+            {
+                data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
+            }
+
+            if (Environment.i.world.state.loadedScenes != null)
+            {
+                if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
+                {
+                    Debug.LogWarning($"Scene {data.id} is already loaded.");
+                    return Environment.i.world.state.loadedScenes[data.id];
+                }
+            }
+
+            var go = new GameObject();
+            var newScene = go.AddComponent<ParcelScene>();
+            newScene.isTestScene = true;
+            newScene.isPersistent = true;
+            newScene.SetData(data);
+
+            if (DCLCharacterController.i != null)
+                newScene.InitializeDebugPlane();
+
+            Environment.i.world.state.scenesSortedByDistance?.Add(newScene);
+            Environment.i.world.state.loadedScenes?.Add(data.id, newScene);
+
+
+            return newScene;
         }
     }
 }

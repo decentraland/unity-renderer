@@ -47,7 +47,7 @@ internal interface IProjectCardView : IDisposable
     /// </summary>
     /// <param name="scenes"></param>
     void SetScenes(List<Scene> scenes);
-    
+
     /// <summary>
     /// This setup the project data 
     /// </summary>
@@ -82,7 +82,7 @@ internal interface IProjectCardView : IDisposable
     /// </summary>
     /// <param name="index"></param>
     void SetSiblingIndex(int index);
-    
+
     void SetName(string name);
     void SetSize(int rows, int columns);
     void SetThumbnail(string thumbnailUrl, string filename);
@@ -95,7 +95,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     internal const string NOT_PUBLISHED = "NOT PUBLISHED";
     internal const string PUBLISHED_IN = "PUBLISHED IN";
-    
+
     internal const float SCENE_CARD_SIZE = 84;
     internal const float SCENE_CARD_ITEM_PADDING = 18;
     internal const float SCENE_CARD_TOTAL_PADDING = 36;
@@ -105,23 +105,23 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     public event Action OnExpandMenuPressed;
 
     [Header("Design Variables")]
-
     [SerializeField] private  float animationSpeed = 6f;
 
     [Header("Project References")]
     [SerializeField] internal Color syncColor;
+
     [SerializeField] internal Color desyncColor;
     [SerializeField] private Texture2D defaultThumbnail;
     [SerializeField] private GameObject projectSceneCardViewPrefab;
-    
-    
+
+
     [Header("Prefab references")]
     [SerializeField] internal Image syncImage;
-    
+
     [SerializeField] internal Button contextMenuButton;
     [SerializeField] internal Button expandButton;
     [SerializeField] internal Button editorButton;
-    
+
     [SerializeField] internal RectTransform scenesContainer;
     [SerializeField] internal VerticalLayoutGroup layoutGroup;
 
@@ -148,18 +148,18 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     private AssetPromise_Texture thumbnailPromise;
     private bool scenesAreVisible = false;
     private bool isDestroyed = false;
-    
+
     private RectTransform rectTransform;
 
     internal List<Scene> scenesDeployedFromProject = new List<Scene>();
     internal List<IProjectSceneCardView> sceneCardViews = new List<IProjectSceneCardView>();
 
-    private Coroutine animCoroutine;
-    
+    private Coroutine animationCoroutine;
+
     private void Awake()
     {
-        editorButton.onClick.AddListener(EditorButtonClicked);    
-        expandButton.onClick.AddListener(ExpandButtonPressed);    
+        editorButton.onClick.AddListener(EditorButtonClicked);
+        expandButton.onClick.AddListener(ExpandButtonPressed);
         contextMenuButton.onClick.AddListener(EditorButtonClicked);
 
         rectTransform = GetComponent<RectTransform>();
@@ -173,21 +173,21 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
     public void Dispose()
     {
+        CoroutineStarter.Stop(animationCoroutine);
         AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
         editorButton.onClick.RemoveAllListeners();
-        CoroutineStarter.Stop(animCoroutine);
         if(!isDestroyed)
             Destroy(gameObject);
     }
-    
+
     public void Setup(ProjectData projectData)
     {
         this.projectData = projectData;
         SetName(projectData.title);
-        SetSize(projectData.rows,projectData.cols);
-        
-        SetThumbnail(projectData.id,projectData.thumbnail);
-        
+        SetSize(projectData.rows, projectData.cols);
+
+        SetThumbnail(projectData.id, projectData.thumbnail);
+
         ((IProjectCardView)this).searchInfo.SetId(projectData.id);
     }
 
@@ -214,32 +214,33 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
                     break;
                 }
             }
+
             if (isSync)
                 syncImage.color = syncColor;
             else
                 syncImage.color = desyncColor;
-            
+
             projectSyncTxt.text = PUBLISHED_IN;
         }
     }
 
     internal void ExpandButtonPressed()
     {
-        if(scenesDeployedFromProject.Count == 0 )
+        if (scenesDeployedFromProject.Count == 0 )
             return;
-        
-        downButtonTransform.Rotate(Vector3.forward,180);
-        
+
+        downButtonTransform.Rotate(Vector3.forward, 180);
+
         scenesAreVisible = !scenesAreVisible;
         ScenesVisiblitityChange(scenesAreVisible);
-        
-        float amountToIncrease = sceneCardViews.Count * SCENE_CARD_SIZE + SCENE_CARD_TOTAL_PADDING + SCENE_CARD_ITEM_PADDING * (sceneCardViews.Count-1);
-        
+
+        float amountToIncrease = sceneCardViews.Count * SCENE_CARD_SIZE + SCENE_CARD_TOTAL_PADDING + SCENE_CARD_ITEM_PADDING * (sceneCardViews.Count - 1);
+
         if (scenesAreVisible)
         {
             layoutGroup.padding.bottom = 18;
-            AddRectTransformHeight(rectTransform,amountToIncrease);
-            AddRectTransformHeight(scenesContainer,amountToIncrease);
+            AddRectTransformHeight(rectTransform, amountToIncrease);
+            AddRectTransformHeight(scenesContainer, amountToIncrease);
         }
         else
         {
@@ -251,16 +252,18 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         OnExpandMenuPressed?.Invoke();
     }
 
+
     private void AddRectTransformHeight(RectTransform rectTransform, float height)
     {
-        if(animCoroutine != null)
-            CoroutineStarter.Stop(animCoroutine);
-        animCoroutine = CoroutineStarter.Start(ChangeHeightAnimation(rectTransform, height));
+        if(animationCoroutine != null)
+            CoroutineStarter.Stop(animationCoroutine);
+        
+        animationCoroutine = CoroutineStarter.Start(ChangeHeightAnimation(rectTransform, height));
     }
-    
+
     private void ScenesVisiblitityChange(bool isVisible)
     {
-        if(sceneCardViews.Count == 0)
+        if (sceneCardViews.Count == 0)
             InstantiateScenesCards();
 
         foreach (IProjectSceneCardView scene in sceneCardViews)
@@ -277,7 +280,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
             bool isSync = scene.deployTimestamp < projectTimestamp;
 
             IProjectSceneCardView cardView = Instantiate(projectSceneCardViewPrefab, scenesContainer).GetComponent<ProjectSceneCardView>();
-            cardView.Setup(scene,isSync);
+            cardView.Setup(scene, isSync);
             sceneCardViews.Add(cardView);
         }
     }
@@ -287,15 +290,15 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         OnEditorPressed?.Invoke(projectData);
     }
 
-    public void SetThumbnail(string thumbnailId,string thumbnailEndpoint)
+    public void SetThumbnail(string thumbnailId, string thumbnailEndpoint)
     {
         if (this.thumbnailId == thumbnailId)
             return;
-        
+
         string projectThumbnailUrl = "";
         if (!string.IsNullOrEmpty(thumbnailId))
         {
-            projectThumbnailUrl = BIWUrlUtils.GetBuilderProjecThumbnailUrl(thumbnailId,thumbnailEndpoint);
+            projectThumbnailUrl = BIWUrlUtils.GetBuilderProjecThumbnailUrl(thumbnailId, thumbnailEndpoint);
         }
 
         this.thumbnailId = thumbnailId;
@@ -305,7 +308,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
             thumbnailPromise = null;
         }
-        
+
         if (string.IsNullOrEmpty(projectThumbnailUrl))
         {
             SetThumbnail((Texture2D) null);
@@ -314,7 +317,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
         thumbnailPromise = new AssetPromise_Texture(projectThumbnailUrl);
         thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => SetThumbnail((Texture2D) null);
+        thumbnailPromise.OnFailEvent += (texture, error) => SetThumbnail(null);
 
         loadingImgGameObject.SetActive(true);
         thumbnail.enabled = false;
@@ -336,24 +339,24 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
         transform.SetParent(parent);
         transform.ResetLocalTRS();
     }
-    
+
     public void SetToDefaultParent() { transform.SetParent(defaultParent); }
-    
+
     public void ConfigureDefaultParent(Transform parent) { defaultParent = parent; }
 
     public void SetActive(bool active) { gameObject.SetActive(active); }
-    
+
     public void SetSiblingIndex(int index) { transform.SetSiblingIndex(index); }
-    
+
     public void SetName(string name)
     {
         projectNameTxt.text = name;
         ((IProjectCardView)this).searchInfo.SetName(name);
     }
-    
+
     public void SetSize(int rows, int columns)
     {
-        projectSizeTxt.text = GetSizeText(rows,columns);
+        projectSizeTxt.text = GetSizeText(rows, columns);
         ((IProjectCardView)this).searchInfo.SetSize(rows * columns);
     }
 
@@ -371,8 +374,8 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
 
         while (time < 1)
         {
-            time += Time.deltaTime * animationSpeed/scenesDeployedFromProject.Count;
-            rect2.y = Mathf.Lerp(rect2.y,objective,time);
+            time += Time.deltaTime * animationSpeed / scenesDeployedFromProject.Count;
+            rect2.y = Mathf.Lerp(rect2.y, objective, time);
             rectTransform.sizeDelta = rect2;
             yield return null;
         }

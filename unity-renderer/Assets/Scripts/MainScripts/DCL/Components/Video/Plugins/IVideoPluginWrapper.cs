@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
@@ -7,7 +8,7 @@ namespace DCL.Components.Video.Plugin
         void Create(string id, string url, bool useHls);
         void Remove(string id);
         void TextureUpdate(string id);
-        int GetTexture(string id);
+        Texture2D PrepareTexture(string id);
         void Play(string id, float startTime);
         void Pause(string id);
         void SetVolume(string id, float volume);

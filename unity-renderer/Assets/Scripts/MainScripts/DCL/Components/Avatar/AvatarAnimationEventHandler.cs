@@ -5,7 +5,7 @@ using DCL;
 
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
-    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap";
+    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho";
     const float MIN_EVENT_WAIT_TIME = 0.1f;
 
     AudioEvent footstepLight;
@@ -117,6 +117,27 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     {
         yield return new WaitForSeconds(0.8f);
         PlaySticker("heart", handR.position, transform.rotation.eulerAngles);
+    }
+
+    public void AnimEvent_Snowflakes()
+    {
+        if (LastEventWasTooRecent())
+            return;
+
+        if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_SNOWFLAKE))
+            return;
+
+        PlaySticker("snowflakes", transform.position, Vector3.zero);
+    }
+
+    public void AnimEvent_Hohoho() {
+        if (LastEventWasTooRecent())
+            return;
+
+        if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_HOHOHO))
+            return;
+
+        PlaySticker("hohoho", transform.position + transform.up * 1.5f, Vector3.zero);
     }
 
     void PlayAudioEvent(AudioEvent audioEvent)

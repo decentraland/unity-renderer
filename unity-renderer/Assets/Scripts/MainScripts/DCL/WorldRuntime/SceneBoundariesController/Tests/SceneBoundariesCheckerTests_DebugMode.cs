@@ -11,13 +11,12 @@ namespace SceneBoundariesCheckerTests
 {
     public class SceneBoundariesCheckerTests_DebugMode : IntegrationTestSuite_Legacy
     {
-        protected override bool enableSceneIntegrityChecker => false;
-        protected override bool justSceneSetUp => true;
+        private ParcelScene scene;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            yield return SetUp_CharacterController();
+            scene = TestUtils.CreateTestScene();
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
             Environment.i.world.sceneBoundsChecker.timeBetweenChecks = 0f;

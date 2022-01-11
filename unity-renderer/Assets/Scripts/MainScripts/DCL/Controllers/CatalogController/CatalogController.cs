@@ -50,6 +50,7 @@ public class CatalogController : MonoBehaviour
 
     public static void Clear()
     {
+        wearableCatalog.Clear();
         wearablesInUseCounters.Clear();
         awaitingWearablePromises.Clear();
         pendingWearableRequestedTimes.Clear();

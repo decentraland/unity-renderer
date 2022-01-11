@@ -1,0 +1,19 @@
+{
+    "name": "SkyboxEditorAssembly",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d8caa1f2d8e6c2b49a7c564e2b81bf89",
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -47,7 +47,6 @@ namespace DCL.Builder
             IBIWGizmosController gizmosController,
             ISceneReferences sceneReferences)
         {
-
             projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
             inputsReferencesAsset = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
 
@@ -76,7 +75,6 @@ namespace DCL.Builder
                 gizmosController,
                 sceneReferences
             );
-
         }
 
         public void Dispose()
@@ -90,7 +88,6 @@ namespace DCL.Builder
 
     public class EditorContext : IEditorContext
     {
-
         private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
         private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
 
@@ -159,7 +156,6 @@ namespace DCL.Builder
         public void Dispose()
         {
             editorHUD.Dispose();
-
             outlinerController.Dispose();
             inputHandler.Dispose();
             inputWrapper.Dispose();
@@ -174,6 +170,7 @@ namespace DCL.Builder
             gizmosController.Dispose();
 
             sceneReferences.Dispose();
+
 
             godModeDynamicVariablesAssetReference = null;
             firstPersonDynamicVariablesAssetReference = null;
