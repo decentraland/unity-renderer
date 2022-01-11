@@ -1,18 +1,24 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace Test.AvatarSystem
 {
     public class WearableLoaderShould
     {
         private const string GLASSES_WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0";
+        private const string SWEATER_ID = "urn:decentraland:off-chain:base-avatars:f_sweater";
+        private const string HOODIE_ID = "urn:decentraland:off-chain:base-avatars:green_hoodie";
 
         private WearableLoader loader;
         private IWearableRetriever retriever;
@@ -25,9 +31,7 @@ namespace Test.AvatarSystem
         {
             container = new GameObject("Container");
             PrepareCatalog();
-            wearable = CatalogController.wearableCatalog[GLASSES_WEARABLE_ID];
             retriever = Substitute.For<IWearableRetriever>();
-            loader = new WearableLoader(retriever, wearable);
         }
 
         private void PrepareCatalog()
@@ -41,6 +45,8 @@ namespace Test.AvatarSystem
         public IEnumerator LoadWearable() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
+            wearable = CatalogController.wearableCatalog[GLASSES_WEARABLE_ID];
+            loader = new WearableLoader(retriever, wearable);
 
             var normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
             var hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
@@ -61,9 +67,175 @@ namespace Test.AvatarSystem
             });
 
             //Assert
+            Assert.AreEqual(IWearableLoader.Status.Succeeded, loader.status);
             Assert.AreEqual(Color.gray, normalRenderer.material.color);
             Assert.AreEqual(Color.red, hairRenderer.material.color);
             Assert.AreEqual(Color.blue, skinRenderer.material.color);
+        });
+
+        [UnityTest]
+        public IEnumerator FallbackIfFailsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
+        {
+            //Arrange
+            wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
+            loader = new WearableLoader(retriever, wearable);
+
+            WearableLoader.defaultWearablesResolver = Substitute.For<IWearableItemResolver>();
+            WearableLoader.defaultWearablesResolver.Configure().Resolve(Arg.Any<string>()).Returns(new UniTask<WearableItem>(wearable));
+
+            Renderer normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
+            Renderer hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
+            Renderer skinRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "skin");
+            Rendereable rendereable = new Rendereable
+            {
+                container = container,
+                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
+            };
+
+            retriever.Configure()
+                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                     .Returns(
+                         x => // First call configures everything for null, mocking the wearable retrieval
+                         {
+                             Debug.Log("Trying 1");
+                             retriever.rendereable.Returns(x => null);
+                             return new UniTask<Rendereable>(null);
+                         },
+                         x => // Second call configures everything for the prepared rendereable, mocking the fallback retrieval
+                         {
+                             Debug.Log("Trying 2");
+                             retriever.rendereable.Returns(x => rendereable);
+                             return new UniTask<Rendereable>(rendereable);
+                         }
+                     );
+
+            //Act
+            await loader.Load(container, new AvatarSettings
+            {
+                bodyshapeId = WearableLiterals.BodyShapes.MALE,
+                hairColor = Color.red,
+                skinColor = Color.blue
+            });
+
+            //Assert
+            Assert.AreEqual(IWearableLoader.Status.Defaulted, loader.status);
+            retriever.Received(2).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Assert.AreEqual(Color.gray, normalRenderer.material.color);
+            Assert.AreEqual(Color.red, hairRenderer.material.color);
+            Assert.AreEqual(Color.blue, skinRenderer.material.color);
+        });
+
+        [UnityTest]
+        public IEnumerator FallbackIfThrowsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
+        {
+            //Arrange
+            wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
+            loader = new WearableLoader(retriever, wearable);
+
+            WearableLoader.defaultWearablesResolver = Substitute.For<IWearableItemResolver>();
+            WearableLoader.defaultWearablesResolver.Configure().Resolve(Arg.Any<string>()).Returns(new UniTask<WearableItem>(wearable));
+
+            Renderer normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
+            Renderer hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
+            Renderer skinRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "skin");
+            Rendereable rendereable = new Rendereable
+            {
+                container = container,
+                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
+            };
+
+            retriever.Configure()
+                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                     .Returns(
+                         x => // First call configures everything for null, mocking the wearable retrieval
+                         {
+                             throw new Exception();
+                         },
+                         x => // Second call configures everything for the prepared rendereable, mocking the fallback retrieval
+                         {
+                             retriever.rendereable.Returns(x => rendereable);
+                             return new UniTask<Rendereable>(rendereable);
+                         }
+                     );
+
+            //Act
+            await loader.Load(container, new AvatarSettings
+            {
+                bodyshapeId = WearableLiterals.BodyShapes.MALE,
+                hairColor = Color.red,
+                skinColor = Color.blue
+            });
+
+            //Assert
+            Assert.AreEqual(IWearableLoader.Status.Defaulted, loader.status);
+            retriever.Received(2).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Assert.AreEqual(Color.gray, normalRenderer.material.color);
+            Assert.AreEqual(Color.red, hairRenderer.material.color);
+            Assert.AreEqual(Color.blue, skinRenderer.material.color);
+        });
+
+        [UnityTest]
+        public IEnumerator NotFallbackIfFailsWithNoRequiredCategory() => UniTask.ToCoroutine(async () =>
+        {
+            //Arrange
+            wearable = CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]; //Use a wearable with required category
+            loader = new WearableLoader(retriever, wearable);
+
+            Renderer normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
+            Renderer hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
+            Renderer skinRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "skin");
+            Rendereable rendereable = new Rendereable
+            {
+                container = container,
+                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
+            };
+
+            retriever.rendereable.Returns(x => null);
+
+            //Act
+            await loader.Load(container, new AvatarSettings
+            {
+                bodyshapeId = WearableLiterals.BodyShapes.MALE,
+                hairColor = Color.red,
+                skinColor = Color.blue
+            });
+
+            //Assert
+            retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Assert.AreEqual(IWearableLoader.Status.Failed, loader.status);
+        });
+
+        [UnityTest]
+        public IEnumerator NotFallbackIfThrowsWithNoRequiredCategory() => UniTask.ToCoroutine(async () =>
+        {
+            //Arrange
+            wearable = CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]; //Use a wearable with required category
+            loader = new WearableLoader(retriever, wearable);
+
+            Renderer normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
+            Renderer hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
+            Renderer skinRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "skin");
+            Rendereable rendereable = new Rendereable
+            {
+                container = container,
+                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
+            };
+
+            retriever.Configure()
+                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                     .Returns(x => throw new Exception("Failing on purpose"));
+
+            //Act
+            await loader.Load(container, new AvatarSettings
+            {
+                bodyshapeId = WearableLiterals.BodyShapes.MALE,
+                hairColor = Color.red,
+                skinColor = Color.blue
+            });
+
+            //Assert
+            retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Assert.AreEqual(IWearableLoader.Status.Failed, loader.status);
         });
 
         private Renderer GetPrimitiveWithAvatarMaterial(Transform parent, string materialName)

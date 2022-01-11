@@ -45,7 +45,18 @@ namespace AvatarSystem
 
                 retriever.Dispose();
 
-                await LoadWearable(container, wearable, settings.bodyshapeId, ct);
+                try
+                {
+                    await LoadWearable(container, wearable, settings.bodyshapeId, ct);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    // Ignored so we try to fallback (if needed)
+                }
 
                 // Succeeded
                 if (rendereable != null)
@@ -60,10 +71,12 @@ namespace AvatarSystem
                     await FallbackToDefault(container, ct);
 
                 if (rendereable != null)
+                {
+                    AvatarSystemUtils.PrepareMaterialColors(rendereable, currentSettings.skinColor, currentSettings.hairColor);
                     status = IWearableLoader.Status.Defaulted;
+                }
                 else
                     status = IWearableLoader.Status.Failed;
-
             }
             catch (OperationCanceledException)
             {
@@ -74,17 +87,23 @@ namespace AvatarSystem
 
         private async UniTask FallbackToDefault(GameObject container, CancellationToken ct)
         {
-            if (ct.IsCancellationRequested)
-                throw new OperationCanceledException();
+            ct.ThrowIfCancellationRequested();
 
-            string wearableId = WearableLiterals.DefaultWearables.GetDefaultWearable(currentSettings.bodyshapeId, wearable.data.category);
-            Debug.Log($"Falling back {wearable.id} to wearable {wearableId}");
+            try
+            {
+                string wearableId = WearableLiterals.DefaultWearables.GetDefaultWearable(currentSettings.bodyshapeId, wearable.data.category);
+                Debug.Log($"Falling back {wearable.id} to wearable {wearableId}");
 
-            WearableItem defaultWearable = await defaultWearablesResolver.Resolve(wearableId, ct);
-            if (ct.IsCancellationRequested)
-                return;
+                WearableItem defaultWearable = await defaultWearablesResolver.Resolve(wearableId, ct);
 
-            await LoadWearable(container, defaultWearable, currentSettings.bodyshapeId, ct);
+                await LoadWearable(container, defaultWearable, currentSettings.bodyshapeId, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                //No disposing required
+                throw;
+            }
+
         }
 
         private async UniTask LoadWearable(GameObject container, WearableItem wearableToLoad, string bodyshapeId, CancellationToken ct)
