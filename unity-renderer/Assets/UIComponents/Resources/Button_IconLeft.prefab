@@ -249,6 +249,7 @@ GameObject:
   - component: {fileID: 7887689455078732951}
   - component: {fileID: 1442316120381234285}
   - component: {fileID: 1727543226122190079}
+  - component: {fileID: 8274474938483644853}
   m_Layer: 5
   m_Name: Button_IconLeft
   m_TagString: Untagged
@@ -480,3 +481,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!114 &8274474938483644853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5466927874646222343}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f05fbeb9b20044d9c1dc9abd16c772, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  componentView: {fileID: 1442316120381234285}
+  textToChange: {fileID: 4469143239268576428}
+  iconToChange: {fileID: 7518669975530283665}
+  onFocusColor: {r: 1, g: 1, b: 1, a: 1}
+  onLoseFocusColor: {r: 1, g: 1, b: 1, a: 1}
