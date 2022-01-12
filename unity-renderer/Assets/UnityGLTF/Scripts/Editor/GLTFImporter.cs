@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEngine;
@@ -540,9 +541,13 @@ namespace UnityGLTF
 
                 OnGLTFWillLoad?.Invoke(loader);
 
+                loader.LoadScene().GetAwaiter().GetResult();
+                return loader.lastLoadedScene;
+                
                 // HACK: Force the coroutine to run synchronously in the editor
-                var stack = new Stack<IEnumerator>();
+                /*var stack = new Stack<IEnumerator>();
                 stack.Push(loader.LoadScene());
+                
 
                 while (stack.Count > 0)
                 {
@@ -566,7 +571,7 @@ namespace UnityGLTF
                     }
                 }
 
-                return loader.lastLoadedScene;
+                return loader.lastLoadedScene;*/
             }
         }
 

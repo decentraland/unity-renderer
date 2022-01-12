@@ -3,13 +3,10 @@ using DCL.Controllers;
 using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
 using DCL.Builder;
-using NSubstitute;
-using Tests;
+using MainScripts.DCL.GLTF;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityGLTF;
 using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWActionsShould : IntegrationTestSuite_Legacy

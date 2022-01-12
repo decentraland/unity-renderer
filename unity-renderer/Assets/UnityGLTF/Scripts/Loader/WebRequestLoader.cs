@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -33,7 +35,7 @@ namespace UnityGLTF.Loader
             assetIdConverter = fileToHashConverter;
         }
 
-        public IEnumerator LoadStream(string filePath)
+        public async UniTask LoadStream(string filePath)
         {
             if (filePath == null)
             {
@@ -47,7 +49,7 @@ namespace UnityGLTF.Loader
 
             filePath = GetWrappedUri(filePath);
 
-            yield return CreateHTTPRequest(_rootURI, filePath);
+            await CreateHTTPRequest(_rootURI, filePath);
         }
 
         public string GetWrappedUri(string uri)
@@ -68,7 +70,7 @@ namespace UnityGLTF.Loader
             throw new NotImplementedException();
         }
 
-        private IEnumerator CreateHTTPRequest(string rootUri, string httpRequestPath)
+        private async UniTask CreateHTTPRequest(string rootUri, string httpRequestPath)
         {
             string finalUrl = httpRequestPath;
 
@@ -85,14 +87,14 @@ namespace UnityGLTF.Loader
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
 
-            yield return asyncOp;
+            await UniTask.Run( async () =>
+            {
+                while (asyncOp.keepWaiting)
+                    await Task.Delay(5);
+            });
 
             bool error = false;
             string errorMessage = null;
-
-            if (asyncOp == null)
-            {
-            }
 
             if (!asyncOp.isSucceded)
             {

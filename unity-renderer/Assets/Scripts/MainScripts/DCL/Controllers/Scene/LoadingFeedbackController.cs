@@ -3,8 +3,8 @@ using DCL.Controllers;
 using DCL.Interface;
 using System.Collections.Generic;
 using System.Linq;
+using MainScripts.DCL.GLTF;
 using UnityEngine;
-using UnityGLTF;
 
 namespace DCL
 {

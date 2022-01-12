@@ -1,11 +1,10 @@
-using DCL;
 using DCL.Helpers;
 using System;
 using System.Collections;
 using DCL.Controllers;
+using MainScripts.DCL.GLTF;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityGLTF;
 using Environment = DCL.Environment;
 
 public class GLTFLoadingTestController : MonoBehaviour

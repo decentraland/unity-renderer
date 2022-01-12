@@ -69,19 +69,7 @@ namespace DCL
         {
             try
             {
-                var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS
-                              && DataStore.i.multithreading.enabled.Get();
-#if !UNITY_STANDALONE
-                isAsync = false;
-#endif
-                if (isAsync)
-                {
-                    gltfComponent = asset.container.AddComponent<GLTFComponentAsync>();
-                }
-                else
-                {
-                    gltfComponent = asset.container.AddComponent<GLTFComponent>();
-                }
+                gltfComponent = asset.container.AddComponent<GLTFComponent>();
 
                 gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
                 gltfComponent.RegisterCallbacks(MeshCreated, RendererCreated);

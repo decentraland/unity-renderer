@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using Cysharp.Threading.Tasks;
 
 public delegate bool AssetIdConverter(string uri, out string id);
 
@@ -8,7 +9,7 @@ namespace UnityGLTF.Loader
 {
     public interface ILoader
     {
-        IEnumerator LoadStream(string relativeFilePath);
+        UniTask LoadStream(string relativeFilePath);
 
         void LoadStreamSync(string jsonFilePath);
 

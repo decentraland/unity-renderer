@@ -1,16 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
-using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Models;
+using MainScripts.DCL.GLTF;
 using NSubstitute;
-using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
-using UnityGLTF;
 
 public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
 {
