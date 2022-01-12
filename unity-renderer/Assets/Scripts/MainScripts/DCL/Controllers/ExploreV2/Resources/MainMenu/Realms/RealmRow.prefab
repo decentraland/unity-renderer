@@ -439,7 +439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f384602183fb6c143b91db79668dcfd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  friendHeadPrefab: {fileID: 897261817415313073, guid: b681cffe9673cf64482a6cb83368424d,
+  friendHeadPrefab: {fileID: 160198427478336551, guid: 9ce20a369768e6c40afc5682836b10f5,
     type: 3}
   nameText: {fileID: 2770113295775961764}
   playersText: {fileID: 5017147291796569921}
