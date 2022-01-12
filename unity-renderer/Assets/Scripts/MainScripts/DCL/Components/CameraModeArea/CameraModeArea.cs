@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Linq;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -83,6 +82,8 @@ namespace DCL.Components
 
         internal void OnModelUpdated(in Model newModel)
         {
+            // NOTE: we don't want the ecs to be able to set "builder in world" camera or any other camera
+            // that might be added in the future. Only first and third person camera are allowed
             if (!IsValidCameraMode(newModel.cameraMode))
             {
                 newModel.cameraMode = CommonScriptableObjects.cameraMode.Get();
@@ -160,7 +161,14 @@ namespace DCL.Components
                 return false;
             }
 
-            return colliders.Any(collider => collider == playerCollider);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i] == playerCollider)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void OnAreaDisabled()
