@@ -468,14 +468,15 @@ namespace UnityGLTF
 
         private async UniTask LoadJsonOnAThread()
         {
-            Thread parseJsonThread = new Thread(() => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition))
+            await UniTask.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition));
+            /*Thread parseJsonThread = new Thread(() => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition))
             {
                 Priority = ThreadPriority.Highest
             };
             parseJsonThread.Start();
             //RunCoroutineSync(WaitUntilEnum(new WaitUntil(() => !parseJsonThread.IsAlive)));
 
-            await WaitUntil(() => !parseJsonThread.IsAlive);
+            await WaitUntil(() => !parseJsonThread.IsAlive);*/
 
             if (_gltfRoot == null)
             {
