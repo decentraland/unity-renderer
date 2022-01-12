@@ -151,26 +151,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         }
 
         [Test]
-        public void ChangeColorGradingCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<ColorGradingControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "colorGrading stored value mismatch");
-            Tonemapping toneMapping;
-            if (SceneReferences.i.postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
-            {
-                Assert.AreEqual(newValue, toneMapping.active, "bloom mismatch");
-            }
-        }
-
-        [Test]
         public void ChangeDetailObjectCullingCorrectly()
         {
             // Arrange

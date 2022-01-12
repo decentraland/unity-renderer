@@ -205,6 +205,11 @@ namespace DCL.Camera
             return CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.State.FinalPosition;
         }
 
+        public UnityEngine.Camera GetCamera()
+        {
+            return camera;
+        }
+
         private void OnDestroy()
         {
             if (cachedModeToVirtualCamera != null)

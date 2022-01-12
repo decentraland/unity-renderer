@@ -48,9 +48,9 @@ namespace DCL
 
         public static GameObject CreateSettingsController() => LoadAndInstantiate("SettingsController");
 
-        public static GameObject CreateEnvironment()
+        public static GameObject CreateEnvironment(string prefabPath = "Environment")
         {
-            GameObject result = LoadAndInstantiate("Environment");
+            GameObject result = LoadAndInstantiate(prefabPath);
             var env = result.GetComponent<EnvironmentReferences>();
             SceneReferences.i.environmentLight = env.environmentLight;
             SceneReferences.i.postProcessVolume = env.postProcessVolume;

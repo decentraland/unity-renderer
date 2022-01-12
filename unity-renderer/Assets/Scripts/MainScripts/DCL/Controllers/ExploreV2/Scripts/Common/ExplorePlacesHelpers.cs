@@ -54,6 +54,8 @@ public static class ExplorePlacesHelpers
                 GameObject.Instantiate(placeCardPrefab).gameObject,
                 maxPrewarmCount: maxPrewarmCount,
                 isPersistent: true);
+
+            pool.ForcePrewarm();
         }
     }
 
