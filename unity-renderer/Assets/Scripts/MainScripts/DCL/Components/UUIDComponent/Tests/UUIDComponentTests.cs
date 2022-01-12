@@ -57,6 +57,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            Utils.LockCursor();
             scene = TestUtils.CreateTestScene();
 
             Physics.autoSyncTransforms = true;
@@ -72,6 +73,7 @@ namespace Tests
         protected override IEnumerator TearDown()
         {
             Object.Destroy(mainCamera.gameObject);
+            Utils.UnlockCursor();
             yield return base.TearDown();
         }
 

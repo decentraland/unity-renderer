@@ -284,7 +284,7 @@ public class DCLCharacterController : MonoBehaviour
                 lastUngroundedTime = Time.time;
             }
 
-            if (Utils.isCursorLocked && characterForward.HasValue())
+            if (characterForward.HasValue())
             {
                 // Horizontal movement
                 var speed = movementSpeed * (isWalking ? runningSpeedMultiplier : 1f);

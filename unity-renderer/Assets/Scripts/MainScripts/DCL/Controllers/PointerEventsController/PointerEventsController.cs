@@ -60,6 +60,9 @@ namespace DCL
             RetrieveCamera();
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            Utils.OnCursorLockChanged += HandleCursorLockChanges;
+            
+            HideOrShowCursor(Utils.IsCursorLocked);
         }
 
         private IRaycastPointerClickHandler clickHandler;
@@ -71,6 +74,7 @@ namespace DCL
 
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null)
                 return;
+            if (!Utils.IsCursorLocked) return;
 
             IWorldState worldState = Environment.i.world.state;
 
@@ -100,7 +104,7 @@ namespace DCL
             if (!didHit || uiIsBlocking)
             {
                 clickHandler = null;
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
                 return;
             }
 
@@ -108,7 +112,7 @@ namespace DCL
             if (raycastHandlerTarget != null)
             {
                 ResolveGenericRaycastHandlers(raycastHandlerTarget);
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
                 return;
             }
 
@@ -121,7 +125,7 @@ namespace DCL
 
             if (!EventObjectCanBeHovered(info, hitInfo.distance))
             {
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
                 return;
             }
 
@@ -129,7 +133,7 @@ namespace DCL
 
             if (newHoveredGO != lastHoveredObject)
             {
-                UnhoverLastHoveredObject(hoverController);
+                UnhoverLastHoveredObject();
 
                 lastHoveredObject = newHoveredGO;
 
@@ -230,12 +234,12 @@ namespace DCL
             }
         }
 
-        void UnhoverLastHoveredObject(InteractionHoverCanvasController interactionHoverCanvasController)
+        void UnhoverLastHoveredObject()
         {
             if (lastHoveredObject == null)
             {
-                if ( interactionHoverCanvasController != null )
-                    interactionHoverCanvasController.SetHoverState(false);
+                if ( hoverController != null )
+                    hoverController.SetHoverState(false);
 
                 return;
             }
@@ -277,6 +281,7 @@ namespace DCL
             }
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            Utils.OnCursorLockChanged -= HandleCursorLockChanges;
         }
 
         void RetrieveCamera()
@@ -297,7 +302,7 @@ namespace DCL
                 if (Utils.LockedThisFrame())
                     return;
 
-                if (!Utils.isCursorLocked || !renderingEnabled)
+                if (!Utils.IsCursorLocked || !renderingEnabled)
                     return;
             }
 
@@ -538,6 +543,22 @@ namespace DCL
             {
                 return colliderInfoA.entity == colliderInfoB.entity;
             }
+        }
+        
+        private void HandleCursorLockChanges(bool isLocked)
+        {
+            HideOrShowCursor(isLocked);
+
+            if (!isLocked)
+                UnhoverLastHoveredObject();
+        }
+
+        private void HideOrShowCursor(bool isCursorLocked)
+        {
+            if (isCursorLocked)
+                CursorController.i?.Show();
+            else
+                CursorController.i?.Hide();
         }
     }
 }
