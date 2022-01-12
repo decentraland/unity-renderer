@@ -55,7 +55,7 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
     [SerializeField] internal RealmRowComponentModel model;
 
     public RealmHandler friendsHandler { get; set; }
-    internal RealmInfoHandler mapInfoHandler { get; set; }
+    internal RealmInfoHandler realmInfoHandler { get; set; }
 
     public Button.ButtonClickedEvent onWarpInClick => warpInButton?.onClick;
 
@@ -74,8 +74,8 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
 
         InitializeFriendsTracker();
 
-        if (mapInfoHandler != null)
-            mapInfoHandler.SetRealmInfo(model.name);
+        if (realmInfoHandler != null)
+            realmInfoHandler.SetRealmInfo(model.name);
 
         RefreshControl();
     }
@@ -151,12 +151,12 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
     {
         CleanFriendHeadsItems();
 
-        if (mapInfoHandler == null)
-            mapInfoHandler = new RealmInfoHandler();
+        if (realmInfoHandler == null)
+            realmInfoHandler = new RealmInfoHandler();
 
         if (friendsHandler == null)
         {
-            friendsHandler = new RealmHandler(mapInfoHandler);
+            friendsHandler = new RealmHandler(realmInfoHandler);
             friendsHandler.OnFriendAddedEvent += OnFriendAdded;
             friendsHandler.OnFriendRemovedEvent += OnFriendRemoved;
         }

@@ -346,9 +346,41 @@ public class ExploreV2MenuComponentControllerTests
         // Act
         exploreV2MenuController.UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
-        //Assert
+        // Assert
         exploreV2MenuView.currentRealmViewer.Received().SetRealm(testRealmName);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetCurrentRealm(testRealmName);
         exploreV2MenuView.currentRealmViewer.Received().SetNumberOfUsers(testUsersCount);
+    }
+
+    [Test]
+    public void UpdateAvailableRealmsInfoCorrectly()
+    {
+        // Arrange
+        RealmModel[] testRealms = 
+        { 
+            new RealmModel
+            {
+                serverName = "TestRealm1",
+                usersCount = 10
+            },
+            new RealmModel
+            {
+                serverName = "TestRealm2",
+                usersCount = 20
+            },
+            new RealmModel
+            {
+                serverName = "TestRealm3",
+                usersCount = 30
+            }
+        };
+
+        // Act
+        exploreV2MenuController.UpdateAvailableRealmsInfo(testRealms, null);
+
+        // Assert
+        Assert.AreEqual(3, exploreV2MenuController.currentAvailableRealms.Count);
+        exploreV2MenuView.currentRealmSelectorModal.Received().SetAvailableRealms(exploreV2MenuController.currentAvailableRealms);
     }
 
     [Test]
