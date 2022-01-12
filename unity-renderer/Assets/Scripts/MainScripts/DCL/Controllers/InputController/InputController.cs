@@ -190,6 +190,9 @@ public class InputController : MonoBehaviour
             switch (action.GetDCLAction())
             {
                 case DCLAction_Trigger.CameraChange:
+                    if (CommonScriptableObjects.cameraModeInputLocked.Get()) 
+                        break;
+                    
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
                         InputProcessor.FromKey(action, KeyCode.V,
