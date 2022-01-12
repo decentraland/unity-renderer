@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DCL.Controllers;
+using MainScripts.DCL.GLTF;
 using UnityEngine;
 
 namespace DCL
@@ -172,7 +173,7 @@ namespace DCL
                 statsPanel.SetCellText(1, (int) Rows.ENTITY_OBJECTS_COUNT, entityCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.MATERIAL_COUNT, materialCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.MESHES_COUNT, meshesCount.ToString());
-                statsPanel.SetCellText(1, (int) Rows.GLTF_BEING_LOADED, UnityGLTF.GLTFComponent.downloadingCount.ToString() + " ... In Queue: " + UnityGLTF.GLTFComponent.queueCount.ToString());
+                statsPanel.SetCellText(1, (int) Rows.GLTF_BEING_LOADED, GLTFComponent.downloadingCount.ToString() + " ... In Queue: " + GLTFComponent.queueCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.AB_BEING_LOADED, AssetPromise_AB.downloadingCount.ToString() + " ...  In Queue: " + AssetPromise_AB.queueCount.ToString());
                 statsPanel.SetCellText(1, (int) Rows.RENDERER_UNLOCK_SEGS, RenderingController.firstActivationTime.ToString(CultureInfo.InvariantCulture));
 

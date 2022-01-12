@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 // using System.Threading.Tasks;
@@ -21,30 +22,31 @@ namespace UnityGLTF.Loader
             HasSyncLoadMethod = true;
         }
 
-        public IEnumerator LoadStream(string gltfFilePath)
+        public async UniTask LoadStream(string gltfFilePath)
         {
             if (gltfFilePath == null)
             {
                 Debug.Log("GLTFSceneImporter - Error - gltfFilePath is null!");
-                yield break;
+                return;
             }
 
-            yield return LoadFileStream(_rootDirectoryPath, gltfFilePath);
+            await LoadFileStream(_rootDirectoryPath, gltfFilePath);
         }
 
-        private IEnumerator LoadFileStream(string rootPath, string fileToLoad)
+        private async UniTask LoadFileStream(string rootPath, string fileToLoad)
         {
             string pathToLoad = Path.Combine(rootPath, fileToLoad);
 
             if (!File.Exists(pathToLoad))
             {
                 Debug.Log($"GLTFSceneImporter - Error - Buffer file not found ({pathToLoad}) -- {fileToLoad}");
-
-                yield break;
+                return;
             }
 
-            yield return null;
-            LoadedStream = File.OpenRead(pathToLoad);
+            await UniTask.Run( () =>
+            {
+                LoadedStream = File.OpenRead(pathToLoad);
+            });
         }
 
         public void LoadStreamSync(string gltfFilePath)

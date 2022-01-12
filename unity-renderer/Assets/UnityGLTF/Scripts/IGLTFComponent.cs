@@ -1,6 +1,7 @@
 using System;
 using DCL;
 using DCL.Components;
+using MainScripts.DCL.GLTF;
 using UnityEngine;
 
 namespace UnityGLTF.Scripts

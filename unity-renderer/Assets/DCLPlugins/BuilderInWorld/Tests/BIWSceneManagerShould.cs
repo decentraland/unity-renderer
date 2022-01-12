@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -7,11 +6,11 @@ using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using MainScripts.DCL.GLTF;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine;
-using UnityGLTF;
 using Environment = DCL.Environment;
 
 public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy

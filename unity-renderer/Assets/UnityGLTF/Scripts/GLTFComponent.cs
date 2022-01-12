@@ -1,22 +1,21 @@
 using System;
-using System.Collections;
-using System.IO;
 using DCL;
 using UnityEngine;
+using UnityGLTF;
 using UnityGLTF.Loader;
 using UnityGLTF.Scripts;
-using WaitUntil = UnityEngine.WaitUntil;
+using Cysharp.Threading.Tasks;
 
-namespace UnityGLTF
+namespace MainScripts.DCL.GLTF
 {
     /// <summary>
     /// Component to load a GLTF scene with
     /// </summary>
     public class GLTFComponent : MonoBehaviour, IGLTFComponent
     {
-        public static bool VERBOSE = false;
+        private static bool VERBOSE = false;
 
-        public static int maxSimultaneousDownloads = 10;
+        private static int maxSimultaneousDownloads = 10;
 
         public static int downloadingCount;
         public static event Action OnDownloadingProgressUpdate;
@@ -46,7 +45,7 @@ namespace UnityGLTF
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
-        public GLTFThrottlingCounter throttlingCounter;
+        private GLTFThrottlingCounter throttlingCounter;
 
         public bool InitialVisibility
         {
@@ -90,7 +89,7 @@ namespace UnityGLTF
         private bool alreadyDecrementedRefCount;
         private AsyncCoroutineHelper asyncCoroutineHelper;
         private Coroutine loadingRoutine = null;
-        public GLTFSceneImporter sceneImporter { get; private set; }
+        private GLTFSceneImporter sceneImporter { get; set; }
         private Camera mainCamera;
         private IWebRequestController webRequestController;
         private bool prioritizeDownload = false;
@@ -98,6 +97,8 @@ namespace UnityGLTF
         
         private Action<Mesh> meshCreatedCallback;
         private Action<Renderer> rendererCreatedCallback;
+        
+        private Settings settings;
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -139,19 +140,18 @@ namespace UnityGLTF
             }
 
             this.fileToHashConverter = fileToHashConverter;
+            this.settings = settings;
+        }
 
-            if ( throttlingCounter != null )
+        private async void Start()
+        {
+            try
             {
-                loadingRoutine = this.StartThrottledCoroutine(
-                    enumerator: LoadAssetCoroutine(settings),
-                    onException: OnFail_Internal,
-                    timeBudgetCounter: throttlingCounter.EvaluateTimeBudget);
+                await LoadAssetCoroutine(settings);
             }
-            else
+            catch (Exception e)
             {
-                loadingRoutine = this.StartThrowingCoroutine(
-                    enumerator: LoadAssetCoroutine(settings),
-                    onException: OnFail_Internal);
+                OnFail_Internal(e);
             }
         }
         public void RegisterCallbacks(Action<Mesh> meshCreated, Action<Renderer> rendererCreated)
@@ -230,7 +230,7 @@ namespace UnityGLTF
             }
         }
 
-        public IEnumerator LoadAssetCoroutine(Settings settings)
+        private async UniTask LoadAssetCoroutine(Settings settings)
         {
             if (!string.IsNullOrEmpty(GLTFUri))
             {
@@ -238,8 +238,6 @@ namespace UnityGLTF
                 {
                     Debug.Log("LoadAssetCoroutine() GLTFUri ->" + GLTFUri);
                 }
-
-                asyncCoroutineHelper = gameObject.GetComponent<AsyncCoroutineHelper>() ?? gameObject.AddComponent<AsyncCoroutineHelper>();
 
                 sceneImporter = null;
                 ILoader loader = null;
@@ -250,20 +248,7 @@ namespace UnityGLTF
                 {
                     if (UseStream)
                     {
-                        // Path.Combine treats paths that start with the separator character
-                        // as absolute paths, ignoring the first path passed in. This removes
-                        // that character to properly handle a filename written with it.
-                        GLTFUri = GLTFUri.TrimStart(new[]
-                            {Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar});
-                        string fullPath = Path.Combine(Application.streamingAssetsPath, GLTFUri);
-                        string directoryPath = URIHelper.GetDirectoryName(fullPath);
-                        loader = new GLTFFileLoader(directoryPath);
-                        sceneImporter = new GLTFSceneImporter(
-                            null,
-                            Path.GetFileName(GLTFUri),
-                            loader,
-                            asyncCoroutineHelper
-                        );
+                        throw new NotImplementedException();
                     }
                     else
                     {
@@ -307,13 +292,10 @@ namespace UnityGLTF
                     state = State.QUEUED;
                     downloadQueueHandler.Queue(this);
 
-                    yield return new WaitUntil(() => downloadQueueHandler.CanDownload(this));
+                    await WaitUntil( () => downloadQueueHandler.CanDownload(this));
 
                     queueCount--;
                     totalDownloadedCount++;
-
-                    if (this == null)
-                        yield break;
 
                     IncrementDownloadCount();
 
@@ -322,7 +304,7 @@ namespace UnityGLTF
 
                     if (transform != null)
                     {
-                        yield return sceneImporter.LoadScene(-1);
+                        await sceneImporter.LoadScene(-1);
 
                         // Override the shaders on all materials if a shader is provided
                         if (shaderOverride != null)
@@ -375,6 +357,19 @@ namespace UnityGLTF
             {
                 Debug.Log("couldn't load GLTF because url is empty");
             }
+        }
+        
+        private async UniTask WaitUntil(Func<bool> condition)
+        {
+            async UniTask action()
+            {
+                while (!condition())
+                {
+                    await UniTask.Delay(5);
+                }
+            }
+
+            await action();
         }
 
         public void Load(string url) { throw new NotImplementedException(); }
