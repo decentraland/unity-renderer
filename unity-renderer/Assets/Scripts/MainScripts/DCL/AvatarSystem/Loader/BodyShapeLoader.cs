@@ -66,12 +66,6 @@ namespace AvatarSystem
                 status = IWearableLoader.Status.Idle;
 
                 await LoadWearable(container, ct);
-                if (rendereable == null)
-                {
-                    status = IWearableLoader.Status.Failed;
-                    Dispose();
-                    return;
-                }
 
                 (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
 
@@ -82,16 +76,22 @@ namespace AvatarSystem
                 var (eyesResult, eyebrowsResult, mouthResult) = await (eyesTask, eyebrowsTask, mouthTask);
 
                 eyesRenderer.material = new Material(Resources.Load<Material>("Eye Material"));
+                if (eyesResult.main == null)
+                    throw new Exception($"Couldn't fetch main texture for {eyes.id}");
                 eyesRenderer.material.SetTexture(AvatarSystemUtils._EyesTexture, eyesResult.main);
                 if (eyesResult.mask != null)
                     eyesRenderer.material.SetTexture(AvatarSystemUtils._IrisMask, eyesResult.mask);
 
                 eyebrowsRenderer.material = new Material(Resources.Load<Material>("Eyebrow Material"));
+                if (eyebrowsResult.main == null)
+                    throw new Exception($"Couldn't fetch main texture for {eyebrows.id}");
                 eyebrowsRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, eyebrowsResult.main);
                 if (eyebrowsResult.mask != null)
                     eyebrowsRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, eyebrowsResult.mask);
 
                 mouthRenderer.material = new Material(Resources.Load<Material>("Mouth Material"));
+                if (mouthResult.main == null)
+                    throw new Exception($"Couldn't fetch main texture for {mouth.id}");
                 mouthRenderer.material.SetTexture(AvatarSystemUtils._BaseMap, mouthResult.main);
                 if (mouthResult.mask != null)
                     mouthRenderer.material.SetTexture(AvatarSystemUtils._TintMask, mouthResult.mask);
@@ -99,8 +99,9 @@ namespace AvatarSystem
                 PrepareMaterials(avatarSettings);
                 status = IWearableLoader.Status.Succeeded;
             }
-            catch (OperationCanceledException e)
+            catch (Exception)
             {
+                status = IWearableLoader.Status.Failed;
                 Dispose();
                 throw;
             }
@@ -118,26 +119,18 @@ namespace AvatarSystem
         {
             ct.ThrowIfCancellationRequested();
 
-            try
-            {
-                bodyshapeRetriever.Dispose();
+            bodyshapeRetriever.Dispose();
 
-                WearableItem.Representation representation = wearable.GetRepresentation(wearable.id);
-                if (representation == null)
-                {
-                    status = IWearableLoader.Status.Failed;
-                    return null;
-                }
+            WearableItem.Representation representation = wearable.GetRepresentation(wearable.id);
+            if (representation == null)
+                throw new Exception("Couldn't find a representation for this bodyshape");
 
-                Rendereable resultRendereable = await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile, ct);
+            Rendereable bodyshapeRenderable = await bodyshapeRetriever.Retrieve(container, wearable.GetContentProvider(wearable.id), wearable.baseUrlBundles, representation.mainFile, ct);
 
-                return resultRendereable;
-            }
-            catch (OperationCanceledException)
-            {
-                Dispose();
-                throw;
-            }
+            if (bodyshapeRenderable == null) // fail safe, we shouldnt reach this since .Retrieve should throw if anything goes wrong
+                throw new Exception("Couldn't load bodyshape");
+
+            return bodyshapeRenderable;
         }
 
         public void Dispose()

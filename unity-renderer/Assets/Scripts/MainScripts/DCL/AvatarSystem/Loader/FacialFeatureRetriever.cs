@@ -29,7 +29,6 @@ namespace AvatarSystem
                 mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
                 mainTexturePromise.OnFailEvent += (x, exception) =>
                 {
-                    //TODO Handle exception
                     mainTexture = null;
                 };
 
@@ -50,6 +49,9 @@ namespace AvatarSystem
 
                 // AttachExternalCancellation is needed, otherwise the cancellation takes a frame to effect
                 await mainTexturePromise.ToUniTask(cancellationToken: ct).AttachExternalCancellation(ct);
+                if (mainTexture == null)
+                    throw new Exception($"Couldn't fetch main texture for {facialFeature.id} at {mainTextureUrl}");
+
                 if (maskTexturePromise != null)
                 {
                     await maskTexturePromise.ToUniTask(cancellationToken: ct).AttachExternalCancellation(ct);

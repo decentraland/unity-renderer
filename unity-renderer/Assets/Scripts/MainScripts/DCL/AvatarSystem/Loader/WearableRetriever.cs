@@ -33,6 +33,7 @@ namespace AvatarSystem
                 loaderAssetHelper.settings.layer = container.layer;
 
                 bool done = false;
+                Exception exception = null;
 
                 void OnSuccessWrapper(Rendereable rendereable)
                 {
@@ -43,7 +44,7 @@ namespace AvatarSystem
 
                 void OnFailEventWrapper(Exception e)
                 {
-                    //TODO handle exception
+                    exception = e;
                     loaderAssetHelper?.ClearEvents();
                     done = true;
                     rendereable = null;
@@ -55,6 +56,12 @@ namespace AvatarSystem
 
                 // AttachExternalCancellation is needed because a cancelled WaitUntil UniTask requires a frame
                 await UniTask.WaitUntil(() => done, cancellationToken: ct).AttachExternalCancellation(ct);
+
+                if (exception != null)
+                    throw exception;
+
+                if (rendereable == null)
+                    throw new Exception($"Couldnt retrieve Wearable assets at: {mainFile}");
 
                 return rendereable;
             }
