@@ -170,7 +170,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -39, y: 0}
+  m_AnchoredPosition: {x: -40, y: 0}
   m_SizeDelta: {x: 105, y: 28}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &8936920128688961413
@@ -519,8 +519,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: YOU ARE HERE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0da28b1264c7140eda8582804e5d094b, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 263d3c969cdca4dfaaa71514f806a4c2, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -550,11 +550,11 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 5
   m_fontSizeMax: 14
-  m_fontStyle: 0
+  m_fontStyle: 16
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: -5
+  m_characterSpacing: -6
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1253,6 +1253,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3725923502685340037, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
       propertyPath: m_PixelsPerUnitMultiplier
       value: 3.5
       objectReference: {fileID: 0}
@@ -1422,6 +1427,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.r
       value: 0.02745098
+      objectReference: {fileID: 0}
+    - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8360437818873036568, guid: fb037d81b9c10ad439a13e356a17bab6,
+        type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8616488889774720505, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
