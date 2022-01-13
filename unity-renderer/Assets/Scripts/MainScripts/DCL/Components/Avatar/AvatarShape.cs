@@ -133,6 +133,7 @@ namespace DCL
 
                 SetImpostor(model.id);
                 loadingCts?.Cancel();
+                loadingCts?.Dispose();
                 loadingCts = new CancellationTokenSource();
 
                 avatar.Load(wearableItems, new AvatarSettings
@@ -299,6 +300,8 @@ namespace DCL
             }
 
             loadingCts?.Cancel();
+            loadingCts?.Dispose();
+            loadingCts = null;
             currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             avatar.Dispose();
 

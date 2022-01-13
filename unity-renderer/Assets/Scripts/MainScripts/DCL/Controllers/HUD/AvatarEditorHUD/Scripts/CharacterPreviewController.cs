@@ -73,6 +73,7 @@ public class CharacterPreviewController : MonoBehaviour
     public void UpdateModel(AvatarModel newModel, Action onDone)
     {
         loadingCts?.Cancel();
+        loadingCts?.Dispose();
         loadingCts = new CancellationTokenSource();
         UpdateModelRoutine(newModel, onDone, loadingCts.Token);
     }
@@ -80,6 +81,7 @@ public class CharacterPreviewController : MonoBehaviour
     private void OnDestroy()
     {
         loadingCts?.Cancel();
+        loadingCts?.Dispose();
         avatar?.Dispose();
     }
 

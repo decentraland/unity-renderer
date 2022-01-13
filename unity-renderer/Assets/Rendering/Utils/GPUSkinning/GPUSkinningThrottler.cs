@@ -33,6 +33,7 @@ namespace GPUSkinning
         public void Start()
         {
             updateCts?.Cancel();
+            updateCts?.Dispose();
             updateCts = new CancellationTokenSource();
             UpdateTask(updateCts.Token);
         }
@@ -50,7 +51,12 @@ namespace GPUSkinning
                 await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
             }
         }
-        public void Stop() { updateCts?.Cancel(); }
+        public void Stop()
+        {
+            updateCts?.Cancel();
+            updateCts?.Dispose();
+        }
+
         public void Dispose()
         {
             updateCts?.Cancel();

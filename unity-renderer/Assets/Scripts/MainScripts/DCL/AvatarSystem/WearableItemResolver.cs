@@ -30,6 +30,8 @@ namespace AvatarSystem
 
         public async UniTask<WearableItem> Resolve(string wearableId, CancellationToken ct = default)
         {
+            if (disposeCts == null)
+                disposeCts = new CancellationTokenSource();
             using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token);
 
             linkedCts.Token.ThrowIfCancellationRequested();
@@ -57,6 +59,11 @@ namespace AvatarSystem
                 //No disposing required
                 throw;
             }
+            finally
+            {
+                disposeCts?.Dispose();
+                disposeCts = null;
+            }
         }
 
         public void Forget(List<string> wearableIds)
@@ -72,8 +79,9 @@ namespace AvatarSystem
 
         public void Dispose()
         {
-            disposeCts.Cancel();
-            disposeCts = new CancellationTokenSource();
+            disposeCts?.Cancel();
+            disposeCts?.Dispose();
+            disposeCts = null;
             Forget(wearablesRetrieved.Keys.ToList());
             wearablesRetrieved.Clear();
         }

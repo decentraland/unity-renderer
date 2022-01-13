@@ -40,6 +40,8 @@ namespace AvatarSystem
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default)
         {
+            disposeCts ??= new CancellationTokenSource();
+
             status = IAvatar.Status.Idle;
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
 
@@ -84,6 +86,11 @@ namespace AvatarSystem
                 Debug.LogException(e);
                 throw;
             }
+            finally
+            {
+                disposeCts.Dispose();
+                disposeCts = null;
+            }
         }
 
         public void SetVisibility(bool visible) { visibility.SetExplicitVisibility(visible); }
@@ -102,7 +109,7 @@ namespace AvatarSystem
         {
             status = IAvatar.Status.Idle;
             disposeCts?.Cancel();
-            disposeCts = new CancellationTokenSource();
+            disposeCts?.Dispose();
             avatarCurator?.Dispose();
             loader?.Dispose();
             visibility?.Dispose();

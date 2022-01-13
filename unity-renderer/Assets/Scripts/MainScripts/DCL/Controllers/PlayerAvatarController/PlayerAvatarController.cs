@@ -116,6 +116,7 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnUserProfileOnUpdate(UserProfile profile)
     {
         avatarLoadingCts?.Cancel();
+        avatarLoadingCts?.Dispose();
         avatarLoadingCts = new CancellationTokenSource();
         LoadingRoutine(profile, avatarLoadingCts.Token);
     }
@@ -186,6 +187,8 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnDestroy()
     {
         avatarLoadingCts?.Cancel();
+        avatarLoadingCts?.Dispose();
+        avatarLoadingCts = null;
         avatar?.Dispose();
     }
 }

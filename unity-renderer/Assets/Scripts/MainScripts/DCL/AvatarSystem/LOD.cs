@@ -83,6 +83,7 @@ namespace AvatarSystem
             this.lodIndex = lodIndex;
 
             transitionCTS?.Cancel();
+            transitionCTS?.Dispose();
             transitionCTS = new CancellationTokenSource();
             Transition(transitionCTS.Token);
         }
@@ -163,6 +164,7 @@ namespace AvatarSystem
         public void Dispose()
         {
             transitionCTS?.Cancel();
+            transitionCTS?.Dispose();
             transitionCTS = new CancellationTokenSource();
         }
 
