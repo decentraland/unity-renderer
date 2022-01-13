@@ -1,8 +1,7 @@
 using System;
 using DCL;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
+using DCL.Helpers;
 
 /// <summary>
 /// GifProcessor: Is in charge of choosing which gif processor tu use (typescript's webworker through GIFProcessingBridge or Unity's plugin UniGif)
@@ -41,17 +40,13 @@ public class GifProcessorAsync : IGifProcessor
 
     private async UniTask UniGifProcessorLoad(string url, Action<GifFrameData[]> OnSuccess, Action<Exception> OnFail)
     {
-        await UniTask.SwitchToMainThread();
-
         webRequestOp = DCL.Environment.i.platform.webRequest.Get(url: url, disposeOnCompleted: false);
         await webRequestOp.asyncOp;
         
         if (webRequestOp.isSucceded)
         {
             var bytes = webRequestOp.webRequest.downloadHandler.data;
-            
-            await UniTask.SwitchToThreadPool();
-            await UniGifAsync.GetTextureListAsync(bytes, Callback(OnSuccess, OnFail));
+            await UniTaskDCL.Run(() => UniGifAsync.GetTextureListAsync(bytes, Callback(OnSuccess, OnFail)));
         }
         else
         {

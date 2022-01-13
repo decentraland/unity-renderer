@@ -9,6 +9,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
@@ -510,7 +511,7 @@ namespace UnityGLTF
 
         private async UniTask LoadJsonOnAThread()
         {
-            await UniTask.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition));
+            await UniTaskDCL.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition));
             /*Thread parseJsonThread = new Thread(() => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition))
             {
                 Priority = ThreadPriority.Highest
@@ -1053,7 +1054,7 @@ namespace UnityGLTF
                 }
             }
 
-            await UniTask.Run( () =>
+            await UniTaskDCL.Run( () =>
             {
                 for (var ci = 0; ci < channelCount; ++ci)
                 {
@@ -1069,7 +1070,7 @@ namespace UnityGLTF
 
             if (optimizeKeyframes)
             {
-                await UniTask.Run( () =>
+                await UniTaskDCL.Run( () =>
                 {
                     for (var ci = 0; ci < channelCount; ++ci)
                     {

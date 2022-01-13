@@ -1,6 +1,4 @@
 using System;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL
@@ -25,12 +23,12 @@ namespace DCL
             {
                 var processor = new GifProcessorAsync(url);
                 asset.processor = processor;
-                UniTask.Run( () => processor.Load(frames =>
+                processor.Load(frames =>
                     {
                         asset.frames = frames;
                         OnSuccess?.Invoke();
-                    }, 
-                    OnFail)).Forget();
+                    },
+                    OnFail);
             }
             else
             {
