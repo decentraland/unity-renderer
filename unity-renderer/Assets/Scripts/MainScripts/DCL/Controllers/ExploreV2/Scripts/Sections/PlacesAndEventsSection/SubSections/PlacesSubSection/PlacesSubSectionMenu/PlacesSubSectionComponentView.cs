@@ -86,11 +86,17 @@ public interface IPlacesSubSectionComponentView
     /// Set the current scroll view position to 1.
     /// </summary>
     void RestartScrollViewPosition();
+
+    /// <summary>
+    /// Configure the needed pools for the places instantiation.
+    /// </summary>
+    void ConfigurePools();
 }
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
     internal const string PLACE_CARDS_POOL_NAME = "Places_PlaceCardsPool";
+    internal const int PLACE_CARDS_POOL_PREWARM = 20;
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
@@ -121,10 +127,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void OnEnable() { OnPlacesSubSectionEnable?.Invoke(); }
 
+    public void ConfigurePools()
+    {
+        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
+    }
+
     public override void Start()
     {
         placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
-        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, 200);
 
         places.RemoveItems();
 

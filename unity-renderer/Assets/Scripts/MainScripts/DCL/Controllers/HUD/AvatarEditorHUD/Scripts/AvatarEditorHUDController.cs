@@ -595,7 +595,7 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
             currentRenderProfile.avatarProfile.Apply();
 
-            prevMouseLockState = Utils.isCursorLocked;
+            prevMouseLockState = Utils.IsCursorLocked;
 
             if (DataStore.i.common.isSignUpFlow.Get() || !DataStore.i.exploreV2.isInitialized.Get())
                 Utils.UnlockCursor();

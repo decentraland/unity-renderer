@@ -30,6 +30,6 @@ namespace DCL.Components
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_ON_UP; }
 
-        public override PointerEventType GetEventType() { return PointerEventType.UP; }
+        public override PointerInputEventType GetEventType() { return PointerInputEventType.UP; }
     }
 }
