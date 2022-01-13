@@ -141,19 +141,10 @@ namespace MainScripts.DCL.GLTF
 
             this.fileToHashConverter = fileToHashConverter;
             this.settings = settings;
+            
+            LoadAssetCoroutine(settings).Forget();
         }
-
-        private async void Start()
-        {
-            try
-            {
-                await LoadAssetCoroutine(settings);
-            }
-            catch (Exception e)
-            {
-                OnFail_Internal(e);
-            }
-        }
+        
         public void RegisterCallbacks(Action<Mesh> meshCreated, Action<Renderer> rendererCreated)
         {
             rendererCreatedCallback = rendererCreated;
