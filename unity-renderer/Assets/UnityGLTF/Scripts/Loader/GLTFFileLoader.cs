@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using UnityEngine;
 
 // using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace UnityGLTF.Loader
                 return;
             }
 
-            await UniTask.Run( () =>
+            await UniTaskDCL.Run( () =>
             {
                 LoadedStream = File.OpenRead(pathToLoad);
             });
