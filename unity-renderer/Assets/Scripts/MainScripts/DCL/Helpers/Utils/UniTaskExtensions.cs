@@ -8,7 +8,7 @@ namespace DCL.Helpers
     {
         public static async UniTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if !UNITY_STANDALONE && !UNITY_EDITOR
             action();
             return;
 #endif
@@ -17,7 +17,7 @@ namespace DCL.Helpers
 
         public static async UniTask Run(Func<UniTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if !UNITY_STANDALONE && !UNITY_EDITOR
             await UniTask.Create(action);
             return;
 #endif
