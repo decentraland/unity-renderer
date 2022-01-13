@@ -175,8 +175,6 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
                     recipient = string.Empty,
                     body = $"/changerealm {realm.name}"
                 });
-
-                CloseModal();
             });
             realmsToAdd.Add(newRealmRow);
 
