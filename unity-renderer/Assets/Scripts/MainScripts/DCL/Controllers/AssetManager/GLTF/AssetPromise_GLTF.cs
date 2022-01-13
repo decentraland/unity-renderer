@@ -85,9 +85,6 @@ namespace DCL
                     forceGPUOnlyMesh = settings.forceGPUOnlyMesh
                 };
 
-                gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
-                    false, tmpSettings, FileToHash);
-
                 gltfComponent.OnSuccess += () =>
                 {
                     if (asset != null)
@@ -100,6 +97,9 @@ namespace DCL
                 };
 
                 gltfComponent.OnFail += OnFail;
+                
+                gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string,
+                    false, tmpSettings, FileToHash);
 
                 asset.name = fileName;
             }
