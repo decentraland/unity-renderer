@@ -64,7 +64,7 @@ namespace DCL
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-            Debug.unityLogger.logEnabled = false;
+            //Debug.unityLogger.logEnabled = false;
 
             kernelCommunication = new NativeBridgeCommunication(Environment.i.world.sceneController);
 #else
