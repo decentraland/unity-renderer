@@ -161,12 +161,10 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         realmsPool.ReleaseAll();
 
         List<BaseComponentView> realmsToAdd = new List<BaseComponentView>();
-        bool isAnOddRow = true;
         foreach (RealmRowComponentModel realm in realms)
         {
             RealmRowComponentView newRealmRow = realmsPool.Get().gameObject.GetComponent<RealmRowComponentView>();
             newRealmRow.Configure(realm);
-            newRealmRow.SetRowColor(isAnOddRow ? colorForOddRows : colorForEvenRows);
             newRealmRow.SetOnHoverColor(colorForFocusedRows);
             newRealmRow.onWarpInClick.RemoveAllListeners();
             newRealmRow.onWarpInClick.AddListener(() =>
@@ -181,12 +179,12 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
                 CloseModal();
             });
             realmsToAdd.Add(newRealmRow);
-            isAnOddRow = !isAnOddRow;
 
             friendsTrackerController?.AddHandler(newRealmRow.friendsHandler);
         }
 
         availableRealms.SetItems(realmsToAdd);
+        RefreshRowColours();
 
         ApplySorting(currentSorting, currentSortingDirection);
     }
@@ -225,6 +223,7 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         currentSortingDirection = sortingDirection;
 
         RefreshSortingArrows();
+        RefreshRowColours();
     }
 
     internal void RefreshSortingArrows()
@@ -233,6 +232,17 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         sortByNameArrowDown.color = currentSorting == RealmsSorting.BY_NAME && currentSortingDirection == RealmsSortingDirection.DESC ? colorForActiveSortingArrow : colorForUnactiveSortingArrow;
         sortByNumberOfPlayersArrowUp.color = currentSorting == RealmsSorting.BY_NUMBER_OF_PLAYERS && currentSortingDirection == RealmsSortingDirection.ASC ? colorForActiveSortingArrow : colorForUnactiveSortingArrow;
         sortByNumberOfPlayersArrowDown.color = currentSorting == RealmsSorting.BY_NUMBER_OF_PLAYERS && currentSortingDirection == RealmsSortingDirection.DESC ? colorForActiveSortingArrow : colorForUnactiveSortingArrow;
+    }
+
+    internal void RefreshRowColours()
+    {
+        var instantiatedRealms = availableRealms.GetItems();
+        bool isAnOddRow = true;
+        foreach (RealmRowComponentView realmRow in instantiatedRealms)
+        {
+            realmRow.SetRowColor(isAnOddRow ? colorForOddRows : colorForEvenRows);
+            isAnOddRow = !isAnOddRow;
+        }
     }
 
     internal void CloseModal() { Hide(); }
