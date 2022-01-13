@@ -162,16 +162,29 @@ namespace DCL.Skybox
 
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.BeginHorizontal();
+
             style = new GUIStyle(EditorStyles.toolbarButton);
             style.alignment = TextAnchor.MiddleCenter;
             style.fixedWidth = (position.width - toolSize.toolRightPadding) / 2;
-            Rect r = EditorGUILayout.BeginHorizontal(style);
+            Rect r = EditorGUILayout.BeginVertical(style);
             if (GUI.Button(r, GUIContent.none))
             {
                 selectedPart = SkyboxEditorToolsParts.Timeline_Tags;
                 rightPanelHeadingTxt = "Timeline Tags";
             }
             EditorGUILayout.LabelField("Timeline Tags");
+            EditorGUILayout.EndVertical();
+
+            style = new GUIStyle();
+            style.alignment = TextAnchor.MiddleRight;
+            style.fixedWidth = 100;
+            EditorGUILayout.BeginVertical(style);
+            if (GUILayout.Button("Config"))
+            {
+                Selection.activeObject = AssetDatabase.LoadAssetAtPath<EditorToolMeasurements>("Assets/Rendering/ProceduralSkybox/ToolProceduralSkybox/Scripts/Editor/EditorToolSize.asset");
+            }
+            EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndScrollView();
@@ -419,7 +432,7 @@ namespace DCL.Skybox
         private void RenderRightPanel()
         {
             RenderRightPanelHeading(rightPanelHeadingTxt);
-            EditorGUILayout.Space(20);
+            EditorGUILayout.Space(5);
 
             rightPanelScrollPos = EditorGUILayout.BeginScrollView(rightPanelScrollPos);
             switch (selectedPart)
