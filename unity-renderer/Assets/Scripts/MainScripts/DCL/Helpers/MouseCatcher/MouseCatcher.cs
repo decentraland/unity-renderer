@@ -2,41 +2,42 @@
 #define WEB_PLATFORM
 #endif
 
+using System;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
-using DCL.Helpers;
 
 namespace DCL
 {
     public interface IMouseCatcher
     {
-        event System.Action OnMouseUnlock;
-        event System.Action OnMouseLock;
+        event Action OnMouseUnlock;
+        event Action OnMouseLock;
         bool isLocked { get; }
     }
 
-    public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler
+    public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler, IPointerUpHandler
     {
-        public bool isLocked => Utils.isCursorLocked;
+        [SerializeField] private InputAction_Trigger unlockInputAction;
+
+        public bool isLocked => Utils.IsCursorLocked;
         bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
 
-        public event System.Action OnMouseUnlock;
-        public event System.Action OnMouseLock;
-        public event System.Action OnMouseDown;
+        public event Action OnMouseUnlock;
+        public event Action OnMouseLock;
+        public event Action OnMouseDown;
 
         //Default OnPointerEvent
         public LayerMask OnPointerDownTarget = 1 << 9;
 
-        void Update()
+        private void Start()
         {
-#if !WEB_PLATFORM
-            //Browser is changing this automatically
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                UnlockCursor();
-            }
-#endif
+            unlockInputAction.OnTriggered += HandleUnlockInput;
+        }
+
+        private void OnDestroy()
+        {
+            unlockInputAction.OnTriggered -= HandleUnlockInput;
         }
 
         public void LockCursor()
@@ -60,8 +61,20 @@ namespace DCL
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (eventData.button == PointerEventData.InputButton.Right)
+                DataStore.i.camera.panning.Set(true);
             OnMouseDown?.Invoke();
             LockCursor();
+        }
+        
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                if (eventData.button == PointerEventData.InputButton.Right)
+                    DataStore.i.camera.panning.Set(false);
+                UnlockCursor();
+            }
         }
 
         #region BROWSER_ONLY
@@ -88,5 +101,10 @@ namespace DCL
         }
 
         #endregion
+
+        private void HandleUnlockInput(DCLAction_Trigger action)
+        {
+            UnlockCursor();
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace DCL.Models
         AUDIO_STREAM = 202,
         AVATAR_MODIFIER_AREA = 205,
         AVATAR_ATTACH = 206,
+        CAMERA_MODE_AREA = 207,
         QUEST_TRACKING_INFORMATION = 1417815519 // This corresponds with dcl-ecs-quests
     }
 

@@ -369,7 +369,6 @@ public class TaskbarHUDController : IHUD
         if (mouseCatcher.isLocked)
             return;
 
-        view.chatButton.SetToggleState(true);
         view.chatButton.SetToggleState(false, false);
         worldChatWindowHud.view.chatHudView.ResetInputField();
         worldChatWindowHud.view.ActivatePreview();

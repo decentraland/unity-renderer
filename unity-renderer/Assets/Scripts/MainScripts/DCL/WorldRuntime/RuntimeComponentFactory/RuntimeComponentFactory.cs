@@ -90,6 +90,7 @@ namespace DCL
             builders.Add((int) CLASS_ID_COMPONENT.GIZMOS, BuildPoolableComponent);
             builders.Add((int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA, BuildPoolableComponent);
             builders.Add((int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION, BuildPoolableComponent);
+            builders.Add((int) CLASS_ID_COMPONENT.CAMERA_MODE_AREA, BuildComponent<CameraModeArea>);
         }
 
         private IComponent BuildPoolableComponent(int classId) { return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId); }
