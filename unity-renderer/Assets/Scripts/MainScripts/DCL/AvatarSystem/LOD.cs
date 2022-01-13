@@ -96,8 +96,7 @@ namespace AvatarSystem
 
         private async UniTaskVoid Transition(CancellationToken ct)
         {
-            if (ct.IsCancellationRequested)
-                throw new OperationCanceledException();
+            ct.ThrowIfCancellationRequested();
 
             try
             {
@@ -165,7 +164,7 @@ namespace AvatarSystem
         {
             transitionCTS?.Cancel();
             transitionCTS?.Dispose();
-            transitionCTS = new CancellationTokenSource();
+            transitionCTS = null;
         }
 
         ~LOD()

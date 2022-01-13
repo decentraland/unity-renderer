@@ -6,6 +6,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.FatalErrorReporter;
+using DCL.Interface;
 using DCL.NotificationModel;
 using GPUSkinning;
 using UnityEngine;
@@ -123,8 +124,7 @@ public class PlayerAvatarController : MonoBehaviour
 
     private async UniTaskVoid LoadingRoutine(UserProfile profile, CancellationToken ct)
     {
-        if (ct.IsCancellationRequested)
-            return;
+        ct.ThrowIfCancellationRequested();
 
         if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
         {
@@ -149,15 +149,9 @@ public class PlayerAvatarController : MonoBehaviour
             catch (Exception e)
             {
                 Debug.LogException(e);
+                WebInterface.ReportAvatarFatalError();
                 return;
             }
-        }
-
-        if (avatar.status != IAvatar.Status.Loaded)
-        {
-            //TODO Enable
-            //WebInterface.ReportAvatarFatalError();
-            return;
         }
 
         IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();

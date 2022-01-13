@@ -116,8 +116,7 @@ namespace AvatarSystem
 
         private async UniTask<Rendereable> LoadWearable(GameObject container, CancellationToken ct)
         {
-            if (ct.IsCancellationRequested)
-                throw new OperationCanceledException();
+            ct.ThrowIfCancellationRequested();
 
             try
             {

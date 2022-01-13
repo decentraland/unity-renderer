@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -225,7 +225,7 @@ namespace Test.AvatarSystem
             cts.Cancel();
 
             retriever.ClearReceivedCalls();
-            await ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
+            await TestUtils.ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
         });
 
         [UnityTest]
@@ -240,7 +240,7 @@ namespace Test.AvatarSystem
                      .Returns(x => throw new OperationCanceledException());
             retriever.ClearReceivedCalls();
 
-            await ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
+            await TestUtils.ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
             retriever.Received().Dispose();
         });
 
@@ -280,36 +280,6 @@ namespace Test.AvatarSystem
                 if (material != null)
                     Object.Destroy(material);
             }
-        }
-
-        // NUnit version of Unity is not up to day and doesnt have ThrowsAsync assertions, this mimics it:
-        // https://forum.unity.com/threads/can-i-replace-upgrade-unitys-nunit.488580/#post-6543523
-        public static async UniTask ThrowsAsync<T>(UniTask asyncMethod) where T : Exception { await ThrowsAsync<T>(asyncMethod, ""); }
-
-        public static async UniTask ThrowsAsync<T>(UniTask asyncMethod, string message) where T : Exception
-        {
-            try
-            {
-                await asyncMethod; //Should throw..
-            }
-            catch (T)
-            {
-                //Ok! Swallow the exception.
-                return;
-            }
-            catch (Exception e)
-            {
-                if (message != "")
-                {
-                    Assert.That(e, Is.TypeOf<T>(), message + " " + e.ToString()); //of course this fail because it goes through the first catch..
-                }
-                else
-                {
-                    Assert.That(e, Is.TypeOf<T>(), e.ToString());
-                }
-                throw; //probably unreachable
-            }
-            Assert.Fail("Expected an exception of type " + typeof(T).FullName + " but no exception was thrown."  );
         }
     }
 }

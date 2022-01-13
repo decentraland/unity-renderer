@@ -66,7 +66,7 @@ namespace AvatarSystem
                 if (bodyshapeLoader.status == IWearableLoader.Status.Failed)
                 {
                     status = ILoader.Status.Failed_Mayor;
-                    return;
+                    throw new Exception($"Couldnt load bodyshape");
                 }
 
                 // Mark for cleanUp unneeded loaders
@@ -108,8 +108,12 @@ namespace AvatarSystem
                 status = ComposeStatus(loaders);
                 if (status == ILoader.Status.Failed_Mayor)
                 {
-                    Dispose();
-                    return;
+                    List<string> failedWearables = loaders.Values
+                                                          .Where(x => x.status == IWearableLoader.Status.Failed && AvatarSystemUtils.IsCategoryRequired(x.wearable.data.category))
+                                                          .Select(x => x.wearable.id)
+                                                          .ToList();
+
+                    throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", failedWearables)}");
                 }
 
                 AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
@@ -124,8 +128,7 @@ namespace AvatarSystem
                 if (!MergeAvatar(activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())), out SkinnedMeshRenderer combinedRenderer))
                 {
                     status = ILoader.Status.Failed_Mayor;
-                    Dispose();
-                    return;
+                    throw new Exception("Couldnt merge avatar");
                 }
 
                 this.combinedRenderer = combinedRenderer;

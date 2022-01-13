@@ -20,8 +20,7 @@ namespace AvatarSystem
 
         public async UniTask<(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables)> Curate(string bodyshapeId, IEnumerable<string> wearablesId, CancellationToken ct = default)
         {
-            if (ct.IsCancellationRequested)
-                throw new OperationCanceledException();
+            ct.ThrowIfCancellationRequested();
 
             try
             {
@@ -89,8 +88,7 @@ namespace AvatarSystem
 
         private async UniTask<WearableItem[]> GetFallbackForMissingNeededCategories(string bodyshapeId, Dictionary<string, WearableItem> wearablesByCategory, CancellationToken ct)
         {
-            if (ct.IsCancellationRequested)
-                throw new OperationCanceledException();
+            ct.ThrowIfCancellationRequested();
 
             try
             {

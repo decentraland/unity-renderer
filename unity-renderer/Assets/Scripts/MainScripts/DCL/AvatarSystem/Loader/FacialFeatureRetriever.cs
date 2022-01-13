@@ -13,8 +13,7 @@ namespace AvatarSystem
 
         public async UniTask<(Texture main, Texture mask)> Retrieve(WearableItem facialFeature, string bodyshapeId, CancellationToken ct = default)
         {
-            if (ct.IsCancellationRequested)
-                throw new OperationCanceledException();
+            ct.ThrowIfCancellationRequested();
 
             try
             {
