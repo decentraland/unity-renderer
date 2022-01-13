@@ -46,7 +46,7 @@ public class RealmSelectorComponentViewTests
 
         // Assert
         Assert.AreEqual(testName, realmSelectorComponent.model.currentRealmName, "The realm name does not match in the model.");
-        Assert.IsTrue(realmSelectorComponent.currentRealmText.text.ToLower().Contains(testName.ToLower()));
+        Assert.IsTrue(realmSelectorComponent.currentRealmText.text.ToUpper().Contains(testName.ToUpper()));
     }
 
     [Test]

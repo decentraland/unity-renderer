@@ -8,4 +8,5 @@ public class RealmRowComponentModel : BaseComponentModel
     public int players;
     public bool isConnected;
     public Color backgroundColor;
+    public Color onHoverColor;
 }

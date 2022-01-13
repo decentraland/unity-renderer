@@ -70,8 +70,7 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
         if (numberOfusers == null)
             return;
 
-        float formattedUsersCount = newNumberOfUsers >= 1000 ? (newNumberOfUsers / 1000f) : newNumberOfUsers;
-        numberOfusers.text = newNumberOfUsers >= 1000 ? $"{formattedUsersCount}k" : $"{formattedUsersCount}";
+        numberOfusers.text = ExploreV2CommonHelpers.FormatNumberToString(newNumberOfUsers);
 
         RebuildLayouts();
     }

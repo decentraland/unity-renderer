@@ -1280,7 +1280,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 550, y: 1.5}
+  m_AnchoredPosition: {x: 450, y: 1.5}
   m_SizeDelta: {x: 10, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6420544829422731288
@@ -1875,6 +1875,7 @@ MonoBehaviour:
     currentRealmName: Loki
   colorForEvenRows: {r: 0.9490197, g: 0.9490197, b: 0.9490197, a: 1}
   colorForOddRows: {r: 0.9803922, g: 0.9803922, b: 0.9803922, a: 1}
+  colorForFocusedRows: {r: 0.9019608, g: 0.9764706, b: 0.972549, a: 1}
   colorForActiveSortingArrow: {r: 0.83137256, g: 0.83137256, b: 0.8352941, a: 1}
   colorForUnactiveSortingArrow: {r: 0.29411766, g: 0.29411766, b: 0.3137255, a: 1}
   friendColors:
@@ -2812,7 +2813,7 @@ PrefabInstance:
     - target: {fileID: 54622623229548845, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 440
+      value: 340
       objectReference: {fileID: 0}
     - target: {fileID: 54622623229548845, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
         type: 3}

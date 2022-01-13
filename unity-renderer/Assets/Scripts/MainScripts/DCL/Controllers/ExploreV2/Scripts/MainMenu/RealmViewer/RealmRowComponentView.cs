@@ -35,6 +35,12 @@ public interface IRealmRowComponentView
     /// </summary>
     /// <param name="color">Color to apply.</param>
     void SetRowColor(Color color);
+
+    /// <summary>
+    /// Set the background color of the row when it is hovered.
+    /// </summary>
+    /// <param name="color">Color to apply.</param>
+    void SetOnHoverColor(Color color);
 }
 
 public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, IComponentModelConfig
@@ -54,6 +60,9 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
     [SerializeField] internal int maxFriendsToShow = 6;
     [SerializeField] internal RealmRowComponentModel model;
 
+    internal Color originalBackgroundColor;
+    internal Color onHoverColor;
+
     public RealmHandler friendsHandler { get; set; }
     internal RealmInfoHandler realmInfoHandler { get; set; }
 
@@ -66,6 +75,9 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
         base.Awake();
 
         CleanFriendHeadsItems();
+
+        originalBackgroundColor = backgroundImage.color;
+        onHoverColor = backgroundImage.color;
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -89,6 +101,21 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
         SetNumberOfPlayers(model.players);
         SetAsConnected(model.isConnected);
         SetRowColor(model.backgroundColor);
+        SetOnHoverColor(model.onHoverColor);
+    }
+
+    public override void OnFocus()
+    {
+        base.OnFocus();
+
+        backgroundImage.color = onHoverColor;
+    }
+
+    public override void OnLoseFocus()
+    {
+        base.OnLoseFocus();
+
+        backgroundImage.color = originalBackgroundColor;
     }
 
     public override void Dispose()
@@ -112,7 +139,7 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
         if (nameText == null)
             return;
 
-        nameText.text = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name.ToLower());
+        nameText.text = name.ToUpper();
     }
 
     public void SetNumberOfPlayers(int numberOfPlayers)
@@ -122,8 +149,7 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
         if (playersText == null)
             return;
 
-        float formattedPlayersCount = numberOfPlayers >= 1000 ? (numberOfPlayers / 1000f) : numberOfPlayers;
-        playersText.text = numberOfPlayers >= 1000 ? $"{formattedPlayersCount}k" : $"{formattedPlayersCount}";
+        playersText.text = ExploreV2CommonHelpers.FormatNumberToString(numberOfPlayers);
     }
 
     public void SetAsConnected(bool isConnected)
@@ -145,6 +171,13 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
             return;
 
         backgroundImage.color = color;
+        originalBackgroundColor = color;
+    }
+
+    public void SetOnHoverColor(Color color)
+    {
+        model.onHoverColor = color;
+        onHoverColor = color;
     }
 
     internal void InitializeFriendsTracker()

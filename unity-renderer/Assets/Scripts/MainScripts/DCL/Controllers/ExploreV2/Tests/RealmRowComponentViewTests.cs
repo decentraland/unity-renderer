@@ -48,7 +48,7 @@ public class RealmRowComponentViewTests
 
         // Assert
         Assert.AreEqual(testName, realmRowComponent.model.name, "The realm name does not match in the model.");
-        Assert.AreEqual(testName.ToLower(), realmRowComponent.nameText.text.ToLower());
+        Assert.AreEqual(testName.ToUpper(), realmRowComponent.nameText.text.ToUpper());
     }
 
     [Test]
@@ -64,7 +64,7 @@ public class RealmRowComponentViewTests
         Assert.AreEqual(testNumPlayers, realmRowComponent.model.players, "The realm number of players does not match in the model.");
 
         float formattedPlayersCount = testNumPlayers >= 1000 ? (testNumPlayers / 1000f) : testNumPlayers;
-        Assert.AreEqual(testNumPlayers >= 1000 ? $"{formattedPlayersCount}k" : $"{formattedPlayersCount}", realmRowComponent.playersText.text.ToLower());
+        Assert.AreEqual(testNumPlayers >= 1000 ? $"{string.Format("{0:0.##}", formattedPlayersCount)}k" : $"{formattedPlayersCount}", realmRowComponent.playersText.text.ToLower());
     }
 
     [Test]
@@ -94,6 +94,21 @@ public class RealmRowComponentViewTests
         // Assert
         Assert.AreEqual(testColor, realmRowComponent.model.backgroundColor, "The realm background color does not match in the model.");
         Assert.AreEqual(testColor, realmRowComponent.backgroundImage.color);
+        Assert.AreEqual(testColor, realmRowComponent.originalBackgroundColor);
+    }
+
+    [Test]
+    public void SetOnHoverColorCorrectly()
+    {
+        // Arrange
+        Color testColor = Color.black;
+
+        // Act
+        realmRowComponent.SetOnHoverColor(testColor);
+
+        // Assert
+        Assert.AreEqual(testColor, realmRowComponent.model.onHoverColor, "The realm on hover color does not match in the model.");
+        Assert.AreEqual(testColor, realmRowComponent.onHoverColor);
     }
 
     [Test]

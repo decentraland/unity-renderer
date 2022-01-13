@@ -58,6 +58,7 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
     [SerializeField] internal RealmSelectorComponentModel model;
     [SerializeField] internal Color colorForEvenRows;
     [SerializeField] internal Color colorForOddRows;
+    [SerializeField] internal Color colorForFocusedRows;
     [SerializeField] internal Color colorForActiveSortingArrow;
     [SerializeField] internal Color colorForUnactiveSortingArrow;
     [SerializeField] internal Color[] friendColors = null;
@@ -142,7 +143,7 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
 
         // Set the current realm in the modal header
         if (currentRealmText != null)
-            currentRealmText.text = $"You are in <b>{System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(realm.ToLower())}</b>";
+            currentRealmText.text = $"You are in <b>{realm.ToUpper()}</b>";
 
         // Search the current realm in the available ones and set it as connected
         var instantiatedRealms = availableRealms.GetItems();
@@ -166,6 +167,7 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
             RealmRowComponentView newRealmRow = realmsPool.Get().gameObject.GetComponent<RealmRowComponentView>();
             newRealmRow.Configure(realm);
             newRealmRow.SetRowColor(isAnOddRow ? colorForOddRows : colorForEvenRows);
+            newRealmRow.SetOnHoverColor(colorForFocusedRows);
             newRealmRow.onWarpInClick.RemoveAllListeners();
             newRealmRow.onWarpInClick.AddListener(() =>
             {

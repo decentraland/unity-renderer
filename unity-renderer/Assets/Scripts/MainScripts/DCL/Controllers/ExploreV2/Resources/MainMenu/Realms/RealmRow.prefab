@@ -35,8 +35,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 451, y: 0}
-  m_SizeDelta: {x: 180, y: 0}
+  m_AnchoredPosition: {x: 351, y: 0}
+  m_SizeDelta: {x: 280, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2274306234934567019
 CanvasRenderer:
@@ -247,7 +247,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 51, y: 0}
-  m_SizeDelta: {x: 380, y: 0}
+  m_SizeDelta: {x: 280, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2339246601185444780
 CanvasRenderer:
@@ -447,12 +447,13 @@ MonoBehaviour:
   connectedMark: {fileID: 4011590442795622596}
   backgroundImage: {fileID: 5928328878546256490}
   friendsGrid: {fileID: 1657603845552397430}
-  maxFriendsToShow: 6
+  maxFriendsToShow: 11
   model:
     name: America-Amber
     players: 20000
     isConnected: 0
     backgroundColor: {r: 0.9803922, g: 0.9803922, b: 0.9803922, a: 1}
+    onHoverColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 1}
 --- !u!1 &6299302337623997550
 GameObject:
   m_ObjectHideFlags: 0
