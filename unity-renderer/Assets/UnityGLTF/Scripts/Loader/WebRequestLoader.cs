@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
@@ -87,7 +88,7 @@ namespace UnityGLTF.Loader
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
 
-            await UniTask.Run( async () =>
+            await UniTaskDCL.Run( async () =>
             {
                 while (asyncOp.keepWaiting)
                     await Task.Delay(5);
