@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
-using DCLPlugins.PreviewModePlugin.Commons;
+using DCLPlugins.DebugPlugins.Commons;
 using UnityEngine;
 
 internal class SceneEntitiesTracker : ISceneListener

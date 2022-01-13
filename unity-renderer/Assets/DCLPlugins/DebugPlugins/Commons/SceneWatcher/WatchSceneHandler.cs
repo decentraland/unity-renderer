@@ -2,7 +2,7 @@ using System;
 using DCL.Controllers;
 using DCL.Models;
 
-namespace DCLPlugins.PreviewModePlugin.Commons
+namespace DCLPlugins.DebugPlugins.Commons
 {
     public class WatchSceneHandler : IDisposable
     {

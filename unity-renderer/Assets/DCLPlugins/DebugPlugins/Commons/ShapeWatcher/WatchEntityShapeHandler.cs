@@ -1,6 +1,6 @@
 using DCL.Models;
 
-namespace DCLPlugins.PreviewModePlugin.Commons
+namespace DCLPlugins.DebugPlugins.Commons
 {
     public class WatchEntityShapeHandler
     {

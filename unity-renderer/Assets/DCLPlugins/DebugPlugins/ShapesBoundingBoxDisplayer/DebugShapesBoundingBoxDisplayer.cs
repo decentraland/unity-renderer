@@ -2,20 +2,20 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Controllers;
-using DCLPlugins.PreviewModePlugin.Commons;
+using DCLPlugins.DebugPlugins.Commons;
 
-public class ShapesBoundingBoxDisplayer : IPlugin
+public class DebugShapesBoundingBoxDisplayer : IPlugin
 {
     private readonly IBaseDictionary<string, bool> isBoundingBoxEnabledForScene;
     private readonly WorldRuntimeContext worldRuntime;
     private readonly Dictionary<string, WatchSceneHandler> scenesWatcher = new Dictionary<string, WatchSceneHandler>();
     private readonly List<string> pendingScenesId = new List<string>();
 
-    public ShapesBoundingBoxDisplayer() : this(
+    public DebugShapesBoundingBoxDisplayer() : this(
         DataStore.i.debugConfig.showSceneBoundingBoxes,
         Environment.i.world) { }
 
-    internal ShapesBoundingBoxDisplayer(
+    internal DebugShapesBoundingBoxDisplayer(
         IBaseDictionary<string, bool> isBoundingBoxEnabledVariable,
         WorldRuntimeContext worldRuntime)
     {

@@ -1,7 +1,7 @@
 using System;
 using DCL.Models;
 
-namespace DCLPlugins.PreviewModePlugin.Commons
+namespace DCLPlugins.DebugPlugins.Commons
 {
     public interface ISceneListener : IDisposable
     {
