@@ -142,7 +142,9 @@ namespace MainScripts.DCL.GLTF
             this.fileToHashConverter = fileToHashConverter;
             this.settings = settings;
             
-            LoadAssetCoroutine(settings).Forget();
+            LoadAssetCoroutine(settings)
+                .SuppressCancellationThrow()
+                .Forget();
         }
         
         public void RegisterCallbacks(Action<Mesh> meshCreated, Action<Renderer> rendererCreated)
@@ -310,6 +312,10 @@ namespace MainScripts.DCL.GLTF
 
                     state = State.COMPLETED;
                     DecrementDownloadCount();
+                }
+                catch (Exception e)
+                {
+                    //Debug.LogError(e);
                 }
                 finally
                 {
