@@ -1,107 +1,106 @@
+using System.Collections.Generic;
+using System.Linq;
 using DCL;
 using DCL.Controllers;
 using DCLPlugins.PreviewModePlugin.Commons;
 
 public class ShapesBoundingBoxDisplayer : IPlugin
 {
-    private string targetSceneId;
-    private IBaseVariable<bool> isDebugEnabled;
-    private KernelConfig kernelConfig;
-    private WorldRuntimeContext worldRuntime;
-    private WatchSceneHandler watchSceneHandler;
+    private readonly IBaseDictionary<string, bool> isBoundingBoxEnabledForScene;
+    private readonly WorldRuntimeContext worldRuntime;
+    private readonly Dictionary<string, WatchSceneHandler> scenesWatcher = new Dictionary<string, WatchSceneHandler>();
+    private readonly List<string> pendingScenesId = new List<string>();
 
-    public ShapesBoundingBoxDisplayer() : this(DataStore.i.debugConfig.isDebugMode, KernelConfig.i, Environment.i.world) { }
+    public ShapesBoundingBoxDisplayer() : this(
+        DataStore.i.debugConfig.showSceneBoundingBoxes,
+        Environment.i.world) { }
 
-    internal ShapesBoundingBoxDisplayer(IBaseVariable<bool> debugModeVariable, KernelConfig kernelConfig, WorldRuntimeContext worldRuntime)
+    internal ShapesBoundingBoxDisplayer(
+        IBaseDictionary<string, bool> isBoundingBoxEnabledVariable,
+        WorldRuntimeContext worldRuntime)
     {
-        isDebugEnabled = debugModeVariable;
-        this.kernelConfig = kernelConfig;
+        this.isBoundingBoxEnabledForScene = isBoundingBoxEnabledVariable;
         this.worldRuntime = worldRuntime;
 
-        isDebugEnabled.OnChange += DebugModeVariableOnOnChange;
-        kernelConfig.OnChange += KernelConfigOnOnChange;
-
-        DebugModeVariableOnOnChange(isDebugEnabled.Get(), false);
-        KernelConfigOnOnChange(kernelConfig.Get(), null);
-    }
-
-    public void Dispose()
-    {
-        isDebugEnabled.OnChange -= DebugModeVariableOnOnChange;
-        kernelConfig.OnChange -= KernelConfigOnOnChange;
-        worldRuntime.sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
-
-        KillWatchScene();
-    }
-
-    private void KillWatchScene()
-    {
-        if (watchSceneHandler == null)
+        // NOTE: we search for scenes that might be added to the variable previous to this class instantiation
+        using (var iterator = isBoundingBoxEnabledVariable.Get().GetEnumerator())
         {
-            return;
+            while (iterator.MoveNext() && iterator.Current.Value)
+            {
+                IsBoundingBoxEnabledVariableOnOnAdded(iterator.Current.Key, iterator.Current.Value);
+            }
         }
 
-        watchSceneHandler.Dispose();
-        watchSceneHandler = null;
+        isBoundingBoxEnabledVariable.OnAdded += IsBoundingBoxEnabledVariableOnOnAdded;
+        isBoundingBoxEnabledVariable.OnRemoved += IsBoundingBoxEnabledVariableOnOnRemoved;
+        worldRuntime.sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
+    }
+    public void Dispose()
+    {
+        isBoundingBoxEnabledForScene.OnAdded -= IsBoundingBoxEnabledVariableOnOnAdded;
+        isBoundingBoxEnabledForScene.OnRemoved -= IsBoundingBoxEnabledVariableOnOnRemoved;
+        worldRuntime.sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
+
+        var scenesId = scenesWatcher.Keys.ToArray();
+        for (int i = 0; i < scenesId.Length; i++)
+        {
+            KillWatchScene(scenesId[i]);
+        }
+    }
+
+    private void KillWatchScene(string sceneId)
+    {
+        if (!scenesWatcher.TryGetValue(sceneId, out WatchSceneHandler watchHandler))
+            return;
+
+        watchHandler?.Dispose();
+        scenesWatcher.Remove(sceneId);
     }
 
     private void WatchScene(string sceneId)
     {
+        // NOTE: in case scene is not loaded yet, we add it to the "pending" list
         if (!worldRuntime.state.TryGetScene(sceneId, out IParcelScene scene))
+        {
+            if (!pendingScenesId.Contains(sceneId))
+            {
+                pendingScenesId.Add(sceneId);
+            }
             return;
+        }
 
         WatchScene(scene);
     }
 
     private void WatchScene(IParcelScene scene)
     {
-        if (!isDebugEnabled.Get())
+        if (scenesWatcher.TryGetValue(scene.sceneData.id, out WatchSceneHandler watchHandler))
         {
-            return;
+            watchHandler?.Dispose();
         }
-
-        watchSceneHandler?.Dispose();
-        watchSceneHandler = new WatchSceneHandler(scene, new SceneEntitiesTracker());
+        scenesWatcher[scene.sceneData.id] = new WatchSceneHandler(scene, new SceneEntitiesTracker());
     }
 
-    private void DebugModeVariableOnOnChange(bool current, bool previous)
+    private void IsBoundingBoxEnabledVariableOnOnRemoved(string sceneId, bool enabled)
     {
-        if (current)
+        KillWatchScene(sceneId);
+    }
+
+    private void IsBoundingBoxEnabledVariableOnOnAdded(string sceneId, bool enabled)
+    {
+        if (enabled)
         {
-            worldRuntime.sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
-            if (!string.IsNullOrEmpty(targetSceneId))
-            {
-                WatchScene(targetSceneId);
-            }
+            WatchScene(sceneId);
         }
         else
         {
-            worldRuntime.sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
-            KillWatchScene();
+            KillWatchScene(sceneId);
         }
-    }
-
-    private void KernelConfigOnOnChange(KernelConfigModel current, KernelConfigModel previous)
-    {
-        if (current?.debugConfig != null && current.debugConfig.shapeBoundingBoxDisplaySceneId == targetSceneId)
-        {
-            return;
-        }
-
-        targetSceneId = current.debugConfig.shapeBoundingBoxDisplaySceneId;
-
-        if (!string.IsNullOrEmpty(targetSceneId))
-        {
-            WatchScene(targetSceneId);
-            return;
-        }
-
-        KillWatchScene();
     }
 
     private void SceneControllerOnOnNewSceneAdded(IParcelScene scene)
     {
-        if (scene.sceneData.id == targetSceneId)
+        if (pendingScenesId.Remove(scene.sceneData.id))
         {
             WatchScene(scene);
         }
