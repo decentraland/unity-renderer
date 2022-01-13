@@ -145,7 +145,7 @@ namespace DCL
                 }, loadingCts.Token);
 
                 // Yielding a UniTask doesn't do anything, we manually wait until the avatar is ready
-                yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded || avatar.status == IAvatar.Status.Failed);
+                yield return new WaitUntil(() => avatar.status == IAvatar.Status.Loaded);
             }
 
             avatar.SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);

@@ -18,8 +18,6 @@ namespace AvatarSystem
         private readonly IGPUSkinningThrottler gpuSkinningThrottler;
         private CancellationTokenSource disposeCts = new CancellationTokenSource();
 
-        private int lodIndex = 0;
-
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
 
@@ -42,6 +40,7 @@ namespace AvatarSystem
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default)
         {
+            status = IAvatar.Status.Idle;
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
 
             linkedCt.ThrowIfCancellationRequested();
@@ -54,28 +53,10 @@ namespace AvatarSystem
                 WearableItem eyebrows = null;
                 WearableItem mouth = null;
                 List<WearableItem> wearables = null;
-                try
-                {
-                    (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, linkedCt);
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Failed curating avatar with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
-                    Debug.LogError(e.ToString());
-                    throw;
-                }
+
+                (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, linkedCt);
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
-
-                if (loader.status == ILoader.Status.Failed_Mayor || loader.status == ILoader.Status.Idle)
-                {
-                    status = IAvatar.Status.Failed;
-                    return;
-                }
 
                 extents = loader.combinedRenderer.localBounds.extents * 2f / 100f;
 
@@ -88,7 +69,6 @@ namespace AvatarSystem
                 visibility.SetLoadingReady(true);
 
                 lod.Bind(gpuSkinning.renderer, new [] { loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
-                lod.SetLodIndex(lodIndex, true);
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
@@ -96,6 +76,12 @@ namespace AvatarSystem
             catch (OperationCanceledException)
             {
                 Dispose();
+            }
+            catch (Exception e)
+            {
+                Dispose();
+                Debug.LogError($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
+                Debug.LogException(e);
                 throw;
             }
         }
@@ -104,13 +90,7 @@ namespace AvatarSystem
 
         public void SetExpression(string expressionId, long timestamps) { animator?.PlayExpression(expressionId, timestamps); }
 
-        public void SetLODLevel(int lodIndex)
-        {
-            this.lodIndex = lodIndex;
-            if (status != IAvatar.Status.Loaded)
-                return;
-            lod.SetLodIndex(lodIndex);
-        }
+        public void SetLODLevel(int lodIndex) { lod.SetLodIndex(lodIndex); }
 
         public void SetAnimationThrottling(int framesBetweenUpdate) { gpuSkinningThrottler.SetThrottling(framesBetweenUpdate); }
 

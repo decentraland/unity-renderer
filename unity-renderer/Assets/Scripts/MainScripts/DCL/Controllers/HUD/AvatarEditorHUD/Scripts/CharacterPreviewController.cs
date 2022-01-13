@@ -77,7 +77,11 @@ public class CharacterPreviewController : MonoBehaviour
         UpdateModelRoutine(newModel, onDone, loadingCts.Token);
     }
 
-    private void OnDestroy() { loadingCts?.Cancel(); }
+    private void OnDestroy()
+    {
+        loadingCts?.Cancel();
+        avatar?.Dispose();
+    }
 
     private async UniTaskVoid UpdateModelRoutine(AvatarModel newModel, Action onDone, CancellationToken ct)
     {

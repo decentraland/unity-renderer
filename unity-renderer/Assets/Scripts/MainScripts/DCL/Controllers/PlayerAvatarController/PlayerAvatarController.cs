@@ -145,15 +145,17 @@ public class PlayerAvatarController : MonoBehaviour
             {
                 return;
             }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return;
+            }
         }
 
         if (avatar.status != IAvatar.Status.Loaded)
         {
-            if (avatar.status == IAvatar.Status.Failed )
-            {
-                //TODO Enable
-                //WebInterface.ReportAvatarFatalError();
-            }
+            //TODO Enable
+            //WebInterface.ReportAvatarFatalError();
             return;
         }
 

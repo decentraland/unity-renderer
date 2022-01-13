@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
@@ -17,12 +18,10 @@ namespace Test.AvatarSystem
     public class WearableLoaderShould
     {
         private const string GLASSES_WEARABLE_ID = "urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0";
-        private const string SWEATER_ID = "urn:decentraland:off-chain:base-avatars:f_sweater";
         private const string HOODIE_ID = "urn:decentraland:off-chain:base-avatars:green_hoodie";
 
         private WearableLoader loader;
         private IWearableRetriever retriever;
-        private WearableItem wearable;
         private GameObject container = null;
         private List<Material> materialsToBeDisposed = new List<Material>();
 
@@ -45,8 +44,7 @@ namespace Test.AvatarSystem
         public IEnumerator LoadWearable() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            wearable = CatalogController.wearableCatalog[GLASSES_WEARABLE_ID];
-            loader = new WearableLoader(retriever, wearable);
+            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
 
             var normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
             var hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
@@ -77,7 +75,7 @@ namespace Test.AvatarSystem
         public IEnumerator FallbackIfFailsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
+            WearableItem wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
             loader = new WearableLoader(retriever, wearable);
 
             WearableLoader.defaultWearablesResolver = Substitute.For<IWearableItemResolver>();
@@ -95,15 +93,13 @@ namespace Test.AvatarSystem
             retriever.Configure()
                      .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
                      .Returns(
-                         x => // First call configures everything for null, mocking the wearable retrieval
+                         x => // First call configures everything for null, mocking a failing wearable retrieval
                          {
-                             Debug.Log("Trying 1");
                              retriever.rendereable.Returns(x => null);
                              return new UniTask<Rendereable>(null);
                          },
-                         x => // Second call configures everything for the prepared rendereable, mocking the fallback retrieval
+                         x => // Second call configures everything for the prepared rendereable, mocking a successfull fallback retrieval
                          {
-                             Debug.Log("Trying 2");
                              retriever.rendereable.Returns(x => rendereable);
                              return new UniTask<Rendereable>(rendereable);
                          }
@@ -129,7 +125,7 @@ namespace Test.AvatarSystem
         public IEnumerator FallbackIfThrowsWithRequiredCategory() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
+            WearableItem wearable = CatalogController.wearableCatalog[HOODIE_ID]; //Use a wearable with required category
             loader = new WearableLoader(retriever, wearable);
 
             WearableLoader.defaultWearablesResolver = Substitute.For<IWearableItemResolver>();
@@ -178,17 +174,8 @@ namespace Test.AvatarSystem
         public IEnumerator NotFallbackIfFailsWithNoRequiredCategory() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            wearable = CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]; //Use a wearable with required category
-            loader = new WearableLoader(retriever, wearable);
-
-            Renderer normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
-            Renderer hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
-            Renderer skinRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "skin");
-            Rendereable rendereable = new Rendereable
-            {
-                container = container,
-                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
-            };
+            //Use a wearable with no required category
+            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
 
             retriever.rendereable.Returns(x => null);
 
@@ -209,17 +196,8 @@ namespace Test.AvatarSystem
         public IEnumerator NotFallbackIfThrowsWithNoRequiredCategory() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
-            wearable = CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]; //Use a wearable with required category
-            loader = new WearableLoader(retriever, wearable);
-
-            Renderer normalRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "ThisMaterialWontBeModified");
-            Renderer hairRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "hair");
-            Renderer skinRenderer = GetPrimitiveWithAvatarMaterial(container.transform, "skin");
-            Rendereable rendereable = new Rendereable
-            {
-                container = container,
-                renderers = new List<Renderer> { normalRenderer, hairRenderer, skinRenderer },
-            };
+            //Use a wearable with no required category
+            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
 
             retriever.Configure()
                      .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -236,6 +214,34 @@ namespace Test.AvatarSystem
             //Assert
             retriever.Received(1).Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
             Assert.AreEqual(IWearableLoader.Status.Failed, loader.status);
+        });
+
+        [UnityTest]
+        public IEnumerator CancelLoadIfACancelledTokenProvided() => UniTask.ToCoroutine(async () =>
+        {
+            //Arrange
+            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            retriever.ClearReceivedCalls();
+            await ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
+        });
+
+        [UnityTest]
+        public IEnumerator DisposeWhenCancellingOnRetrieving() => UniTask.ToCoroutine(async () =>
+        {
+            //Arrange
+            loader = new WearableLoader(retriever, CatalogController.wearableCatalog[GLASSES_WEARABLE_ID]);
+            CancellationTokenSource cts = new CancellationTokenSource();
+
+            retriever.Configure()
+                     .Retrieve(Arg.Any<GameObject>(), Arg.Any<ContentProvider>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+                     .Returns(x => throw new OperationCanceledException());
+            retriever.ClearReceivedCalls();
+
+            await ThrowsAsync<OperationCanceledException>(loader.Load(container, new AvatarSettings { bodyshapeId = WearableLiterals.BodyShapes.MALE }, cts.Token));
+            retriever.Received().Dispose();
         });
 
         private Renderer GetPrimitiveWithAvatarMaterial(Transform parent, string materialName)
@@ -268,12 +274,42 @@ namespace Test.AvatarSystem
             if (CatalogController.i != null)
                 Object.Destroy(CatalogController.i);
 
-            for (var i = 0; i < materialsToBeDisposed.Count; i++)
+            for (int i = 0; i < materialsToBeDisposed.Count; i++)
             {
                 Material material = materialsToBeDisposed[i];
                 if (material != null)
                     Object.Destroy(material);
             }
+        }
+
+        // NUnit version of Unity is not up to day and doesnt have ThrowsAsync assertions, this mimics it:
+        // https://forum.unity.com/threads/can-i-replace-upgrade-unitys-nunit.488580/#post-6543523
+        public static async UniTask ThrowsAsync<T>(UniTask asyncMethod) where T : Exception { await ThrowsAsync<T>(asyncMethod, ""); }
+
+        public static async UniTask ThrowsAsync<T>(UniTask asyncMethod, string message) where T : Exception
+        {
+            try
+            {
+                await asyncMethod; //Should throw..
+            }
+            catch (T)
+            {
+                //Ok! Swallow the exception.
+                return;
+            }
+            catch (Exception e)
+            {
+                if (message != "")
+                {
+                    Assert.That(e, Is.TypeOf<T>(), message + " " + e.ToString()); //of course this fail because it goes through the first catch..
+                }
+                else
+                {
+                    Assert.That(e, Is.TypeOf<T>(), e.ToString());
+                }
+                throw; //probably unreachable
+            }
+            Assert.Fail("Expected an exception of type " + typeof(T).FullName + " but no exception was thrown."  );
         }
     }
 }

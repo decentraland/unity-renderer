@@ -11,13 +11,15 @@ namespace AvatarSystem
         AssetPromise_Texture mainTexturePromise = null;
         AssetPromise_Texture maskTexturePromise = null;
 
-        public async UniTask<(Texture main, Texture mask)> Retrieve( string mainTextureUrl, string maskTextureUrl, CancellationToken ct = default)
+        public async UniTask<(Texture main, Texture mask)> Retrieve(WearableItem facialFeature, string bodyshapeId, CancellationToken ct = default)
         {
             if (ct.IsCancellationRequested)
                 throw new OperationCanceledException();
 
             try
             {
+                (string mainTextureUrl, string maskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(bodyshapeId, facialFeature);
+
                 AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
                 AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
 

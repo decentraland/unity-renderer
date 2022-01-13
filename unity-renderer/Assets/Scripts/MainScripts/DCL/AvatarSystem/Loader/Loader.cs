@@ -138,6 +138,12 @@ namespace AvatarSystem
                 Dispose();
                 throw;
             }
+            catch
+            {
+                Dispose();
+                Debug.LogError("Failed Loading avatar");
+                throw;
+            }
             finally
             {
                 DisposeCleanUpLoaders();

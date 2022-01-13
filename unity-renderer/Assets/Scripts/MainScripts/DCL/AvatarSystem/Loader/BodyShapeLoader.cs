@@ -24,10 +24,10 @@ namespace AvatarSystem
         public SkinnedMeshRenderer upperBodyRenderer { get; private set; }
         public SkinnedMeshRenderer lowerBodyRenderer { get; private set; }
 
-        private readonly IWearableRetriever bodyshapeRetriever;
-        private readonly IFacialFeatureRetriever eyesRetriever;
-        private readonly IFacialFeatureRetriever eyebrowsRetriever;
-        private readonly IFacialFeatureRetriever mouthRetriever;
+        internal readonly IWearableRetriever bodyshapeRetriever;
+        internal readonly IFacialFeatureRetriever eyesRetriever;
+        internal readonly IFacialFeatureRetriever eyebrowsRetriever;
+        internal readonly IFacialFeatureRetriever mouthRetriever;
 
         public BodyShapeLoader(IRetrieverFactory retrieverFactory, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
         {
@@ -69,18 +69,15 @@ namespace AvatarSystem
                 if (rendereable == null)
                 {
                     status = IWearableLoader.Status.Failed;
+                    Dispose();
                     return;
                 }
 
                 (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
 
-                (string eyesMainTextureUrl, string eyesMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, eyes);
-                (string eyebrowsMainTextureUrl, string eyebrowsMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, eyebrows);
-                (string mouthMainTextureUrl, string mouthMaskTextureUrl) = AvatarSystemUtils.GetFacialFeatureTexturesUrls(wearable.id, mouth);
-
-                UniTask<(Texture main, Texture mask)> eyesTask = eyesRetriever.Retrieve(eyesMainTextureUrl, eyesMaskTextureUrl, ct);
-                UniTask<(Texture main, Texture mask)> eyebrowsTask = eyebrowsRetriever.Retrieve(eyebrowsMainTextureUrl, eyebrowsMaskTextureUrl, ct);
-                UniTask<(Texture main, Texture mask)> mouthTask = mouthRetriever.Retrieve(mouthMainTextureUrl, mouthMaskTextureUrl, ct);
+                UniTask<(Texture main, Texture mask)> eyesTask = eyesRetriever.Retrieve(eyes, wearable.id, ct);
+                UniTask<(Texture main, Texture mask)> eyebrowsTask = eyebrowsRetriever.Retrieve(eyebrows, wearable.id, ct);
+                UniTask<(Texture main, Texture mask)> mouthTask = mouthRetriever.Retrieve(mouth, wearable.id, ct);
 
                 var (eyesResult, eyebrowsResult, mouthResult) = await (eyesTask, eyebrowsTask, mouthTask);
 

@@ -7,6 +7,6 @@ namespace AvatarSystem
 {
     public interface IFacialFeatureRetriever : IDisposable
     {
-        UniTask<(Texture main, Texture mask)> Retrieve( string mainTextureUrl, string maskTextureUrl, CancellationToken ct = default);
+        UniTask<(Texture main, Texture mask)> Retrieve(WearableItem facialFeature, string bodyshapeId, CancellationToken ct = default);
     }
 }

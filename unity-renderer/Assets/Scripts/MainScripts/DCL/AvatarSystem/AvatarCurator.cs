@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace AvatarSystem
@@ -77,6 +78,11 @@ namespace AvatarSystem
             catch (OperationCanceledException)
             {
                 //No Disposing required
+                throw;
+            }
+            catch
+            {
+                Debug.LogError("Failed curating avatar wearables");
                 throw;
             }
         }

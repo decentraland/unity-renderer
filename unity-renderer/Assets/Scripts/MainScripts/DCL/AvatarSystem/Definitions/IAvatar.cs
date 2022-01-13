@@ -12,7 +12,6 @@ namespace AvatarSystem
         {
             Idle,
             Loaded,
-            Failed
         }
 
         Status status { get; }

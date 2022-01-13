@@ -59,6 +59,8 @@ namespace AvatarSystem
         public void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures)
         {
             this.combinedAvatar = combinedAvatar;
+            UpdateSSAO(lodIndex);
+            UpdateAlpha(avatarAlpha);
         }
 
         public void SetLodIndex(int lodIndex, bool inmediate = false)
@@ -125,7 +127,9 @@ namespace AvatarSystem
 
         private void UpdateAlpha(float avatarAlpha)
         {
-            // Validate that sharedMaterials must be used here
+            if (combinedAvatar == null)
+                return;
+
             Material[] mats = combinedAvatar.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
@@ -141,8 +145,10 @@ namespace AvatarSystem
 
         private void UpdateSSAO(int lodIndex)
         {
-            Material[] mats = combinedAvatar.sharedMaterials;
+            if (combinedAvatar == null)
+                return;
 
+            Material[] mats = combinedAvatar.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
                 if (lodIndex == 0)
