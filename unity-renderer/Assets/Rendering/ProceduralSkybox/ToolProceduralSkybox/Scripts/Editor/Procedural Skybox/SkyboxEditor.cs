@@ -105,11 +105,11 @@ namespace DCL.Skybox
 
             GUILayout.Space(32);
 
-            showHorizonLayer = EditorGUILayout.Foldout(showHorizonLayer, "Horizon Layer", true);
+            showHorizonLayer = EditorGUILayout.Foldout(showHorizonLayer, "Horizon Plane", true);
             if (showHorizonLayer)
             {
                 EditorGUI.indentLevel++;
-                RenderHorizonMaskValues();
+                RenderHorizonPlaneValues();
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
@@ -506,20 +506,40 @@ namespace DCL.Skybox
 
             EditorGUILayout.Space(10);
             RenderTransitioningFloat(selectedConfiguration.horizonWidth, "Horizon Width", "%", "value", true, -1, 1);
-        }
 
-        void RenderHorizonMaskValues()
-        {
+            EditorGUILayout.Space(10);
+
+            EditorGUILayout.LabelField("Horizon Mask", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
             // Horizon Mask
             RenderTexture("Texture", ref selectedConfiguration.horizonMask);
 
-            // Horizon mask values
+            // Horizon Mask values
             EditorGUILayout.LabelField("Horizon Mask Values", EditorStyles.boldLabel);
+
             EditorGUI.indentLevel++;
             // Tiling
             RenderVector2Field("Tiling", ref selectedConfiguration.horizonMaskTiling);
             // Offset
             RenderVector2Field("Offset", ref selectedConfiguration.horizonMaskOffset);
+            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel--;
+        }
+
+        void RenderHorizonPlaneValues()
+        {
+            // Horizon Plane
+            RenderTexture("Texture", ref selectedConfiguration.horizonPlaneTexture);
+
+            // Horizon Plane values
+            EditorGUILayout.LabelField("Horizon Plane Values", EditorStyles.boldLabel);
+
+            EditorGUI.indentLevel++;
+            // Tiling
+            RenderVector2Field("Tiling", ref selectedConfiguration.horizonPlaneTiling);
+            // Offset
+            RenderVector2Field("Offset", ref selectedConfiguration.horizonPlaneOffset);
             EditorGUI.indentLevel--;
 
             // Horizon Plane color
@@ -896,12 +916,6 @@ namespace DCL.Skybox
             // Anim Speed
             RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
 
-            // Normal Texture
-            RenderTexture("Normal Map", ref layer.textureNormal);
-
-            // Normal Intensity
-            RenderFloatFieldAsSlider("Normal Intensity", ref layer.normalIntensity, 0, 1);
-
             // Gradient
             RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
 
@@ -960,12 +974,6 @@ namespace DCL.Skybox
             // Anim Speed
             RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
 
-            // Normal Texture
-            RenderTexture("Normal Map", ref layer.textureNormal);
-
-            // Normal Intensity
-            RenderFloatFieldAsSlider("Normal Intensity", ref layer.normalIntensity, 0, 1);
-
             // Gradient
             RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
 
@@ -1013,12 +1021,6 @@ namespace DCL.Skybox
 
             // Anim Speed
             RenderFloatField("Anim Speed", ref layer.flipbookAnimSpeed);
-
-            // Normal Map
-            RenderTexture("Normal Map", ref layer.textureNormal);
-
-            // Normal Intensity
-            RenderFloatFieldAsSlider("Normal Intensity", ref layer.normalIntensity, 0, 1);
 
             // Gradient
             RenderColorGradientField(layer.color, "color", layer.timeSpan_start, layer.timeSpan_End, true);
