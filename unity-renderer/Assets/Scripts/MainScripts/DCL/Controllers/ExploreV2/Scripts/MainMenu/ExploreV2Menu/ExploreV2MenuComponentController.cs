@@ -414,6 +414,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void UpdateProfileInfo(UserProfile profile)
     {
+        view.currentProfileCard.SetIsClaimedName(profile.hasClaimedName);
         view.currentProfileCard.SetProfileName(profile.userName);
         view.currentProfileCard.SetProfileAddress(profile.ethAddress);
         view.currentProfileCard.SetProfilePicture(profile.face128SnapshotURL);
