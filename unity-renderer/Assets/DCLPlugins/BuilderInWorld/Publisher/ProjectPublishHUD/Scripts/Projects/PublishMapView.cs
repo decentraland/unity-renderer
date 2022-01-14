@@ -12,6 +12,9 @@ namespace DCL.Builder
 {
     public class PublishMapView : MonoBehaviour
     {
+        private const int RESET_POSITION_X = -1219;
+        private const int RESET_POSITION_Y = -1596;
+        
         public event Action<Vector2Int> OnParcelClicked;
 
         [Header("References")]
@@ -28,7 +31,6 @@ namespace DCL.Builder
         {
             scrollRect.onValueChanged.AddListener((x) =>
             {
-                Debug.Log("x " + x.x + "   y " + x.y);
                 if (isVisible)
                     MapRenderer.i.atlas.UpdateCulling();
             });
@@ -54,7 +56,7 @@ namespace DCL.Builder
         public void GoToCoords(Vector2Int coords)
         {
             //Reset scroll
-            scrollRectContentTransform.anchoredPosition = new Vector2(-1219, -1596);
+            scrollRectContentTransform.anchoredPosition = new Vector2(RESET_POSITION_X, RESET_POSITION_Y);
             MapRenderer.i.atlas.CenterToTile(coords);
         }
 
