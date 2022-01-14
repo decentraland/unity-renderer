@@ -29,6 +29,7 @@ namespace AvatarSystem
         private float avatarAlpha;
 
         private CancellationTokenSource transitionCTS;
+        private CancellationTokenSource billboardLookAtCameraCTS;
 
         public LOD(GameObject impostorContainer, IVisibility visibility, IAvatarMovementController avatarMovementController)
         {
@@ -72,7 +73,7 @@ namespace AvatarSystem
                 UpdateMovementLerping(lodIndex);
                 visibility.SetCombinedRendererVisibility(lodIndex <= 1);
                 visibility.SetFacialFeaturesVisibility(lodIndex <= 0);
-                impostorRenderer.enabled = avatarAlpha == 0;
+                SetImpostorEnabled(avatarAlpha == 0);
                 return;
             }
 
@@ -115,12 +116,28 @@ namespace AvatarSystem
                 visibility.SetCombinedRendererVisibility(avatarAlpha > 0);
                 visibility.SetFacialFeaturesVisibility(lodIndex == 0);
 
-                impostorRenderer.enabled = avatarAlpha == 0;
+                SetImpostorEnabled(avatarAlpha == 0);
             }
             catch (OperationCanceledException)
             {
                 //No disposing required
                 throw;
+            }
+        }
+
+        private void SetImpostorEnabled(bool enabled)
+        {
+            impostorRenderer.enabled = enabled;
+            billboardLookAtCameraCTS?.Cancel();
+            billboardLookAtCameraCTS?.Dispose();
+            if (enabled)
+            {
+                billboardLookAtCameraCTS = new CancellationTokenSource();
+                BillboardLookAtCamera(billboardLookAtCameraCTS.Token);
+            }
+            else
+            {
+                billboardLookAtCameraCTS = null;
             }
         }
 
@@ -159,11 +176,32 @@ namespace AvatarSystem
 
         private void UpdateMovementLerping(int lodIndex) { avatarMovementController.SetMovementLerpWait(lodIndex >= 2 ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f); }
 
+        private async UniTaskVoid BillboardLookAtCamera(CancellationToken ct)
+        {
+            Camera camera = Camera.main;
+            while (camera == null)
+            {
+                await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
+                camera = Camera.main;
+            }
+
+            while (true)
+            {
+                impostorContainer.transform.LookAt(camera.transform);
+                impostorContainer.transform.eulerAngles = Vector3.Scale(impostorContainer.transform.eulerAngles, Vector3.up);
+                await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
+            }
+        }
+
         public void Dispose()
         {
             transitionCTS?.Cancel();
             transitionCTS?.Dispose();
             transitionCTS = null;
+
+            billboardLookAtCameraCTS?.Cancel();
+            billboardLookAtCameraCTS?.Dispose();
+            billboardLookAtCameraCTS = null;
         }
 
         ~LOD()

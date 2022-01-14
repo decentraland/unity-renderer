@@ -89,12 +89,6 @@ namespace DCL
             cameraForward = CommonScriptableObjects.cameraForward.Get();
 
             UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
-            UpdateLODsBillboardOrientation();
-        }
-
-        internal void UpdateLODsBillboardOrientation()
-        {
-            //Debug.Log("TODO"); // Move to a component or the LOD itself
         }
 
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
