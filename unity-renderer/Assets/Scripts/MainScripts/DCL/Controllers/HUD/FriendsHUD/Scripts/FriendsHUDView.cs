@@ -8,8 +8,8 @@ public class FriendsHUDView : MonoBehaviour
     public const string NOTIFICATIONS_ID = "Friends";
     static readonly int ANIM_PROPERTY_SELECTED = Animator.StringToHash("Selected");
     const string VIEW_PATH = "FriendsHUD";
-    const int PREINSTANTIATED_FRIENDS_ENTRIES = 50;
-    const int PREINSTANTIATED_FRIENDS_REQUEST_ENTRIES = 10;
+    const int PREINSTANTIATED_FRIENDS_ENTRIES = 25;
+    const int PREINSTANTIATED_FRIENDS_REQUEST_ENTRIES = 5;
 
     public Button closeButton;
     public Button friendsButton;

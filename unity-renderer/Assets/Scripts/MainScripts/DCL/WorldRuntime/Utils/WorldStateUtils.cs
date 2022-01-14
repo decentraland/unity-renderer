@@ -115,7 +115,7 @@ namespace DCL
             return currentSceneAndPortableExperiencesIds;
         }
 
-        static IParcelScene GetCurrentScene()
+        public static IParcelScene GetCurrentScene()
         {
             var worldState = Environment.i.world.state;
             string currentSceneId = worldState.currentSceneId;

@@ -13,6 +13,7 @@ public class EventsSubSectionComponentViewTests
     public void SetUp()
     {
         eventsSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/EventsSubSection/EventsSubSection")).GetComponent<EventsSubSectionComponentView>();
+        eventsSubSectionComponent.ConfigurePools();
         eventsSubSectionComponent.Start();
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);

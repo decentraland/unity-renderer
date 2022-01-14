@@ -63,6 +63,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
         this.exploreV2Analytics = exploreV2Analytics;
+
+        view.ConfigurePools();
     }
 
     internal void FirstLoading()

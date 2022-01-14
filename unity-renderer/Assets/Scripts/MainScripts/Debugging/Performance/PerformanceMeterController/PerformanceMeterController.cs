@@ -218,7 +218,6 @@ namespace DCL
                 + "\n * Quality Settings -> Shadow -> " + Settings.i.qualitySettings.Data.shadows
                 + "\n * Quality Settings -> Antialising -> " + Settings.i.qualitySettings.Data.antiAliasing
                 + "\n * Quality Settings -> Base Resolution -> " + Settings.i.qualitySettings.Data.baseResolution
-                + "\n * Quality Settings -> Color Grading -> " + Settings.i.qualitySettings.Data.colorGrading
                 + "\n * Quality Settings -> Display Name -> " + Settings.i.qualitySettings.Data.displayName
                 + "\n * Quality Settings -> Render Scale -> " + Settings.i.qualitySettings.Data.renderScale
                 + "\n * Quality Settings -> Shadow Distance -> " + Settings.i.qualitySettings.Data.shadowDistance
