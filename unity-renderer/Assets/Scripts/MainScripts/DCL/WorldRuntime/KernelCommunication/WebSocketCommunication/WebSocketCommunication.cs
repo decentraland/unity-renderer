@@ -155,6 +155,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["SetUsersMuted"] = "HUDController";
         messageTypeToBridgeName["ShowWelcomeNotification"] = "HUDController";
         messageTypeToBridgeName["UpdateBalanceOfMANA"] = "HUDController";
+        messageTypeToBridgeName["RequestWeb3ApiUse"] = "HUDController";
         messageTypeToBridgeName["SetPlayerTalking"] = "HUDController";
         messageTypeToBridgeName["SetVoiceChatEnabledByScene"] = "HUDController";
         messageTypeToBridgeName["TriggerSelfUserExpression"] = "HUDController";

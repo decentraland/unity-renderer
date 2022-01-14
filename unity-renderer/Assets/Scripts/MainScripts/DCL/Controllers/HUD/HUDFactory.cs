@@ -102,6 +102,9 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.LOADING:
                 hudElement = new LoadingHUDController();
                 break;
+            case HUDElementID.TRANSACTIONS:
+                hudElement = new TransactionHUDController();
+                break;
         }
 
         return hudElement;
