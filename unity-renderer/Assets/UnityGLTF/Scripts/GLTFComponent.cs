@@ -285,8 +285,8 @@ namespace MainScripts.DCL.GLTF
                     state = State.QUEUED;
                     downloadQueueHandler.Queue(this);
 
-                    await WaitUntil( () => downloadQueueHandler.CanDownload(this));
-
+                    await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this));
+                    
                     queueCount--;
                     totalDownloadedCount++;
 
@@ -354,19 +354,6 @@ namespace MainScripts.DCL.GLTF
             {
                 Debug.Log("couldn't load GLTF because url is empty");
             }
-        }
-        
-        private async UniTask WaitUntil(Func<bool> condition)
-        {
-            async UniTask action()
-            {
-                while (!condition())
-                {
-                    await UniTask.Delay(5);
-                }
-            }
-
-            await action();
         }
 
         public void Load(string url) { throw new NotImplementedException(); }
