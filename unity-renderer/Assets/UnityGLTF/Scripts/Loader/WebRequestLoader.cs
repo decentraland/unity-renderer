@@ -87,16 +87,11 @@ namespace UnityGLTF.Loader
                 disposeOnCompleted: false);
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
-            /*await UniTaskDCL.Run( async () =>
+            
+            await UniTaskDCL.Run( async () =>
             {
-                while (asyncOp.keepWaiting && !asyncOp.isDone)
-                {
-                    Debug.Log("Awaiting for " + finalUrl);
-                    await UniTask.WaitForEndOfFrame();
-                }
-            });*/
-
-            await asyncOp.asyncOp;
+                while (asyncOp.keepWaiting && !asyncOp.isDone) await UniTask.WaitForEndOfFrame();
+            });
 
             bool error = false;
             string errorMessage = null;
