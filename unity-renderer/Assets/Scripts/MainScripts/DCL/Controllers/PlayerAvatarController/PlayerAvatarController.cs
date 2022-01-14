@@ -42,6 +42,7 @@ public class PlayerAvatarController : MonoBehaviour
             UserProfileController.i.OnBaseWereablesFail += OnBaseWereablesFail;
         }
 
+        DataStore.i.player.playerCollider.Set(avatarCollider);
         CommonScriptableObjects.rendererState.AddLock(this);
         
 #if UNITY_WEBGL

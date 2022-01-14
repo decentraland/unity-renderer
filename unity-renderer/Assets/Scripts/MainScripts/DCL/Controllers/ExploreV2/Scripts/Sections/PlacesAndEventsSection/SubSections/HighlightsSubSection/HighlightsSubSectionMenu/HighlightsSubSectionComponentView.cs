@@ -131,14 +131,23 @@ public interface IHighlightsSubSectionComponentView
     /// Set the current scroll view position to 1.
     /// </summary>
     void RestartScrollViewPosition();
+
+    /// <summary>
+    /// Configure the needed pools for the places and events instantiation.
+    /// </summary>
+    void ConfigurePools();
 }
 
 public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsSubSectionComponentView
 {
     internal const string TRENDING_PLACE_CARDS_POOL_NAME = "Highlights_TrendingPlaceCardsPool";
+    internal const int TRENDING_PLACE_CARDS_POOL_PREWARM = 10;
     internal const string TRENDING_EVENT_CARDS_POOL_NAME = "Highlights_TrendingEventCardsPool";
+    internal const int TRENDING_EVENT_CARDS_POOL_PREWARM = 10;
     internal const string FEATURED_PLACE_CARDS_POOL_NAME = "Highlights_FeaturedPlaceCardsPool";
+    internal const int FEATURED_PLACE_CARDS_POOL_PREWARM = 9;
     internal const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
+    internal const int LIVE_EVENT_CARDS_POOL_PREWARM = 3;
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardLongPrefab;
@@ -183,14 +192,18 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public override void OnEnable() { OnHighlightsSubSectionEnable?.Invoke(); }
 
+    public void ConfigurePools()
+    {
+        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
+        ExploreEventsHelpers.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
+    }
+
     public override void Start()
     {
         placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
         eventModal = ExploreEventsHelpers.ConfigureEventCardModal(eventCardModalPrefab);
-        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, 10);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, 10);
-        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, 6);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, 3);
 
         trendingPlacesAndEvents.RemoveItems();
         featuredPlaces.RemoveItems();
