@@ -90,7 +90,7 @@ namespace UnityGLTF.Loader
             Debug.Log("Starting to wait for asyncOp");
             await UniTaskDCL.Run( async () =>
             {
-                while (asyncOp.keepWaiting)
+                while (asyncOp.keepWaiting && !asyncOp.isDone)
                     await Task.Delay(5);
             });
 
