@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,7 +59,7 @@ namespace DCL
                 return;
             }
 
-            currentProfile.avatarProfile.currentProfile = currentProfile.avatarProfile.inWorld;
+            currentProfile.avatarProfile.CheckAndAssignCurrentProfile();
             currentProfile.Apply();
         }
     }

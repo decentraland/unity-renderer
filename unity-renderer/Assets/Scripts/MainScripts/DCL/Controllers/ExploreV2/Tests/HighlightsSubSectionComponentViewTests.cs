@@ -13,6 +13,7 @@ public class HighlightsSubSectionComponentViewTests
     public void SetUp()
     {
         highlightsSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/HighlightsSubSection/HighlightsSubSection")).GetComponent<HighlightsSubSectionComponentView>();
+        highlightsSubSectionComponent.ConfigurePools();
         highlightsSubSectionComponent.Start();
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);

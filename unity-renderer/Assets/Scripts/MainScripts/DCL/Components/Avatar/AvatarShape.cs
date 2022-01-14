@@ -2,13 +2,7 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using AvatarSystem;
-using DCL.Helpers;
 using DCL.Models;
-using GPUSkinning;
 using UnityEngine;
 using Avatar = AvatarSystem.Avatar;
 using LOD = AvatarSystem.LOD;
@@ -155,16 +149,6 @@ namespace DCL
 
             avatar.SetExpression(model.expressionTriggerId, model.expressionTriggerTimestamp);
 
-            onPointerDown.Initialize(
-                new OnPointerDown.Model()
-                {
-                    type = OnPointerDown.NAME,
-                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "view profile"
-                },
-                entity
-            );
-
             entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
             entity.OnTransformChange += avatarMovementController.OnTransformChanged;
 
@@ -178,8 +162,17 @@ namespace DCL
             onPointerDown.OnPointerExitReport -= PlayerPointerExit;
             onPointerDown.OnPointerExitReport += PlayerPointerExit;
 
-
             UpdatePlayerStatus(model);
+            
+            onPointerDown.Initialize(
+                new OnPointerDown.Model()
+                {
+                    type = OnPointerDown.NAME,
+                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+                    hoverText = "view profile"
+                },
+                entity, player
+            );            
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -187,6 +180,10 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+
+            bool isAvatarGlobalScene = scene.sceneData.id == EnvironmentSettings.AVATAR_GLOBAL_SCENE_ID;
+            onPointerDown.SetColliderEnabled(isAvatarGlobalScene);
+            onPointerDown.SetOnClickReportEnabled(isAvatarGlobalScene);
         }
 
         public void SetImpostor(string userId)
@@ -264,7 +261,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.SetColliderEnabled(false);
+            onPointerDown.SetPassportEnabled(false);
         }
 
         public void EnablePassport()
@@ -272,7 +269,7 @@ namespace DCL
             if (onPointerDown.collider == null)
                 return;
 
-            onPointerDown.SetColliderEnabled(true);
+            onPointerDown.SetPassportEnabled(true);
         }
 
         private void OnEntityTransformChanged(object newModel)

@@ -1,10 +1,10 @@
-using Cinemachine;
-using DCL.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
+using Cinemachine;
+using DCL.Helpers;
+using DCL.Interface;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DCL.Camera
 {
@@ -47,7 +47,7 @@ namespace DCL.Camera
         public CameraStateBase currentCameraState => cachedModeToVirtualCamera[CommonScriptableObjects.cameraMode];
 
         [HideInInspector]
-        public System.Action<CameraMode.ModeId> onSetCameraMode;
+        public Action<CameraMode.ModeId> onSetCameraMode;
 
         private void Awake()
         {
@@ -70,8 +70,9 @@ namespace DCL.Camera
 
             cameraChangeAction.OnTriggered += OnCameraChangeAction;
             worldOffset.OnChange += OnWorldReposition;
+            CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
 
-            SetCameraMode(CommonScriptableObjects.cameraMode);
+            OnCameraModeChange(CommonScriptableObjects.cameraMode, CameraMode.ModeId.FirstPerson);
 
             if (CommonScriptableObjects.isFullscreenHUDOpen)
                 OnFullscreenUIVisibilityChange(CommonScriptableObjects.isFullscreenHUDOpen.Get(), !CommonScriptableObjects.isFullscreenHUDOpen.Get());
@@ -105,7 +106,10 @@ namespace DCL.Camera
             return false;
         }
 
-        private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled && !CommonScriptableObjects.isFullscreenHUDOpen; }
+        private void OnRenderingStateChanged(bool enabled, bool prevState)
+        {
+            camera.enabled = enabled && !CommonScriptableObjects.isFullscreenHUDOpen;
+        }
 
         private void CameraBlocked_OnChange(bool current, bool previous)
         {
@@ -129,18 +133,28 @@ namespace DCL.Camera
 
         public void SetCameraMode(CameraMode.ModeId newMode)
         {
-            currentCameraState.OnUnselect();
             CommonScriptableObjects.cameraMode.Set(newMode);
-            currentCameraState.OnSelect();
-
-            DCL.Interface.WebInterface.ReportCameraChanged(newMode);
-
-            onSetCameraMode?.Invoke(newMode);
         }
 
-        public CameraStateBase GetCameraMode( CameraMode.ModeId mode ) { return cameraModes.FirstOrDefault( x => x.cameraModeId == mode ); }
+        private void OnCameraModeChange(CameraMode.ModeId current, CameraMode.ModeId previous)
+        {
+            cachedModeToVirtualCamera[previous].OnUnselect();
+            cachedModeToVirtualCamera[current].OnSelect();
 
-        private void OnWorldReposition(Vector3 newValue, Vector3 oldValue) { transform.position += newValue - oldValue; }
+            WebInterface.ReportCameraChanged(current);
+
+            onSetCameraMode?.Invoke(current);
+        }
+
+        public CameraStateBase GetCameraMode(CameraMode.ModeId mode)
+        {
+            return cameraModes.FirstOrDefault(x => x.cameraModeId == mode);
+        }
+
+        private void OnWorldReposition(Vector3 newValue, Vector3 oldValue)
+        {
+            transform.position += newValue - oldValue;
+        }
 
         private void Update()
         {
@@ -173,7 +187,10 @@ namespace DCL.Camera
             currentCameraState?.OnSetRotation(payload);
         }
 
-        public void SetRotation(float x, float y, float z, Vector3? cameraTarget = null) { currentCameraState?.OnSetRotation(new SetRotationPayload() { x = x, y = y, z = z, cameraTarget = cameraTarget }); }
+        public void SetRotation(float x, float y, float z, Vector3? cameraTarget = null)
+        {
+            currentCameraState?.OnSetRotation(new SetRotationPayload() { x = x, y = y, z = z, cameraTarget = cameraTarget });
+        }
 
         public Vector3 GetRotation()
         {
@@ -183,7 +200,15 @@ namespace DCL.Camera
             return Vector3.zero;
         }
 
-        public Vector3 GetPosition() { return CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.State.FinalPosition; }
+        public Vector3 GetPosition()
+        {
+            return CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.State.FinalPosition;
+        }
+
+        public UnityEngine.Camera GetCamera()
+        {
+            return camera;
+        }
 
         private void OnDestroy()
         {
@@ -203,9 +228,10 @@ namespace DCL.Camera
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
             CommonScriptableObjects.cameraBlocked.OnChange -= CameraBlocked_OnChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
+            CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
         }
 
-        [System.Serializable]
+        [Serializable]
         public class SetRotationPayload
         {
             public float x;

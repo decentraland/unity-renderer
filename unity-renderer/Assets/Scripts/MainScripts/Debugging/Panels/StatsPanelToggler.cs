@@ -28,7 +28,7 @@ namespace DCL
         {
             UpdateDeepProfilingInput();
 
-            if (Input.GetKeyUp(KeyCode.P))
+            if (Input.GetKeyUp(KeyCode.Y))
             {
                 TogglePanel();
             }
