@@ -1,17 +1,15 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class NavMapAudioHandler : MonoBehaviour
+public class NavMapAudioHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    void Update()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            AudioScriptableObjects.buttonClick.Play(true);
-        }
+        AudioScriptableObjects.buttonClick.Play(true);
+    }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            AudioScriptableObjects.buttonRelease.Play(true);
-        }
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        AudioScriptableObjects.buttonRelease.Play(true);
     }
 }
