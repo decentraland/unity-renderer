@@ -53,6 +53,8 @@ MonoBehaviour:
   avatarContainer: {fileID: 5582000225371496597}
   avatarCollider: {fileID: 7755590202629118220}
   avatarMovementController: {fileID: 122622683908687435}
+  onloadParticlePrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
+    type: 3}
   onPointerDown: {fileID: 3865137627712764486}
   everythingIsLoaded: 0
 --- !u!114 &122622683908687435

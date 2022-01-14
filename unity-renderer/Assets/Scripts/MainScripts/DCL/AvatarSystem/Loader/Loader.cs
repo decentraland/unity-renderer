@@ -55,7 +55,7 @@ namespace AvatarSystem
             {
                 status = ILoader.Status.Loading;
 
-                if (bodyshapeLoader == null || bodyshapeLoader.wearable.id != bodyshape.id)
+                if (bodyshapeLoader == null || bodyshapeLoader.wearable.id != bodyshape.id || bodyshapeLoader.eyes.id != eyes.id || bodyshapeLoader.eyebrows.id != eyebrows.id || bodyshapeLoader.mouth.id != mouth.id)
                 {
                     toCleanUp.Add(bodyshapeLoader);
                     bodyshapeLoader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
@@ -158,12 +158,11 @@ namespace AvatarSystem
         private bool MergeAvatar(IEnumerable<SkinnedMeshRenderer> allRenderers, out SkinnedMeshRenderer renderer)
         {
             renderer = null;
-            var renderersToCombine = allRenderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
             var featureFlags = DataStore.i.featureFlags.flags.Get();
             avatarMeshCombiner.useCullOpaqueHeuristic = featureFlags.IsFeatureEnabled("cull-opaque-heuristic");
             avatarMeshCombiner.enableCombinedMesh = false;
 
-            bool success = avatarMeshCombiner.Combine(bodyshapeLoader.upperBodyRenderer, renderersToCombine.ToArray());
+            bool success = avatarMeshCombiner.Combine(bodyshapeLoader.upperBodyRenderer, allRenderers.ToArray());
             if (!success)
                 return false;
 

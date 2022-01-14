@@ -59,8 +59,7 @@ namespace AvatarSystem
         public void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures)
         {
             this.combinedAvatar = combinedAvatar;
-            UpdateSSAO(lodIndex);
-            UpdateAlpha(avatarAlpha);
+            SetLodIndex(lodIndex, true);
         }
 
         public void SetLodIndex(int lodIndex, bool inmediate = false)

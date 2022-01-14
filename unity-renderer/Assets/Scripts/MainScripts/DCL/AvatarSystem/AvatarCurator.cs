@@ -25,11 +25,16 @@ namespace AvatarSystem
             try
             {
                 WearableItem[] wearableItems =  await wearableItemResolver.Resolve(wearablesId, ct);
+                HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(bodyshapeId, wearableItems);
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
                 for (int i = 0; i < wearableItems.Length; i++)
                 {
                     WearableItem wearableItem = wearableItems[i];
+
+                    // Ignore hidden categories
+                    if (hiddenCategories.Contains(wearableItem.data.category))
+                        continue;
 
                     // Avoid having two items with the same category.
                     if (wearableItem == null || wearablesByCategory.ContainsKey(wearableItem.data.category) )
@@ -42,7 +47,7 @@ namespace AvatarSystem
                     wearablesByCategory.Add(wearableItem.data.category, wearableItem);
                 }
 
-                WearableItem[] fallbackWearables = await GetFallbackForMissingNeededCategories(bodyshapeId, wearablesByCategory, ct);
+                WearableItem[] fallbackWearables = await GetFallbackForMissingNeededCategories(bodyshapeId, wearablesByCategory, hiddenCategories, ct);
 
                 for (int i = 0; i < fallbackWearables.Length; i++)
                 {
@@ -86,7 +91,7 @@ namespace AvatarSystem
             }
         }
 
-        private async UniTask<WearableItem[]> GetFallbackForMissingNeededCategories(string bodyshapeId, Dictionary<string, WearableItem> wearablesByCategory, CancellationToken ct)
+        private async UniTask<WearableItem[]> GetFallbackForMissingNeededCategories(string bodyshapeId, Dictionary<string, WearableItem> wearablesByCategory, HashSet<string> hiddenCategories , CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
 
@@ -95,6 +100,11 @@ namespace AvatarSystem
                 List<UniTask<WearableItem>> neededWearablesTasks = new List<UniTask<WearableItem>>();
                 foreach (string neededCategory in WearableLiterals.Categories.NEEDED_CATEGORIES)
                 {
+                    // If a needed category is hidden we dont need to fallback, we skipped it on purpose
+                    if (hiddenCategories.Contains(neededCategory))
+                        continue;
+
+                    // The needed category is present
                     if (wearablesByCategory.ContainsKey(neededCategory))
                         continue;
 

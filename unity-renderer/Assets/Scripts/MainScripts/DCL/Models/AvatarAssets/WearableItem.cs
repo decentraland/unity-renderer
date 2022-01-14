@@ -182,18 +182,17 @@ public class WearableItem
 
     public string ComposeThumbnailUrl() { return baseUrl + thumbnail; }
 
-    public static HashSet<string> CompoundHidesList(string bodyShapeId, List<WearableItem> wearables)
+    public static HashSet<string> ComposeHiddenCategories(string bodyShapeId, WearableItem[] wearables)
     {
         HashSet<string> result = new HashSet<string>();
         //Last wearable added has priority over the rest
-        for (int i = wearables.Count - 1; i >= 0; i--)
+        for (int index = 0; index < wearables.Length; index++)
         {
-            var wearableItem = wearables[i];
-
+            WearableItem wearableItem = wearables[index];
             if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;
 
-            var wearableHidesList = wearableItem.GetHidesList(bodyShapeId);
+            string[] wearableHidesList = wearableItem.GetHidesList(bodyShapeId);
             if (wearableHidesList != null)
             {
                 result.UnionWith(wearableHidesList);

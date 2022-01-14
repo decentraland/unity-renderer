@@ -16,6 +16,7 @@ namespace AvatarSystem
 
         Status status { get; }
         Vector3 extents { get; }
+        int lodLevel { get; }
 
         UniTask Load(List<string> wearablesIds, AvatarSettings settings, CancellationToken ct = default);
         void SetVisibility(bool visible);

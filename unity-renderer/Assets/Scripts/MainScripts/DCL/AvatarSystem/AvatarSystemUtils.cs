@@ -1,10 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Helpers;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace AvatarSystem
 {
@@ -216,6 +215,15 @@ namespace AvatarSystem
             if (feetVisible)
                 result.Add(bodyshapeLoader.feetRenderer);
             return result;
+        }
+
+        public static void SpawnAvatarLoadedParticles(Transform avatarContainer, GameObject particlePrefab)
+        {
+            if (!particlePrefab.TryGetComponent(out DestroyParticlesOnFinish selfDestroyScript))
+                throw new Exception("A self destructive particles prefab is expected");
+
+            GameObject particles = Object.Instantiate(particlePrefab);
+            particles.transform.position = avatarContainer.position + particlePrefab.transform.position;
         }
     }
 }

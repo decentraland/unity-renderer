@@ -23,6 +23,7 @@ public class PlayerAvatarController : MonoBehaviour
 
     public Collider avatarCollider;
     public AvatarVisibility avatarVisibility;
+    [SerializeField] private GameObject loadingParticlesPrefab;
     public float cameraDistanceToDeactivate = 1.0f;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
@@ -132,7 +133,7 @@ public class PlayerAvatarController : MonoBehaviour
             {
                 currentAvatar.CopyFrom(profile.avatar);
 
-                var wearableItems = profile.avatar.wearables.ToList();
+                List<string> wearableItems = profile.avatar.wearables.ToList();
                 wearableItems.Add(profile.avatar.bodyShape);
                 await avatar.Load(wearableItems, new AvatarSettings
                 {
@@ -141,6 +142,9 @@ public class PlayerAvatarController : MonoBehaviour
                     skinColor = profile.avatar.skinColor,
                     hairColor = profile.avatar.hairColor,
                 }, ct);
+
+                if (avatar.lodLevel <= 1)
+                    AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
             }
             catch (OperationCanceledException)
             {

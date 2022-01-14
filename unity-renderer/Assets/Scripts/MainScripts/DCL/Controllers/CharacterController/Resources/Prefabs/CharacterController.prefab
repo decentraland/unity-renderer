@@ -380,7 +380,10 @@ MonoBehaviour:
   avatarContainer: {fileID: 3711435650905816617}
   avatarCollider: {fileID: 7115442889188564318}
   avatarVisibility: {fileID: 8920001334808305060}
+  loadingParticlesPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
+    type: 3}
   cameraDistanceToDeactivate: 1
+  forceAvatar: {fileID: 4900000, guid: 1b2b64f728c37844fabbefb9ce10348f, type: 3}
 --- !u!114 &8920001334808305060
 MonoBehaviour:
   m_ObjectHideFlags: 0
