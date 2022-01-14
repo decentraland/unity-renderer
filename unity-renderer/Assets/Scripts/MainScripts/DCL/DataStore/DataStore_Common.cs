@@ -9,5 +9,6 @@ namespace DCL
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
         public readonly BaseVariable<bool> isTutorialRunning = new BaseVariable<bool>(false);
+        public readonly BaseVariable<bool> isAvatarSkinsEnabled = new BaseVariable<bool>(false);
     }
 }

@@ -1,13 +1,16 @@
-using DCL;
-using DCL.Helpers;
-using DCL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
+using DCL.Helpers;
+using DCL.Interface;
+using DCL.NotificationModel;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using Categories = WearableLiterals.Categories;
+using Environment = DCL.Environment;
+using Random = UnityEngine.Random;
+using Type = DCL.NotificationModel.Type;
 
 public class AvatarEditorHUDController : IHUD
 {
@@ -18,8 +21,8 @@ public class AvatarEditorHUDController : IHUD
     private const string URL_SELL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
     private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
 
-    protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
-    protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
+    protected static readonly string[] categoriesThatMustHaveSelection = { WearableLiterals.Categories.BODY_SHAPE, WearableLiterals.Categories.UPPER_BODY, WearableLiterals.Categories.LOWER_BODY, WearableLiterals.Categories.FEET, WearableLiterals.Categories.EYES, WearableLiterals.Categories.EYEBROWS, WearableLiterals.Categories.MOUTH };
+    protected static readonly string[] categoriesToRandomize = { WearableLiterals.Categories.HAIR, WearableLiterals.Categories.EYES, WearableLiterals.Categories.EYEBROWS, WearableLiterals.Categories.MOUTH, WearableLiterals.Categories.FACIAL, WearableLiterals.Categories.HAIR, WearableLiterals.Categories.UPPER_BODY, WearableLiterals.Categories.LOWER_BODY, WearableLiterals.Categories.FEET };
 
     [NonSerialized]
     public bool bypassUpdateAvatarPreview = false;
@@ -31,6 +34,8 @@ public class AvatarEditorHUDController : IHUD
     BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     BaseVariable<Transform> configureBackpackInFullscreenMenu => DataStore.i.exploreV2.configureBackpackInFullscreenMenu;
     BaseVariable<bool> exploreV2IsOpen => DataStore.i.exploreV2.isOpen;
+    private bool isSkinsFeatureEnabled => DataStore.i.common.isAvatarSkinsEnabled.Get();
+    
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
@@ -44,6 +49,8 @@ public class AvatarEditorHUDController : IHUD
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     private bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
+    private float prevRenderScale = 1.0f;
+    private Camera mainCamera;
 
     public AvatarEditorHUDView view;
 
@@ -59,6 +66,7 @@ public class AvatarEditorHUDController : IHUD
 
         view = AvatarEditorHUDView.Create(this);
 
+        view.skinsFeatureContainer.SetActive(isSkinsFeatureEnabled);
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
         OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
 
@@ -133,10 +141,10 @@ public class AvatarEditorHUDController : IHUD
                              }
                              else
                              {
-                                 NotificationsController.i.ShowNotification(new DCL.NotificationModel.Model
+                                 NotificationsController.i.ShowNotification(new Model
                                  {
                                      message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                                     type = DCL.NotificationModel.Type.GENERIC,
+                                     type = Type.GENERIC,
                                      timer = 10f,
                                      destroyOnFinish = true
                                  });
@@ -153,11 +161,11 @@ public class AvatarEditorHUDController : IHUD
         if (string.IsNullOrEmpty(userId))
             return;
 
-        DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
+        Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
            .Then((nfts) => ownedNftCollectionsL1 = nfts)
            .Catch((error) => Debug.LogError(error));
 
-        DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
+        Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
            .Then((nfts) => ownedNftCollectionsL2 = nfts)
            .Catch((error) => Debug.LogError(error));
     }
@@ -261,7 +269,7 @@ public class AvatarEditorHUDController : IHUD
         for (var i = 0; i < categoriesThatMustHaveSelection.Length; i++)
         {
             var category = categoriesThatMustHaveSelection[i];
-            if (category != Categories.BODY_SHAPE && !(categoriesInUse.Contains(category)))
+            if (category != WearableLiterals.Categories.BODY_SHAPE && !(categoriesInUse.Contains(category)))
             {
                 WearableItem wearable;
                 var defaultItemId = WearableLiterals.DefaultWearables.GetDefaultWearable(model.bodyShape.id, category);
@@ -285,10 +293,9 @@ public class AvatarEditorHUDController : IHUD
     public void WearableClicked(string wearableId)
     {
         CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
-        if (wearable == null)
-            return;
+        if (wearable == null) return;
 
-        if (wearable.data.category == Categories.BODY_SHAPE)
+        if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
         {
             if (wearable.id == model.bodyShape.id)
                 return;
@@ -309,12 +316,10 @@ public class AvatarEditorHUDController : IHUD
             }
             else
             {
-                var sameCategoryEquipped = model.wearables.FirstOrDefault(x => x.data.category == wearable.data.category);
+                var sameCategoryEquipped = model.GetWearable(wearable.data.category);
                 if (sameCategoryEquipped != null)
-                {
                     UnequipWearable(sameCategoryEquipped);
-                }
-
+                
                 EquipWearable(wearable);
             }
         }
@@ -387,7 +392,7 @@ public class AvatarEditorHUDController : IHUD
 
     private void EquipBodyShape(WearableItem bodyShape)
     {
-        if (bodyShape.data.category != Categories.BODY_SHAPE)
+        if (bodyShape.data.category != WearableLiterals.Categories.BODY_SHAPE)
         {
             Debug.LogError($"Item ({bodyShape.id} is not a body shape");
             return;
@@ -474,7 +479,9 @@ public class AvatarEditorHUDController : IHUD
         }
 
         wearablesByCategory[wearable.data.category].Add(wearable);
-        view.AddWearable(wearable, userProfile.GetItemAmount(id));
+        view.AddWearable(wearable, userProfile.GetItemAmount(id),
+            ShouldShowHideOtherWearablesToast,
+            ShouldShowReplaceOtherWearablesToast);
     }
 
     private void RemoveWearable(string id, WearableItem wearable)
@@ -495,8 +502,8 @@ public class AvatarEditorHUDController : IHUD
 
     public void RandomizeWearables()
     {
-        EquipHairColor(hairColorList.colors[UnityEngine.Random.Range(0, hairColorList.colors.Count)]);
-        EquipEyesColor(eyeColorList.colors[UnityEngine.Random.Range(0, eyeColorList.colors.Count)]);
+        EquipHairColor(hairColorList.colors[Random.Range(0, hairColorList.colors.Count)]);
+        EquipEyesColor(eyeColorList.colors[Random.Range(0, eyeColorList.colors.Count)]);
 
         model.wearables.Clear();
         view.UnselectAllWearables();
@@ -516,7 +523,7 @@ public class AvatarEditorHUDController : IHUD
                     Debug.LogError($"Couldn't get any wearable for category {category} and bodyshape {model.bodyShape.id}");
                 }
 
-                var wearable = supportedWearables[UnityEngine.Random.Range(0, supportedWearables.Length - 1)];
+                var wearable = supportedWearables[Random.Range(0, supportedWearables.Length - 1)];
                 EquipWearable(wearable);
             }
         }
@@ -524,18 +531,19 @@ public class AvatarEditorHUDController : IHUD
         UpdateAvatarPreview();
     }
 
-    public List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
+    private List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
     {
-        List<WearableItem> wearablesToReplace = new List<WearableItem>();
+        var wearablesToReplace = new List<WearableItem>();
+        var categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]);
 
-        HashSet<string> categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]);
+        if (IsTryingToReplaceSkin(wearableItem) && !categoriesToReplace.Contains(WearableLiterals.Categories.SKIN))
+            categoriesToReplace.Add(WearableLiterals.Categories.SKIN);
 
-        int wearableCount = model.wearables.Count;
-        for (int i = 0; i < wearableCount; i++)
+        var wearableCount = model.wearables.Count;
+        for (var i = 0; i < wearableCount; i++)
         {
             var wearable = model.wearables[i];
-            if (wearable == null)
-                continue;
+            if (wearable == null) continue;
 
             if (categoriesToReplace.Contains(wearable.data.category))
             {
@@ -544,7 +552,7 @@ public class AvatarEditorHUDController : IHUD
             else
             {
                 //For retrocompatibility's sake we check current wearables against new one (compatibility matrix is symmetrical)
-                HashSet<string> replacesList = new HashSet<string>(wearable.GetReplacesList(model.bodyShape.id) ?? new string[0]);
+                var replacesList = new HashSet<string>(wearable.GetReplacesList(model.bodyShape.id) ?? new string[0]);
                 if (replacesList.Contains(wearableItem.data.category))
                 {
                     wearablesToReplace.Add(wearable);
@@ -555,23 +563,20 @@ public class AvatarEditorHUDController : IHUD
         return wearablesToReplace;
     }
 
-    private float prevRenderScale = 1.0f;
-    private Camera mainCamera;
-
     public void SetVisibility(bool visible) { avatarEditorVisible.Set(visible); }
 
     private void OnAvatarEditorVisibleChanged(bool current, bool previous) { SetVisibility_Internal(current); }
 
     public void SetVisibility_Internal(bool visible)
     {
-        var currentRenderProfile = DCL.RenderProfileManifest.i.currentProfile;
+        var currentRenderProfile = RenderProfileManifest.i.currentProfile;
 
         if (!visible && view.isOpen)
         {
             if (DataStore.i.common.isSignUpFlow.Get())
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
 
-            DCL.Environment.i.messaging.manager.paused = false;
+            Environment.i.messaging.manager.paused = false;
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld);
             currentRenderProfile.avatarProfile.Apply();
             if (prevMouseLockState && DataStore.i.common.isSignUpFlow.Get())
@@ -596,7 +601,7 @@ public class AvatarEditorHUDController : IHUD
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
 
             LoadOwnedWereables(userProfile);
-            DCL.Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
+            Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
             currentRenderProfile.avatarProfile.Apply();
 
@@ -660,7 +665,7 @@ public class AvatarEditorHUDController : IHUD
         SetVisibility(false);
     }
 
-    public void GoToMarketplace()
+    public void GoToMarketplaceOrConnectWallet()
     {
         if (userProfile.hasConnectedWeb3)
             WebInterface.OpenURL(URL_MARKET_PLACE);
@@ -691,5 +696,36 @@ public class AvatarEditorHUDController : IHUD
             LoadUserProfile(userProfile, true);
             avatarIsDirty = false;
         }
+    }
+    
+    private bool ShouldShowHideOtherWearablesToast(WearableItem wearable)
+    {
+        var isWearingSkinAlready = model.wearables.Any(item => item.IsSkin());
+        return wearable.IsSkin() && !isWearingSkinAlready;
+    }
+
+    private bool IsTryingToReplaceSkin(WearableItem wearable)
+    {
+        return model.wearables.Any(skin =>
+        {
+            return skin.IsSkin()
+                   && skin.DoesHide(wearable.data.category, model.bodyShape.id);
+        });
+    }
+    
+    private bool ShouldShowReplaceOtherWearablesToast(WearableItem wearable)
+    {
+        var toReplace = GetWearablesReplacedBy(wearable);
+        if (wearable == null || toReplace.Count == 0) return false;
+        if (model.wearables.Contains(wearable)) return false;
+        
+        // NOTE: why just 1?
+        if (toReplace.Count == 1)
+        {
+            var w = toReplace[0];
+            if (w.data.category == wearable.data.category)
+                return false;
+        }
+        return true;
     }
 }

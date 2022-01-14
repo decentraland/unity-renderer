@@ -17,7 +17,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     internal bool arePanelsInitialized = false;
 
-    [System.Serializable]
+    [Serializable]
     public class AvatarEditorNavigationInfo
     {
         public Toggle toggle;
@@ -29,7 +29,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         public void Initialize() { Application.quitting += () => toggle.onValueChanged.RemoveAllListeners(); }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class AvatarEditorWearableFilter
     {
         public string categoryFilter;
@@ -93,14 +93,26 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField]
     internal Button noWeb3GoToMarketplaceButton;
 
+    [Header("Skins")]
+    
+    [SerializeField] internal GameObject skinsFeatureContainer;
+    
+    [SerializeField] internal GameObject skinsWeb3Container;
+
+    [SerializeField] internal GameObject skinsMissingWeb3Container;
+    
+    [SerializeField] internal Button skinsGoToMarketplaceButton;
+    
+    [SerializeField] internal Button skinsConnectWalletButton;
+
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
     private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
 
-    public event System.Action<AvatarModel> OnAvatarAppear;
-    public event System.Action<bool> OnSetVisibility;
-    public event System.Action OnRandomize;
+    public event Action<AvatarModel> OnAvatarAppear;
+    public event Action<bool> OnSetVisibility;
+    public event Action OnRandomize;
 
     private void Awake()
     {
@@ -108,7 +120,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
         if (characterPreviewController == null)
         {
-            characterPreviewController = GameObject.Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
+            characterPreviewController = Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
             characterPreviewController.name = "_CharacterPreviewController";
         }
 
@@ -118,7 +130,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     private void Initialize(AvatarEditorHUDController controller)
     {
-        ItemToggle.getEquippedWearablesReplacedByFunc = controller.GetWearablesReplacedBy;
         this.controller = controller;
         gameObject.name = VIEW_OBJECT_NAME;
 
@@ -128,8 +139,12 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         web3GoToMarketplaceButton.onClick.RemoveAllListeners();
         noWeb3GoToMarketplaceButton.onClick.RemoveAllListeners();
-        web3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplace);
-        noWeb3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplace);
+        skinsGoToMarketplaceButton.onClick.RemoveAllListeners();
+        skinsConnectWalletButton.onClick.RemoveAllListeners();
+        web3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
+        noWeb3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
+        skinsGoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
+        skinsConnectWalletButton.onClick.AddListener(controller.GoToMarketplaceOrConnectWallet);
 
         characterPreviewController.camera.enabled = false;
     }
@@ -138,6 +153,8 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         web3Container.SetActive(isWeb3User);
         noWeb3Container.SetActive(!isWeb3User);
+        skinsWeb3Container.SetActive(isWeb3User);
+        skinsMissingWeb3Container.SetActive(!isWeb3User);
     }
 
     internal void InitializeNavigationEvents(bool isGuest)
@@ -299,7 +316,9 @@ public class AvatarEditorHUDView : MonoBehaviour
             });
     }
 
-    public void AddWearable(WearableItem wearableItem, int amount)
+    public void AddWearable(WearableItem wearableItem, int amount,
+        Func<WearableItem, bool> hideOtherWearablesToastStrategy,
+        Func<WearableItem, bool> replaceOtherWearablesToastStrategy)
     {
         if (wearableItem == null)
             return;
@@ -310,10 +329,12 @@ public class AvatarEditorHUDView : MonoBehaviour
             return;
         }
 
-        selectorsByCategory[wearableItem.data.category].AddItemToggle(wearableItem, amount);
+        selectorsByCategory[wearableItem.data.category].AddItemToggle(wearableItem, amount,
+            hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
         if (wearableItem.IsCollectible())
         {
-            collectiblesItemSelector.AddItemToggle(wearableItem, amount);
+            collectiblesItemSelector.AddItemToggle(wearableItem, amount,
+                hideOtherWearablesToastStrategy, replaceOtherWearablesToastStrategy);
         }
     }
 
