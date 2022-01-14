@@ -172,11 +172,11 @@ namespace DCL.Builder
             {
                 progressController.DeployError(message);
             }
-
-            builderSceneToDeploy = null;
             
             string successString = isOk ? "Success" : message;
             BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+            
+            builderSceneToDeploy = null;
         }
 
         internal CatalystSceneEntityMetadata CreateSceneJson(IBuilderScene builderScene, PublishInfo info)

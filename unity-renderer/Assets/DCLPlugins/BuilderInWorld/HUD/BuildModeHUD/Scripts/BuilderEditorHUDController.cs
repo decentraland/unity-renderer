@@ -11,6 +11,7 @@ using UnityEngine.EventSystems;
 
 public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 {
+    public event Action<string, string> OnProjectNameAndDescriptionChanged;
     public event Action OnChangeModeAction;
     public event Action OnTranslateSelectedAction;
     public event Action OnRotateSelectedAction;
@@ -73,6 +74,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
         ConfigureTopActionsButtonsController();
         ConfigureSaveHUDController();
         ConfigureQuickBarController();
+        ConfigureNewProjectController();
     }
 
     public void Initialize(BuildModeHUDInitializationModel controllers, IContext context)
@@ -102,7 +104,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             buildModeConfirmationModalController = new BuildModeConfirmationModalController(),
             topActionsButtonsController = new TopActionsButtonsController(),
             saveHUDController = new SaveHUDController(),
-            newProjectDetailsController = new NewProjectDetailController(),
+            newProjectDetailsController = new NewLandProjectDetailController(),
         };
     }
 
@@ -189,14 +191,19 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
 
     private void ConfigureQuickBarController() { controllers.quickBarController.OnCatalogItemAssigned += QuickBarCatalogItemAssigned; }
-
+    private void ConfigureNewProjectController() { controllers.newProjectDetailsController.OnNameAndDescriptionSet += NameAndDescriptionOfNewProjectSet; }
+    
     private void QuickBarCatalogItemAssigned(CatalogItem item) { BIWAnalytics.QuickAccessAssigned(item, GetCatalogSectionSelected().ToString()); }
+
+    private void NameAndDescriptionOfNewProjectSet(string name, string description)
+    {
+        OnProjectNameAndDescriptionChanged?.Invoke(name,description);
+    }
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
     public void NewSceneForLand(IBuilderScene sceneWithSceenshot)
     {
-        //TODO: Implement welcome panel
         controllers.newProjectDetailsController.SetActive(true);
     }
 

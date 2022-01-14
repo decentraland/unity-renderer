@@ -8,6 +8,7 @@ using UnityEngine;
 
 public interface IBuilderEditorHUDController
 {
+    event Action<string, string> OnProjectNameAndDescriptionChanged;
     event Action OnUndoAction;
     event Action OnRedoAction;
     event Action OnResetAction;
