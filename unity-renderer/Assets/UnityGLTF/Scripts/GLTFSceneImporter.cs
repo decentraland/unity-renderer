@@ -265,7 +265,7 @@ namespace UnityGLTF
                     }
                     Debug.Log("Loading JSON Stream");
 
-                    await LoadJsonStreamOnAThread(_gltfFileName);
+                    await LoadJsonStreamOnAThread();
                 }
 
                 float profiling = 0, frames = 0, jsonProfiling = 0;
@@ -328,10 +328,10 @@ namespace UnityGLTF
                     }
                 }
             }
-            catch (Exception e)
+            /*catch (Exception e)
             {
                 Debug.Log(e);
-            }
+            }*/
             finally
             {
                 Debug.Log("Finally!");
@@ -493,27 +493,9 @@ namespace UnityGLTF
 
         protected IEnumerator EmptyYieldEnum() { yield break; }
 
-        private async UniTask LoadJsonStreamOnAThread(string jsonUrl)
+        private async UniTask LoadJsonStreamOnAThread()
         {
-#if !WINDOWS_UWP
-            // Note (Pato) This is worthless as we dont use the file loader
-            /*if (isMultithreaded && _loader.HasSyncLoadMethod)
-            {
-                Debug.Log("Loading Stream " + _gltfFileName);
-                Thread loadThread = new Thread(() => _loader.LoadStreamSync(_gltfFileName));
-                loadThread.Name = "LoadJsonStream: " + _gltfFileName;
-                loadThread.Priority = ThreadPriority.Highest;
-                loadThread.Start();
-                //RunCoroutineSync(WaitUntilEnum(new WaitUntil(() => !loadThread.IsAlive)));
-                
-                await WaitUntil(() => !loadThread.IsAlive);
-            }
-            else*/
-#endif
-            {
-                // HACK: Force the coroutine to run synchronously in the editor
-                await _loader.LoadStream(_gltfFileName);
-            }
+            await _loader.LoadStream(_gltfFileName);
 
             _gltfStream.Stream = _loader.LoadedStream;
             _gltfStream.StartPosition = 0;
@@ -522,14 +504,6 @@ namespace UnityGLTF
         private async UniTask LoadJsonOnAThread()
         {
             await UniTaskDCL.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition));
-            /*Thread parseJsonThread = new Thread(() => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition))
-            {
-                Priority = ThreadPriority.Highest
-            };
-            parseJsonThread.Start();
-            //RunCoroutineSync(WaitUntilEnum(new WaitUntil(() => !parseJsonThread.IsAlive)));
-
-            await WaitUntil(() => !parseJsonThread.IsAlive);*/
 
             if (_gltfRoot == null)
             {
