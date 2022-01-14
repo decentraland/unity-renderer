@@ -51,6 +51,7 @@ namespace DCL.Components
         public DCLAvatarTexture() { 
             model = new AvatarModel(); 
         }
+        
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
@@ -106,33 +107,5 @@ namespace DCL.Components
                     onURLSuccess?.Invoke(face256Url);
                 });
         }
-
-        // protected int refCount;
-        //
-        // public virtual void AttachTo(PBRMaterial material) { AddRefCount(); }
-        //
-        // public virtual void AttachTo(BasicMaterial material) { AddRefCount(); }
-        //
-        // public virtual void AttachTo(UIImage image) { AddRefCount(); }
-        //
-        // public virtual void DetachFrom(PBRMaterial material) { RemoveRefCount(); }
-        //
-        // public virtual void DetachFrom(BasicMaterial material) { RemoveRefCount(); }
-        //
-        // public virtual void DetachFrom(UIImage image) { RemoveRefCount(); }
-        //
-        // public void AddRefCount() { refCount++; }
-        //
-        // public void RemoveRefCount()
-        // {
-        //     if (refCount == 0)
-        //         Dispose();
-        // }
-        //
-        // public override void Dispose()
-        // {
-        //     isDisposed = true
-        //     base.Dispose();
-        // }
     }
 }
