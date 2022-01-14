@@ -111,6 +111,7 @@ namespace AvatarSystem
             status = IAvatar.Status.Idle;
             disposeCts?.Cancel();
             disposeCts?.Dispose();
+            disposeCts = null;
             avatarCurator?.Dispose();
             loader?.Dispose();
             visibility?.Dispose();

@@ -82,6 +82,7 @@ public class CharacterPreviewController : MonoBehaviour
     {
         loadingCts?.Cancel();
         loadingCts?.Dispose();
+        loadingCts = null;
         avatar?.Dispose();
     }
 

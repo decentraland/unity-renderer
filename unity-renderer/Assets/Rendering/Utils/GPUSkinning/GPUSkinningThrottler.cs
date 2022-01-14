@@ -54,6 +54,7 @@ namespace GPUSkinning
         {
             updateCts?.Cancel();
             updateCts?.Dispose();
+            updateCts = null;
         }
 
         public void Dispose()
