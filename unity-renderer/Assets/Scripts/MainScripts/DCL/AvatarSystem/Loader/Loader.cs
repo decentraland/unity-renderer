@@ -13,9 +13,7 @@ namespace AvatarSystem
     {
         public GameObject bodyshapeContainer => bodyshapeLoader?.rendereable?.container;
         public SkinnedMeshRenderer combinedRenderer { get; private set; }
-        public Renderer eyesRenderer { get; private set; }
-        public Renderer eyebrowsRenderer { get; private set; }
-        public Renderer mouthRenderer { get; private set; }
+        public Renderer[] facialFeaturesRenderers { get; private set; }
         public ILoader.Status status { get; private set; } = ILoader.Status.Idle;
 
         private readonly IWearableLoaderFactory wearableLoaderFactory;
@@ -69,37 +67,13 @@ namespace AvatarSystem
                     throw new Exception($"Couldnt load bodyshape");
                 }
 
-                // Mark for cleanUp unneeded loaders
-                List<string> unnededCategories = new List<string>();
-                foreach ((string category, IWearableLoader existentLoader) in loaders)
+                (List<IWearableLoader> notReusableLoaders, List<IWearableLoader> newLoaders) = GetNewLoaders(wearables, loaders, wearableLoaderFactory);
+                toCleanUp.AddRange(notReusableLoaders);
+                loaders.Clear();
+                for (int i = 0; i < newLoaders.Count; i++)
                 {
-                    if (!wearables.Contains(existentLoader.wearable))
-                    {
-                        toCleanUp.Add(existentLoader);
-                        unnededCategories.Add(category);
-                    }
-                }
-                for (int index = 0; index < unnededCategories.Count; index++)
-                {
-                    loaders.Remove(unnededCategories[index]);
-                }
-
-                // Get loaders for the new set of wearables (reusing current ones already on use)
-                for (int i = 0; i < wearables.Count; i++)
-                {
-                    WearableItem wearable = wearables[i];
-                    IWearableLoader loader = null;
-                    if (loaders.TryGetValue(wearable.data.category, out IWearableLoader existentLoader))
-                    {
-                        loaders.Remove(wearable.data.category);
-                        if (existentLoader.wearable.id == wearable.id)
-                            loader = existentLoader;
-                        else
-                            toCleanUp.Add(existentLoader);
-                    }
-                    if (loader == null)
-                        loader = wearableLoaderFactory.GetWearableLoader(wearable);
-                    loaders.Add(wearable.data.category, loader);
+                    IWearableLoader loader = newLoaders[i];
+                    loaders.Add(loader.wearable.data.category, loader);
                 }
 
                 await UniTask.WhenAll(loaders.Values.Select(x => x.Load(container, settings, ct)));
@@ -118,6 +92,7 @@ namespace AvatarSystem
 
                 AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
                 (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) = AvatarSystemUtils.GetActiveBodyParts(bodyshape.id, wearables);
+
                 var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
 
                 // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
@@ -132,9 +107,12 @@ namespace AvatarSystem
                 }
 
                 this.combinedRenderer = combinedRenderer;
-                eyesRenderer = bodyshapeLoader.eyesRenderer;
-                eyebrowsRenderer = bodyshapeLoader.eyebrowsRenderer;
-                mouthRenderer = bodyshapeLoader.mouthRenderer;
+                if (headVisible)
+                    facialFeaturesRenderers = new Renderer[] { bodyshapeLoader.eyesRenderer, bodyshapeLoader.eyebrowsRenderer, bodyshapeLoader.mouthRenderer };
+                else
+                    //Loader is not in charge of visibility, since everything loaded has the renderer disabled
+                    //we can just leave this field nulled 
+                    facialFeaturesRenderers = null; 
             }
             catch (OperationCanceledException)
             {
@@ -151,6 +129,32 @@ namespace AvatarSystem
             {
                 DisposeCleanUpLoaders();
             }
+        }
+
+        internal static (List<IWearableLoader> notReusableLoaders, List<IWearableLoader> newLoaders) GetNewLoaders(List<WearableItem> wearables, Dictionary<string, IWearableLoader> currentLoaders, IWearableLoaderFactory wearableLoaderFactory)
+        {
+            // Initialize with all loaders and remove from cleaning-up the ones that can be reused
+            List<IWearableLoader> notReusableLoaders = new List<IWearableLoader>(currentLoaders.Values);
+            List<IWearableLoader> newLoaders = new List<IWearableLoader>();
+
+            for (int i = 0; i < wearables.Count; i++)
+            {
+                WearableItem wearable = wearables[i];
+
+                if (currentLoaders.TryGetValue(wearable.data.category, out IWearableLoader loader))
+                {
+                    //We can reuse this loader
+                    if (loader.wearable.id == wearable.id)
+                    {
+                        newLoaders.Add(loader);
+                        notReusableLoaders.Remove(loader);
+                        continue;
+                    }
+                }
+                newLoaders.Add(wearableLoaderFactory.GetWearableLoader(wearable));
+            }
+
+            return (notReusableLoaders, newLoaders);
         }
 
         public Transform[] GetBones() { return bodyshapeLoader?.upperBodyRenderer?.bones; }

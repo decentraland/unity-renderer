@@ -56,7 +56,7 @@ namespace AvatarSystem
 
         public void SetImpostorTint(Color color) { AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, color); }
 
-        public void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures)
+        public void Bind(Renderer combinedAvatar)
         {
             this.combinedAvatar = combinedAvatar;
             SetLodIndex(lodIndex, true);
@@ -177,7 +177,7 @@ namespace AvatarSystem
     {
         public int lodIndex { get; }
 
-        public void Bind(Renderer combinedAvatar, IEnumerable<Renderer> facialFeatures) { }
+        public void Bind(Renderer combinedAvatar) { }
         public void SetLodIndex(int lodIndex, bool inmediate = false) { }
         public void SetImpostorTexture(Texture2D texture) { }
         public void SetImpostorTint(Color color) { }

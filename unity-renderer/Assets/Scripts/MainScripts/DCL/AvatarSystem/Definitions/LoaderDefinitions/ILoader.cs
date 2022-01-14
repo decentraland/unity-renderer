@@ -19,9 +19,7 @@ namespace AvatarSystem
 
         GameObject bodyshapeContainer { get; }
         SkinnedMeshRenderer combinedRenderer { get; }
-        Renderer eyesRenderer { get; }
-        Renderer eyebrowsRenderer { get; }
-        Renderer mouthRenderer { get; }
+        Renderer[] facialFeaturesRenderers { get; }
         Status status { get; }
 
         UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, CancellationToken ct = default);

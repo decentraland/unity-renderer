@@ -196,7 +196,7 @@ namespace AvatarSystem
                     hiddenList.UnionWith(hiddenByThisWearable);
             }
 
-            headVisible = !hiddenList.Contains(WearableLiterals.Categories.BODY_SHAPE) && !usedCategories.Contains(WearableLiterals.Categories.BODY_SHAPE);
+            headVisible = !hiddenList.Contains(WearableLiterals.Misc.HEAD) && !usedCategories.Contains(WearableLiterals.Misc.HEAD);
             upperBodyVisible = !hiddenList.Contains(WearableLiterals.Categories.UPPER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.UPPER_BODY);
             lowerBodyVisible = !hiddenList.Contains(WearableLiterals.Categories.LOWER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.LOWER_BODY);
             feetVisible = !hiddenList.Contains(WearableLiterals.Categories.FEET) && !usedCategories.Contains(WearableLiterals.Categories.FEET);

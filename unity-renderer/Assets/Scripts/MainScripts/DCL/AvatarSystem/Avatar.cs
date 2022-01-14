@@ -68,10 +68,10 @@ namespace AvatarSystem
                 gpuSkinning.Prepare(loader.combinedRenderer);
                 gpuSkinningThrottler.Bind(gpuSkinning);
 
-                visibility.Bind(gpuSkinning.renderer,  new [] { loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
+                visibility.Bind(gpuSkinning.renderer, loader.facialFeaturesRenderers);
                 visibility.SetLoadingReady(true);
 
-                lod.Bind(gpuSkinning.renderer, new [] { loader.eyesRenderer, loader.eyebrowsRenderer, loader.mouthRenderer });
+                lod.Bind(gpuSkinning.renderer);
                 gpuSkinningThrottler.Start();
 
                 status = IAvatar.Status.Loaded;
@@ -89,7 +89,7 @@ namespace AvatarSystem
             }
             finally
             {
-                disposeCts.Dispose();
+                disposeCts?.Dispose();
                 disposeCts = null;
             }
         }
