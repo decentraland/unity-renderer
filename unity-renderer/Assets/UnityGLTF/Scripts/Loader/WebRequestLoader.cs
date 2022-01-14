@@ -91,7 +91,10 @@ namespace UnityGLTF.Loader
             await UniTaskDCL.Run( async () =>
             {
                 while (asyncOp.keepWaiting && !asyncOp.isDone)
-                    await Task.Delay(5);
+                {
+                    Debug.Log("Awaiting for " + finalUrl);
+                    await UniTask.WaitForEndOfFrame();
+                }
             });
 
             Debug.Log("Wait Finished");
