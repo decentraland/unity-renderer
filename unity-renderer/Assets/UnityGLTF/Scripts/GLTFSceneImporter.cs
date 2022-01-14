@@ -309,7 +309,8 @@ namespace UnityGLTF
                 if (matTransitions != null && matTransitions.Length > 0)
                 {
                     //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
-                    await WaitUntil(() => IsTransitionFinished(matTransitions));
+                    await UniTask.WaitUntil(() => IsTransitionFinished(matTransitions));
+                    
                 }
 
                 if (!importSkeleton)
@@ -453,7 +454,7 @@ namespace UnityGLTF
             {
                 while (streamingImagesStaticList.Contains(image.Uri))
                 {
-                    await Task.Delay(25);
+                    await UniTask.Delay(TimeSpan.FromMilliseconds(25));
                 }
             }
 
@@ -1845,7 +1846,7 @@ namespace UnityGLTF
             if (!skipFrameIfDepletedTimeBudget.keepWaiting)
                 return;
 
-            await WaitUntil(() => !skipFrameIfDepletedTimeBudget.keepWaiting);
+            await UniTask.WaitUntil(() => !skipFrameIfDepletedTimeBudget.keepWaiting);
         }
 
         private async UniTask ConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
@@ -2149,7 +2150,7 @@ namespace UnityGLTF
 
         protected virtual async UniTask ConstructTexture(GLTFTexture texture, int textureIndex, bool linear)
         {
-            await WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
+            await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
 
             if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
                 return;
@@ -2203,19 +2204,7 @@ namespace UnityGLTF
 
             _assetCache.TextureCache[textureIndex].CachedTexture = source;
         }
-        private async UniTask WaitUntil(Func<bool> condition)
-        {
-            async UniTask action()
-            {
-                while (!condition())
-                {
-                    await Task.Delay(5);
-                }
-            }
-
-            await action();
-        }
-
+        
         protected virtual void ConstructImageFromGLB(GLTFImage image, int imageCacheIndex)
         {
             var texture = new Texture2D(0, 0);
