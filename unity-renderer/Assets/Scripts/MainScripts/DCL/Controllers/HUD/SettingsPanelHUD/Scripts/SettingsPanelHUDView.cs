@@ -31,6 +31,10 @@ namespace DCL.SettingsPanelHUD
         [SerializeField] private InputAction_Trigger closeAction;
         [SerializeField] private InputAction_Trigger openAction;
 
+        [Header("World Preview Window")]
+        [SerializeField] private GameObject worldPreviewWindow;
+        [SerializeField] private RawImage worldPreviewRawImage;
+
         [Header("Others")]
         [SerializeField] private Button tutorialButton;
         [SerializeField] private Button reportBugButton;
@@ -147,8 +151,9 @@ namespace DCL.SettingsPanelHUD
             {
                 settingsAnimator.Hide();
                 settingsPanelController.SaveSettings();
+                SetWorldPreviewActive(false);
             }
-
+            
             isOpen = visible;
         }
 
@@ -175,6 +180,13 @@ namespace DCL.SettingsPanelHUD
         {
             helpAndSupportButton.gameObject.SetActive(true);
             helpAndSupportButton.onClick.AddListener(() => OnHelpAndSupportClicked?.Invoke());
+        }
+
+        public void SetWorldPreviewActive(bool isActive)
+        {
+            worldPreviewWindow.gameObject.SetActive(isActive);
+            DataStore.i.camera.outputTexture.Set(isActive ? worldPreviewRawImage.texture as RenderTexture : null);
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(DataStore.i.exploreV2.isOpen.Get() && !isActive);
         }
 
         private void OpenAction_OnTriggered(DCLAction_Trigger action)

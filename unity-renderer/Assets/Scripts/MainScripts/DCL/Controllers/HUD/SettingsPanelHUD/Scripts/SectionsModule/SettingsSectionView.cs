@@ -10,12 +10,14 @@ namespace DCL.SettingsPanelHUD.Sections
     /// </summary>
     public interface ISettingsSectionView
     {
+        string sectionName { get; }
+
         /// <summary>
         /// All the needed logic to initializes the SECTION view and put its WIDGETS factory into operation.
         /// </summary>
         /// <param name="settingsSectionController">Controller that will be associated to this view.</param>
         /// <param name="widgets">List of WIDGETS associated to this SECTION.</param>
-        void Initialize(ISettingsSectionController settingsSectionController, List<SettingsWidgetModel> widgets);
+        void Initialize(ISettingsSectionController settingsSectionController, List<SettingsWidgetModel> widgets, string sectionName);
 
         /// <summary>
         /// Activates/deactivates the SECTION.
@@ -36,10 +38,13 @@ namespace DCL.SettingsPanelHUD.Sections
         private List<SettingsWidgetModel> widgets;
         private bool isOpen = false;
 
-        public void Initialize(ISettingsSectionController settingsSectionController, List<SettingsWidgetModel> widgets)
+        public string sectionName { get; private set; }
+
+        public void Initialize(ISettingsSectionController settingsSectionController, List<SettingsWidgetModel> widgets, string sectionName)
         {
             this.settingsSectionController = settingsSectionController;
             this.widgets = widgets;
+            this.sectionName = sectionName;
 
             CreateWidgets();
         }

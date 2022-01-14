@@ -35,6 +35,8 @@ namespace DCL.SettingsPanelHUD.Sections
         private Color originalBackgroundColor;
         private bool isSelected;
 
+        public string settingName { get => text.text; }
+
         public void Initialize(Sprite icon, string text)
         {
             this.icon.sprite = icon;
