@@ -69,6 +69,7 @@ namespace DCL
         {
             try
             {
+                Debug.Log("Adding GLTF Component");
                 gltfComponent = asset.container.AddComponent<GLTFComponent>();
 
                 gltfComponent.Initialize(webRequestController, AssetPromiseKeeper_GLTF.i.throttlingCounter);
