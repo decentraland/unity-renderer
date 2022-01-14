@@ -263,8 +263,6 @@ namespace UnityGLTF
                     {
                         Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
                     }
-                    Debug.Log("Loading JSON Stream");
-
                     await LoadJsonStreamOnAThread();
                 }
 
@@ -277,8 +275,6 @@ namespace UnityGLTF
 
                 if (_gltfRoot == null)
                 {
-                    Debug.Log("Loading JSON");
-
                     await LoadJsonOnAThread();
                 }
 
@@ -295,7 +291,6 @@ namespace UnityGLTF
                     profiling = Time.realtimeSinceStartup;
                     frames = Time.frameCount;
                 }
-                Debug.Log("Internal Load Scene");
 
                 await _LoadScene(sceneIndex, showSceneObj);
 

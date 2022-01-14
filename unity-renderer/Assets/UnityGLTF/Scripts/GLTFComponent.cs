@@ -297,7 +297,6 @@ namespace MainScripts.DCL.GLTF
 
                     if (transform != null)
                     {
-                        Debug.Log("Before load scene");
                         await sceneImporter.LoadScene(-1);
 
                         // Override the shaders on all materials if a shader is provided
@@ -310,7 +309,7 @@ namespace MainScripts.DCL.GLTF
                             }
                         }
                     }
-
+                    Debug.Log(GLTFUri + " loaded correctly");
                     state = State.COMPLETED;
                     DecrementDownloadCount();
                 }
