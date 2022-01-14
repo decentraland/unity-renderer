@@ -926,7 +926,7 @@ namespace UnityGLTF
                     case GLTFAnimationChannelPath.translation:
                         propertyNames = new string[] { "localPosition.x", "localPosition.y", "localPosition.z" };
 
-                        SetAnimationCurve(clip, relativePath, propertyNames, input, output,
+                        await SetAnimationCurve(clip, relativePath, propertyNames, input, output,
                             samplerCache.Interpolation, typeof(Transform),
                             (data, frame) =>
                             {
