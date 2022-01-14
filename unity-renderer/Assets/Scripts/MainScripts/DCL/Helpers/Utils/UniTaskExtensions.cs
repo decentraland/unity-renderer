@@ -8,7 +8,8 @@ namespace DCL.Helpers
     {
         public static async UniTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-#if !UNITY_STANDALONE && !UNITY_EDITOR
+#if !UNITY_STANDALONE || UNITY_EDITOR
+            await UniTask.Yield();
             action();
             return;
 #endif
@@ -17,7 +18,8 @@ namespace DCL.Helpers
 
         public static async UniTask Run(Func<UniTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-#if !UNITY_STANDALONE && !UNITY_EDITOR
+#if !UNITY_STANDALONE || UNITY_EDITOR
+            await UniTask.Yield();
             await UniTask.Create(action);
             return;
 #endif
