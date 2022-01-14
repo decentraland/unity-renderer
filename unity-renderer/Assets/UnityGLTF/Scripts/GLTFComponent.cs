@@ -141,7 +141,7 @@ namespace MainScripts.DCL.GLTF
 
             this.fileToHashConverter = fileToHashConverter;
             this.settings = settings;
-            
+            Debug.Log("Starting to load asset: " + incomingURI);
             LoadAssetCoroutine(settings)
                 .SuppressCancellationThrow()
                 .Forget();
@@ -297,6 +297,7 @@ namespace MainScripts.DCL.GLTF
 
                     if (transform != null)
                     {
+                        Debug.Log("Before load scene");
                         await sceneImporter.LoadScene(-1);
 
                         // Override the shaders on all materials if a shader is provided

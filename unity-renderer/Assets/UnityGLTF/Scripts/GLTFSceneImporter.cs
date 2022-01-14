@@ -246,6 +246,7 @@ namespace UnityGLTF
         {
             try
             {
+                Debug.Log("Starting to load scene");
                 lock (this)
                 {
                     if (_isRunning)
@@ -262,6 +263,7 @@ namespace UnityGLTF
                     {
                         Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
                     }
+                    Debug.Log("Loading JSON Stream");
 
                     await LoadJsonStreamOnAThread(_gltfFileName);
                 }
@@ -275,6 +277,8 @@ namespace UnityGLTF
 
                 if (_gltfRoot == null)
                 {
+                    Debug.Log("Loading JSON");
+
                     await LoadJsonOnAThread();
                 }
 
@@ -291,6 +295,7 @@ namespace UnityGLTF
                     profiling = Time.realtimeSinceStartup;
                     frames = Time.frameCount;
                 }
+                Debug.Log("Internal Load Scene");
 
                 await _LoadScene(sceneIndex, showSceneObj);
 
@@ -323,8 +328,13 @@ namespace UnityGLTF
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
             finally
             {
+                Debug.Log("Finally!");
                 lock (this)
                 {
                     _isRunning = false;
