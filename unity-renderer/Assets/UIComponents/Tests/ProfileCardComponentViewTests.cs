@@ -151,8 +151,6 @@ public class ProfileCardComponentViewTests
     [TestCase(false)]
     public void SetIsClaimedNameCorrectly(bool isClaimedName)
     {
-        // Arrange
-
         // Act
         profileCardComponent.SetIsClaimedName(isClaimedName);
 
