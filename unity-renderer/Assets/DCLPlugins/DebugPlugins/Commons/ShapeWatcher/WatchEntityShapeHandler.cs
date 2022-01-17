@@ -14,24 +14,32 @@ namespace DCLPlugins.DebugPlugins.Commons
 
             if (entity.meshesInfo.currentShape != null)
             {
-                OnShapeUpdated();
+                OnShapeUpdated(entity);
             }
 
-            entity.meshesInfo.OnUpdated += OnShapeUpdated;
+            entity.OnMeshesInfoUpdated += OnShapeUpdated;
+            entity.OnMeshesInfoCleaned += OnShapeCleaned;
         }
 
         public void Dispose()
         {
-            entity.meshesInfo.OnUpdated -= OnShapeUpdated;
+            entity.OnMeshesInfoUpdated -= OnShapeUpdated;
+            entity.OnMeshesInfoCleaned -= OnShapeCleaned;
+
             listener.Dispose();
         }
 
-        private void OnShapeUpdated()
+        private void OnShapeUpdated(IDCLEntity entity)
         {
             if (entity.meshesInfo.currentShape != null)
             {
                 listener.OnShapeUpdated(entity);
             }
+        }
+
+        private void OnShapeCleaned(IDCLEntity entity)
+        {
+            listener.OnShapeCleaned(entity);
         }
     }
 }

@@ -15,7 +15,7 @@ internal class EntityWireframe : IShapeListener
 
     public void Dispose()
     {
-        Object.Destroy(entityWireframe);
+        CleanWireframe();
     }
 
     public void OnShapeUpdated(IDCLEntity entity)
@@ -29,5 +29,16 @@ internal class EntityWireframe : IShapeListener
 
         wireframeT.SetParent(entity.gameObject.transform);
         entityWireframe.SetActive(true);
+    }
+    
+    public void OnShapeCleaned(IDCLEntity entity)
+    {
+        CleanWireframe();
+    }
+
+    private void CleanWireframe()
+    {
+        Object.Destroy(entityWireframe);
+        entityWireframe = null;
     }
 }
