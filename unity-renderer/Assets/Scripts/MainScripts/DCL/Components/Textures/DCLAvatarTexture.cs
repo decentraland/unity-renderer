@@ -94,7 +94,7 @@ namespace DCL.Components
             yield return Environment.i.platform.webRequest.Get(
                 url: url,
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 1,
+                timeout: 10,
                 disposeOnCompleted: false,
                 OnFail: (webRequest) =>
                 {
