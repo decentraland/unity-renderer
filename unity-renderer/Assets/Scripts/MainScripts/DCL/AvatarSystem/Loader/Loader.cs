@@ -19,16 +19,16 @@ namespace AvatarSystem
         private readonly IWearableLoaderFactory wearableLoaderFactory;
         private readonly GameObject container;
 
-        private IBodyshapeLoader bodyshapeLoader;
-        private readonly Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>();
-        private readonly AvatarMeshCombinerHelper avatarMeshCombiner;
+        internal IBodyshapeLoader bodyshapeLoader;
+        internal readonly Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>();
+        private readonly IAvatarMeshCombinerHelper avatarMeshCombiner;
 
-        public Loader(IWearableLoaderFactory wearableLoaderFactory, GameObject container)
+        public Loader(IWearableLoaderFactory wearableLoaderFactory, GameObject container, IAvatarMeshCombinerHelper avatarMeshCombiner)
         {
             this.wearableLoaderFactory = wearableLoaderFactory;
             this.container = container;
 
-            avatarMeshCombiner = new AvatarMeshCombinerHelper();
+            this.avatarMeshCombiner = avatarMeshCombiner;
             avatarMeshCombiner.prepareMeshForGpuSkinning = true;
             avatarMeshCombiner.uploadMeshToGpu = true;
         }
@@ -177,7 +177,7 @@ namespace AvatarSystem
             return true;
         }
 
-        private static ILoader.Status ComposeStatus(Dictionary<string, IWearableLoader> loaders)
+        internal static ILoader.Status ComposeStatus(Dictionary<string, IWearableLoader> loaders)
         {
             ILoader.Status composedStatus = ILoader.Status.Succeeded;
             foreach ((string category, IWearableLoader loader) in loaders)

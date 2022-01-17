@@ -57,12 +57,12 @@ namespace DCL
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             avatar = new Avatar(
                 new AvatarCurator(new WearableItemResolver()),
-                new Loader(new WearableLoaderFactory(), avatarContainer),
+                new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
                 GetComponentInChildren<AvatarAnimatorLegacy>(),
                 visibility,
                 avatarLOD,
                 new SimpleGPUSkinning(),
-                new GPUSkinningThrottler_New());
+                new GPUSkinningThrottler());
 
             if (avatarReporterController == null)
             {

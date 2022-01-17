@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using DCL;
 using GPUSkinning;
 using UnityEngine;
 
@@ -61,12 +62,12 @@ public class CharacterPreviewController : MonoBehaviour
         };
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
-            new Loader(new WearableLoaderFactory(), avatarContainer),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             avatarContainer.gameObject.GetComponentInChildren<IAnimator>(),
             new Visibility(),
             new NoLODs(),
             new SimpleGPUSkinning(),
-            new GPUSkinningThrottler_New()
+            new GPUSkinningThrottler()
         );
     }
 

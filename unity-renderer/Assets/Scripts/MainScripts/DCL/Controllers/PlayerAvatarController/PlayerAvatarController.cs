@@ -41,12 +41,12 @@ public class PlayerAvatarController : MonoBehaviour
 
         avatar = new AvatarSystem.Avatar(
             new AvatarCurator(new WearableItemResolver()),
-            new Loader(new WearableLoaderFactory(), avatarContainer),
+            new Loader(new WearableLoaderFactory(), avatarContainer, new AvatarMeshCombinerHelper()),
             GetComponentInChildren<AvatarAnimatorLegacy>(),
             new Visibility(),
             new NoLODs(),
             new SimpleGPUSkinning(),
-            new GPUSkinningThrottler_New());
+            new GPUSkinningThrottler());
 
         if ( UserProfileController.i != null )
         {

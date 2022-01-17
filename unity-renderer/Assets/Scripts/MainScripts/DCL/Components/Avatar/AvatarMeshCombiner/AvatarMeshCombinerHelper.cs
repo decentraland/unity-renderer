@@ -7,6 +7,20 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
+    public interface IAvatarMeshCombinerHelper : IDisposable
+    {
+        public bool useCullOpaqueHeuristic { get; set; }
+        public bool prepareMeshForGpuSkinning { get; set; }
+        public bool uploadMeshToGpu { get; set; }
+        public bool enableCombinedMesh { get; set; }
+
+        public GameObject container { get; }
+        public SkinnedMeshRenderer renderer { get; }
+
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine);
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset);
+    }
+    
     /// <summary>
     /// AvatarMeshCombinerHelper uses the AvatarMeshCombiner utility class to combine many skinned renderers
     /// into a single one.
@@ -14,7 +28,7 @@ namespace DCL
     /// This class will recycle the same gameObject and renderer each time it is called,
     /// and binds the AvatarMeshCombiner output to a proper well configured SkinnedMeshRenderer. 
     /// </summary>
-    public class AvatarMeshCombinerHelper : IDisposable
+    public class AvatarMeshCombinerHelper : IAvatarMeshCombinerHelper
     {
         private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
@@ -22,10 +36,10 @@ namespace DCL
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
 
-        public bool useCullOpaqueHeuristic = false;
-        public bool prepareMeshForGpuSkinning = false;
-        public bool uploadMeshToGpu = true;
-        public bool enableCombinedMesh = true;
+        public bool useCullOpaqueHeuristic { get; set; } = false;
+        public bool prepareMeshForGpuSkinning { get; set; } = false;
+        public bool uploadMeshToGpu { get; set; } = true;
+        public bool enableCombinedMesh { get; set; } = true;
 
         private AvatarMeshCombiner.Output? lastOutput;
 

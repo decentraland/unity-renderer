@@ -12,7 +12,7 @@ namespace GPUSkinning
         void Stop();
     }
 
-    public class GPUSkinningThrottler_New : IGPUSkinningThrottler
+    public class GPUSkinningThrottler : IGPUSkinningThrottler
     {
         internal static int startingFrame = 0;
 
@@ -21,7 +21,7 @@ namespace GPUSkinning
         internal int currentFrame;
         internal CancellationTokenSource updateCts = new CancellationTokenSource();
 
-        public GPUSkinningThrottler_New()
+        public GPUSkinningThrottler()
         {
             framesBetweenUpdates = 1;
             currentFrame = startingFrame++;
@@ -62,31 +62,6 @@ namespace GPUSkinning
             updateCts?.Cancel();
             updateCts?.Dispose();
             updateCts = null;
-        }
-    }
-
-    public class GPUSkinningThrottler
-    {
-        internal static int startingFrame = 0;
-
-        internal readonly IGPUSkinning gpuSkinning;
-        internal int framesBetweenUpdates;
-        internal int currentFrame;
-
-        public GPUSkinningThrottler(IGPUSkinning gpuSkinning)
-        {
-            this.gpuSkinning = gpuSkinning;
-            framesBetweenUpdates = 1;
-            currentFrame = startingFrame++;
-        }
-
-        public void SetThrottling(int newFramesBetweenUpdates) { framesBetweenUpdates = newFramesBetweenUpdates; }
-
-        public void TryUpdate()
-        {
-            currentFrame++;
-            if (currentFrame % framesBetweenUpdates == 0)
-                gpuSkinning.Update();
         }
     }
 }

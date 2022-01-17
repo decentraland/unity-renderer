@@ -98,7 +98,7 @@ namespace AvatarSystem
             try
             {
                 List<UniTask<WearableItem>> neededWearablesTasks = new List<UniTask<WearableItem>>();
-                foreach (string neededCategory in WearableLiterals.Categories.NEEDED_CATEGORIES)
+                foreach (string neededCategory in WearableLiterals.Categories.REQUIRED_CATEGORIES)
                 {
                     // If a needed category is hidden we dont need to fallback, we skipped it on purpose
                     if (hiddenCategories.Contains(neededCategory))
