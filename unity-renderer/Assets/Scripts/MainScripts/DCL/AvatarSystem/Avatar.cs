@@ -57,7 +57,7 @@ namespace AvatarSystem
                 WearableItem mouth = null;
                 List<WearableItem> wearables = null;
 
-                (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings.bodyshapeId , wearablesIds, linkedCt);
+                (bodyshape, eyes, eyebrows, mouth, wearables) = await avatarCurator.Curate(settings , wearablesIds, linkedCt);
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 

@@ -59,7 +59,7 @@ public static class WearableLiterals
 
     public static class DefaultWearables
     {
-        private static readonly Dictionary<(string, string), string> defaultWearables = new Dictionary<(string, string), string>
+        public static readonly IReadOnlyDictionary<(string, string), string> defaultWearables = new Dictionary<(string, string), string>
         {
             { (BodyShapes.MALE, Categories.EYES), "urn:decentraland:off-chain:base-avatars:eyes_00" },
             { (BodyShapes.MALE, Categories.EYEBROWS), "urn:decentraland:off-chain:base-avatars:eyebrows_00" },

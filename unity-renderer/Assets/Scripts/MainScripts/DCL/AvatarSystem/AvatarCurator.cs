@@ -18,14 +18,23 @@ namespace AvatarSystem
             this.wearableItemResolver = wearableItemResolver;
         }
 
-        public async UniTask<(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables)> Curate(string bodyshapeId, IEnumerable<string> wearablesId, CancellationToken ct = default)
+        /// <summary>
+        /// Curate a flattened into IDs set of wearables.
+        /// Bear in mind that the bodyshape must be part of the list of wearables
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="wearablesId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async UniTask<(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables)> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
 
             try
             {
                 WearableItem[] wearableItems =  await wearableItemResolver.Resolve(wearablesId, ct);
-                HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(bodyshapeId, wearableItems);
+                HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategories(settings.bodyshapeId, wearableItems);
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
                 for (int i = 0; i < wearableItems.Length; i++)
@@ -41,21 +50,24 @@ namespace AvatarSystem
                         continue;
 
                     // Filter wearables without representation for the bodyshape
-                    if (!wearableItem.TryGetRepresentation(bodyshapeId, out var representation))
+                    if (!wearableItem.TryGetRepresentation(settings.bodyshapeId, out var representation))
                         continue;
 
                     wearablesByCategory.Add(wearableItem.data.category, wearableItem);
                 }
 
-                WearableItem[] fallbackWearables = await GetFallbackForMissingNeededCategories(bodyshapeId, wearablesByCategory, hiddenCategories, ct);
+                if (!wearablesByCategory.ContainsKey(WearableLiterals.Categories.BODY_SHAPE))
+                    throw new Exception("Set of wearables doesn't contain a bodyshape (or couldn't be resolved)");
+
+                WearableItem[] fallbackWearables = await GetFallbackForMissingNeededCategories(settings.bodyshapeId, wearablesByCategory, hiddenCategories, ct);
 
                 for (int i = 0; i < fallbackWearables.Length; i++)
                 {
                     WearableItem wearableItem = fallbackWearables[i];
                     if (wearableItem == null)
                         throw new Exception($"Fallback wearable is null");
-                    if (!wearableItem.TryGetRepresentation(bodyshapeId, out var representation))
-                        throw new Exception($"Fallback wearable {wearableItem} doesn't contain a representation for {bodyshapeId}");
+                    if (!wearableItem.TryGetRepresentation(settings.bodyshapeId, out var representation))
+                        throw new Exception($"Fallback wearable {wearableItem} doesn't contain a representation for {settings.bodyshapeId}");
                     if (wearablesByCategory.ContainsKey(wearableItem.data.category))
                         throw new Exception($"A wearable in category {wearableItem.data.category} already exists trying to add fallback wearable {wearableItem}");
                     wearablesByCategory.Add(wearableItem.data.category, wearableItem);
