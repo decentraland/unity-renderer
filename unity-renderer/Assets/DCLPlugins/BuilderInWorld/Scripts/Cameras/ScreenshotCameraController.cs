@@ -19,7 +19,7 @@ namespace DCL.Builder
             screenshotCamera.depth = -9999;
             screenshotCamera.gameObject.SetActive(false);
             
-            if (context.sceneReferences.cameraController.GetComponent<Camera.CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+            if (context.sceneReferences.cameraController != null && context.sceneReferences.cameraController.GetComponent<Camera.CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
                 freeCameraMovement = (FreeCameraMovement) cameraState;
         }
 

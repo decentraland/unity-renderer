@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Builder;
+using DCL.Configuration;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -76,6 +78,13 @@ public class NewProjectFlowController : INewProjectFlowController
 
     public void NewProject()
     {
+        UserProfile userProfile = UserProfile.GetOwnUserProfile();
+        if (string.IsNullOrEmpty(userProfile.ethAddress))
+        {
+            BIWUtils.ShowGenericNotification(BIWSettings.GUEST_CANT_USE_BUILDER);
+            return;
+        }
+        
         projectData = new ProjectData();
         projectData.id = Guid.NewGuid().ToString();
         projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
