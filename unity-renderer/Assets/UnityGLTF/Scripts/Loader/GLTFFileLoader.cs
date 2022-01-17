@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using UnityEngine;
@@ -23,7 +24,7 @@ namespace UnityGLTF.Loader
             HasSyncLoadMethod = true;
         }
 
-        public async UniTask LoadStream(string gltfFilePath)
+        public async UniTask LoadStream(string gltfFilePath, CancellationToken token)
         {
             if (gltfFilePath == null)
             {
@@ -31,10 +32,10 @@ namespace UnityGLTF.Loader
                 return;
             }
 
-            await LoadFileStream(_rootDirectoryPath, gltfFilePath);
+            await LoadFileStream(_rootDirectoryPath, gltfFilePath, token);
         }
 
-        private async UniTask LoadFileStream(string rootPath, string fileToLoad)
+        private async UniTask LoadFileStream(string rootPath, string fileToLoad, CancellationToken token)
         {
             string pathToLoad = Path.Combine(rootPath, fileToLoad);
 
@@ -47,7 +48,7 @@ namespace UnityGLTF.Loader
             await UniTaskDCL.Run( () =>
             {
                 LoadedStream = File.OpenRead(pathToLoad);
-            });
+            }, cancellationToken: token);
         }
 
         public void LoadStreamSync(string gltfFilePath)

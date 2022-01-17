@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using DCL;
 using UnityEngine;
 using UnityGLTF;
@@ -20,7 +21,6 @@ namespace MainScripts.DCL.GLTF
         public static int downloadingCount;
         public static event Action OnDownloadingProgressUpdate;
 
-        public static int totalDownloadedCount;
         public static int queueCount;
 
         private static DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxSimultaneousDownloads, () => downloadingCount);
@@ -62,7 +62,7 @@ namespace MainScripts.DCL.GLTF
 
         public GameObject loadingPlaceholder;
         public Action OnFinishedLoadingAsset;
-        public Action<Exception> OnFailedLoadingAsset;
+        private Action<Exception> OnFailedLoadingAsset;
 
         [HideInInspector] public bool alreadyLoadedAsset = false;
         [HideInInspector] public GameObject loadedAssetRootGameObject;
@@ -88,7 +88,6 @@ namespace MainScripts.DCL.GLTF
 
         private bool alreadyDecrementedRefCount;
         private AsyncCoroutineHelper asyncCoroutineHelper;
-        private Coroutine loadingRoutine = null;
         private GLTFSceneImporter sceneImporter { get; set; }
         private Camera mainCamera;
         private IWebRequestController webRequestController;
@@ -99,6 +98,8 @@ namespace MainScripts.DCL.GLTF
         private Action<Renderer> rendererCreatedCallback;
         
         private Settings settings;
+
+        private readonly CancellationTokenSource ctokenSource = new CancellationTokenSource();
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -123,12 +124,6 @@ namespace MainScripts.DCL.GLTF
             if (!string.IsNullOrEmpty(idPrefix))
                 this.idPrefix = idPrefix;
 
-            if (loadingRoutine != null)
-            {
-                Debug.LogError($"ERROR: trying to load GLTF when is already loading {idPrefix}");
-                return;
-            }
-
             alreadyDecrementedRefCount = false;
             state = State.NONE;
             mainCamera = Camera.main;
@@ -141,9 +136,9 @@ namespace MainScripts.DCL.GLTF
 
             this.fileToHashConverter = fileToHashConverter;
             this.settings = settings;
-            Debug.Log("Starting to load asset: " + incomingURI);
-            LoadAssetCoroutine(settings)
-                .SuppressCancellationThrow()
+            CancellationToken cancellationToken = ctokenSource.Token;
+            Internal_LoadAsset(settings, cancellationToken)
+                .AttachExternalCancellation(cancellationToken)
                 .Forget();
         }
         
@@ -180,11 +175,6 @@ namespace MainScripts.DCL.GLTF
 
             state = State.FAILED;
             
-            CoroutineStarter.Stop(loadingRoutine);
-            loadingRoutine = null;
-            
-            DecrementDownloadCount();
-
             OnFailedLoadingAsset?.Invoke(exception);
 
             if (exception != null)
@@ -223,7 +213,7 @@ namespace MainScripts.DCL.GLTF
             }
         }
 
-        private async UniTask LoadAssetCoroutine(Settings settings)
+        private async UniTask Internal_LoadAsset(Settings settings, CancellationToken token)
         {
             if (!string.IsNullOrEmpty(GLTFUri))
             {
@@ -239,23 +229,16 @@ namespace MainScripts.DCL.GLTF
 
                 try
                 {
-                    if (UseStream)
-                    {
-                        throw new NotImplementedException();
-                    }
-                    else
-                    {
-                        loader = new WebRequestLoader(baseUrl, webRequestController, fileToHashConverter);
+                    loader = new WebRequestLoader(baseUrl, webRequestController, fileToHashConverter);
 
-                        string id = string.IsNullOrEmpty(idPrefix) ? GLTFUri : idPrefix;
+                    string id = string.IsNullOrEmpty(idPrefix) ? GLTFUri : idPrefix;
 
-                        sceneImporter = new GLTFSceneImporter(
-                            id,
-                            GLTFUri,
-                            loader,
-                            asyncCoroutineHelper
-                        );
-                    }
+                    sceneImporter = new GLTFSceneImporter(
+                        id,
+                        GLTFUri,
+                        loader,
+                        asyncCoroutineHelper
+                    );
 
                     if (sceneImporter.CreatedObject != null)
                     {
@@ -284,11 +267,10 @@ namespace MainScripts.DCL.GLTF
 
                     state = State.QUEUED;
                     downloadQueueHandler.Queue(this);
-
-                    await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this));
+                    await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
+                    token.ThrowIfCancellationRequested();
                     
                     queueCount--;
-                    totalDownloadedCount++;
 
                     IncrementDownloadCount();
 
@@ -297,8 +279,9 @@ namespace MainScripts.DCL.GLTF
 
                     if (transform != null)
                     {
-                        await sceneImporter.LoadScene(-1);
-
+                        await sceneImporter.LoadScene(token);
+                        token.ThrowIfCancellationRequested();
+                        
                         // Override the shaders on all materials if a shader is provided
                         if (shaderOverride != null)
                         {
@@ -309,13 +292,13 @@ namespace MainScripts.DCL.GLTF
                             }
                         }
                     }
-                    Debug.Log(GLTFUri + " loaded correctly");
                     state = State.COMPLETED;
                     DecrementDownloadCount();
                 }
                 catch (Exception e)
                 {
-                    //Debug.LogError(e);
+                    if (!(e is OperationCanceledException))
+                        throw;
                 }
                 finally
                 {
@@ -338,10 +321,7 @@ namespace MainScripts.DCL.GLTF
 
                     alreadyLoadedAsset = true;
 
-                    CoroutineStarter.Stop(loadingRoutine);
-                    loadingRoutine = null;
-
-                    if ( state == State.COMPLETED )
+                    if ( state == State.COMPLETED && !token.IsCancellationRequested)
                         OnFinishedLoadingAsset?.Invoke();
                     else
                         OnFailedLoadingAsset?.Invoke(new Exception($"GLTF state finished as: {state}"));
@@ -391,14 +371,22 @@ namespace MainScripts.DCL.GLTF
                 queueCount--;
             }
 
+            if (state == State.DOWNLOADING)
+            {
+                DecrementDownloadCount();
+            }
+            
+            ctokenSource.Cancel();
+            ctokenSource.Dispose();
+            
+
             downloadQueueHandler.Dequeue(this);
 
-            if (!alreadyLoadedAsset && loadingRoutine != null)
+            if (!alreadyLoadedAsset)
             {
                 OnFail_Internal(null);
                 return;
             }
-
             DecrementDownloadCount();
         }
 
