@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 1280009699583276918}
   - component: {fileID: 7070113288650926610}
   m_Layer: 5
-  m_Name: Title
+  m_Name: MessageSignTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -402,7 +402,7 @@ GameObject:
   - component: {fileID: 2415776047069759197}
   - component: {fileID: 74241078047234547}
   m_Layer: 5
-  m_Name: Title
+  m_Name: PaymentTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3386,6 +3386,8 @@ MonoBehaviour:
   amountLabel: {fileID: 9100725803184709259}
   toAddressLabel: {fileID: 4831138817158128161}
   messageLabel: {fileID: 5313465827997701538}
+  paymentPanelTitle: {fileID: 74241078047234547}
+  signPanelTitle: {fileID: 7070113288650926610}
 --- !u!1 &7270210420711196451
 GameObject:
   m_ObjectHideFlags: 0

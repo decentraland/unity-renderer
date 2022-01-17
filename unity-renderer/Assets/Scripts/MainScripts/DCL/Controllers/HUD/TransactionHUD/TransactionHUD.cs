@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using System.Collections.Generic;
 using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 using DCL.TransactionHUDModel;
@@ -66,6 +67,9 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
     public void Show(Model model)
     {
+        if (Utils.IsCursorLocked)
+            Utils.UnlockCursor();
+
         this.model = model;
 
         var scene = FindScene(model.sceneId);
@@ -73,7 +77,7 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
         if (model.requestType == Type.REQUIRE_PAYMENT)
         {
             if (scene != null)
-                signPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to initiate a transfer";
+                paymentPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to initiate a transfer";
             paymentPanel.SetActive(true);
             signPanel.SetActive(false);
 

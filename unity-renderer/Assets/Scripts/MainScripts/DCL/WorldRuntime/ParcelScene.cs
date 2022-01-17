@@ -168,7 +168,10 @@ namespace DCL.Controllers
 
         public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData; }
 
-        public string GetSceneName() { return sceneName; }
+        public string GetSceneName()
+        {
+            return string.IsNullOrEmpty(sceneName) ? "Unnamed" : sceneName;
+        }
 
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
