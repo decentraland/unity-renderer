@@ -6,6 +6,7 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 using DCL.TransactionHUDModel;
+using UnityEngine.SocialPlatforms.Impl;
 using Type = DCL.TransactionHUDModel.Type;
 
 public class TransactionHUD : MonoBehaviour, ITransactionHUD
@@ -20,6 +21,8 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
     
     [SerializeField] private TMP_Text amountLabel;
     
+    [SerializeField] private TMP_Text fromAddressLabel;
+
     [SerializeField] private TMP_Text toAddressLabel;
     
     [SerializeField] private TMP_Text messageLabel;
@@ -27,6 +30,10 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
     [SerializeField] private TMP_Text paymentPanelTitle;
     
     [SerializeField] private TMP_Text signPanelTitle;
+    
+    [SerializeField] private TMP_Text paymentNetworkLabel;
+    
+    [SerializeField] private TMP_Text signNetworkLabel;
 
     public Model model { get; private set; } = new Model();
 
@@ -65,6 +72,11 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
             rejectButton.onClick.RemoveAllListeners();
     }
 
+    private static string ShortAddress(string address)
+    {
+        return $"{address.Substring(0, 6)}...{address.Substring(address.Length - 4)}";
+    }
+
     public void Show(Model model)
     {
         if (Utils.IsCursorLocked)
@@ -81,8 +93,11 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
             paymentPanel.SetActive(true);
             signPanel.SetActive(false);
 
-            toAddressLabel.text = model.toAddress;
+            UserProfile ownUserProfile = UserProfile.GetOwnUserProfile();
+            fromAddressLabel.text = ShortAddress(ownUserProfile.ethAddress);
+            toAddressLabel.text = ShortAddress(model.toAddress);
             amountLabel.text = $"{model.amount} {model.currency}";
+            paymentNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
         }
         else
         {
@@ -90,7 +105,7 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
                 signPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to sign this message";
             paymentPanel.SetActive(false);
             signPanel.SetActive(true);
-
+            signNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
             messageLabel.text = model.message;
         }
     }

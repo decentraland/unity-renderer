@@ -97,8 +97,6 @@ public class HUDBridge : MonoBehaviour
                 requestType = DCL.TransactionHUDModel.Type.SEND_ASYNC;
                 break;
         }
-        
-        Debug.Log($"{requestType} message={model.payload.message} toAddress={model.payload.toAddress} amount={model.payload.amount} currency={model.payload.currency}");
 
         HUDController.i.transactionController.ShowTransaction(new DCL.TransactionHUDModel.Model
         {
