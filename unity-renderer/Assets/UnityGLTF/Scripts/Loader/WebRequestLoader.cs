@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
@@ -10,10 +9,6 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
 using Environment = DCL.Environment;
-
-#if WINDOWS_UWP
-using System.Threading.Tasks;
-#endif
 
 namespace UnityGLTF.Loader
 {
@@ -36,7 +31,7 @@ namespace UnityGLTF.Loader
             assetIdConverter = fileToHashConverter;
         }
 
-        public async UniTask LoadStream(string filePath)
+        public async UniTask LoadStream(string filePath, CancellationToken token)
         {
             if (filePath == null)
             {
@@ -50,7 +45,7 @@ namespace UnityGLTF.Loader
 
             filePath = GetWrappedUri(filePath);
 
-            await CreateHTTPRequest(_rootURI, filePath);
+            await CreateHTTPRequest(_rootURI, filePath, token);
         }
 
         public string GetWrappedUri(string uri)
@@ -66,12 +61,9 @@ namespace UnityGLTF.Loader
             return uri;
         }
 
-        public void LoadStreamSync(string jsonFilePath)
-        {
-            throw new NotImplementedException();
-        }
+        public void LoadStreamSync(string jsonFilePath) { throw new NotImplementedException(); }
 
-        private async UniTask CreateHTTPRequest(string rootUri, string httpRequestPath)
+        private async UniTask CreateHTTPRequest(string rootUri, string httpRequestPath, CancellationToken token)
         {
             string finalUrl = httpRequestPath;
 
@@ -87,12 +79,15 @@ namespace UnityGLTF.Loader
                 disposeOnCompleted: false);
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
-            
+
             await UniTaskDCL.Run( async () =>
             {
-                while (asyncOp.keepWaiting && !asyncOp.isDone) await UniTask.WaitForEndOfFrame();
-            });
-
+                while (asyncOp.keepWaiting && !asyncOp.isDone && !asyncOp.isDisposed)
+                    await UniTask.WaitForEndOfFrame();
+            }, cancellationToken: token);
+            
+            token.ThrowIfCancellationRequested();
+            
             bool error = false;
             string errorMessage = null;
 

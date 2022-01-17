@@ -11,7 +11,9 @@ namespace DCL.Helpers
         {
 #if !UNITY_STANDALONE || UNITY_EDITOR
             await UniTask.Yield();
+            cancellationToken.ThrowIfCancellationRequested();
             action();
+            cancellationToken.ThrowIfCancellationRequested();
             return;
 #endif
             await UniTask.RunOnThreadPool(action, configureAwait, cancellationToken);
@@ -20,8 +22,7 @@ namespace DCL.Helpers
         public static async UniTask Run(Func<UniTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
 #if !UNITY_STANDALONE || UNITY_EDITOR
-            await UniTask.Yield();
-            await action();
+            await UniTask.Create(action).AttachExternalCancellation(cancellationToken);
             return;
 #endif
             await UniTask.RunOnThreadPool(action, configureAwait, cancellationToken);

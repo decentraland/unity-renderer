@@ -2,11 +2,10 @@
 using GLTF;
 using GLTF.Schema;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cysharp.Threading.Tasks;
+using System.Threading;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEngine;
@@ -541,37 +540,8 @@ namespace UnityGLTF
 
                 OnGLTFWillLoad?.Invoke(loader);
 
-                loader.LoadScene().GetAwaiter().GetResult();
+                loader.LoadScene(CancellationToken.None).GetAwaiter().GetResult();
                 return loader.lastLoadedScene;
-                
-                // HACK: Force the coroutine to run synchronously in the editor
-                /*var stack = new Stack<IEnumerator>();
-                stack.Push(loader.LoadScene());
-                
-
-                while (stack.Count > 0)
-                {
-                    var enumerator = stack.Pop();
-
-                    try
-                    {
-                        if (enumerator.MoveNext())
-                        {
-                            stack.Push(enumerator);
-                            var subEnumerator = enumerator.Current as IEnumerator;
-                            if (subEnumerator != null)
-                            {
-                                stack.Push(subEnumerator);
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Log("GLTFImporter - CreateGLTFScene Failed: " + e.Message + "\n" + e.StackTrace);
-                    }
-                }
-
-                return loader.lastLoadedScene;*/
             }
         }
 
