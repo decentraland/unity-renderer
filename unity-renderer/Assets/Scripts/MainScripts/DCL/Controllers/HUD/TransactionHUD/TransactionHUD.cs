@@ -48,8 +48,6 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
         
         foreach (var rejectButton in rejectButtons)
             rejectButton.onClick.AddListener(RejectTransaction);
-
-        //AudioScriptableObjects.notification.Play(true);
     }
     
     public IParcelScene FindScene(string sceneId)
