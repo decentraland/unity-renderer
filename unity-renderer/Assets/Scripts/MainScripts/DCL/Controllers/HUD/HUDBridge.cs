@@ -70,6 +70,7 @@ public class HUDBridge : MonoBehaviour
         [System.Serializable]
         public class RequestWeb3ApiUsePayload
         {
+            public string sceneId;
             public string message;
             public string toAddress;
             public float amount;
@@ -103,6 +104,7 @@ public class HUDBridge : MonoBehaviour
         {
             id = model.id,
             requestType = requestType,
+            sceneId = model.payload.sceneId,
             message = model.payload.message,
             toAddress = model.payload.toAddress,
             amount = model.payload.amount,

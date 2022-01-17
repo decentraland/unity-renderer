@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using System.Collections.Generic;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.UI;
 using DCL.TransactionHUDModel;
@@ -21,6 +22,10 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
     [SerializeField] private TMP_Text toAddressLabel;
     
     [SerializeField] private TMP_Text messageLabel;
+    
+    [SerializeField] private TMP_Text paymentPanelTitle;
+    
+    [SerializeField] private TMP_Text signPanelTitle;
 
     public Model model { get; private set; } = new Model();
 
@@ -38,6 +43,17 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
         //AudioScriptableObjects.notification.Play(true);
     }
+    
+    public IParcelScene FindScene(string sceneId)
+    {
+        foreach (IParcelScene scene in DCL.Environment.i.world.state.scenesSortedByDistance)
+        {
+            if (scene.sceneData.id == sceneId)
+                return scene;
+        }
+
+        return null;
+    }
 
     private void OnDisable()
     {
@@ -52,8 +68,12 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
     {
         this.model = model;
 
+        var scene = FindScene(model.sceneId);
+
         if (model.requestType == Type.REQUIRE_PAYMENT)
         {
+            if (scene != null)
+                signPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to initiate a transfer";
             paymentPanel.SetActive(true);
             signPanel.SetActive(false);
 
@@ -62,6 +82,8 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
         }
         else
         {
+            if (scene != null)
+                signPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to sign this message";
             paymentPanel.SetActive(false);
             signPanel.SetActive(true);
 
