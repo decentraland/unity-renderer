@@ -10,7 +10,6 @@ namespace DCL
     {
         [Header("References")]
         [SerializeField] Button closeButton;
-        [SerializeField] InputAction_Trigger closeAction;
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
@@ -52,7 +51,6 @@ namespace DCL
             MapRenderer.OnParcelHold += TriggerToast;
             MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
-            closeAction.OnTriggered += OnCloseAction;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
@@ -76,7 +74,6 @@ namespace DCL
             MapRenderer.OnParcelHold -= TriggerToast;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
-            closeAction.OnTriggered += OnCloseAction;
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
         }
 
@@ -169,7 +166,6 @@ namespace DCL
             OnToggle?.Invoke(visible);
         }
 
-        private void OnCloseAction(DCLAction_Trigger action) { navmapVisible.Set(false); }
         void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)
         {
             const string format = "{0},{1}";

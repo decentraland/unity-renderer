@@ -2,6 +2,7 @@ using DCL;
 using DCL.Helpers;
 using ExploreV2Analytics;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,6 +13,8 @@ using Variables.RealmsInfo;
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
+    internal const float MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU = 0.1f;
+
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     internal RectTransform topMenuTooltipReference { get => view.currentTopMenuTooltipReference; }
     internal RectTransform placesAndEventsTooltipReference { get => view.currentPlacesAndEventsTooltipReference; }
@@ -26,6 +29,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal IPlacesAndEventsSectionComponentController placesAndEventsSectionController;
     internal IExploreV2Analytics exploreV2Analytics;
     internal ExploreSection currentOpenSection;
+    internal float controlsHUDCloseTime = 0f;
+    internal float emotesHUDCloseTime = 0f;
+    internal float playerInfoCardHUDCloseTime = 0f;
+    internal float chatInputHUDCloseTime = 0f;
 
     internal RendererState rendererState => CommonScriptableObjects.rendererState;
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
@@ -44,6 +51,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
+
+    internal BaseVariable<bool> controlsVisible => DataStore.i.HUDs.controlsVisible;
+    internal BaseVariable<bool> emotesVisible => DataStore.i.HUDs.emotesVisible;
+    internal BaseVariable<bool> chatInputVisible => DataStore.i.HUDs.chatInputVisible;
+    internal BooleanVariable playerInfoCardVisible => CommonScriptableObjects.playerInfoCardVisibleState;
 
     public void Initialize()
     {
@@ -118,6 +130,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         IsSettingsPanelInitializedChanged(isSettingsPanelInitialized.Get(), false);
         settingsVisible.OnChange += SettingsVisibleChanged;
         SettingsVisibleChanged(settingsVisible.Get(), false);
+        
+        ConfigureOhterUIDependencies();
 
         isInitialized.Set(true);
     }
@@ -428,7 +442,54 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         if (isOpen.Get())
             exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
 
-        SetVisibility(false);
+        if (!fromShortcut)
+            SetVisibility(false);
+        else
+        {
+            if (isOpen.Get())
+                SetVisibility(false);
+            else
+            {
+                if(Time.realtimeSinceStartup - controlsHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
+                   Time.realtimeSinceStartup - emotesHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
+                   Time.realtimeSinceStartup - playerInfoCardHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU &&
+                   Time.realtimeSinceStartup - chatInputHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU)
+                {
+                    SetVisibility(true);
+                }
+            }
+        }
+    }
+
+    internal void ConfigureOhterUIDependencies()
+    {
+        controlsHUDCloseTime = Time.realtimeSinceStartup;
+        controlsVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                controlsHUDCloseTime = Time.realtimeSinceStartup;
+        };
+
+        emotesHUDCloseTime = Time.realtimeSinceStartup;
+        emotesVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                emotesHUDCloseTime = Time.realtimeSinceStartup;
+        };
+
+        chatInputHUDCloseTime = Time.realtimeSinceStartup;
+        chatInputVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                chatInputHUDCloseTime = Time.realtimeSinceStartup;
+        };
+
+        playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;
+        playerInfoCardVisible.OnChange += (current, old) =>
+        {
+            if (!current)
+                playerInfoCardHUDCloseTime = Time.realtimeSinceStartup;
+        };
     }
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() => new ExploreV2Analytics.ExploreV2Analytics();

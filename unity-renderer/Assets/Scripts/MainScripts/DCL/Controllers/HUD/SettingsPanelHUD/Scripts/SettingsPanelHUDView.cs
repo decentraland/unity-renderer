@@ -28,7 +28,6 @@ namespace DCL.SettingsPanelHUD
         [Header("Open/Close Settings")]
         [SerializeField] private Button closeButton;
         [SerializeField] private Button backgroundButton;
-        [SerializeField] private InputAction_Trigger closeAction;
         [SerializeField] private InputAction_Trigger openAction;
 
         [Header("World Preview Window")]
@@ -140,10 +139,8 @@ namespace DCL.SettingsPanelHUD
 
         public void SetVisibility(bool visible)
         {
-            closeAction.OnTriggered -= CloseAction_OnTriggered;
             if (visible)
             {
-                closeAction.OnTriggered += CloseAction_OnTriggered;
                 settingsAnimator.Show();
                 mainWindow.SetActive(true);
                 HideResetAllConfirmation();
@@ -196,22 +193,6 @@ namespace DCL.SettingsPanelHUD
         {
             Utils.UnlockCursor();
             hudController.SetVisibility(!isOpen);
-        }
-
-        private void CloseAction_OnTriggered(DCLAction_Trigger action)
-        {
-            if (DataStore.i.exploreV2.isSomeModalOpen.Get())
-            {
-                if (resetAllBlackOverlay.activeSelf)
-                {
-                    HideResetAllConfirmation();
-                    return;
-                }
-
-                return;
-            }
-
-            CloseSettingsPanel();
         }
 
         private void OnFinishHide(ShowHideAnimator animator) { mainWindow.SetActive(false); }
