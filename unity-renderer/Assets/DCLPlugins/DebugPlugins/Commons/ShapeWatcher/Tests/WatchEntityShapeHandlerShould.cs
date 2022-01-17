@@ -1,9 +1,10 @@
 using DCL.Components;
 using DCL.Models;
+using DCLPlugins.DebugPlugins.Commons;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace DCLPlugins.DebugPlugins.Commons.Tests
+namespace Tests
 {
     public class WatchEntityShapeHandlerShould
     {

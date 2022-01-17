@@ -8,8 +8,8 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
 {
     private readonly IBaseDictionary<string, bool> isBoundingBoxEnabledForScene;
     private readonly WorldRuntimeContext worldRuntime;
-    private readonly Dictionary<string, WatchSceneHandler> scenesWatcher = new Dictionary<string, WatchSceneHandler>();
-    private readonly List<string> pendingScenesId = new List<string>();
+    internal readonly Dictionary<string, WatchSceneHandler> scenesWatcher = new Dictionary<string, WatchSceneHandler>();
+    internal readonly List<string> pendingScenesId = new List<string>();
 
     public DebugShapesBoundingBoxDisplayer() : this(
         DataStore.i.debugConfig.showSceneBoundingBoxes,
@@ -60,7 +60,7 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
     private void WatchScene(string sceneId)
     {
         // NOTE: in case scene is not loaded yet, we add it to the "pending" list
-        if (!worldRuntime.state.TryGetScene(sceneId, out IParcelScene scene))
+        if (!worldRuntime.state.loadedScenes.TryGetValue(sceneId, out IParcelScene scene))
         {
             if (!pendingScenesId.Contains(sceneId))
             {

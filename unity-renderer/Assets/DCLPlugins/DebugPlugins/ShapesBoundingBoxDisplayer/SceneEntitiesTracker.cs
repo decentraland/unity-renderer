@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using DCLPlugins.DebugPlugins.Commons;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 internal class SceneEntitiesTracker : ISceneListener
 {
@@ -12,7 +14,7 @@ internal class SceneEntitiesTracker : ISceneListener
     private GameObject wireframeOriginal;
     private Material wireframeMaterial;
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         foreach (var handler in entityShapeHandler.Values)
         {
@@ -23,12 +25,12 @@ internal class SceneEntitiesTracker : ISceneListener
         DestroyWireframeOriginal();
     }
 
-    public void OnEntityAdded(IDCLEntity entity)
+    void ISceneListener.OnEntityAdded(IDCLEntity entity)
     {
         WatchEntityShape(entity);
     }
 
-    public void OnEntityRemoved(IDCLEntity entity)
+    void ISceneListener.OnEntityRemoved(IDCLEntity entity)
     {
         KillWatchEntityShape(entity);
     }

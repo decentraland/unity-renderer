@@ -1,6 +1,8 @@
+using System;
 using DCL.Models;
 using DCLPlugins.DebugPlugins.Commons;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 internal class EntityWireframe : IShapeListener
 {
@@ -13,12 +15,12 @@ internal class EntityWireframe : IShapeListener
         this.wireframeOriginal = wireframeOriginal;
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         CleanWireframe();
     }
 
-    public void OnShapeUpdated(IDCLEntity entity)
+    void IShapeListener.OnShapeUpdated(IDCLEntity entity)
     {
         entityWireframe ??= Object.Instantiate(wireframeOriginal);
 
@@ -30,8 +32,8 @@ internal class EntityWireframe : IShapeListener
         wireframeT.SetParent(entity.gameObject.transform);
         entityWireframe.SetActive(true);
     }
-    
-    public void OnShapeCleaned(IDCLEntity entity)
+
+    void IShapeListener.OnShapeCleaned(IDCLEntity entity)
     {
         CleanWireframe();
     }
