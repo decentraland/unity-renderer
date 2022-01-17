@@ -94,5 +94,50 @@ namespace Tests
             Assert.AreEqual(initialMode, CommonScriptableObjects.cameraMode.Get());
             Assert.IsFalse(CommonScriptableObjects.cameraModeInputLocked.Get());
         }
+
+        [Test]
+        public void ShowNotificationCorrectly()
+        {
+            ICameraModeArea[] areas = new ICameraModeArea[2];
+            areas[0] = Substitute.For<ICameraModeArea>();
+            areas[0].cameraMode.Returns(CameraMode.ModeId.BuildingToolGodMode);
+
+            areas[1] = Substitute.For<ICameraModeArea>();
+            areas[1].cameraMode.Returns(CameraMode.ModeId.FirstPerson);
+
+            CameraModeAreasController controllerMock = Substitute.ForPartsOf<CameraModeAreasController>();
+
+            controllerMock.AddInsideArea(areas[0]);
+            controllerMock.AddInsideArea(areas[1]);
+            controllerMock.RemoveInsideArea(areas[0]);
+            controllerMock.RemoveInsideArea(areas[1]);
+
+            controllerMock.Received(1).ShowCameraModeLockedNotification();
+        }
+
+        [Test]
+        public void HideNotificationCorrectly()
+        {
+            ICameraModeArea[] areas = new ICameraModeArea[2];
+            areas[0] = Substitute.For<ICameraModeArea>();
+            areas[0].cameraMode.Returns(CameraMode.ModeId.BuildingToolGodMode);
+
+            areas[1] = Substitute.For<ICameraModeArea>();
+            areas[1].cameraMode.Returns(CameraMode.ModeId.FirstPerson);
+
+            CameraModeAreasController controllerMock = Substitute.ForPartsOf<CameraModeAreasController>();
+
+            controllerMock.AddInsideArea(areas[0]);
+            controllerMock.DidNotReceive().HideCameraModeLockedNotification();
+
+            controllerMock.AddInsideArea(areas[1]);
+            controllerMock.DidNotReceive().HideCameraModeLockedNotification();
+
+            controllerMock.RemoveInsideArea(areas[0]);
+            controllerMock.DidNotReceive().HideCameraModeLockedNotification();
+
+            controllerMock.RemoveInsideArea(areas[0]);
+            controllerMock.Received(1).HideCameraModeLockedNotification();
+        }
     }
 }
