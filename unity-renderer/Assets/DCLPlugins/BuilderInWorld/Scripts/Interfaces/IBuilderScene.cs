@@ -25,6 +25,11 @@ namespace DCL.Builder
         Texture2D sceneScreenshotTexture { get; set; }
 
         /// <summary>
+        /// Aerial screenshot of the project
+        /// </summary>
+        Texture2D aerialScreenshotTexture { get; set; }
+
+        /// <summary>
         /// Parcel scene associated with the scene
         /// </summary>
         IParcelScene scene { get; }
@@ -51,4 +56,4 @@ namespace DCL.Builder
         /// <returns></returns>
         bool HasBeenCreatedThisSession();
     }
-} 
+}

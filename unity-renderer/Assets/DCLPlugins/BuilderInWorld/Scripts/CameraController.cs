@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Builder;
 using DCL.Camera;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
@@ -24,9 +25,9 @@ namespace DCL.Builder
             this.context = context;
             if (context.sceneReferences.cameraController != null)
             {
-                if(context.sceneReferences.cameraController.GetComponent<Camera.CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+                if (context.sceneReferences.cameraController.GetComponent<Camera.CameraController>().TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
                     freeCameraController = (FreeCameraMovement) cameraState;
-                
+
                 cameraController = context.sceneReferences.cameraController.GetComponent<Camera.CameraController>();
             }
 
@@ -46,7 +47,26 @@ namespace DCL.Builder
                 onSuccess?.Invoke(sceneSnapshot);
             });
         }
+
+        public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IFreeCameraMovement.OnSnapshotsReady onSuccess)
+        {
+            //We deselect the entities to take better photos
+            context.editorContext.entityHandler.DeselectEntities();
+            freeCameraController.TakeSceneScreenshot(camPosition, pointToLookAt, width, height, (sceneSnapshot) =>
+            {
+                lastScreenshot = sceneSnapshot;
+                onSuccess?.Invoke(sceneSnapshot);
+            });
+        }
         
+        public void TakeSceneAerialScreenshot(IParcelScene parcelScene, IFreeCameraMovement.OnSnapshotsReady onSuccess)
+        {
+            Vector3 pointToLookAt = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
+            Vector3 cameraPosition = pointToLookAt  + Vector3.up * context.editorContext.godModeDynamicVariablesAsset.aerialScreenshotHeight;
+
+            TakeSceneScreenshot(cameraPosition, pointToLookAt, BIWSettings.AERIAL_SCREENSHOT_WIDTH, BIWSettings.AERIAL_SCREENSHOT_HEIGHT, onSuccess);
+        }
+
         public void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess)
         {
             //We deselect the entities to take better photos
@@ -66,7 +86,7 @@ namespace DCL.Builder
             freeCameraController.SetPosition(cameraPosition);
             freeCameraController.LookAt(pointToLookAt);
             freeCameraController.SetResetConfiguration(cameraPosition, pointToLookAt);
-            
+
             if (cameraController != null && cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
                 avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
 
@@ -79,7 +99,7 @@ namespace DCL.Builder
                 cameraController?.SetCameraMode(avatarCameraModeBeforeEditing);
         }
 
-        public Texture2D GetLastScreenshot() { return lastScreenshot;}
+        public Texture2D GetLastScreenshot() { return lastScreenshot; }
 
         internal Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
         {

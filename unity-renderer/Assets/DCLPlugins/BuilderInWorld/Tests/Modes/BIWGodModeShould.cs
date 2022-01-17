@@ -416,15 +416,15 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    [Explicit("This test fails because camera lerps to the expected target and is not positioned correctly")]
-    [Category("Explicit")]
     public void DragEditionGameObject()
     {
         //Arrange
         godMode.dragStartedPoint = Vector3.zero;
         var mousePosition = new Vector3(100, 100, 100);
         var initialGameObjectPosition = mockedGameObject.transform.position;
-
+        godMode.raycastController = Substitute.For<IBIWRaycastController>();
+        godMode.raycastController.Configure().GetFloorPointAtMouse(Arg.Any<Vector3>()).Returns(Vector3.one);
+        
         //Act
         godMode.DragEditionGameObject(mousePosition);
 

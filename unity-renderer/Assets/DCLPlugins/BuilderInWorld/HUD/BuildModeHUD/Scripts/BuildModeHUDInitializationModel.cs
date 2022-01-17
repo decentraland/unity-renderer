@@ -1,3 +1,5 @@
+using DCL.Builder;
+
 public class BuildModeHUDInitializationModel
 {
     public ITooltipController tooltipController;
@@ -7,7 +9,6 @@ public class BuildModeHUDInitializationModel
     public IEntityInformationController entityInformationController;
     public IFirstPersonModeController firstPersonModeController;
     public IShortcutsController shortcutsController;
-    public IPublishPopupController publishPopupController;
     public IDragAndDropSceneObjectController dragAndDropSceneObjectController;
     public IPublishBtnController publishBtnController;
     public IInspectorBtnController inspectorBtnController;
@@ -16,6 +17,5 @@ public class BuildModeHUDInitializationModel
     public ITopActionsButtonsController topActionsButtonsController;
     public IBuildModeConfirmationModalController buildModeConfirmationModalController;
     public ISaveHUDController saveHUDController;
-    public IPublicationDetailsController newProjectDetailsController;
-    public IPublicationDetailsController publicationDetailsController;
+    public INewProjectDetailController newProjectDetailsController;
 }

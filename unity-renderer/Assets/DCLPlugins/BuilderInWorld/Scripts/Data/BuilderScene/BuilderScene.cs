@@ -9,6 +9,8 @@ namespace DCL.Builder
     {
         public Manifest.IManifest manifest { get; internal set; }
         public Texture2D sceneScreenshotTexture { get; set; }
+        public Texture2D aerialScreenshotTexture { get; set; }
+
         public IParcelScene scene { get; internal set; }
 
         public IBuilderScene.SceneType sceneType { get; }

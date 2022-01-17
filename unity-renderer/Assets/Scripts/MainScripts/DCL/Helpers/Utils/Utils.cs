@@ -91,7 +91,7 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.zero;
             t.anchoredPosition = Vector2.zero;
         }
-
+        
         public static void SetToCentered(this RectTransform t)
         {
             t.anchorMin = Vector2.one * 0.5f;
@@ -282,7 +282,7 @@ namespace DCL.Helpers
         {
             if (obj is Transform)
                 return;
-            
+
 #if UNITY_EDITOR
             if (Application.isPlaying)
                 Object.Destroy(obj);

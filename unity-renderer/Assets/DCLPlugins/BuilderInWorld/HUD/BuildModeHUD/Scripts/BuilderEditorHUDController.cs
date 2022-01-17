@@ -53,7 +53,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     internal BuildModeHUDInitializationModel controllers;
 
-    private Coroutine publishProgressCoroutine = null;
     private float timeFromLastClickOnExtraButtons = 0f;
     internal IContext context;
 
@@ -73,8 +72,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
         ConfigureInspectorController();
         ConfigureTopActionsButtonsController();
         ConfigureSaveHUDController();
-        ConfigureNewProjectDetailsController();
-        ConfigurePublicationDetailsController();
         ConfigureQuickBarController();
     }
 
@@ -97,7 +94,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             entityInformationController = new EntityInformationController(),
             firstPersonModeController = new FirstPersonModeController(),
             shortcutsController = new ShortcutsController(),
-            publishPopupController = new PublishPopupController(),
             dragAndDropSceneObjectController = new DragAndDropSceneObjectController(),
             publishBtnController = new PublishBtnController(),
             inspectorBtnController = new InspectorBtnController(),
@@ -106,8 +102,7 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             buildModeConfirmationModalController = new BuildModeConfirmationModalController(),
             topActionsButtonsController = new TopActionsButtonsController(),
             saveHUDController = new SaveHUDController(),
-            newProjectDetailsController = new PublicationDetailsController(),
-            publicationDetailsController = new PublicationDetailsController()
+            newProjectDetailsController = new NewProjectDetailController(),
         };
     }
 
@@ -193,14 +188,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
 
-    private void ConfigureNewProjectDetailsController() { controllers.newProjectDetailsController.OnCancel += CancelNewProjectDetails; }
-
-    private void ConfigurePublicationDetailsController()
-    {
-        controllers.publicationDetailsController.OnCancel += CancelPublicationDetails;
-        controllers.publicationDetailsController.OnConfirm += ConfirmPublicationDetails;
-    }
-
     private void ConfigureQuickBarController() { controllers.quickBarController.OnCatalogItemAssigned += QuickBarCatalogItemAssigned; }
 
     private void QuickBarCatalogItemAssigned(CatalogItem item) { BIWAnalytics.QuickAccessAssigned(item, GetCatalogSectionSelected().ToString()); }
@@ -215,8 +202,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
     internal void CancelNewProjectDetails() { controllers.newProjectDetailsController.SetActive(false); }
 
-    public void PublishStart(IBuilderScene scene) { controllers.publicationDetailsController.SetActive(true); }
-
     public void ConfigureConfirmationModal(string title, string subTitle, string cancelButtonText, string confirmButtonText)
     {
         controllers.buildModeConfirmationModalController.Configure(
@@ -224,78 +209,6 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
             subTitle,
             cancelButtonText,
             confirmButtonText);
-    }
-
-    internal void ConfirmPublicationDetails()
-    {
-        UnsubscribeConfirmationModal();
-
-        controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
-
-        ConfigureConfirmationModal(
-            BIWSettings.PUBLISH_MODAL_TITLE,
-            BIWSettings.PUBLISH_MODAL_SUBTITLE,
-            BIWSettings.PUBLISH_MODAL_CANCEL_BUTTON,
-            BIWSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
-
-        controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
-        controllers.publicationDetailsController.SetActive(false);
-    }
-
-    internal void CancelPublicationDetails() { controllers.publicationDetailsController.SetActive(false); }
-
-    internal void CancelPublishModal(BuildModeModalType modalType)
-    {
-        if (modalType != BuildModeModalType.PUBLISH)
-            return;
-
-        controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.PUBLISH);
-        controllers.publicationDetailsController.SetActive(true);
-
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
-    }
-
-    internal void ConfirmPublishModal(BuildModeModalType modalType)
-    {
-        if (modalType != BuildModeModalType.PUBLISH)
-            return;
-
-        controllers.publishPopupController.PublishStart();
-
-        Texture2D sceneScreenshotTexture = controllers.publicationDetailsController.GetSceneScreenshotTexture();
-        string sceneName = controllers.publicationDetailsController.GetSceneName();
-        string sceneDescription = controllers.publicationDetailsController.GetSceneDescription();
-
-        OnConfirmPublishAction?.Invoke(
-            sceneName,
-            sceneDescription,
-            sceneScreenshotTexture != null ? Convert.ToBase64String(sceneScreenshotTexture.EncodeToJPG(90)) : "");
-
-        controllers.newProjectDetailsController.SetCustomPublicationInfo(sceneName, sceneDescription);
-
-        // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
-        //               Meanwhile we will display a fake progress.
-        publishProgressCoroutine = CoroutineStarter.Start(FakePublishProgress());
-
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
-    }
-
-    private IEnumerator FakePublishProgress()
-    {
-        while (true)
-        {
-            float newPercentage = Mathf.Clamp(
-                controllers.publishPopupController.currentProgress + UnityEngine.Random.Range(10f, 30f),
-                controllers.publishPopupController.currentProgress,
-                99f);
-
-            controllers.publishPopupController.SetPercentage(newPercentage);
-
-            yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.5f));
-        }
     }
 
     public void ExitStart()
@@ -332,27 +245,12 @@ public class BuilderEditorHUDController : IHUD, IBuilderEditorHUDController
 
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
-
-        controllers.publicationDetailsController.SetDefaultPublicationInfo();
     }
 
     private void UnsubscribeConfirmationModal()
     {
-        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
-    }
-
-    public void PublishEnd(bool isOk, string message)
-    {
-        if (publishProgressCoroutine != null)
-        {
-            CoroutineStarter.Stop(publishProgressCoroutine);
-            publishProgressCoroutine = null;
-        }
-
-        controllers.publishPopupController.PublishEnd(isOk, message);
     }
 
     public void SetGizmosActive(string gizmos) { controllers.topActionsButtonsController.SetGizmosActive(gizmos); }

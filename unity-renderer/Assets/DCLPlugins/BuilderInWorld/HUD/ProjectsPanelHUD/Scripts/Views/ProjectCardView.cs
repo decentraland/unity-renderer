@@ -113,6 +113,7 @@ internal class ProjectCardView : MonoBehaviour, IProjectCardView
     [SerializeField] internal Color desyncColor;
     [SerializeField] private Texture2D defaultThumbnail;
     [SerializeField] private GameObject projectSceneCardViewPrefab;
+
     [Header("Prefab references")]
     [SerializeField] internal Image syncImage;
 

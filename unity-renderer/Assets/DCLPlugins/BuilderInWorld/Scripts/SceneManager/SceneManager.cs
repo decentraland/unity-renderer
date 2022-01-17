@@ -273,12 +273,21 @@ namespace DCL.Builder
                     }
                 });
 
-                if (context.editorContext.editorHUD != null)
+                if (context.editorContext.editorHUD == null )
+                    return;
+
+                if (sceneToEdit.sceneType == IBuilderScene.SceneType.LAND)
                     context.editorContext.editorHUD.ConfigureConfirmationModal(
                         BIWSettings.EXIT_MODAL_TITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
                         BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
+                else
+                    context.editorContext.editorHUD.ConfigureConfirmationModal(
+                        BIWSettings.EXIT_MODAL_TITLE,
+                        BIWSettings.EXIT_MODAL_SUBTITLE,
+                        BIWSettings.EXIT_MODAL_CANCEL_BUTTON,
+                        BIWSettings.EXIT_MODAL_CONFIRM_BUTTON);
             }
             else
             {
@@ -335,6 +344,8 @@ namespace DCL.Builder
         {
             if (currentState != State.IDLE || targetScene == null)
                 return;
+
+            DataStore.i.exploreV2.isOpen.Set(false);
 
             sceneToEditId = targetScene.manifest.project.scene_id;
             sceneToEdit = targetScene;
@@ -493,6 +504,7 @@ namespace DCL.Builder
         internal void ExitEditMode()
         {
             currentState = State.IDLE;
+            DataStore.i.HUDs.loadingHUD.visible.Set(true);
             initialLoadingController.Hide(true);
             inputController.inputTypeMode = InputTypeMode.GENERAL;
             CommonScriptableObjects.allUIHidden.Set(false);

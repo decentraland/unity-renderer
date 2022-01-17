@@ -654,11 +654,11 @@ namespace DCL.Interface
                 {
                     ProcessQueuedMessages();
                 }
-            } 
+            }
             get => OnMessage;
         }
         private static Action<string, string> OnMessage;
-        
+
         private static bool hasQueuedMessages = false;
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
@@ -1186,7 +1186,7 @@ namespace DCL.Interface
         }
 
         public static void ReportMotdClicked() { SendMessage("MotdConfirmClicked"); }
-        
+
         public static void OpenURL(string url)
         {
 #if UNITY_WEBGL
@@ -1195,7 +1195,9 @@ namespace DCL.Interface
             Application.OpenURL(url);
 #endif
         }
-        
+
+        public static void PublishStatefulScene(ProtocolV2.PublishPayload payload) { MessageFromEngine("PublishSceneState", JsonConvert.SerializeObject(payload)); }
+
         public static void StartIsolatedMode(IsolatedConfig config) { MessageFromEngine("StartIsolatedMode", JsonConvert.SerializeObject(config)); }
 
         public static void StopIsolatedMode(IsolatedConfig config) { MessageFromEngine("StopIsolatedMode", JsonConvert.SerializeObject(config)); }

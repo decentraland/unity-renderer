@@ -10,6 +10,7 @@ public class LimitInputField : MonoBehaviour
     public event System.Action OnLimitReached;
     public event System.Action OnEmptyValue;
     public event System.Action OnInputAvailable;
+    public event System.Action OnInputFocused;
 
     public event System.Action<string> OnInputChange;
 
@@ -58,6 +59,7 @@ public class LimitInputField : MonoBehaviour
             inputFieldbackgroundImg.sprite = inputFieldErrorBackgroundSprite;
         else
             inputFieldbackgroundImg.sprite = inputFieldFocusBackgroundSprite;
+        OnInputFocused?.Invoke();
     }
 
     internal void InputChanged(string newValue)

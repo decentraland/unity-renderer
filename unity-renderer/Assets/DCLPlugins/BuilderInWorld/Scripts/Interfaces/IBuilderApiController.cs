@@ -65,7 +65,7 @@ public interface IBuilderAPIController
     /// </summary>
     /// <param name="newProject">Data of the new Project</param>
     /// <returns></returns>
-    Promise<Manifest> CreateNewProject(ProjectData newProject);
+    Promise<ProjectData> CreateNewProject(ProjectData newProject);
 
     /// <summary>
     /// Dispose the component

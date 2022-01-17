@@ -22,7 +22,23 @@ namespace DCL.Builder
         /// </summary>
         /// <param name="onSuccess"></param>
         void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess);
-        
+
+        /// <summary>
+        /// Take screenshot from the camPosition looking at pointToLooKAt
+        /// </summary>
+        /// <param name="camPosition"></param>
+        /// <param name="pointToLookAt"></param>
+        /// <param name="onSuccess"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IFreeCameraMovement.OnSnapshotsReady onSuccess);
+
+        /// <summary>
+        /// Take screenshot from the areal position of the scene
+        /// </summary>
+        /// <param name="onSuccess"></param>
+        void TakeSceneAerialScreenshot(IParcelScene parcelScene, IFreeCameraMovement.OnSnapshotsReady onSuccess);
+
         /// <summary>
         /// Activate the camera in the eagle mode to have a more editor feel
         /// </summary>

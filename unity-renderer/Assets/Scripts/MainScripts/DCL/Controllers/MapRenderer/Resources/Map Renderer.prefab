@@ -232,6 +232,8 @@ MonoBehaviour:
   showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
   parcelHighlightImage: {fileID: 5226131346438990493}
+  redParcelHighlighImagePrefab: {fileID: 2348616308724949633, guid: 7fde7ef488a1cd449aeceb98a72d8470,
+    type: 3}
   highlightedParcelText: {fileID: 7940259258301411768}
   overlayContainer: {fileID: 90597117798403300}
   globalUserMarkerContainer: {fileID: 3332934504654532118}

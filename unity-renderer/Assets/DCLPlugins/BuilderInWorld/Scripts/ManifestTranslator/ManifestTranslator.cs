@@ -16,7 +16,6 @@ namespace DCL.Builder
     {
         private static readonly Dictionary<string, int> idToHumanReadableDictionary = new Dictionary<string, int>()
         {
-
             { "Transform", (int) CLASS_ID_COMPONENT.TRANSFORM },
 
             { "GLTFShape", (int) CLASS_ID.GLTF_SHAPE },
@@ -103,7 +102,7 @@ namespace DCL.Builder
             return builderScene;
         }
 
-        public static StatelessManifest ParcelSceneToStatelessManifest(ParcelScene scene)
+        public static StatelessManifest ParcelSceneToStatelessManifest(IParcelScene scene)
         {
             StatelessManifest manifest = new StatelessManifest();
             manifest.schemaVersion = 1;
@@ -117,7 +116,22 @@ namespace DCL.Builder
                 {
                     Component statelesComponent = new Component();
                     statelesComponent.type = idToHumanReadableDictionary.FirstOrDefault( x => x.Value == (int)entityComponent.Key).Key;
-                    statelesComponent.value = entityComponent.Value.GetModel();
+
+                    // Transform component is handle a bit different due to quaternion serializations
+                    if (entityComponent.Key == CLASS_ID_COMPONENT.TRANSFORM)
+                    {
+                        ProtocolV2.TransformComponent entityTransformComponentModel = new ProtocolV2.TransformComponent();
+                        entityTransformComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+                        entityTransformComponentModel.rotation = new ProtocolV2.QuaternionRepresentation(entity.gameObject.transform.rotation);
+                        entityTransformComponentModel.scale = entity.gameObject.transform.lossyScale;
+
+                        statelesComponent.value = entityTransformComponentModel;
+                    }
+                    else
+                    {
+                        statelesComponent.value = entityComponent.Value.GetModel();
+                    }
+                    
                     statlesEntity.components.Add(statelesComponent);
                 }
 
