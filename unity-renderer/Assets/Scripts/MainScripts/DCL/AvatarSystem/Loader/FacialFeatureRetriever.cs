@@ -24,23 +24,25 @@ namespace AvatarSystem
 
                 Texture2D mainTexture = null;
                 Texture2D maskTexture = null;
-
+                Exception mainTextureException = null;
                 mainTexturePromise = new AssetPromise_Texture(mainTextureUrl);
                 mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
-                mainTexturePromise.OnFailEvent += (x, exception) =>
+                mainTexturePromise.OnFailEvent += (x, e) =>
                 {
+                    mainTextureException = e;
                     mainTexture = null;
                 };
 
                 AssetPromiseKeeper_Texture.i.Keep(mainTexturePromise);
 
+                Exception maskTextureException = null;
                 if (!string.IsNullOrEmpty(maskTextureUrl))
                 {
                     maskTexturePromise = new AssetPromise_Texture(maskTextureUrl);
                     maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
-                    maskTexturePromise.OnFailEvent += (x, exception) =>
+                    maskTexturePromise.OnFailEvent += (x, e) =>
                     {
-                        //TODO Handle exception
+                        maskTextureException = e;
                         maskTexture = null;
                     };
 
@@ -49,12 +51,21 @@ namespace AvatarSystem
 
                 // AttachExternalCancellation is needed, otherwise the cancellation takes a frame to effect
                 await mainTexturePromise.ToUniTask(cancellationToken: ct).AttachExternalCancellation(ct);
+                if (mainTextureException != null)
+                    throw mainTextureException;
+
                 if (mainTexture == null)
                     throw new Exception($"Couldn't fetch main texture for {facialFeature.id} at {mainTextureUrl}");
 
                 if (maskTexturePromise != null)
                 {
                     await maskTexturePromise.ToUniTask(cancellationToken: ct).AttachExternalCancellation(ct);
+
+                    if (maskTextureException != null)
+                        throw maskTextureException;
+
+                    if (maskTexture == null)
+                        throw new Exception($"Couldn't fetch mask texture for {facialFeature.id} at {maskTextureUrl}");
                 }
 
                 return (mainTexture, maskTexture);
