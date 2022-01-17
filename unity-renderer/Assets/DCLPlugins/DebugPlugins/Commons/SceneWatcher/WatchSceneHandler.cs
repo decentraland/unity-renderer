@@ -15,6 +15,7 @@ namespace DCLPlugins.DebugPlugins.Commons
             this.sceneListener = sceneListener;
 
             scene.OnEntityAdded += SceneOnOnEntityAdded;
+            scene.OnEntityRemoved += SceneOnOnEntityRemoved;
 
             foreach (IDCLEntity entity in scene.entities.Values)
             {
@@ -25,12 +26,19 @@ namespace DCLPlugins.DebugPlugins.Commons
         public void Dispose()
         {
             scene.OnEntityAdded -= SceneOnOnEntityAdded;
+            scene.OnEntityRemoved -= SceneOnOnEntityRemoved;
+
             sceneListener.Dispose();
         }
 
         private void SceneOnOnEntityAdded(IDCLEntity entity)
         {
             sceneListener.OnEntityAdded(entity);
+        }
+
+        private void SceneOnOnEntityRemoved(IDCLEntity entity)
+        {
+            sceneListener.OnEntityRemoved(entity);
         }
     }
 }
