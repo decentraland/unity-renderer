@@ -375,6 +375,7 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         exploreV2MenuController.isOpen.Set(true);
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
 
         // Act
         exploreV2MenuController.OnCloseButtonPressed(fromShortcut);

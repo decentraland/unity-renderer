@@ -116,18 +116,21 @@ namespace DCL.SettingsPanelHUD
 
         private void ShowResetAllConfirmation()
         {
+            DataStore.i.exploreV2.isSomeModalOpen.Set(true);
             resetAllConfirmation.Show();
             resetAllBlackOverlay.SetActive(true);
         }
 
         private void HideResetAllConfirmation()
         {
+            DataStore.i.exploreV2.isSomeModalOpen.Set(false);
             resetAllConfirmation.Hide();
             resetAllBlackOverlay.SetActive(false);
         }
 
         private void ResetAllSettings()
         {
+            DataStore.i.exploreV2.isSomeModalOpen.Set(false);
             settingsPanelController.ResetAllSettings();
             resetAllConfirmation.Hide();
             resetAllBlackOverlay.SetActive(false);
@@ -195,7 +198,21 @@ namespace DCL.SettingsPanelHUD
             hudController.SetVisibility(!isOpen);
         }
 
-        private void CloseAction_OnTriggered(DCLAction_Trigger action) { CloseSettingsPanel(); }
+        private void CloseAction_OnTriggered(DCLAction_Trigger action)
+        {
+            if (DataStore.i.exploreV2.isSomeModalOpen.Get())
+            {
+                if (resetAllBlackOverlay.activeSelf)
+                {
+                    HideResetAllConfirmation();
+                    return;
+                }
+
+                return;
+            }
+
+            CloseSettingsPanel();
+        }
 
         private void OnFinishHide(ShowHideAnimator animator) { mainWindow.SetActive(false); }
     }
