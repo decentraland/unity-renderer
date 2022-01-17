@@ -69,9 +69,6 @@ namespace DCL.Builder
                 case IBuilderScene.SceneType.LAND:
                     landPublisher.StartPublishFlow(scene);
                     break;
-                default:
-                    Debug.Log("This should no appear, the scene should have a know type!");
-                    break;
             }
         }
 
