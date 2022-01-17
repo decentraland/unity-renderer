@@ -248,6 +248,8 @@ namespace UnityGLTF
         {
             try
             {
+                token.ThrowIfCancellationRequested();
+
                 lock (this)
                 {
                     if (_isRunning)
@@ -266,6 +268,8 @@ namespace UnityGLTF
                     }
                     await LoadJsonStreamOnAThread(token);
                 }
+                
+                token.ThrowIfCancellationRequested();
 
                 float profiling = 0, frames = 0, jsonProfiling = 0;
 
@@ -276,8 +280,10 @@ namespace UnityGLTF
 
                 if (_gltfRoot == null)
                 {
-                    await LoadJsonOnAThread();
+                    await LoadJsonOnAThread(token);
                 }
+                
+                token.ThrowIfCancellationRequested();
 
                 if (PROFILING_ENABLED)
                 {
@@ -293,7 +299,9 @@ namespace UnityGLTF
                     frames = Time.frameCount;
                 }
 
-                await _LoadScene(sceneIndex, showSceneObj);
+                await _LoadScene(sceneIndex, showSceneObj, token);
+                
+                token.ThrowIfCancellationRequested();
 
                 if (PROFILING_ENABLED)
                 {
@@ -310,7 +318,7 @@ namespace UnityGLTF
                 if (matTransitions != null && matTransitions.Length > 0)
                 {
                     //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
-                    await UniTask.WaitUntil(() => IsTransitionFinished(matTransitions));
+                    await UniTask.WaitUntil(() => IsTransitionFinished(matTransitions), cancellationToken: token);
                     
                 }
 
@@ -494,18 +502,26 @@ namespace UnityGLTF
         {
             
             await _loader.LoadStream(_gltfFileName, token);
+            
+            token.ThrowIfCancellationRequested();
+
+            if (_loader.LoadedStream == null)
+            {
+                throw new Exception($"Failed to Load Json Stream {_gltfFileName}");
+            }
 
             _gltfStream.Stream = _loader.LoadedStream;
             _gltfStream.StartPosition = 0;
         }
 
-        private async UniTask LoadJsonOnAThread()
+        private async UniTask LoadJsonOnAThread(CancellationToken cancellationToken)
         {
-            await UniTaskDCL.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition));
+            // TODO: ParseJsonDelayed
+            await UniTaskDCL.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition), cancellationToken: cancellationToken);
 
             if (_gltfRoot == null)
             {
-                throw new GLTFLoadException("Failed to parse glTF");
+                throw new Exception($"Failed to parse GLTF {_gltfFileName}");
             }
         }
 
@@ -555,7 +571,9 @@ namespace UnityGLTF
 
             InitializeGltfTopLevelObject();
 
+            cancellationToken.ThrowIfCancellationRequested();
             await ConstructScene(scene, showSceneObj, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (SceneParent != null)
                 CreatedObject.transform.SetParent(SceneParent, false);
@@ -722,6 +740,7 @@ namespace UnityGLTF
             return dstTex;
         }
 
+        // TODO: verificar si se puede pasar a un thread
         protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken token)
         {
             if (_assetCache.MeshCache[meshID][primitiveIndex].MeshAttributes.Count == 0)
