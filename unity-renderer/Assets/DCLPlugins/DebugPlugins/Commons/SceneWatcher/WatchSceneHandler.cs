@@ -17,9 +17,12 @@ namespace DCLPlugins.DebugPlugins.Commons
             scene.OnEntityAdded += SceneOnOnEntityAdded;
             scene.OnEntityRemoved += SceneOnOnEntityRemoved;
 
-            foreach (IDCLEntity entity in scene.entities.Values)
+            if (scene.entities?.Values != null)
             {
-                sceneListener.OnEntityAdded(entity);
+                foreach (IDCLEntity entity in scene.entities.Values)
+                {
+                    sceneListener.OnEntityAdded(entity);
+                }
             }
         }
 
