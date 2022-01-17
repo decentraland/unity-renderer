@@ -41,7 +41,7 @@ namespace DCL.ABConverter
 
             var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(w.downloadHandler.text);
 
-            return wearableCollections = collectionsApiData.collections;
+            return wearableCollections = collectionsApiData.data;
         }
 
         public static string BuildWearableCollectionFetchingURL(string targetCollectionId)
@@ -192,7 +192,9 @@ namespace DCL.ABConverter
             if (currentCollectionIndex >= wearableCollections.Length)
                 return;
 
-            string collectionId = wearableCollections[currentCollectionIndex].id;
+            string collectionId = wearableCollections[currentCollectionIndex].urn;
+            
+            log.Info($"Dumping... current collection: {currentCollectionIndex}, last collection: {lastCollectionIndex}");
             
             DumpWearablesCollection(abConverterCoreController, collectionId, (x) =>
             {

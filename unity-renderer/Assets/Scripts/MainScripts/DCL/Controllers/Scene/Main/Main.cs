@@ -60,7 +60,11 @@ namespace DCL
             //              IntegrationTestSuite_Legacy base class.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
-                kernelCommunication = new WebSocketCommunication();
+#if UNITY_STANDALONE && !UNITY_EDITOR
+                kernelCommunication = new WebSocketCommunication(true);
+#else
+                kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
+#endif
             }
 #endif
 
@@ -156,7 +160,7 @@ namespace DCL
             MainSceneFactory.CreateBridges();
             MainSceneFactory.CreateMouseCatcher();
             MainSceneFactory.CreatePlayerSystems();
-            MainSceneFactory.CreateEnvironment();
+            CreateEnvironment();
             MainSceneFactory.CreateAudioHandler();
             MainSceneFactory.CreateHudController();
             MainSceneFactory.CreateSettingsController();
@@ -164,5 +168,7 @@ namespace DCL
             MainSceneFactory.CreateEventSystem();
             MainSceneFactory.CreateInteractionHoverCanvas();
         }
+
+        protected virtual void CreateEnvironment() => MainSceneFactory.CreateEnvironment();
     }
 }

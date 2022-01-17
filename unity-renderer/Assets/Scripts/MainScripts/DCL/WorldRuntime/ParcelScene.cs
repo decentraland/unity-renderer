@@ -463,6 +463,14 @@ namespace DCL.Controllers
                 OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(data as string);
                 classId = model.GetClassIdFromType();
             }
+            // NOTE: TRANSFORM and AVATAR_ATTACH can't be used in the same Entity at the same time.
+            // so we remove AVATAR_ATTACH (if exists) when a TRANSFORM is created.
+            else if (classId == CLASS_ID_COMPONENT.TRANSFORM
+                     && entity.TryGetBaseComponent(CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
+            {
+                component.Cleanup();
+                entity.components.Remove( CLASS_ID_COMPONENT.AVATAR_ATTACH );
+            }
 
             if (!entity.components.ContainsKey(classId))
             {
@@ -630,6 +638,24 @@ namespace DCL.Controllers
                         {
                             Utils.SafeDestroy(component.GetTransform().gameObject);
                             entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_UP );
+                        }
+                    }
+                    return;
+                case OnPointerHoverEnter.NAME:
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, out IEntityComponent component ))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER );
+                        }
+                    }
+                    return;
+                case OnPointerHoverExit.NAME:
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, out IEntityComponent component ))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT );
                         }
                     }
                     return;

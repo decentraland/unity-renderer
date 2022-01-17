@@ -77,6 +77,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         OnEventsFromAPIUpdated += OnRequestedEventsUpdated;
 
         this.exploreV2Analytics = exploreV2Analytics;
+
+        view.ConfigurePools();
     }
 
     internal void FirstLoading()

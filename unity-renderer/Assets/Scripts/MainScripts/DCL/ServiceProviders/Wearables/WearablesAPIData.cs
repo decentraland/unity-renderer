@@ -126,9 +126,9 @@ public class WearableCollectionsAPIData
     [Serializable]
     public class Collection
     {
-        public string id;
+        public string urn;
         public string name;
     }
 
-    public Collection[] collections;
+    public Collection[] data;
 }

@@ -13,6 +13,7 @@ public class ExplorePlacesCommonTests
     public void SetUp()
     {
         placesSubSectionComponent = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesSubSection/PlacesSubSection")).GetComponent<PlacesSubSectionComponentView>();
+        placesSubSectionComponent.ConfigurePools();
         placesSubSectionComponent.Start();
 
         testPlaceCard = Object.Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/PlacesSubSection/PlaceCard_Modal")).GetComponent<PlaceCardComponentView>();

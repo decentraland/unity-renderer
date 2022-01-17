@@ -123,7 +123,12 @@ namespace DCL.Builder
             AudioScriptableObjects.enable.Play();
         }
 
-        public void Hide() { modal.Hide(); }
+        public void Hide()
+        {
+            modal.Hide();
+            if (fakeProgressCoroutine != null)
+                StopCoroutine(fakeProgressCoroutine);
+        }
 
         public void PublishError(string message)
         {
@@ -132,6 +137,8 @@ namespace DCL.Builder
             confirmGameObject.SetActive(false);
 
             errorTextView.text = message;
+            if (fakeProgressCoroutine != null)
+                StopCoroutine(fakeProgressCoroutine);
         }
 
         public void SetPercentage(float newValue) { loadingBar.SetPercentage(newValue); }
