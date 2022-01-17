@@ -58,25 +58,6 @@ namespace DCL.Builder
             screenshotCameraController.TakeSceneScreenshot(camPosition,pointToLookAt,width,height,onSuccess);
         }
 
-        public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IFreeCameraMovement.OnSnapshotsReady onSuccess)
-        {
-            //We deselect the entities to take better photos
-            context.editorContext.entityHandler.DeselectEntities();
-            freeCameraController.TakeSceneScreenshot(camPosition, pointToLookAt, width, height, (sceneSnapshot) =>
-            {
-                lastScreenshot = sceneSnapshot;
-                onSuccess?.Invoke(sceneSnapshot);
-            });
-        }
-        
-        public void TakeSceneAerialScreenshot(IParcelScene parcelScene, IFreeCameraMovement.OnSnapshotsReady onSuccess)
-        {
-            Vector3 pointToLookAt = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-            Vector3 cameraPosition = pointToLookAt  + Vector3.up * context.editorContext.godModeDynamicVariablesAsset.aerialScreenshotHeight;
-
-            TakeSceneScreenshot(cameraPosition, pointToLookAt, BIWSettings.AERIAL_SCREENSHOT_WIDTH, BIWSettings.AERIAL_SCREENSHOT_HEIGHT, onSuccess);
-        }
-
         public void TakeSceneAerialScreenshot(IParcelScene parcelScene, IScreenshotCameraController.OnSnapshotsReady onSuccess)
         {
            screenshotCameraController.TakeSceneAerialScreenshot(parcelScene,onSuccess); 
