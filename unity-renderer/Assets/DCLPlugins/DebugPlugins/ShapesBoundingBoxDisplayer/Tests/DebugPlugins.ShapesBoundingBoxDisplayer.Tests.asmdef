@@ -1,6 +1,6 @@
 {
     "name": "DebugPlugins_ShapesBoundingBoxDisplayer_Tests",
-    "rootNamespace": "UNITY_INCLUDE_TESTS",
+    "rootNamespace": "",
     "references": [
         "GUID:dd2bdb4c07be4110a5b57bf41484b080",
         "GUID:287946b9a5eec4b4fb510829a20c86b8",
@@ -27,8 +27,10 @@
         "nunit.framework.dll",
         "System.Threading.Tasks.Extensions.dll"
     ],
-    "autoReferenced": false,
-    "defineConstraints": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
