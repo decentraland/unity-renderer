@@ -40,6 +40,10 @@ internal class EntityWireframe : IShapeListener
 
     private void CleanWireframe()
     {
+        if (entityWireframe == null)
+            return;
+
+        entityWireframe.SetActive(false);
         Object.Destroy(entityWireframe);
         entityWireframe = null;
     }

@@ -8,6 +8,7 @@ using Object = UnityEngine.Object;
 
 internal class SceneEntitiesTracker : ISceneListener
 {
+    internal const string WIREFRAME_GAMEOBJECT_NAME = "ShapeBoundingBoxWireframe";
     private const string WIREFRAME_PREFAB_NAME = "Prefabs/WireframeCubeMesh";
 
     private readonly Dictionary<IDCLEntity, WatchEntityShapeHandler> entityShapeHandler = new Dictionary<IDCLEntity, WatchEntityShapeHandler>();
@@ -65,6 +66,7 @@ internal class SceneEntitiesTracker : ISceneListener
             return wireframeOriginal;
         }
         wireframeOriginal = Object.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
+        wireframeOriginal.name = WIREFRAME_GAMEOBJECT_NAME;
         wireframeMaterial = wireframeOriginal.GetComponent<Renderer>().material;
         wireframeMaterial.SetColor(ShaderUtils.EmissionColor, Color.grey);
         wireframeOriginal.SetActive(false);

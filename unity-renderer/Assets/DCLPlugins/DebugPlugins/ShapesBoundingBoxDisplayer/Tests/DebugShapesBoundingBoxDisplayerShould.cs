@@ -1,12 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
 using DCL.Tests;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 namespace Tests
@@ -33,6 +37,21 @@ namespace Tests
             worldRuntime = WorldRuntimeContextFactory.CreateWithGenericMocks(worldState, sceneController);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (var sceneId in entities.Keys)
+            {
+                foreach (var entity in entities[sceneId].Values)
+                {
+                    Object.Destroy(entity.gameObject);
+                }
+            }
+
+            loadedScenes.Clear();
+            entities.Clear();
+        }
+
         [Test]
         public void StartWatchingSceneOnInstantiation()
         {
@@ -41,6 +60,8 @@ namespace Tests
 
             var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
+
+            controller.Dispose();
         }
 
         [Test]
@@ -55,6 +76,8 @@ namespace Tests
             CreateAndAddScene("temptation");
             Assert.AreEqual(0, controller.pendingScenesId.Count);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
+
+            controller.Dispose();
         }
 
         [Test]
@@ -68,6 +91,190 @@ namespace Tests
 
             isBoundingBoxEnabledVariable.AddOrSet("temptation", false);
             Assert.AreEqual(0, controller.scenesWatcher.Count);
+
+            controller.Dispose();
+        }
+
+        [Test]
+        public void AddWireframeCorrectly()
+        {
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
+
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var entity = CreateEntityWithShape("temptationEntity");
+
+            AddEntity(scene, entity);
+            Assert.AreEqual(1, GetWireframesCount());
+
+            controller.Dispose();
+        }
+
+        [Test]
+        public void AddWireframeCorrectlyWhenShapeAdded()
+        {
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
+
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var entity = CreateEntityWithoutShape("temptationEntity");
+
+            AddEntity(scene, entity);
+            Assert.AreEqual(0, GetWireframesCount());
+
+            AddShapeToEntity(entity, GameObject.CreatePrimitive(PrimitiveType.Cube));
+            Assert.AreEqual(1, GetWireframesCount());
+
+            controller.Dispose();
+        }
+
+        [Test]
+        public void RemoveWireframeCorrectlyWhenShapeRemoved()
+        {
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
+
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var entity = CreateEntityWithShape("temptationEntity");
+
+            AddEntity(scene, entity);
+            entity.OnMeshesInfoCleaned.Invoke(entity);
+
+            Assert.AreEqual(0, GetWireframesCount());
+
+            controller.Dispose();
+        }
+
+        [Test]
+        public void RemoveWireframeCorrectlyWhenEntityRemoved()
+        {
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
+
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var entity = CreateEntityWithShape("temptationEntity");
+
+            AddEntity(scene, entity);
+            RemoveEntity(entity);
+
+            Assert.AreEqual(0, GetWireframesCount());
+
+            controller.Dispose();
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveAllWireframesCorrectlyWhenFeatureIsDisabled()
+        {
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
+
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var sceneEntities = new[]
+            {
+                CreateEntityWithShape("temptationEntity1"),
+                CreateEntityWithShape("temptationEntity2"),
+                CreateEntityWithShape("temptationEntity3"),
+                CreateEntityWithShape("temptationEntity4"),
+            };
+
+            foreach (var entity in sceneEntities)
+            {
+                AddEntity(scene, entity);
+            }
+
+            Assert.AreEqual(sceneEntities.Length, GetWireframesCount());
+
+            int allWireframes = GetWireframesCount(true);
+
+            // entities + 1 for original cached gameobject
+            Assert.AreEqual(sceneEntities.Length + 1, allWireframes);
+
+            // Disable feature for scene
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", false);
+
+            // wait a frame for Object.Destroy
+            yield return null;
+
+            allWireframes = GetWireframesCount(true);
+            Assert.AreEqual(0, allWireframes);
+
+            controller.Dispose();
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveAllWireframesCorrectlyWhenSceneIsDestroyed()
+        {
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
+
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var sceneEntities = new[]
+            {
+                CreateEntityWithShape("temptationEntity1"),
+                CreateEntityWithShape("temptationEntity2"),
+                CreateEntityWithShape("temptationEntity3"),
+                CreateEntityWithShape("temptationEntity4"),
+            };
+
+            foreach (var entity in sceneEntities)
+            {
+                AddEntity(scene, entity);
+            }
+
+            Assert.AreEqual(sceneEntities.Length, GetWireframesCount());
+
+            int allWireframes = GetWireframesCount(true);
+
+            // entities + 1 for original cached gameobject
+            Assert.AreEqual(sceneEntities.Length + 1, allWireframes);
+
+            // Destroy scene
+            RemoveScene(scene);
+
+            // wait a frame for Object.Destroy
+            yield return null;
+
+            allWireframes = GetWireframesCount(true);
+            Assert.AreEqual(0, allWireframes);
+
+            controller.Dispose();
+        }
+
+        [UnityTest]
+        public IEnumerator RemoveAllWireframesCorrectlyOnControllerDisposed()
+        {
+            var scene = CreateAndAddScene("temptation");
+            isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
+
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var sceneEntities = new[]
+            {
+                CreateEntityWithShape("temptationEntity1"),
+                CreateEntityWithShape("temptationEntity2"),
+                CreateEntityWithShape("temptationEntity3"),
+                CreateEntityWithShape("temptationEntity4"),
+            };
+
+            foreach (var entity in sceneEntities)
+            {
+                AddEntity(scene, entity);
+            }
+
+            Assert.AreEqual(sceneEntities.Length, GetWireframesCount());
+
+            int allWireframes = GetWireframesCount(true);
+
+            // entities + 1 for original cached gameobject
+            Assert.AreEqual(sceneEntities.Length + 1, allWireframes);
+
+            // Dispose controller
+            controller.Dispose();
+
+            // wait a frame for Object.Destroy
+            yield return null;
+
+            allWireframes = GetWireframesCount(true);
+            Assert.AreEqual(0, allWireframes);
         }
 
         private IParcelScene CreateAndAddScene(string id)
@@ -94,12 +301,40 @@ namespace Tests
             }
         }
 
-        private IDCLEntity CreateEntity(string id)
+        private IDCLEntity CreateEntityWithoutShape(string id)
         {
             IDCLEntity entity = Substitute.For<IDCLEntity>();
             entity.entityId.Returns(id);
 
+            var gameObject = new GameObject(id);
+            entity.gameObject.Returns(gameObject);
+
+            CreateMeshesInfoForEntity(entity);
+
             return entity;
+        }
+
+        private IDCLEntity CreateEntityWithShape(string id)
+        {
+            IDCLEntity entity = CreateEntityWithoutShape(id);
+
+            AddShapeToEntity(entity, GameObject.CreatePrimitive(PrimitiveType.Cube));
+
+            return entity;
+        }
+
+        private void CreateMeshesInfoForEntity(IDCLEntity entity)
+        {
+            var meshesInfo = new MeshesInfo();
+            meshesInfo.OnUpdated += () => entity.OnMeshesInfoUpdated.Invoke(entity);
+            meshesInfo.OnCleanup += () => entity.OnMeshesInfoCleaned.Invoke(entity);
+            entity.meshesInfo.Returns(meshesInfo);
+        }
+
+        private void AddShapeToEntity(IDCLEntity entity, GameObject shape)
+        {
+            entity.meshesInfo.currentShape = Substitute.For<IShape>();
+            entity.meshesInfo.meshRootGameObject = shape;
         }
 
         private void AddEntity(IParcelScene scene, IDCLEntity entity)
@@ -116,6 +351,13 @@ namespace Tests
                 Object.Destroy(entity.gameObject);
                 entity.scene.OnEntityRemoved += Raise.Event<Action<IDCLEntity>>(entity);
             }
+        }
+
+        private int GetWireframesCount(bool includeInactive = false)
+        {
+            return Object
+                   .FindObjectsOfType<GameObject>(includeInactive)
+                   .Count(go => go.name.StartsWith(SceneEntitiesTracker.WIREFRAME_GAMEOBJECT_NAME));
         }
     }
 }
