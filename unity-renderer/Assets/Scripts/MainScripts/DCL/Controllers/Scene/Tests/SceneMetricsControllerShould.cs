@@ -147,6 +147,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     }
 
     [UnityTest]
+    [Explicit]
     [Category("Explicit")]
     public IEnumerator CountNFTShapes()
     {
