@@ -2,6 +2,8 @@ using AssetPromiseKeeper_Tests;
 using DCL;
 using DCL.Helpers;
 using System.Collections;
+using System.Text.RegularExpressions;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
@@ -65,6 +67,7 @@ namespace AssetPromiseKeeper_AssetBundle_Tests
 
             Assert.IsFalse(keeper.library.Contains(asset));
             Assert.AreNotEqual(1, keeper.library.masterAssets.Count);
+            LogAssert.Expect(LogType.Exception, new Regex(".+"));
         }
     }
 }
