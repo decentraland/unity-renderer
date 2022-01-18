@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL.Helpers
 {
-    public struct UniTaskDCL
+    public static class TaskUtils
     {
         private static BaseVariable<bool> multithreading => DataStore.i.multithreading.enabled;
         public static async UniTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
@@ -21,7 +22,7 @@ namespace DCL.Helpers
                 await UniTask.Yield();
                 action();
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -37,8 +38,14 @@ namespace DCL.Helpers
             {
                 await UniTask.Create(action).AttachExternalCancellation(cancellationToken);
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
+        }
+
+        public static async UniTask RunThrottledCoroutine(IEnumerator enumerator, Action<Exception> onFail, Func<double, bool> timeBudget = null)
+        {
+            IEnumerator routine = DCLCoroutineRunner.Run(enumerator, onFail, timeBudget);
+            await routine.ToUniTask(CoroutineStarter.instance);
         }
     }
 }

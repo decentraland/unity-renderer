@@ -46,7 +46,7 @@ public class GifProcessorAsync : IGifProcessor
         if (webRequestOp.isSucceded)
         {
             var bytes = webRequestOp.webRequest.downloadHandler.data;
-            await UniTaskDCL.Run(() => UniGifAsync.GetTextureListAsync(bytes, Callback(OnSuccess, OnFail)));
+            await TaskUtils.Run(() => UniGifAsync.GetTextureListAsync(bytes, Callback(OnSuccess, OnFail)));
         }
         else
         {
