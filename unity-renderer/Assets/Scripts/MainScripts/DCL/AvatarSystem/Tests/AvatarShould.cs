@@ -74,7 +74,7 @@ namespace Test.AvatarSystem
 
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, settings));
             visibility.Received().SetLoadingReady(false);
-            curator.Received().Curate(settings, wearableIds);
+            curator.Received().Curate(settings, wearableIds, Arg.Any<CancellationToken>());
             loader.DidNotReceiveWithAnyArgs()
                   .Load(default, default, default, default, default, default);
         });

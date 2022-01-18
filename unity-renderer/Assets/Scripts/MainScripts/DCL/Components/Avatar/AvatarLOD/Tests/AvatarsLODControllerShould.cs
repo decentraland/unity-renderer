@@ -141,67 +141,6 @@ namespace Tests.AvatarsLODController
         }
 
         [Test]
-        public void UpdateImpostorsBillboardRotationProperly()
-        {
-            Vector3 cameraPosition = Vector3.zero;
-            float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
-            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
-            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
-            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
-
-            // Create full avatar to reach max 3D avatars
-            Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
-            IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
-            controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
-            fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (lodDistance * 0.1f);
-
-            // Create impostor avatar
-            Player impostorPlayer = CreateMockPlayer("impostorPlayer", out IAvatar impostorPlayerRenderer);
-            otherPlayers.Add(impostorPlayer.id, impostorPlayer);
-            var lodController = Substitute.For<IAvatarLODController>();
-            lodController.player.Returns(impostorPlayer);
-            controller.lodControllers.Add(impostorPlayer.id, lodController);
-            impostorPlayer.worldPosition = cameraPosition + Vector3.forward * lodDistance * 1.1f + Vector3.left * 3;
-
-            controller.enabled = true;
-            controller.Update();
-
-            Assert.Fail();
-            //impostorPlayerRenderer.Received().SetImpostorForward((cameraPosition - impostorPlayer.worldPosition).normalized);
-        }
-
-        [Test]
-        public void AvoidInvisiblesBillboardRotation()
-        {
-            Vector3 cameraPosition = Vector3.zero;
-            float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
-            CommonScriptableObjects.cameraForward.Set(Vector3.forward);
-            CommonScriptableObjects.cameraPosition.Set(cameraPosition);
-            CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
-
-            // Create full avatar to reach max 3D avatars
-            Player fullAvatarPlayer = CreateMockPlayer("fullAvatar");
-            IAvatarLODController fullAvatarPlayerController = Substitute.For<IAvatarLODController>();
-            fullAvatarPlayerController.player.Returns(fullAvatarPlayer);
-            controller.lodControllers.Add(fullAvatarPlayer.id, fullAvatarPlayerController);
-            fullAvatarPlayer.worldPosition = cameraPosition + Vector3.forward * (lodDistance * 0.1f);
-
-            // Create impostor avatar
-            Player impostorPlayer = CreateMockPlayer("impostorPlayer", out IAvatar avatar);
-            otherPlayers.Add(impostorPlayer.id, impostorPlayer);
-            var lodController = Substitute.For<IAvatarLODController>();
-            lodController.player.Returns(impostorPlayer);
-            controller.lodControllers.Add(impostorPlayer.id, lodController);
-            impostorPlayer.worldPosition = cameraPosition - Vector3.forward * lodDistance;
-
-            controller.UpdateAllLODs(1);
-
-            Assert.Fail();
-            //avatar.DidNotReceive().SetImpostorForward(new Vector3(0, 0, -1));
-        }
-
-        [Test]
         public void UpdateAllLODsCorrectly_Distance()
         {
             Vector3 cameraPosition = Vector3.zero;
