@@ -61,6 +61,7 @@ namespace AvatarSystem
 
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
+                //Scale the bounds due to the giant avatar not being skinned yet
                 extents = loader.combinedRenderer.localBounds.extents * 2f / 100f;
 
                 animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
@@ -83,8 +84,7 @@ namespace AvatarSystem
             catch (Exception e)
             {
                 Dispose();
-                Debug.LogError($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
-                Debug.LogException(e);
+                Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
                 throw;
             }
             finally

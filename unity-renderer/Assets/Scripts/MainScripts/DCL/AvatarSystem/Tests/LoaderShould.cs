@@ -309,7 +309,6 @@ namespace Test.AvatarSystem
                         skinColor = Color.green
                     }
                 ));
-            LogAssert.Expect(LogType.Error, "Failed Loading avatar");
         });
 
         [UnityTest]
@@ -415,7 +414,6 @@ namespace Test.AvatarSystem
                         skinColor = Color.green
                     }
                 ));
-            LogAssert.Expect(LogType.Error, "Failed Loading avatar");
         });
 
         private IWearableLoader GetMockedWearableLoader(WearableItem wearable, IWearableLoader.Status status = IWearableLoader.Status.Succeeded)

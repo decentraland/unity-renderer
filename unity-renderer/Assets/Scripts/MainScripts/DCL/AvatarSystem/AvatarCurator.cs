@@ -98,7 +98,7 @@ namespace AvatarSystem
             }
             catch
             {
-                Debug.LogError("Failed curating avatar wearables");
+                Debug.Log("Failed curating avatar wearables");
                 throw;
             }
         }

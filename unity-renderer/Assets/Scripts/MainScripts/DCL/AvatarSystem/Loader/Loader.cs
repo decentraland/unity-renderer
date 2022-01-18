@@ -122,7 +122,7 @@ namespace AvatarSystem
             catch
             {
                 Dispose();
-                Debug.LogError("Failed Loading avatar");
+                Debug.Log("Failed Loading avatar");
                 throw;
             }
             finally

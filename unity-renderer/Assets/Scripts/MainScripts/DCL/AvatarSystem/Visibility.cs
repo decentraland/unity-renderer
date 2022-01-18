@@ -35,8 +35,16 @@ namespace AvatarSystem
             this.loadingReady = loadingReady;
             UpdateVisibility();
         }
-        public void SetCombinedRendererVisibility(bool combinedRendererVisibility) { this.combinedRendererVisibility = combinedRendererVisibility; }
-        public void SetFacialFeaturesVisibility(bool facialFeaturesVisibility) { this.facialFeaturesVisibility = facialFeaturesVisibility; }
+        public void SetCombinedRendererVisibility(bool combinedRendererVisibility)
+        {
+            this.combinedRendererVisibility = combinedRendererVisibility;
+            UpdateVisibility();
+        }
+        public void SetFacialFeaturesVisibility(bool facialFeaturesVisibility)
+        {
+            this.facialFeaturesVisibility = facialFeaturesVisibility;
+            UpdateVisibility();
+        }
 
         private void UpdateVisibility()
         {

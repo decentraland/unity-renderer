@@ -10,6 +10,7 @@ namespace AvatarSystem
 {
     public class LOD : ILOD
     {
+        public const float IMPOSTOR_MOVEMENT_INTERPOLATION = 1.79f;
         private const float TRANSITION_DURATION = 0.75f;
 
         /// <summary>
@@ -23,9 +24,9 @@ namespace AvatarSystem
         private readonly IVisibility visibility;
         private readonly IAvatarMovementController avatarMovementController;
 
-        private Renderer combinedAvatar;
-        private readonly Renderer impostorRenderer;
-        private readonly MeshFilter impostorMeshFilter;
+        internal Renderer combinedAvatar;
+        internal readonly Renderer impostorRenderer;
+        internal readonly MeshFilter impostorMeshFilter;
         private float avatarAlpha;
 
         private CancellationTokenSource transitionCTS;
@@ -68,7 +69,7 @@ namespace AvatarSystem
             if (inmediate)
             {
                 avatarAlpha = lodIndex <= 1 ? 1f : 0f;
-                UpdateSSAO(lodIndex);
+                UpdateSSAO(combinedAvatar, lodIndex);
                 UpdateAlpha(avatarAlpha);
                 UpdateMovementLerping(lodIndex);
                 visibility.SetCombinedRendererVisibility(lodIndex <= 1);
@@ -110,7 +111,7 @@ namespace AvatarSystem
                     await UniTask.NextFrame(ct);
                 }
 
-                UpdateSSAO(lodIndex);
+                UpdateSSAO(combinedAvatar, lodIndex);
                 UpdateMovementLerping(lodIndex);
 
                 visibility.SetCombinedRendererVisibility(avatarAlpha > 0);
@@ -141,7 +142,7 @@ namespace AvatarSystem
             }
         }
 
-        private void UpdateAlpha(float avatarAlpha)
+        internal void UpdateAlpha(float avatarAlpha)
         {
             if (combinedAvatar == null)
                 return;
@@ -159,12 +160,12 @@ namespace AvatarSystem
             impostorMaterial.SetColor(AvatarSystemUtils._BaseColor, current);
         }
 
-        private void UpdateSSAO(int lodIndex)
+        internal static void UpdateSSAO(Renderer renderer, int lodIndex)
         {
-            if (combinedAvatar == null)
+            if (renderer == null)
                 return;
 
-            Material[] mats = combinedAvatar.sharedMaterials;
+            Material[] mats = renderer.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
                 if (lodIndex == 0)
@@ -174,7 +175,7 @@ namespace AvatarSystem
             }
         }
 
-        private void UpdateMovementLerping(int lodIndex) { avatarMovementController.SetMovementLerpWait(lodIndex >= 2 ? AvatarRendererHelpers.IMPOSTOR_MOVEMENT_INTERPOLATION : 0f); }
+        internal void UpdateMovementLerping(int lodIndex) { avatarMovementController.SetMovementLerpWait(lodIndex >= 2 ? IMPOSTOR_MOVEMENT_INTERPOLATION : 0f); }
 
         private async UniTaskVoid BillboardLookAtCamera(CancellationToken ct)
         {
@@ -187,10 +188,15 @@ namespace AvatarSystem
 
             while (true)
             {
-                impostorContainer.transform.LookAt(camera.transform);
-                impostorContainer.transform.eulerAngles = Vector3.Scale(impostorContainer.transform.eulerAngles, Vector3.up);
+                SetBillboardRotation(camera.transform);
                 await UniTask.WaitForEndOfFrame(ct).AttachExternalCancellation(ct);
             }
+        }
+
+        internal void SetBillboardRotation(Transform lookAt)
+        {
+            impostorContainer.transform.LookAt(lookAt);
+            impostorContainer.transform.eulerAngles = Vector3.Scale(impostorContainer.transform.eulerAngles, Vector3.up);
         }
 
         public void Dispose()
