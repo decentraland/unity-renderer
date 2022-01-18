@@ -1,18 +1,30 @@
 using System.Collections.Generic;
+using DCL.NotificationModel;
 
 namespace DCL.Components
 {
     internal class CameraModeAreasController
     {
+        private const string NOTIFICATION_GROUP = "CameraModeLockedByScene";
+        private const float NOTIFICATION_TIME = 3;
+
+        private static readonly Model notificationModel = new Model()
+        {
+            type = Type.CAMERA_MODE_LOCKED_BY_SCENE,
+            groupID = NOTIFICATION_GROUP,
+            timer = NOTIFICATION_TIME
+        };
+
         private CameraMode.ModeId initialCameraMode;
         private readonly List<ICameraModeArea> insideAreasList = new List<ICameraModeArea>();
 
         public void AddInsideArea(in ICameraModeArea area)
         {
-            if (insideAreasList.Count == 0)
+            if (!IsPlayerInsideAnyArea())
             {
                 initialCameraMode = CommonScriptableObjects.cameraMode.Get();
                 CommonScriptableObjects.cameraModeInputLocked.Set(true);
+                ShowCameraModeLockedNotification();
             }
 
             CommonScriptableObjects.cameraMode.Set(area.cameraMode);
@@ -32,6 +44,9 @@ namespace DCL.Components
             {
                 // reset to initial state of camera mode
                 ResetCameraMode();
+
+                //remove notification
+                HideCameraModeLockedNotification();
             }
             else if (IsTheActivelyAffectingArea(area))
             {
@@ -50,6 +65,11 @@ namespace DCL.Components
             }
         }
 
+        private bool IsPlayerInsideAnyArea()
+        {
+            return insideAreasList.Count > 0;
+        }
+
         private void ResetCameraMode()
         {
             CommonScriptableObjects.cameraMode.Set(initialCameraMode);
@@ -66,6 +86,16 @@ namespace DCL.Components
             }
 
             return insideAreasList[affectingAreasCount - 1] == area;
+        }
+
+        internal virtual void ShowCameraModeLockedNotification()
+        {
+            NotificationsController.i?.ShowNotification(notificationModel);
+        }
+
+        internal virtual void HideCameraModeLockedNotification()
+        {
+            NotificationsController.i?.DismissAllNotifications(NOTIFICATION_GROUP);
         }
     }
 }
