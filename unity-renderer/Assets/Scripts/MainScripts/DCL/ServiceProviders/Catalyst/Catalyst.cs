@@ -12,6 +12,7 @@ public class Catalyst : ICatalyst
     private const int MAX_POINTERS_PER_REQUEST = 90;
 
     public string contentUrl => realmContentServerUrl;
+    public string lambdasUrl => $"{realmDomain}/lambdas";
 
     private string realmDomain = "https://peer-lb.decentraland.org";
     private string realmContentServerUrl = "https://peer-lb.decentraland.org/content";
