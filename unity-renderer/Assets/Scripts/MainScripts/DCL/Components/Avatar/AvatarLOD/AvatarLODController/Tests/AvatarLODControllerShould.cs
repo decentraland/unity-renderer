@@ -32,7 +32,7 @@ namespace Tests.AvatarLODController
         public void BeCreatedProperly()
         {
             Assert.AreEqual(player, controller.player);
-            player.avatar.Received().SetLODLevel(1);
+            player.avatar.Received().SetLODLevel(0);
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace Tests.AvatarLODController
         {
             controller.SetLOD0();
 
-            Assert.Fail();
+            player.avatar.Received().SetLODLevel(0);
         }
 
         [Test]
@@ -51,18 +51,11 @@ namespace Tests.AvatarLODController
         }
 
         [Test]
-        public void SetFullAvatarProperly_IgnoresIfTargetsAreSet()
-        {
-            controller.SetLOD0();
-
-            Assert.Fail();
-        }
-
-        [Test]
         public void SetSimpleAvatarStateProperly()
         {
             controller.SetLOD1();
-            Assert.Fail();
+
+            player.avatar.Received().SetLODLevel(1);
         }
 
         [Test]
@@ -73,26 +66,21 @@ namespace Tests.AvatarLODController
         }
 
         [Test]
-        public void SetSimpleAvatarStateProperly_IgnoresIfTargetsAreSet()
-        {
-            controller.SetLOD1();
-
-            Assert.Fail();
-        }
-
-        [Test]
         public void SetImpostorStateStateProperly()
         {
             controller.SetLOD2();
-            Assert.Fail();
+
+            player.avatar.Received().SetLODLevel(2);
         }
 
-        [UnityTest]
-        public IEnumerator AffectAvatarColliderBasedOnVisibility()
+        [Test]
+        public void AffectAvatarColliderBasedOnVisibility()
         {
             controller.SetInvisible();
-            yield return null;
-            Assert.Fail();
+            controller.player.onPointerDownCollider.Received().SetColliderEnabled(false);
+
+            controller.SetLOD0();
+            controller.player.onPointerDownCollider.Received().SetColliderEnabled(true);
         }
 
         [Test]
@@ -100,13 +88,6 @@ namespace Tests.AvatarLODController
         {
             player.avatar = null;
             Assert.DoesNotThrow(() => controller.SetLOD2());
-        }
-
-        [Test]
-        public void SetImpostorStateStateProperly_IgnoresIfTargetsAreSet()
-        {
-            controller.SetLOD2();
-            Assert.Fail();
         }
     }
 }
