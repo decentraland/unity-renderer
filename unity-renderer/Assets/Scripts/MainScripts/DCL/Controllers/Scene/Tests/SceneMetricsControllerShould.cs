@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
@@ -147,6 +147,7 @@ public class SceneMetricsControllerShould : IntegrationTestSuite
     }
 
     [UnityTest]
+    [Category("Explicit")]
     public IEnumerator CountNFTShapes()
     {
         var entity = TestUtils.CreateSceneEntity(scene);
