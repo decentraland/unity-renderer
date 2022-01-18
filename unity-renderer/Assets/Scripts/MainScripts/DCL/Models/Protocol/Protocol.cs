@@ -65,6 +65,8 @@ namespace DCL.Models
         VIDEO_CLIP = 70,
         VIDEO_TEXTURE = 71,
 
+        AVATAR_TEXTURE = 72,
+
         AUDIO_CLIP = 200,
 
         NAME = 300,
