@@ -69,8 +69,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             Assert.IsTrue(keeper.library.Contains(asset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
-            
-            LogAssert.Expect(LogType.Exception, new Regex(".+"));
         }
 
         [UnityTest]
@@ -126,6 +124,8 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             Assert.IsFalse(keeper.library.Contains(asset));
             Assert.AreNotEqual(1, keeper.library.masterAssets.Count);
+            
+            LogAssert.Expect(LogType.Exception, new Regex(".+"));
         }
     }
 }
