@@ -45,7 +45,7 @@ namespace UnityGLTF.Loader
                 return;
             }
 
-            await UniTaskDCL.Run( () =>
+            await TaskUtils.Run( () =>
             {
                 LoadedStream = File.OpenRead(pathToLoad);
             }, cancellationToken: token);

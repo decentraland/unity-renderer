@@ -528,7 +528,7 @@ namespace UnityGLTF
 
                 OnGLTFRootIsConstructed?.Invoke(gLTFRoot);
 
-                var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, stream);
+                var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, new GLTFThrottlingCounter(), stream);
                 loader.addImagesToPersistentCaching = false; // Since we control the PersistentAssetCache during AB Conversion, we don't want the importer to mess with that
                 loader.addMaterialsToPersistentCaching = false;
                 loader.initialVisibility = true;

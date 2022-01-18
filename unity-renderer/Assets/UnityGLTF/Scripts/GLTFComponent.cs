@@ -237,7 +237,8 @@ namespace MainScripts.DCL.GLTF
                         id,
                         GLTFUri,
                         loader,
-                        asyncCoroutineHelper
+                        asyncCoroutineHelper, 
+                        throttlingCounter
                     );
 
                     if (sceneImporter.CreatedObject != null)

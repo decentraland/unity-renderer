@@ -150,6 +150,7 @@ namespace UnityGLTF
         protected MaterialCacheData _defaultLoadedMaterial = null;
 
         protected string _gltfFileName;
+        private readonly GLTFThrottlingCounter throttlingCounter;
         protected GLBStream _gltfStream;
         protected GLTFRoot _gltfRoot;
         protected AssetCache _assetCache;
@@ -181,17 +182,19 @@ namespace UnityGLTF
         /// <param name="gltfFileName">glTF file relative to data loader path</param>
         /// <param name="externalDataLoader">Loader to load external data references</param>
         /// <param name="asyncCoroutineHelper">Helper to load coroutines on a seperate thread</param>
-        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper) : this(externalDataLoader)
+        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper, GLTFThrottlingCounter throttlingCounter) : this(externalDataLoader)
         {
             _gltfFileName = gltfFileName;
+            this.throttlingCounter = throttlingCounter;
             this.id = string.IsNullOrEmpty(id) ? gltfFileName : id;
         }
 
-        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper, Stream gltfStream = null) : this(externalDataLoader)
+        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper, GLTFThrottlingCounter throttlingCounter, Stream gltfStream = null) : this(externalDataLoader)
         {
             this.id = id;
             _gltfRoot = rootNode;
             _loader = externalDataLoader;
+            this.throttlingCounter = throttlingCounter;
 
             skipFrameIfDepletedTimeBudget = new SkipFrameIfDepletedTimeBudget();
 
@@ -266,9 +269,9 @@ namespace UnityGLTF
                     {
                         Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
                     }
-                    await LoadJsonStreamOnAThread(token);
+                    await LoadJsonStream(token);
                 }
-                
+
                 token.ThrowIfCancellationRequested();
 
                 float profiling = 0, frames = 0, jsonProfiling = 0;
@@ -280,9 +283,9 @@ namespace UnityGLTF
 
                 if (_gltfRoot == null)
                 {
-                    await LoadJsonOnAThread(token);
+                    await ParseJson(token);
                 }
-                
+
                 token.ThrowIfCancellationRequested();
 
                 if (PROFILING_ENABLED)
@@ -300,7 +303,7 @@ namespace UnityGLTF
                 }
 
                 await _LoadScene(sceneIndex, showSceneObj, token);
-                
+
                 token.ThrowIfCancellationRequested();
 
                 if (PROFILING_ENABLED)
@@ -319,7 +322,7 @@ namespace UnityGLTF
                 {
                     //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
                     await UniTask.WaitUntil(() => IsTransitionFinished(matTransitions), cancellationToken: token);
-                    
+
                 }
 
                 if (!importSkeleton)
@@ -440,7 +443,8 @@ namespace UnityGLTF
 
                 if (_assetCache.MeshCache[meshIdIndex][i].MeshAttributes.Count == 0)
                 {
-                    await ConstructMeshAttributes(primitive, meshIdIndex, i, token);
+                    await TaskUtils.Run( () => ConstructMeshAttributes(primitive, meshIdIndex, i, token), cancellationToken: token);
+                    
                     if (primitive.Material != null && !pendingImageBuffers.Contains(primitive.Material.Value))
                     {
                         pendingImageBuffers.Add(primitive.Material.Value);
@@ -498,11 +502,11 @@ namespace UnityGLTF
 
         protected IEnumerator EmptyYieldEnum() { yield break; }
 
-        private async UniTask LoadJsonStreamOnAThread(CancellationToken token)
+        private async UniTask LoadJsonStream(CancellationToken token)
         {
-            
+
             await _loader.LoadStream(_gltfFileName, token);
-            
+
             token.ThrowIfCancellationRequested();
 
             if (_loader.LoadedStream == null)
@@ -514,33 +518,24 @@ namespace UnityGLTF
             _gltfStream.StartPosition = 0;
         }
 
-        private async UniTask LoadJsonOnAThread(CancellationToken cancellationToken)
+        private async UniTask ParseJson(CancellationToken cancellationToken)
         {
-            // TODO: ParseJsonDelayed
-            await UniTaskDCL.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition), cancellationToken: cancellationToken);
+            if (DataStore.i.multithreading.enabled.Get())
+            {
+                await TaskUtils.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition), cancellationToken: cancellationToken);
+            }
+            else
+            {
+                _gltfRoot ??= new GLTFRoot();
+
+                await TaskUtils.RunThrottledCoroutine(GLTFParser.ParseJsonDelayed(_gltfStream.Stream, _gltfRoot, _gltfStream.StartPosition),
+                    exception => throw exception,
+                    throttlingCounter.EvaluateTimeBudget);
+            }
 
             if (_gltfRoot == null)
             {
                 throw new Exception($"Failed to parse GLTF {_gltfFileName}");
-            }
-        }
-
-        public static void RunCoroutineSync(IEnumerator streamEnum)
-        {
-            var stack = new Stack<IEnumerator>();
-            stack.Push(streamEnum);
-            while (stack.Count > 0)
-            {
-                var enumerator = stack.Pop();
-                if (enumerator.MoveNext())
-                {
-                    stack.Push(enumerator);
-                    var subEnumerator = enumerator.Current as IEnumerator;
-                    if (subEnumerator != null)
-                    {
-                        stack.Push(subEnumerator);
-                    }
-                }
             }
         }
 
@@ -665,7 +660,7 @@ namespace UnityGLTF
                 await ConstructUnityTexture(settings, stream, imageCacheIndex);
             }
         }
-        
+
         protected virtual async UniTask ConstructUnityTexture(TextureCreationSettings settings, byte[] buffer, int imageCacheIndex)
         {
             Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, settings.generateMipmaps, settings.linear);
@@ -740,7 +735,6 @@ namespace UnityGLTF
             return dstTex;
         }
 
-        // TODO: verificar si se puede pasar a un thread
         protected virtual async UniTask ConstructMeshAttributes(MeshPrimitive primitive, int meshID, int primitiveIndex, CancellationToken token)
         {
             if (_assetCache.MeshCache[meshID][primitiveIndex].MeshAttributes.Count == 0)
@@ -1055,7 +1049,7 @@ namespace UnityGLTF
                 }
             }
 
-            await UniTaskDCL.Run( () =>
+            await TaskUtils.Run( () =>
             {
                 for (var ci = 0; ci < channelCount; ++ci)
                 {
@@ -1071,7 +1065,7 @@ namespace UnityGLTF
 
             if (optimizeKeyframes)
             {
-                await UniTaskDCL.Run( () =>
+                await TaskUtils.Run( () =>
                 {
                     for (var ci = 0; ci < channelCount; ++ci)
                     {
@@ -1728,7 +1722,11 @@ namespace UnityGLTF
 
                 unityMeshData = ConvertAccessorsToUnityTypes(meshConstructionData);
 
-                await ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData);
+                // Note (Pato): this is a MainThread only method, so we always want to reduce hiccups
+                await TaskUtils.RunThrottledCoroutine(
+                    ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData),
+                    exception => throw exception,
+                    throttlingCounter.EvaluateTimeBudget);
             }
         }
 
@@ -1870,13 +1868,13 @@ namespace UnityGLTF
             await UniTask.WaitUntil(() => !skipFrameIfDepletedTimeBudget.keepWaiting);
         }
 
-        private async UniTask ConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
+        protected IEnumerator ConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
         {
             MeshPrimitive primitive = meshConstructionData.Primitive;
             int vertexCount = (int) primitive.Attributes[SemanticProperties.POSITION].Value.Count;
             bool hasNormals = unityMeshData.Normals != null;
 
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
 
             Mesh mesh = new Mesh
             {
@@ -1889,17 +1887,17 @@ namespace UnityGLTF
 
             mesh.vertices = unityMeshData.Vertices;
 
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.normals = unityMeshData.Normals;
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv = unityMeshData.Uv1;
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv2 = unityMeshData.Uv2;
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv3 = unityMeshData.Uv3;
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.uv4 = unityMeshData.Uv4;
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.colors = unityMeshData.Colors;
 
             if ( !Application.isPlaying )
@@ -1916,13 +1914,13 @@ namespace UnityGLTF
             else
             {
                 mesh.triangles = unityMeshData.Triangles;
-                await SkipFrameIfDepletedTimeBudget();
+                yield return skipFrameIfDepletedTimeBudget;
             }
 
             mesh.tangents = unityMeshData.Tangents;
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
             mesh.boneWeights = unityMeshData.BoneWeights;
-            await SkipFrameIfDepletedTimeBudget();
+            yield return skipFrameIfDepletedTimeBudget;
 
             if (!hasNormals)
                 mesh.RecalculateNormals();
@@ -2225,7 +2223,7 @@ namespace UnityGLTF
 
             _assetCache.TextureCache[textureIndex].CachedTexture = source;
         }
-        
+
         protected virtual void ConstructImageFromGLB(GLTFImage image, int imageCacheIndex)
         {
             var texture = new Texture2D(0, 0);

@@ -45,7 +45,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
     [Test]
     public void ImporterCanLoadSkeletonsByDefault()
     {
-        var importer = new GLTFSceneImporter("", "", null, null);
+        var importer = new GLTFSceneImporter("", "", null, null, null);
         Assert.IsTrue( importer.importSkeleton, "Skeleton importing should be true by default or avatars won't load correctly!" );
     }
 
