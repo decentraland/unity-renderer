@@ -376,7 +376,7 @@ public class ExploreV2MenuComponentControllerTests
         };
 
         // Act
-        exploreV2MenuController.UpdateAvailableRealmsInfo(testRealms, null);
+        exploreV2MenuController.UpdateAvailableRealmsInfo(testRealms);
 
         // Assert
         Assert.AreEqual(3, exploreV2MenuController.currentAvailableRealms.Count);

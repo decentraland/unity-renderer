@@ -67,8 +67,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.realm.playerRealm.OnChange += UpdateRealmInfo;
         UpdateRealmInfo(DataStore.i.realm.playerRealm.Get(), null);
 
-        DataStore.i.realm.realmsInfo.OnChange += UpdateAvailableRealmsInfo;
-        UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get(), null);
+        DataStore.i.realm.realmsInfo.OnSet += UpdateAvailableRealmsInfo;
+        UpdateAvailableRealmsInfo(DataStore.i.realm.realmsInfo.Get());
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
@@ -163,7 +163,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     {
         rendererState.OnChange -= Initialize_Internal;
         DataStore.i.realm.playerRealm.OnChange -= UpdateRealmInfo;
-        DataStore.i.realm.realmsInfo.OnChange -= UpdateAvailableRealmsInfo;
+        DataStore.i.realm.realmsInfo.OnSet -= UpdateAvailableRealmsInfo;
         ownUserProfile.OnUpdate -= UpdateProfileInfo;
         view?.currentProfileCard.onClick?.RemoveAllListeners();
         isOpen.OnChange -= IsOpenChanged;
@@ -416,7 +416,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentRealmViewer.SetNumberOfUsers(realmUsers);
     }
 
-    internal void UpdateAvailableRealmsInfo(RealmModel[] currentRealmList, RealmModel[] previousRealmList)
+    internal void UpdateAvailableRealmsInfo(IEnumerable<RealmModel> currentRealmList)
     {
         if (!NeedToRefreshRealms(currentRealmList))
             return;
@@ -442,13 +442,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         view.currentRealmSelectorModal.SetAvailableRealms(currentAvailableRealms);
     }
 
-    internal bool NeedToRefreshRealms(RealmModel[] newRealmList)
+    internal bool NeedToRefreshRealms(IEnumerable<RealmModel> newRealmList)
     {
         if (newRealmList == null)
             return true;
 
         bool needToRefresh = false;
-        if (newRealmList.Length == currentAvailableRealms.Count)
+        if (newRealmList.Count() == currentAvailableRealms.Count)
         {
             foreach (RealmModel realm in newRealmList)
             {
