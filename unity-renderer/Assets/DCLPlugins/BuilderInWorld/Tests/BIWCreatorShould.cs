@@ -6,9 +6,9 @@ using DCL.Builder;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using MainScripts.DCL.GLTF;
 using NUnit.Framework;
 using UnityEngine;
+using UnityGLTF;
 
 public class BIWCreatorShould : IntegrationTestSuite_Legacy
 {

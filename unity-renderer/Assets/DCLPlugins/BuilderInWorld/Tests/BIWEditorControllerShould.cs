@@ -3,10 +3,10 @@ using DCL;
 using DCL.Builder;
 using DCL.Controllers;
 using DCL.Helpers;
-using MainScripts.DCL.GLTF;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityGLTF;
 
 public class BIWEditorControllerShould : IntegrationTestSuite_Legacy
 {

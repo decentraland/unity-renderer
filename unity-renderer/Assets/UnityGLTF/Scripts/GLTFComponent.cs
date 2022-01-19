@@ -2,12 +2,11 @@ using System;
 using System.Threading;
 using DCL;
 using UnityEngine;
-using UnityGLTF;
 using UnityGLTF.Loader;
 using UnityGLTF.Scripts;
 using Cysharp.Threading.Tasks;
 
-namespace MainScripts.DCL.GLTF
+namespace UnityGLTF
 {
     /// <summary>
     /// Component to load a GLTF scene with

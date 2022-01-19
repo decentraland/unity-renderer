@@ -4,9 +4,9 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using DCL.Builder;
-using MainScripts.DCL.GLTF;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityGLTF;
 using WaitUntil = UnityEngine.WaitUntil;
 
 public class BIWActionsShould : IntegrationTestSuite_Legacy

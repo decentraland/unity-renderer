@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using DCL.Helpers;
 using DCL.Models;
-using MainScripts.DCL.GLTF;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityGLTF;
