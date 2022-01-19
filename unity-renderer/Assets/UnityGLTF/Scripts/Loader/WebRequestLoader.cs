@@ -75,8 +75,9 @@ namespace UnityGLTF.Loader
             WebRequestAsyncOperation asyncOp = (WebRequestAsyncOperation)webRequestController.Get(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
-                disposeOnCompleted: false);
+                timeout: 10,
+                disposeOnCompleted: false,
+                requestAttemps: 3);
 
             Assert.IsNotNull(asyncOp, "asyncOp == null ... Maybe you are using a mocked WebRequestController?");
 
