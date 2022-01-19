@@ -15,6 +15,6 @@ namespace DCL.Builder
         }
 
         public ProjectRotation rotation;
-        public LandWithAccess[] landsToPublish;
+        public Vector2Int coordsToPublish;
     }
 }
