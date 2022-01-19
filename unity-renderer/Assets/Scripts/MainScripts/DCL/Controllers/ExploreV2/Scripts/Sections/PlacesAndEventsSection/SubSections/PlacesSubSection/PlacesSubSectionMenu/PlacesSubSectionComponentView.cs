@@ -129,12 +129,12 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void ConfigurePools()
     {
-        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
+        ExplorePlacesUtils.ConfigurePlaceCardsPool(out placeCardsPool, PLACE_CARDS_POOL_NAME, placeCardPrefab, PLACE_CARDS_POOL_PREWARM);
     }
 
     public override void Start()
     {
-        placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
+        placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
 
         places.RemoveItems();
 
@@ -166,7 +166,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         this.places.ExtractItems();
         placeCardsPool.ReleaseAll();
 
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
             places,
             placeCardsPool,
             OnFriendHandlerAdded,
@@ -179,7 +179,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void AddPlaces(List<PlaceCardComponentModel> places)
     {
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
             places,
             placeCardsPool,
             OnFriendHandlerAdded,
@@ -206,7 +206,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        ExplorePlacesHelpers.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
+        ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked);
     }
 
     public void HidePlaceModal() { placeModal.Hide(); }
