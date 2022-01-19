@@ -16,7 +16,7 @@ public class TransactionListHUDView : MonoBehaviour
 
     internal static TransactionListHUDView Create()
     {
-        TransactionListHUDView view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<TransactionListHUDView>();
+        TransactionListHUDView view = Instantiate(Resources.Load<TransactionListHUDView>(VIEW_PATH));
         view.Initialize();
         return view;
     }
@@ -25,9 +25,6 @@ public class TransactionListHUDView : MonoBehaviour
 
     public void ShowTransaction(ITransactionHUD transaction, Model model = null)
     {
-        if (transaction == null)
-            return;
-
         transaction.OnTransactionAccepted += OnTransactionAccepted;
         transaction.OnTransactionRejected += OnTransactionRejected;
 

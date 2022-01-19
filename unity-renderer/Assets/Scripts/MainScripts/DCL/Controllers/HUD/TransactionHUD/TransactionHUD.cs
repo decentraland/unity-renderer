@@ -72,7 +72,41 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
     private static string ShortAddress(string address)
     {
-        return $"{address.Substring(0, 6)}...{address.Substring(address.Length - 4)}";
+        if (address == null)
+            return "Null";
+
+        if (address.Length >= 12)
+            return $"{address.Substring(0, 6)}...{address.Substring(address.Length - 4)}";
+        
+        return address;
+    }
+    
+    private void ShowTransferMessage(Model model)
+    {
+        var scene = FindScene(model.sceneId);
+        
+        if (scene != null)
+            paymentPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to initiate a transfer";
+        paymentPanel.SetActive(true);
+        signPanel.SetActive(false);
+
+        UserProfile ownUserProfile = UserProfile.GetOwnUserProfile();
+        fromAddressLabel.text = ShortAddress(ownUserProfile.ethAddress);
+        toAddressLabel.text = ShortAddress(model.toAddress);
+        amountLabel.text = $"{model.amount} {model.currency}";
+        paymentNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
+    }
+
+    private void ShowSignMessage(Model model)
+    {
+        var scene = FindScene(model.sceneId);
+        
+        if (scene != null)
+            signPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to sign this message";
+        paymentPanel.SetActive(false);
+        signPanel.SetActive(true);
+        signNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
+        messageLabel.text = model.message;
     }
 
     public void Show(Model model)
@@ -82,30 +116,10 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
 
         this.model = model;
 
-        var scene = FindScene(model.sceneId);
-
         if (model.requestType == Type.REQUIRE_PAYMENT)
-        {
-            if (scene != null)
-                paymentPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to initiate a transfer";
-            paymentPanel.SetActive(true);
-            signPanel.SetActive(false);
-
-            UserProfile ownUserProfile = UserProfile.GetOwnUserProfile();
-            fromAddressLabel.text = ShortAddress(ownUserProfile.ethAddress);
-            toAddressLabel.text = ShortAddress(model.toAddress);
-            amountLabel.text = $"{model.amount} {model.currency}";
-            paymentNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
-        }
+            ShowTransferMessage(model);
         else
-        {
-            if (scene != null)
-                signPanelTitle.text = $"'{scene.GetSceneName()}', {scene.sceneData.basePosition.ToString()} wants to sign this message";
-            paymentPanel.SetActive(false);
-            signPanel.SetActive(true);
-            signNetworkLabel.text = KernelConfig.i.Get().network.ToUpper();
-            messageLabel.text = model.message;
-        }
+            ShowSignMessage(model);
     }
 
     public void AcceptTransaction()
