@@ -81,16 +81,6 @@ namespace UnityGLTF
         public int maximumLod = 300;
 
         /// <summary>
-        /// Timeout for certain threading operations
-        /// </summary>
-        public int Timeout = 8;
-
-        /// <summary>
-        /// Use Multithreading or not
-        /// </summary>
-        public bool isMultithreaded = false;
-
-        /// <summary>
         /// The parent transform for the created GameObject
         /// </summary>
         public Transform SceneParent { get; set; }
@@ -181,15 +171,15 @@ namespace UnityGLTF
         /// </summary>
         /// <param name="gltfFileName">glTF file relative to data loader path</param>
         /// <param name="externalDataLoader">Loader to load external data references</param>
-        /// <param name="asyncCoroutineHelper">Helper to load coroutines on a seperate thread</param>
-        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper, GLTFThrottlingCounter throttlingCounter) : this(externalDataLoader)
+        /// <param name="throttlingCounter">Used to determine if we should throttle some Main-thread only processes</param>
+        public GLTFSceneImporter(string id, string gltfFileName, ILoader externalDataLoader, GLTFThrottlingCounter throttlingCounter) : this(externalDataLoader)
         {
             _gltfFileName = gltfFileName;
             this.throttlingCounter = throttlingCounter;
             this.id = string.IsNullOrEmpty(id) ? gltfFileName : id;
         }
 
-        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper, GLTFThrottlingCounter throttlingCounter, Stream gltfStream = null) : this(externalDataLoader)
+        public GLTFSceneImporter(string id, GLTFRoot rootNode, ILoader externalDataLoader, GLTFThrottlingCounter throttlingCounter, Stream gltfStream = null) : this(externalDataLoader)
         {
             this.id = id;
             _gltfRoot = rootNode;
