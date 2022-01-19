@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-class RealmTracker
+public class RealmTracker
 {
     HashSet<TrackedRealmInfo> realmListeners = new HashSet<TrackedRealmInfo>();
 

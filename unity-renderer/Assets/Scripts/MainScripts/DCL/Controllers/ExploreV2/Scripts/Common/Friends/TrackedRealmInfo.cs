@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using UnityEngine;
 
-class TrackedRealmInfo : IDisposable
+public class TrackedRealmInfo : IDisposable
 {
     IRealmTrackerHandler view;
 
