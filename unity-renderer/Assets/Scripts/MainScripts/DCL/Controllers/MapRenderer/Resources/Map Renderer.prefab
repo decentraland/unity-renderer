@@ -228,7 +228,6 @@ MonoBehaviour:
   parcelHightlightScale: 1.25
   parcelHoldTimeInSeconds: 1
   ParcelHighlightButton: {fileID: 3511145948971381255}
-  highlight: {fileID: 7765750690706878977}
   cursorMapCoords: {x: 0, y: 0, z: 0}
   showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
@@ -423,7 +422,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6083578241133350518}
   - component: {fileID: 3409671240014069258}
-  - component: {fileID: 7765750690706878977}
   - component: {fileID: 5226131346438990493}
   - component: {fileID: 3511145948971381255}
   m_Layer: 5
@@ -461,24 +459,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6407972158151617183}
   m_CullTransparentMesh: 0
---- !u!114 &7765750690706878977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6407972158151617183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e67762912a5724586d43745585ab8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  builderHighlightTexture: {fileID: 2800000, guid: 78ce4056779883148aee750d30f9911c,
-    type: 3}
-  builderHighlightDisableTexture: {fileID: 2800000, guid: 7a9af2a42b09c8447aeb13743d890b44,
-    type: 3}
-  defaultTexture: {fileID: 2800000, guid: 1aac5e83391d74318b6be345b5ca43aa, type: 3}
-  highlighImage: {fileID: 5226131346438990493}
 --- !u!114 &5226131346438990493
 MonoBehaviour:
   m_ObjectHideFlags: 0

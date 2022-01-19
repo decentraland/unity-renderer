@@ -74,16 +74,16 @@ namespace DCL.Builder
 
         internal void PublishLandScene(IBuilderScene scene)
         {
-            // List<LandWithAccess> landWithAccesses = new List<LandWithAccess>();
-            // foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
-            // {
-            //     if (land.scenes.FirstOrDefault()?.projectId == scene.manifest.project.id)
-            //         landWithAccesses.Add(land);
-            // }
+            List<LandWithAccess> landWithAccesses = new List<LandWithAccess>();
+            foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
+            {
+                if (land.scenes.FirstOrDefault()?.projectId == scene.manifest.project.id)
+                    landWithAccesses.Add(land);
+            }
 
             PublishInfo publishInfo = new PublishInfo();
             publishInfo.rotation = PublishInfo.ProjectRotation.NORTH;
-            publishInfo.coordsToPublish = scene.scene.sceneData.basePosition;
+            publishInfo.landsToPublish = landWithAccesses.ToArray();
             ConfirmDeployment(scene, publishInfo);
         }
 
@@ -158,7 +158,7 @@ namespace DCL.Builder
             {
                 // We notify the success of the deployment
                 progressController.DeploySuccess(builderSceneToDeploy);
-
+                
                 // Remove link to a land if exists
                 builderSceneToDeploy.manifest.project.creation_coords = null;
 
@@ -169,10 +169,10 @@ namespace DCL.Builder
             {
                 progressController.DeployError(message);
             }
-
+            
             string successString = isOk ? "Success" : message;
             BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
-
+            
             builderSceneToDeploy = null;
         }
 
@@ -194,23 +194,17 @@ namespace DCL.Builder
             sceneJson.scene = new CatalystSceneEntityMetadata.Scene();
 
             //  Base Parcels 
-            string baseParcels = info.coordsToPublish.x + "," + info.coordsToPublish.y;
+            string baseParcels = info.landsToPublish[0].baseCoords.x + "," + info.landsToPublish[0].baseCoords.y;
             sceneJson.scene.@base = baseParcels;
 
             //  All parcels 
             string[] parcels = new string[builderScene.scene.sceneData.parcels.Length];
             int cont = 0;
 
-            Vector2Int sceneSize = BIWUtils.GetSceneSize(builderScene.scene);
-            for (int x = 0; x < sceneSize.x; x++)
+            foreach (LandWithAccess landWithAccess in info.landsToPublish)
             {
-                for (int y = 0; y < sceneSize.y; y++)
-                {
-                    parcels[cont] = (info.coordsToPublish.x + x) + "," + (info.coordsToPublish.y + y);
-                    cont++;
-                }
+                parcels[cont] = landWithAccess.baseCoords.x + "," + landWithAccess.baseCoords.y;
             }
-
             sceneJson.scene.parcels = parcels;
 
             //Main
@@ -225,7 +219,7 @@ namespace DCL.Builder
             sceneJson.source.layout = new CatalystSceneEntityMetadata.Source.Layout();
             sceneJson.source.layout.rows = builderScene.manifest.project.rows.ToString();
             sceneJson.source.layout.cols = builderScene.manifest.project.cols.ToString();
-            sceneJson.source.point = info.coordsToPublish;
+            sceneJson.source.point = info.landsToPublish[0].baseCoords;
 
             return sceneJson;
         }

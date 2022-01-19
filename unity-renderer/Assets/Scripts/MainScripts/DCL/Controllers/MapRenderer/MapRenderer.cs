@@ -24,8 +24,6 @@ namespace DCL
         [SerializeField] private float parcelHightlightScale = 1.25f;
         [SerializeField] private float parcelHoldTimeInSeconds = 1f;
         [SerializeField] private Button ParcelHighlightButton;
-        [SerializeField] private MapParcelHighlight highlight;
-
         private float parcelSizeInMap;
         private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
         private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
@@ -90,7 +88,7 @@ namespace DCL
         private bool isInitialized = false;
 
         [HideInInspector]
-        public event System.Action<float, float> OnMovedParcelCursor;
+        public event System.Action OnMovedParcelCursor;
 
         private void Awake()
         {
@@ -148,10 +146,6 @@ namespace DCL
             }
         }
 
-        public void SetHighlighSize(Vector2Int[] parcels) { highlight.ChangeHighlighSize(parcels); }
-
-        public void SetHighlightStyle(MapParcelHighlight.HighlighStyle style) { highlight.SetStyle(style); }
-
         public void OnDestroy() { Cleanup(); }
 
         public void Cleanup()
@@ -165,7 +159,7 @@ namespace DCL
                     Destroy(kvp.Value);
             }
 
-            CleanLandsHighlights();
+            CleanRedLandsHighlights();
 
             scenesOfInterestMarkers.Clear();
 
@@ -184,7 +178,7 @@ namespace DCL
             isInitialized = false;
         }
 
-        public void CleanLandsHighlights()
+        public void CleanRedLandsHighlights()
         {
             foreach (KeyValuePair<Vector2Int, RawImage> kvp in redHighlightedLands)
             {
@@ -195,7 +189,7 @@ namespace DCL
         }
         public void HighlightLandsInRed(List<Vector2Int> landsToHighlight)
         {
-            CleanLandsHighlights();
+            CleanRedLandsHighlights();
 
             foreach (Vector2Int coords in landsToHighlight)
             {
@@ -270,7 +264,7 @@ namespace DCL
 
             if (highlightedParcelText.text != previousText && !Input.GetMouseButton(0))
             {
-                OnMovedParcelCursor?.Invoke(cursorMapCoords.x, cursorMapCoords.y);
+                OnMovedParcelCursor?.Invoke();
             }
 
             // ----------------------------------------------------

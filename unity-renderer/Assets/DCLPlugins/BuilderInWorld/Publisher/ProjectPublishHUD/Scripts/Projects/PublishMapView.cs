@@ -14,9 +14,8 @@ namespace DCL.Builder
     {
         private const int RESET_POSITION_X = -1219;
         private const int RESET_POSITION_Y = -1596;
-
+        
         public event Action<Vector2Int> OnParcelClicked;
-        public event Action<Vector2Int> OnParcelHover;
 
         [Header("References")]
         [SerializeField] internal ScrollRect scrollRect;
@@ -54,8 +53,6 @@ namespace DCL.Builder
             MapRenderer.i.HighlightLandsInRed(landsToHighlight);
         }
 
-        public void SetProjectSize(Vector2Int[] parcels) { MapRenderer.i.SetHighlighSize(parcels); }
-
         public void GoToCoords(Vector2Int coords)
         {
             //Reset scroll
@@ -75,55 +72,36 @@ namespace DCL.Builder
             MapRenderer.i.parcelHighlightEnabled = visible;
 
             if (visible)
-                SetMapRendererInContainer();
+            {
+                minimapViewport = MapRenderer.i.atlas.viewport;
+                mapRendererMinimapParent = MapRenderer.i.transform.parent;
+                atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
+
+                MapRenderer.i.atlas.viewport = scrollRect.viewport;
+                MapRenderer.i.transform.SetParent(scrollRectContentTransform);
+                MapRenderer.i.atlas.UpdateCulling();
+
+                scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
+
+                // Reparent the player icon parent to scroll everything together
+                MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(scrollRect.content);
+
+                UpdateOwnedLands();
+            }
             else
-                RemoveMapRendererFromContainer();
-        }
+            {
+                MapRenderer.i.CleanRedLandsHighlights();
+                MapRenderer.i.atlas.viewport = minimapViewport;
+                MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
+                MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
+                MapRenderer.i.atlas.UpdateCulling();
 
-        public void SetAvailabilityToPublish(bool isAvailable)
-        {
-            var style = isAvailable ? MapParcelHighlight.HighlighStyle.BUILDER_ENABLE : MapParcelHighlight.HighlighStyle.BUILDER_DISABLE;
-            MapRenderer.i.SetHighlightStyle(style);
-        }
+                // Restore the player icon to its original parent
+                MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);
+                (MapRenderer.i.atlas.overlayLayerGameobject.transform as RectTransform).anchoredPosition = Vector2.zero;
 
-        private void ParcelHovered(float x, float y) { OnParcelHover?.Invoke( new Vector2Int(Mathf.RoundToInt(x), Mathf.RoundToInt(y))); }
-
-        private void SetMapRendererInContainer()
-        {
-            minimapViewport = MapRenderer.i.atlas.viewport;
-            mapRendererMinimapParent = MapRenderer.i.transform.parent;
-            atlasOriginalPosition = MapRenderer.i.atlas.chunksParent.transform.localPosition;
-
-            MapRenderer.i.SetHighlightStyle(MapParcelHighlight.HighlighStyle.BUILDER_DISABLE);
-            MapRenderer.i.atlas.viewport = scrollRect.viewport;
-            MapRenderer.i.transform.SetParent(scrollRectContentTransform);
-            MapRenderer.i.atlas.UpdateCulling();
-            MapRenderer.i.OnMovedParcelCursor += ParcelHovered;
-
-            scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
-
-            // Reparent the player icon parent to scroll everything together
-            MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(scrollRect.content);
-
-            UpdateOwnedLands();
-        }
-
-        private void RemoveMapRendererFromContainer()
-        {
-            MapRenderer.i.CleanLandsHighlights();
-            MapRenderer.i.SetHighlightStyle(MapParcelHighlight.HighlighStyle.DEFAULT);
-            MapRenderer.i.atlas.viewport = minimapViewport;
-            MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
-            MapRenderer.i.OnMovedParcelCursor -= ParcelHovered;
-            MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
-            MapRenderer.i.atlas.UpdateCulling();
-
-            // Restore the player icon to its original parent
-            MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);
-            (MapRenderer.i.atlas.overlayLayerGameobject.transform as RectTransform).anchoredPosition = Vector2.zero;
-
-            MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition.Get()));
-
+                MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition.Get()));
+            }
         }
 
         void ParcelSelect(int cursorTileX, int cursorTileY) { OnParcelClicked?.Invoke(new Vector2Int(cursorTileX, cursorTileY)); }
