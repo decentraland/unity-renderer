@@ -433,7 +433,7 @@ namespace UnityGLTF
 
                 if (_assetCache.MeshCache[meshIdIndex][i].MeshAttributes.Count == 0)
                 {
-                    await TaskUtils.Run( () => ConstructMeshAttributes(primitive, meshIdIndex, i, token), cancellationToken: token);
+                    await ConstructMeshAttributes(primitive, meshIdIndex, i, token);
                     
                     if (primitive.Material != null && !pendingImageBuffers.Contains(primitive.Material.Value))
                     {
@@ -771,9 +771,12 @@ namespace UnityGLTF
                     attributeAccessors[SemanticProperties.INDICES] = indexBuilder;
                 }
 
-                GLTFHelpers.BuildMeshAttributes(ref attributeAccessors);
+                await TaskUtils.Run( () =>
+                {
+                    GLTFHelpers.BuildMeshAttributes(ref attributeAccessors);
+                    TransformAttributes(ref attributeAccessors);
+                }, cancellationToken: token);
 
-                TransformAttributes(ref attributeAccessors);
                 _assetCache.MeshCache[meshID][primitiveIndex].MeshAttributes = attributeAccessors;
             }
         }

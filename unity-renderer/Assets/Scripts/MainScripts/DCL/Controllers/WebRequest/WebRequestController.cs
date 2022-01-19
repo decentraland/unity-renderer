@@ -41,6 +41,7 @@ namespace DCL
             this.textureWebRequest = textureWebRequest;
             this.audioClipWebRequest = audioClipWebRequest;
         }
+        public IWebRequestAsyncOperation xzGet(string url, DownloadHandler downloadHandler = null, Action<IWebRequestAsyncOperation> OnSuccess = null, Action<IWebRequestAsyncOperation> OnFail = null, int requestAttemps = 3, int timeout = 0, bool disposeOnCompleted = true, Dictionary<string, string> headers = null) { throw new NotImplementedException(); }
 
         public IWebRequestAsyncOperation Get(
             string url,
@@ -170,6 +171,7 @@ namespace DCL
                     }
                     else
                     {
+                        Debug.LogWarning($"[{resultOp.webRequest.error}] {url}");
                         OnFail?.Invoke(resultOp);
                         resultOp.SetAsCompleted(false);
                     }

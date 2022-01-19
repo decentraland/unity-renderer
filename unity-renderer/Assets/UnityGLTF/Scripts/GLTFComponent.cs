@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using DCL;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace UnityGLTF
     {
         private static bool VERBOSE = false;
 
-        private static int maxSimultaneousDownloads = 10;
+        private static int maxSimultaneousDownloads = 20;
 
         public static int downloadingCount;
         public static event Action OnDownloadingProgressUpdate;
@@ -258,22 +259,27 @@ namespace UnityGLTF
                     sceneImporter.OnMeshCreated += meshCreatedCallback;
                     sceneImporter.OnRendererCreated += rendererCreatedCallback;
 
-                    queueCount++;
+                    Debug.Log($"Enqueueing {GLTFUri}... Queue: {queueCount} Concurrent downloads {downloadingCount} was forced: {prioritizeDownload}");
 
-                    state = State.QUEUED;
-                    downloadQueueHandler.Queue(this);
+                    EnqueueDownload();
+
                     await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
                     token.ThrowIfCancellationRequested();
 
-                    queueCount--;
+                    if (downloadingCount > maxSimultaneousDownloads)
+                    {
+                        var canDownload = downloadQueueHandler.CanDownload(this);
+                    }
+
+                    RemoveFromQueue();
 
                     IncrementDownloadCount();
-
                     state = State.DOWNLOADING;
-                    downloadQueueHandler.Dequeue(this);
 
                     if (transform != null)
                     {
+                        Debug.Log($"Downloading {GLTFUri}... Queue: {queueCount} Concurrent downloads {downloadingCount} can download? {downloadQueueHandler.CanDownload(this)}");
+
                         await sceneImporter.LoadScene(token);
                         token.ThrowIfCancellationRequested();
 
@@ -289,6 +295,8 @@ namespace UnityGLTF
                     }
                     state = State.COMPLETED;
                     DecrementDownloadCount();
+                    Debug.Log($"Downloading {GLTFUri} Finished. Queue: {queueCount} Concurrent downloads {downloadingCount} was forced: {prioritizeDownload}");
+
                 }
                 catch (Exception e)
                 {
@@ -321,12 +329,24 @@ namespace UnityGLTF
 
                     Destroy(loadingPlaceholder);
                     Destroy(this);
+                    CleanUp();
                 }
             }
             else
             {
                 Debug.Log("couldn't load GLTF because url is empty");
             }
+        }
+        private void RemoveFromQueue()
+        {
+            queueCount--;
+            downloadQueueHandler.Dequeue(this);
+        }
+        private void EnqueueDownload()
+        {
+            queueCount++;
+            state = State.QUEUED;
+            downloadQueueHandler.Queue(this);
         }
 
         public void Load(string url) { throw new NotImplementedException(); }
@@ -354,11 +374,19 @@ namespace UnityGLTF
             if (isQuitting)
                 return;
 #endif
+            if (state != State.COMPLETED)
+            {
+                ctokenSource.Cancel();
+                ctokenSource.Dispose();
+            }
+        }
+        private void CleanUp()
+        {
             sceneImporter?.Dispose();
 
             if (state == State.QUEUED)
             {
-                queueCount--;
+                RemoveFromQueue();
             }
 
             if (state == State.DOWNLOADING)
@@ -366,25 +394,27 @@ namespace UnityGLTF
                 DecrementDownloadCount();
             }
 
-            ctokenSource.Cancel();
-            ctokenSource.Dispose();
-
-            downloadQueueHandler.Dequeue(this);
-
             if (!alreadyLoadedAsset)
             {
                 OnFail_Internal(null);
-                return;
             }
-            DecrementDownloadCount();
         }
 
         bool IDownloadQueueElement.ShouldPrioritizeDownload() { return prioritizeDownload; }
 
-        bool IDownloadQueueElement.ShouldForceDownload() { return mainCamera == null; }
+        bool IDownloadQueueElement.ShouldForceDownload()
+        {
+#if UNITY_EDITOR_OSX
+            return false;
+#endif
+            return mainCamera == null;
+        }
 
         float IDownloadQueueElement.GetSqrDistance()
         {
+            if (mainCamera == null)
+                return 0;
+            
             Vector3 cameraPosition = mainCamera.transform.position;
             Vector3 gltfPosition = transform.position;
             gltfPosition.y = cameraPosition.y;
