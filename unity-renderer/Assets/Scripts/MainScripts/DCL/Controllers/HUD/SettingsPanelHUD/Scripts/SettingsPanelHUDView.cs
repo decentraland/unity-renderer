@@ -25,6 +25,7 @@ namespace DCL.SettingsPanelHUD
         [SerializeField] private Button resetAllOkButton;
         [SerializeField] private Button resetAllCancelButton;
         [SerializeField] private GameObject resetAllBlackOverlay;
+        [SerializeField] internal InputAction_Trigger closeResetAllAction;
 
         [Header("Open/Close Settings")]
         [SerializeField] private Button closeButton;
@@ -70,6 +71,7 @@ namespace DCL.SettingsPanelHUD
             this.settingsPanelController = settingsPanelController;
 
             openAction.OnTriggered += OpenAction_OnTriggered;
+            closeResetAllAction.OnTriggered += CloseResetAllAction_OnTriggered;
 
             resetAllButton.onClick.AddListener(ShowResetAllConfirmation);
             resetAllCancelButton.onClick.AddListener(HideResetAllConfirmation);
@@ -98,6 +100,7 @@ namespace DCL.SettingsPanelHUD
         private void OnDestroy()
         {
             openAction.OnTriggered -= OpenAction_OnTriggered;
+            closeResetAllAction.OnTriggered -= CloseResetAllAction_OnTriggered;
 
             if (settingsAnimator)
                 settingsAnimator.OnWillFinishHide -= OnFinishHide;
@@ -203,6 +206,11 @@ namespace DCL.SettingsPanelHUD
         {
             Utils.UnlockCursor();
             hudController.SetVisibility(!isOpen);
+        }
+
+        private void CloseResetAllAction_OnTriggered(DCLAction_Trigger action)
+        {
+            HideResetAllConfirmation();
         }
 
         private void OnFinishHide(ShowHideAnimator animator) { mainWindow.SetActive(false); }

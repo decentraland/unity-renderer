@@ -489,9 +489,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
-        if (DataStore.i.exploreV2.isSomeModalOpen.Get())
-            return;
-
         if (isOpen.Get())
             exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
 

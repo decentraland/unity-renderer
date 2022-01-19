@@ -274,6 +274,8 @@ MonoBehaviour:
   resetAllOkButton: {fileID: 3689218334276754076}
   resetAllCancelButton: {fileID: 7439851785821442718}
   resetAllBlackOverlay: {fileID: 2343336915888927456}
+  closeResetAllAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b,
+    type: 2}
   closeButton: {fileID: 636651055379034414}
   backgroundButton: {fileID: 4819849137068859271}
   openAction: {fileID: 11400000, guid: 6f31c2fc30264d64db048fa133946cfa, type: 2}
