@@ -14,35 +14,16 @@ namespace DCL
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
-            var isAsync = !Configuration.EnvironmentSettings.RUNNING_TESTS 
-                          && DataStore.i.multithreading.enabled.Get();
-#if !UNITY_STANDALONE
-                isAsync = false;
-#endif
-            if (isAsync)
-            {
-                var processor = new GifProcessorAsync(url);
-                asset.processor = processor;
-                processor.Load(frames =>
+            var processor = new GifProcessor(url);
+            asset.processor = processor;
+            loadingRoutine = CoroutineStarter.Start(
+                processor.Load(
+                    frames =>
                     {
                         asset.frames = frames;
-                        OnSuccess?.Invoke();
-                    },
-                    OnFail);
-            }
-            else
-            {
-                var processor = new GifProcessor(url);
-                asset.processor = processor;
-                loadingRoutine = CoroutineStarter.Start(
-                    processor.Load(
-                        frames =>
-                        {
-                            asset.frames = frames;
 
-                            OnSuccess?.Invoke();
-                        }, OnFail));
-            }
+                        OnSuccess?.Invoke();
+                    }, OnFail));
         }
 
         protected override void OnCancelLoading()
