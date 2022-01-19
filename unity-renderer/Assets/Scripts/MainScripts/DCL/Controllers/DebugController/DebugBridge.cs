@@ -131,6 +131,12 @@ namespace DCL
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
             DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
         }
+        
+        public void ToggleSceneColliders(string payload)
+        {
+            ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);
+            DataStore.i.debugConfig.showSceneColliders.AddOrSet(data.sceneId, data.enabled);
+        }
 
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]

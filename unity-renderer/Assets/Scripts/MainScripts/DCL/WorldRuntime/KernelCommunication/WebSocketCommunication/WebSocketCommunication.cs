@@ -142,6 +142,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["RemoveBot"] = "Main";
         messageTypeToBridgeName["ClearBots"] = "Main";
         messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
+        messageTypeToBridgeName["ToggleSceneColliders"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 
