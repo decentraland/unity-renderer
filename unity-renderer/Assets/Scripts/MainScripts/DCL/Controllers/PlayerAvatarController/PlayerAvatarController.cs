@@ -121,13 +121,18 @@ public class PlayerAvatarController : MonoBehaviour
         avatarLoadingCts?.Cancel();
         avatarLoadingCts?.Dispose();
         avatarLoadingCts = new CancellationTokenSource();
-        LoadingRoutine(profile, avatarLoadingCts.Token);
+        LoadingAvatarRoutine(profile, avatarLoadingCts.Token);
     }
 
-    private async UniTaskVoid LoadingRoutine(UserProfile profile, CancellationToken ct)
+    private async UniTaskVoid LoadingAvatarRoutine(UserProfile profile, CancellationToken ct)
     {
-        ct.ThrowIfCancellationRequested();
+        if (string.IsNullOrEmpty(profile.avatar.bodyShape) || profile.avatar.wearables == null)
+        {
+            avatar.Dispose();
+            return;
+        }
 
+        ct.ThrowIfCancellationRequested();
         if (avatar.status != IAvatar.Status.Loaded || !profile.avatar.HaveSameWearablesAndColors(currentAvatar))
         {
             try
