@@ -2,7 +2,6 @@
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using MainScripts.DCL.GLTF;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

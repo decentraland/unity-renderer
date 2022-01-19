@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DCL.Controllers;
-using MainScripts.DCL.GLTF;
 using UnityEngine;
+using UnityGLTF;
 
 namespace DCL
 {

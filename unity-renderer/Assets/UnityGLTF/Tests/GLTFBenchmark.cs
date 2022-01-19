@@ -1,6 +1,5 @@
 using DCL.Helpers;
 using System.Collections;
-using MainScripts.DCL.GLTF;
 using UnityEngine;
 using UnityGLTF;
 
