@@ -119,7 +119,6 @@ namespace DCL
                 logger.LogError("AvatarMeshCombiner", "Combine failed!");
                 return false;
             }
-
             Transform rootBone = bonesContainer.rootBone;
 
             if ( container == null )

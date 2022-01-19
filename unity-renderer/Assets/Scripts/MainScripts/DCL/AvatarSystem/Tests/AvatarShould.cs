@@ -109,7 +109,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator FinishProperly() => UniTask.ToCoroutine(async () =>
+        public IEnumerator FinishSuccessfully() => UniTask.ToCoroutine(async () =>
         {
             var settings = new AvatarSettings { bodyshapeId = "bodyshapeId" };
             SkinnedMeshRenderer combinedRenderer = CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>();

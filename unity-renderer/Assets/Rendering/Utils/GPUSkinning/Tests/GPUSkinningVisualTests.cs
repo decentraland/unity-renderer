@@ -108,7 +108,6 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
         combiner.container.transform.SetParent(rends[0].transform.parent);
         combiner.container.transform.localPosition = rends[0].transform.localPosition;
-        yield break;
     }
 
     protected override IEnumerator TearDown()

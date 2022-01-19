@@ -55,7 +55,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void GetNewLoaders_WhenEmptyCurrentLoaders()
+        public void GetNewLoadersWhenThereWerentCurrentLoaders()
         {
             //Arrange
             List<WearableItem> items = new List<WearableItem>()
@@ -85,7 +85,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void GetNewLoaders_WhenSomethingToReuse()
+        public void GetNewLoadersWhenThereWasReusableLoaders()
         {
             //Arrange
             List<WearableItem> items = new List<WearableItem>()
@@ -118,7 +118,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void GetNewLoaders_WhenSomethingNotReusable()
+        public void GetNewLoadersAndNotReusableLoaderWhenThereWasAnObsoleteLoader()
         {
             //Arrange
             List<WearableItem> items = new List<WearableItem>()
@@ -152,7 +152,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void ComposeStatus_AllSucceeded()
+        public void ComposeStatusWithAllLoadersSucceded()
         {
             //Arrange
             WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } };
@@ -173,7 +173,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void ComposeStatus_NoRequiredFailed()
+        public void ComposeStatusWithNonRequiredLoadersFailed()
         {
             //Arrange
             WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } };
@@ -194,7 +194,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void ComposeStatus_RequiredFailed()
+        public void ComposeStatusWithRequiredLoadersFailed()
         {
             //Arrange
             WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } };

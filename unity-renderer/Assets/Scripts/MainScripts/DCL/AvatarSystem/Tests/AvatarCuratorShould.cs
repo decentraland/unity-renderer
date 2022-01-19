@@ -6,6 +6,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using NSubstitute;
+using NSubstitute.Core;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -22,7 +23,7 @@ namespace Test.AvatarSystem
         [SetUp]
         public void SetUp()
         {
-            PrepareWearablesDictionary();
+            SetupWearableCatalog();
 
             resolver = Substitute.For<IWearableItemResolver>();
 
@@ -31,65 +32,17 @@ namespace Test.AvatarSystem
                     .Resolve(Arg.Any<IEnumerable<string>>())
                     .Returns( x =>
                     {
-                        List<WearableItem> toReturn = new List<WearableItem>();
-                        var ids = x.ArgAt<IEnumerable<string>>(0);
-                        foreach (string id in ids)
-                        {
-                            if (!catalog.TryGetValue(id, out var wearable))
-                                continue;
-                            toReturn.Add(wearable);
-                        }
-                        return new UniTask<WearableItem[]>(toReturn.ToArray());
+                        WearableItem[] wearables = GetWearablesFromIDs(x.ArgAt<IEnumerable<string>>(0));
+                        return new UniTask<WearableItem[]>(wearables);
                     });
             resolver.Configure()
                     .Resolve(Arg.Any<string>())
                     .Returns( x =>
                     {
-                        string id = x.ArgAt<string>(0);
-                        if (!catalog.TryGetValue(id, out WearableItem wearable))
-                            return new UniTask<WearableItem>(null);
-
+                        WearableItem wearable = GetWearableFromID(x.ArgAt<string>(0));
                         return new UniTask<WearableItem>(wearable);
                     });
             curator = new AvatarCurator(resolver);
-        }
-        private void PrepareWearablesDictionary()
-        {
-            catalog = new Dictionary<string, WearableItem>();
-            catalog.Add(WearableLiterals.BodyShapes.FEMALE, GetWearableForFemaleBodyshape(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.BODY_SHAPE));
-            catalog.Add("ubody_id",  GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.UPPER_BODY));
-            catalog.Add("lbody_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.LOWER_BODY));
-            catalog.Add("eyes_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.EYES));
-            catalog.Add("eyebrows_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.EYEBROWS));
-            catalog.Add("mouth_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.MOUTH));
-
-            catalog.Add("feet_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.FEET));
-            catalog.Add("hair_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.HAIR));
-
-            // Fill with default wearables
-            foreach (((string bodyshapeId, string category), string id) in DefaultWearables.defaultWearables)
-            {
-                catalog.Add(id, GetWearableForFemaleBodyshape(id, category));
-            }
-        }
-
-        private WearableItem GetWearableForFemaleBodyshape(string id, string category)
-        {
-            return new WearableItem
-            {
-                id = id,
-                data = new WearableItem.Data
-                {
-                    category = category,
-                    representations = new []
-                    {
-                        new WearableItem.Representation
-                        {
-                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                        }
-                    },
-                }
-            };
         }
 
         [UnityTest]
@@ -158,7 +111,7 @@ namespace Test.AvatarSystem
         });
 
         [Test]
-        public void DisposeResolverProperly()
+        public void DisposeResolver()
         {
             //Act
             curator.Dispose();
@@ -169,5 +122,62 @@ namespace Test.AvatarSystem
 
         [TearDown]
         public void TearDown() { curator.Dispose(); }
+
+        private WearableItem[] GetWearablesFromIDs(IEnumerable<string> ids)
+        {
+            List<WearableItem> toReturn = new List<WearableItem>();
+            foreach (string id in ids)
+            {
+                if (!catalog.TryGetValue(id, out var wearable))
+                    continue;
+                toReturn.Add(wearable);
+            }
+            return toReturn.ToArray();
+        }
+
+        private WearableItem GetWearableFromID(string id)
+        {
+            catalog.TryGetValue(id, out WearableItem wearable);
+            return wearable;
+        }
+
+        private void SetupWearableCatalog()
+        {
+            catalog = new Dictionary<string, WearableItem>();
+            catalog.Add(WearableLiterals.BodyShapes.FEMALE, GetWearableForFemaleBodyshape(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.BODY_SHAPE));
+            catalog.Add("ubody_id",  GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.UPPER_BODY));
+            catalog.Add("lbody_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.LOWER_BODY));
+            catalog.Add("eyes_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.EYES));
+            catalog.Add("eyebrows_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.EYEBROWS));
+            catalog.Add("mouth_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.MOUTH));
+
+            catalog.Add("feet_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.FEET));
+            catalog.Add("hair_id", GetWearableForFemaleBodyshape("ubody", WearableLiterals.Categories.HAIR));
+
+            // Fill with default wearables
+            foreach (((string bodyshapeId, string category), string id) in DefaultWearables.defaultWearables)
+            {
+                catalog.Add(id, GetWearableForFemaleBodyshape(id, category));
+            }
+        }
+
+        private WearableItem GetWearableForFemaleBodyshape(string id, string category)
+        {
+            return new WearableItem
+            {
+                id = id,
+                data = new WearableItem.Data
+                {
+                    category = category,
+                    representations = new []
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
+                        }
+                    },
+                }
+            };
+        }
     }
 }

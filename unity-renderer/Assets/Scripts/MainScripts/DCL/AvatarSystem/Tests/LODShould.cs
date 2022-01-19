@@ -37,7 +37,7 @@ namespace Test.AvatarSystem
         [Test]
         [TestCase(1, 0, 0)]
         [TestCase(0, 1, 0)]
-        public void TintImpostorProperly(float r, float g, float b)
+        public void TintImpostor(float r, float g, float b)
         {
             Color impostorColor = lod.impostorRenderer.material.GetColor(BASE_COLOR);
             Color color = new Color(r, g, b, impostorColor.a); //alpha is ignored
@@ -47,7 +47,7 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void MakeTheBillboardLookAtProperly()
+        public void MakeTheBillboardLookAt()
         {
             GameObject lookAtTarget = new GameObject("look at target");
             lookAtTarget.transform.position = impostorContainer.transform.position + (Vector3.forward * 2);
@@ -65,7 +65,7 @@ namespace Test.AvatarSystem
         [TestCase(0, true)]
         [TestCase(1, false)]
         [TestCase(2, false)]
-        public void UpdateSSAOProperly(int lodIndex, bool enabled)
+        public void UpdateScreenSpaceAmbientOclussion(int lodIndex, bool enabled)
         {
             var renderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>();
 

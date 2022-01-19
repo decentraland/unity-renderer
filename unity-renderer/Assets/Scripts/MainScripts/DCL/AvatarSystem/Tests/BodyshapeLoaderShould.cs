@@ -129,7 +129,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingBodyshape_FromThrow() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenBodyshapeRetrieverFails() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.Configure()
@@ -145,7 +145,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingBodyshape_FromNull() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenBodyshapeRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(x => null);
@@ -162,7 +162,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingFacialFeature_FromThrow_Eyes() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenEyesRetrieverFails() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.eyesRetriever.Configure()
@@ -178,7 +178,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingFacialFeature_FromThrow_Eyebrows() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenEyebrowsRetrieverFails() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.eyebrowsRetriever.Configure()
@@ -194,7 +194,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingFacialFeature_FromThrow_Mouth() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenMouthRetrieverFails() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.mouthRetriever.Configure()
@@ -210,7 +210,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingFacialFeature_FromNull_Eyes() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenEyesRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.eyesRetriever.Configure()
@@ -226,7 +226,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingFacialFeature_FromNull_Eyebrows() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenEyebrowsRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.eyebrowsRetriever.Configure()
@@ -242,7 +242,7 @@ namespace Test.AvatarSystem
         });
 
         [UnityTest]
-        public IEnumerator ThrowsIfFailingFacialFeature_FromNull_Mouth() => UniTask.ToCoroutine(async () =>
+        public IEnumerator ThrowWhenMouthRetrieverReturnsNull() => UniTask.ToCoroutine(async () =>
         {
             //Arrange
             bodyshapeLoader.mouthRetriever.Configure()

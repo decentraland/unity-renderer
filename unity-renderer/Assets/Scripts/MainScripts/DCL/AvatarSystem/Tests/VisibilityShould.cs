@@ -32,7 +32,7 @@ namespace Test.AvatarSystem
         [TestCase(false, true, false, false)]
         [TestCase(false, false, true, false)]
         [TestCase(true, true, true, true)]
-        public void SetVisibilityProperlyForCombinedRenderer(bool loadingReady, bool explicitVisibility, bool combinedRendererVisibility, bool expected)
+        public void SetVisibilityForCombinedRenderer(bool loadingReady, bool explicitVisibility, bool combinedRendererVisibility, bool expected)
         {
             visibility.SetLoadingReady(loadingReady);
             visibility.SetExplicitVisibility(explicitVisibility);
@@ -47,7 +47,7 @@ namespace Test.AvatarSystem
         [TestCase(false, true, false, false)]
         [TestCase(false, false, true, false)]
         [TestCase(true, true, true, true)]
-        public void SetVisibilityProperlyForFacialFeatures(bool loadingReady, bool explicitVisibility, bool facialFeaturesVisibility, bool expected)
+        public void SetVisibilityForFacialFeatures(bool loadingReady, bool explicitVisibility, bool facialFeaturesVisibility, bool expected)
         {
             visibility.SetLoadingReady(loadingReady);
             visibility.SetExplicitVisibility(explicitVisibility);
