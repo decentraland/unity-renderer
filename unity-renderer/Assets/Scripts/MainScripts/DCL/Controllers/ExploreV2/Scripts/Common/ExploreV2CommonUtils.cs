@@ -1,7 +1,7 @@
 /// <summary>
-/// Helpers related to the events management in ExploreV2.
+/// Utils related to the events management in ExploreV2.
 /// </summary>
-public static class ExploreV2CommonHelpers
+public static class ExploreV2CommonUtils
 {
     /// <summary>
     /// Converts a number to string using up to 2 decimals if needed.

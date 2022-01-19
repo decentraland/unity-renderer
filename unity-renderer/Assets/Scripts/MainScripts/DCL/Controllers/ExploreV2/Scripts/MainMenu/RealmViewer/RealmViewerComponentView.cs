@@ -70,7 +70,7 @@ public class RealmViewerComponentView : BaseComponentView, IRealmViewerComponent
         if (numberOfusers == null)
             return;
 
-        numberOfusers.text = ExploreV2CommonHelpers.FormatNumberToString(newNumberOfUsers);
+        numberOfusers.text = ExploreV2CommonUtils.FormatNumberToString(newNumberOfUsers);
 
         RebuildLayouts();
     }

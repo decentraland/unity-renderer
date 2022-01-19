@@ -149,7 +149,7 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
         if (playersText == null)
             return;
 
-        playersText.text = ExploreV2CommonHelpers.FormatNumberToString(numberOfPlayers);
+        playersText.text = ExploreV2CommonUtils.FormatNumberToString(numberOfPlayers);
     }
 
     public void SetAsConnected(bool isConnected)
