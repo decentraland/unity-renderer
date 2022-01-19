@@ -406,7 +406,7 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         List<BaseComponentView> itemsToDestroy = ExtractItems();
         foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
-            Destroy(itemToDestroy.gameObject);
+            DestroyImmediate(itemToDestroy.gameObject);
         }
         itemsToDestroy.Clear();
 
