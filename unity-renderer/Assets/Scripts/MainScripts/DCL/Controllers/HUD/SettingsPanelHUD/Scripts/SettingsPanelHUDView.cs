@@ -48,10 +48,11 @@ namespace DCL.SettingsPanelHUD
 
         private const string PATH = "SettingsPanelHUD";
         private const float WORLD_PREVIEW_MIN_WIDTH_TO_BE_SHOWED = 200f;
+        private const float WORLD_PREVIEW_ORIGINAL_WIDTH = 400f;
+        private const float WORLD_PREVIEW_ORIGINAL_HEIGHT = 360f;
 
         private IHUD hudController;
         private ISettingsPanelHUDController settingsPanelController;
-        private Vector2 originalWorldPreviewWindowSize;
 
         public event System.Action OnRestartTutorial;
         public event System.Action OnHelpAndSupportClicked;
@@ -84,8 +85,8 @@ namespace DCL.SettingsPanelHUD
 
             tutorialButton.onClick.AddListener(() => OnRestartTutorial?.Invoke());
 
-            originalWorldPreviewWindowSize = worldPreviewWindowTransform.rect.size;
             DataStore.i.screen.size.OnChange += ScreenSizeChanged;
+            ScreenSizeChanged(DataStore.i.screen.size.Get(), Vector2Int.zero);
         }
 
         public void Initialize(IHUD hudController, ISettingsPanelHUDController settingsPanelController, SettingsSectionList sections)
@@ -215,7 +216,7 @@ namespace DCL.SettingsPanelHUD
         {
             yield return null;
 
-            float newHeight = worldPreviewWindowTransform.rect.size.x * originalWorldPreviewWindowSize.y / originalWorldPreviewWindowSize.x;
+            float newHeight = worldPreviewWindowTransform.rect.size.x * WORLD_PREVIEW_ORIGINAL_HEIGHT / WORLD_PREVIEW_ORIGINAL_WIDTH;
 
             worldPreviewWindowTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Vertical,
