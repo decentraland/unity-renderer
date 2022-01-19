@@ -278,8 +278,8 @@ MonoBehaviour:
   backgroundButton: {fileID: 4819849137068859271}
   openAction: {fileID: 11400000, guid: 6f31c2fc30264d64db048fa133946cfa, type: 2}
   worldPreviewWindowTransform: {fileID: 1176613563678431756}
-  worldPreviewRawImage: {fileID: 2191989629373033612}
   worldPreviewCanvasGroup: {fileID: 5635322980749407413}
+  worldPreviewRawImage: {fileID: 2191989629373033612}
   tutorialButton: {fileID: 3925351393142990170}
   reportBugButton: {fileID: 4794479746615010920}
   helpAndSupportButton: {fileID: 5637693271798556258}
@@ -3050,7 +3050,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 1129.7727, y: -85}
-  m_SizeDelta: {x: -1199.7727, y: 280}
+  m_SizeDelta: {x: -1199.7727, y: 360}
   m_Pivot: {x: 0, y: 1}
 --- !u!225 &5635322980749407413
 CanvasGroup:
