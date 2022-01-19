@@ -220,10 +220,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
 
         if (realmSelectorModal != null)
-        {
             realmSelectorModal.Dispose();
-            Destroy(realmSelectorModal.gameObject);
-        }
     }
 
     public void SetVisible(bool isActive)
