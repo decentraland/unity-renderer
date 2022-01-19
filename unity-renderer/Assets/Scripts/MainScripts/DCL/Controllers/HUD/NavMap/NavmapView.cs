@@ -49,8 +49,7 @@ namespace DCL
             toastView.OnGotoClicked += () => navmapVisible.Set(false);
 
             MapRenderer.OnParcelClicked += TriggerToast;
-            MapRenderer.OnParcelHold += TriggerToast;
-            MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
+            MapRenderer.OnCursorFarFromParcel += () => { toastView.OnCloseClick(); };
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
             closeAction.OnTriggered += OnCloseAction;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
@@ -73,7 +72,6 @@ namespace DCL
         private void OnDestroy()
         {
             MapRenderer.OnParcelClicked -= TriggerToast;
-            MapRenderer.OnParcelHold -= TriggerToast;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             closeAction.OnTriggered += OnCloseAction;

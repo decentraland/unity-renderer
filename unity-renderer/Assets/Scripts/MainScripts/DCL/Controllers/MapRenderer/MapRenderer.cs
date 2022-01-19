@@ -17,20 +17,18 @@ namespace DCL
         const int WORLDMAP_WIDTH_IN_PARCELS = 300;
         const string MINIMAP_USER_ICONS_POOL_NAME = "MinimapUserIconsPool";
         const int MINIMAP_USER_ICONS_MAX_PREWARM = 30;
+        private const int MAX_CURSOR_PARCEL_DISTANCE = 40;
         private int NAVMAP_CHUNK_LAYER;
 
         public static MapRenderer i { get; private set; }
 
         [SerializeField] private float parcelHightlightScale = 1.25f;
-        [SerializeField] private float parcelHoldTimeInSeconds = 1f;
         [SerializeField] private Button ParcelHighlightButton;
         private float parcelSizeInMap;
         private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
         private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
         private Vector3[] mapWorldspaceCorners = new Vector3[4];
         private Vector3 worldCoordsOriginInMap;
-        private Vector3 lastCursorMapCoords;
-        private float parcelHoldCountdown;
         private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
         private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
 
@@ -58,6 +56,7 @@ namespace DCL
         private Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
         private Dictionary<string, PoolableObject> usersInfoMarkers = new Dictionary<string, PoolableObject>();
 
+        private Vector3 lastClickedCursorMapCoords;
         private Pool usersInfoPool;
 
         private bool parcelHighlightEnabledValue = false;
@@ -78,8 +77,7 @@ namespace DCL
         }
 
         public static System.Action<int, int> OnParcelClicked;
-        public static System.Action<int, int> OnParcelHold;
-        public static System.Action OnParcelHoldCancel;
+        public static System.Action OnCursorFarFromParcel;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
@@ -115,8 +113,6 @@ namespace DCL
             playerRotation.OnChange += OnCharacterRotate;
 
             parcelHighlightImage.rectTransform.localScale = new Vector3(parcelHightlightScale, parcelHightlightScale, 1f);
-
-            parcelHoldCountdown = parcelHoldTimeInSeconds;
 
             usersPositionMarkerController = new MapGlobalUsersPositionMarkerController(globalUserMarkerPrefab,
                 globalUserMarkerContainer,
@@ -190,8 +186,6 @@ namespace DCL
             UpdateParcelHighlight();
 
             UpdateParcelHold();
-
-            lastCursorMapCoords = cursorMapCoords;
         }
 
         void UpdateCursorMapCoords()
@@ -244,24 +238,9 @@ namespace DCL
 
         void UpdateParcelHold()
         {
-            if (cursorMapCoords == lastCursorMapCoords)
+            if(Vector3.Distance(lastClickedCursorMapCoords, cursorMapCoords) > MAX_CURSOR_PARCEL_DISTANCE)
             {
-                if (parcelHoldCountdown <= 0f)
-                    return;
-
-                parcelHoldCountdown -= Time.deltaTime;
-
-                if (parcelHoldCountdown <= 0)
-                {
-                    parcelHoldCountdown = 0f;
-                    highlightedParcelText.text = string.Empty;
-                    OnParcelHold?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
-                }
-            }
-            else
-            {
-                parcelHoldCountdown = parcelHoldTimeInSeconds;
-                OnParcelHoldCancel?.Invoke();
+                OnCursorFarFromParcel?.Invoke();
             }
         }
 
@@ -389,6 +368,7 @@ namespace DCL
         public void ClickMousePositionParcel()
         {
             highlightedParcelText.text = string.Empty;
+            lastClickedCursorMapCoords = new Vector3((int)cursorMapCoords.x, (int)cursorMapCoords.y, 0);
             OnParcelClicked?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
         }
     }

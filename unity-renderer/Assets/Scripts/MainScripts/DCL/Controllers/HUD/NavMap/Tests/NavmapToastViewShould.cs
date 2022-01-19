@@ -11,14 +11,24 @@ namespace Tests
     {
         NavmapToastView navmapToastView;
         private NavmapView navmapView;
+        private MinimapHUDController controller;
 
+        protected override List<GameObject> SetUp_LegacySystems()
+        {
+            List<GameObject> result = new List<GameObject>();
+            result.Add(MainSceneFactory.CreateNavMap());
+            return result;
+        }
+        
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             yield return null;
 
+            controller = new MinimapHUDController();
             navmapView = Object.FindObjectOfType<NavmapView>();
+            Debug.Log("Navmapview is null? " + navmapView);
             navmapToastView = navmapView.toastView;
 
             if (!DataStore.i.HUDs.navmapVisible.Get())
@@ -27,12 +37,11 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
+            controller.Dispose();
             yield return base.TearDown();
         }
 
         [Test]
-        [Explicit("Broke with Legacy suite refactor, fix later")]
-        [Category("Explicit")]
         public void CloseWhenCloseButtonIsClicked()
         {
             var sceneInfo = new MinimapMetadata.MinimapSceneInfo()
