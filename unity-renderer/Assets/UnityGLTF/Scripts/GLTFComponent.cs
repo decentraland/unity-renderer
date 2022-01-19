@@ -92,10 +92,10 @@ namespace UnityGLTF
         private IWebRequestController webRequestController;
         private bool prioritizeDownload = false;
         private string baseUrl = "";
-        
+
         private Action<Mesh> meshCreatedCallback;
         private Action<Renderer> rendererCreatedCallback;
-        
+
         private Settings settings;
 
         private readonly CancellationTokenSource ctokenSource = new CancellationTokenSource();
@@ -140,7 +140,7 @@ namespace UnityGLTF
                 .AttachExternalCancellation(cancellationToken)
                 .Forget();
         }
-        
+
         public void RegisterCallbacks(Action<Mesh> meshCreated, Action<Renderer> rendererCreated)
         {
             rendererCreatedCallback = rendererCreated;
@@ -173,7 +173,7 @@ namespace UnityGLTF
                 return;
 
             state = State.FAILED;
-            
+
             OnFailedLoadingAsset?.Invoke(exception);
 
             if (exception != null)
@@ -236,7 +236,6 @@ namespace UnityGLTF
                         id,
                         GLTFUri,
                         loader,
-                        asyncCoroutineHelper, 
                         throttlingCounter
                     );
 
@@ -248,20 +247,16 @@ namespace UnityGLTF
                     sceneImporter.SceneParent = gameObject.transform;
                     sceneImporter.Collider = Collider;
                     sceneImporter.maximumLod = MaximumLod;
-                    sceneImporter.Timeout = Timeout;
-                    sceneImporter.isMultithreaded = DataStore.i.multithreading.enabled.Get();
                     sceneImporter.useMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.initialVisibility = initialVisibility;
                     sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
-                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh && DataStore.i.featureFlags.flags.Get()
-                        .IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
-                    
+                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
+                                                     && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+
                     sceneImporter.OnMeshCreated += meshCreatedCallback;
                     sceneImporter.OnRendererCreated += rendererCreatedCallback;
-
-                    float time = Time.realtimeSinceStartup;
 
                     queueCount++;
 
@@ -269,7 +264,7 @@ namespace UnityGLTF
                     downloadQueueHandler.Queue(this);
                     await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
                     token.ThrowIfCancellationRequested();
-                    
+
                     queueCount--;
 
                     IncrementDownloadCount();
@@ -281,7 +276,7 @@ namespace UnityGLTF
                     {
                         await sceneImporter.LoadScene(token);
                         token.ThrowIfCancellationRequested();
-                        
+
                         // Override the shaders on all materials if a shader is provided
                         if (shaderOverride != null)
                         {
@@ -315,8 +310,6 @@ namespace UnityGLTF
                             sceneImporter?.Dispose();
                             sceneImporter = null;
                         }
-
-                        loader = null;
                     }
 
                     alreadyLoadedAsset = true;
@@ -361,10 +354,7 @@ namespace UnityGLTF
             if (isQuitting)
                 return;
 #endif
-            if (sceneImporter != null)
-            {
-                sceneImporter.Dispose();
-            }
+            sceneImporter?.Dispose();
 
             if (state == State.QUEUED)
             {
@@ -375,10 +365,9 @@ namespace UnityGLTF
             {
                 DecrementDownloadCount();
             }
-            
+
             ctokenSource.Cancel();
             ctokenSource.Dispose();
-            
 
             downloadQueueHandler.Dequeue(this);
 
