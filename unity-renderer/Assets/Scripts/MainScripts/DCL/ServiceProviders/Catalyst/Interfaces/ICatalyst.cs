@@ -10,7 +10,12 @@ public interface ICatalyst : IDisposable
     /// url for content server
     /// </summary>
     public string contentUrl { get; }
-
+    
+    /// <summary>
+    /// url for lambdas
+    /// </summary>
+    public string lambdasUrl { get; }
+    
     /// <summary>
     /// get scenes deployed in parcels
     /// </summary>
