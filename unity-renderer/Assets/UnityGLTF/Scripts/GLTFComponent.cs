@@ -411,10 +411,19 @@ namespace UnityGLTF
 
         bool IDownloadQueueElement.ShouldPrioritizeDownload() { return prioritizeDownload; }
 
-        bool IDownloadQueueElement.ShouldForceDownload() { return mainCamera == null; }
+        bool IDownloadQueueElement.ShouldForceDownload()
+        {
+#if UNITY_EDITOR_OSX
+            return false;
+#endif
+            return mainCamera == null;
+        }
 
         float IDownloadQueueElement.GetSqrDistance()
         {
+            if (mainCamera == null)
+                return 0;
+            
             Vector3 cameraPosition = mainCamera.transform.position;
             Vector3 gltfPosition = transform.position;
             gltfPosition.y = cameraPosition.y;
