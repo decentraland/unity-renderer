@@ -1,5 +1,6 @@
 using DCL.Helpers;
 using DCL.SettingsPanelHUD.Sections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,7 +32,8 @@ namespace DCL.SettingsPanelHUD
         [SerializeField] private InputAction_Trigger openAction;
 
         [Header("World Preview Window")]
-        [SerializeField] private GameObject worldPreviewWindow;
+        [SerializeField] private RectTransform worldPreviewWindowTransform;
+        [SerializeField] private CanvasGroup worldPreviewCanvasGroup;
         [SerializeField] private RawImage worldPreviewRawImage;
 
         [Header("Others")]
@@ -45,9 +47,11 @@ namespace DCL.SettingsPanelHUD
         public bool isOpen { get; private set; }
 
         private const string PATH = "SettingsPanelHUD";
+        private const float WORLD_PREVIEW_MIN_WIDTH_TO_BE_SHOWED = 200f;
 
         private IHUD hudController;
         private ISettingsPanelHUDController settingsPanelController;
+        private Vector2 originalWorldPreviewWindowSize;
 
         public event System.Action OnRestartTutorial;
         public event System.Action OnHelpAndSupportClicked;
@@ -79,6 +83,9 @@ namespace DCL.SettingsPanelHUD
             settingsAnimator.Hide(true);
 
             tutorialButton.onClick.AddListener(() => OnRestartTutorial?.Invoke());
+
+            originalWorldPreviewWindowSize = worldPreviewWindowTransform.rect.size;
+            DataStore.i.screen.size.OnChange += ScreenSizeChanged;
         }
 
         public void Initialize(IHUD hudController, ISettingsPanelHUDController settingsPanelController, SettingsSectionList sections)
@@ -96,6 +103,8 @@ namespace DCL.SettingsPanelHUD
 
             tutorialButton.onClick.RemoveAllListeners();
             helpAndSupportButton.onClick.RemoveAllListeners();
+
+            DataStore.i.screen.size.OnChange -= ScreenSizeChanged;
         }
 
         private void CreateSections()
@@ -184,7 +193,7 @@ namespace DCL.SettingsPanelHUD
 
         public void SetWorldPreviewActive(bool isActive)
         {
-            worldPreviewWindow.gameObject.SetActive(isActive);
+            worldPreviewWindowTransform.gameObject.SetActive(isActive);
             DataStore.i.camera.outputTexture.Set(isActive ? worldPreviewRawImage.texture as RenderTexture : null);
             CommonScriptableObjects.isFullscreenHUDOpen.Set(DataStore.i.exploreV2.isOpen.Get() && !isActive);
         }
@@ -196,5 +205,25 @@ namespace DCL.SettingsPanelHUD
         }
 
         private void OnFinishHide(ShowHideAnimator animator) { mainWindow.SetActive(false); }
+
+        private void ScreenSizeChanged(Vector2Int current, Vector2Int previous)
+        {
+            StartCoroutine(RefreshWorldPreviewSize());
+        }
+
+        private IEnumerator RefreshWorldPreviewSize()
+        {
+            yield return null;
+
+            float newHeight = worldPreviewWindowTransform.rect.size.x * originalWorldPreviewWindowSize.y / originalWorldPreviewWindowSize.x;
+
+            worldPreviewWindowTransform.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Vertical,
+                newHeight);
+
+            worldPreviewCanvasGroup.alpha = worldPreviewWindowTransform.rect.size.x >= WORLD_PREVIEW_MIN_WIDTH_TO_BE_SHOWED ? 1f : 0f;
+
+            Utils.ForceRebuildLayoutImmediate(sectionsContainer as RectTransform);
+        }
     }
 }
