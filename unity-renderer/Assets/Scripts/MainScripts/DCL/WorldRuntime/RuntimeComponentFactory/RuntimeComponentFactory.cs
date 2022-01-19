@@ -51,6 +51,7 @@ namespace DCL
             builders.Add((int) CLASS_ID.BASIC_MATERIAL, BuildComponent<BasicMaterial>);
             builders.Add((int) CLASS_ID.PBR_MATERIAL, BuildComponent<PBRMaterial>);
             builders.Add((int) CLASS_ID.TEXTURE, BuildComponent<DCLTexture>);
+            builders.Add((int) CLASS_ID.AVATAR_TEXTURE, BuildComponent<DCLAvatarTexture>);
 
             // Audio
             builders.Add((int) CLASS_ID.AUDIO_CLIP, BuildComponent<DCLAudioClip>);
