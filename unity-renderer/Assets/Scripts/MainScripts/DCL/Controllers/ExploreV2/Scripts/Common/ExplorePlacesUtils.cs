@@ -7,9 +7,9 @@ using UnityEngine;
 using static HotScenesController;
 
 /// <summary>
-/// Helpers related to the places management in ExploreV2.
+/// Utils related to the places management in ExploreV2.
 /// </summary>
-public static class ExplorePlacesHelpers
+public static class ExplorePlacesUtils
 {
     internal const string PLACE_CARD_MODAL_ID = "PlaceCard_Modal";
     internal const string NO_PLACE_DESCRIPTION_WRITTEN = "The author hasn't written a description yet.";

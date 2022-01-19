@@ -6,9 +6,9 @@ using System.Globalization;
 using UnityEngine;
 
 /// <summary>
-/// Helpers related to the events management in ExploreV2.
+/// Utils related to the events management in ExploreV2.
 /// </summary>
-public static class ExploreEventsHelpers
+public static class ExploreEventsUtils
 {
     internal const string EVENT_CARD_MODAL_ID = "EventCard_Modal";
     internal const string LIVE_TAG_TEXT = "LIVE";

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Bots;
 using DCL.Helpers;
@@ -81,6 +81,12 @@ namespace DCL
         {
             if (debugView != null)
                 debugView.ShowInfoPanel(network, realm);
+        }
+
+        public void SetRealm(string realm)
+        {
+            if (debugView != null)
+                debugView.SetRealm(realm);
         }
 
         public void SetSceneDebugPanel()

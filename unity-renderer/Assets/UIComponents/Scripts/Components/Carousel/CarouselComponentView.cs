@@ -434,10 +434,12 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
     internal void DestroyInstantiatedItems()
     {
-        foreach (Transform child in itemsContainer)
+        List<BaseComponentView> itemsToDestroy = ExtractItems();
+        foreach (BaseComponentView itemToDestroy in itemsToDestroy)
         {
-            Destroy(child.gameObject);
+            Destroy(itemToDestroy.gameObject);
         }
+        itemsToDestroy.Clear();
 
         instantiatedItems.Clear();
 
