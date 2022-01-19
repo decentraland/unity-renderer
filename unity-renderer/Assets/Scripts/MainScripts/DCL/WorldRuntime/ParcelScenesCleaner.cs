@@ -44,6 +44,7 @@ namespace DCL
         public void Initialize ()
         {
             removeEntitiesCoroutine = CoroutineStarter.Start(CleanupEntitiesCoroutine());
+            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
         }
 
         private void OnRendererStateChange(bool isEnable, bool prevState)

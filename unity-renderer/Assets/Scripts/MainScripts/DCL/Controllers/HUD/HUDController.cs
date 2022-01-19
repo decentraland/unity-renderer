@@ -30,11 +30,7 @@ public class HUDController : IHUDController
         groupID = "UIHiddenNotification"
     };
 
-    public HUDController ()
-    {
-    }
-
-    public HUDController (IHUDFactory hudFactory)
+    public HUDController (IHUDFactory hudFactory = null)
     {
         this.hudFactory = hudFactory;
     }

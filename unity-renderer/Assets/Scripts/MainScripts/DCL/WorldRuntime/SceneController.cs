@@ -16,6 +16,7 @@ namespace DCL
     public class SceneController : ISceneController
     {
         public static bool VERBOSE = false;
+        const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
         public bool enabled { get; set; } = true;
 
@@ -47,7 +48,7 @@ namespace DCL
             {
                 if (prewarmSceneMessagesPool)
                 {
-                    for (int i = 0; i < 100000; i++)
+                    for (int i = 0; i < SCENE_MESSAGES_PREWARM_COUNT; i++)
                     {
                         sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
                     }
