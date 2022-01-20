@@ -259,8 +259,6 @@ namespace UnityGLTF
                     sceneImporter.OnMeshCreated += meshCreatedCallback;
                     sceneImporter.OnRendererCreated += rendererCreatedCallback;
 
-                    //Debug.Log($"Enqueueing {GLTFUri}... Queue: {queueCount} Concurrent downloads {downloadingCount} was forced: {prioritizeDownload}");
-
                     EnqueueDownload();
 
                     await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
@@ -278,8 +276,6 @@ namespace UnityGLTF
 
                     if (transform != null)
                     {
-                        //Debug.Log($"Downloading {GLTFUri}... Queue: {queueCount} Concurrent downloads {downloadingCount} can download? {downloadQueueHandler.CanDownload(this)}");
-
                         await sceneImporter.LoadScene(token);
                         token.ThrowIfCancellationRequested();
 
@@ -295,8 +291,6 @@ namespace UnityGLTF
                     }
                     state = State.COMPLETED;
                     DecrementDownloadCount();
-                    //Debug.Log($"Downloading {GLTFUri} Finished. Queue: {queueCount} Concurrent downloads {downloadingCount} was forced: {prioritizeDownload}");
-
                 }
                 catch (Exception e)
                 {
