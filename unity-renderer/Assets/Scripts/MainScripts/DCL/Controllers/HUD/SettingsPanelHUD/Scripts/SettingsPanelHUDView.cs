@@ -50,7 +50,7 @@ namespace DCL.SettingsPanelHUD
         private const string PATH = "SettingsPanelHUD";
         private const float WORLD_PREVIEW_MIN_WIDTH_TO_BE_SHOWED = 200f;
         private const float WORLD_PREVIEW_ORIGINAL_WIDTH = 400f;
-        private const float WORLD_PREVIEW_ORIGINAL_HEIGHT = 360f;
+        private const float WORLD_PREVIEW_ORIGINAL_HEIGHT = 250f;
 
         private IHUD hudController;
         private ISettingsPanelHUDController settingsPanelController;
