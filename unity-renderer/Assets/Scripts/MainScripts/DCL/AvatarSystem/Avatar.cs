@@ -9,6 +9,7 @@ namespace AvatarSystem
 {
     public class Avatar : IAvatar
     {
+        private const float RESCALING_BOUNDS_FACTOR = 100f;
         private readonly IAvatarCurator avatarCurator;
         private readonly ILoader loader;
         private readonly IAnimator animator;
@@ -62,7 +63,7 @@ namespace AvatarSystem
                 await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, linkedCt);
 
                 //Scale the bounds due to the giant avatar not being skinned yet
-                extents = loader.combinedRenderer.localBounds.extents * 2f / 100f;
+                extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
 
                 animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
 

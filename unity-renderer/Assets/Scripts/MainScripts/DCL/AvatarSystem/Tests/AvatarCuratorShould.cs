@@ -6,7 +6,6 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using NSubstitute;
-using NSubstitute.Core;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -44,6 +43,9 @@ namespace Test.AvatarSystem
                     });
             curator = new AvatarCurator(resolver);
         }
+
+        [TearDown]
+        public void TearDown() { curator.Dispose(); }
 
         [UnityTest]
         public IEnumerator CurateAProperConstructedModel() => UniTask.ToCoroutine(async () =>
@@ -119,9 +121,6 @@ namespace Test.AvatarSystem
             //Arrange
             resolver.Received().Dispose();
         }
-
-        [TearDown]
-        public void TearDown() { curator.Dispose(); }
 
         private WearableItem[] GetWearablesFromIDs(IEnumerable<string> ids)
         {
