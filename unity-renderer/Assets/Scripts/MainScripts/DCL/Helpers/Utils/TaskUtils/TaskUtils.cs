@@ -8,7 +8,7 @@ namespace DCL.Helpers
 {
     public static class TaskUtils
     {
-        private static BaseVariable<bool> multithreading => DataStore.i.multithreading.enabled;
+        private static BaseVariable<bool> multithreading => DataStore.i.performance.multithreading;
         public static async UniTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
