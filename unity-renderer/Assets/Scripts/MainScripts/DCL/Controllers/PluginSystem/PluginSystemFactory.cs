@@ -12,6 +12,7 @@ namespace DCL
             pluginSystem.Register(() => new DebugPluginFeature());
             pluginSystem.Register(() => new ShortcutsFeature());
             pluginSystem.Register(() => new ExploreV2Feature());
+            pluginSystem.Register(() => new DebugShapesBoundingBoxDisplayer());
             pluginSystem.Register(() => new TransactionFeature());
             pluginSystem.RegisterWithFlag(() => new BuilderInWorldPlugin(), "builder_in_world");
             pluginSystem.RegisterWithFlag(() => new TutorialController(), "tutorial");
