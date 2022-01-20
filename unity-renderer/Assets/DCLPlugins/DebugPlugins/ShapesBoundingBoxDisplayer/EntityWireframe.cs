@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 internal class EntityWireframe : IShapeListener
 {
-    private const float WIREFRAME_SIZE_MULTIPIER = 1.01f;
+    private const float WIREFRAME_SIZE_MULTIPLIER = 1.01f;
 
     private readonly GameObject wireframeOriginal;
 
@@ -29,7 +29,7 @@ internal class EntityWireframe : IShapeListener
         Transform wireframeT = entityWireframe.transform;
 
         wireframeT.position = entity.meshesInfo.mergedBounds.center;
-        wireframeT.localScale = entity.meshesInfo.mergedBounds.size * WIREFRAME_SIZE_MULTIPIER;
+        wireframeT.localScale = entity.meshesInfo.mergedBounds.size * WIREFRAME_SIZE_MULTIPLIER;
 
         wireframeT.SetParent(entity.gameObject.transform);
         entityWireframe.SetActive(true);
