@@ -16,14 +16,13 @@ namespace UnityGLTF
     {
         private static bool VERBOSE = false;
 
-        private static int maxSimultaneousDownloads = 20;
-
         public static int downloadingCount;
         public static event Action OnDownloadingProgressUpdate;
 
         public static int queueCount;
 
-        private static DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxSimultaneousDownloads, () => downloadingCount);
+        private static readonly BaseVariable<int> maxSimultaneousDownloads = DataStore.i.performance.maxDownloads;
+        private static readonly DownloadQueueHandler downloadQueueHandler = new DownloadQueueHandler(maxSimultaneousDownloads.Get(), () => downloadingCount);
 
         public class Settings
         {

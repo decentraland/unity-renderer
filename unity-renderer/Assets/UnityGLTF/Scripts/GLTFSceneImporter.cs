@@ -510,7 +510,7 @@ namespace UnityGLTF
 
         private async UniTask ParseJson(CancellationToken cancellationToken)
         {
-            if (DataStore.i.multithreading.enabled.Get())
+            if (DataStore.i.performance.multithreading.Get())
             {
                 await TaskUtils.Run( () => GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition), cancellationToken: cancellationToken);
             }
