@@ -66,9 +66,12 @@ internal class EntityStyle : IShapeListener
         CleanCollider();
         CleanMaterials();
 
-        materialChangesTracker.OnRendererMaterialChanged -= OnMaterialChanged;
-        materialChangesTracker.Dispose();
-        materialChangesTracker = null;
+        if (materialChangesTracker != null)
+        {
+            materialChangesTracker.OnRendererMaterialChanged -= OnMaterialChanged;
+            materialChangesTracker.Dispose();
+            materialChangesTracker = null;
+        }
     }
 
     private void CleanCollider()
