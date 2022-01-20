@@ -263,11 +263,6 @@ namespace UnityGLTF
                     await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
                     token.ThrowIfCancellationRequested();
 
-                    if (downloadingCount > maxSimultaneousDownloads)
-                    {
-                        var canDownload = downloadQueueHandler.CanDownload(this);
-                    }
-
                     RemoveFromQueue();
 
                     IncrementDownloadCount();
