@@ -224,7 +224,7 @@ namespace DCL.SettingsPanelHUD
         {
             yield return null;
 
-            float newHeight = worldPreviewWindowTransform.rect.size.x * WORLD_PREVIEW_ORIGINAL_HEIGHT / WORLD_PREVIEW_ORIGINAL_WIDTH;
+            float newHeight = Mathf.Clamp(worldPreviewWindowTransform.rect.size.x * WORLD_PREVIEW_ORIGINAL_HEIGHT / WORLD_PREVIEW_ORIGINAL_WIDTH, 0f, 700f);
 
             worldPreviewWindowTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Vertical,
