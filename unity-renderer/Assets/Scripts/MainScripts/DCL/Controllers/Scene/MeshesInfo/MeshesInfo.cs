@@ -32,6 +32,7 @@ namespace DCL.Models
         public Renderer[] renderers;
         public MeshFilter[] meshFilters;
         public List<Collider> colliders = new List<Collider>();
+        public Animation animation { get; private set; }
 
         Vector3 lastBoundsCalculationPosition;
         Vector3 lastBoundsCalculationScale;
@@ -62,6 +63,7 @@ namespace DCL.Models
             {
                 renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
                 meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
+                animation = meshRootGameObjectValue.GetComponentInChildren<Animation>();
 
                 TextMeshPro[] tmpros = meshRootGameObjectValue.GetComponentsInChildren<TextMeshPro>(true);
                 if (tmpros.Length > 0)
