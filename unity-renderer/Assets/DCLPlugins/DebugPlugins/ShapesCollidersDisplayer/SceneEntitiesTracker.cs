@@ -49,7 +49,7 @@ internal class SceneEntitiesTracker : ISceneListener
         }
         entityShapeHandler.Add(entity, new WatchEntityShapeHandler(
             entity,
-            new EntityCollider(GetColliderMaterialOriginal(), GetEntitiesWithColliderMaterialResource())
+            new EntityStyle(GetColliderMaterialOriginal(), GetEntitiesWithColliderMaterialResource())
         ));
     }
 

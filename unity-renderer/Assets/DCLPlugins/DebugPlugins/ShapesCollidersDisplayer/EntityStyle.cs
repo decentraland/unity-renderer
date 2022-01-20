@@ -5,20 +5,22 @@ using DCLPlugins.DebugPlugins.Commons;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-internal class EntityCollider : IShapeListener
+internal class EntityStyle : IShapeListener
 {
     internal const string COLLIDERS_GAMEOBJECT_NAME = "ShapeColliderDisplay";
+    internal const string ENTITY_MATERIAL_NAME = "DebugMaterialForColliders";
 
     private readonly Material colliderMaterial;
     private readonly Material entityMaterialResource;
     private readonly List<GameObject> colliders = new List<GameObject>();
 
     private readonly Dictionary<Renderer, Material> originalMaterials = new Dictionary<Renderer, Material>();
-    private readonly List<Material> entityWithColliderMaterials = new List<Material>();
+    private readonly Dictionary<Renderer, Material> entityWithColliderMaterials = new Dictionary<Renderer, Material>();
 
     private bool isShowingColliders = false;
+    private MaterialChangesTracker materialChangesTracker;
 
-    public EntityCollider(Material colliderMaterial, Material entityWithColliderMaterialResource)
+    public EntityStyle(Material colliderMaterial, Material entityWithColliderMaterialResource)
     {
         this.colliderMaterial = colliderMaterial;
         this.entityMaterialResource = entityWithColliderMaterialResource;
@@ -42,9 +44,14 @@ internal class EntityCollider : IShapeListener
                 break;
         }
 
-        // TODO: sdk material changed?
-        CleanMaterials();
-        SetUpMaterials(entity.meshesInfo);
+        if (materialChangesTracker == null)
+        {
+            materialChangesTracker = new MaterialChangesTracker(entity.meshesInfo, originalMaterials);
+            materialChangesTracker.OnRendererMaterialChanged += OnMaterialChanged;
+
+            CleanMaterials();
+            SetUpMaterials(entity.meshesInfo);
+        }
 
         isShowingColliders = entityHasColliders;
     }
@@ -58,6 +65,10 @@ internal class EntityCollider : IShapeListener
     {
         CleanCollider();
         CleanMaterials();
+
+        materialChangesTracker.OnRendererMaterialChanged -= OnMaterialChanged;
+        materialChangesTracker.Dispose();
+        materialChangesTracker = null;
     }
 
     private void CleanCollider()
@@ -71,11 +82,15 @@ internal class EntityCollider : IShapeListener
 
     private void CleanMaterials()
     {
-        for (int i = 0; i < entityWithColliderMaterials.Count; i++)
+        using (var iterator = entityWithColliderMaterials.GetEnumerator())
         {
-            if (entityWithColliderMaterials[i] != null)
+            while (iterator.MoveNext())
             {
-                Object.Destroy(entityWithColliderMaterials[i]);
+                Material material = iterator.Current.Value;
+                if (material != null)
+                {
+                    Object.Destroy(material);
+                }
             }
         }
         entityWithColliderMaterials.Clear();
@@ -149,21 +164,40 @@ internal class EntityCollider : IShapeListener
 
         for (int i = 0; i < entityRenderers.Length; i++)
         {
-            if (entityRenderers[i] == null)
-                continue;
+            SetUpMaterials(entityRenderers[i]);
+        }
+    }
 
-            Material originalMaterial = entityRenderers[i].sharedMaterial;
+    private void SetUpMaterials(Renderer renderer)
+    {
+        if (renderer == null)
+            return;
 
-            if (originalMaterial == null)
-                continue;
+        Material originalMaterial = renderer.sharedMaterial;
 
-            originalMaterials.Add(entityRenderers[i], originalMaterial);
+        if (originalMaterial == null)
+            return;
 
-            Material newMaterial = new Material(entityMaterialResource);
-            newMaterial.mainTexture = originalMaterial.mainTexture;
-            entityWithColliderMaterials.Add(newMaterial);
+        originalMaterials.Add(renderer, originalMaterial);
 
-            entityRenderers[i].sharedMaterial = newMaterial;
+        Material newMaterial = new Material(entityMaterialResource);
+        newMaterial.mainTexture = originalMaterial.mainTexture;
+        newMaterial.name = ENTITY_MATERIAL_NAME;
+
+        entityWithColliderMaterials.Add(renderer, newMaterial);
+
+        renderer.sharedMaterial = newMaterial;
+    }
+
+    // NOTE: we need to cover the scenario where we apply the debugging material to the entity's shape
+    // and the material is later changed through the sdk for a new material,
+    // overriding the debug material previously applied
+    private void OnMaterialChanged(Renderer renderer)
+    {
+        originalMaterials[renderer] = renderer.sharedMaterial;
+        if (entityWithColliderMaterials.TryGetValue(renderer, out Material material))
+        {
+            renderer.sharedMaterial = material;
         }
     }
 }

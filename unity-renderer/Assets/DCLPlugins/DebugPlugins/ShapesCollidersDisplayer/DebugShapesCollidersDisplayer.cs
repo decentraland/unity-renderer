@@ -32,13 +32,13 @@ public class DebugShapesCollidersDisplayer : IPlugin
         }
 
         isCollidersDisplayEnabledVariable.OnAdded += IsCollidersDisplayEnabledVariableOnOnAdded;
-        isCollidersDisplayEnabledVariable.OnRemoved += IsBoundingBoxEnabledVariableOnOnRemoved;
+        isCollidersDisplayEnabledVariable.OnRemoved += IsCollidersDisplayEnabledVariableOnOnRemoved;
         worldRuntime.sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
     }
     public void Dispose()
     {
         isCollidersDisplayEnabledForScene.OnAdded -= IsCollidersDisplayEnabledVariableOnOnAdded;
-        isCollidersDisplayEnabledForScene.OnRemoved -= IsBoundingBoxEnabledVariableOnOnRemoved;
+        isCollidersDisplayEnabledForScene.OnRemoved -= IsCollidersDisplayEnabledVariableOnOnRemoved;
         worldRuntime.sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
 
         var scenesId = scenesWatcher.Keys.ToArray();
@@ -81,7 +81,7 @@ public class DebugShapesCollidersDisplayer : IPlugin
         scenesWatcher[scene.sceneData.id] = new WatchSceneHandler(scene, new SceneEntitiesTracker());
     }
 
-    private void IsBoundingBoxEnabledVariableOnOnRemoved(string sceneId, bool enabled)
+    private void IsCollidersDisplayEnabledVariableOnOnRemoved(string sceneId, bool enabled)
     {
         KillWatchScene(sceneId);
     }
