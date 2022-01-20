@@ -14,7 +14,7 @@ internal class EntityCollider : IShapeListener
     private readonly List<GameObject> colliders = new List<GameObject>();
 
     private readonly Dictionary<Renderer, Material> originalMaterials = new Dictionary<Renderer, Material>();
-    private readonly List<Material> entityWitchColliderMaterials = new List<Material>();
+    private readonly List<Material> entityWithColliderMaterials = new List<Material>();
 
     private bool isShowingColliders = false;
 
@@ -36,12 +36,16 @@ internal class EntityCollider : IShapeListener
         {
             case true when !isShowingColliders:
                 SetUpColliders(entity.meshesInfo);
-                SetUpMaterials(entity.meshesInfo);
                 break;
             case false when isShowingColliders:
-                CleanUp();
+                CleanCollider();
                 break;
         }
+
+        // TODO: sdk material changed?
+        CleanMaterials();
+        SetUpMaterials(entity.meshesInfo);
+
         isShowingColliders = entityHasColliders;
     }
 
@@ -67,14 +71,14 @@ internal class EntityCollider : IShapeListener
 
     private void CleanMaterials()
     {
-        for (int i = 0; i < entityWitchColliderMaterials.Count; i++)
+        for (int i = 0; i < entityWithColliderMaterials.Count; i++)
         {
-            if (entityWitchColliderMaterials[i] != null)
+            if (entityWithColliderMaterials[i] != null)
             {
-                Object.Destroy(entityWitchColliderMaterials[i]);
+                Object.Destroy(entityWithColliderMaterials[i]);
             }
         }
-        entityWitchColliderMaterials.Clear();
+        entityWithColliderMaterials.Clear();
 
         // Restore original materials
         using (var iterator = originalMaterials.GetEnumerator())
@@ -149,11 +153,15 @@ internal class EntityCollider : IShapeListener
                 continue;
 
             Material originalMaterial = entityRenderers[i].sharedMaterial;
+
+            if (originalMaterial == null)
+                continue;
+
             originalMaterials.Add(entityRenderers[i], originalMaterial);
 
             Material newMaterial = new Material(entityMaterialResource);
             newMaterial.mainTexture = originalMaterial.mainTexture;
-            entityWitchColliderMaterials.Add(newMaterial);
+            entityWithColliderMaterials.Add(newMaterial);
 
             entityRenderers[i].sharedMaterial = newMaterial;
         }

@@ -12,6 +12,7 @@ internal class SceneEntitiesTracker : ISceneListener
 
     private static readonly int materialColorProperty = Shader.PropertyToID("_Color");
     private static readonly int materialRimColorProperty = Shader.PropertyToID("_RimColor");
+    private static readonly int materialCullYPlaneProperty = Shader.PropertyToID("_CullYPlane");
 
     private static Material collidersMaterialResource;
     private static Material entitiesWithColliderMaterialResource;
@@ -78,12 +79,10 @@ internal class SceneEntitiesTracker : ISceneListener
             collidersMaterialResource = Resources.Load(COLLIDERS_MATERIAL_PATH) as Material;
         }
 
-        Color materialColor = new Color(1, 0, 1, 0.3f);
-        Color rimColor = new Color(1, 0, 1, 0);
-        
         collidersMaterial = new Material(collidersMaterialResource);
-        collidersMaterial.SetColor(materialColorProperty, materialColor);
-        collidersMaterial.SetColor(materialRimColorProperty, rimColor);
+        collidersMaterial.SetColor(materialColorProperty, new Color(1, 0, 1, 0.3f));
+        collidersMaterial.SetColor(materialRimColorProperty, new Color(1, 0, 1, 0));
+        collidersMaterial.SetFloat(materialCullYPlaneProperty, 1000);
 
         return collidersMaterial;
     }
