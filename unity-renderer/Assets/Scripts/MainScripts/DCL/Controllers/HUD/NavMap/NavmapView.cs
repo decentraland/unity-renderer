@@ -49,7 +49,7 @@ namespace DCL
             toastView.OnGotoClicked += () => navmapVisible.Set(false);
 
             MapRenderer.OnParcelClicked += TriggerToast;
-            MapRenderer.OnCursorFarFromParcel += () => { toastView.OnCloseClick(); };
+            MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
             closeAction.OnTriggered += OnCloseAction;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
@@ -72,6 +72,7 @@ namespace DCL
         private void OnDestroy()
         {
             MapRenderer.OnParcelClicked -= TriggerToast;
+            MapRenderer.OnCursorFarFromParcel -= CloseToast;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             closeAction.OnTriggered += OnCloseAction;
@@ -183,6 +184,8 @@ namespace DCL
 
             toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
+
+        private void CloseToast() { toastView.OnCloseClick(); }
 
         public void SetExitButtonActive(bool isActive) { closeButton.gameObject.SetActive(isActive); }
 
