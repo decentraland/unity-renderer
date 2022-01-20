@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObjectsToToggle:
-  - {fileID: 7509157592280631724}
+  - {fileID: 5916271607637106390}
   - {fileID: 5854254909640412467}
   - {fileID: 5582000225371496597}
 --- !u!1 &5582000225371496597
@@ -533,15 +533,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c53ec74589327644bba45b4054fb78dc, type: 3}
---- !u!1 &7509157592280631724 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3778843143832927354, guid: c53ec74589327644bba45b4054fb78dc,
-    type: 3}
-  m_PrefabInstance: {fileID: 6648657593541883350}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4161845772322530390 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7315286666275099008, guid: c53ec74589327644bba45b4054fb78dc,
+    type: 3}
+  m_PrefabInstance: {fileID: 6648657593541883350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5916271607637106390 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1035290754004822784, guid: c53ec74589327644bba45b4054fb78dc,
     type: 3}
   m_PrefabInstance: {fileID: 6648657593541883350}
   m_PrefabAsset: {fileID: 0}
