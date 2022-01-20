@@ -52,10 +52,8 @@ public enum HUDElementID
     AVATAR_NAMES = 31,
 
     EMOTES = 32,
-    
-    TRANSACTIONS = 33,
 
-    COUNT = 34
+    COUNT = 33
 }
 
 public interface IHUDFactory

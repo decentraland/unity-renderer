@@ -37,7 +37,7 @@ public class TransactionListHUDView : MonoBehaviour
         if (transactionModel == null)
             return null;
         
-        TransactionHUD transactionHUD = Instantiate(Resources.Load<GameObject>(VIEW_CHILD_PATH), transactionPanel).GetComponent<TransactionHUD>();
+        TransactionHUD transactionHUD = Instantiate(Resources.Load<TransactionHUD>(VIEW_CHILD_PATH), transactionPanel);
         ShowTransaction(transactionHUD, transactionModel);
         return transactionHUD;
     }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class TransactionHUDController : IHUD, ITransactionHUDController
@@ -13,12 +14,21 @@ public class TransactionHUDController : IHUD, ITransactionHUDController
     public Model model { get; private set; }
     public TransactionHUDController() : this(new Model()) { }
 
+    private TransactionBridge transactionBridge;
+
     public TransactionHUDController(Model model)
     {
         this.model = model;
+    }
+
+    public void Initialize()
+    {
         view = TransactionListHUDView.Create();
         view.OnTransactionAcceptedEvent += OnTransactionAccepted;
         view.OnTransactionRejectedEvent += OnTransactionRejected;
+
+        transactionBridge = SceneReferences.i.bridgeGameObject.AddComponent<TransactionBridge>();
+        transactionBridge.transactionController = this;
     }
 
     public void ShowTransaction(ITransactionHUD transaction)
@@ -47,9 +57,13 @@ public class TransactionHUDController : IHUD, ITransactionHUDController
 
     public void Dispose()
     {
+        if (transactionBridge != null)
+        {
+            Object.Destroy(transactionBridge);
+        }
         if (view != null)
         {
-            UnityEngine.Object.Destroy(view.gameObject);
+            Object.Destroy(view.gameObject);
         }
 
         view.OnTransactionAcceptedEvent -= OnTransactionAccepted;

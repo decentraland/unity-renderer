@@ -63,52 +63,6 @@ public class HUDBridge : MonoBehaviour
     public void RequestTeleport(string teleportDataJson) { HUDController.i.teleportHud?.RequestTeleport(teleportDataJson); }
 
     public void UpdateBalanceOfMANA(string balance) { HUDController.i.profileHud?.SetManaBalance(balance); }
-    
-    [System.Serializable]
-    class RequestWeb3ApiUseMessage
-    {
-        [System.Serializable]
-        public class RequestWeb3ApiUsePayload
-        {
-            public string sceneId;
-            public string message;
-            public string toAddress;
-            public float amount;
-            public string currency;
-        }
-        public string id;
-        public string requestType;
-        public RequestWeb3ApiUsePayload payload;
-    }
-
-    public void RequestWeb3ApiUse(string payload) {
-        var model = JsonUtility.FromJson<RequestWeb3ApiUseMessage>(payload);
-
-        var requestType = DCL.TransactionHUDModel.Type.REQUIRE_PAYMENT;
-        switch (model.requestType)
-        {
-            case "requirePayment":
-                requestType = DCL.TransactionHUDModel.Type.REQUIRE_PAYMENT;
-                break;
-            case "signMessage":
-                requestType = DCL.TransactionHUDModel.Type.SIGN_MESSAGE;
-                break;
-            case "sendAsync":
-                requestType = DCL.TransactionHUDModel.Type.SEND_ASYNC;
-                break;
-        }
-
-        HUDController.i.transactionController.ShowTransaction(new DCL.TransactionHUDModel.Model
-        {
-            id = model.id,
-            requestType = requestType,
-            sceneId = model.payload.sceneId,
-            message = model.payload.message,
-            toAddress = model.payload.toAddress,
-            amount = model.payload.amount,
-            currency = model.payload.currency
-        });
-    }
 
     public void ShowAvatarEditorInSignUp()
     {

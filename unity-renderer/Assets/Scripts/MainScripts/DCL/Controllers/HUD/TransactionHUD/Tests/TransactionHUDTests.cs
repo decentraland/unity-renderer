@@ -1,42 +1,28 @@
 using NUnit.Framework;
 using System.Collections;
-using DCL.Controllers;
-using DCL.Helpers;
-using UnityEngine;
+using DCL;
 using UnityEngine.TestTools;
 using DCL.TransactionHUDModel;
 
 namespace Tests
 {
-    public class TransactionHUDTests : IntegrationTestSuite_Legacy
+    public class TransactionHUDTests
     {
         private TransactionHUDController controller;
 
-        private ParcelScene scene;
-
-        protected override IEnumerator SetUp()
+        [SetUp]
+        protected void SetUp()
         {
-            yield return base.SetUp();
+            MainSceneFactory.CreateBridges();
+            
             controller = new TransactionHUDController();
-            scene = TestUtils.CreateTestScene();
+            controller.Initialize();
         }
 
-        protected override IEnumerator TearDown()
+        [TearDown]
+        protected void TearDown()
         {
             controller.Dispose();
-            yield return base.TearDown();
-        }
-
-        [Test]
-        public void TransactionHUD_Creation()
-        {
-            var views = GameObject.FindObjectsOfType<TransactionListHUDView>();
-
-            Assert.AreEqual(1, views.Length);
-
-            var view = views[0];
-            Assert.NotNull(view);
-            Assert.AreEqual(view, controller.view);
         }
 
         [Test]
@@ -60,11 +46,11 @@ namespace Tests
             controller.ShowTransaction(model);
 
             yield return null;
+            
+            TransactionHUD[] transactions = controller.view.gameObject.GetComponentsInChildren<TransactionHUD>();
+            Assert.AreEqual(transactions.Length, 1);
 
-            TransactionHUD[] Transactions = GameObject.FindObjectsOfType<TransactionHUD>();
-            Assert.AreEqual(Transactions.Length, 1);
-
-            TransactionHUD n = Transactions[0];
+            TransactionHUD n = transactions[0];
             Assert.AreEqual(n.model.id, model.id);
             Assert.AreEqual(n.model.requestType, model.requestType);
             Assert.AreEqual(n.model.message, model.message);
@@ -104,11 +90,11 @@ namespace Tests
 
             yield return null;
 
-            TransactionHUD[] transactions = GameObject.FindObjectsOfType<TransactionHUD>();
+            TransactionHUD[] transactions = controller.view.gameObject.GetComponentsInChildren<TransactionHUD>();
             Assert.AreEqual(3, transactions.Length);
 
             TransactionHUD n;
-            n = transactions[2];
+            n = transactions[0];
             Assert.AreEqual(n.model.id, model.id);
             Assert.AreEqual(n.model.requestType, model.requestType);
             Assert.AreEqual(n.model.message, model.message);
@@ -118,7 +104,7 @@ namespace Tests
             Assert.AreEqual(n.model.requestType, model2.requestType);
             Assert.AreEqual(n.model.message, model2.message);
             
-            n = transactions[0];
+            n = transactions[2];
             Assert.AreEqual(n.model.id, model3.id);
             Assert.AreEqual(n.model.requestType, model3.requestType);
             Assert.AreEqual(n.model.message, model3.message);

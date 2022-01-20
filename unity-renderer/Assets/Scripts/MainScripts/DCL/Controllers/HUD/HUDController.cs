@@ -91,8 +91,6 @@ public class HUDController : IHUDController
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
     public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
-    
-    public TransactionHUDController transactionController => GetHUDElement(HUDElementID.TRANSACTIONS) as TransactionHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -330,9 +328,6 @@ public class HUDController : IHUDController
                 break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
-                break;
-            case HUDElementID.TRANSACTIONS:
-                CreateHudElement(configuration, hudElementId);
                 break;
         }
 

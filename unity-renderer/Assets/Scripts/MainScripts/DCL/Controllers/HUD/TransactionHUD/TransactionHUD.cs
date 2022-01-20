@@ -52,10 +52,13 @@ public class TransactionHUD : MonoBehaviour, ITransactionHUD
     
     public IParcelScene FindScene(string sceneId)
     {
-        foreach (IParcelScene scene in DCL.Environment.i.world.state.scenesSortedByDistance)
+        if (DCL.Environment.i.world?.state?.scenesSortedByDistance != null)
         {
-            if (scene.sceneData.id == sceneId)
-                return scene;
+            foreach (IParcelScene scene in DCL.Environment.i.world.state.scenesSortedByDistance)
+            {
+                if (scene.sceneData.id == sceneId)
+                    return scene;
+            }
         }
 
         return null;
