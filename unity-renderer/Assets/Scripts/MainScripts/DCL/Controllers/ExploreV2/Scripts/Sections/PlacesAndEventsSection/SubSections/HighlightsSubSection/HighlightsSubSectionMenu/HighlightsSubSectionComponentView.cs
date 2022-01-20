@@ -194,16 +194,16 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public void ConfigurePools()
     {
-        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        ExplorePlacesHelpers.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
-        ExploreEventsHelpers.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
+        ExplorePlacesUtils.ConfigurePlaceCardsPool(out trendingPlaceCardsPool, TRENDING_PLACE_CARDS_POOL_NAME, placeCardLongPrefab, TRENDING_PLACE_CARDS_POOL_PREWARM);
+        ExploreEventsUtils.ConfigureEventCardsPool(out trendingEventCardsPool, TRENDING_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
+        ExplorePlacesUtils.ConfigurePlaceCardsPool(out featuredPlaceCardsPool, FEATURED_PLACE_CARDS_POOL_NAME, placeCardPrefab, FEATURED_PLACE_CARDS_POOL_PREWARM);
+        ExploreEventsUtils.ConfigureEventCardsPool(out liveEventCardsPool, LIVE_EVENT_CARDS_POOL_NAME, eventCardPrefab, LIVE_EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void Start()
     {
-        placeModal = ExplorePlacesHelpers.ConfigurePlaceCardModal(placeCardModalPrefab);
-        eventModal = ExploreEventsHelpers.ConfigureEventCardModal(eventCardModalPrefab);
+        placeModal = ExplorePlacesUtils.ConfigurePlaceCardModal(placeCardModalPrefab);
+        eventModal = ExploreEventsUtils.ConfigureEventCardModal(eventCardModalPrefab);
 
         trendingPlacesAndEvents.RemoveItems();
         featuredPlaces.RemoveItems();
@@ -252,14 +252,14 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         trendingPlaceCardsPool.ReleaseAll();
         trendingEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
             places,
             trendingPlaceCardsPool,
             OnFriendHandlerAdded,
             OnPlaceInfoClicked,
             OnPlaceJumpInClicked);
 
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
             events,
             trendingEventCardsPool,
             OnEventInfoClicked,
@@ -294,7 +294,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         featuredPlaces.ExtractItems();
         featuredPlaceCardsPool.ReleaseAll();
 
-        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesHelpers.InstantiateAndConfigurePlaceCards(
+        List<BaseComponentView> placeComponentsToAdd = ExplorePlacesUtils.InstantiateAndConfigurePlaceCards(
             places,
             featuredPlaceCardsPool,
             OnFriendHandlerAdded,
@@ -319,7 +319,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         liveEvents.ExtractItems();
         liveEventCardsPool.ReleaseAll();
 
-        List<BaseComponentView> eventComponentsToAdd = ExploreEventsHelpers.InstantiateAndConfigureEventCards(
+        List<BaseComponentView> eventComponentsToAdd = ExploreEventsUtils.InstantiateAndConfigureEventCards(
             events,
             liveEventCardsPool,
             OnEventInfoClicked,
@@ -344,7 +344,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        ExplorePlacesHelpers.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
+        ExplorePlacesUtils.ConfigurePlaceCard(placeModal, placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked);
     }
 
     public void HidePlaceModal() { placeModal.Hide(); }
@@ -352,7 +352,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        ExploreEventsHelpers.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
+        ExploreEventsUtils.ConfigureEventCard(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
     }
 
     public void HideEventModal() { eventModal.Hide(); }

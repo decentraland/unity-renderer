@@ -3,6 +3,7 @@ using DCL.Models;
 using DCLPlugins.DebugPlugins.Commons;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Tests
 {
@@ -11,15 +12,23 @@ namespace Tests
         private IDCLEntity entity;
         private IShapeListener listener;
         private MeshesInfo meshesInfo;
+        private GameObject meshesInfoGameObject;
 
         [SetUp]
         public void SetUp()
         {
             entity = Substitute.For<IDCLEntity>();
             listener = Substitute.For<IShapeListener>();
-            meshesInfo = Substitute.ForPartsOf<MeshesInfo>();
+            meshesInfo = new MeshesInfo();
+            meshesInfoGameObject = new GameObject("MeshesInfoGO");
 
             entity.meshesInfo.Returns(meshesInfo);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Object.Destroy(meshesInfoGameObject);
         }
 
         [Test]
@@ -28,6 +37,7 @@ namespace Tests
             WatchEntityShapeHandler handler = new WatchEntityShapeHandler(entity, listener);
 
             meshesInfo.currentShape = Substitute.For<IShape>();
+            meshesInfo.meshRootGameObject = meshesInfoGameObject;
             entity.OnMeshesInfoUpdated.Invoke(entity);
 
             listener.Received(1).OnShapeUpdated(Arg.Is(entity));
@@ -39,6 +49,9 @@ namespace Tests
         public void TriggerShapeUpdatedWhenShapeExistBeforeHandler()
         {
             meshesInfo.currentShape = Substitute.For<IShape>();
+            meshesInfo.meshRootGameObject = meshesInfoGameObject;
+            entity.OnMeshesInfoUpdated.Invoke(entity);
+
             WatchEntityShapeHandler handler = new WatchEntityShapeHandler(entity, listener);
 
             listener.Received(1).OnShapeUpdated(Arg.Is(entity));

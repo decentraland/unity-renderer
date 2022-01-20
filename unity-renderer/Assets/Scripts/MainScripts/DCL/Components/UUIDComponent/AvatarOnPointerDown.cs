@@ -29,7 +29,7 @@ namespace DCL.Components
         {
             bool isHoveringDirty = state != isHovering;
             isHovering = state;
-            eventHandler.SetFeedbackState(model.showFeedback, state && passportEnabled, model.button, model.hoverText);
+            eventHandler?.SetFeedbackState(model.showFeedback, state && passportEnabled, model.button, model.hoverText);
             if (!isHoveringDirty)
                 return;
             if (isHovering)
@@ -119,7 +119,6 @@ namespace DCL.Components
         public void SetPassportEnabled(bool newEnabledState)
         {
             passportEnabled = newEnabledState;
-            eventHandler?.SetFeedbackState(model.showFeedback, false, model.button, model.hoverText);
             isHovering = false;
         }
 

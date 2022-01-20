@@ -31,7 +31,8 @@ namespace DCLPlugins.DebugPlugins.Commons
 
         private void OnShapeUpdated(IDCLEntity entity)
         {
-            if (entity.meshesInfo.currentShape != null)
+            if (entity.meshesInfo.currentShape != null
+                && entity.meshesInfo.meshRootGameObject != null)
             {
                 listener.OnShapeUpdated(entity);
             }
