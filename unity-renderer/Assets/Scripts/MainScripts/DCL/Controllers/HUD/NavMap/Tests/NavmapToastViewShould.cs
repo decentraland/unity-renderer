@@ -28,7 +28,6 @@ namespace Tests
 
             controller = new MinimapHUDController();
             navmapView = Object.FindObjectOfType<NavmapView>();
-            Debug.Log("Navmapview is null? " + navmapView);
             navmapToastView = navmapView.toastView;
 
             if (!DataStore.i.HUDs.navmapVisible.Get())
