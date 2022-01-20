@@ -276,13 +276,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Explore);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Explore, true);
         }
         else if (currentOpenSection == ExploreSection.Explore)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Explore, false);
         }
     }
@@ -296,13 +306,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Backpack);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Backpack, true);
         }
         else if (currentOpenSection == ExploreSection.Backpack)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Backpack, false);
         }
     }
@@ -322,13 +342,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Map);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Map, true);
         }
         else if (currentOpenSection == ExploreSection.Map)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Map, false);
         }
     }
@@ -348,13 +378,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Builder);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Builder, true);
         }
         else if (currentOpenSection == ExploreSection.Builder)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Builder, false);
         }
     }
@@ -374,13 +414,23 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             view.GoToSection(ExploreSection.Quest);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Quest, true);
         }
         else if (currentOpenSection == ExploreSection.Quest)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
+
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Quest, false);
         }
     }
@@ -400,13 +450,21 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (current)
         {
-            SetVisibility(true);
+            if (!isOpen.Get())
+            {
+                SetVisibility(true);
+                exploreV2Analytics.SendStartMenuVisibility(true, ExploreUIVisibilityMethod.FromShortcut);
+            }
             view.GoToSection(ExploreSection.Settings);
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Settings, true);
         }
         else if (currentOpenSection == ExploreSection.Settings)
         {
-            SetVisibility(false);
+            if (isOpen.Get())
+            {
+                SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, ExploreUIVisibilityMethod.FromShortcut);
+            }
             exploreV2Analytics.SendStartMenuSectionVisibility(ExploreSection.Settings, false);
         }
     }
@@ -489,18 +547,17 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     internal void OnCloseButtonPressed(bool fromShortcut)
     {
-        if (isOpen.Get())
-            exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
-
         if (!fromShortcut)
         {
             SetVisibility(false);
+            exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
         }
         else
         {
             if (isOpen.Get())
             {
                 SetVisibility(false);
+                exploreV2Analytics.SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
             }
             else
             {
@@ -510,6 +567,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
                     Time.realtimeSinceStartup - chatInputHUDCloseTime >= MIN_TIME_AFTER_CLOSE_OTHER_UI_TO_OPEN_START_MENU)
                 {
                     SetVisibility(true);
+                    exploreV2Analytics.SendStartMenuVisibility(true, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
                 }
             }
         }
