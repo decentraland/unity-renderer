@@ -43,7 +43,7 @@ namespace DCL
                     return;
 
                 MapRenderer.i.atlas.UpdateCulling();
-                toastView.OnCloseClick();
+                CloseToast();
             });
 
             toastView.OnGotoClicked += () => navmapVisible.Set(false);
@@ -148,7 +148,7 @@ namespace DCL
             }
             else
             {
-                toastView.OnCloseClick();
+                CloseToast();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
                 MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
@@ -178,6 +178,8 @@ namespace DCL
 
         void TriggerToast(int cursorTileX, int cursorTileY)
         {
+            if(toastView.isOpen)
+                CloseToast();
             var sceneInfo = mapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
             if (sceneInfo == null)
                 WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
