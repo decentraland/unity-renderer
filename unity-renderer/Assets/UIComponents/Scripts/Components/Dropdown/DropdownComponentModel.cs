@@ -5,5 +5,6 @@ using System.Collections.Generic;
 public class DropdownComponentModel : BaseComponentModel
 {
     public string title;
+    public bool isMultiselect;
     public List<ToggleComponentModel> options;
 }

@@ -11,7 +11,12 @@ public interface IToggleComponentView
     event Action<bool, string> OnSelectedChanged;
 
     /// <summary>
-    /// Set the toggle as on or off.
+    /// Id asociated to the toogle.
+    /// </summary>
+    string id { get; }
+
+    /// <summary>
+    /// On/Off state of the toggle.
     /// </summary>
     bool isOn { get; set; }
 
@@ -20,12 +25,6 @@ public interface IToggleComponentView
     /// </summary>
     /// <param name="newText">New text.</param>
     void SetText(string newText);
-
-    /// <summary>
-    /// Set the toggle id.
-    /// </summary>
-    /// <param name="newId">New id.</param>
-    void SetId(string newId);
 }
 
 public class ToggleComponentView : BaseComponentView, IToggleComponentView, IComponentModelConfig
@@ -38,6 +37,12 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
     [SerializeField] internal ToggleComponentModel model;
 
     public event Action<bool, string> OnSelectedChanged;
+
+    public string id
+    {
+        get => model.id;
+        set => model.id = value;
+    }
 
     public bool isOn 
     { 
@@ -60,13 +65,6 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         toggle.onValueChanged.AddListener((isOn) => OnSelectedChanged?.Invoke(isOn, model.id));
     }
 
-    public override void Dispose()
-    {
-        base.Dispose();
-
-        toggle.onValueChanged.RemoveAllListeners();
-    }
-
     public void Configure(BaseComponentModel newModel)
     {
         model = (ToggleComponentModel)newModel;
@@ -78,9 +76,9 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         if (model == null)
             return;
 
+        id = model.id;
         isOn = model.isOn;
         SetText(model.text);
-        SetId(model.id);
     }
 
     public void SetText(string newText)
@@ -93,8 +91,10 @@ public class ToggleComponentView : BaseComponentView, IToggleComponentView, ICom
         toggleText.text = newText;
     }
 
-    public void SetId(string newId)
+    public override void Dispose()
     {
-        model.id = newId;
+        base.Dispose();
+
+        toggle.onValueChanged.RemoveAllListeners();
     }
 }

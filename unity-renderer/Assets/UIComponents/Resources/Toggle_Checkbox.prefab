@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2151166506241299639}
   - component: {fileID: 7411399265605913824}
   m_Layer: 5
-  m_Name: Toggle
+  m_Name: Toggle_Checkbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 20}
+  m_SizeDelta: {x: 200, y: 28.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8448182982039922279
 MonoBehaviour:
@@ -89,7 +89,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!95 &871710885947596886
 Animator:
   serializedVersion: 3
@@ -151,9 +151,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toggle: {fileID: 8448182982039922279}
   toggleText: {fileID: 3005862737368832046}
+  selectedMark: {fileID: 5911642011196046217}
   model:
-    isOn: 0
+    isOn: 1
     text: Text
+    id: 
+    showSelectedMark: 1
 --- !u!1 &582205753242044301
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,8 +191,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 9, y: -0.5}
-  m_SizeDelta: {x: -28, y: -3}
+  m_AnchoredPosition: {x: 9.5, y: 0}
+  m_SizeDelta: {x: -29, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7041155672701076563
 CanvasRenderer:
@@ -247,10 +250,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 15
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 0
   m_fontSizeMax: 16
   m_fontStyle: 0
@@ -321,10 +324,10 @@ RectTransform:
   m_Father: {fileID: 2195480638150896117}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: -6, y: -6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1358073026174820023
 CanvasRenderer:
@@ -354,7 +357,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 394362cf579a347f0b72a304db178ccb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -397,10 +400,10 @@ RectTransform:
   m_Father: {fileID: 6128774804984969185}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: -10}
-  m_SizeDelta: {x: 20, y: 20}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 10, y: 0}
+  m_SizeDelta: {x: 16, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2038291749362849400
 CanvasRenderer:
@@ -430,8 +433,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: e4194917179d34ea897e31a5b487a894, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

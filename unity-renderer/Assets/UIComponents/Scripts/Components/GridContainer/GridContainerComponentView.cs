@@ -398,6 +398,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
 
         instantiatedItems.Clear();
 
+        SetItemSize(model.itemSize);
+
         return extractedItems;
     }
 
@@ -411,6 +413,8 @@ public class GridContainerComponentView : BaseComponentView, IGridContainerCompo
         itemsToDestroy.Clear();
 
         instantiatedItems.Clear();
+
+        SetItemSize(model.itemSize);
     }
 
     internal void CreateItem(BaseComponentView newItem, string name)
