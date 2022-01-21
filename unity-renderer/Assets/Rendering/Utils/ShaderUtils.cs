@@ -46,5 +46,12 @@ namespace DCL.Helpers
         public static readonly int SpecularHighlights = Shader.PropertyToID("_SpecularHighlights");
         public static readonly int EnvironmentReflections = Shader.PropertyToID("_EnvironmentReflections");
         public static readonly int Surface = Shader.PropertyToID("_Surface");
+
+        //Avatar specific properties
+        public static readonly int EyesTexture = Shader.PropertyToID("_EyesTexture");
+        public static readonly int EyeTint = Shader.PropertyToID("_EyeTint");
+        public static readonly int IrisMask = Shader.PropertyToID("_IrisMask");
+        public static readonly int TintMask = Shader.PropertyToID("_TintMask");
+        public static readonly string SSAO_OFF_KEYWORD = "_SSAO_OFF";
     }
 }

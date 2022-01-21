@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -25,8 +25,8 @@ namespace AvatarSystem
         private readonly IAvatarMovementController avatarMovementController;
 
         internal Renderer combinedAvatar;
-        internal readonly Renderer impostorRenderer;
-        internal readonly MeshFilter impostorMeshFilter;
+        internal Renderer impostorRenderer;
+        internal MeshFilter impostorMeshFilter;
         private float avatarAlpha;
 
         private CancellationTokenSource transitionCTS;
@@ -38,8 +38,13 @@ namespace AvatarSystem
             this.visibility = visibility;
             // TODO Once the AvatarMovementController is completly ported into the AvatarSystem we can decouple it from the LOD
             this.avatarMovementController = avatarMovementController;
-            impostorRenderer = CreateImpostor();
+        }
 
+        private void EnsureImpostor()
+        {
+            if (impostorRenderer != null && impostorMeshFilter != null)
+                return;
+            impostorRenderer = CreateImpostor();
             impostorMeshFilter = impostorRenderer.GetComponent<MeshFilter>();
             SetImpostorTexture(null);
         }
@@ -50,13 +55,20 @@ namespace AvatarSystem
         /// <param name="texture"></param>
         public void SetImpostorTexture(Texture2D texture)
         {
+            EnsureImpostor();
+
             if (texture == null)
                 AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(impostorMeshFilter.mesh, impostorRenderer.material);
             else
                 AvatarRendererHelpers.SetImpostorTexture(texture, impostorMeshFilter.mesh, impostorRenderer.material);
         }
 
-        public void SetImpostorTint(Color color) { AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, color); }
+        public void SetImpostorTint(Color color)
+        {
+            EnsureImpostor();
+
+            AvatarRendererHelpers.SetImpostorTintColor(impostorRenderer.material, color);
+        }
 
         public void Bind(Renderer combinedAvatar)
         {
@@ -98,6 +110,7 @@ namespace AvatarSystem
         private async UniTaskVoid Transition(CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
+            EnsureImpostor();
 
             try
             {
@@ -128,6 +141,8 @@ namespace AvatarSystem
 
         private void SetImpostorEnabled(bool enabled)
         {
+            EnsureImpostor();
+
             impostorRenderer.enabled = enabled;
             billboardLookAtCameraCTS?.Cancel();
             billboardLookAtCameraCTS?.Dispose();
@@ -147,17 +162,19 @@ namespace AvatarSystem
             if (combinedAvatar == null)
                 return;
 
+            EnsureImpostor();
+
             Material[] mats = combinedAvatar.sharedMaterials;
             for (int j = 0; j < mats.Length; j++)
             {
-                mats[j].SetFloat(AvatarSystemUtils.DitherFade, avatarAlpha);
+                mats[j].SetFloat(ShaderUtils.DitherFade, avatarAlpha);
             }
 
             Material impostorMaterial = impostorRenderer.material;
             //TODO implement dither in Unlit shader
-            Color current = impostorMaterial.GetColor(AvatarSystemUtils._BaseColor);
+            Color current = impostorMaterial.GetColor(ShaderUtils.BaseColor);
             current.a = 1f - avatarAlpha;
-            impostorMaterial.SetColor(AvatarSystemUtils._BaseColor, current);
+            impostorMaterial.SetColor(ShaderUtils.BaseColor, current);
         }
 
         internal static void UpdateSSAO(Renderer renderer, int lodIndex)
@@ -169,9 +186,9 @@ namespace AvatarSystem
             for (int j = 0; j < mats.Length; j++)
             {
                 if (lodIndex == 0)
-                    mats[j].DisableKeyword(AvatarSystemUtils.SSAO_OFF_KEYWORD);
+                    mats[j].DisableKeyword(ShaderUtils.SSAO_OFF_KEYWORD);
                 else
-                    mats[j].EnableKeyword(AvatarSystemUtils.SSAO_OFF_KEYWORD);
+                    mats[j].EnableKeyword(ShaderUtils.SSAO_OFF_KEYWORD);
             }
         }
 
@@ -195,8 +212,10 @@ namespace AvatarSystem
 
         internal void SetBillboardRotation(Transform lookAt)
         {
-            impostorContainer.transform.LookAt(lookAt);
-            impostorContainer.transform.eulerAngles = Vector3.Scale(impostorContainer.transform.eulerAngles, Vector3.up);
+            EnsureImpostor();
+
+            impostorRenderer.transform.LookAt(lookAt);
+            impostorRenderer.transform.eulerAngles = Vector3.Scale(impostorContainer.transform.eulerAngles, Vector3.up);
         }
 
         public void Dispose()
@@ -208,10 +227,7 @@ namespace AvatarSystem
             billboardLookAtCameraCTS?.Cancel();
             billboardLookAtCameraCTS?.Dispose();
             billboardLookAtCameraCTS = null;
-        }
 
-        ~LOD()
-        {
             if (impostorRenderer != null)
                 Object.Destroy(impostorRenderer.gameObject);
         }

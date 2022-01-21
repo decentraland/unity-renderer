@@ -48,7 +48,7 @@ namespace AvatarSystem
 
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
-                if (status == ILoader.Status.Failed_Mayor)
+                if (status == ILoader.Status.Failed_Major)
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
 
                 AvatarSystemUtils.CopyBones(bodyshapeLoader.upperBodyRenderer, loaders.Values.SelectMany(x => x.rendereable.renderers).OfType<SkinnedMeshRenderer>());
@@ -97,7 +97,7 @@ namespace AvatarSystem
 
             if (bodyshapeLoader.status == IWearableLoader.Status.Failed)
             {
-                status = ILoader.Status.Failed_Mayor;
+                status = ILoader.Status.Failed_Major;
                 throw new Exception($"Couldnt load bodyshape");
             }
         }
@@ -162,7 +162,7 @@ namespace AvatarSystem
             bool success = avatarMeshCombiner.Combine(bodyshapeLoader.upperBodyRenderer, allRenderers.ToArray());
             if (!success)
             {
-                status = ILoader.Status.Failed_Mayor;
+                status = ILoader.Status.Failed_Major;
                 throw new Exception("Couldnt merge avatar");
             }
 
@@ -187,7 +187,7 @@ namespace AvatarSystem
                 else if (loader.status == IWearableLoader.Status.Failed)
                 {
                     if (AvatarSystemUtils.IsCategoryRequired(category))
-                        return ILoader.Status.Failed_Mayor;
+                        return ILoader.Status.Failed_Major;
                     composedStatus = ILoader.Status.Failed_Minor;
                 }
             }

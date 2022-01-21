@@ -211,7 +211,7 @@ namespace Test.AvatarSystem
             ILoader.Status result = Loader.ComposeStatus(loaders);
 
             //Assert
-            Assert.AreEqual(ILoader.Status.Failed_Mayor, result);
+            Assert.AreEqual(ILoader.Status.Failed_Major, result);
         }
 
         [UnityTest]

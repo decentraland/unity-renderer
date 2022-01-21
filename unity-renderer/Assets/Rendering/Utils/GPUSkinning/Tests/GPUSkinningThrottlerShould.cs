@@ -51,7 +51,7 @@ public class GPUSkinningThrottlerShould
     });
 
     [UnityTest]
-    public IEnumerator StoWhenDisposed() => UniTask.ToCoroutine(async () =>
+    public IEnumerator StopWhenDisposed() => UniTask.ToCoroutine(async () =>
     {
         throttler.SetThrottling(1);
 

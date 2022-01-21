@@ -109,12 +109,12 @@ namespace Test.AvatarSystem
             Assert.AreEqual(hairColor, bodyParts.ubody.material.color);
             Assert.AreEqual(skinColor, bodyParts.lbody.material.color);
             Assert.AreEqual(Color.gray, bodyParts.feet.material.color);
-            Assert.AreEqual(eyesColor, bodyParts.eyes.material.GetColor(AvatarSystemUtils._EyeTint));
-            Assert.AreEqual(Texture2D.whiteTexture, bodyParts.eyes.material.GetTexture(AvatarSystemUtils._EyesTexture));
-            Assert.AreEqual(hairColor, bodyParts.eyebrows.material.GetColor(AvatarSystemUtils._BaseColor));
-            Assert.AreEqual(Texture2D.whiteTexture, bodyParts.eyebrows.material.GetTexture(AvatarSystemUtils._BaseMap));
-            Assert.AreEqual(skinColor, bodyParts.mouth.material.GetColor(AvatarSystemUtils._BaseColor));
-            Assert.AreEqual(Texture2D.whiteTexture, bodyParts.mouth.material.GetTexture(AvatarSystemUtils._BaseMap));
+            Assert.AreEqual(eyesColor, bodyParts.eyes.material.GetColor(ShaderUtils.EyeTint));
+            Assert.AreEqual(Texture2D.whiteTexture, bodyParts.eyes.material.GetTexture(ShaderUtils.EyesTexture));
+            Assert.AreEqual(hairColor, bodyParts.eyebrows.material.GetColor(ShaderUtils.BaseColor));
+            Assert.AreEqual(Texture2D.whiteTexture, bodyParts.eyebrows.material.GetTexture(ShaderUtils.BaseMap));
+            Assert.AreEqual(skinColor, bodyParts.mouth.material.GetColor(ShaderUtils.BaseColor));
+            Assert.AreEqual(Texture2D.whiteTexture, bodyParts.mouth.material.GetTexture(ShaderUtils.BaseMap));
         });
 
         [UnityTest]

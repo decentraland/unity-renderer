@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Threading;
-using AvatarSystem;
-using Cysharp.Threading.Tasks;
+﻿using AvatarSystem;
+using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using LOD = AvatarSystem.LOD;
 
 namespace Test.AvatarSystem
@@ -74,7 +71,7 @@ namespace Test.AvatarSystem
             for (var i = 0; i < renderer.sharedMaterials.Length; i++)
             {
                 //SSAO is disabled explicitly, therefor the negated condition
-                bool isSSAOEnabled = !renderer.sharedMaterials[i].IsKeywordEnabled(AvatarSystemUtils.SSAO_OFF_KEYWORD);
+                bool isSSAOEnabled = !renderer.sharedMaterials[i].IsKeywordEnabled(ShaderUtils.SSAO_OFF_KEYWORD);
                 Assert.AreEqual(enabled, isSSAOEnabled);
             }
 
@@ -103,10 +100,10 @@ namespace Test.AvatarSystem
             lod.UpdateAlpha(avatarAlpha);
 
             foreach (Material material in lod.combinedAvatar.sharedMaterials)
-                Assert.AreEqual(avatarAlpha, material.GetFloat(AvatarSystemUtils.DitherFade));
+                Assert.AreEqual(avatarAlpha, material.GetFloat(ShaderUtils.DitherFade));
 
             Material impostorMaterial = lod.impostorRenderer.material;
-            float impostorAlpha = impostorMaterial.GetColor(AvatarSystemUtils._BaseColor).a;
+            float impostorAlpha = impostorMaterial.GetColor(ShaderUtils.BaseColor).a;
             Assert.AreEqual(1f - avatarAlpha, impostorAlpha);
 
             Object.Destroy(renderer.gameObject);

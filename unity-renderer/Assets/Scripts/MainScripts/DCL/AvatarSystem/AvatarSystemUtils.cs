@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Helpers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -11,14 +12,6 @@ namespace AvatarSystem
     {
         public const float AVATAR_Y_OFFSET = 0.75f;
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
-        public static readonly int _BaseColor = Shader.PropertyToID("_BaseColor");
-        public static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
-        public static readonly int _EyesTexture = Shader.PropertyToID("_EyesTexture");
-        public static readonly int _EyeTint = Shader.PropertyToID("_EyeTint");
-        public static readonly int _IrisMask = Shader.PropertyToID("_IrisMask");
-        public static readonly int _TintMask = Shader.PropertyToID("_TintMask");
-        public static readonly int DitherFade = Shader.PropertyToID("_DitherFade");
-        public static readonly string SSAO_OFF_KEYWORD = "_SSAO_OFF";
 
         public static bool IsCategoryRequired(string category) { return WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(category); }
 
@@ -67,9 +60,9 @@ namespace AvatarSystem
                 foreach (Material material in renderer.materials)
                 {
                     if (material.name.ToLower().Contains("skin"))
-                        material.SetColor(_BaseColor, skinColor);
+                        material.SetColor(ShaderUtils.BaseColor, skinColor);
                     else if (material.name.ToLower().Contains("hair"))
-                        material.SetColor(_BaseColor, hairColor);
+                        material.SetColor(ShaderUtils.BaseColor, hairColor);
                 }
             }
         }

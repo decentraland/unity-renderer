@@ -332,5 +332,8 @@ namespace DCL
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
+
+        [ContextMenu("Print current profile")]
+        private void PrintCurrentProfile() { Debug.Log(JsonUtility.ToJson(model)); }
     }
 }
