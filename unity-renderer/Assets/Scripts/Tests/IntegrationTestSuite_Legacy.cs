@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using DCL.Camera;
 using DCL.Controllers;
+using DCL.Helpers.NFT.Markets;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using NSubstitute;
@@ -50,6 +51,19 @@ public class IntegrationTestSuite_Legacy
         result.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
         result.Register<IParcelScenesCleaner>(() => Substitute.For<IParcelScenesCleaner>());
         result.Register<ICullingController>(() => Substitute.For<ICullingController>());
+
+        result.Register<IServiceProviders>(
+            () =>
+            {
+                var mockedProviders = Substitute.For<IServiceProviders>();
+                mockedProviders.theGraph.Returns( Substitute.For<ITheGraph>() );
+                mockedProviders.analytics.Returns( Substitute.For<IAnalytics>() );
+                mockedProviders.catalyst.Returns( Substitute.For<ICatalyst>() );
+                mockedProviders.openSea.Returns( Substitute.For<INFTMarket>() );
+                return mockedProviders;
+            });
+
+
         return result;
     }
 
