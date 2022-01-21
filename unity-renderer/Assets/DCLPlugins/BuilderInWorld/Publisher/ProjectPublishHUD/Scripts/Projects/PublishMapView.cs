@@ -2,19 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
-using DCL.Interface;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 namespace DCL.Builder
 {
     public class PublishMapView : MonoBehaviour
     {
-        private const int RESET_POSITION_X = -1219;
-        private const int RESET_POSITION_Y = -1596;
-
         public event Action<Vector2Int> OnParcelClicked;
         public event Action<Vector2Int> OnParcelHover;
 
@@ -22,13 +16,14 @@ namespace DCL.Builder
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] RectTransform scrollRectContentTransform;
 
-        RectTransform minimapViewport;
-        Transform mapRendererMinimapParent;
-        Vector3 atlasOriginalPosition;
+        private RectTransform minimapViewport;
+        private Transform mapRendererMinimapParent;
+        private Vector3 atlasOriginalPosition;
+        private Vector2 initialContentPosition;
 
         private bool isVisible = false;
 
-        void Start()
+        private void Start()
         {
             scrollRect.onValueChanged.AddListener((x) =>
             {
@@ -40,6 +35,18 @@ namespace DCL.Builder
         }
 
         private void OnDestroy() { MapRenderer.OnParcelClicked -= ParcelSelect; }
+
+        // Note: this event is handled by an event trigger in the same gameobject as the scrollrect
+        public void BeginDrag()
+        {
+            MapRenderer.i.parcelHighlightImage.enabled = false;
+        }
+
+        // Note: this event is handled by an event trigger in the same gameobject as the scrollrect
+        public void EndDrag()
+        {
+            MapRenderer.i.parcelHighlightImage.enabled = true;
+        }
 
         internal void UpdateOwnedLands()
         {
@@ -59,7 +66,7 @@ namespace DCL.Builder
         public void GoToCoords(Vector2Int coords)
         {
             //Reset scroll
-            scrollRectContentTransform.anchoredPosition = new Vector2(RESET_POSITION_X, RESET_POSITION_Y);
+            scrollRect.content.anchoredPosition = initialContentPosition;
             MapRenderer.i.atlas.CenterToTile(coords);
         }
 
@@ -99,9 +106,12 @@ namespace DCL.Builder
             MapRenderer.i.transform.SetParent(scrollRectContentTransform);
             MapRenderer.i.atlas.UpdateCulling();
             MapRenderer.i.OnMovedParcelCursor += ParcelHovered;
+            MapRenderer.i.userIconPrefab.SetActive(false);
+
 
             scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
-
+            initialContentPosition = scrollRect.content.anchoredPosition;
+            
             // Reparent the player icon parent to scroll everything together
             MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(scrollRect.content);
 
@@ -117,6 +127,7 @@ namespace DCL.Builder
             MapRenderer.i.OnMovedParcelCursor -= ParcelHovered;
             MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
             MapRenderer.i.atlas.UpdateCulling();
+            MapRenderer.i.userIconPrefab.SetActive(true);
 
             // Restore the player icon to its original parent
             MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);
