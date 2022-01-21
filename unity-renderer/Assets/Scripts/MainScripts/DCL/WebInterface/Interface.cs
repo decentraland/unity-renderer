@@ -153,6 +153,13 @@ namespace DCL.Interface
         {
             public CameraMode.ModeId cameraMode;
         };
+        
+        [System.Serializable]
+        public class Web3UseResponsePayload
+        {
+            public string id;
+            public bool result;
+        };
 
         [System.Serializable]
         public class IdleStateChangedPayload
@@ -753,6 +760,7 @@ namespace DCL.Interface
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
         private static CameraModePayload cameraModePayload = new CameraModePayload();
+        private static Web3UseResponsePayload web3UseResponsePayload = new Web3UseResponsePayload();
         private static IdleStateChangedPayload idleStateChangedPayload = new IdleStateChangedPayload();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
         private static OnClickEvent onClickEvent = new OnClickEvent();
@@ -839,6 +847,13 @@ namespace DCL.Interface
             {
                 SendAllScenesEvent("cameraModeChanged", cameraModePayload);
             }
+        }
+        
+        public static void Web3UseResponse(string id, bool result)
+        {
+            web3UseResponsePayload.id = id;
+            web3UseResponsePayload.result = result;
+            SendMessage("Web3UseResponse", web3UseResponsePayload);
         }
 
         public static void ReportIdleStateChanged(bool isIdle)

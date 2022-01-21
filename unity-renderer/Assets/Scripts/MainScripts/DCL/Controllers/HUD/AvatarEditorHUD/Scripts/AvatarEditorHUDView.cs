@@ -33,9 +33,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     }
 
     [SerializeField]
-    internal InputAction_Trigger closeAction;
-
-    [SerializeField]
     internal Canvas avatarEditorCanvas;
 
     [SerializeField]
@@ -107,7 +104,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     private void Awake()
     {
-        closeAction.OnTriggered += CloseAction_OnTriggered;
         loadingSpinnerGameObject.SetActive(false);
         doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
         if (characterPreviewController == null)
@@ -118,8 +114,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         isOpen = false;
     }
-
-    private void OnDestroy() { closeAction.OnTriggered -= CloseAction_OnTriggered; }
 
     private void CloseAction_OnTriggered(DCLAction_Trigger action) { OnCloseActionTriggered?.Invoke(); }
 
