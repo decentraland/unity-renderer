@@ -183,8 +183,13 @@ internal class EntityStyle : IShapeListener
 
         originalMaterials.Add(renderer, originalMaterial);
 
+        SetUpDebugMaterial(renderer, originalMaterial.mainTexture);
+    }
+
+    private void SetUpDebugMaterial(Renderer renderer, Texture originalMaterialTexture)
+    {
         Material newMaterial = new Material(entityMaterialResource);
-        newMaterial.mainTexture = originalMaterial.mainTexture;
+        newMaterial.mainTexture = originalMaterialTexture;
         newMaterial.name = ENTITY_MATERIAL_NAME;
 
         entityWithColliderMaterials.Add(renderer, newMaterial);
@@ -201,6 +206,10 @@ internal class EntityStyle : IShapeListener
         if (entityWithColliderMaterials.TryGetValue(renderer, out Material material))
         {
             renderer.sharedMaterial = material;
+        }
+        else
+        {
+            SetUpDebugMaterial(renderer, renderer.sharedMaterial.mainTexture);
         }
     }
 }
