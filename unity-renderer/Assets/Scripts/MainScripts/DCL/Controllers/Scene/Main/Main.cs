@@ -50,6 +50,17 @@ namespace DCL
 
             SetupPlugins();
 
+            InitializeCommunication();
+
+            // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
+            // We should re-enable this later as produces a performance regression.
+            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
+                Environment.i.platform.cullingController.SetAnimationCulling(false);
+        }
+
+        protected virtual void InitializeCommunication()
+        {
+
 #if UNITY_WEBGL && !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;
@@ -60,18 +71,9 @@ namespace DCL
             //              IntegrationTestSuite_Legacy base class.
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
-#if UNITY_STANDALONE && !UNITY_EDITOR
-                kernelCommunication = new WebSocketCommunication(true);
-#else
                 kernelCommunication = new WebSocketCommunication(DebugConfigComponent.i.webSocketSSL);
-#endif
             }
 #endif
-
-            // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
-            // We should re-enable this later as produces a performance regression.
-            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
-                Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
         void OnLoadingScreenVisibleStateChange(bool newVisibleValue, bool previousVisibleValue)
