@@ -85,11 +85,14 @@ namespace DCL
 
             PoolManager.i.OnGet -= Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
+
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
 
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
+
+            CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneIdChange;
 
             UnloadAllScenes(includePersistent: true);
 
