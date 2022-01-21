@@ -524,6 +524,7 @@ public class DCLCharacterController : MonoBehaviour
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
         var compositeRotation = Quaternion.LookRotation(characterForward.HasValue() ? characterForward.Get().Value :cameraForward.Get());
         var playerHeight = height + (characterController.height / 2);
+        var cameraRotation = Quaternion.LookRotation(cameraForward.Get());
 
         //NOTE(Brian): We have to wait for a Teleport before sending the ReportPosition, because if not ReportPosition events will be sent
         //             When the spawn point is being selected / scenes being prepared to be sent and the Kernel gets crazy.
@@ -532,7 +533,7 @@ public class DCLCharacterController : MonoBehaviour
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
         if (initialPositionAlreadySet)
-            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
+            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight, cameraRotation);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;
     }
