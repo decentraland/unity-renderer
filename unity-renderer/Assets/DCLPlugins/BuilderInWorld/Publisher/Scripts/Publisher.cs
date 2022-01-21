@@ -74,13 +74,6 @@ namespace DCL.Builder
 
         internal void PublishLandScene(IBuilderScene scene)
         {
-            // List<LandWithAccess> landWithAccesses = new List<LandWithAccess>();
-            // foreach (var land in DataStore.i.builderInWorld.landsWithAccess.Get())
-            // {
-            //     if (land.scenes.FirstOrDefault()?.projectId == scene.manifest.project.id)
-            //         landWithAccesses.Add(land);
-            // }
-
             PublishInfo publishInfo = new PublishInfo();
             publishInfo.rotation = PublishInfo.ProjectRotation.NORTH;
             publishInfo.coordsToPublish = scene.scene.sceneData.basePosition;
@@ -91,6 +84,7 @@ namespace DCL.Builder
         {
             builderSceneToDeploy = scene;
             publishInfo = info;
+            progressController.SetScene(scene);
             progressController.ShowConfirmDeploy();
         }
 
@@ -157,7 +151,7 @@ namespace DCL.Builder
             if (isOk)
             {
                 // We notify the success of the deployment
-                progressController.DeploySuccess(builderSceneToDeploy);
+                progressController.DeploySuccess();
 
                 // Remove link to a land if exists
                 builderSceneToDeploy.manifest.project.creation_coords = null;
@@ -172,8 +166,9 @@ namespace DCL.Builder
 
             string successString = isOk ? "Success" : message;
             BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
-
-            builderSceneToDeploy = null;
+            
+            if (isOk)
+                builderSceneToDeploy = null;
         }
 
         internal CatalystSceneEntityMetadata CreateSceneJson(IBuilderScene builderScene, PublishInfo info)

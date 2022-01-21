@@ -73,13 +73,11 @@ namespace DCL.Builder
 
         [Header("Second step")]
         [SerializeField] internal GameObject secondStep;
-        [SerializeField] internal Button cancelButton;
+        [SerializeField] internal Button backSecondButton;
         [SerializeField] internal Button publishButton;
         [SerializeField] internal PublishLandListView landListView;
         [SerializeField] internal PublishMapView mapView;
-
-        [Header("Last step")]
-        [SerializeField] internal GameObject lastStep;
+        
         [SerializeField] internal RawImage sceneScreenshotImage;
 
         internal IBuilderScene scene;
@@ -109,7 +107,7 @@ namespace DCL.Builder
             backButton.onClick.AddListener(Back);
             nextButton.onClick.AddListener(Next);
 
-            cancelButton.onClick.AddListener(CancelButtonPressed);
+            backSecondButton.onClick.AddListener(Back);
             publishButton.onClick.AddListener(PublishButtonPressed);
 
             rotateLeftButton.onClick.AddListener( RotateLeft);
@@ -130,7 +128,7 @@ namespace DCL.Builder
             backButton.onClick.RemoveAllListeners();
             nextButton.onClick.RemoveAllListeners();
 
-            cancelButton.onClick.RemoveAllListeners();
+            backSecondButton.onClick.RemoveAllListeners();
             publishButton.onClick.RemoveAllListeners();
 
             rotateLeftButton.onClick.RemoveAllListeners();
@@ -140,7 +138,10 @@ namespace DCL.Builder
         private void Back()
         {
             if (currentStep <= 0)
+            {
+                Hide();
                 return;
+            }
 
             currentStep--;
             ShowCurrentStep();
@@ -160,8 +161,6 @@ namespace DCL.Builder
                 return;
             }
 
-            Debug.Log("Parcel clicked " + parcel.x + " ," + parcel.y );
-
             coordsSelected = true;
             selectedCoords = parcel;
             publishButton.interactable = true;
@@ -177,7 +176,6 @@ namespace DCL.Builder
         {
             firstStep.SetActive(false);
             secondStep.SetActive(false);
-            lastStep.SetActive(false);
             switch (currentStep)
             {
                 case 0: // Choose name, desc and rotation
@@ -187,18 +185,6 @@ namespace DCL.Builder
                     secondStep.SetActive(true);
                     if (availableLandsToPublish.Count >= 0)
                         CoordsSelected(availableLandsToPublish[0]);
-                    break;
-                case 2: // Confirm the publish
-                    lastStep.SetActive(true);
-                    break;
-                case 3: // Publishing progress
-                    lastStep.SetActive(true);
-                    break;
-                case 4: // Publish error
-                    lastStep.SetActive(true);
-                    break;
-                case 5: // Publish success
-                    lastStep.SetActive(true);
                     break;
             }
         }
@@ -251,7 +237,8 @@ namespace DCL.Builder
 
             // We set the screenshot
             sceneAerialScreenshotImage.texture = scene.aerialScreenshotTexture;
-            sceneScreenshotImage.texture = scene.sceneScreenshotTexture;
+            if(sceneScreenshotImage != null)
+                sceneScreenshotImage.texture = scene.sceneScreenshotTexture;
 
             // We set the scene info
             nameInputField.SetText(scene.manifest.project.title);
