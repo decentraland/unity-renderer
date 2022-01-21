@@ -24,6 +24,7 @@ namespace DCL.Controllers
         bool isPersistent { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
+        string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
