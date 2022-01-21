@@ -78,6 +78,10 @@ namespace DCL.Camera
                 OnFullscreenUIVisibilityChange(CommonScriptableObjects.isFullscreenHUDOpen.Get(), !CommonScriptableObjects.isFullscreenHUDOpen.Get());
 
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange += OnFullscreenUIVisibilityChange;
+
+            DataStore.i.camera.outputTexture.OnChange += OnOutputTextureChange;
+            OnOutputTextureChange(DataStore.i.camera.outputTexture.Get(), null);
+
             wasBlendingLastFrame = false;
         }
 
@@ -89,6 +93,11 @@ namespace DCL.Camera
                 return;
 
             camera.enabled = !visibleState && CommonScriptableObjects.rendererState.Get();
+        }
+
+        void OnOutputTextureChange(RenderTexture current, RenderTexture previous)
+        {
+            camera.targetTexture = current;
         }
 
         public bool TryGetCameraStateByType<T>(out CameraStateBase searchedCameraState)
@@ -229,6 +238,7 @@ namespace DCL.Camera
             CommonScriptableObjects.cameraBlocked.OnChange -= CameraBlocked_OnChange;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnFullscreenUIVisibilityChange;
             CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
+            DataStore.i.camera.outputTexture.OnChange -= OnOutputTextureChange;
         }
 
         [Serializable]

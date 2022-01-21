@@ -217,6 +217,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
         closeAction.OnTriggered -= OnCloseActionTriggered;
+        DataStore.i.exploreV2.isSomeModalOpen.OnChange -= IsSomeModalOpen_OnChange;
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
 
         if (realmSelectorModal != null)
@@ -397,6 +398,15 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         closeMenuButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke(false));
         closeAction.OnTriggered += OnCloseActionTriggered;
+        DataStore.i.exploreV2.isSomeModalOpen.OnChange += IsSomeModalOpen_OnChange;
+    }
+
+    internal void IsSomeModalOpen_OnChange(bool current, bool previous)
+    {
+        closeAction.OnTriggered -= OnCloseActionTriggered;
+
+        if (!current)
+            closeAction.OnTriggered += OnCloseActionTriggered;
     }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { OnCloseButtonPressed?.Invoke(true); }
