@@ -7,7 +7,6 @@ using UnityEngine;
 internal class MaterialChangesTracker : IDisposable
 {
     private readonly Dictionary<Renderer, Material> originalMaterials;
-    private readonly Dictionary<Renderer, Material> entityWithColliderMaterials;
     private readonly MeshesInfo meshesInfo;
 
     private readonly Coroutine checkRoutine;

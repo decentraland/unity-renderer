@@ -2,7 +2,7 @@
     "name": "DebugPlugins_ShapesCollidersDisplayer_Tests",
     "rootNamespace": "",
     "references": [
-        "GUID:dd2bdb4c07be4110a5b57bf41484b080",
+        "GUID:4944eecb1b2624b8e937f97e1056f4d6",
         "GUID:287946b9a5eec4b4fb510829a20c86b8",
         "GUID:8d6bbe4241044fef932e08783eed474f",
         "GUID:97d8897529779cb49bebd400c7f402a6",

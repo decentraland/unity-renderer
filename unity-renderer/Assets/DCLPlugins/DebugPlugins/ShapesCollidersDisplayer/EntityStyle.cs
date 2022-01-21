@@ -15,7 +15,7 @@ internal class EntityStyle : IShapeListener
     private readonly List<GameObject> colliders = new List<GameObject>();
 
     private readonly Dictionary<Renderer, Material> originalMaterials = new Dictionary<Renderer, Material>();
-    private readonly Dictionary<Renderer, Material> entityWithColliderMaterials = new Dictionary<Renderer, Material>();
+    private readonly Dictionary<Renderer, Material> entityDebugMaterials = new Dictionary<Renderer, Material>();
 
     private bool isShowingColliders = false;
     private MaterialChangesTracker materialChangesTracker;
@@ -78,6 +78,7 @@ internal class EntityStyle : IShapeListener
     {
         for (int i = 0; i < colliders.Count; i++)
         {
+            colliders[i]?.SetActive(false);
             Object.Destroy(colliders[i]);
         }
         colliders.Clear();
@@ -85,7 +86,7 @@ internal class EntityStyle : IShapeListener
 
     private void CleanMaterials()
     {
-        using (var iterator = entityWithColliderMaterials.GetEnumerator())
+        using (var iterator = entityDebugMaterials.GetEnumerator())
         {
             while (iterator.MoveNext())
             {
@@ -96,7 +97,7 @@ internal class EntityStyle : IShapeListener
                 }
             }
         }
-        entityWithColliderMaterials.Clear();
+        entityDebugMaterials.Clear();
 
         // Restore original materials
         using (var iterator = originalMaterials.GetEnumerator())
@@ -192,7 +193,7 @@ internal class EntityStyle : IShapeListener
         newMaterial.mainTexture = originalMaterialTexture;
         newMaterial.name = ENTITY_MATERIAL_NAME;
 
-        entityWithColliderMaterials.Add(renderer, newMaterial);
+        entityDebugMaterials.Add(renderer, newMaterial);
 
         renderer.sharedMaterial = newMaterial;
     }
@@ -203,7 +204,7 @@ internal class EntityStyle : IShapeListener
     private void OnMaterialChanged(Renderer renderer)
     {
         originalMaterials[renderer] = renderer.sharedMaterial;
-        if (entityWithColliderMaterials.TryGetValue(renderer, out Material material))
+        if (entityDebugMaterials.TryGetValue(renderer, out Material material))
         {
             renderer.sharedMaterial = material;
         }
