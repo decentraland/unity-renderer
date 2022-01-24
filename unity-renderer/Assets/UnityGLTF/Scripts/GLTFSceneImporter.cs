@@ -1221,15 +1221,19 @@ namespace UnityGLTF
             CreatedObject.transform.localRotation = Quaternion.identity;
             CreatedObject.transform.localScale = Vector3.one;
 
-            for (int i = 0; i < scene.Nodes.Count; ++i)
+            if (scene?.Nodes != null)
             {
-                NodeId node = scene.Nodes[i];
+                for (int i = 0; i < scene.Nodes.Count; ++i)
+                {
+                    NodeId node = scene.Nodes[i];
 
-                Node nodeToLoad = _gltfRoot.Nodes[node.Id];
+                    Node nodeToLoad = _gltfRoot.Nodes[node.Id];
 
-                await ConstructBufferData(nodeToLoad, token);
-                await ConstructNode(nodeToLoad, node.Id, token, CreatedObject.transform);
+                    await ConstructBufferData(nodeToLoad, token);
+                    await ConstructNode(nodeToLoad, node.Id, token, CreatedObject.transform);
+                }
             }
+            
 
             foreach (var gltfMaterial in pendingImageBuffers)
             {
