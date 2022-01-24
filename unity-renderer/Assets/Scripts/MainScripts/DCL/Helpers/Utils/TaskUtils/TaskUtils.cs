@@ -48,5 +48,13 @@ namespace DCL.Helpers
             IEnumerator routine = DCLCoroutineRunner.Run(enumerator, onFail, timeBudget);
             await routine.ToUniTask(CoroutineStarter.instance);
         }
+
+        public static async UniTask WaitWebRequest(IWebRequestAsyncOperation asyncOp, CancellationToken token)
+        {
+            await Run( async () =>
+            {
+                while (!asyncOp.isDone && !asyncOp.isDisposed) await UniTask.WaitForEndOfFrame();
+            }, cancellationToken: token);
+        }
     }
 }

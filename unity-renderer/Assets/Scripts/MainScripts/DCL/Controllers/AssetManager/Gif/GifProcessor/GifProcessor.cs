@@ -45,7 +45,7 @@ public class GifProcessor : IGifProcessor
     {
         webRequestOp = DCL.Environment.i.platform.webRequest.Get(url: url, disposeOnCompleted: false);
         cancellationToken.ThrowIfCancellationRequested();
-        await webRequestOp.asyncOp;
+        await TaskUtils.WaitWebRequest(webRequestOp, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
         
         if (webRequestOp.isSucceded)
