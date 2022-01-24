@@ -221,7 +221,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
     {
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
         AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.AddComponent<AvatarAnimationEventHandler>();
-        AudioContainer audioContainer = container.transform.parent.parent.GetComponentInChildren<AudioContainer>();
+        AudioContainer audioContainer = container.transform.parent.parent.parent.GetComponentInChildren<AudioContainer>();
         if (audioContainer != null)
         {
             animationEventHandler.Init(audioContainer);
