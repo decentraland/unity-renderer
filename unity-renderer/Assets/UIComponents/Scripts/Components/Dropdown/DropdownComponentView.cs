@@ -9,14 +9,14 @@ using UnityEngine.UI;
 public interface IDropdownComponentView
 {
     /// <summary>
-    /// Set the dropdown as multiselect or not.
-    /// </summary>
-    bool isMultiselect { get; set; }
-
-    /// <summary>
     /// Event that will be triggered when the toggle changes.
     /// </summary>
     event Action<bool, string> OnOptionSelectionChanged;
+
+    /// <summary>
+    /// Set the dropdown as multiselect or not.
+    /// </summary>
+    bool isMultiselect { get; set; }
 
     /// <summary>
     /// Open the options list.
@@ -52,13 +52,19 @@ public interface IDropdownComponentView
     /// </summary>
     /// <returns>The list of options.</returns>
     List<IToggleComponentView> GetAllOptions();
-}
 
+    /// <summary>
+    /// Filter options using a text.
+    /// </summary>
+    /// <param name="filterText">Text used to filter.</param>
+    void FilterOptions(string filterText);
+}
 public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig
 {
     [Header("Prefab References")]
     [SerializeField] internal Button button;
     [SerializeField] internal TMP_Text title;
+    [SerializeField] internal SearchBarComponentView searchBar;
     [SerializeField] internal GameObject optionsPanel;
     [SerializeField] internal GridContainerComponentView availableOptions;
     [SerializeField] internal ToggleComponentView togglePrefab;
@@ -66,15 +72,16 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [Header("Configuration")]
     [SerializeField] internal DropdownComponentModel model;
 
+    public event Action<bool, string> OnOptionSelectionChanged;
+
     public bool isMultiselect 
     {
         get => model.isMultiselect;
         set => model.isMultiselect = value;
     }
 
-    public event Action<bool, string> OnOptionSelectionChanged;
-
     internal bool isOpen = false;
+    internal List<ToggleComponentModel> originalOptions;
 
     public override void Awake()
     {
@@ -84,14 +91,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         Close();
 
         button.onClick.AddListener(() => ToggleOptionsList());
-
-        OnOptionSelectionChanged += (isOn, id) =>
-        {
-            if (isOn)
-                Debug.Log($"Option {id} ON");
-            else
-                Debug.Log($"Option {id} OFF");
-        };
+        searchBar.OnSearchText += FilterOptions;
     }
 
     public void Configure(BaseComponentModel newModel)
@@ -135,12 +135,38 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     public void SetOptions(List<ToggleComponentModel> options)
     {
         model.options = options;
+        originalOptions = options;
 
         RemoveAllInstantiatedOptions();
 
         for (int i = 0; i < options.Count; i++)
         {
             CreateOption(options[i], $"Option_{i}");
+        }
+    }
+
+    public void FilterOptions(string filterText)
+    {
+        if (filterText == string.Empty)
+        {
+            SetOptions(originalOptions);
+            return;
+        }
+
+        List<ToggleComponentModel> newFilteredOptions = new List<ToggleComponentModel>();
+        foreach (ToggleComponentModel option in originalOptions)
+        {
+            if (option.text.ToLower().Contains(filterText.ToLower()))
+                newFilteredOptions.Add(option);
+        }
+
+        model.options = newFilteredOptions;
+
+        RemoveAllInstantiatedOptions();
+
+        for (int i = 0; i < newFilteredOptions.Count; i++)
+        {
+            CreateOption(newFilteredOptions[i], $"Option_{i}");
         }
     }
 
@@ -154,7 +180,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
     public List<IToggleComponentView> GetAllOptions() 
     {
-        return availableOptions.GetItems()
+        return availableOptions
+            .GetItems()
             .Select(x => x as IToggleComponentView)
             .ToList();
     }
@@ -164,6 +191,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         base.Dispose();
 
         button.onClick.RemoveAllListeners();
+        searchBar.OnSearchText -= FilterOptions;
     }
 
     internal void ToggleOptionsList()
@@ -201,6 +229,12 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
                     option.isOn = false;
             }
         }
+
+        foreach (ToggleComponentModel option in originalOptions)
+        {
+            if (optionId == option.id)
+                option.isOn = isOn;
+        }
     }
 
     internal void RemoveAllInstantiatedOptions()
@@ -227,8 +261,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         DestroyImmediate(go);
     }
 
-    [ContextMenu("Test SANTI")]
-    public void TestSanti()
+    [ContextMenu("Mock Options")]
+    public void MockOptions()
     {
         List<ToggleComponentModel> test = new List<ToggleComponentModel>();
         for (int i = 0; i < 20; i++)
@@ -245,8 +279,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         SetOptions(test);
     }
 
-    [ContextMenu("Test SANTI Multiselect")]
-    public void TestSanti2()
+    [ContextMenu("Mock Options (Multi-selection)")]
+    public void MockOptions_MultiSelection()
     {
         List<ToggleComponentModel> test = new List<ToggleComponentModel>();
         for (int i = 0; i < 20; i++)
