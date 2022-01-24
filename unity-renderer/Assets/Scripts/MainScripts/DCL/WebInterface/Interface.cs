@@ -23,7 +23,7 @@ namespace DCL.Interface
         public static bool VERBOSE = false;
 
         [System.Serializable]
-        private class ReportPositionPayload
+        public class ReportPositionPayload
         {
             /** Camera position, world space */
             public Vector3 position;
