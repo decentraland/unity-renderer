@@ -1,3 +1,4 @@
+using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
@@ -65,7 +66,13 @@ namespace DCL
             for (int i = 0; i < contents.Count; i++)
             {
                 MappingPair m = contents[i];
-                fileToHash.Add(m.file, m.hash);
+                var key = m.file.ToLower();
+                if (fileToHash.ContainsKey(key))
+                {
+                    Debug.Log($"Hash key: {key} already exists in the map");
+                    continue;
+                }
+                fileToHash.Add(key, m.hash);
 
                 if (VERBOSE)
                 {
@@ -92,7 +99,7 @@ namespace DCL
                 return false;
             }
 
-            return fileToHash.ContainsKey(url);
+            return fileToHash.ContainsKey(url.ToLower());
         }
 
         public virtual string GetContentsUrl(string url)
@@ -109,6 +116,7 @@ namespace DCL
 
         public virtual bool TryGetContentsUrl_Raw(string url, out string result)
         {
+            url = url.ToLower();
             result = url;
 
 #if UNITY_EDITOR
@@ -137,6 +145,7 @@ namespace DCL
 
         public virtual bool TryGetContentsUrl(string url, out string result)
         {
+            url = url.ToLower();
             result = url;
 
             if (HasTestSchema(url))
@@ -193,7 +202,7 @@ namespace DCL
                 return true;
             }
 
-            if (fileToHash.TryGetValue(file, out result))
+            if (fileToHash.TryGetValue(file.ToLower(), out result))
             {
                 return true;
             }

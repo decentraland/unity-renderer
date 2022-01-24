@@ -10,7 +10,7 @@ public class ContentProviderShould
     public void SetUp() { contentProvider = new ContentProvider(); }
 
     [Test]
-    public void BakeFilesWithTheSameToLowerName()
+    public void NotAddFilesWithTheSameCaseInsensitiveName()
     {
         contentProvider.contents = new List<ContentServerUtils.MappingPair>()
         {
@@ -24,11 +24,10 @@ public class ContentProviderShould
 
         Assert.IsTrue(contentProvider.fileToHash.ContainsKey("file1"));
         Assert.AreEqual(contentProvider.fileToHash["file1"], "file1Hash");
-        Assert.IsTrue(contentProvider.fileToHash.ContainsKey("File1"));
-        Assert.AreEqual(contentProvider.fileToHash["File1"], "File1Hash");
+        Assert.IsFalse(contentProvider.fileToHash.ContainsKey("File1"));
+
         Assert.IsTrue(contentProvider.fileToHash.ContainsKey("file2"));
         Assert.AreEqual(contentProvider.fileToHash["file2"], "file2Hash");
-        Assert.IsTrue(contentProvider.fileToHash.ContainsKey("File2"));
-        Assert.AreEqual(contentProvider.fileToHash["File2"], "File2Hash");
+        Assert.IsFalse(contentProvider.fileToHash.ContainsKey("File2"));
     }
 }
