@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL
@@ -6,30 +8,41 @@ namespace DCL
     public class AssetPromise_Gif : AssetPromise<Asset_Gif>
     {
         private readonly string url;
-        private Coroutine loadingRoutine;
-
+        private Action onSuccsess;
+        private CancellationTokenSource tokenSource;
+        private static int gifLoadingCount = 0;
         public AssetPromise_Gif(string url) { this.url = url; }
 
         public override object GetId() { return url; }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
+            tokenSource = new CancellationTokenSource();
             var processor = new GifProcessor(url);
+            onSuccsess = OnSuccess;
             asset.processor = processor;
-            loadingRoutine = CoroutineStarter.Start(
-                processor.Load(
-                    frames =>
-                    {
-                        asset.frames = frames;
 
-                        OnSuccess?.Invoke();
-                    }, OnFail));
+            CancellationToken token = tokenSource.Token;
+            gifLoadingCount++;
+            Debug.Log($"[{gifLoadingCount}] Loading gif {url}");
+            processor.Load(OnLoadSuccsess, OnFail, token)
+                     .AttachExternalCancellation(token)
+                     .Forget();
         }
-
+        private void OnLoadSuccsess(GifFrameData[] frames)
+        {
+            gifLoadingCount--;
+            asset.frames = frames;
+            onSuccsess?.Invoke();
+            Debug.Log($"[{gifLoadingCount}] Loading gif finished {url}" );
+        }
         protected override void OnCancelLoading()
         {
-            if (loadingRoutine != null)
-                CoroutineStarter.Stop(loadingRoutine);
+            gifLoadingCount--;
+            tokenSource.Cancel();
+            tokenSource.Dispose();
+            Debug.Log($"[{gifLoadingCount}] Loading gif FAILED {url}" );
+
         }
 
         protected override bool AddToLibrary()

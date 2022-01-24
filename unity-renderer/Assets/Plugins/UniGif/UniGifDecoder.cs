@@ -9,10 +9,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public static partial class UniGif
 {
+    private const int MAX_ROWS_PER_FRAME = 25;
     /// <summary>
     /// Decode to textures from GIF data
     /// </summary>
@@ -21,11 +23,11 @@ public static partial class UniGif
     /// <param name="filterMode">Textures filter mode</param>
     /// <param name="wrapMode">Textures wrap mode</param>
     /// <returns>IEnumerator</returns>
-    private static IEnumerator DecodeTextureCoroutine(GifData gifData, Action<GifFrameData[]> callback, FilterMode filterMode, TextureWrapMode wrapMode)
+    private static async UniTask DecodeTexture(GifData gifData, Action<GifFrameData[]> callback, FilterMode filterMode, TextureWrapMode wrapMode)
     {
         if (gifData.m_imageBlockList == null || gifData.m_imageBlockList.Count < 1)
         {
-            yield break;
+            return;
         }
 
         GifFrameData[] gifTexList = new GifFrameData[gifData.m_imageBlockList.Count];
@@ -33,9 +35,21 @@ public static partial class UniGif
 
         int imgIndex = 0;
 
+        Dictionary<int, byte[]> decodedDataBuffer = new Dictionary<int, byte[]>();
+
+        // this is the CPU heavy part
         for (int i = 0; i < gifData.m_imageBlockList.Count; i++)
         {
             byte[] decodedData = GetDecodedData(gifData.m_imageBlockList[i]);
+            decodedDataBuffer.Add(i, decodedData);
+        }
+
+        // then we return to main thread to create textures
+        await UniTask.SwitchToMainThread();
+        
+        for (int i = 0; i < gifData.m_imageBlockList.Count; i++)
+        {
+            byte[] decodedData = decodedDataBuffer[i];
 
             GraphicControlExtension? graphicCtrlEx = GetGraphicCtrlExt(gifData, imgIndex);
 
@@ -46,23 +60,25 @@ public static partial class UniGif
             Color32 bgColor;
             List<byte[]> colorTable = GetColorTableAndSetBgColor(gifData, gifData.m_imageBlockList[i], transparentIndex, out bgColor);
 
-            yield return 0;
-
             bool filledTexture;
             Texture2D tex = CreateTexture2D(gifData, gifTexList, imgIndex, disposalMethodList, bgColor, filterMode, wrapMode, out filledTexture);
-
-            yield return 0;
 
             // Set pixel data
             int dataIndex = 0;
             // Reverse set pixels. because GIF data starts from the top left.
-            for (int y = tex.height - 1; y >= 0; y--)
+            int texHeight = tex.height;
+            int texWidth = tex.width;
+            ImageBlock gifDataMImageBlock = gifData.m_imageBlockList[i];
+
+            for (int y = texHeight - 1; y >= 0; y--)
             {
-                SetTexturePixelRow(tex, y, gifData.m_imageBlockList[i], decodedData, ref dataIndex, colorTable, bgColor, transparentIndex, filledTexture);
+                SetTexturePixelRow(tex, y, gifDataMImageBlock, decodedData, ref dataIndex, colorTable, bgColor, transparentIndex, filledTexture, texWidth, texHeight);
+                if (y % MAX_ROWS_PER_FRAME == 0)
+                {
+                    await UniTask.WaitForEndOfFrame();
+                }
             }
             tex.Apply();
-
-            yield return 0;
 
             float delaySec = GetDelaySec(graphicCtrlEx);
 
@@ -76,8 +92,6 @@ public static partial class UniGif
         {
             callback(gifTexList);
         }
-
-        yield break;
     }
 
     #region Call from DecodeTexture methods
@@ -240,12 +254,22 @@ public static partial class UniGif
     /// <summary>
     /// Set texture pixel row
     /// </summary>
-    private static void SetTexturePixelRow(Texture2D tex, int y, ImageBlock imgBlock, byte[] decodedData, ref int dataIndex, List<byte[]> colorTable, Color32 bgColor, int transparentIndex, bool filledTexture)
+    private static void SetTexturePixelRow(Texture2D tex,
+        int y,
+        ImageBlock imgBlock,
+        byte[] decodedData, 
+        ref int dataIndex, 
+        List<byte[]> colorTable,
+        Color32 bgColor, 
+        int transparentIndex, 
+        bool filledTexture,
+        int texWidth,
+        int texHeight)
     {
         // Row no (0~)
-        int row = tex.height - 1 - y;
+        int row = texHeight - 1 - y;
 
-        for (int x = 0; x < tex.width; x++)
+        for (int x = 0; x < texWidth; x++)
         {
             // Line no (0~)
             int line = x;

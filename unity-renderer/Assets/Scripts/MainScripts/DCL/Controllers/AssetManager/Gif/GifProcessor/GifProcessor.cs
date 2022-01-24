@@ -1,8 +1,8 @@
-using System.Collections;
 using System;
-using DCL.Helpers;
-using UnityEngine.Networking;
+using System.Threading;
 using DCL;
+using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 
 /// <summary>
 /// GifProcessor: Is in charge of choosing which gif processor tu use (typescript's webworker through GIFProcessingBridge or Unity's plugin UniGif)
@@ -10,32 +10,22 @@ using DCL;
 /// </summary>
 public class GifProcessor : IGifProcessor
 {
-    private bool jsGIFProcessingEnabled = false;
     private IWebRequestAsyncOperation webRequestOp;
     private string url;
 
-    public GifProcessor(string url)
-    {
-        this.url = url;
-        KernelConfig.i.EnsureConfigInitialized().Then(config => jsGIFProcessingEnabled = config.gifSupported);
-    }
+    public GifProcessor(string url) { this.url = url; }
 
     /// <summary>
     /// Request the download and processing of a gif
     /// </summary>
     /// <param name="OnSuccess">success callback with gif's frames arry</param>
     /// <param name="OnFail">fail callback</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public IEnumerator Load(Action<GifFrameData[]> OnSuccess, Action<Exception> OnFail)
+    public async UniTask Load( Action<GifFrameData[]> OnSuccess, Action<Exception> OnFail, CancellationToken cancellationToken)
     {
-        if (jsGIFProcessingEnabled)
-        {
-            yield return JSProcessorLoad(url, OnSuccess, OnFail);
-        }
-        else
-        {
-            yield return UniGifProcessorLoad(url, OnSuccess, OnFail);
-        }
+        cancellationToken.ThrowIfCancellationRequested();
+        await UniGifProcessorLoad(url, OnSuccess, OnFail, cancellationToken);
     }
 
     /// <summary>
@@ -45,58 +35,24 @@ public class GifProcessor : IGifProcessor
     /// </summary>
     public void DisposeGif()
     {
-        if (jsGIFProcessingEnabled)
-        {
-            DCL.GIFProcessingBridge.i.DeleteGIF(url);
-        }
-        else if (webRequestOp != null)
+        if (webRequestOp != null)
         {
             webRequestOp.Dispose();
         }
     }
 
-    private IEnumerator JSProcessorLoad(string url, Action<GifFrameData[]> OnSuccess, Action<Exception> OnFail)
-    {
-        bool fetchFailed = false;
-        yield return DCL.GIFProcessingBridge.i.RequestGIFProcessor(url,
-            (GifFrameData[] newTextures) =>
-            {
-                if (newTextures == null || newTextures.Length == 0)
-                {
-                    fetchFailed = true;
-                    return;
-                }
-
-                OnSuccess?.Invoke(newTextures);
-            }, () => fetchFailed = true);
-
-        if (fetchFailed)
-        {
-            OnFail?.Invoke(new Exception("Gif fetch failed"));
-        }
-    }
-
-    private IEnumerator UniGifProcessorLoad(string url, Action<GifFrameData[]> OnSuccess, Action<Exception> OnFail)
+    private async UniTask UniGifProcessorLoad(  string url, Action<GifFrameData[]> OnSuccess, Action<Exception> OnFail, CancellationToken cancellationToken)
     {
         webRequestOp = DCL.Environment.i.platform.webRequest.Get(url: url, disposeOnCompleted: false);
-
-        yield return webRequestOp;
-
+        cancellationToken.ThrowIfCancellationRequested();
+        await webRequestOp.asyncOp;
+        cancellationToken.ThrowIfCancellationRequested();
+        
         if (webRequestOp.isSucceded)
         {
             var bytes = webRequestOp.webRequest.downloadHandler.data;
-            yield return UniGif.GetTextureListCoroutine(bytes,
-                (frames, loopCount, width, height) =>
-                {
-                    if (frames != null)
-                    {
-                        OnSuccess?.Invoke(frames);
-                    }
-                    else
-                    {
-                        OnFail?.Invoke(new Exception("Gif does not have any frames"));
-                    }
-                });
+            await TaskUtils.Run(() => UniGif.GetTextureListAsync(bytes, Callback(OnSuccess, OnFail)), cancellationToken: cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
         }
         else
         {
@@ -104,5 +60,19 @@ public class GifProcessor : IGifProcessor
         }
 
         webRequestOp.Dispose();
+    }
+    private static Action<GifFrameData[], int, int, int> Callback(Action<GifFrameData[]> OnSuccess, Action<Exception> OnFail)
+    {
+        return (frames, loopCount, width, height) =>
+        {
+            if (frames != null)
+            {
+                OnSuccess?.Invoke(frames);
+            }
+            else
+            {
+                OnFail?.Invoke(new Exception("Gif does not have any frames"));
+            }
+        };
     }
 }

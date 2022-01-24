@@ -1,8 +1,10 @@
 {
     "name": "UniGif",
+    "rootNamespace": "",
     "references": [
         "GUID:8f18b4ef38b9d4637b8190231eb24e38",
-        "GUID:0a33bdeafa5c84cb1b5534b5feb3c773"
+        "GUID:0a33bdeafa5c84cb1b5534b5feb3c773",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

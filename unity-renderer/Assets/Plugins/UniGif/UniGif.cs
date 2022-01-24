@@ -8,6 +8,7 @@ http://opensource.org/licenses/mit-license.php
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public static partial class UniGif
@@ -21,7 +22,7 @@ public static partial class UniGif
     /// <param name="wrapMode">Textures wrap mode</param>
     /// <param name="debugLog">Debug Log Flag</param>
     /// <returns>IEnumerator</returns>
-    public static IEnumerator GetTextureListCoroutine(
+    public static async UniTask GetTextureListAsync(
         byte[] bytes,
         Action<GifFrameData[], int, int, int> callback,
         FilterMode filterMode = FilterMode.Bilinear,
@@ -41,12 +42,12 @@ public static partial class UniGif
             {
                 callback(null, loopCount, width, height);
             }
-            yield break;
+            return;
         }
 
         // Decode to textures from GIF data
         GifFrameData[] gifTexList = null;
-        yield return DecodeTextureCoroutine(gifData, result => gifTexList = result, filterMode, wrapMode);
+        await DecodeTexture(gifData, result => gifTexList = result, filterMode, wrapMode);
 
         if (gifTexList == null || gifTexList.Length <= 0)
         {
@@ -55,7 +56,7 @@ public static partial class UniGif
             {
                 callback(null, loopCount, width, height);
             }
-            yield break;
+            return;
         }
 
         loopCount = gifData.m_appEx.loopCount;
@@ -66,7 +67,5 @@ public static partial class UniGif
         {
             callback(gifTexList, loopCount, width, height);
         }
-
-        yield break;
     }
 }
