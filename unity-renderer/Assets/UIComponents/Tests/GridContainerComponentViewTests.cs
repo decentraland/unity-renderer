@@ -95,6 +95,10 @@ public class GridContainerComponentViewTests
         if (autoItemSize)
             ((RectTransform)gridContainerComponent.transform).rect.Set(0, 0, 100, 100);
 
+        List<BaseComponentView> testItems = new List<BaseComponentView>();
+        testItems.Add(BaseComponentView.Create<ButtonComponentView>("Button_Common"));
+        gridContainerComponent.SetItems(testItems);
+
         // Act
         gridContainerComponent.SetItemSize(testItemSize);
 
