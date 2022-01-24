@@ -1,17 +1,15 @@
+using DCL.Components;
+using DCL.Configuration;
+using DCL.Helpers;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
-using DCL.Components;
-using DCL.Configuration;
 using DCL.Controllers;
-using DCL.Helpers;
 using DCL.Interface;
-using DCL.Models;
-using Newtonsoft.Json;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Assert = UnityEngine.Assertions.Assert;
 
 namespace Tests
 {
@@ -47,7 +45,7 @@ namespace Tests
 
             DCLCharacterController.i.Teleport(JsonUtility.ToJson(position));
 
-            Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position), 2.0f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position), 2.0f);
 
             yield return null;
         }
@@ -62,7 +60,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterAdjustPosition()
         {
-            Assert.AreApproximatelyEqual(0,
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0,
                 Vector3.Distance(Vector3.zero,
                     CommonScriptableObjects.worldOffset), 0.05f);
 
@@ -83,7 +81,7 @@ namespace Tests
             };
 
             yield return InitCharacterPosition(pos2, true);
-            Assert.AreApproximatelyEqual(0, Vector3.Distance(new Vector3(50f, 2f, 50f), DCLCharacterController.i.transform.position), 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(new Vector3(50f, 2f, 50f), DCLCharacterController.i.transform.position), 0.5f);
 
             var pos3 = new Vector3
             {
@@ -93,7 +91,7 @@ namespace Tests
             };
 
             yield return InitCharacterPosition(pos3, true);
-            NUnit.Framework.Assert.AreEqual(new Vector3(-50f, 2f, -50f), DCLCharacterController.i.transform.position);
+            Assert.AreEqual(new Vector3(-50f, 2f, -50f), DCLCharacterController.i.transform.position);
         }
 
         [UnityTest]
@@ -102,7 +100,7 @@ namespace Tests
         public IEnumerator CharacterIsNotParentedOnWorldReposition()
         {
             // We use a shape that represents a static ground and has collisions
-            TestUtils.InstantiateEntityWithShape(scene, "groundShape", CLASS_ID.PLANE_SHAPE, Vector3.zero);
+            TestUtils.InstantiateEntityWithShape(scene, "groundShape", DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
             var shapeEntity = scene.entities["groundShape"];
 
             // Reposition ground shape to be on the world-reposition-limit
@@ -124,7 +122,7 @@ namespace Tests
 
             yield return WaitUntilGrounded();
 
-            NUnit.Framework.Assert.IsTrue(DCLCharacterController.i.groundTransform == shapeEntity.meshRootGameObject.transform);
+            Assert.IsTrue(DCLCharacterController.i.groundTransform == shapeEntity.meshRootGameObject.transform);
 
             // Place the character barely passing the limits to trigger the world repositioning
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
@@ -137,18 +135,18 @@ namespace Tests
             yield return null;
 
             // check if the character got repositioned correctly
-            NUnit.Framework.Assert.AreEqual(new Vector3(1f, DCLCharacterController.i.transform.position.y, 1f), DCLCharacterController.i.transform.position);
+            Assert.AreEqual(new Vector3(1f, DCLCharacterController.i.transform.position.y, 1f), DCLCharacterController.i.transform.position);
 
             // check it's not parented but still has the same ground
-            NUnit.Framework.Assert.IsTrue(DCLCharacterController.i.groundTransform == shapeEntity.meshRootGameObject.transform);
-            NUnit.Framework.Assert.IsTrue(DCLCharacterController.i.transform.parent == null);
+            Assert.IsTrue(DCLCharacterController.i.groundTransform == shapeEntity.meshRootGameObject.transform);
+            Assert.IsTrue(DCLCharacterController.i.transform.parent == null);
         }
 
         [UnityTest]
         public IEnumerator Character_UpdateSOPosition()
         {
             yield return InitCharacterPosition(50, 2, 0);
-            NUnit.Framework.Assert.AreEqual(new Vector3(50f, 2f, 0f), CommonScriptableObjects.playerUnityPosition.Get());
+            Assert.AreEqual(new Vector3(50f, 2f, 0f), CommonScriptableObjects.playerUnityPosition.Get());
         }
 
         [UnityTest]
@@ -163,12 +161,12 @@ namespace Tests
             Cursor.lockState = CursorLockMode.Locked;
             yield return new WaitForSeconds(0.1f);
 
-            NUnit.Framework.Assert.AreEqual(DCLCharacterController.i.transform.eulerAngles, CommonScriptableObjects.playerUnityEulerAngles);
+            Assert.AreEqual(DCLCharacterController.i.transform.eulerAngles, CommonScriptableObjects.playerUnityEulerAngles);
             DCLCharacterController.i.ResumeGravity();
         }
 
         [UnityTest]
-        [Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
+        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
         [Category("Explicit")]
         public IEnumerator CharacterSupportsMovingPlatforms()
         {
@@ -182,20 +180,20 @@ namespace Tests
             yield return InitCharacterPosition(originalCharacterPosition);
 
             string platformEntityId = "movingPlatform";
-            TestUtils.InstantiateEntityWithShape(scene, platformEntityId, CLASS_ID.BOX_SHAPE, new Vector3(2f, 1f, 8f));
+            TestUtils.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(2f, 1f, 8f));
 
             Transform platformTransform = scene.entities[platformEntityId].gameObject.transform;
             platformTransform.localScale = new Vector3(2f, 0.5f, 2f);
 
             yield return null;
-            NUnit.Framework.Assert.IsTrue(Vector3.Distance(platformTransform.position, new Vector3(2f, 1f, 8f)) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(platformTransform.position, new Vector3(2f, 1f, 8f)) < 0.1f);
 
             // enable character gravity
             DCLCharacterController.i.ResumeGravity();
 
             yield return WaitUntilGrounded();
 
-            NUnit.Framework.Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
             // Lerp the platform's position
             float lerpTime = 0f;
@@ -219,22 +217,22 @@ namespace Tests
 
                 if (!checkedParent && lerpTime >= 0.25f)
                 {
-                    NUnit.Framework.Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
+                    Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
                     checkedParent = true;
                 }
             }
 
             // check positions
-            NUnit.Framework.Assert.IsTrue(Vector3.Distance(platformTransform.position, targetPosition) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(platformTransform.position, targetPosition) < 0.1f);
 
             float dist1 = Vector3.Distance(originalCharacterPosition, DCLCharacterController.i.transform.position);
             float dist2 = Vector3.Distance(originalPosition, targetPosition);
 
-            Assert.AreApproximatelyEqual(dist1, dist2, 1f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(dist1, dist2, 1f);
         }
 
         [UnityTest]
-        [Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
+        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
         [Category("Explicit")]
         public IEnumerator CharacterSupportsRotatingPlatforms()
         {
@@ -248,20 +246,20 @@ namespace Tests
             yield return InitCharacterPosition(originalCharacterPosition);
 
             string platformEntityId = "rotatingPlatform";
-            TestUtils.InstantiateEntityWithShape(scene, platformEntityId, CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
+            TestUtils.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
 
             Transform platformTransform = scene.entities[platformEntityId].gameObject.transform;
             platformTransform.localScale = new Vector3(8f, 0.5f, 8f);
 
             yield return null;
-            NUnit.Framework.Assert.IsTrue(Vector3.Distance(platformTransform.position, new Vector3(8f, 1f, 8f)) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(platformTransform.position, new Vector3(8f, 1f, 8f)) < 0.1f);
 
             // enable character gravity
             DCLCharacterController.i.ResumeGravity();
 
             yield return WaitUntilGrounded();
 
-            NUnit.Framework.Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
             var initialDirection = CommonScriptableObjects.characterForward.Get().Value;
             // Lerp the platform's rotation
@@ -283,33 +281,33 @@ namespace Tests
 
                 if (!checkedParent && lerpTime >= 0.5f)
                 {
-                    NUnit.Framework.Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
+                    Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
 
                     checkedParent = true;
                 }
             }
 
             // check positions
-            NUnit.Framework.Assert.IsTrue(Vector3.Distance(platformTransform.rotation.eulerAngles, targetRotation.eulerAngles) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(platformTransform.rotation.eulerAngles, targetRotation.eulerAngles) < 0.1f);
 
-            Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 1f);
-            Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 1f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 1f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 1f);
 
             //test for rotation
             var currentDirection = CommonScriptableObjects.characterForward.Get().Value;
             var expectedDirection = Quaternion.AngleAxis(180, Vector3.up) * initialDirection;
             var rotationIsExpected = Vector3.Distance(currentDirection, expectedDirection) <= 0.05f;
-            Assert.IsTrue(rotationIsExpected, "character is rotated");
+            UnityEngine.Assertions.Assert.IsTrue(rotationIsExpected, "character is rotated");
 
             // remove platform and check character parent
             TestUtils.RemoveSceneEntity(scene, platformEntityId);
             yield return null;
 
-            NUnit.Framework.Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false as there's no platform anymore");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false as there's no platform anymore");
         }
 
         [UnityTest]
-        [Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
+        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
         [Category("Explicit")]
         public IEnumerator CharacterIsReleasedOnEntityRemoval()
         {
@@ -322,11 +320,11 @@ namespace Tests
             yield return null;
             yield return null;
 
-            NUnit.Framework.Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented as there's no platform anymore");
+            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented as there's no platform anymore");
         }
 
         [UnityTest]
-        [Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
+        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
         [Category("Explicit")]
         public IEnumerator CharacterIsReleasedOnPlatformCollisionToggle()
         {
@@ -343,11 +341,11 @@ namespace Tests
             yield return null;
             yield return null;
 
-            NUnit.Framework.Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented as the shape colliders were disabled");
+            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented as the shape colliders were disabled");
         }
 
         [UnityTest]
-        [Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
+        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
         [Category("Explicit")]
         public IEnumerator CharacterIsReleasedOnShapeRemoval()
         {
@@ -361,9 +359,9 @@ namespace Tests
             yield return null;
             yield return null;
 
-            NUnit.Framework.Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false when the shape colliders are disabled");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false when the shape colliders are disabled");
         }
-        
+
         [UnityTest]
         public IEnumerator ReportCameraRotationCorrectly()
         {
@@ -388,6 +386,6 @@ namespace Tests
             WebInterface.OnMessageFromEngine -= OnMessageFromEngine;
             
             Assert.IsTrue(rotationMatch);
-        }        
+        }
     }
 }
