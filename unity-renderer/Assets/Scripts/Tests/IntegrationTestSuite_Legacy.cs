@@ -63,7 +63,6 @@ public class IntegrationTestSuite_Legacy
                 return mockedProviders;
             });
 
-
         return result;
     }
 

@@ -10,10 +10,6 @@ public class Analytics : IAnalytics
 {
     private static bool VERBOSE = false;
 
-    //Remove this once environment is on its own assembly and can be accessed properly
-    public static IAnalytics i;
-    public Analytics() { i = this; }
-
     public void SendAnalytic(string eventName, Dictionary<string, string> data)
     {
         if (VERBOSE)

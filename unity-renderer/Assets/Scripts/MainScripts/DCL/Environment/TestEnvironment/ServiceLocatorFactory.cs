@@ -1,4 +1,5 @@
 ﻿using DCL.Controllers;
+using DCL.Helpers.NFT.Markets;
 using DCL.Rendering;
 using NSubstitute;
 
@@ -17,7 +18,17 @@ namespace DCL.Tests
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
-            result.Register<IServiceProviders>(() => Substitute.For<IServiceProviders>());
+            result.Register<IServiceProviders>(
+                () =>
+                {
+                    var mockedProviders = Substitute.For<IServiceProviders>();
+                    mockedProviders.theGraph.Returns( Substitute.For<ITheGraph>() );
+                    mockedProviders.analytics.Returns( Substitute.For<IAnalytics>() );
+                    mockedProviders.catalyst.Returns( Substitute.For<ICatalyst>() );
+                    mockedProviders.openSea.Returns( Substitute.For<INFTMarket>() );
+                    return mockedProviders;
+                });
+
             result.Register<IUpdateEventHandler>(() => Substitute.For<IUpdateEventHandler>());
 
             // World runtime

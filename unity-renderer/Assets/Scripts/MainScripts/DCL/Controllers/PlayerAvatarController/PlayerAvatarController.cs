@@ -28,7 +28,8 @@ public class PlayerAvatarController : MonoBehaviour
     private void Start()
     {
         DataStore.i.common.isPlayerRendererLoaded.Set(false);
-        playerAvatarAnalytics = new PlayerAvatarAnalytics(Analytics.i, CommonScriptableObjects.playerCoords);
+        IAnalytics analytics = DCL.Environment.i.platform.serviceProviders.analytics;
+        playerAvatarAnalytics = new PlayerAvatarAnalytics(analytics, CommonScriptableObjects.playerCoords);
 
         //NOTE(Brian): We must wait for loading to finish before deactivating the renderer, or the GLTF Loader won't finish.
         avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
@@ -44,7 +45,7 @@ public class PlayerAvatarController : MonoBehaviour
 
         DataStore.i.player.playerCollider.Set(avatarCollider);
         CommonScriptableObjects.rendererState.AddLock(this);
-        
+
 #if UNITY_WEBGL
         fatalErrorReporter = new WebFatalErrorReporter();
 #else

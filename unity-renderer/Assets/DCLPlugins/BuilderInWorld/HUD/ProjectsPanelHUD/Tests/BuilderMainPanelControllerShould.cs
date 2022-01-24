@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
 using DCL.Helpers;
+using DCL.Helpers.NFT.Markets;
+using DCL.Tests;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 
 namespace Tests
 {
@@ -19,11 +22,16 @@ namespace Tests
         private IProjectsController projectsController;
         private INewProjectFlowController newProjectFlowController;
 
-        private bool condtionMet = false;
+        private bool conditionMet = false;
 
         [SetUp]
         public void SetUp()
         {
+            // This is needed because BuilderMainPanelController uses the Analytics utils, which in turn use
+            // Environment.i.serviceProviders.analytics
+            ServiceLocator serviceLocator = ServiceLocatorFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
+
             controller = new BuilderMainPanelController();
 
             sectionsController = Substitute.For<ISectionsController>();
@@ -50,8 +58,9 @@ namespace Tests
         [TearDown]
         public void TearDown()
         {
-            controller.OnJumpInOrEdit -= AssertJump;
+            Environment.Dispose();
 
+            controller.OnJumpInOrEdit -= AssertJump;
             controller.Dispose();
         }
 
@@ -105,20 +114,20 @@ namespace Tests
         {
             //Arrange
             ProjectData[] projectDatas = new [] { new ProjectData() };
-            
+
             //Act
             controller.ProjectsFetched(projectDatas);
-            
+
             //Assert
             Assert.IsFalse(controller.isFetchingProjects);
         }
-        
+
         [Test]
         public void FailCorrectlyOnProjectFetchedError()
         {
             //Act
             controller.ProjectsFetchedError("Intended error");
-            
+
             //Assert
             Assert.IsFalse(controller.isFetchingProjects);
         }
@@ -127,31 +136,31 @@ namespace Tests
         public void GoToCoords()
         {
             //Arrange
-            condtionMet = false;
+            conditionMet = false;
             controller.OnJumpInOrEdit += AssertJump;
 
             //Act
             controller.GoToCoords(new Vector2Int(0, 0));
 
             //Assert
-            Assert.IsTrue(condtionMet);
+            Assert.IsTrue(conditionMet);
         }
 
         [Test]
         public void GoToEditScene()
         {
             //Arrange
-            condtionMet = false;
+            conditionMet = false;
             controller.OnJumpInOrEdit += AssertJump;
 
             //Act
             controller.OnGoToEditScene(new Vector2Int(0, 0));
 
             //Assert
-            Assert.IsTrue(condtionMet);
+            Assert.IsTrue(conditionMet);
         }
 
-        private void AssertJump() { condtionMet = true; }
+        private void AssertJump() { conditionMet = true; }
 
         [Test]
         public void ViewCreatedCorrectly() { Assert.IsNotNull(controller.view); }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DCL;
 using DCL.QuestsController;
+using DCL.Tests;
 using NUnit.Framework;
 
 namespace Tests.QuestsTrackerHUD
@@ -12,7 +13,14 @@ namespace Tests.QuestsTrackerHUD
         private BaseCollection<string> pinnedQuests => DataStore.i.Quests.pinnedQuests;
 
         [SetUp]
-        public void SetUp() { questsController = new QuestsController(); }
+        public void SetUp()
+        {
+            // This is needed because GenericAnalytics.SendAnalytics use Environment
+            ServiceLocator serviceLocator = ServiceLocatorFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
+
+            questsController = new QuestsController();
+        }
 
         [Test]
         public void InitializeQuestsProperly()
@@ -278,6 +286,10 @@ namespace Tests.QuestsTrackerHUD
         }
 
         [TearDown]
-        public void TearDown() { DataStore.Clear(); }
+        public void TearDown()
+        {
+            Environment.Dispose();
+            DataStore.Clear();
+        }
     }
 }
