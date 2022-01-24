@@ -61,7 +61,6 @@ public class AvatarEditorHUDController : IHUD
 
         avatarEditorVisible.OnChange += OnAvatarEditorVisibleChanged;
         OnAvatarEditorVisibleChanged(avatarEditorVisible.Get(), false);
-        view.OnCloseActionTriggered += DiscardAndClose;
 
         configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
         ConfigureBackpackInFullscreenMenuChanged(configureBackpackInFullscreenMenu.Get(), null);
@@ -621,7 +620,6 @@ public class AvatarEditorHUDController : IHUD
     {
         avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
         configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
-        view.OnCloseActionTriggered -= DiscardAndClose;
         DataStore.i.common.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
         exploreV2IsOpen.OnChange -= ExploreV2IsOpenChanged;
 
@@ -653,19 +651,6 @@ public class AvatarEditorHUDController : IHUD
             DataStore.i.HUDs.signupVisible.Set(true);
 
         avatarIsDirty = false;
-        SetVisibility(false);
-    }
-
-    public void DiscardAndClose()
-    {
-        if (!view.isOpen)
-            return;
-
-        if (!DataStore.i.common.isSignUpFlow.Get())
-            LoadUserProfile(userProfile);
-        else
-            WebInterface.SendCloseUserAvatar(true);
-
         SetVisibility(false);
     }
 
