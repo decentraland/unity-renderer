@@ -59,6 +59,9 @@ namespace DCL
                     PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
                 }
             }
+
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
+            DCL.Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         }
 
         private void OnDebugModeSet(bool current, bool previous)
@@ -88,9 +91,6 @@ namespace DCL
 
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
-
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneIdChange;
 
