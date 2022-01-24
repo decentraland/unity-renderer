@@ -65,7 +65,7 @@ namespace DCL
             for (int i = 0; i < contents.Count; i++)
             {
                 MappingPair m = contents[i];
-                fileToHash.Add(m.file.ToLower(), m.hash);
+                fileToHash.Add(m.file, m.hash);
 
                 if (VERBOSE)
                 {
@@ -92,7 +92,7 @@ namespace DCL
                 return false;
             }
 
-            return fileToHash.ContainsKey(url.ToLower());
+            return fileToHash.ContainsKey(url);
         }
 
         public virtual string GetContentsUrl(string url)
@@ -109,7 +109,6 @@ namespace DCL
 
         public virtual bool TryGetContentsUrl_Raw(string url, out string result)
         {
-            url = url.ToLower();
             result = url;
 
 #if UNITY_EDITOR
@@ -138,7 +137,6 @@ namespace DCL
 
         public virtual bool TryGetContentsUrl(string url, out string result)
         {
-            url = url.ToLower();
             result = url;
 
             if (HasTestSchema(url))
@@ -195,7 +193,7 @@ namespace DCL
                 return true;
             }
 
-            if (fileToHash.TryGetValue(file.ToLower(), out result))
+            if (fileToHash.TryGetValue(file, out result))
             {
                 return true;
             }
