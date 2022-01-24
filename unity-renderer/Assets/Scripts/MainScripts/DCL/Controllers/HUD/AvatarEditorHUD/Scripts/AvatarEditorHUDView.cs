@@ -74,9 +74,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField]
     internal Button doneButton;
 
-    [SerializeField]
-    internal Button exitButton;
-
     [SerializeField] internal GameObject loadingSpinnerGameObject;
 
     [Header("Collectibles")]
@@ -100,7 +97,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     public event System.Action<AvatarModel> OnAvatarAppear;
     public event System.Action<bool> OnSetVisibility;
     public event System.Action OnRandomize;
-    public event System.Action OnCloseActionTriggered;
 
     private void Awake()
     {
@@ -115,8 +111,6 @@ public class AvatarEditorHUDView : MonoBehaviour
         isOpen = false;
     }
 
-    private void CloseAction_OnTriggered(DCLAction_Trigger action) { OnCloseActionTriggered?.Invoke(); }
-
     private void Initialize(AvatarEditorHUDController controller)
     {
         ItemToggle.getEquippedWearablesReplacedByFunc = controller.GetWearablesReplacedBy;
@@ -125,7 +119,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         randomizeButton.onClick.AddListener(OnRandomizeButton);
         doneButton.onClick.AddListener(OnDoneButton);
-        exitButton.onClick.AddListener(OnExitButton);
         InitializeNavigationEvents();
         InitializeWearableChangeEvents();
 
@@ -354,8 +347,6 @@ public class AvatarEditorHUDView : MonoBehaviour
         characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
-    private void OnExitButton() { OnCloseActionTriggered?.Invoke(); }
-
     private void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body)
     {
         doneButton.interactable = true;
@@ -424,8 +415,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void ShowCollectiblesLoadingRetry(bool isActive) { collectiblesItemSelector.ShowRetryLoading(isActive); }
 
-    public void SetExitButtonActive(bool isActive) { exitButton.gameObject.SetActive(isActive); }
-
     public void SetAsFullScreenMenuMode(Transform parentTransform)
     {
         if (parentTransform == null)
@@ -433,7 +422,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         transform.SetParent(parentTransform);
         transform.localScale = Vector3.one;
-        SetExitButtonActive(false);
 
         RectTransform rectTransform = transform as RectTransform;
         rectTransform.anchorMin = Vector2.zero;
