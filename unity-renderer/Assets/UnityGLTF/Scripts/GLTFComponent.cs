@@ -229,41 +229,16 @@ namespace UnityGLTF
                 try
                 {
                     loader = new WebRequestLoader(baseUrl, webRequestController, fileToHashConverter);
-
                     string id = string.IsNullOrEmpty(idPrefix) ? GLTFUri : idPrefix;
 
-                    sceneImporter = new GLTFSceneImporter(
-                        id,
-                        GLTFUri,
-                        loader,
-                        throttlingCounter
-                    );
-
-                    if (sceneImporter.CreatedObject != null)
-                    {
-                        Destroy(sceneImporter.CreatedObject);
-                    }
-
-                    sceneImporter.SceneParent = gameObject.transform;
-                    sceneImporter.Collider = Collider;
-                    sceneImporter.maximumLod = MaximumLod;
-                    sceneImporter.useMaterialTransition = UseVisualFeedback;
-                    sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
-                    sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
-                    sceneImporter.initialVisibility = initialVisibility;
-                    sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
-                    sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
-                                                     && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
-
-                    sceneImporter.OnMeshCreated += meshCreatedCallback;
-                    sceneImporter.OnRendererCreated += rendererCreatedCallback;
+                    SetupSceneImporter(settings, id, loader);
 
                     EnqueueDownload();
 
                     await UniTask.WaitUntil( () => downloadQueueHandler.CanDownload(this), cancellationToken: token);
                     token.ThrowIfCancellationRequested();
 
-                    RemoveFromQueue();
+                    DequeueDownload();
 
                     IncrementDownloadCount();
                     state = State.DOWNLOADING;
@@ -276,11 +251,7 @@ namespace UnityGLTF
                         // Override the shaders on all materials if a shader is provided
                         if (shaderOverride != null)
                         {
-                            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-                            foreach (Renderer renderer in renderers)
-                            {
-                                renderer.sharedMaterial.shader = shaderOverride;
-                            }
+                            OverrideShaders();
                         }
                     }
                     state = State.COMPLETED;
@@ -325,7 +296,43 @@ namespace UnityGLTF
                 Debug.Log("couldn't load GLTF because url is empty");
             }
         }
-        private void RemoveFromQueue()
+        private void OverrideShaders()
+        {
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
+            {
+                renderer.sharedMaterial.shader = shaderOverride;
+            }
+        }
+        private void SetupSceneImporter(Settings settings, string id, ILoader loader)
+        {
+            sceneImporter = new GLTFSceneImporter(
+                id,
+                GLTFUri,
+                loader,
+                throttlingCounter
+            );
+
+            if (sceneImporter.CreatedObject != null)
+            {
+                Destroy(sceneImporter.CreatedObject);
+            }
+
+            sceneImporter.SceneParent = gameObject.transform;
+            sceneImporter.Collider = Collider;
+            sceneImporter.maximumLod = MaximumLod;
+            sceneImporter.useMaterialTransition = UseVisualFeedback;
+            sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
+            sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
+            sceneImporter.initialVisibility = initialVisibility;
+            sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
+            sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
+                                             && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
+
+            sceneImporter.OnMeshCreated += meshCreatedCallback;
+            sceneImporter.OnRendererCreated += rendererCreatedCallback;
+        }
+        private void DequeueDownload()
         {
             queueCount--;
             downloadQueueHandler.Dequeue(this);
@@ -374,7 +381,7 @@ namespace UnityGLTF
 
             if (state == State.QUEUED)
             {
-                RemoveFromQueue();
+                DequeueDownload();
             }
 
             if (state == State.DOWNLOADING)
