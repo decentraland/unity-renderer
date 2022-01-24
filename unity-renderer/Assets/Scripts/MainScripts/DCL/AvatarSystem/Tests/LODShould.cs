@@ -25,8 +25,13 @@ namespace Test.AvatarSystem
         }
 
         [Test]
-        public void CreateImpostorOnConstruction()
+        public void EnsureImpostor()
         {
+            Assert.Null(lod.impostorRenderer);
+            Assert.Null(lod.impostorMeshFilter);
+
+            lod.EnsureImpostor();
+
             Assert.NotNull(lod.impostorRenderer);
             Assert.NotNull(lod.impostorMeshFilter);
         }
@@ -36,6 +41,7 @@ namespace Test.AvatarSystem
         [TestCase(0, 1, 0)]
         public void TintImpostor(float r, float g, float b)
         {
+            lod.EnsureImpostor();
             Color impostorColor = lod.impostorRenderer.material.GetColor(BASE_COLOR);
             Color color = new Color(r, g, b, impostorColor.a); //alpha is ignored
             lod.SetImpostorTint(color);
@@ -46,14 +52,15 @@ namespace Test.AvatarSystem
         [Test]
         public void MakeTheBillboardLookAt()
         {
+            lod.EnsureImpostor();
             GameObject lookAtTarget = new GameObject("look at target");
-            lookAtTarget.transform.position = impostorContainer.transform.position + (Vector3.forward * 2);
+            lookAtTarget.transform.position = lod.impostorRenderer.transform.position + (Vector3.forward * 2);
 
             Vector3 initialEulerAngle = new Vector3(0.7f, 0.7f, 0.7f);
-            impostorContainer.transform.eulerAngles = initialEulerAngle;
+            lod.impostorRenderer.transform.eulerAngles = initialEulerAngle;
             lod.SetBillboardRotation(lookAtTarget.transform);
 
-            Assert.AreEqual(impostorContainer.transform.eulerAngles.y, 0);
+            Assert.AreEqual(lod.impostorRenderer.transform.eulerAngles.y, 0);
 
             Object.Destroy(lookAtTarget);
         }
@@ -64,6 +71,7 @@ namespace Test.AvatarSystem
         [TestCase(2, false)]
         public void UpdateScreenSpaceAmbientOclussion(int lodIndex, bool enabled)
         {
+            lod.EnsureImpostor();
             var renderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>();
 
             LOD.UpdateSSAO(renderer, lodIndex);
@@ -95,6 +103,7 @@ namespace Test.AvatarSystem
         [TestCase(2)]
         public void UpdateAlpha(float avatarAlpha)
         {
+            lod.EnsureImpostor();
             var renderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>();
             lod.combinedAvatar = renderer;
             lod.UpdateAlpha(avatarAlpha);

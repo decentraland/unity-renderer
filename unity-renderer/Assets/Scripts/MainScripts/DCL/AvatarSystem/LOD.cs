@@ -40,7 +40,7 @@ namespace AvatarSystem
             this.avatarMovementController = avatarMovementController;
         }
 
-        private void EnsureImpostor()
+        internal void EnsureImpostor()
         {
             if (impostorRenderer != null && impostorMeshFilter != null)
                 return;
