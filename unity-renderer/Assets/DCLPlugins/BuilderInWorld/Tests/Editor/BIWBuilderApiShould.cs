@@ -15,6 +15,7 @@ using Tests;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
+using Environment = System.Environment;
 
 public class BIWBuilderApiShould : IntegrationTestSuite
 {
@@ -22,13 +23,6 @@ public class BIWBuilderApiShould : IntegrationTestSuite
     private IWebRequestController mockedRequestController;
     private string baseURL;
     private GameObject gameObjectToDestroy;
-
-    protected override PlatformContext CreatePlatformContext()
-    {
-        mockedRequestController =  Substitute.For<IWebRequestController>();
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks( mockedRequestController
-        );
-    }
 
     [UnitySetUp]
     protected override IEnumerator SetUp()
@@ -43,6 +37,8 @@ public class BIWBuilderApiShould : IntegrationTestSuite
         var context = BIWTestUtils.CreateMockedContext();
         context.sceneReferences.Configure().biwBridgeGameObject.Returns(gameObjectToDestroy);
         apiController.Initialize(context);
+
+        mockedRequestController = DCL.Environment.i.platform.webRequest;
     }
 
     [UnityTearDown]
@@ -140,14 +136,14 @@ public class BIWBuilderApiShould : IntegrationTestSuite
 
         bool result = false;
         List<SceneObject> list = new List<SceneObject>();
-        list.Add(new SceneObject(){id ="test id"});
-        
+        list.Add(new SceneObject() { id = "test id" });
+
         string jsonData = JsonConvert.SerializeObject(list);
-        TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController,2);
-        
+        TestUtils.ConfigureMockedRequestController(jsonData, mockedRequestController, 2);
+
         apiController.apiResponseResolver = Substitute.For<IBuilderAPIResponseResolver>();
         apiController.apiResponseResolver.Configure().GetArrayFromCall<SceneObject>(Arg.Any<string>()).Returns(list.ToArray());
-        
+
         //Act
         var promise = apiController.GetAssets(new List<string>());
         promise.Then( data =>

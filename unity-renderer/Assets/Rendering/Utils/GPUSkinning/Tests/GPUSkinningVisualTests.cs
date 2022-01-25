@@ -11,6 +11,7 @@ using UnityEngine.TestTools;
 
 public class GPUSkinningVisualTests : VisualTestsBase
 {
+    private CatalogController catalogController;
     private BaseDictionary<string, WearableItem> catalog;
     private readonly HashSet<WearableController> toCleanUp = new HashSet<WearableController>();
     private Material avatarMaterial;
@@ -20,6 +21,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         toCleanUp.Clear();
 
@@ -104,6 +106,8 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
     protected override IEnumerator TearDown()
     {
+        Object.Destroy(catalogController.gameObject);
+
         foreach (WearableController wearable in toCleanUp)
         {
             wearable.CleanUp();

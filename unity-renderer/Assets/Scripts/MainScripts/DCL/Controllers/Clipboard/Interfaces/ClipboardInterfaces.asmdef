@@ -2,7 +2,8 @@
   "name": "ClipboardInterfaces",
   "rootNamespace": "",
   "references": [
-    "GUID:e99faafecbf8dd74d8130597511b9b27"
+    "GUID:e99faafecbf8dd74d8130597511b9b27",
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

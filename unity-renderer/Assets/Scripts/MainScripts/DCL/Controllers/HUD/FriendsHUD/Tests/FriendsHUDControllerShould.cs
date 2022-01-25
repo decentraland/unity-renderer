@@ -9,6 +9,7 @@ using UnityEngine.TestTools;
 public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 {
     UserProfileController userProfileController;
+    private NotificationsController notificationsController;
     FriendsHUDController controller;
     FriendsHUDView view;
     FriendsController_Mock friendsController;
@@ -18,7 +19,8 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
 
-        NotificationsController.i.Initialize(new NotificationHUDController());
+        notificationsController = TestUtils.CreateComponentWithGameObject<NotificationsController>("NotificationsController");
+        notificationsController.Initialize(new NotificationHUDController());
 
         userProfileController = TestUtils.CreateComponentWithGameObject<UserProfileController>("UserProfileController");
         controller = new FriendsHUDController();
@@ -33,9 +35,10 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         UnityEngine.Object.Destroy(userProfileController.gameObject);
-        NotificationsController.i.Dispose();
-        controller.Dispose();
+        notificationsController.Dispose();
+        UnityEngine.Object.Destroy(notificationsController.gameObject);
 
+        controller.Dispose();
         yield return base.TearDown();
     }
 

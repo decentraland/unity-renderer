@@ -14,7 +14,6 @@ public class BuilderMeshLoadingIndicator : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator BuilderMeshLoadingIndicatorTest()
     {
-        SetUp_SceneController();
         yield return SceneManager.LoadSceneAsync("BuilderScene", LoadSceneMode.Additive);
 
         scene = TestUtils.CreateTestScene();

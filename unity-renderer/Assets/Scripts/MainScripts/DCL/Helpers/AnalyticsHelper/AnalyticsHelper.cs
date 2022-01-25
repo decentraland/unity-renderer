@@ -20,7 +20,8 @@ public static class AnalyticsHelper
     {
         Dictionary<string, string> eventToSend = new Dictionary<string, string>();
         AddSceneNameAndBasePositionToDictionary(eventToSend);
-        Analytics.i.SendAnalytic("voice_chat_start_recording", eventToSend);
+        IAnalytics analytics = Environment.i.platform.serviceProviders.analytics;
+        analytics.SendAnalytic("voice_chat_start_recording", eventToSend);
     }
 
     public static void SendExternalLinkAnalytic(string url, string nftToken)
@@ -30,7 +31,8 @@ public static class AnalyticsHelper
         if (nftToken != null)
             eventToSend.Add("nft_token_id", nftToken);
         AddSceneNameAndBasePositionToDictionary(eventToSend);
-        Analytics.i.SendAnalytic("external_link_open", eventToSend);
+        IAnalytics analytics = Environment.i.platform.serviceProviders.analytics;
+        analytics.SendAnalytic("external_link_open", eventToSend);
     }
 
     public static void SendExternalLinkAnalytic(string url) { SendExternalLinkAnalytic(url, null); }

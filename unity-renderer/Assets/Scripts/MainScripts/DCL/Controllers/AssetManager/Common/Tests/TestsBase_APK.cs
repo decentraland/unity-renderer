@@ -1,6 +1,7 @@
 using DCL;
 using System.Collections;
 using NSubstitute;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Tests
@@ -16,13 +17,10 @@ namespace AssetPromiseKeeper_Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            Environment.SetupWithBuilders
-            (
-                MessagingContextFactory.CreateDefault,
-                PlatformContextFactory.CreateDefault,
-                WorldRuntimeContextFactory.CreateDefault,
-                HUDContextFactory.CreateDefault
-            );
+            DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+            var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
+            serviceLocator.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
+            Environment.Setup(serviceLocator);
             keeper = new APKType();
             yield break;
         }
@@ -30,6 +28,9 @@ namespace AssetPromiseKeeper_Tests
         [UnityTearDown]
         protected virtual IEnumerator TearDown()
         {
+            // If the asset bundles cache is not cleared, the tests are going to stop working on successive runs
+            Caching.ClearCache();
+
             Environment.Dispose();
             keeper.Cleanup();
             yield break;

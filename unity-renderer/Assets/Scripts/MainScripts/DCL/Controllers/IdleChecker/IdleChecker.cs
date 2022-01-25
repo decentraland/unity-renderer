@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace DCL
@@ -8,13 +9,27 @@ namespace DCL
         private int maxTime = 60;
         private float lastActivityTime = 0.0f;
         private bool idle = false;
+        private IUpdateEventHandler updateEventHandler;
         public event IIdleChecker.ChangeStatus OnChangeStatus;
 
         public void Subscribe(IIdleChecker.ChangeStatus callback) { OnChangeStatus += callback; }
 
         public void Unsubscribe(IIdleChecker.ChangeStatus callback) { OnChangeStatus -= callback; }
 
-        public void Initialize() { lastActivityTime = Time.time; }
+        public IdleChecker (IUpdateEventHandler eventHandler = null)
+        {
+            this.updateEventHandler = eventHandler;
+        }
+
+        public void Initialize()
+        {
+            lastActivityTime = Time.time;
+
+            if (this.updateEventHandler == null)
+                this.updateEventHandler = DCL.Environment.i.platform.updateEventHandler;
+
+            updateEventHandler?.AddListener(IUpdateEventHandler.EventType.Update, Update);
+        }
 
         public void SetMaxTime(int time) { maxTime = time; }
 
@@ -57,5 +72,10 @@ namespace DCL
         private bool IdleCheck() { return Time.time - lastActivityTime > maxTime; }
 
         public bool isIdle() { return idle; }
+
+        public void Dispose()
+        {
+            updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+        }
     }
 }
