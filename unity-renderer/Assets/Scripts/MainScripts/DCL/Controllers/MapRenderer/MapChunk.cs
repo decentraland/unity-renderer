@@ -37,6 +37,7 @@ namespace DCL
                     return;
 
                 targetImage.texture = result;
+                targetImage.texture.wrapMode = TextureWrapMode.Clamp;
                 targetImage.SetNativeSize();
                 targetImage.color = Color.white;
             });
