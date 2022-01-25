@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using DCL;
 using DCL.Builder;
 using DCL.Helpers;
-using DCL.Helpers.NFT.Markets;
-using DCL.Tests;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -29,7 +27,7 @@ namespace Tests
         {
             // This is needed because BuilderMainPanelController uses the Analytics utils, which in turn use
             // Environment.i.serviceProviders.analytics
-            ServiceLocator serviceLocator = ServiceLocatorFactory.CreateMocked();
+            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             Environment.Setup(serviceLocator);
 
             controller = new BuilderMainPanelController();

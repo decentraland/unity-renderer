@@ -16,7 +16,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
     protected override ServiceLocator InitializeServiceLocator()
     {
-        ServiceLocator result = DCL.Tests.ServiceLocatorFactory.CreateMocked();
+        ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
         result.Register<IWebRequestController>(WebRequestController.Create);
         result.Register<IServiceProviders>( () => new ServiceProviders());
         result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());

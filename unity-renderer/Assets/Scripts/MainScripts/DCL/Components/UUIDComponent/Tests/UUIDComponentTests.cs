@@ -32,7 +32,7 @@ namespace Tests
 
         protected override ServiceLocator InitializeServiceLocator()
         {
-            ServiceLocator result = DCL.Tests.ServiceLocatorFactory.CreateMocked();
+            ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
             result.Register<IPointerEventsController>( () => new PointerEventsController());
             result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
             result.Register<IWorldState>( () => new WorldState());
@@ -212,7 +212,7 @@ namespace Tests
 
             Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                 "OnPointerEventCollider should have the same mesh info as the mesh renderer");
-        } 
+        }
 
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShape()
@@ -437,7 +437,7 @@ namespace Tests
                 Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                     "OnPointerEventCollider should have the same mesh info as the mesh renderer");
             }
-        }        
+        }
 
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously()
@@ -1059,14 +1059,14 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = uuidHoverEnter
             };
-            
+
             const string uuidHoverExit = "pointerHoverExitEvent-1";
             var hoverExitModel = new OnPointerHoverEvent.Model()
             {
                 type = OnPointerHoverExit.NAME,
                 uuid = uuidHoverExit
             };
-            
+
             var onPointerHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
                 hoverEnterModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
@@ -1121,7 +1121,7 @@ namespace Tests
                 });
 
             Assert.IsTrue(hoverEnterEventTriggered);
-            
+
             mainCamera.transform.forward = Vector3.up;
 
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEventHoverExit,
@@ -1144,7 +1144,7 @@ namespace Tests
                     return false;
                 });
 
-            Assert.IsTrue(hoverExitEventTriggered);            
+            Assert.IsTrue(hoverExitEventTriggered);
         }
 
         [UnityTest]
@@ -1699,7 +1699,7 @@ namespace Tests
             Assert.IsFalse(targetEntityHit, "Target entity was hit but other entity was blocking it");
 
             mainCamera.transform.forward = Vector3.up;
-            
+
             // Toggle 'isPointerBlocker' property
             yield return TestUtils.SharedComponentUpdate(blockingShape, new BoxShape.Model
             {

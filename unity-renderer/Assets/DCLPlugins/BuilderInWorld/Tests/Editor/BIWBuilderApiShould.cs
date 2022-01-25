@@ -6,7 +6,6 @@ using System.Text;
 using DCL;
 using DCL.Builder;
 using DCL.Helpers;
-using DCL.Tests;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.Core.Arguments;

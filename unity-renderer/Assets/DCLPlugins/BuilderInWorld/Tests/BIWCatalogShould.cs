@@ -23,7 +23,7 @@ public class BIWCatalogShould : IntegrationTestSuite_Legacy
 
     protected override ServiceLocator InitializeServiceLocator()
     {
-        return DCL.Tests.ServiceLocatorFactory.CreateMocked();
+        return DCL.ServiceLocatorTestFactory.CreateMocked();
     }
 
 

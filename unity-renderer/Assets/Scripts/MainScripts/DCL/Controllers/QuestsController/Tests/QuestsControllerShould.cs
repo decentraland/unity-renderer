@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using DCL;
 using DCL.QuestsController;
-using DCL.Tests;
 using NUnit.Framework;
 
 namespace Tests.QuestsTrackerHUD
@@ -16,7 +15,7 @@ namespace Tests.QuestsTrackerHUD
         public void SetUp()
         {
             // This is needed because GenericAnalytics.SendAnalytics use Environment
-            ServiceLocator serviceLocator = ServiceLocatorFactory.CreateMocked();
+            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             Environment.Setup(serviceLocator);
 
             questsController = new QuestsController();

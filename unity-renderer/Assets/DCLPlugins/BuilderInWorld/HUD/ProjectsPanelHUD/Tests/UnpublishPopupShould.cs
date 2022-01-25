@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Tests;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -20,7 +19,7 @@ namespace Tests
 
             // This is needed because BuilderMainPanelController uses the Analytics utils, which in turn use
             // Environment.i.serviceProviders.analytics
-            ServiceLocator serviceLocator = ServiceLocatorFactory.CreateMocked();
+            ServiceLocator serviceLocator = ServiceLocatorTestFactory.CreateMocked();
             Environment.Setup(serviceLocator);
         }
 

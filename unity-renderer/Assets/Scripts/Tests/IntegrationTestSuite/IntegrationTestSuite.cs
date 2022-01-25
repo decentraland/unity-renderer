@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using DCL;
-using DCL.Tests;
 using NSubstitute;
 using NSubstitute.ClearExtensions;
 using UnityEngine.TestTools;
@@ -21,7 +20,7 @@ namespace Tests
             AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
             PoolManager.enablePrewarm = false;
 
-            ServiceLocator serviceLocator = DCL.Tests.ServiceLocatorFactory.CreateMocked();
+            ServiceLocator serviceLocator = DCL.ServiceLocatorTestFactory.CreateMocked();
             InitializeServices(serviceLocator);
             Environment.Setup(serviceLocator);
             yield break;

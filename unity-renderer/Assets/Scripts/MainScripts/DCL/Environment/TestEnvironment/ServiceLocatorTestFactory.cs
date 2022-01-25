@@ -3,9 +3,9 @@ using DCL.Helpers.NFT.Markets;
 using DCL.Rendering;
 using NSubstitute;
 
-namespace DCL.Tests
+namespace DCL
 {
-    public static class ServiceLocatorFactory
+    public static class ServiceLocatorTestFactory
     {
         public static ServiceLocator CreateMocked()
         {
