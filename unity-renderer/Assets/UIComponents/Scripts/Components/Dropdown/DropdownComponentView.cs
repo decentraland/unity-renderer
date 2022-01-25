@@ -166,7 +166,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         for (int i = 0; i < newFilteredOptions.Count; i++)
         {
-            CreateOption(newFilteredOptions[i], $"Option_{i}");
+            CreateOption(newFilteredOptions[i], $"FilteredOption_{i}");
         }
     }
 
@@ -208,10 +208,10 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
             return;
 
         ToggleComponentView newGO = Instantiate(togglePrefab);
-        newGO.name = name;
         newGO.gameObject.SetActive(true);
         newGO.Configure(newOptionModel);
         availableOptions.AddItem(newGO);
+        newGO.name = name;
 
         newGO.OnSelectedChanged += OnOptionSelected;
     }
