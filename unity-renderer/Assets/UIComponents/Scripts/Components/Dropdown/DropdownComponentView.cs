@@ -120,6 +120,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     {
         optionsPanel.SetActive(false);
         isOpen = false;
+        searchBar.ClearSearch();
     }
 
     public void SetTitle(string newText)

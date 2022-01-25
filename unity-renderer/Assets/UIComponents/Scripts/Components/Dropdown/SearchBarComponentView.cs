@@ -97,6 +97,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     public void ClearSearch()
     {
+        StopSearchCoroutine();
+
         inputField.SetTextWithoutNotify(string.Empty);
         SetClearMode();
         OnSearchText?.Invoke(string.Empty);
