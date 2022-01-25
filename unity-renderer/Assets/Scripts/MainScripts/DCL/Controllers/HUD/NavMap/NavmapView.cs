@@ -42,14 +42,13 @@ namespace DCL
                     return;
 
                 MapRenderer.i.atlas.UpdateCulling();
-                toastView.OnCloseClick();
+                CloseToast();
             });
 
             toastView.OnGotoClicked += () => navmapVisible.Set(false);
 
             MapRenderer.OnParcelClicked += TriggerToast;
-            MapRenderer.OnParcelHold += TriggerToast;
-            MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
+            MapRenderer.OnCursorFarFromParcel += CloseToast;
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
             navmapVisible.OnChange += OnNavmapVisibleChanged;
 
@@ -71,7 +70,7 @@ namespace DCL
         private void OnDestroy()
         {
             MapRenderer.OnParcelClicked -= TriggerToast;
-            MapRenderer.OnParcelHold -= TriggerToast;
+            MapRenderer.OnCursorFarFromParcel -= CloseToast;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             navmapVisible.OnChange -= OnNavmapVisibleChanged;
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
@@ -146,7 +145,7 @@ namespace DCL
             }
             else
             {
-                toastView.OnCloseClick();
+                CloseToast();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
                 MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
@@ -175,12 +174,16 @@ namespace DCL
 
         void TriggerToast(int cursorTileX, int cursorTileY)
         {
+            if(toastView.isOpen)
+                CloseToast();
             var sceneInfo = mapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
             if (sceneInfo == null)
                 WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
 
             toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
+
+        private void CloseToast() { toastView.OnCloseClick(); }
 
         public void SetExitButtonActive(bool isActive) { closeButton.gameObject.SetActive(isActive); }
 
