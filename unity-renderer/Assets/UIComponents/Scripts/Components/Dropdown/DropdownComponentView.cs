@@ -69,6 +69,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [SerializeField] internal GridContainerComponentView availableOptions;
     [SerializeField] internal ToggleComponentView togglePrefab;
 
+    [SerializeField] internal UIHelper_ClickBlocker blocker;
+
     [Header("Configuration")]
     [SerializeField] internal DropdownComponentModel model;
 
@@ -90,6 +92,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         RefreshControl();
         Close();
 
+        blocker.OnClicked += Close;
         button.onClick.AddListener(() => ToggleOptionsList());
         searchBar.OnSearchText += FilterOptions;
     }
@@ -114,6 +117,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     {
         optionsPanel.SetActive(true);
         isOpen = true;
+        blocker.Activate();
     }
 
     public void Close()
@@ -121,6 +125,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         optionsPanel.SetActive(false);
         isOpen = false;
         searchBar.ClearSearch();
+        blocker.Deactivate();
     }
 
     public void SetTitle(string newText)
@@ -191,6 +196,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     {
         base.Dispose();
 
+        blocker.OnClicked -= Close;
         button.onClick.RemoveAllListeners();
         searchBar.OnSearchText -= FilterOptions;
     }

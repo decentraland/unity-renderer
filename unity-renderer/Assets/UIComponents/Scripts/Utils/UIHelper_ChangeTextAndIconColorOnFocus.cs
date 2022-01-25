@@ -2,8 +2,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Used for customize the color of the text and icon of a UI Component.
+/// </summary>
 [RequireComponent(typeof(BaseComponentView))]
-public class UIUtil_ChangeTextAndIconColorOnFocus : MonoBehaviour
+public class UIHelper_ChangeTextAndIconColorOnFocus : MonoBehaviour
 {
     [SerializeField] internal TMP_Text textToChange;
     [SerializeField] internal Image iconToChange;
@@ -28,7 +31,7 @@ public class UIUtil_ChangeTextAndIconColorOnFocus : MonoBehaviour
         componentView.onFocused -= ComponentView_onFocused;
     }
 
-    private void ComponentView_onFocused(bool isFocused)
+    internal void ComponentView_onFocused(bool isFocused)
     {
         textToChange.color = isFocused ? onFocusColor : onLoseFocusColor;
         iconToChange.color = isFocused ? onFocusColor : onLoseFocusColor;

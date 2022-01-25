@@ -89,6 +89,9 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField]
     internal Button noWeb3GoToMarketplaceButton;
 
+    [SerializeField]
+    internal DropdownComponentView collectionsDropdown;
+
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
@@ -362,9 +365,14 @@ public class AvatarEditorHUDView : MonoBehaviour
         avatarEditorCanvasGroup.blocksRaycasts = visible;
 
         if (visible && !isOpen)
+        {
             OnSetVisibility?.Invoke(visible);
+        }
         else if (!visible && isOpen)
+        {
+            collectionsDropdown.Close();
             OnSetVisibility?.Invoke(visible);
+        }
 
         isOpen = visible;
     }
