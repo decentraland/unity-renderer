@@ -7,20 +7,24 @@ using DCLPlugins.DebugPlugins.Commons;
 public class DebugShapesBoundingBoxDisplayer : IPlugin
 {
     private readonly IBaseDictionary<string, bool> isBoundingBoxEnabledForScene;
-    private readonly WorldRuntimeContext worldRuntime;
+    private readonly IWorldState worldState;
+    private readonly ISceneController sceneController;
     internal readonly Dictionary<string, WatchSceneHandler> scenesWatcher = new Dictionary<string, WatchSceneHandler>();
     internal readonly List<string> pendingScenesId = new List<string>();
 
     public DebugShapesBoundingBoxDisplayer() : this(
         DataStore.i.debugConfig.showSceneBoundingBoxes,
-        Environment.i.world) { }
+        Environment.i.world.state, Environment.i.world.sceneController)
+    {
+    }
 
     internal DebugShapesBoundingBoxDisplayer(
         IBaseDictionary<string, bool> isBoundingBoxEnabledVariable,
-        WorldRuntimeContext worldRuntime)
+        IWorldState state, ISceneController sceneController)
     {
         this.isBoundingBoxEnabledForScene = isBoundingBoxEnabledVariable;
-        this.worldRuntime = worldRuntime;
+        this.worldState = state;
+        this.sceneController = sceneController;
 
         // NOTE: we search for scenes that might be added to the variable previous to this class instantiation
         using (var iterator = isBoundingBoxEnabledVariable.Get().GetEnumerator())
@@ -33,13 +37,14 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
 
         isBoundingBoxEnabledVariable.OnAdded += IsBoundingBoxEnabledVariableOnOnAdded;
         isBoundingBoxEnabledVariable.OnRemoved += IsBoundingBoxEnabledVariableOnOnRemoved;
-        worldRuntime.sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
+        sceneController.OnNewSceneAdded += SceneControllerOnOnNewSceneAdded;
     }
+
     public void Dispose()
     {
         isBoundingBoxEnabledForScene.OnAdded -= IsBoundingBoxEnabledVariableOnOnAdded;
         isBoundingBoxEnabledForScene.OnRemoved -= IsBoundingBoxEnabledVariableOnOnRemoved;
-        worldRuntime.sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
+        sceneController.OnNewSceneAdded -= SceneControllerOnOnNewSceneAdded;
 
         var scenesId = scenesWatcher.Keys.ToArray();
         for (int i = 0; i < scenesId.Length; i++)
@@ -60,12 +65,13 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
     private void WatchScene(string sceneId)
     {
         // NOTE: in case scene is not loaded yet, we add it to the "pending" list
-        if (!worldRuntime.state.loadedScenes.TryGetValue(sceneId, out IParcelScene scene))
+        if (!worldState.loadedScenes.TryGetValue(sceneId, out IParcelScene scene))
         {
             if (!pendingScenesId.Contains(sceneId))
             {
                 pendingScenesId.Add(sceneId);
             }
+
             return;
         }
 
@@ -78,6 +84,7 @@ public class DebugShapesBoundingBoxDisplayer : IPlugin
         {
             watchHandler?.Dispose();
         }
+
         scenesWatcher[scene.sceneData.id] = new WatchSceneHandler(scene, new SceneEntitiesTracker());
     }
 

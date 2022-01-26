@@ -44,7 +44,7 @@ namespace DCL.Rendering
             );
         }
 
-        public CullingController() { }
+        private CullingController() { }
 
         public CullingController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
         {
@@ -345,6 +345,11 @@ namespace DCL.Rendering
             Stop();
         }
 
+        public void Initialize()
+        {
+            Start();
+        }
+
         /// <summary>
         /// Method suscribed to renderer state change
         /// </summary>
@@ -461,7 +466,10 @@ namespace DCL.Rendering
         /// <summary>
         /// Returns true if the culling loop is running
         /// </summary>
-        public bool IsRunning() { return updateCoroutine != null; }
+        public bool IsRunning()
+        {
+            return updateCoroutine != null;
+        }
 
         /// <summary>
         /// Draw debug gizmos on the scene view.

@@ -9,7 +9,7 @@ namespace Tests
 {
     public class IdleCheckerShould
     {
-        private IIdleChecker idleChecker;
+        private IdleChecker idleChecker;
 
         [UnityTest]
         public IEnumerator BeIdleInOneSecond()

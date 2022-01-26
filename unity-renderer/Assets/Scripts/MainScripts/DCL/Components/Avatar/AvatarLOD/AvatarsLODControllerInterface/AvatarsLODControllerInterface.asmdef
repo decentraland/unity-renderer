@@ -2,8 +2,9 @@
     "name": "AvatarsLODControllerInterface",
     "rootNamespace": "",
     "references": [
-        "GUID:46cbc133d57a24117993396eb0fbbc5a",
-        "GUID:09421665db03949048c48febfea4311f"
+      "GUID:46cbc133d57a24117993396eb0fbbc5a",
+      "GUID:09421665db03949048c48febfea4311f",
+      "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

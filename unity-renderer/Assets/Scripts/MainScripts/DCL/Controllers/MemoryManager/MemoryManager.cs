@@ -39,6 +39,10 @@ namespace DCL
             autoCleanupCoroutine = null;
         }
 
+        public void Initialize()
+        {
+        }
+
         bool NeedsMemoryCleanup()
         {
             long usedMemory = Profiler.GetTotalAllocatedMemoryLong() + Profiler.GetMonoUsedSizeLong() + Profiler.GetAllocatedMemoryForGraphicsDriver();

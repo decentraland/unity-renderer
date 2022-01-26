@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using DCL.Camera;
 using DCL.Controllers;
 using UnityEngine;
@@ -29,29 +30,17 @@ namespace Tests
             return result;
         }
 
-        protected override WorldRuntimeContext CreateRuntimeContext()
+        protected override ServiceLocator InitializeServiceLocator()
         {
-            return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks
-            (
-                new PointerEventsController(),
-                new RuntimeComponentFactory(),
-                new WorldState()
-            );
+            ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
+            result.Register<IPointerEventsController>( () => new PointerEventsController());
+            result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
+            result.Register<IWorldState>( () => new WorldState());
+            result.Register<IUpdateEventHandler>( () => new UpdateEventHandler());
+            result.Register<IWebRequestController>( WebRequestController.Create );
+            return result;
         }
 
-        protected override PlatformContext CreatePlatformContext()
-        {
-            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks
-            (
-                new UpdateEventHandler(),
-                WebRequestController.Create()
-            );
-        }
-
-        protected override MessagingContext CreateMessagingContext()
-        {
-            return DCL.Tests.MessagingContextFactory.CreateMocked();
-        }
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -223,7 +212,7 @@ namespace Tests
 
             Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                 "OnPointerEventCollider should have the same mesh info as the mesh renderer");
-        } 
+        }
 
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShape()
@@ -448,7 +437,7 @@ namespace Tests
                 Assert.AreSame(meshFilter.sharedMesh, onPointerEventCollider.GetComponent<MeshCollider>().sharedMesh,
                     "OnPointerEventCollider should have the same mesh info as the mesh renderer");
             }
-        }        
+        }
 
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously()
@@ -1070,14 +1059,14 @@ namespace Tests
                 type = OnPointerHoverEnter.NAME,
                 uuid = uuidHoverEnter
             };
-            
+
             const string uuidHoverExit = "pointerHoverExitEvent-1";
             var hoverExitModel = new OnPointerHoverEvent.Model()
             {
                 type = OnPointerHoverExit.NAME,
                 uuid = uuidHoverExit
             };
-            
+
             var onPointerHoverEnterComponent = TestUtils.EntityComponentCreate<OnPointerHoverEnter, OnPointerHoverEvent.Model>(scene, entity,
                 hoverEnterModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
@@ -1132,7 +1121,7 @@ namespace Tests
                 });
 
             Assert.IsTrue(hoverEnterEventTriggered);
-            
+
             mainCamera.transform.forward = Vector3.up;
 
             yield return TestUtils.ExpectMessageToKernel(targetEventType, sceneEventHoverExit,
@@ -1155,7 +1144,7 @@ namespace Tests
                     return false;
                 });
 
-            Assert.IsTrue(hoverExitEventTriggered);            
+            Assert.IsTrue(hoverExitEventTriggered);
         }
 
         [UnityTest]
@@ -1710,7 +1699,7 @@ namespace Tests
             Assert.IsFalse(targetEntityHit, "Target entity was hit but other entity was blocking it");
 
             mainCamera.transform.forward = Vector3.up;
-            
+
             // Toggle 'isPointerBlocker' property
             yield return TestUtils.SharedComponentUpdate(blockingShape, new BoxShape.Model
             {
