@@ -11,6 +11,7 @@ namespace DCL
         private Action onSuccsess;
         private CancellationTokenSource tokenSource;
         private bool jsGIFProcessingEnabled;
+        
         public AssetPromise_Gif(string url)
         {
             KernelConfig.i.EnsureConfigInitialized().Then(config => jsGIFProcessingEnabled = config.gifSupported);
@@ -25,20 +26,20 @@ namespace DCL
             IGifProcessor processor = GetGifProcessor();
             onSuccsess = OnSuccess;
             asset.processor = processor;
-
             CancellationToken token = tokenSource.Token;
+
             processor.Load(OnLoadSuccsess, OnFail, token)
                      .AttachExternalCancellation(token)
                      .Forget();
         }
-        
+
         private IGifProcessor GetGifProcessor()
         {
             if (jsGIFProcessingEnabled)
             {
                 return new JSGifProcessor(url);
             }
-            
+
             return new UniGifProcessor(url);
         }
         private void OnLoadSuccsess(GifFrameData[] frames)
