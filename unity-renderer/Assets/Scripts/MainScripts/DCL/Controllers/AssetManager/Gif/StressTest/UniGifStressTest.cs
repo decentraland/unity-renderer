@@ -64,17 +64,10 @@ public class UniGifStressTest : MonoBehaviour
         Debug.Log("Starting Load");
 
         CancellationToken cancellationToken = source.Token;
-        if (multithreaded)
-        {
-            await TaskUtils.Run( async () =>
-            {
-                await UniGif.GetTextureListAsync(bytes, OnLoadFinished, FilterMode.Bilinear, token: cancellationToken);
-            }, cancellationToken: cancellationToken);
-        }
-        else
+        await TaskUtils.Run( async () =>
         {
             await UniGif.GetTextureListAsync(bytes, OnLoadFinished, FilterMode.Bilinear, token: cancellationToken);
-        }
+        }, cancellationToken: cancellationToken);
         
     }
     private void OnLoadFinished(GifFrameData[] texturelist, int animationloops, int width, int height)
