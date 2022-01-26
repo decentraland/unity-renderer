@@ -3,19 +3,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-internal class PreviewMenuVisibilityToggleView : MonoBehaviour
+internal class PreviewMenuVisibilityToggleView : MonoBehaviour, IDisposable
 {
-    [SerializeField] private Color colorON;
-    [SerializeField] private Color colorOFF;
-    [SerializeField] private Sprite imageON;
-    [SerializeField] private Sprite imageOFF;
+    [SerializeField] internal Color colorON;
+    [SerializeField] internal Color colorOFF;
+    [SerializeField] internal Sprite imageON;
+    [SerializeField] internal Sprite imageOFF;
 
-    [SerializeField] private TextMeshProUGUI textReference;
-    [SerializeField] private Image imageReference;
-    [SerializeField] private Button buttonReference;
+    [SerializeField] internal TextMeshProUGUI textReference;
+    [SerializeField] internal Image imageReference;
+    [SerializeField] internal Button buttonReference;
 
     private Func<bool> isEnableFunc;
     private Action<bool> onToggleAction;
+
+    private bool isDestroyed;
 
     public void SetUp(string text, Func<bool> isEnableFunc, Action<bool> onToggleAction)
     {
@@ -26,6 +28,14 @@ internal class PreviewMenuVisibilityToggleView : MonoBehaviour
 
         bool isEnable = isEnableFunc?.Invoke() ?? false;
         SetToggle(isEnable);
+    }
+
+    public void Dispose()
+    {
+        if (!isDestroyed)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Awake()
@@ -39,6 +49,11 @@ internal class PreviewMenuVisibilityToggleView : MonoBehaviour
                 SetToggle(!isEnable);
             }
         });
+    }
+
+    private void OnDestroy()
+    {
+        isDestroyed = true;
     }
 
     private void OnEnable()

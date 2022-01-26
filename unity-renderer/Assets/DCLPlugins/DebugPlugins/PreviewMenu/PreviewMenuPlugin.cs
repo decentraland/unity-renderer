@@ -4,7 +4,7 @@ public class PreviewMenuPlugin : IPlugin
 {
     private readonly IBaseVariable<bool> isPreviewMenuActive;
 
-    private PreviewMenuController menuController;
+    internal PreviewMenuController menuController;
 
     public PreviewMenuPlugin() : this(DataStore.i.debugConfig.isPreviewMenuActive) { }
 

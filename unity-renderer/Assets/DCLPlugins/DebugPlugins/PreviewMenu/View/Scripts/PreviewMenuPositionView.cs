@@ -1,19 +1,35 @@
+using System;
 using DCL;
 using TMPro;
 using UnityEngine;
 
-public class PreviewMenuPositionView : MonoBehaviour
+public class PreviewMenuPositionView : MonoBehaviour, IDisposable
 {
-    [SerializeField] private TMP_InputField xValueInputField;
-    [SerializeField] private TMP_InputField yValueInputField;
-    [SerializeField] private TMP_InputField zValueInputField;
+    [SerializeField] internal TMP_InputField xValueInputField;
+    [SerializeField] internal TMP_InputField yValueInputField;
+    [SerializeField] internal TMP_InputField zValueInputField;
 
-    private string FormatFloatValue(float value)
+    private bool isDestroyed;
+
+    public void Dispose()
+    {
+        if (!isDestroyed)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        isDestroyed = true;
+    }
+
+    internal static string FormatFloatValue(float value)
     {
         return $"{value:0.00}";
     }
 
-    private void LateUpdate()
+    internal void LateUpdate()
     {
         Vector3 position = WorldStateUtils.ConvertUnityToScenePosition(CommonScriptableObjects.playerUnityPosition.Get());
         xValueInputField.text = FormatFloatValue(position.x);

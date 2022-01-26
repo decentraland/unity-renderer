@@ -3,9 +3,11 @@ using UnityEngine.UI;
 
 internal class PreviewMenuView : MonoBehaviour
 {
-    [SerializeField] private Button menuButton;
-    [SerializeField] private GameObject contentContainer;
-    [SerializeField] private Transform menuList;
+    [SerializeField] internal Button menuButton;
+    [SerializeField] internal GameObject contentContainer;
+    [SerializeField] internal Transform menuList;
+
+    private bool isDestroyed;
 
     private void Awake()
     {
@@ -13,6 +15,19 @@ internal class PreviewMenuView : MonoBehaviour
         {
             SetVisible(!contentContainer.activeSelf);
         });
+    }
+
+    private void OnDestroy()
+    {
+        isDestroyed = true;
+    }
+
+    public void Dispose()
+    {
+        if (!isDestroyed)
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void AddMenuItem(Transform item)

@@ -10,31 +10,27 @@ internal class PreviewMenuController : IDisposable
     internal const string TOGGLEVISIBILITY_VIEW_RES_PATH = "PreviewMenuVisibilityToggle";
     internal const string POSITION_VIEW_RES_PATH = "PreviewMenuPositionView";
 
-    private readonly PreviewMenuView menuViewResource;
-    private readonly PreviewMenuVisibilityToggleView visibilityToggleViewResource;
-    private readonly PreviewMenuPositionView positionViewResource;
+    internal readonly PreviewMenuView menuView;
 
-    private readonly PreviewMenuView menuView;
-
-    private readonly PreviewMenuVisibilityToggleView showFps;
-    private readonly PreviewMenuVisibilityToggleView showBoundingBox;
-    private readonly PreviewMenuPositionView positionView;
+    internal readonly PreviewMenuVisibilityToggleView showFps;
+    internal readonly PreviewMenuVisibilityToggleView showBoundingBox;
+    internal readonly PreviewMenuPositionView positionView;
 
     public PreviewMenuController()
     {
-        menuViewResource = Resources.Load<PreviewMenuView>(MENU_VIEW_RES_PATH);
+        var menuViewResource = Resources.Load<PreviewMenuView>(MENU_VIEW_RES_PATH);
         menuView = Object.Instantiate(menuViewResource);
         menuView.name = "_PreviewMenu";
         menuView.SetVisible(false);
 
-        visibilityToggleViewResource = Resources.Load<PreviewMenuVisibilityToggleView>(TOGGLEVISIBILITY_VIEW_RES_PATH);
+        var visibilityToggleViewResource = Resources.Load<PreviewMenuVisibilityToggleView>(TOGGLEVISIBILITY_VIEW_RES_PATH);
         showFps = Object.Instantiate(visibilityToggleViewResource);
         showFps.SetUp("FPS PANEL", IsFPSpanleOn, OnFPSPanelToggle);
 
         showBoundingBox = Object.Instantiate(visibilityToggleViewResource);
         showBoundingBox.SetUp("BOUNDING BOXES", IsBoundingBoxOn, OnBoundingBoxToggle);
 
-        positionViewResource = Resources.Load<PreviewMenuPositionView>(POSITION_VIEW_RES_PATH);
+        var positionViewResource = Resources.Load<PreviewMenuPositionView>(POSITION_VIEW_RES_PATH);
         positionView = Object.Instantiate(positionViewResource);
 
         menuView.AddMenuItem(positionView.transform);
@@ -44,14 +40,10 @@ internal class PreviewMenuController : IDisposable
 
     public void Dispose()
     {
-        Object.Destroy(positionView);
-        Object.Destroy(showBoundingBox);
-        Object.Destroy(showFps);
-        Object.Destroy(menuView);
-
-        Resources.UnloadAsset(menuViewResource);
-        Resources.UnloadAsset(visibilityToggleViewResource);
-        Resources.UnloadAsset(positionViewResource);
+        positionView.Dispose();
+        showBoundingBox.Dispose();
+        showFps.Dispose();
+        menuView.Dispose();
     }
 
     private static bool IsFPSpanleOn()
