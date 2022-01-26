@@ -10,33 +10,44 @@ namespace DCL
         private readonly string url;
         private Action onSuccsess;
         private CancellationTokenSource tokenSource;
-        private static int gifLoadingCount = 0;
-        public AssetPromise_Gif(string url) { this.url = url; }
+        private bool jsGIFProcessingEnabled;
+        public AssetPromise_Gif(string url)
+        {
+            KernelConfig.i.EnsureConfigInitialized().Then(config => jsGIFProcessingEnabled = config.gifSupported);
+            this.url = url;
+        }
 
         public override object GetId() { return url; }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
             tokenSource = new CancellationTokenSource();
-            var processor = new GifProcessor(url);
+            IGifProcessor processor = GetGifProcessor();
             onSuccsess = OnSuccess;
             asset.processor = processor;
 
             CancellationToken token = tokenSource.Token;
-            gifLoadingCount++;
             processor.Load(OnLoadSuccsess, OnFail, token)
                      .AttachExternalCancellation(token)
                      .Forget();
         }
+        
+        private IGifProcessor GetGifProcessor()
+        {
+            if (jsGIFProcessingEnabled)
+            {
+                return new JSGifProcessor(url);
+            }
+            
+            return new UniGifProcessor(url);
+        }
         private void OnLoadSuccsess(GifFrameData[] frames)
         {
-            gifLoadingCount--;
             asset.frames = frames;
             onSuccsess?.Invoke();
         }
         protected override void OnCancelLoading()
         {
-            gifLoadingCount--;
             tokenSource.Cancel();
             tokenSource.Dispose();
         }
