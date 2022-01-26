@@ -44,6 +44,7 @@ public class AvatarEditorHUDController : IHUD
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     private bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
+    private bool collectionsAlreadyLoaded = false;
 
     public AvatarEditorHUDView view;
 
@@ -73,7 +74,6 @@ public class AvatarEditorHUDController : IHUD
         view.SetColors(skinColorList.colors, hairColorList.colors, eyeColorList.colors);
 
         SetCatalog(catalog);
-        LoadCollections();
 
         LoadUserProfile(userProfile, true);
         this.userProfile.OnUpdate += LoadUserProfile;
@@ -592,6 +592,7 @@ public class AvatarEditorHUDController : IHUD
                 DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
 
             LoadOwnedWereables(userProfile);
+            LoadCollections();
             DCL.Environment.i.messaging.manager.paused = DataStore.i.common.isSignUpFlow.Get();
             DataStore.i.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InEditor);
             currentRenderProfile.avatarProfile.Apply();
@@ -691,10 +692,14 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadCollections()
     {
+        if (collectionsAlreadyLoaded)
+            return;
+
         WearablesFetchingHelper.GetThirdPartyCollections()
             .Then((collections) =>
             {
                 view.LoadCollectionsDropdown(collections);
+                collectionsAlreadyLoaded = true;
             })
             .Catch((error) => Debug.LogError(error));
     }

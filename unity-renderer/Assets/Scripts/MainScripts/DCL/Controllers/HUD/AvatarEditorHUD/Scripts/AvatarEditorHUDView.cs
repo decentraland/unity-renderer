@@ -423,6 +423,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleCollection;
+        collectionsDropdown.Dispose();
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
