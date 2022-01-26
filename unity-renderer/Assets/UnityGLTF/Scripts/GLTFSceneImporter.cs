@@ -2224,6 +2224,8 @@ namespace UnityGLTF
 
         protected virtual async UniTask ConstructTexture(  GLTFTexture texture, int textureIndex, bool linear, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            
             await UniTask.WaitUntil(() => _assetCache.TextureCache[textureIndex] != null, cancellationToken: cancellationToken);
 
             if (_assetCache.TextureCache[textureIndex].CachedTexture != null)
@@ -2277,6 +2279,8 @@ namespace UnityGLTF
             }
 
             _assetCache.TextureCache[textureIndex].CachedTexture = source;
+            
+            cancellationToken.ThrowIfCancellationRequested();
         }
 
         protected virtual void ConstructImageFromGLB(GLTFImage image, int imageCacheIndex)
