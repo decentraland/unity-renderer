@@ -225,9 +225,12 @@ namespace DCL.Builder
 
         private void UpdateLandsWithAccess()
         {
+            ICatalyst catalyst = Environment.i.platform.serviceProviders.catalyst;
+            ITheGraph theGraph = Environment.i.platform.serviceProviders.theGraph;
+
             DeployedScenesFetcher.FetchLandsFromOwner(
-                    Environment.i.platform.serviceProviders.catalyst,
-                    Environment.i.platform.serviceProviders.theGraph,
+                    catalyst,
+                    theGraph,
                     userProfile.ethAddress,
                     KernelConfig.i.Get().network,
                     BIWSettings.CACHE_TIME_LAND,

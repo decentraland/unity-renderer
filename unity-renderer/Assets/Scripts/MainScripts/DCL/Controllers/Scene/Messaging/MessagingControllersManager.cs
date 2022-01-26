@@ -24,9 +24,9 @@ namespace DCL
         public bool hasPendingMessages => pendingMessagesCount > 0;
 
         public float timeBudgetCounter = MAX_GLOBAL_MSG_BUDGET;
-        public int pendingMessagesCount;
-        public int pendingInitMessagesCount;
-        public long processedInitMessagesCount;
+        public long processedInitMessagesCount { get; set; }
+        public int pendingMessagesCount { get; set;  }
+        public int pendingInitMessagesCount { get; set; }
 
         public bool isRunning { get { return mainCoroutine != null; } }
 
@@ -41,9 +41,19 @@ namespace DCL
         private MessagingController globalController = null;
         private MessagingController currentSceneController = null;
 
-        public void Initialize(IMessageProcessHandler messageHandler)
+        private IMessageProcessHandler messageHandler;
+
+        public MessagingControllersManager (IMessageProcessHandler messageHandler = null)
         {
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(messageHandler, GLOBAL_MESSAGING_CONTROLLER);
+            this.messageHandler = messageHandler;
+        }
+
+        public void Initialize()
+        {
+            if ( messageHandler == null )
+                messageHandler = Environment.i.world.sceneController;
+
+            messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(this, messageHandler, GLOBAL_MESSAGING_CONTROLLER);
 
             if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
                 messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER, out globalController);
@@ -167,7 +177,7 @@ namespace DCL
         public void AddController(IMessageProcessHandler messageHandler, string sceneId, bool isGlobal = false)
         {
             if (!messagingControllers.ContainsKey(sceneId))
-                messagingControllers[sceneId] = new MessagingController(messageHandler, sceneId);
+                messagingControllers[sceneId] = new MessagingController(this, messageHandler, sceneId);
 
             if (isGlobal && !string.IsNullOrEmpty(sceneId))
             {

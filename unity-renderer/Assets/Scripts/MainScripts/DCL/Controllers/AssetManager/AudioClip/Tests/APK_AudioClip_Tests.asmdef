@@ -1,32 +1,34 @@
 {
-    "name": "AssetPromiseKeeper_AudioClip_Tests",
-    "rootNamespace": "",
-    "references": [
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-        "GUID:e555144732b726c4cba5b0f6337fea75",
-        "GUID:b24824f3bc2a60641a01e2083614f802",
-        "GUID:a92fa8e55a4197b4d815691f30474181",
-        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
-        "GUID:27619889b8ba8c24980f49ee34dbb44a",
-        "GUID:0acc523941302664db1f4e527237feb3",
-        "GUID:a3ceb534947fac14da25035bc5c24788",
-        "GUID:b308ae946900fa04080222d7daf47d9a",
-        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-        "GUID:1320d33ea2522ba4e8e60cf9e6a351dd",
-        "GUID:e9cee4050cfa5534d9b26e2782df20be",
-        "GUID:2c6e13fc1d2a309239fafe1b0de41193"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": true,
-    "precompiledReferences": [
-        "nunit.framework.dll"
-    ],
-    "autoReferenced": false,
-    "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "AssetPromiseKeeper_AudioClip_Tests",
+  "rootNamespace": "",
+  "references": [
+    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+    "GUID:e555144732b726c4cba5b0f6337fea75",
+    "GUID:b24824f3bc2a60641a01e2083614f802",
+    "GUID:a92fa8e55a4197b4d815691f30474181",
+    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+    "GUID:27619889b8ba8c24980f49ee34dbb44a",
+    "GUID:0acc523941302664db1f4e527237feb3",
+    "GUID:a3ceb534947fac14da25035bc5c24788",
+    "GUID:b308ae946900fa04080222d7daf47d9a",
+    "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+    "GUID:1320d33ea2522ba4e8e60cf9e6a351dd",
+    "GUID:e9cee4050cfa5534d9b26e2782df20be",
+    "GUID:c27391cd3f3b5aeb4b4c45372ede8043",
+    "GUID:ee6523961ef177343ad763fcd55c7c46",
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

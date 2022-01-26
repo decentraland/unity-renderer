@@ -2,7 +2,8 @@
   "name": "MessagingInterfaces",
   "rootNamespace": "",
   "references": [
-    "GUID:132013f160565434195ba5960832b346"
+    "GUID:132013f160565434195ba5960832b346",
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

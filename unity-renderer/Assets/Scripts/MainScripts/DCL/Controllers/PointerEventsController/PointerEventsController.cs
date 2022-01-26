@@ -257,7 +257,7 @@ namespace DCL
             lastHoveredObject = null;
         }
 
-        public void Cleanup()
+        public void Dispose()
         {
             for (int i = 0; i < Enum.GetValues(typeof(WebInterface.ACTION_BUTTON)).Length; i++)
             {

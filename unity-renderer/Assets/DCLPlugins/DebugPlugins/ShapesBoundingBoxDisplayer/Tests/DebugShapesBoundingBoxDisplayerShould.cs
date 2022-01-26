@@ -6,7 +6,6 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
-using DCL.Tests;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -17,7 +16,6 @@ namespace Tests
 {
     public class DebugShapesBoundingBoxDisplayerShould
     {
-        private WorldRuntimeContext worldRuntime;
         private IWorldState worldState;
         private ISceneController sceneController;
 
@@ -33,8 +31,6 @@ namespace Tests
             worldState.loadedScenes.Returns(loadedScenes);
 
             sceneController = Substitute.For<ISceneController>();
-
-            worldRuntime = WorldRuntimeContextFactory.CreateWithGenericMocks(worldState, sceneController);
         }
 
         [TearDown]
@@ -58,7 +54,7 @@ namespace Tests
             CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
 
             controller.Dispose();
@@ -69,7 +65,7 @@ namespace Tests
         {
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             Assert.AreEqual(1, controller.pendingScenesId.Count);
             Assert.AreEqual(0, controller.scenesWatcher.Count);
 
@@ -86,7 +82,7 @@ namespace Tests
             CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             Assert.AreEqual(1, controller.scenesWatcher.Count);
 
             isBoundingBoxEnabledVariable.AddOrSet("temptation", false);
@@ -101,7 +97,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -116,7 +112,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithoutShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -134,7 +130,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -151,7 +147,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var entity = CreateEntityWithShape("temptationEntity");
 
             AddEntity(scene, entity);
@@ -168,7 +164,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
             {
                 CreateEntityWithShape("temptationEntity1"),
@@ -207,7 +203,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
             {
                 CreateEntityWithShape("temptationEntity1"),
@@ -246,7 +242,7 @@ namespace Tests
             var scene = CreateAndAddScene("temptation");
             isBoundingBoxEnabledVariable.AddOrSet("temptation", true);
 
-            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldRuntime);
+            var controller = new DebugShapesBoundingBoxDisplayer(isBoundingBoxEnabledVariable, worldState, sceneController);
             var sceneEntities = new[]
             {
                 CreateEntityWithShape("temptationEntity1"),
@@ -356,8 +352,8 @@ namespace Tests
         private int GetWireframesCount(bool includeInactive = false)
         {
             return Object
-                   .FindObjectsOfType<GameObject>(includeInactive)
-                   .Count(go => go.name.StartsWith(SceneEntitiesTracker.WIREFRAME_GAMEOBJECT_NAME));
+                .FindObjectsOfType<GameObject>(includeInactive)
+                .Count(go => go.name.StartsWith(SceneEntitiesTracker.WIREFRAME_GAMEOBJECT_NAME));
         }
     }
 }
