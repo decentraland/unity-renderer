@@ -19,8 +19,6 @@ namespace DCL
         protected bool isLoadingOrLoaded = false;
         private WebRequestAsyncOperation loadOp;
 
-        private void Start() { targetImage.color = Color.clear; }
-
         public virtual WebRequestAsyncOperation LoadChunkImage()
         {
             isLoadingOrLoaded = true;
