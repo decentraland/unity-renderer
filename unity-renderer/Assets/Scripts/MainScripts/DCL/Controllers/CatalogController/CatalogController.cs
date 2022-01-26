@@ -1,9 +1,9 @@
-using System;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
+using System;
 using System.Collections.Generic;
-using DCL.Configuration;
+using System.Linq;
 using UnityEngine;
 
 public class CatalogController : MonoBehaviour
@@ -11,6 +11,7 @@ public class CatalogController : MonoBehaviour
     public static bool VERBOSE = false;
     private const string OWNED_WEARABLES_CONTEXT = "OwnedWearables";
     private const string BASE_WEARABLES_CONTEXT = "BaseWearables";
+    private const string THIRD_PARTY_WEARABLES_CONTEXT = "ThirdPartyWearables";
     private const int FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS = 1;
     private const float TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10f;
     private const float REQUESTS_TIME_OUT_SECONDS = 45;
@@ -112,7 +113,8 @@ public class CatalogController : MonoBehaviour
         WearablesRequestFailed requestFailedResponse = JsonUtility.FromJson<WearablesRequestFailed>(payload);
 
         if (requestFailedResponse.context == BASE_WEARABLES_CONTEXT ||
-            requestFailedResponse.context == OWNED_WEARABLES_CONTEXT)
+            requestFailedResponse.context == OWNED_WEARABLES_CONTEXT ||
+            requestFailedResponse.context.Contains(THIRD_PARTY_WEARABLES_CONTEXT))
         {
             ResolvePendingWearablesByContextPromise(
                 requestFailedResponse.context,
@@ -141,6 +143,19 @@ public class CatalogController : MonoBehaviour
         {
             wearableCatalog.Remove(itemIDs[i]);
             wearablesInUseCounters.Remove(itemIDs[i]);
+        }
+    }
+
+    public void RemoveWearablesFromCatalogByColection(string collectionId)
+    {
+        List<string> wearablesToRemove = wearableCatalog
+            .Where(x => x.Value.collection == collectionId)
+            .Select(x => x.Key)
+            .ToList();
+
+        foreach (string wearableId in wearablesToRemove)
+        {
+            wearableCatalog.Remove(wearableId);
         }
     }
 
@@ -232,6 +247,35 @@ public class CatalogController : MonoBehaviour
         else
         {
             awaitingWearablesByContextPromises.TryGetValue(BASE_WEARABLES_CONTEXT, out promiseResult);
+        }
+
+        return promiseResult;
+    }
+
+    // TODO(Santi): Use it when the TPW endpoints are available by platform!
+    public static Promise<WearableItem[]> RequestThirdPartyWearablesByCollection(string userId, string collectionId)
+    {
+        Promise<WearableItem[]> promiseResult;
+
+        if (!awaitingWearablesByContextPromises.ContainsKey($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"))
+        {
+            promiseResult = new Promise<WearableItem[]>();
+
+            awaitingWearablesByContextPromises.Add($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", promiseResult);
+
+            if (!pendingWearablesByContextRequestedTimes.ContainsKey($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"))
+                pendingWearablesByContextRequestedTimes.Add($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", Time.realtimeSinceStartup);
+
+            WebInterface.RequestWearables(
+                ownedByUser: userId,
+                wearableIds: null,
+                collectionIds: new string[] { collectionId },
+                context: $"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}"
+            );
+        }
+        else
+        {
+            awaitingWearablesByContextPromises.TryGetValue($"{THIRD_PARTY_WEARABLES_CONTEXT}_{collectionId}", out promiseResult);
         }
 
         return promiseResult;

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
+using static WearableCollectionsAPIData;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 
@@ -131,6 +132,9 @@ public class AvatarEditorHUDView : MonoBehaviour
         noWeb3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplace);
 
         characterPreviewController.camera.enabled = false;
+
+        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleCollection;
+        collectionsDropdown.OnOptionSelectionChanged += controller.ToggleCollection;
     }
 
     public void SetIsWeb3(bool isWeb3User)
@@ -417,6 +421,8 @@ public class AvatarEditorHUDView : MonoBehaviour
             Destroy(characterPreviewController.gameObject);
             characterPreviewController = null;
         }
+
+        collectionsDropdown.OnOptionSelectionChanged -= controller.ToggleCollection;
     }
 
     public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
@@ -438,5 +444,21 @@ public class AvatarEditorHUDView : MonoBehaviour
         rectTransform.localPosition = Vector2.zero;
         rectTransform.offsetMax = new Vector2(0f, 50f);
         rectTransform.offsetMin = Vector2.zero;
+    }
+
+    public void LoadCollectionsDropdown(Collection[] collections)
+    {
+        List<ToggleComponentModel> collectionsToAdd = new List<ToggleComponentModel>();
+        foreach (var collection in collections)
+        {
+            collectionsToAdd.Add(new ToggleComponentModel
+            {
+                id = collection.urn,
+                text = collection.name,
+                isOn = false,
+            });
+        }
+
+        collectionsDropdown.SetOptions(collectionsToAdd);
     }
 }

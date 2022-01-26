@@ -9,8 +9,7 @@ namespace DCL.Helpers
 {
     public static class WearablesFetchingHelper
     {
-        // TODO: dinamically use ICatalyst.contentUrl, content server is not a const
-        public const string WEARABLES_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections/wearables?";
+        public const string WEARABLES_FETCH_URL = "collections/wearables?";
         public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
 
         // TODO: change fetching logic to allow for auto-pagination
@@ -18,6 +17,9 @@ namespace DCL.Helpers
         // public const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections"; 
         public const string COLLECTIONS_FETCH_URL = "https://nft-api.decentraland.org/v1/collections?sortBy=newest&first=1000"; 
         private static Collection[] collections;
+
+        public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "https://nft-api.decentraland.org/v1/collections?sortBy=newest&first=30";
+        public const string THIRD_PARTY_WEARABLES_FETCH_URL = "collections/wearables?";
 
         private static IEnumerator EnsureCollectionsData()
         {
@@ -105,8 +107,54 @@ namespace DCL.Helpers
             {
                 // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
                 // batches sequentially
-                yield return GetWearableItems(WEARABLES_FETCH_URL + nextPageParams, finalWearableItemsList);
+                yield return GetWearableItems(
+                    $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{WEARABLES_FETCH_URL}{nextPageParams}", 
+                    finalWearableItemsList);
             }
+        }
+
+        // TODO (Santi): Use the correct url when the endpoint is available by platform!
+        public static Promise<Collection[]> GetThirdPartyCollections()
+        {
+            Promise<Collection[]> promiseResult = new Promise<Collection[]>();
+
+            Environment.i.platform.webRequest.Get(
+                url: THIRD_PARTY_COLLECTIONS_FETCH_URL,
+                downloadHandler: new DownloadHandlerBuffer(),
+                timeout: 5000,
+                OnFail: (webRequest) =>
+                {
+                    promiseResult.Reject($"Request error! third party collections couldn't be fetched! -- {webRequest.webRequest.error}");
+                },
+                OnSuccess: (webRequest) =>
+                {
+                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.webRequest.downloadHandler.text);
+                    promiseResult.Resolve(collectionsApiData.data);
+                });
+
+            return promiseResult;
+        }
+
+        // TODO (Santi): Stop using it when the endpoint is available by platform!
+        public static Promise<WearableItem[]> GetThirdPartyWearablesByCollection(string collectionId)
+        {
+            Promise<WearableItem[]> promiseResult = new Promise<WearableItem[]>();
+
+            Environment.i.platform.webRequest.Get(
+                url: $"{Environment.i.platform.serviceProviders.catalyst.lambdasUrl}/{THIRD_PARTY_WEARABLES_FETCH_URL}&collectionId={collectionId}",
+                downloadHandler: new DownloadHandlerBuffer(),
+                timeout: 5000,
+                OnFail: (webRequest) =>
+                {
+                    promiseResult.Reject($"Request error! third party wearables couldn't be fetched! -- {webRequest.webRequest.error}");
+                },
+                OnSuccess: (webRequest) =>
+                {
+                    var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.webRequest.downloadHandler.text);
+                    promiseResult.Resolve(wearablesApiData.GetWearableItems().ToArray());
+                });
+
+            return promiseResult;
         }
     }
 }

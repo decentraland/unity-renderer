@@ -73,6 +73,7 @@ public class AvatarEditorHUDController : IHUD
         view.SetColors(skinColorList.colors, hairColorList.colors, eyeColorList.colors);
 
         SetCatalog(catalog);
+        LoadCollections();
 
         LoadUserProfile(userProfile, true);
         this.userProfile.OnUpdate += LoadUserProfile;
@@ -457,10 +458,11 @@ public class AvatarEditorHUDController : IHUD
 
     private void AddWearable(string id, WearableItem wearable)
     {
-        if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
-        {
-            return;
-        }
+        // TODO (Santi): Temporally commented to be able to mock the Third Party Wearables logic
+        //if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
+        //{
+        //    return;
+        //}
 
         if (!wearablesByCategory.ContainsKey(wearable.data.category))
         {
@@ -684,6 +686,40 @@ public class AvatarEditorHUDController : IHUD
         {
             LoadUserProfile(userProfile, true);
             avatarIsDirty = false;
+        }
+    }
+
+    private void LoadCollections()
+    {
+        WearablesFetchingHelper.GetThirdPartyCollections()
+            .Then((collections) =>
+            {
+                view.LoadCollectionsDropdown(collections);
+            })
+            .Catch((error) => Debug.LogError(error));
+    }
+
+    public void ToggleCollection(bool isOn, string collectionId)
+    {
+        if (isOn)
+        {
+            // TODO (Santi): Use CatalogController.RequestThirdPartyWearablesByCollection(...) when the endpoint is available by platform!
+            //CatalogController.RequestThirdPartyWearablesByCollection(userProfile.userId, collectionId)
+            WearablesFetchingHelper.GetThirdPartyWearablesByCollection(collectionId)
+                .Then((wearables) =>
+                {
+                    foreach (WearableItem wearable in wearables)
+                    {
+                        wearable.collection = collectionId;
+                    }
+
+                    CatalogController.i.AddWearablesToCatalog(wearables);
+                })
+                .Catch((error) => Debug.LogError(error));
+        }
+        else
+        {
+            CatalogController.i.RemoveWearablesFromCatalogByColection(collectionId);
         }
     }
 }

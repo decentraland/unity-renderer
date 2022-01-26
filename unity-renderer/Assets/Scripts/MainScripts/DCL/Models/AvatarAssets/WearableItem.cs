@@ -41,6 +41,7 @@ public class WearableItem
 
     public i18n[] i18n;
     public string thumbnail;
+    public string collection;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
     public string rarity;
