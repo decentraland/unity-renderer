@@ -24,7 +24,6 @@ namespace DCL
 
             CancellationToken token = tokenSource.Token;
             gifLoadingCount++;
-            Debug.Log($"[{gifLoadingCount}] Loading gif {url}");
             processor.Load(OnLoadSuccsess, OnFail, token)
                      .AttachExternalCancellation(token)
                      .Forget();
@@ -34,15 +33,12 @@ namespace DCL
             gifLoadingCount--;
             asset.frames = frames;
             onSuccsess?.Invoke();
-            Debug.Log($"[{gifLoadingCount}] Loading gif finished {url}" );
         }
         protected override void OnCancelLoading()
         {
             gifLoadingCount--;
             tokenSource.Cancel();
             tokenSource.Dispose();
-            Debug.Log($"[{gifLoadingCount}] Loading gif FAILED {url}" );
-
         }
 
         protected override bool AddToLibrary()

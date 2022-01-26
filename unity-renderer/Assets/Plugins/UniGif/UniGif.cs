@@ -6,13 +6,13 @@ http://opensource.org/licenses/mit-license.php
 */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public static partial class UniGif
 {
+    public delegate void OnLoadFinished(GifFrameData[] textureList, int animationLoops, int width, int height);
     /// <summary>
     /// Get GIF texture list Coroutine
     /// </summary>
@@ -21,13 +21,15 @@ public static partial class UniGif
     /// <param name="filterMode">Textures filter mode</param>
     /// <param name="wrapMode">Textures wrap mode</param>
     /// <param name="debugLog">Debug Log Flag</param>
+    /// <param name="token"></param>
     /// <returns>IEnumerator</returns>
     public static async UniTask GetTextureListAsync(
         byte[] bytes,
-        Action<GifFrameData[], int, int, int> callback,
+        OnLoadFinished callback,
         FilterMode filterMode = FilterMode.Bilinear,
         TextureWrapMode wrapMode = TextureWrapMode.Clamp,
-        bool debugLog = false)
+        bool debugLog = false,
+        CancellationToken token = default)
     {
         int loopCount = -1;
         int width = 0;
@@ -47,7 +49,8 @@ public static partial class UniGif
 
         // Decode to textures from GIF data
         GifFrameData[] gifTexList = null;
-        await DecodeTexture(gifData, result => gifTexList = result, filterMode, wrapMode);
+        token.ThrowIfCancellationRequested();
+        await DecodeTexture(gifData, result => gifTexList = result, filterMode, wrapMode, token);
 
         if (gifTexList == null || gifTexList.Length <= 0)
         {
