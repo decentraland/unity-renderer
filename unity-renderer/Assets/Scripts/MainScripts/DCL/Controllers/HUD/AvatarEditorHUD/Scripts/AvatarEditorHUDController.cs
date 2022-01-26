@@ -44,7 +44,7 @@ public class AvatarEditorHUDController : IHUD
     private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
     private bool avatarIsDirty = false;
     private float lastTimeOwnedWearablesChecked = 0;
-    private bool collectionsAlreadyLoaded = false;
+    internal bool collectionsAlreadyLoaded = false;
 
     public AvatarEditorHUDView view;
 
