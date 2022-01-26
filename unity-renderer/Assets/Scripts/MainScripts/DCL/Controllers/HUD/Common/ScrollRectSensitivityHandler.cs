@@ -1,6 +1,7 @@
 using DCL;
 using UnityEngine;
 using UnityEngine.UI;
+using MainScripts.DCL.WebPlugin;
 
 /// <summary>
 /// Attaching this component to a scroll rect to apply the scroll sensitivity based on the os based stored sensitivities
@@ -15,6 +16,7 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
     {
         myScrollRect = GetComponent<ScrollRect>();
         SetScrollSensBasedOnOS();
+        Debug.Log($"Fail is called, Exception: {WebGLPlugin.GetUserAgent()}");
     }
 
     private void SetScrollSensBasedOnOS() {
