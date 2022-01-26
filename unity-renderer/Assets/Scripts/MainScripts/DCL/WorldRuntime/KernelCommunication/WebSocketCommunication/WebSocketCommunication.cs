@@ -75,13 +75,13 @@ public class WebSocketCommunication : IKernelCommunication
         return wssUrl;
     }
 
-    public WebSocketCommunication(bool withSSL = false)
+    public WebSocketCommunication(bool withSSL = false, int startPort = 5000, int endPort = 5100)
     {
         InitMessageTypeToBridgeName();
 
         DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-        string url = StartServer(5000, 5100, withSSL);
+        string url = StartServer(startPort, endPort, withSSL);
 
         Debug.Log("WebSocket Server URL: " + url);
 
@@ -141,6 +141,7 @@ public class WebSocketCommunication : IKernelCommunication
         messageTypeToBridgeName["StopBotsMovement"] = "Main";
         messageTypeToBridgeName["RemoveBot"] = "Main";
         messageTypeToBridgeName["ClearBots"] = "Main";
+        messageTypeToBridgeName["ToggleSceneBoundingBoxes"] = "Main";
 
         messageTypeToBridgeName["Teleport"] = "CharacterController";
 

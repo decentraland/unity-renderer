@@ -17,14 +17,11 @@ namespace Tests
 
         private ParcelScene scene;
 
-        protected override WorldRuntimeContext CreateRuntimeContext()
+        protected override void InitializeServices(ServiceLocator serviceLocator)
         {
-            return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
-            (
-                sceneController: new SceneController(),
-                state: new WorldState(),
-                componentFactory: new RuntimeComponentFactory()
-            );
+            serviceLocator.Register<ISceneController>(() => new SceneController());
+            serviceLocator.Register<IWorldState>(() => new WorldState());
+            serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         }
 
         [UnitySetUp]

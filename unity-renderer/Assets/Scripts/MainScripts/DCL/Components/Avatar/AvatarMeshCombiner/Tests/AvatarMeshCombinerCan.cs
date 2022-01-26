@@ -19,6 +19,7 @@ public class AvatarMeshCombinerCan
     public IEnumerator CombineSkinnedMeshes()
     {
         AssetPromiseKeeper_GLTF keeper = new AssetPromiseKeeper_GLTF();
+        keeper.throttlingCounter.enabled = false;
         WebRequestController webRequestController = WebRequestController.Create();
         AssetPromise_GLTF promise = new AssetPromise_GLTF(BASE_MALE_PATH, webRequestController);
 

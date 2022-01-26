@@ -80,13 +80,25 @@ namespace DCL.Helpers.NFT
         // NOTE: this method doesn't make sense now, but it will when support for other market is added
         public static IEnumerator GetMarket(string assetContractAddress, string tokenId, Action<INFTMarket> onSuccess)
         {
-            onSuccess?.Invoke(DCL.Environment.i.platform.serviceProviders.openSea);
+            IServiceProviders serviceProviders = Environment.i.platform.serviceProviders;
+            INFTMarket openSea = null;
+
+            if ( serviceProviders != null )
+                openSea = serviceProviders.openSea;
+
+            onSuccess?.Invoke(openSea);
             yield break;
         }
 
         public static IEnumerator GetMarket(string assetContractAddress, Action<INFTMarket> onSuccess)
         {
-            onSuccess?.Invoke(DCL.Environment.i.platform.serviceProviders.openSea);
+            IServiceProviders serviceProviders = Environment.i.platform.serviceProviders;
+            INFTMarket openSea = null;
+
+            if ( serviceProviders != null )
+                openSea = serviceProviders.openSea;
+
+            onSuccess?.Invoke(openSea);
             yield break;
         }
     }

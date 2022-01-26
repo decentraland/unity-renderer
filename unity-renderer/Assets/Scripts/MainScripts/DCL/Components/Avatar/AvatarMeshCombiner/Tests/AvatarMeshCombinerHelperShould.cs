@@ -24,6 +24,7 @@ public class AvatarMeshCombinerHelperShould
     public IEnumerator SetUp()
     {
         keeper = new AssetPromiseKeeper_GLTF();
+        keeper.throttlingCounter.enabled = false;
         webRequestController = WebRequestController.Create();
         promise = new AssetPromise_GLTF(BASE_MALE_PATH, webRequestController);
 

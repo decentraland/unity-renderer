@@ -60,7 +60,7 @@ public class FeatureFlagShould
         controller.Dispose();
 
         //Assert
-        Assert.IsNull(controller.featureFlagBridgeComponent);
+        Assert.IsTrue(controller.featureFlagBridgeComponent == null);
         Object.DestroyImmediate(bridges);
     }
 

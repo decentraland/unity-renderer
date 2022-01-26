@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public enum RealmsSorting
@@ -80,14 +81,18 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
                 ApplySorting(
                     RealmsSorting.BY_NAME,
                     currentSorting != RealmsSorting.BY_NAME || currentSortingDirection != RealmsSortingDirection.ASC ? RealmsSortingDirection.ASC : RealmsSortingDirection.DESC);
+
+                EventSystem.current?.SetSelectedGameObject(null);
             });
 
-        if (sortByNameButton != null)
+        if (sortByNumberOfPlayersButton != null)
             sortByNumberOfPlayersButton.onClick.AddListener(() =>
             {
                 ApplySorting(
                     RealmsSorting.BY_NUMBER_OF_PLAYERS,
                     currentSorting != RealmsSorting.BY_NUMBER_OF_PLAYERS || currentSortingDirection != RealmsSortingDirection.ASC ? RealmsSortingDirection.ASC : RealmsSortingDirection.DESC);
+
+                EventSystem.current?.SetSelectedGameObject(null);
             });
 
         if (closeCardButton != null)
@@ -117,6 +122,21 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         SetCurrentRealm(model.currentRealmName);
         availableRealms.RefreshControl();
     }
+
+    public override void Show(bool instant = false)
+    {
+        base.Show(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(true);
+    }
+
+    public override void Hide(bool instant = false)
+    {
+        base.Hide(instant);
+
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
+    }
+
     public override void Dispose()
     {
         base.Dispose();

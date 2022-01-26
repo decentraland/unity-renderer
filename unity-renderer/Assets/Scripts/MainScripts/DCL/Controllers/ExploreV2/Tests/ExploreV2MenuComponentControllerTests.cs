@@ -393,6 +393,7 @@ public class ExploreV2MenuComponentControllerTests
         exploreV2MenuController.UpdateProfileInfo(testUserProfile);
 
         //Assert
+        exploreV2MenuView.currentProfileCard.Received().SetIsClaimedName(testUserProfile.hasClaimedName);
         exploreV2MenuView.currentProfileCard.Received().SetProfileName(testUserProfile.userName);
         exploreV2MenuView.currentProfileCard.Received().SetProfileAddress(testUserProfile.ethAddress);
         exploreV2MenuView.currentProfileCard.Received().SetProfilePicture(testUserProfile.face128SnapshotURL);
@@ -405,6 +406,7 @@ public class ExploreV2MenuComponentControllerTests
     {
         // Arrange
         exploreV2MenuController.isOpen.Set(true);
+        DataStore.i.exploreV2.isSomeModalOpen.Set(false);
 
         // Act
         exploreV2MenuController.OnCloseButtonPressed(fromShortcut);

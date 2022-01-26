@@ -2,7 +2,7 @@
 
 namespace DCL.Rendering
 {
-    public interface ICullingController : IDisposable
+    public interface ICullingController : IService
     {
         void Start();
         void Stop();
