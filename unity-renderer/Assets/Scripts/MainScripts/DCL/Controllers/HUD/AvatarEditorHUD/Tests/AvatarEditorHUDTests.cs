@@ -45,6 +45,7 @@ namespace AvatarEditorHUD_Tests
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
+            controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
         }

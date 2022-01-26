@@ -24,6 +24,7 @@ namespace AvatarEditorHUD_Tests
 
             Setup_AvatarEditorHUDController();
 
+            controller.collectionsAlreadyLoaded = true;
             controller.UnequipAllWearables();
             controller.SetVisibility(true);
         }
@@ -52,6 +53,7 @@ namespace AvatarEditorHUD_Tests
             catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
+            controller.collectionsAlreadyLoaded = true;
             controller.Initialize(userProfile, catalog);
         }
 
