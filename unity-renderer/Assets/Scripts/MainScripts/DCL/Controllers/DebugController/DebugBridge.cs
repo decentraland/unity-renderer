@@ -132,12 +132,10 @@ namespace DCL
             DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
         }
 
-        public void TogglePreviewMenu(string booleanValue)
+        public void TogglePreviewMenu(int booleanValue)
         {
-            if (bool.TryParse(booleanValue, out bool isEnabled))
-            {
-                DataStore.i.debugConfig.isPreviewMenuActive.Set(isEnabled);
-            }
+            bool isEnabled = booleanValue != 0;
+            DataStore.i.debugConfig.isPreviewMenuActive.Set(isEnabled);
         }
 
 #if UNITY_EDITOR
