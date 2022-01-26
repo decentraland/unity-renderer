@@ -13,6 +13,21 @@ using UnityEngine;
 internal interface IProjectsController
 {
     /// <summary>
+    /// This will be released when a project start the publish flow 
+    /// </summary>
+    event Action<ProjectData> OnPublishProject;
+
+    /// <summary>
+    /// This will be released when a project must be deleted
+    /// </summary>
+    event Action<ProjectData> OnDeleteProject;
+
+    /// <summary>
+    /// This will be released when a project must be duplicated
+    /// </summary>
+    event Action<ProjectData> OnDuplicateProject;
+
+    /// <summary>
     /// This action will be called when the user want to edit a project
     /// </summary>
     event Action<ProjectData> OnEditorPressed;
@@ -21,7 +36,7 @@ internal interface IProjectsController
     /// This action will be called each time that we changes the project list
     /// </summary>
     event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
-    
+
     /// <summary>
     /// When the user click on expand or collapse the project
     /// </summary>
@@ -55,19 +70,25 @@ internal interface IProjectsController
     /// </summary>
     /// <returns>Dictionary of all the projects indexed by their id</returns>
     Dictionary<string, IProjectCardView> GetProjects();
+
+    void Dispose();
 }
 
 internal class ProjectsController : IProjectsController
 {
+    public event Action<ProjectData> OnDeleteProject;
+    public event Action<ProjectData> OnDuplicateProject;
+    public event Action<ProjectData> OnPublishProject;
     public event Action<ProjectData> OnEditorPressed;
     public event Action<Dictionary<string, IProjectCardView>> OnProjectsSet;
-    
+
     public event Action OnExpandMenuPressed;
 
     private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
-    
+
     internal Dictionary<string, IProjectCardView> projects = new Dictionary<string, IProjectCardView>();
     private readonly ProjectCardView projectCardViewPrefab;
+    private readonly IProjectContextMenuView contextMenuView;
     private readonly Transform defaultParent;
 
     /// <summary>
@@ -75,11 +96,22 @@ internal class ProjectsController : IProjectsController
     /// </summary>
     /// <param name="projectCardViewPrefab">prefab for project's card</param>
     /// <param name="defaultParent">default parent for scene's card</param>
-    public ProjectsController(ProjectCardView projectCardViewPrefab, Transform defaultParent = null)
+    public ProjectsController(ProjectCardView projectCardViewPrefab, IProjectContextMenuView contextMenuView, Transform defaultParent = null)
     {
+        this.contextMenuView = contextMenuView;
         this.projectCardViewPrefab = projectCardViewPrefab;
         this.defaultParent = defaultParent;
+
+        this.contextMenuView.OnDeletePressed += DeleteProject;
+        this.contextMenuView.OnDuplicatePressed += DuplicateProject;
+        this.contextMenuView.OnPublishPressed += PublishProject;
     }
+
+    private void PublishProject(IProjectCardView projectCardView) { OnPublishProject?.Invoke(projectCardView.projectData); }
+
+    private void DuplicateProject(IProjectCardView projectCardView) { OnDuplicateProject?.Invoke(projectCardView.projectData); }
+
+    private void DeleteProject(IProjectCardView projectCardView) { OnDeleteProject?.Invoke(projectCardView.projectData); }
 
     public void SetProjects(ProjectData[] projects)
     {
@@ -87,7 +119,7 @@ internal class ProjectsController : IProjectsController
         {
             DestroyCardView(projectCard);
         }
-        
+
         this.projects = new Dictionary<string, IProjectCardView>();
         foreach (var project in projects)
         {
@@ -110,7 +142,7 @@ internal class ProjectsController : IProjectsController
                         scenesList.Add(scene);
                 }
             }
-            
+
             project.Value.SetScenes(scenesList);
         }
     }
@@ -121,25 +153,19 @@ internal class ProjectsController : IProjectsController
         listener.OnSetProjects(projects);
     }
 
-    public void RemoveListener(IProjectsListener listener)
-    {
-        OnProjectsSet -= listener.OnSetProjects;
-    }
+    public void RemoveListener(IProjectsListener listener) { OnProjectsSet -= listener.OnSetProjects; }
 
     public Dictionary<string, IProjectCardView> GetProjects() { return projects; }
 
-    internal void ExpandMenuPressed()
-    {
-        OnExpandMenuPressed?.Invoke();
-    }
-    
+    internal void ExpandMenuPressed() { OnExpandMenuPressed?.Invoke(); }
+
     private IProjectCardView CreateCardView(ProjectData data)
     {
         var card = CreateCardView();
         card.Setup(data);
         return card;
     }
-    
+
     private IProjectCardView CreateCardView()
     {
         ProjectCardView projectCardView = GameObject.Instantiate(projectCardViewPrefab).GetComponent<ProjectCardView>();
@@ -166,10 +192,14 @@ internal class ProjectsController : IProjectsController
         projectCardView.Dispose();
     }
 
-    private void OnSceneSettingsPressed(ProjectData sceneData) {  }
+    private void OnSceneSettingsPressed(IProjectCardView sceneData) { contextMenuView.ShowOnCard(sceneData); }
 
     public void Dispose()
     {
+        contextMenuView.OnDeletePressed -= DeleteProject;
+        contextMenuView.OnDuplicatePressed -= DuplicateProject;
+        contextMenuView.OnPublishPressed -= PublishProject;
+
         foreach (var projectCard in this.projects.Values)
         {
             DestroyCardView(projectCard);

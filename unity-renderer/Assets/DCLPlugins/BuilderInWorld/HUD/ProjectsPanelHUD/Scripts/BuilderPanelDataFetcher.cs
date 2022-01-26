@@ -9,7 +9,7 @@ public static class BuilderPanelDataFetcher
     public static Promise<ProjectData[]> FetchProjectData(IBuilderAPIController apiController)
     {
         var promise = new Promise<ProjectData[]>();
-        var manifestPromise = apiController.GetAllManifests();
+        var manifestPromise = apiController.GetAllProjectsData();
         manifestPromise.Then(projectList =>
         {
             promise.Resolve(projectList.ToArray());
@@ -18,7 +18,7 @@ public static class BuilderPanelDataFetcher
         {
             promise.Reject(error);
         });
- 
+
         return promise;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.Builder;
 
 internal interface ISectionSearchHandler
 {

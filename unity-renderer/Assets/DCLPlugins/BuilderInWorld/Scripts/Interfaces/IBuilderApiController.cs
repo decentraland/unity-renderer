@@ -30,7 +30,7 @@ public interface IBuilderAPIController
     /// Get all the projects from an user
     /// </summary>
     /// <returns></returns>
-    Promise<List<ProjectData>> GetAllManifests();
+    Promise<List<ProjectData>> GetAllProjectsData();
 
     /// <summary>
     /// This will get the manifest from the project data
@@ -38,6 +38,13 @@ public interface IBuilderAPIController
     /// <param name="id">Id that we will use to recover the manifest associated</param>
     /// <returns></returns>
     Promise<Manifest> GetManifestById(string id);
+
+    /// <summary>
+    /// This will delete de project
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Promise<bool> DeleteProject(string id);
 
     /// <summary>
     /// This will get the manifest from the project data

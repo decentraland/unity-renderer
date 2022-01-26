@@ -131,7 +131,7 @@ namespace DCL.Builder
                     {
                         statelesComponent.value = entityComponent.Value.GetModel();
                     }
-                    
+
                     statlesEntity.components.Add(statelesComponent);
                 }
 
@@ -307,7 +307,7 @@ namespace DCL.Builder
             return newName;
         }
 
-        public static ParcelScene ManifestToParcelScene(Manifest.Manifest manifest)
+        public static IParcelScene ManifestToParcelScene(Manifest.Manifest manifest)
         {
             GameObject parcelGameObject = new GameObject("Builder Scene SceneId: " + manifest.scene.id);
             ParcelScene scene = parcelGameObject.AddComponent<ParcelScene>();
@@ -333,14 +333,14 @@ namespace DCL.Builder
             parcelData.parcels =  new Vector2Int[manifest.project.rows * manifest.project.cols];
 
             //We assign the parcels position
-            for (int index = 0; index == parcelData.parcels.Length; index++)
+            for (int index = 0; index < parcelData.parcels.Length; index++)
             {
                 parcelData.parcels[index] = new Vector2Int(x, y);
-                y++;
-                if (y == manifest.project.rows)
+                x++;
+                if (x == manifest.project.rows)
                 {
-                    x++;
-                    y = CommonScriptableObjects.playerCoords.Get().y;
+                    y++;
+                    x = 0;
                 }
             }
 

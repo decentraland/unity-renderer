@@ -37,7 +37,8 @@ namespace DCL.Controllers
         {
             foreach (var renderer in disabledRenderers)
             {
-                renderer.enabled = true;
+                if (renderer != null)
+                    renderer.enabled = true;
             }
 
             disabledRenderers.Clear();

@@ -66,6 +66,7 @@ namespace DCL.Builder
         [SerializeField] internal Button rotateLeftButton;
         [SerializeField] internal Button rotateRightButton;
 
+        [SerializeField] internal GameObject aerialScreenshotGameObject;
         [SerializeField] internal RawImage sceneAerialScreenshotImage;
 
         [SerializeField] internal LimitInputField nameInputField;
@@ -77,7 +78,7 @@ namespace DCL.Builder
         [SerializeField] internal Button publishButton;
         [SerializeField] internal PublishLandListView landListView;
         [SerializeField] internal PublishMapView mapView;
-        
+
         [SerializeField] internal RawImage sceneScreenshotImage;
 
         internal IBuilderScene scene;
@@ -183,7 +184,7 @@ namespace DCL.Builder
                     break;
                 case 1: // Choose land to deploy
                     secondStep.SetActive(true);
-                    if (availableLandsToPublish.Count >= 0)
+                    if (availableLandsToPublish.Count > 0)
                         CoordsSelected(availableLandsToPublish[0]);
                     break;
             }
@@ -236,8 +237,17 @@ namespace DCL.Builder
             publishButton.interactable = false;
 
             // We set the screenshot
-            sceneAerialScreenshotImage.texture = scene.aerialScreenshotTexture;
-            if(sceneScreenshotImage != null)
+            if (scene.aerialScreenshotTexture != null)
+            {
+                aerialScreenshotGameObject.SetActive(true);
+                sceneAerialScreenshotImage.texture = scene.aerialScreenshotTexture;
+            }
+            else
+            {
+                aerialScreenshotGameObject.SetActive(false);
+            }
+
+            if (sceneScreenshotImage != null)
                 sceneScreenshotImage.texture = scene.sceneScreenshotTexture;
 
             // We set the scene info

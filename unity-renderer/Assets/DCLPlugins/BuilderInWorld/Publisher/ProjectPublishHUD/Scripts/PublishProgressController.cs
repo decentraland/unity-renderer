@@ -26,12 +26,12 @@ namespace DCL.Builder
         /// </summary>
         /// <param name="publishedScene"></param>
         void DeploySuccess();
-        
+
         /// <summary>
         /// Set the scene to publish
         /// </summary>
         /// <param name="scene"></param>
-        void SetScene(IBuilderScene scene);
+        void SetInfoToPublish(IBuilderScene scene, PublishInfo info);
 
         /// <summary>
         /// This is called when the deployment has failed with the error as parameter
@@ -60,7 +60,7 @@ namespace DCL.Builder
         {
             view.OnViewClosed -= ViewClosed;
             view.OnPublishConfirmButtonPressed -= ConfirmPressed;
-            
+
             view.Dispose();
         }
 
@@ -72,18 +72,12 @@ namespace DCL.Builder
             view.PublishStarted();
         }
 
-        public void DeploySuccess()
-        {
-            view.ProjectPublished();
-        }
-        
-        public void SetScene(IBuilderScene scene) { view.SetScene(scene); }
+        public void DeploySuccess() { view.ProjectPublished(); }
+
+        public void SetInfoToPublish(IBuilderScene scene, PublishInfo info) { view.SetPublishInfo(scene, info); }
 
         public void DeployError(string error) { view.PublishError(error); }
 
-        private void ViewClosed()
-        {
-            view.Hide();
-        }
+        private void ViewClosed() { view.Hide(); }
     }
 }

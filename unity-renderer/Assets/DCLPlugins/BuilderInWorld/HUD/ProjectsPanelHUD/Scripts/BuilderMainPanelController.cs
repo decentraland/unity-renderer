@@ -6,6 +6,7 @@ using DCL.Interface;
 using System;
 using System.Collections;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Variables.RealmsInfo;
 using Environment = DCL.Environment;
@@ -15,6 +16,13 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 {
     private const string CREATING_PROJECT_ERROR = "Error creating a new project: ";
     private const string OBTAIN_PROJECT_ERROR = "Error obtaining the project: ";
+
+    private const string DUPLICATE_PROJECT_ERROR = "Error duplicating the project: ";
+    private const string PUBLISH_PROJECT_ERROR = "Error publishing the project: ";
+
+    private const string DELETE_PROJECT_ERROR = "Error deleting the project: ";
+    private const string DELETE_PROJECT_SUCCESS = "Project deleted: ";
+
     private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
@@ -95,6 +103,9 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         scenesViewController.OnRequestOpenUrl -= OpenUrl;
         scenesViewController.OnEditorPressed -= OnGoToEditScene;
         projectsController.OnEditorPressed -= GetManifestToEdit;
+        projectsController.OnDeleteProject -= DeleteProject;
+        projectsController.OnDuplicateProject -= DuplicateProject;
+        projectsController.OnPublishProject -= PublishProject;
 
         newProjectFlowController.OnNewProjectCrated -= CreateNewProject;
 
@@ -131,7 +142,7 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         Initialize(new SectionsController(view.GetSectionContainer()),
             new ScenesViewController(view.GetSceneCardViewPrefab(), view.GetTransform()),
             new LandsController(),
-            new ProjectsController(view.GetProjectCardView(), view.GetTransform()),
+            new ProjectsController(view.GetProjectCardView(), view.GetProjectCardViewContextMenu(), view.GetTransform()),
             new NewProjectFlowController(),
             Environment.i.platform.serviceProviders.theGraph,
             Environment.i.platform.serviceProviders.catalyst);
@@ -180,9 +191,107 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         view.OnCreateProjectPressed += this.newProjectFlowController.NewProject;
         this.projectsController.OnEditorPressed += GetManifestToEdit;
+        this.projectsController.OnDeleteProject += DeleteProject;
+        this.projectsController.OnDuplicateProject += DuplicateProject;
+        this.projectsController.OnPublishProject += PublishProject;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
+    }
+
+    private void DuplicateProject(ProjectData data)
+    {
+        Promise<Manifest> manifestPromise = context.builderAPIController.GetManifestById(data.id);
+        manifestPromise.Then( (manifest) =>
+        {
+            DuplicateProject(data, manifest);
+        });
+
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR + errorString);
+        });
+    }
+    private async void DuplicateProject(ProjectData data, Manifest manifest)
+    {
+        string url = BIWUrlUtils.GetBuilderProjecThumbnailUrl(data.id, data.thumbnail);
+        Promise<Texture2D> screenshotPromise = new Promise<Texture2D>();
+        BIWUtils.MakeGetTextureCall(url, screenshotPromise);
+
+        string scene_id = Guid.NewGuid().ToString();
+        manifest.project.title += " Copy";
+        manifest.project.id = Guid.NewGuid().ToString();
+        manifest.project.scene_id = scene_id;
+        manifest.scene.id = scene_id;
+        manifest.project.created_at = DateTime.Now;
+        manifest.project.updated_at = DateTime.Now;
+
+        screenshotPromise.Then(texture =>
+        {
+            context.builderAPIController.SetThumbnail(manifest.project.id, texture);
+        });
+
+        Promise<bool> createPromise = context.builderAPIController.SetManifest(manifest);
+        createPromise.Then(isOk =>
+        {
+            if (!isOk)
+                BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR);
+        });
+        createPromise.Catch(error =>
+        {
+            BIWUtils.ShowGenericNotification(DUPLICATE_PROJECT_ERROR + error);
+        });
+
+        await createPromise;
+        await screenshotPromise;
+
+        CoroutineStarter.Start(WaitASecondAndRefreshProjects());
+    }
+
+    private async void PublishProject(ProjectData data)
+    {
+        Promise<Manifest> manifestPromise = context.builderAPIController.GetManifestById(data.id);
+        manifestPromise.Then( (manifest) =>
+        {
+            manifest.project = data;
+            PublishProject(manifest);
+        });
+
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(PUBLISH_PROJECT_ERROR + errorString);
+        });
+    }
+
+    private async void PublishProject(Manifest manifest)
+    {
+        string url = BIWUrlUtils.GetBuilderProjecThumbnailUrl(manifest.project.id, manifest.project.thumbnail);
+        Promise<Texture2D> screenshotPromise = new Promise<Texture2D>();
+        BIWUtils.MakeGetTextureCall(url, screenshotPromise);
+
+        IBuilderScene builderScene = new BuilderScene(manifest, IBuilderScene.SceneType.PROJECT);
+        builderScene.SetScene(ManifestTranslator.ManifestToParcelScene(manifest));
+        screenshotPromise.Then((texture2D => builderScene.sceneScreenshotTexture = texture2D));
+        await screenshotPromise;
+        context.publisher.StartPublish(builderScene);
+    }
+
+    private void DeleteProject(ProjectData data)
+    {
+        Promise<bool> manifestPromise = context.builderAPIController.DeleteProject(data.id);
+        manifestPromise.Then( (isOk) =>
+        {
+            if (isOk)
+            {
+                BIWUtils.ShowGenericNotification(DELETE_PROJECT_SUCCESS + data.title);
+                FetchProjectData();
+            }
+        });
+
+        manifestPromise.Catch( errorString =>
+        {
+            BIWUtils.ShowGenericNotification(DELETE_PROJECT_ERROR + errorString);
+        });
     }
 
     private void GetManifestToEdit(ProjectData data)
@@ -326,6 +435,11 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
 
         if (!DataStore.i.builderInWorld.isDevBuild.Get())
             return;
+        FetchProjectData();
+    }
+
+    internal void FetchProjectData()
+    {
         fetchProjectsPromise = BuilderPanelDataFetcher.FetchProjectData(context.builderAPIController);
         fetchProjectsPromise
             .Then(ProjectsFetched)
@@ -435,6 +549,12 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
             yield return WaitForSecondsCache.Get(REFRESH_INTERVAL);
             FetchPanelInfo();
         }
+    }
+
+    IEnumerator WaitASecondAndRefreshProjects()
+    {
+        yield return new WaitForSeconds(1f);
+        FetchProjectData();
     }
 
     private void OnSceneUnpublished(PublishSceneResultPayload current, PublishSceneResultPayload previous)

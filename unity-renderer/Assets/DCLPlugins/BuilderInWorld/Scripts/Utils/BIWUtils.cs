@@ -194,6 +194,17 @@ public static partial class BIWUtils
         return cachedModel;
     }
 
+    public static Manifest CreateManifestFromProjectDataAndScene(ProjectData data, WebBuilderScene scene)
+    {
+        Manifest manifest = new Manifest();
+        manifest.version = BIWSettings.MANIFEST_VERSION;
+        manifest.project = data;
+        manifest.scene = scene;
+
+        manifest.project.scene_id = manifest.scene.id;
+        return manifest;
+    }
+
     public static Manifest CreateManifestFromProject(ProjectData projectData)
     {
         Manifest manifest = new Manifest();
@@ -239,6 +250,7 @@ public static partial class BIWUtils
         projectData.cols = size.y;
         projectData.updated_at = DateTime.Now;
         projectData.created_at = DateTime.Now;
+        projectData.thumbnail = "thumbnail.png";
 
         manifest.project = projectData;
 
@@ -663,6 +675,22 @@ public static partial class BIWUtils
                 }
             },
             headers: headers);
+
+        return asyncOperation;
+    }
+
+    public static IWebRequestAsyncOperation MakeGetTextureCall(string url, Promise<Texture2D> callPromise)
+    {
+        var asyncOperation = Environment.i.platform.webRequest.GetTexture(
+            url: url,
+            OnSuccess: (webRequestResult) =>
+            {
+                callPromise.Resolve(DownloadHandlerTexture.GetContent(webRequestResult.webRequest));
+            },
+            OnFail: (webRequestResult) =>
+            {
+                callPromise.Reject(webRequestResult.webRequest.error);
+            });
 
         return asyncOperation;
     }

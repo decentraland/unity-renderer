@@ -4084,6 +4084,7 @@ MonoBehaviour:
   nextButton: {fileID: 7377263013007147382}
   rotateLeftButton: {fileID: 2562692018909936145}
   rotateRightButton: {fileID: 6810042847814207012}
+  aerialScreenshotGameObject: {fileID: 7661971356753094665}
   sceneAerialScreenshotImage: {fileID: 7240046172784172835}
   nameInputField: {fileID: 7874013267899282974}
   descriptionInputField: {fileID: 6149131939645581686}
@@ -8015,8 +8016,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 492891507427974709}
   m_HandleRect: {fileID: 6128027950741607916}
   m_Direction: 2
-  m_Value: 0.9999973
-  m_Size: 0.8473513
+  m_Value: 0.99999666
+  m_Size: 0.84735125
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

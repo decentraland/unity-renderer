@@ -84,7 +84,7 @@ namespace DCL.Builder
         {
             builderSceneToDeploy = scene;
             publishInfo = info;
-            progressController.SetScene(scene);
+            progressController.SetInfoToPublish(scene, info);
             progressController.ShowConfirmDeploy();
         }
 
@@ -166,7 +166,7 @@ namespace DCL.Builder
 
             string successString = isOk ? "Success" : message;
             BIWAnalytics.EndScenePublish(builderSceneToDeploy.scene.metricsCounter.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
-            
+
             if (isOk)
                 builderSceneToDeploy = null;
         }

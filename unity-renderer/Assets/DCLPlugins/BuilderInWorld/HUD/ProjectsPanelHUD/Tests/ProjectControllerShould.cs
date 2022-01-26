@@ -12,19 +12,19 @@ using UnityEngine.TestTools;
 public class ProjectControllerShould
 {
     private ProjectsController controller;
-    
+
     [SetUp]
     public void SetUp()
     {
         const string prefabAssetPath =
             "Projects/ProjectCardView";
         var prefab = Resources.Load<ProjectCardView>(prefabAssetPath);
-        controller = new ProjectsController(prefab);
+        controller = new ProjectsController(prefab, Substitute.For<IProjectContextMenuView>());
     }
 
     [TearDown]
-    public void TearDown() { controller.Dispose();}
-    
+    public void TearDown() { controller.Dispose(); }
+
     [Test]
     public void SetProjectsCorrectly()
     {
@@ -38,10 +38,10 @@ public class ProjectControllerShould
         };
         bool eventCalled = false;
         controller.OnProjectsSet += (x) => { eventCalled = true; };
-        
+
         //Act
-        controller.SetProjects(new []{data});
-        
+        controller.SetProjects(new [] { data });
+
         //Assert
         Assert.IsTrue(eventCalled);
     }
@@ -50,27 +50,27 @@ public class ProjectControllerShould
     public void UpdateDelpoymentStatus()
     {
         //Arrange
-        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[]{});
+        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[] { });
         var cardView = Substitute.For<IProjectCardView>();
-        controller.projects.Add("id",cardView);
-        
+        controller.projects.Add("id", cardView);
+
         //Act
         controller.UpdateDeploymentStatus();
-        
+
         //Assert
         cardView.Received().SetScenes(Arg.Any<List<Scene>>());
     }
-    
+
     [Test]
     public void ExpandCalledCorrectly()
     {
         //Arrange
         bool eventCalled = false;
         controller.OnExpandMenuPressed += () => { eventCalled = true; };
-        
+
         //Act
         controller.ExpandMenuPressed();
-        
+
         //Assert
         Assert.IsTrue(eventCalled);
     }

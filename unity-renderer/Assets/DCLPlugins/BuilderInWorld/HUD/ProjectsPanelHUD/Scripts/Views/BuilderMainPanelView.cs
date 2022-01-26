@@ -23,6 +23,7 @@ namespace DCL.Builder
         SearchBarView GetSearchBar();
         LeftMenuSettingsViewReferences GetSettingsViewReferences();
         SceneCardViewContextMenu GetSceneCardViewContextMenu();
+        ProjectContextMenuView GetProjectCardViewContextMenu();
         IUnpublishPopupView GetUnpublishPopup();
         void SetAsFullScreenMenuMode(Transform parentTransform);
     }
@@ -34,6 +35,7 @@ namespace DCL.Builder
         [SerializeField] internal Button backgroundButton;
         [SerializeField] internal Transform sectionsContainer;
         [SerializeField] internal SceneCardViewContextMenu contextMenu;
+        [SerializeField] internal ProjectContextMenuView projectContextMenu;
         [SerializeField] internal SearchBarView searchBarView;
         [SerializeField] internal ShowHideAnimator showHideAnimator;
         [SerializeField] internal InputAction_Trigger closeTrigger;
@@ -117,6 +119,7 @@ namespace DCL.Builder
         LeftMenuSettingsViewReferences IBuilderMainPanelView.GetSettingsViewReferences() { return settingsViewReferences; }
 
         SceneCardViewContextMenu IBuilderMainPanelView.GetSceneCardViewContextMenu() { return contextMenu; }
+        public ProjectContextMenuView GetProjectCardViewContextMenu() { return projectContextMenu; }
 
         IUnpublishPopupView IBuilderMainPanelView.GetUnpublishPopup() { return unpublishPopupView; }
 
