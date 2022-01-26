@@ -25,7 +25,7 @@ internal class PreviewMenuController : IDisposable
 
         var visibilityToggleViewResource = Resources.Load<PreviewMenuVisibilityToggleView>(TOGGLEVISIBILITY_VIEW_RES_PATH);
         showFps = Object.Instantiate(visibilityToggleViewResource);
-        showFps.SetUp("FPS PANEL", IsFPSpanleOn, OnFPSPanelToggle);
+        showFps.SetUp("FPS PANEL", IsFPSPanelOn, OnFPSPanelToggle);
 
         showBoundingBox = Object.Instantiate(visibilityToggleViewResource);
         showBoundingBox.SetUp("BOUNDING BOXES", IsBoundingBoxOn, OnBoundingBoxToggle);
@@ -46,7 +46,7 @@ internal class PreviewMenuController : IDisposable
         menuView.Dispose();
     }
 
-    private static bool IsFPSpanleOn()
+    private static bool IsFPSPanelOn()
     {
         return DataStore.i.debugConfig.isFPSPanelVisible.Get();
     }
