@@ -99,7 +99,7 @@ namespace UnityGLTF
 
         private Settings settings;
 
-        private readonly CancellationTokenSource ctokenSource = new CancellationTokenSource();
+        private  CancellationTokenSource ctokenSource;
 
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
@@ -113,6 +113,7 @@ namespace UnityGLTF
 
         public void LoadAsset(string baseUrl, string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null, AssetIdConverter fileToHashConverter = null)
         {
+            ctokenSource = new CancellationTokenSource();
             if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded)
             {
                 return;
