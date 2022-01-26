@@ -132,6 +132,14 @@ namespace DCL
             DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
         }
 
+        public void TogglePreviewMenu(string booleanValue)
+        {
+            if (bool.TryParse(booleanValue, out bool isEnabled))
+            {
+                DataStore.i.debugConfig.isPreviewMenuActive.Set(isEnabled);
+            }
+        }
+
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 30 seconds")]
         public void DebugPerformanceMeter() { RunPerformanceMeterTool(30); }
