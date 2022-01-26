@@ -17,6 +17,7 @@ namespace DCL
             public string sceneId;
             public bool enabled;
         }
+        
 
         private ILogger debugLogger = new Logger(Debug.unityLogger.logHandler);
         private IDebugController debugController;
@@ -132,12 +133,10 @@ namespace DCL
             DataStore.i.debugConfig.showSceneBoundingBoxes.AddOrSet(data.sceneId, data.enabled);
         }
 
-        public void TogglePreviewMenu(string booleanValue)
+        public void TogglePreviewMenu(string payload)
         {
-            if (bool.TryParse(booleanValue, out bool isEnabled))
-            {
-                DataStore.i.debugConfig.isPreviewMenuActive.Set(isEnabled);
-            }
+            PreviewMenuPayload data =  JsonUtility.FromJson<PreviewMenuPayload>(payload);
+            DataStore.i.debugConfig.isPreviewMenuActive.Set(data.enabled);
         }
 
 #if UNITY_EDITOR

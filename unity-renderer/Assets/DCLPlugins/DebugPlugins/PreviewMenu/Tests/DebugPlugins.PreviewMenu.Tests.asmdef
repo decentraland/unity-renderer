@@ -1,3 +1,22 @@
 {
-  "name": "DebugPlugins_PreviewMenu_Tests"
+    "name": "DebugPlugins_PreviewMenu_Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:044764b0a8d94a2fbdcdc9e02e6da0de"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "nunit.framework.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
