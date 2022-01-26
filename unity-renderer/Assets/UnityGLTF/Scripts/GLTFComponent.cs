@@ -52,6 +52,7 @@ namespace UnityGLTF
             set
             {
                 initialVisibility = value;
+
                 if (sceneImporter != null)
                 {
                     sceneImporter.initialVisibility = value;
@@ -136,8 +137,8 @@ namespace UnityGLTF
             this.fileToHashConverter = fileToHashConverter;
             this.settings = settings;
             CancellationToken cancellationToken = ctokenSource.Token;
+
             Internal_LoadAsset(settings, cancellationToken)
-                .AttachExternalCancellation(cancellationToken)
                 .Forget();
         }
 
@@ -205,6 +206,7 @@ namespace UnityGLTF
                 downloadingCount--;
                 OnDownloadingProgressUpdate?.Invoke();
                 alreadyDecrementedRefCount = true;
+
                 if (VERBOSE)
                 {
                     Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
@@ -212,7 +214,7 @@ namespace UnityGLTF
             }
         }
 
-        private async UniTask Internal_LoadAsset(Settings settings, CancellationToken token)
+        private async UniTaskVoid Internal_LoadAsset(Settings settings, CancellationToken token)
         {
             if (!string.IsNullOrEmpty(GLTFUri))
             {
@@ -254,13 +256,13 @@ namespace UnityGLTF
                             OverrideShaders();
                         }
                     }
+
                     state = State.COMPLETED;
                     DecrementDownloadCount();
                 }
-                catch (Exception e)
+                catch (Exception e) when (!(e is OperationCanceledException))
                 {
-                    if (!(e is OperationCanceledException))
-                        throw;
+                    throw;
                 }
                 finally
                 {
@@ -299,11 +301,13 @@ namespace UnityGLTF
         private void OverrideShaders()
         {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+
             foreach (Renderer renderer in renderers)
             {
                 renderer.sharedMaterial.shader = shaderOverride;
             }
         }
+
         private void SetupSceneImporter(Settings settings, string id, ILoader loader)
         {
             sceneImporter = new GLTFSceneImporter(
@@ -326,6 +330,7 @@ namespace UnityGLTF
             sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
             sceneImporter.initialVisibility = initialVisibility;
             sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
+
             sceneImporter.forceGPUOnlyMesh = settings.forceGPUOnlyMesh
                                              && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(FeatureFlag.GPU_ONLY_MESHES);
 
@@ -409,7 +414,7 @@ namespace UnityGLTF
         {
             if (mainCamera == null)
                 return 0;
-            
+
             Vector3 cameraPosition = mainCamera.transform.position;
             Vector3 gltfPosition = transform.position;
             gltfPosition.y = cameraPosition.y;

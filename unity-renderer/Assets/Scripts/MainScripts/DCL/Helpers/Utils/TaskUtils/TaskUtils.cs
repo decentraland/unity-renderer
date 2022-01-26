@@ -19,7 +19,7 @@ namespace DCL.Helpers
             }
             else
             {
-                await UniTask.Yield();
+                await UniTask.Yield(cancellationToken);
                 action();
             }
 

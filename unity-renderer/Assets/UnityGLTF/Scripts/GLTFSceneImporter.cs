@@ -237,7 +237,7 @@ namespace UnityGLTF
         /// <param name="onLoadComplete">Callback function for when load is completed</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        public async UniTask LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true, Action<GameObject, ExceptionDispatchInfo> onLoadComplete = null)
+        public async UniTask LoadScene(CancellationToken token, int sceneIndex = -1, bool showSceneObj = true)
         {
             try
             {
@@ -283,8 +283,7 @@ namespace UnityGLTF
                     jsonProfiling = ((Time.realtimeSinceStartup - jsonProfiling) * 1000f);
                 }
 
-                if (_assetCache == null)
-                    _assetCache = new AssetCache(_gltfRoot);
+                _assetCache ??= new AssetCache(_gltfRoot);
 
                 if (PROFILING_ENABLED)
                 {
@@ -292,7 +291,7 @@ namespace UnityGLTF
                     frames = Time.frameCount;
                 }
 
-                await _LoadScene(sceneIndex, showSceneObj, token);
+                await CreateScene(sceneIndex, showSceneObj, token);
 
                 token.ThrowIfCancellationRequested();
 
@@ -326,10 +325,9 @@ namespace UnityGLTF
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is OperationCanceledException))
             {
-                if (!(e is OperationCanceledException))
-                    throw;
+                throw;
             }
             finally
             {
@@ -338,8 +336,6 @@ namespace UnityGLTF
                     _isRunning = false;
                 }
             }
-
-            onLoadComplete?.Invoke(lastLoadedScene, null);
         }
         private static bool IsTransitionFinished(MaterialTransitionController[] matTransitions)
         {
@@ -534,7 +530,7 @@ namespace UnityGLTF
         /// </summary>
         /// <param name="sceneIndex">The bufferIndex of scene in gltf file to load</param>
         /// <returns></returns>
-        protected async UniTask _LoadScene(int sceneIndex = -1, bool showSceneObj = true, CancellationToken cancellationToken = default(CancellationToken))
+        private async UniTask CreateScene(int sceneIndex = -1, bool showSceneObj = true, CancellationToken cancellationToken = default)
         {
             GLTFScene scene;
 
