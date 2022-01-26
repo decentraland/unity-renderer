@@ -29,7 +29,7 @@ public class WearablesVisualTests : VisualTestsBase
         catalogController = TestUtils.CreateComponentWithGameObject<CatalogController>("CatalogController");
         catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
-        avatarMaterial = Resources.Load<Material>("Materials/Avatar Material");
+        avatarMaterial = Resources.Load<Material>("Avatar Material");
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#F2C2A5", out skinColor));
         Assert.IsTrue(ColorUtility.TryParseHtmlString("#1C1C1C", out hairColor));
         Assert.NotNull(avatarMaterial);
