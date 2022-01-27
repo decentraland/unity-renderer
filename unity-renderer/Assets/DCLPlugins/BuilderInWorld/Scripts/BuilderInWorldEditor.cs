@@ -90,12 +90,16 @@ public class BuilderInWorldEditor : IBIWEditor
     {
         context.editorContext.editorHUD.Initialize(context);
         context.editorContext.editorHUD.OnTutorialAction += StartTutorial;
+        context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged += ChangeProjectNameAndDescription;
     }
 
     public void Dispose()
     {
         if (context.editorContext.editorHUD != null)
+        {
+            context.editorContext.editorHUD.OnProjectNameAndDescriptionChanged -= ChangeProjectNameAndDescription;
             context.editorContext.editorHUD.OnTutorialAction -= StartTutorial;
+        }
 
 
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
@@ -191,6 +195,14 @@ public class BuilderInWorldEditor : IBIWEditor
         creatorController?.CleanUp();
     }
 
+    private void ChangeProjectNameAndDescription(string name, string description)
+    {
+        sceneToEdit.manifest.project.title = name;
+        sceneToEdit.manifest.project.description = description;
+        
+        saveController.ForceSave();
+    }
+    
     public void EnterEditMode(IBuilderScene builderScene)
     {
         sceneToEdit = builderScene;

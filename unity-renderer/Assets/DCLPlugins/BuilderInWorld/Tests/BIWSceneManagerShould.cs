@@ -72,7 +72,7 @@ public class BIWSceneManagerShould :  IntegrationTestSuite_Legacy
         mainController.StartExitMode();
 
         // Assert
-        mainController.context.cameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+        mainController.context.cameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IScreenshotCameraController.OnSnapshotsReady>());
     }
 
     [Test]

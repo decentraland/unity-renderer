@@ -74,7 +74,7 @@ namespace Tests.BuildModeHUDViews
             Assert.AreEqual(testControllers.saveHUDController, buildModeHUDView.controllers.saveHUDController, "The SaveHUDController does not match!");
             testControllers.saveHUDController.Received(1).Initialize(buildModeHUDView.saveView);
             Assert.AreEqual(testControllers.newProjectDetailsController, buildModeHUDView.controllers.newProjectDetailsController, "The newProjectDetailsController does not match!");
-            testControllers.newProjectDetailsController.Received(1).Initialize(buildModeHUDView.newProjectDetailsView);
+            testControllers.newProjectDetailsController.Received(1).Initialize(buildModeHUDView.newLandProjectDetailsView);
         }
 
         [Test]

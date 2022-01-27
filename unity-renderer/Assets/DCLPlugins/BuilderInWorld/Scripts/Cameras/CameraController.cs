@@ -17,8 +17,12 @@ namespace DCL.Builder
         private CameraMode.ModeId avatarCameraModeBeforeEditing;
         private Camera.CameraController cameraController;
         internal IFreeCameraMovement freeCameraController;
+        internal IScreenshotCameraController screenshotCameraController;
         internal IContext context;
         internal Texture2D lastScreenshot;
+
+        internal Vector3 initialCameraPosition;
+        internal Vector3 initialPointToLookAt;
 
         public void Initialize(IContext context)
         {
@@ -33,49 +37,35 @@ namespace DCL.Builder
 
             initialEagleCameraHeight = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraHeight;
             initialEagleCameraDistance = context.editorContext.godModeDynamicVariablesAsset.initialEagleCameraDistance;
+
+            screenshotCameraController = new ScreenshotCameraController();
+            screenshotCameraController.Init(context);
         }
 
-        public void Dispose() { DeactivateCamera(); }
-
-        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess)
+        public void Dispose()
         {
-            //We deselect the entities to take better photos
-            context.editorContext.entityHandler.DeselectEntities();
-            freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
-            {
-                lastScreenshot = sceneSnapshot;
-                onSuccess?.Invoke(sceneSnapshot);
-            });
+            DeactivateCamera();
+            screenshotCameraController.Dispose();
         }
 
-        public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IFreeCameraMovement.OnSnapshotsReady onSuccess)
+        public void TakeSceneScreenshot(IScreenshotCameraController.OnSnapshotsReady onSuccess)
         {
-            //We deselect the entities to take better photos
-            context.editorContext.entityHandler.DeselectEntities();
-            freeCameraController.TakeSceneScreenshot(camPosition, pointToLookAt, width, height, (sceneSnapshot) =>
-            {
-                lastScreenshot = sceneSnapshot;
-                onSuccess?.Invoke(sceneSnapshot);
-            });
-        }
-        
-        public void TakeSceneAerialScreenshot(IParcelScene parcelScene, IFreeCameraMovement.OnSnapshotsReady onSuccess)
-        {
-            Vector3 pointToLookAt = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-            Vector3 cameraPosition = pointToLookAt  + Vector3.up * context.editorContext.godModeDynamicVariablesAsset.aerialScreenshotHeight;
-
-            TakeSceneScreenshot(cameraPosition, pointToLookAt, BIWSettings.AERIAL_SCREENSHOT_WIDTH, BIWSettings.AERIAL_SCREENSHOT_HEIGHT, onSuccess);
+           screenshotCameraController.TakeSceneScreenshot(onSuccess);
         }
 
-        public void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess)
+        public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IScreenshotCameraController.OnSnapshotsReady onSuccess)
         {
-            //We deselect the entities to take better photos
-            context.editorContext.entityHandler.DeselectEntities();
-            freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
-            {
-                lastScreenshot = sceneSnapshot;
-                onSuccess?.Invoke(sceneSnapshot);
-            });
+            screenshotCameraController.TakeSceneScreenshot(camPosition,pointToLookAt,width,height,onSuccess);
+        }
+
+        public void TakeSceneAerialScreenshot(IParcelScene parcelScene, IScreenshotCameraController.OnSnapshotsReady onSuccess)
+        {
+           screenshotCameraController.TakeSceneAerialScreenshot(parcelScene,onSuccess); 
+        }
+
+        public void TakeSceneScreenshotFromResetPosition(IScreenshotCameraController.OnSnapshotsReady onSuccess)
+        {
+           screenshotCameraController.TakeSceneScreenshot(initialCameraPosition,initialPointToLookAt,onSuccess);
         }
 
         public void ActivateCamera(IParcelScene parcelScene)
@@ -83,6 +73,10 @@ namespace DCL.Builder
             freeCameraController.gameObject.SetActive(true);
             Vector3 pointToLookAt = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
             Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
+
+            initialPointToLookAt = pointToLookAt;
+            initialCameraPosition = cameraPosition;
+            
             freeCameraController.SetPosition(cameraPosition);
             freeCameraController.LookAt(pointToLookAt);
             freeCameraController.SetResetConfiguration(cameraPosition, pointToLookAt);

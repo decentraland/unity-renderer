@@ -95,10 +95,6 @@ namespace DCL.Configuration
         public const float GIZMOS_RELATIVE_SCALE_RATIO = 0.06f;
 
         //Publish
-        public const string PUBLISH_MODAL_TITLE = "Publish Scene";
-        public const string PUBLISH_MODAL_SUBTITLE = "Are you sure you want to publish your scene to this Land?";
-        public const string PUBLISH_MODAL_CONFIRM_BUTTON = "PUBLISH";
-        public const string PUBLISH_MODAL_CANCEL_BUTTON = "CANCEL";
         public const string EXIT_MODAL_TITLE = "Exiting Builder mode";
         public const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode?";
         public const string EXIT_MODAL_CONFIRM_BUTTON = "EXIT";
@@ -112,6 +108,7 @@ namespace DCL.Configuration
         public const string LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
         public const string LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE = "Checking if you have permission to edit this land";
         public const string LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE = "This place was created with the SDK and can not be edited in-world.";
+        public const string GUEST_CANT_USE_BUILDER = "In order to use the builder, you need to log-in connecting a wallet";
         public const float CACHE_TIME_LAND = 5 * 60;
         public const float CACHE_TIME_SCENES = 1 * 60;
         public const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
