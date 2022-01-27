@@ -15,13 +15,13 @@ namespace DCL.Builder
         /// Take screenshot from the initial position of the camera
         /// </summary>
         /// <param name="onSuccess"></param>
-        void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess);
+        void TakeSceneScreenshot(IScreenshotCameraController.OnSnapshotsReady onSuccess);
 
         /// <summary>
         /// Take screenshot from the initial position
         /// </summary>
         /// <param name="onSuccess"></param>
-        void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess);
+        void TakeSceneScreenshotFromResetPosition(IScreenshotCameraController.OnSnapshotsReady onSuccess);
 
         /// <summary>
         /// Take screenshot from the camPosition looking at pointToLooKAt
@@ -31,13 +31,15 @@ namespace DCL.Builder
         /// <param name="onSuccess"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IFreeCameraMovement.OnSnapshotsReady onSuccess);
+        void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IScreenshotCameraController.OnSnapshotsReady onSuccess);
 
         /// <summary>
         /// Take screenshot from the areal position of the scene
         /// </summary>
         /// <param name="onSuccess"></param>
-        void TakeSceneAerialScreenshot(IParcelScene parcelScene, IFreeCameraMovement.OnSnapshotsReady onSuccess);
+        /// <summary>
+        void TakeSceneAerialScreenshot(IParcelScene parcelScene, IScreenshotCameraController.OnSnapshotsReady onSuccess);
+
 
         /// <summary>
         /// Activate the camera in the eagle mode to have a more editor feel
