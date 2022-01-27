@@ -22,7 +22,7 @@ public class AvatarModifierArea : BaseComponent
 
     private Model cachedModel = new Model();
 
-    private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
+    private HashSet<Collider> avatarsInArea = new HashSet<Collider>();
     private event Action<GameObject> OnAvatarEnter;
     private event Action<GameObject> OnAvatarExit;
     internal readonly Dictionary<string, AvatarModifier> modifiers;
@@ -53,7 +53,7 @@ public class AvatarModifierArea : BaseComponent
 
     private void OnDestroy()
     {
-        var toRemove = new HashSet<GameObject>();
+        var toRemove = new HashSet<Collider>();
         if (avatarsInArea != null)
             toRemove.UnionWith(avatarsInArea);
 
@@ -72,32 +72,32 @@ public class AvatarModifierArea : BaseComponent
         }
 
         // Find avatars currently on the area
-        HashSet<GameObject> newAvatarsInArea = DetectAllAvatarsInArea();
+        HashSet<Collider> newAvatarsInArea = DetectAllAvatarsInArea();
         if (AreSetEquals(avatarsInArea, newAvatarsInArea))
             return;
 
         if (avatarsInArea == null)
-            avatarsInArea = new HashSet<GameObject>();
+            avatarsInArea = new HashSet<Collider>();
 
         if (newAvatarsInArea == null)
-            newAvatarsInArea = new HashSet<GameObject>();
+            newAvatarsInArea = new HashSet<Collider>();
 
         // Call event for avatars that just entered the area
-        foreach (GameObject avatarThatEntered in newAvatarsInArea.Except(avatarsInArea))
+        foreach (Collider avatarThatEntered in newAvatarsInArea.Except(avatarsInArea))
         {
-            OnAvatarEnter?.Invoke(avatarThatEntered);
+            OnAvatarEnter?.Invoke(ColliderToAvatarGO(avatarThatEntered));
         }
 
         // Call events for avatars that just exited the area
-        foreach (GameObject avatarThatExited in avatarsInArea.Except(newAvatarsInArea))
+        foreach (Collider avatarThatExited in avatarsInArea.Except(newAvatarsInArea))
         {
-            OnAvatarExit?.Invoke(avatarThatExited);
+            OnAvatarExit?.Invoke(ColliderToAvatarGO(avatarThatExited));
         }
 
         avatarsInArea = newAvatarsInArea;
     }
 
-    private bool AreSetEquals(HashSet<GameObject> set1, HashSet<GameObject> set2)
+    private bool AreSetEquals(HashSet<Collider> set1, HashSet<Collider> set2)
     {
         if (set1 == null && set2 == null)
             return true;
@@ -108,7 +108,7 @@ public class AvatarModifierArea : BaseComponent
         return set1.SetEquals(set2);
     }
 
-    private HashSet<GameObject> DetectAllAvatarsInArea()
+    private HashSet<Collider> DetectAllAvatarsInArea()
     {
         if (entity?.gameObject == null)
         {
@@ -122,7 +122,7 @@ public class AvatarModifierArea : BaseComponent
 
     private void RemoveAllModifiers() { RemoveAllModifiers(DetectAllAvatarsInArea()); }
 
-    private void RemoveAllModifiers(HashSet<GameObject> avatars)
+    private void RemoveAllModifiers(HashSet<Collider> avatars)
     {
         if (cachedModel?.area == null)
         {
@@ -131,9 +131,9 @@ public class AvatarModifierArea : BaseComponent
 
         if (avatars != null)
         {
-            foreach (GameObject avatar in avatars)
+            foreach (Collider avatar in avatars)
             {
-                OnAvatarExit?.Invoke(avatar);
+                OnAvatarExit?.Invoke(ColliderToAvatarGO(avatar));
             }
         }
     }
@@ -156,4 +156,9 @@ public class AvatarModifierArea : BaseComponent
     }
 
     public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA; }
+
+    private static GameObject ColliderToAvatarGO(Collider collider)
+    {
+        return collider.transform.parent.gameObject;
+    }
 }
