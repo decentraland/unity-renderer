@@ -2,6 +2,10 @@ using DCL;
 using UnityEngine;
 using UnityEngine.UI;
 using MainScripts.DCL.WebPlugin;
+using System;
+using System.IO;
+using DCL.Interface;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Attaching this component to a scroll rect to apply the scroll sensitivity based on the os based stored sensitivities
@@ -17,25 +21,64 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
         myScrollRect = GetComponent<ScrollRect>();
         SetScrollSensBasedOnOS();
         //Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36
-        //Debug.Log($"User agent is: {WebGLPlugin.GetUserAgent()}");
+        Debug.Log($"User agent is: {WebGLPlugin.GetUserAgent()}");
     }
 
     private void SetScrollSensBasedOnOS() {
-        switch (SystemInfo.operatingSystemFamily)
+        switch (GetCurrentOs())
         {
-            case OperatingSystemFamily.Windows:
+            case OS_SYSTEM.windows:
                 myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityWindows.Get();
                 break;
-            case OperatingSystemFamily.Linux:
+            case OS_SYSTEM.linux:
                 myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityLinux.Get();
                 break;
-            case OperatingSystemFamily.MacOSX:
+            case OS_SYSTEM.macosx:
                 myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityMac.Get();
                 break;
             default:
                 myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityGeneric.Get();
                 break;
         }
+    }
+
+    private OS_SYSTEM GetCurrentOs() {
+#if UNITY_WEBGL
+        return ObtainOsFromWebGLAgent();
+#else
+        return Enum.Parse(typeof(OS_SYSTEM), SystemInfo.operatingSystemFamily.ToString());
+#endif
+    }
+
+    private OS_SYSTEM ObtainOsFromWebGLAgent() {
+        String agentInfo = WebGLPlugin.GetUserAgent();
+        if (agentInfo.ToLower().Contains("windows"))
+        {
+            Debug.log("OS IS WINDOWS");
+            return OS_SYSTEM.windows;
+        }
+        else if (agentInfo.ToLower().Contains("mac") || agentInfo.ToLower().Contains("osx") || agentInfo.ToLower().Contains("os x"))
+        {
+            Debug.log("OS IS MAC");
+            return OS_SYSTEM.macosx;
+        }
+        else if (agentInfo.ToLower().Contains("linux"))
+        {
+            Debug.log("OS IS LINUX");
+            return OS_SYSTEM.linux;
+        }
+        else
+        {
+            Debug.log("OS IS OTHER");
+            return OS_SYSTEM.other;
+        }
+    }
+
+    private enum OS_SYSTEM { 
+        windows,
+        linux,
+        macosx,
+        other
     }
 
 }
