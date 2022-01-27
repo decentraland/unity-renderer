@@ -49,6 +49,16 @@ namespace DCL
             }
         }
 
+        [ContextMenu("Dump Scene Metrics Offenders")]
+        public void DumpSceneMetricsOffenders()
+        {
+            var worstMetricOffenses = DataStore.i.Get<DataStore_SceneMetrics>().worstMetricOffenses;
+            foreach ( var offense in worstMetricOffenses )
+            {
+                debugLogger.Log($"Scene: {offense.Key} ... Metrics: {offense.Value}");
+            }
+        }
+
         public void SetDisableAssetBundles()
         {
             RendereableAssetLoadHelper.defaultLoadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
@@ -125,7 +135,7 @@ namespace DCL
         public void StopBotsMovement() { debugController.StopBotsMovement(); }
         public void RemoveBot(string targetEntityId) { debugController.RemoveBot(targetEntityId); }
         public void ClearBots() { debugController.ClearBots(); }
-        
+
         public void ToggleSceneBoundingBoxes(string payload)
         {
             ToggleSceneBoundingBoxesPayload data = JsonUtility.FromJson<ToggleSceneBoundingBoxesPayload>(payload);

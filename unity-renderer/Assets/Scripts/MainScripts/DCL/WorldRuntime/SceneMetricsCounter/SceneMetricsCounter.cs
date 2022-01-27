@@ -41,16 +41,17 @@ namespace DCL
             }
         }
 
-        private static bool VERBOSE = false;
+        private static bool VERBOSE = true;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
         public IParcelScene scene { get; private set; }
 
         public HashSet<string> excludedEntities = new HashSet<string>();
 
-        SceneMetricsModel cachedModel = null;
+        SceneMetricsModel sceneLimits = null;
 
-        private SceneMetricsModel model;
+        private SceneMetricsModel modelValue;
+        public ref readonly SceneMetricsModel model => ref modelValue;
 
         private Dictionary<Material, int> uniqueMaterialsRefCount = new Dictionary<Material, int>();
         private Dictionary<Mesh, int> uniqueMeshesRefCount = new Dictionary<Mesh, int>();
@@ -61,17 +62,17 @@ namespace DCL
 
         public bool isDirty { get; private set; }
 
-        public SceneMetricsModel GetModel() { return model.Clone(); }
+        public DataStore_SceneMetrics data => DataStore.i.Get<DataStore_SceneMetrics>();
+
+        public SceneMetricsModel GetModel() { return modelValue; }
 
         public SceneMetricsCounter(IParcelScene sceneOwner)
         {
             Assert.IsTrue( !string.IsNullOrEmpty(sceneOwner.sceneData.id), "Scene must have an ID!" );
             this.scene = sceneOwner;
 
-            model = new SceneMetricsModel();
+            modelValue = new SceneMetricsModel();
             sceneObjectsTrackingHelper = new WorldSceneObjectsTrackingHelper(DataStore.i, scene.sceneData.id);
-
-            logger.Log("Start ScenePerformanceLimitsController...");
         }
 
         public void Enable()
@@ -103,13 +104,52 @@ namespace DCL
             scene.OnEntityRemoved -= OnEntityRemoved;
         }
 
+        private void RaiseMetricsUpdate()
+        {
+            UpdateWorstMetricsOffense();
+            OnMetricsUpdated?.Invoke(this);
+        }
+
+        private void UpdateWorstMetricsOffense()
+        {
+            if ( sceneLimits != null && data.worstMetricOffenseComputeEnabled.Get() )
+            {
+                bool isOffending = model > sceneLimits;
+
+                if ( !isOffending )
+                    return;
+
+                string sceneId = scene.sceneData.id;
+                bool firstOffense = false;
+
+                if (!data.worstMetricOffenses.ContainsKey(sceneId))
+                {
+                    firstOffense = true;
+                    data.worstMetricOffenses[sceneId] = model.Clone();
+                }
+
+                SceneMetricsModel worstOffense = data.worstMetricOffenses[sceneId];
+                SceneMetricsModel currentOffense = sceneLimits - model;
+
+                if ( firstOffense )
+                    logger.Log($"New offending scene {sceneId} ({scene.sceneData.basePosition})!\n{model}");
+
+                if ( currentOffense < worstOffense )
+                    return;
+
+                currentOffense.parcelCount = scene.sceneData.parcels.Length;
+                data.worstMetricOffenses[scene.sceneData.id] = currentOffense;
+                logger.Log($"New offending scene {sceneId} {scene.sceneData.basePosition}!\nmetrics: {model}\nlimits: {sceneLimits}\ndelta:{currentOffense}");
+            }
+        }
+
         private void OnWillAddRendereable(Rendereable rendereable)
         {
             if (excludedEntities.Contains(rendereable.ownerId))
                 return;
 
             int trianglesToAdd = rendereable.totalTriangleCount / 3;
-            model.triangles += trianglesToAdd;
+            modelValue.triangles += trianglesToAdd;
 
             for ( int i = 0; i < rendereable.meshes.Count; i++)
             {
@@ -122,11 +162,11 @@ namespace DCL
                 else
                 {
                     uniqueMeshesRefCount.Add(mesh, 1);
-                    model.meshes++;
+                    modelValue.meshes++;
                 }
             }
 
-            OnMetricsUpdated?.Invoke(this);
+            RaiseMetricsUpdate();
         }
 
         private void OnWillRemoveRendereable(Rendereable rendereable)
@@ -135,7 +175,7 @@ namespace DCL
                 return;
 
             int trianglesToRemove = rendereable.totalTriangleCount / 3;
-            model.triangles -= trianglesToRemove;
+            modelValue.triangles -= trianglesToRemove;
 
             for ( int i = 0; i < rendereable.meshes.Count; i++)
             {
@@ -147,7 +187,7 @@ namespace DCL
 
                     if (uniqueMeshesRefCount[mesh] == 0)
                     {
-                        model.meshes--;
+                        modelValue.meshes--;
                         uniqueMeshesRefCount.Remove(mesh);
                     }
                 }
@@ -157,16 +197,16 @@ namespace DCL
                 }
             }
 
-            OnMetricsUpdated?.Invoke(this);
+            RaiseMetricsUpdate();
         }
 
         private void OnEntityAdded(IDCLEntity e)
         {
             e.OnMeshesInfoUpdated += OnEntityMeshInfoUpdated;
             e.OnMeshesInfoCleaned += OnEntityMeshInfoCleaned;
-            model.entities++;
+            modelValue.entities++;
             isDirty = true;
-            OnMetricsUpdated?.Invoke(this);
+            RaiseMetricsUpdate();
         }
 
         private void OnEntityRemoved(IDCLEntity e)
@@ -176,23 +216,23 @@ namespace DCL
 
             e.OnMeshesInfoUpdated -= OnEntityMeshInfoUpdated;
             e.OnMeshesInfoCleaned -= OnEntityMeshInfoCleaned;
-            model.entities--;
+            modelValue.entities--;
             isDirty = true;
-            OnMetricsUpdated?.Invoke(this);
+            RaiseMetricsUpdate();
         }
 
         // TODO(Brian): When all the code is migrated to the Rendereable counting, remove this method
         private void OnEntityMeshInfoUpdated(IDCLEntity entity)
         {
             AddOrReplaceMetrics(entity);
-            OnMetricsUpdated?.Invoke(this);
+            RaiseMetricsUpdate();
         }
 
         // TODO(Brian): When all the code is migrated to the Rendereable counting, remove this method
         private void OnEntityMeshInfoCleaned(IDCLEntity entity)
         {
             SubstractMetrics(entity);
-            OnMetricsUpdated?.Invoke(this);
+            RaiseMetricsUpdate();
         }
 
         // TODO(Brian): When all the code is migrated to the Rendereable counting, remove this method
@@ -204,7 +244,7 @@ namespace DCL
             }
 
             AddMetrics(entity);
-            OnMetricsUpdated?.Invoke(this);
+            RaiseMetricsUpdate();
         }
 
         // TODO(Brian): Move all this counting on OnWillRemoveRendereable instead
@@ -221,8 +261,8 @@ namespace DCL
 
             RemoveEntitiesMaterial(entityMetrics);
 
-            model.materials = uniqueMaterialsRefCount.Count;
-            model.bodies -= entityMetrics.bodies;
+            modelValue.materials = uniqueMaterialsRefCount.Count;
+            modelValue.bodies -= entityMetrics.bodies;
 
             if (entitiesMetrics.ContainsKey(entity))
             {
@@ -253,15 +293,15 @@ namespace DCL
             // TODO(Brian): We should move bodies and materials to DataStore_WorldObjects later
             entityMetrics.bodies = entity.meshesInfo.meshFilters.Length;
 
-            model.materials = uniqueMaterialsRefCount.Count;
-            model.bodies += entityMetrics.bodies;
+            modelValue.materials = uniqueMaterialsRefCount.Count;
+            modelValue.bodies += entityMetrics.bodies;
 
             if (!entitiesMetrics.ContainsKey(entity))
                 entitiesMetrics.Add(entity, entityMetrics);
             else
                 entitiesMetrics[entity] = entityMetrics;
 
-            logger.Log("SceneMetrics: entity " + entity.entityId + " metrics " + entityMetrics.ToString());
+            //logger.Log("SceneMetrics: entity " + entity.entityId + " metrics " + entityMetrics.ToString());
             isDirty = true;
         }
 
@@ -274,7 +314,7 @@ namespace DCL
 
             if (originalMaterials == null)
             {
-                logger.Log($"SceneMetrics: material null of entity {entity.entityId} -- (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName})");
+                //logger.Log($"SceneMetrics: material null of entity {entity.entityId} -- (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName})");
                 return;
             }
 
@@ -286,7 +326,7 @@ namespace DCL
                     continue;
 
                 AddMaterial(entityMetrics, originalMaterials[i]);
-                logger.Log($"SceneMetrics: material {originalMaterials[i].name} of entity {entity.entityId} -- (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName})");
+                //logger.Log($"SceneMetrics: material {originalMaterials[i].name} of entity {entity.entityId} -- (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName})");
             }
         }
 
@@ -337,35 +377,33 @@ namespace DCL
 
             scene.OnEntityAdded -= OnEntityAdded;
             scene.OnEntityRemoved -= OnEntityRemoved;
-
-            logger.Log("Disposing...");
         }
 
-        public SceneMetricsModel GetLimits()
+        public SceneMetricsModel ComputeSceneLimits()
         {
-            if (cachedModel == null)
+            if (sceneLimits == null)
             {
-                cachedModel = new SceneMetricsModel();
+                sceneLimits = new SceneMetricsModel();
 
                 int parcelCount = scene.sceneData.parcels.Length;
                 float log = Mathf.Log(parcelCount + 1, 2);
                 float lineal = parcelCount;
 
-                cachedModel.triangles = (int) (lineal * LimitsConfig.triangles);
-                cachedModel.bodies = (int) (lineal * LimitsConfig.bodies);
-                cachedModel.entities = (int) (lineal * LimitsConfig.entities);
-                cachedModel.materials = (int) (log * LimitsConfig.materials);
-                cachedModel.textures = (int) (log * LimitsConfig.textures);
-                cachedModel.meshes = (int) (log * LimitsConfig.meshes);
-                cachedModel.sceneHeight = (int) (log * LimitsConfig.height);
+                sceneLimits.triangles = (int) (lineal * LimitsConfig.triangles);
+                sceneLimits.bodies = (int) (lineal * LimitsConfig.bodies);
+                sceneLimits.entities = (int) (lineal * LimitsConfig.entities);
+                sceneLimits.materials = (int) (log * LimitsConfig.materials);
+                sceneLimits.textures = (int) (log * LimitsConfig.textures);
+                sceneLimits.meshes = (int) (log * LimitsConfig.meshes);
+                sceneLimits.sceneHeight = (int) (log * LimitsConfig.height);
             }
 
-            return cachedModel;
+            return sceneLimits;
         }
 
         public bool IsInsideTheLimits()
         {
-            SceneMetricsModel limits = GetLimits();
+            SceneMetricsModel limits = ComputeSceneLimits();
             SceneMetricsModel usage = GetModel();
 
             if (usage.triangles > limits.triangles)
@@ -409,7 +447,7 @@ namespace DCL
             isDirty = false;
 
             Interface.WebInterface.ReportOnMetricsUpdate(scene.sceneData.id,
-                model.ToMetricsModel(), GetLimits().ToMetricsModel());
+                modelValue.ToMetricsModel(), ComputeSceneLimits().ToMetricsModel());
         }
     }
 }

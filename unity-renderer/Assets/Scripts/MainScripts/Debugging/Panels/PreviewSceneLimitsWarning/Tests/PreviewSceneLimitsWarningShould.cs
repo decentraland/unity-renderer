@@ -28,7 +28,7 @@ public class PreviewSceneLimitsWarningShould
 
         ISceneMetricsCounter sceneMetrics = Substitute.For<ISceneMetricsCounter>();
         sceneMetrics.GetModel().Returns(metrics);
-        sceneMetrics.GetLimits().Returns(limit);
+        sceneMetrics.ComputeSceneLimits().Returns(limit);
 
         scene.metricsCounter.Returns(sceneMetrics);
         worldState.loadedScenes.Returns(scenes);

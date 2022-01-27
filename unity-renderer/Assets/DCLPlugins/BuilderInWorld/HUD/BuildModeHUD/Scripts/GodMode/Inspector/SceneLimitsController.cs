@@ -75,7 +75,7 @@ public class SceneLimitsController : ISceneLimitsController
             sceneLimitsView.SetTitleText(BIWSettings.CUSTOM_LAND);
         }
 
-        SceneMetricsModel limits = currentParcelScene.metricsCounter.GetLimits();
+        SceneMetricsModel limits = currentParcelScene.metricsCounter.ComputeSceneLimits();
         SceneMetricsModel usage = currentParcelScene.metricsCounter.GetModel();
 
         string leftDesc = AppendUsageAndLimit("ENTITIES", usage.entities, limits.entities);
@@ -124,7 +124,7 @@ public class SceneLimitsController : ISceneLimitsController
 
     internal float GetHigherLimitPercentInfo()
     {
-        SceneMetricsModel limits = currentParcelScene.metricsCounter.GetLimits();
+        SceneMetricsModel limits = currentParcelScene.metricsCounter.ComputeSceneLimits();
         SceneMetricsModel usage = currentParcelScene.metricsCounter.GetModel();
 
         float percentEntities = usage.entities * 100 / limits.entities;
