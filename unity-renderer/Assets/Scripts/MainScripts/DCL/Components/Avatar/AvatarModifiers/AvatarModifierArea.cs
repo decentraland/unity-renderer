@@ -42,6 +42,8 @@ public class AvatarModifierArea : BaseComponent
             { "DISABLE_PASSPORTS", new DisablePassportModifier() }
         };
         model = new Model();
+
+        DataStore.i.player.otherPlayers.OnRemoved += OnOtherPlayersRemoved;
     }
 
     public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -71,6 +73,7 @@ public class AvatarModifierArea : BaseComponent
 
         DataStore.i.player.ownPlayer.OnChange -= OwnPlayerOnOnChange;
         DataStore.i.player.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
+        DataStore.i.player.otherPlayers.OnRemoved -= OnOtherPlayersRemoved;
     }
 
     private void Update()
@@ -218,6 +221,11 @@ public class AvatarModifierArea : BaseComponent
     private void OwnPlayerOnOnChange(Player current, Player previous)
     {
         RefreshExclusionList(current);
+    }
+
+    private void OnOtherPlayersRemoved(string id, Player player)
+    {
+        excludedColliders?.Remove(player.collider);
     }
 
     private void RefreshExclusionList(Player player)
