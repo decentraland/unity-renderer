@@ -458,11 +458,11 @@ public class AvatarEditorHUDController : IHUD
 
     private void AddWearable(string id, WearableItem wearable)
     {
-        // TODO (Santi): Temporally commented to be able to mock the Third Party Wearables logic
-        //if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
-        //{
-        //    return;
-        //}
+        if (!wearable.data.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0 && 
+            String.IsNullOrEmpty(wearable.collection)) // TODO (Santi): Temporally allowing wearables with collection not empty to be able to mock the Third Party Wearables logic. Remove it in the future!
+        {
+            return;
+        }
 
         if (!wearablesByCategory.ContainsKey(wearable.data.category))
         {
