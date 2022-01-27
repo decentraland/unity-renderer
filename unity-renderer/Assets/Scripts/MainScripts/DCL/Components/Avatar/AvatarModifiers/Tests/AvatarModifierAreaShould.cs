@@ -119,16 +119,27 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
         mockAvatarModifier.Received().ApplyModifier(player1.gameObject);
         mockAvatarModifier.Received().RemoveModifier(player2.gameObject);
 
-        model.excludeIds = new string[0];
+        model.excludeIds =  new[] { player2.player.id, "notLoadedAvatar" };
 
         yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
         yield return null;
+        
+        var player4 = MockPlayer("notLoadedAvatar");
+        DataStore.i.player.otherPlayers.AddOrSet(player4.player.id, player4.player);
+        yield return null;
+        
+        mockAvatarModifier.DidNotReceive().ApplyModifier(player4.gameObject);
 
+        model.excludeIds =  new string[0];
+        yield return TestUtils.EntityComponentUpdate(avatarModifierArea, model);
+        yield return null;
+        
         mockAvatarModifier.Received().ApplyModifier(player2.gameObject);
 
         Object.Destroy(player1.gameObject);
         Object.Destroy(player2.gameObject);
         Object.Destroy(player3.gameObject);
+        Object.Destroy(player4.gameObject);
         Object.Destroy(avatarModifierArea.gameObject);
     }
 
