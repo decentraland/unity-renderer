@@ -167,6 +167,7 @@ RectTransform:
   - {fileID: 8867674412829076672}
   - {fileID: 2249193035634569280}
   - {fileID: 8585665900420765760}
+  - {fileID: 6083578241133350518}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -229,12 +230,14 @@ MonoBehaviour:
   parcelHoldTimeInSeconds: 1
   ParcelHighlightButton: {fileID: 3511145948971381255}
   highlight: {fileID: 7765750690706878977}
+  parcelHighlightImage: {fileID: 5226131346438990493}
+  parcelHighlighImagePrefab: {fileID: 2348616308724949633, guid: 7fde7ef488a1cd449aeceb98a72d8470,
+    type: 3}
+  selectParcelHighlighImagePrefab: {fileID: 2348616308724949633, guid: de10b7ec0d61e314f97d8c8b4b8875c4,
+    type: 3}
   cursorMapCoords: {x: 0, y: 0, z: 0}
   showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
-  parcelHighlightImage: {fileID: 5226131346438990493}
-  redParcelHighlighImagePrefab: {fileID: 2348616308724949633, guid: 7fde7ef488a1cd449aeceb98a72d8470,
-    type: 3}
   highlightedParcelText: {fileID: 7940259258301411768}
   overlayContainer: {fileID: 90597117798403300}
   globalUserMarkerContainer: {fileID: 3332934504654532118}
@@ -275,7 +278,6 @@ RectTransform:
   m_Children:
   - {fileID: 3332934504654532118}
   - {fileID: 1340394175305253205}
-  - {fileID: 6083578241133350518}
   m_Father: {fileID: 2249193035634569280}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -442,11 +444,11 @@ RectTransform:
   m_GameObject: {fileID: 6407972158151617183}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2624566956026777839}
-  m_Father: {fileID: 90597117798403300}
-  m_RootOrder: 2
+  m_Father: {fileID: 6584822353056061070}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -475,6 +477,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   builderHighlightTexture: {fileID: 2800000, guid: 78ce4056779883148aee750d30f9911c,
     type: 3}
+  builderSelectedHighlightTexture: {fileID: 0}
   builderHighlightDisableTexture: {fileID: 2800000, guid: 7a9af2a42b09c8447aeb13743d890b44,
     type: 3}
   defaultTexture: {fileID: 2800000, guid: 1aac5e83391d74318b6be345b5ca43aa, type: 3}

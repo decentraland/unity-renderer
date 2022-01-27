@@ -46,8 +46,6 @@ namespace DCL.Builder
 
         public void TakeSceneScreenshot(Vector3 camPosition, Vector3 pointToLookAt, int width, int height, IScreenshotCameraController.OnSnapshotsReady onSuccess)
         {
-            //We deselect the entities to take better photos
-            context.editorContext.entityHandler.DeselectEntities();
             screenshotCamera.transform.position = camPosition;
             screenshotCamera.transform.LookAt(pointToLookAt);
             TakeScreenshot(onSuccess, width, height);
@@ -58,6 +56,9 @@ namespace DCL.Builder
             if (UnityEngine.Camera.main == null)
                 return;
 
+            //We deselect the entities to take better photos
+            context.editorContext.entityHandler.DeselectEntities();
+            
             screenshotCamera.gameObject.SetActive(true);
 
             var current = screenshotCamera.targetTexture;

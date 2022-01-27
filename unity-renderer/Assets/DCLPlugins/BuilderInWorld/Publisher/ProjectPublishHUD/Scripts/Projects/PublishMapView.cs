@@ -39,13 +39,13 @@ namespace DCL.Builder
         // Note: this event is handled by an event trigger in the same gameobject as the scrollrect
         public void BeginDrag()
         {
-            MapRenderer.i.parcelHighlightImage.enabled = false;
+            MapRenderer.i.SetParcelHighlightActive(false);
         }
 
         // Note: this event is handled by an event trigger in the same gameobject as the scrollrect
         public void EndDrag()
         {
-            MapRenderer.i.parcelHighlightImage.enabled = true;
+            MapRenderer.i.SetParcelHighlightActive(true);
         }
 
         internal void UpdateOwnedLands()
@@ -58,7 +58,7 @@ namespace DCL.Builder
                     landsToHighlight.Add(landParcel);
                 }
             }
-            MapRenderer.i.HighlightLandsInRed(landsToHighlight);
+            MapRenderer.i.HighlightLands(landsToHighlight);
         }
 
         public void SetProjectSize(Vector2Int[] parcels) { MapRenderer.i.SetHighlighSize(parcels); }
@@ -107,8 +107,8 @@ namespace DCL.Builder
             MapRenderer.i.atlas.UpdateCulling();
             MapRenderer.i.OnMovedParcelCursor += ParcelHovered;
             MapRenderer.i.userIconPrefab.SetActive(false);
-
-
+            MapRenderer.i.SetPointOfInterestActive(false);
+            
             scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
             initialContentPosition = scrollRect.content.anchoredPosition;
             
@@ -127,6 +127,7 @@ namespace DCL.Builder
             MapRenderer.i.OnMovedParcelCursor -= ParcelHovered;
             MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
             MapRenderer.i.atlas.UpdateCulling();
+            MapRenderer.i.SetPointOfInterestActive(true);
             MapRenderer.i.userIconPrefab.SetActive(true);
 
             // Restore the player icon to its original parent

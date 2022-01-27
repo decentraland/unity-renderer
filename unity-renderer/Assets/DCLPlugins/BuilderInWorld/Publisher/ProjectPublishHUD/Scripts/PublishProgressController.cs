@@ -59,19 +59,24 @@ namespace DCL.Builder
             view = GameObject.Instantiate(Resources.Load<PublishProgressView>(PROGRESS_PREFAB_PATH));
 
             view.OnViewClosed += ViewClosed;
-            view.OnBackPressed += OnBackPressed;
+            view.OnBackPressed += BackPressed;
             view.OnPublishConfirmButtonPressed += ConfirmPressed;
         }
 
         public void Dispose()
         {
             view.OnViewClosed -= ViewClosed;
-            view.OnBackPressed -= OnBackPressed;
+            view.OnBackPressed -= BackPressed;
             view.OnPublishConfirmButtonPressed -= ConfirmPressed;
 
             view.Dispose();
         }
 
+        private void BackPressed()
+        {
+            OnBackPressed?.Invoke();
+        }
+        
         public void ShowConfirmDeploy() { view.ConfirmDeployment(); }
 
         private void ConfirmPressed()

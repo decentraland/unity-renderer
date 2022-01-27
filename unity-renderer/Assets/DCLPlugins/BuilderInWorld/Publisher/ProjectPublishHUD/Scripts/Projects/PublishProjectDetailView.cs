@@ -35,6 +35,11 @@ namespace DCL.Builder
         void SetProjectToPublish(IBuilderScene scene);
 
         /// <summary>
+        /// This will reset the view to the first state
+        /// </summary>
+        void ResetView(); 
+        
+        /// <summary>
         /// This will show the detail modal 
         /// </summary>
         void Show();
@@ -185,7 +190,7 @@ namespace DCL.Builder
                 case 1: // Choose land to deploy
                     secondStep.SetActive(true);
                     if (availableLandsToPublish.Count > 0)
-                        CoordsSelected(availableLandsToPublish[0]);
+                        GoToCoords(availableLandsToPublish[0]);
                     break;
             }
         }
@@ -301,10 +306,10 @@ namespace DCL.Builder
         private void LandSelected(LandWithAccess land)
         {
             // We set the map to the main land
-            CoordsSelected(land.baseCoords);
+            GoToCoords(land.baseCoords);
         }
 
-        private void CoordsSelected(Vector2Int coord)
+        private void GoToCoords(Vector2Int coord)
         {
             // We set the map to the main land
             CoroutineStarter.Start(WaitFrameToPositionMap(coord));
@@ -321,7 +326,12 @@ namespace DCL.Builder
             gameObject.SetActive(true);
             mapView.SetVisible(true);
             modal.Show();
+            if(coordsSelected)
+                GoToCoords(selectedCoords);
+        }
 
+        public void ResetView() 
+        { 
             currentStep = 0;
             ShowCurrentStep();
         }

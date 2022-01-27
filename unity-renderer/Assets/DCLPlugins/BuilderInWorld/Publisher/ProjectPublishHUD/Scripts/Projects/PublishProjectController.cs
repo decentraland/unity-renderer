@@ -67,6 +67,7 @@ namespace DCL.Builder
 
             detailView.SetProjectToPublish(sceneToPublish);
             detailView.Show();
+            detailView.ResetView();
         }
 
         public void SetActive(bool isActive)
