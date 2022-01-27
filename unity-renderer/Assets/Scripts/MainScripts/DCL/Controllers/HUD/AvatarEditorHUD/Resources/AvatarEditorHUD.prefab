@@ -1539,7 +1539,7 @@ MonoBehaviour:
   navigationInfos:
   - toggle: {fileID: 3150290542716019958}
     canvas: {fileID: 3150290543018005860}
-    enabledByDefault: 1
+    enabledByDefault: 0
     focus: 0
   - toggle: {fileID: 3661532844623969922}
     canvas: {fileID: 3150290543101964660}
@@ -1609,6 +1609,11 @@ MonoBehaviour:
     canvas: {fileID: 6151202184307174224}
     enabledByDefault: 0
     focus: 1
+  defaultNavigationPanel:
+    toggle: {fileID: 0}
+    canvas: {fileID: 0}
+    enabledByDefault: 0
+    focus: 0
   wearableGridPairs:
   - categoryFilter: body_shape
     selector: {fileID: 3358252997386326019}
@@ -1645,7 +1650,7 @@ MonoBehaviour:
   collectiblesNavigationInfo:
     toggle: {fileID: 1039268970838228618}
     canvas: {fileID: 7406321907236003421}
-    enabledByDefault: 0
+    enabledByDefault: 1
     focus: 0
   collectiblesItemSelector: {fileID: 5289564723011178695}
   skinColorSelector: {fileID: 3615833362840057512}
