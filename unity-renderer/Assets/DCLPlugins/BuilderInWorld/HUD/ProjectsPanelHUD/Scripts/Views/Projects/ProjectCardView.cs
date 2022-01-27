@@ -20,9 +20,14 @@ namespace DCL.Builder
         event Action<ProjectData> OnEditorPressed;
 
         /// <summary>
-        ///  Setting button pressed
+        ///  Setting button pressed from the project card
         /// </summary>
         event Action<IProjectCardView> OnSettingsPressed;
+
+        /// <summary>
+        ///  Setting button pressed from the sceneCard
+        /// </summary>
+        event Action<IProjectSceneCardView> OnSceneCardSettingsPressed;
 
         /// <summary>
         /// Expand button pressed
@@ -104,6 +109,7 @@ namespace DCL.Builder
 
         public event Action<ProjectData> OnEditorPressed;
         public event Action<IProjectCardView> OnSettingsPressed;
+        public event Action<IProjectSceneCardView> OnSceneCardSettingsPressed;
         public event Action OnExpandMenuPressed;
 
         [Header("Design Variables")]
@@ -283,6 +289,7 @@ namespace DCL.Builder
 
                 IProjectSceneCardView cardView = Instantiate(projectSceneCardViewPrefab, scenesContainer).GetComponent<ProjectSceneCardView>();
                 cardView.Setup(scene, isSync);
+                cardView.OnSettingsPressed += OnSceneCardSettingsPressed;
                 sceneCardViews.Add(cardView);
             }
         }

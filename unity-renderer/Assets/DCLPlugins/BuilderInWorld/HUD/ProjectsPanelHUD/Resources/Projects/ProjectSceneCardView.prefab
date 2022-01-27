@@ -155,6 +155,7 @@ MonoBehaviour:
   outdatedGameObject: {fileID: 5880200268905844250}
   sceneNameTxt: {fileID: 6413016629635610869}
   sceneCoordsTxt: {fileID: 2371684709909410652}
+  contextSettingButton: {fileID: 4048026255157998503}
   canvasGroup: {fileID: 1105526939477448655}
   thumbnail: {fileID: 2918943808568610179}
 --- !u!222 &1533866142872764801

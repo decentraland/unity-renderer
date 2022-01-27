@@ -58,6 +58,15 @@ internal class SceneContextMenuHandler : IDisposable
         sceneSource = sceneData.source;
     }
 
+    public void OnContextMenuOpen(IProjectSceneCardView sceneCard)
+    {
+        contextMenu.transform.position = sceneCard.contextMenuButtonPosition;
+        contextMenu.Show( sceneCard.scene.id, true,
+            sceneCard.scene.land?.role == LandRole.OWNER || sceneCard.scene.land?.role == LandRole.OPERATOR, false);
+        sceneCoords = sceneCard.scene.@base;
+        sceneSource = sceneCard.scene.source;
+    }
+
     void OnRequestContextMenuHide() { contextMenu.Hide(); }
 
     void OnContextMenuSettingsPressed(string id) { scenesViewController.SelectScene(id); }

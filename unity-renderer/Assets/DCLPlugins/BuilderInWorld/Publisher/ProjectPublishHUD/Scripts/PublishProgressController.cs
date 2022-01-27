@@ -12,6 +12,11 @@ namespace DCL.Builder
         /// </summary>
         event Action OnConfirm;
 
+        /// <summary>
+        /// The back button has been pressed
+        /// </summary>
+        event Action OnBackPressed;
+
         void Initialize();
 
         void Dispose();
@@ -43,6 +48,7 @@ namespace DCL.Builder
     public class PublishProgressController : IPublishProgressController
     {
         public event Action OnConfirm;
+        public event Action OnBackPressed;
 
         private const string PROGRESS_PREFAB_PATH = "PublishProgressView";
 
@@ -53,12 +59,14 @@ namespace DCL.Builder
             view = GameObject.Instantiate(Resources.Load<PublishProgressView>(PROGRESS_PREFAB_PATH));
 
             view.OnViewClosed += ViewClosed;
+            view.OnBackPressed += OnBackPressed;
             view.OnPublishConfirmButtonPressed += ConfirmPressed;
         }
 
         public void Dispose()
         {
             view.OnViewClosed -= ViewClosed;
+            view.OnBackPressed -= OnBackPressed;
             view.OnPublishConfirmButtonPressed -= ConfirmPressed;
 
             view.Dispose();

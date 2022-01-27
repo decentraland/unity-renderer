@@ -32,6 +32,11 @@ namespace DCL.Builder
         event Action OnViewClosed;
 
         /// <summary>
+        /// Whe should go back to the previous view
+        /// </summary>
+        event Action OnBackPressed;
+
+        /// <summary>
         /// Show the confirm publish pop up
         /// </summary>
         void ConfirmDeployment();
@@ -84,6 +89,7 @@ namespace DCL.Builder
 
         public event Action OnPublishConfirmButtonPressed;
         public event Action OnViewClosed;
+        public event Action OnBackPressed;
 
         [Header("General references")]
         [SerializeField] internal TMP_Text mainTitleTextView;
@@ -122,7 +128,7 @@ namespace DCL.Builder
         {
             base.Awake();
             cancelButton.onClick.AddListener(Close);
-            noButton.onClick.AddListener(Close);
+            noButton.onClick.AddListener(Back);
             okButton.onClick.AddListener(Close);
 
             yesButton.onClick.AddListener(ConfirmPublish);
@@ -234,6 +240,12 @@ namespace DCL.Builder
         {
             currentStatus = status;
             ShowCurrentStatus();
+        }
+
+        public void Back()
+        {
+            modal.Hide();
+            OnBackPressed?.Invoke();
         }
 
         public void Close()

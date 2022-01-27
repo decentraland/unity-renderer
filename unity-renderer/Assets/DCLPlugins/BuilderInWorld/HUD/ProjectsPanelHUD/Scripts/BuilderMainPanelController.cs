@@ -177,6 +177,8 @@ public class BuilderMainPanelController : IHUD, IBuilderMainPanelController
         // handle scene's context menu options
         sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController, unpublishPopupController);
 
+        this.projectsController.SetSceneContextMenuHandler(sceneContextMenuHandler);
+
         SetView();
 
         sectionsController.OnRequestOpenUrl += OpenUrl;

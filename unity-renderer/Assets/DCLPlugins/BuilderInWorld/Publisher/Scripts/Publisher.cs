@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
-using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Builder
@@ -22,6 +20,7 @@ namespace DCL.Builder
 
         private IBuilderScene builderSceneToDeploy;
         private PublishInfo publishInfo;
+        private IBuilderScene.SceneType lastTypeWhoStartedPublish;
 
         public void Initialize(IContext context)
         {
@@ -38,6 +37,7 @@ namespace DCL.Builder
             landPublisher.OnPublishPressed += PublishLandScene;
             projectPublisher.OnPublishPressed += ConfirmDeployment;
             progressController.OnConfirm += StartDeployment;
+            progressController.OnBackPressed += BackToPublishInfo;
 
             builderInWorldBridge = context.sceneReferences.biwBridgeGameObject.GetComponent<BuilderInWorldBridge>();
 
@@ -50,6 +50,7 @@ namespace DCL.Builder
             landPublisher.OnPublishPressed -= PublishLandScene;
             projectPublisher.OnPublishPressed -= ConfirmDeployment;
             progressController.OnConfirm -= StartDeployment;
+            progressController.OnBackPressed -= BackToPublishInfo;
 
             if (builderInWorldBridge != null)
                 builderInWorldBridge.OnPublishEnd -= PublishEnd;
@@ -57,6 +58,19 @@ namespace DCL.Builder
             projectPublisher.Dispose();
             landPublisher.Dispose();
             progressController.Dispose();
+        }
+
+        private void BackToPublishInfo()
+        {
+            switch (lastTypeWhoStartedPublish)
+            {
+                case IBuilderScene.SceneType.PROJECT:
+                    projectPublisher.SetActive(true);
+                    break;
+                case IBuilderScene.SceneType.LAND:
+                    landPublisher.SetActive(true);
+                    break;
+            }
         }
 
         public void StartPublish(IBuilderScene scene)
@@ -70,6 +84,8 @@ namespace DCL.Builder
                     landPublisher.StartPublishFlow(scene);
                     break;
             }
+
+            lastTypeWhoStartedPublish = scene.sceneType;
         }
 
         internal void PublishLandScene(IBuilderScene scene)

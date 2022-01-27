@@ -36,9 +36,6 @@ namespace DCL.Builder
 
         public void TakeSceneScreenshot(IScreenshotCameraController.OnSnapshotsReady onSuccess)
         {
-            if (UnityEngine.Camera.main == null)
-                return;
-
             screenshotCamera.transform.position = freeCameraMovement.GetCameraPosition;
             screenshotCamera.transform.rotation = freeCameraMovement.gameObject.transform.rotation;
 
@@ -58,6 +55,9 @@ namespace DCL.Builder
 
         private void TakeScreenshot(IScreenshotCameraController.OnSnapshotsReady callback, int width, int height)
         {
+            if (UnityEngine.Camera.main == null)
+                return;
+
             screenshotCamera.gameObject.SetActive(true);
 
             var current = screenshotCamera.targetTexture;

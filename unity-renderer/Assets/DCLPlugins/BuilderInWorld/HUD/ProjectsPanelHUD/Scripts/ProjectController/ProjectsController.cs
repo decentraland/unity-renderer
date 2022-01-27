@@ -54,6 +54,12 @@ internal interface IProjectsController
     void SetProjects(ProjectData[] projects);
 
     /// <summary>
+    /// This will set the handler for the context menu of the scenes
+    /// </summary>
+    /// <param name="sceneContextMenuHandler"></param>
+    void SetSceneContextMenuHandler(SceneContextMenuHandler sceneContextMenuHandler);
+
+    /// <summary>
     /// This will add a listener that will be responsible to add/remove projects
     /// </summary>
     /// <param name="listener"></param>
@@ -90,6 +96,7 @@ internal class ProjectsController : IProjectsController
     private readonly ProjectCardView projectCardViewPrefab;
     private readonly IProjectContextMenuView contextMenuView;
     private readonly Transform defaultParent;
+    private SceneContextMenuHandler sceneContextMenuHandler;
 
     /// <summary>
     /// Ctor
@@ -128,6 +135,8 @@ internal class ProjectsController : IProjectsController
         sceneSearchHandler.SetSearchableList(this.projects.Values.Select(scene => scene.searchInfo).ToList());
         OnProjectsSet?.Invoke(this.projects);
     }
+
+    public void SetSceneContextMenuHandler(SceneContextMenuHandler sceneContextMenuHandler) { this.sceneContextMenuHandler = sceneContextMenuHandler; }
 
     public void UpdateDeploymentStatus()
     {
@@ -176,7 +185,8 @@ internal class ProjectsController : IProjectsController
         view.SetToDefaultParent();
 
         view.OnEditorPressed += OnEditorPressed;
-        view.OnSettingsPressed += OnSceneSettingsPressed;
+        view.OnSettingsPressed += OnProjectSettingsPressed;
+        view.OnSceneCardSettingsPressed += OnSceneCardSettingsPressed;
         view.OnExpandMenuPressed += ExpandMenuPressed;
 
         return view;
@@ -186,13 +196,14 @@ internal class ProjectsController : IProjectsController
     {
         // NOTE: there is actually no need to unsubscribe here, but, just in case...
         projectCardView.OnEditorPressed -= OnEditorPressed;
-        projectCardView.OnSettingsPressed -= OnSceneSettingsPressed;
+        projectCardView.OnSettingsPressed -= OnProjectSettingsPressed;
         projectCardView.OnExpandMenuPressed -= ExpandMenuPressed;
 
         projectCardView.Dispose();
     }
 
-    private void OnSceneSettingsPressed(IProjectCardView sceneData) { contextMenuView.ShowOnCard(sceneData); }
+    private void OnProjectSettingsPressed(IProjectCardView sceneData) { contextMenuView.ShowOnCard(sceneData); }
+    private void OnSceneCardSettingsPressed(IProjectSceneCardView sceneData) { sceneContextMenuHandler.OnContextMenuOpen(sceneData) ; }
 
     public void Dispose()
     {

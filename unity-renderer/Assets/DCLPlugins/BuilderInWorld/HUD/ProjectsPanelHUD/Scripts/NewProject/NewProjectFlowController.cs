@@ -13,7 +13,7 @@ public interface INewProjectFlowController
     /// When a new project is created
     /// </summary>
     event Action<ProjectData> OnNewProjectCrated;
-    
+
     /// <summary>
     /// This will create a new project data and show the view to create it
     /// </summary>
@@ -23,7 +23,7 @@ public interface INewProjectFlowController
     /// Hide the view
     /// </summary>
     void Hide();
-    
+
     void Dispose();
 
     /// <summary>
@@ -38,22 +38,19 @@ public class NewProjectFlowController : INewProjectFlowController
     public const string VIEW_PATH = "NewProject/NewProjectFlowView";
 
     public event Action<ProjectData> OnNewProjectCrated;
-    
+
     internal ProjectData projectData;
 
     internal INewProjectFlowView view;
-    
+
     public NewProjectFlowController()
     {
         var prefab = Resources.Load<NewProjectFlowView>(VIEW_PATH);
         var instantiateView = Object.Instantiate(prefab);
         Initilizate(instantiateView);
     }
-    
-    public NewProjectFlowController(INewProjectFlowView view)
-    {
-        Initilizate(view);
-    }
+
+    public NewProjectFlowController(INewProjectFlowView view) { Initilizate(view); }
 
     private void Initilizate(INewProjectFlowView view)
     {
@@ -63,32 +60,29 @@ public class NewProjectFlowController : INewProjectFlowController
     }
 
     public void Hide() { view.Hide(); }
-    
+
     public void Dispose()
     {
         view.OnTittleAndDescriptionSet -= SetTitleAndDescription;
         view.OnSizeSet -= SetRowsAndColumns;
         view.Dispose();
     }
-    
-    public bool IsActive()
-    {
-        return view.IsActive();
-    }
+
+    public bool IsActive() { return view.IsActive(); }
 
     public void NewProject()
     {
         UserProfile userProfile = UserProfile.GetOwnUserProfile();
-        if (string.IsNullOrEmpty(userProfile.ethAddress))
+        if (userProfile.isGuest)
         {
             BIWUtils.ShowGenericNotification(BIWSettings.GUEST_CANT_USE_BUILDER);
             return;
         }
-        
+
         projectData = new ProjectData();
         projectData.id = Guid.NewGuid().ToString();
         projectData.eth_address = UserProfile.GetOwnUserProfile().ethAddress;
-        
+
         view.ShowNewProjectTitleAndDescrition();
     }
 
@@ -102,7 +96,7 @@ public class NewProjectFlowController : INewProjectFlowController
     {
         projectData.rows = rows;
         projectData.cols = columns;
-        
+
         NewProjectCreated();
     }
 
