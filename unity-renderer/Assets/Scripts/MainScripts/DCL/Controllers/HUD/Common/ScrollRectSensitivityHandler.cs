@@ -16,7 +16,8 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
     {
         myScrollRect = GetComponent<ScrollRect>();
         SetScrollSensBasedOnOS();
-        Debug.Log($"Fail is called, Exception: {WebGLPlugin.GetUserAgent()}");
+        //Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36
+        //Debug.Log($"User agent is: {WebGLPlugin.GetUserAgent()}");
     }
 
     private void SetScrollSensBasedOnOS() {
