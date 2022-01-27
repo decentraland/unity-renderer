@@ -139,7 +139,7 @@ public class DropdownComponentViewTests
         // Assert
         Assert.AreEqual(testOptions, dropdownComponent.model.options, "The options list does not match in the model.");
         Assert.AreEqual(testOptions, dropdownComponent.originalOptions, "The options list does not match in the original list.");
-        Assert.AreEqual(testOptions.Count, dropdownComponent.availableOptions.transform.childCount, "The number of instantiated options does not match.");
+        Assert.AreEqual(testOptions.Count + 1, dropdownComponent.availableOptions.transform.childCount, "The number of instantiated options does not match.");
     }
 
     [Test]
@@ -189,6 +189,43 @@ public class DropdownComponentViewTests
         Assert.AreEqual(testOptions[0].id, allExistingOptions[0].id, "The option 1 gotten does not match.");
         Assert.AreEqual(testOptions[1].id, allExistingOptions[1].id, "The option 2 gotten does not match.");
         Assert.AreEqual(testOptions.Count, allExistingOptions.Count, "The number of options gotten do not match.");
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetSelectAllCorrectly(bool isSelected)
+    {
+        // Arrange
+        List<ToggleComponentModel> testOptions = CreateTestOptions(2, !isSelected);
+        dropdownComponent.SetOptions(testOptions);
+        List<IToggleComponentView> allExistingOptions = dropdownComponent.GetAllOptions();
+
+        // Act
+        dropdownComponent.SetSelectAll(isSelected);
+
+        // Assert
+        Assert.AreEqual(isSelected, allExistingOptions[0].isOn, "The option 1 gotten isOn property does not match.");
+        Assert.AreEqual(isSelected, allExistingOptions[1].isOn, "The option 2 gotten isOn property does not match.");
+    }
+
+    [Test]
+    public void CreateSelectAllOptionCorrectly()
+    {
+        // Act
+        dropdownComponent.CreateSelectAllOption();
+
+        // Assert
+        ToggleComponentView newOption = dropdownComponent.availableOptions
+            .GetItems()
+            .Select(x => x as ToggleComponentView)
+            .FirstOrDefault(x => x.model.id == DropdownComponentView.SELECT_ALL_OPTION_ID);
+
+        Assert.IsNotNull(newOption, "The Select All option does not exist in the availableOptions list.");
+        Assert.IsTrue(newOption.model.id == DropdownComponentView.SELECT_ALL_OPTION_ID, "The option id does not match.");
+        Assert.IsTrue(newOption.model.isOn == false, "The Select All option isOn property does not match.");
+        Assert.IsTrue(newOption.model.text == DropdownComponentView.SELECT_ALL_OPTION_TEXT, "The Select All option text does not match.");
+        Assert.AreEqual($"Option_{DropdownComponentView.SELECT_ALL_OPTION_ID}", newOption.name, "The Select All option game object name does not match.");
     }
 
     [Test]
@@ -260,7 +297,7 @@ public class DropdownComponentViewTests
         Assert.AreEqual(0, dropdownComponent.availableOptions.transform.childCount, "The number of option does not match.");
     }
 
-    private List<ToggleComponentModel> CreateTestOptions(int numberOfOptions)
+    private List<ToggleComponentModel> CreateTestOptions(int numberOfOptions, bool isOn = false)
     {
         List<ToggleComponentModel> options = new List<ToggleComponentModel>();
 
@@ -269,7 +306,7 @@ public class DropdownComponentViewTests
             options.Add(new ToggleComponentModel
             {
                 id = $"{i + 1}",
-                isOn = false,
+                isOn = isOn,
                 text = $"Test{i + 1}"
             });
         }

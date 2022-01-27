@@ -58,9 +58,17 @@ public interface IDropdownComponentView
     /// </summary>
     /// <param name="filterText">Text used to filter.</param>
     void FilterOptions(string filterText);
+
+    /// <summary>
+    /// Select/unselect all the available options (if multiselect is activated).
+    /// </summary>
+    void SetSelectAll(bool isSelected);
 }
 public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig
 {
+    internal const string SELECT_ALL_OPTION_ID = "select_all";
+    internal const string SELECT_ALL_OPTION_TEXT = "Select All";
+
     [Header("Prefab References")]
     [SerializeField] internal Button button;
     [SerializeField] internal TMP_Text title;
@@ -75,6 +83,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [SerializeField] internal DropdownComponentModel model;
 
     public event Action<bool, string> OnOptionSelectionChanged;
+
+    internal ToggleComponentView selectAllOptionComponent;
 
     public bool isMultiselect 
     {
@@ -145,10 +155,13 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
         RemoveAllInstantiatedOptions();
 
+        CreateSelectAllOption();
         for (int i = 0; i < options.Count; i++)
         {
             CreateOption(options[i], $"Option_{i}");
         }
+
+        UpdateSelectAllOptionStatus();
     }
 
     public void FilterOptions(string filterText)
@@ -178,10 +191,10 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
 
     public IToggleComponentView GetOption(int index)
     {
-        if (index >= availableOptions.GetItems().Count)
+        if (index >= availableOptions.GetItems().Count - 1)
             return null;
 
-        return availableOptions.GetItems()[index] as IToggleComponentView;
+        return availableOptions.GetItems()[index + 1] as IToggleComponentView;
     }
 
     public List<IToggleComponentView> GetAllOptions() 
@@ -189,7 +202,22 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         return availableOptions
             .GetItems()
             .Select(x => x as IToggleComponentView)
+            .Where(x => x.id != SELECT_ALL_OPTION_ID)
             .ToList();
+    }
+
+    public void SetSelectAll(bool isSelected)
+    {
+        List<IToggleComponentView> allOptions = GetAllOptions();
+        foreach (IToggleComponentView option in allOptions)
+        {
+            option.isOn = isSelected;
+        }
+
+        foreach (ToggleComponentModel option in originalOptions)
+        {
+            option.isOn = isSelected;
+        }
     }
 
     public override void Dispose()
@@ -209,6 +237,18 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
             Open();
     }
 
+    internal void CreateSelectAllOption()
+    {
+        CreateOption(
+            new ToggleComponentModel
+            {
+                id = SELECT_ALL_OPTION_ID,
+                text = SELECT_ALL_OPTION_TEXT,
+                isOn = false,
+            },
+            $"Option_{SELECT_ALL_OPTION_ID}");
+    }
+
     internal void CreateOption(ToggleComponentModel newOptionModel, string name)
     {
         if (togglePrefab == null)
@@ -220,28 +260,54 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         availableOptions.AddItem(newGO);
         newGO.name = name;
 
+        if (newOptionModel.id == SELECT_ALL_OPTION_ID)
+        {
+            selectAllOptionComponent = newGO;
+            newGO.gameObject.SetActive(isMultiselect);
+        }
+
         newGO.OnSelectedChanged += OnOptionSelected;
     }
 
     internal void OnOptionSelected(bool isOn, string optionId)
     {
-        OnOptionSelectionChanged?.Invoke(isOn, optionId);
-
-        if (isOn && !isMultiselect)
+        if (optionId != SELECT_ALL_OPTION_ID)
         {
-            List<IToggleComponentView> allOptions = GetAllOptions();
-            foreach (IToggleComponentView option in allOptions)
+            OnOptionSelectionChanged?.Invoke(isOn, optionId);
+
+            if (isOn && !isMultiselect)
             {
-                if (option.id != optionId)
-                    option.isOn = false;
+                List<IToggleComponentView> allOptions = GetAllOptions();
+                foreach (IToggleComponentView option in allOptions)
+                {
+                    if (option.id != optionId)
+                        option.isOn = false;
+                }
             }
-        }
 
-        foreach (ToggleComponentModel option in originalOptions)
-        {
-            if (optionId == option.id)
-                option.isOn = isOn;
+            foreach (ToggleComponentModel option in originalOptions)
+            {
+                if (optionId == option.id)
+                    option.isOn = isOn;
+            }
+
+            UpdateSelectAllOptionStatus();
         }
+        else
+        {
+            SetSelectAll(isOn);
+        }
+    }
+
+    internal void UpdateSelectAllOptionStatus()
+    {
+        if (!isMultiselect)
+            return;
+
+        List<IToggleComponentView> allOptions = GetAllOptions();
+        selectAllOptionComponent.OnSelectedChanged -= OnOptionSelected;
+        selectAllOptionComponent.isOn = allOptions.Count > 0 && allOptions.All(x => x.isOn);
+        selectAllOptionComponent.OnSelectedChanged += OnOptionSelected;
     }
 
     internal void RemoveAllInstantiatedOptions()
