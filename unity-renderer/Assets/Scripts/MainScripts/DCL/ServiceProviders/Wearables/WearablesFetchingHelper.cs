@@ -151,7 +151,15 @@ namespace DCL.Helpers
                 OnSuccess: (webRequest) =>
                 {
                     var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.webRequest.downloadHandler.text);
-                    promiseResult.Resolve(wearablesApiData.GetWearableItems().ToArray());
+                    var wearablesItems = wearablesApiData.GetWearableItems();
+                    
+                    List<WearableItem> result;
+                    if (wearablesItems != null)
+                        result = wearablesItems;
+                    else
+                        result = new List<WearableItem>();
+
+                    promiseResult.Resolve(result.ToArray());
                 });
 
             return promiseResult;
