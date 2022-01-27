@@ -259,6 +259,7 @@ namespace UnityGLTF
                     }
 
                     state = State.COMPLETED;
+                    alreadyLoadedAsset = true;
                     DecrementDownloadCount();
                 }
                 catch (Exception e) when (!(e is OperationCanceledException))
@@ -281,8 +282,6 @@ namespace UnityGLTF
                             sceneImporter = null;
                         }
                     }
-
-                    alreadyLoadedAsset = true;
 
                     if ( state == State.COMPLETED && !token.IsCancellationRequested)
                         OnFinishedLoadingAsset?.Invoke();
