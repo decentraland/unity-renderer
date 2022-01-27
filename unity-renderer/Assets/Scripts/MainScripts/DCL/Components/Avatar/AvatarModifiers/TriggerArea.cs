@@ -1,28 +1,39 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public abstract class TriggerArea
 {
-    public abstract HashSet<Collider> DetectAvatars(Vector3 center, Quaternion rotation);
+    public abstract HashSet<GameObject> DetectAvatars(in Vector3 center, in Quaternion rotation, in HashSet<Collider> excludeColliders = null);
 
 }
 
-[System.Serializable]
+[Serializable]
 public class BoxTriggerArea : TriggerArea
 {
     internal const string AVATAR_TRIGGER_LAYER = "AvatarTriggerDetection";
     public Vector3 box;
 
-    public override HashSet<Collider> DetectAvatars(Vector3 center, Quaternion rotation)
+    public override HashSet<GameObject> DetectAvatars(in Vector3 center, in Quaternion rotation, in HashSet<Collider> excludeColliders = null)
     {
-        Collider[] colliders = Physics.OverlapBox(center, box * 0.5f, rotation, LayerMask.GetMask(AVATAR_TRIGGER_LAYER), QueryTriggerInteraction.Collide);
+        Collider[] colliders = Physics.OverlapBox(center, box * 0.5f, rotation,
+            LayerMask.GetMask(AVATAR_TRIGGER_LAYER), QueryTriggerInteraction.Collide);
+
         if (colliders.Length == 0)
         {
             return null;
         }
 
-        HashSet<Collider> result = new HashSet<Collider>(colliders);
+        HashSet<GameObject> result = new HashSet<GameObject>();
+        foreach (Collider collider in colliders)
+        {
+            if (excludeColliders != null && excludeColliders.Contains(collider))
+            {
+                continue;
+            }
+            result.Add(collider.transform.parent.gameObject);
+        }
         return result;
     }
 }
