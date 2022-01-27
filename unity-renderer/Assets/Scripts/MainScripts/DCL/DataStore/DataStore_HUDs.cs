@@ -16,10 +16,6 @@ namespace DCL
         public readonly BaseVariable<bool> chatInputVisible = new BaseVariable<bool>(false);
         public readonly BaseVariable<bool> avatarNamesVisible = new BaseVariable<bool>(true);
         public readonly BaseVariable<float> avatarNamesOpacity = new BaseVariable<float>(1);
-        public readonly BaseVariable<float> scrollSensitivityWindows = new BaseVariable<float>(1.2f);
-        public readonly BaseVariable<float> scrollSensitivityMac = new BaseVariable<float>(3);
-        public readonly BaseVariable<float> scrollSensitivityLinux = new BaseVariable<float>(3);
-        public readonly BaseVariable<float> scrollSensitivityGeneric = new BaseVariable<float>(3);
         public readonly LoadingHUD loadingHUD = new LoadingHUD();
 
         public class LoadingHUD

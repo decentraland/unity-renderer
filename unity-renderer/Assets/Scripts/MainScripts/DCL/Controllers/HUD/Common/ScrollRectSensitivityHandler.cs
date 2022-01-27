@@ -13,15 +13,27 @@ using UnityEngine.Networking;
 public class ScrollRectSensitivityHandler : MonoBehaviour
 {
 
+    private const float windowsSensitivityMultiplier = 1f;
+    private const float macSensitivityMultiplier = 3f;
+    private const float linuxSensitivityMultiplier = 2.5f;
+    private const float defaultSensitivityMultiplier = 1.5f;
+
     private ScrollRect myScrollRect;
+    private float defaultSens;
     private float tempSens = 3;
 
     void Awake()
     {
         myScrollRect = GetComponent<ScrollRect>();
-        SetScrollSensBasedOnOS();
+        defaultSens = myScrollRect.scrollSensitivity;
+        SetScrollRectSensitivity();
         //Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36
         Debug.Log($"User agent is: {WebGLPlugin.GetUserAgent()}");
+    }
+
+    private void SetScrollRectSensitivity() 
+    {
+        myScrollRect.scrollSensitivity *= GetScrollMultiplier();
     }
 
     private void Update()
@@ -29,72 +41,61 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P)) 
         {
             tempSens += 1;
+            myScrollRect.scrollSensitivity = defaultSens*tempSens;
             Debug.Log($"Current sens is {tempSens}");
-            SetScrollSensBasedOnOS();
         }
         if (Input.GetKeyDown(KeyCode.K)) 
         {
             tempSens -= 1;
+            myScrollRect.scrollSensitivity = defaultSens * tempSens;
             Debug.Log($"Current sens is {tempSens}");
-            SetScrollSensBasedOnOS();
         }
     }
 
-    private void SetScrollSensBasedOnOS() {
+    private float GetScrollMultiplier() {
         switch (GetCurrentOs())
         {
-            case OS_SYSTEM.windows:
-                myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityWindows.Get();
-                break;
-            case OS_SYSTEM.linux:
-                myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityLinux.Get();
-                break;
-            case OS_SYSTEM.macosx:
-                myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityMac.Get();
-                break;
+            case OperatingSystemFamily.Windows:
+                return windowsSensitivityMultiplier;
+            case OperatingSystemFamily.Linux:
+                return linuxSensitivityMultiplier;
+            case OperatingSystemFamily.MacOSX:
+                return macSensitivityMultiplier;
             default:
-                myScrollRect.scrollSensitivity = DataStore.i.HUDs.scrollSensitivityGeneric.Get();
-                break;
+                return defaultSensitivityMultiplier;
         }
     }
 
-    private OS_SYSTEM GetCurrentOs() {
+    private OperatingSystemFamily GetCurrentOs() {
 #if UNITY_WEBGL
         return ObtainOsFromWebGLAgent();
 #else
-        return (OS_SYSTEM) Enum.Parse(typeof(OS_SYSTEM), SystemInfo.operatingSystemFamily.ToString());
+        return SystemInfo.operatingSystemFamily;
 #endif
     }
 
-    private OS_SYSTEM ObtainOsFromWebGLAgent() {
+    private OperatingSystemFamily ObtainOsFromWebGLAgent() {
         String agentInfo = WebGLPlugin.GetUserAgent();
         if (agentInfo.ToLower().Contains("windows"))
         {
             Debug.Log("OS IS WINDOWS");
-            return OS_SYSTEM.windows;
+            return OperatingSystemFamily.Windows;
         }
         else if (agentInfo.ToLower().Contains("mac") || agentInfo.ToLower().Contains("osx") || agentInfo.ToLower().Contains("os x"))
         {
             Debug.Log("OS IS MAC");
-            return OS_SYSTEM.macosx;
+            return OperatingSystemFamily.MacOSX;
         }
         else if (agentInfo.ToLower().Contains("linux"))
         {
             Debug.Log("OS IS LINUX");
-            return OS_SYSTEM.linux;
+            return OperatingSystemFamily.Linux;
         }
         else
         {
             Debug.Log("OS IS OTHER");
-            return OS_SYSTEM.other;
+            return OperatingSystemFamily.Other;
         }
-    }
-
-    private enum OS_SYSTEM { 
-        windows,
-        linux,
-        macosx,
-        other
     }
 
 }
