@@ -19,15 +19,16 @@ namespace MessagingBusTest
         protected IMessageProcessHandler dummyHandler = new DummyMessageHandler();
         protected IEnumerator<QueuedSceneMessage_Scene> nextQueueMessage;
 
-        // protected MessagingBus bus;
         protected MessagingController controller;
+        protected MessagingControllersManager manager;
 
         public void SetupTests()
         {
+            if ( manager == null )
+                manager = new MessagingControllersManager(dummyHandler);
+
             if (controller == null)
-            {
-                controller = new MessagingController(dummyHandler);
-            }
+                controller = new MessagingController(manager, dummyHandler);
 
             if (nextQueueMessage == null)
             {
@@ -42,18 +43,18 @@ namespace MessagingBusTest
         public void MeasureTimeToEnqueueThousandMessages()
         {
             Measure.Method(() =>
-                   {
-                       for (var i = 0; i < 1000; i++)
-                       {
-                           EnqueueNextMessage();
-                       }
-                   })
-                   .SetUp(() => SetupTests())
-                   .WarmupCount(3)
-                   .MeasurementCount(10)
-                   .IterationsPerMeasurement(10)
-                   .GC()
-                   .Run();
+                {
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        EnqueueNextMessage();
+                    }
+                })
+                .SetUp(() => SetupTests())
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
         }
 
         [Test, Performance]
@@ -64,27 +65,27 @@ namespace MessagingBusTest
             controller.StartBus(MessagingBusType.INIT);
 
             Measure.Method(() =>
-                   {
-                       var processed = controller.initBus.processedMessagesCount;
-                       Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
-                       while (controller.initBus.processedMessagesCount < processed + 1000)
-                       {
-                           controller.initBus.ProcessQueue(0.1f, out _);
-                       }
-                   })
-                   .SetUp(() =>
-                   {
-                       SetupTests();
-                       for (var i = 0; i < 1001; i++)
-                       {
-                           EnqueueNextMessage();
-                       }
-                   })
-                   .WarmupCount(3)
-                   .MeasurementCount(10)
-                   .IterationsPerMeasurement(10)
-                   .GC()
-                   .Run();
+                {
+                    var processed = controller.initBus.processedMessagesCount;
+                    Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
+                    while (controller.initBus.processedMessagesCount < processed + 1000)
+                    {
+                        controller.initBus.ProcessQueue(0.1f, out _);
+                    }
+                })
+                .SetUp(() =>
+                {
+                    SetupTests();
+                    for (var i = 0; i < 1001; i++)
+                    {
+                        EnqueueNextMessage();
+                    }
+                })
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
         }
 
         private void EnqueueNextMessage()

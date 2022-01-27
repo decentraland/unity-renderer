@@ -54,6 +54,8 @@ namespace DCL.HelpAndSupportHUD
 
         public void SetVisibility(bool visible)
         {
+            DataStore.i.exploreV2.isSomeModalOpen.Set(visible);
+
             closeAction.OnTriggered -= closeActionDelegate;
             if (visible)
             {

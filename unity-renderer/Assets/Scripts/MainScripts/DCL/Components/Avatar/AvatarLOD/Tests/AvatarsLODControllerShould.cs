@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
@@ -18,8 +19,13 @@ namespace Tests.AvatarsLODController
         [SetUp]
         public void SetUp()
         {
+            ServiceLocator serviceLocator = new ServiceLocator();
+            serviceLocator.Register<IUpdateEventHandler>( () => Substitute.For<IUpdateEventHandler>());
+            DCL.Environment.Setup(serviceLocator);
+
             CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.FirstPerson);
             controller = Substitute.ForPartsOf<DCL.AvatarsLODController>();
+            controller.Initialize();
         }
 
         [Test]
@@ -252,6 +258,7 @@ namespace Tests.AvatarsLODController
             CommonScriptableObjects.cameraForward.Set(Vector3.forward);
             CommonScriptableObjects.cameraPosition.Set(cameraPosition);
             CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
+
             float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
 
             Player avatar = CreateMockPlayer("avatar");
@@ -487,6 +494,7 @@ namespace Tests.AvatarsLODController
         {
             controller.Dispose();
             DataStore.Clear();
+            DCL.Environment.Dispose();
         }
     }
 }
