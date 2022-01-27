@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Linq;
+using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Rendering;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -20,6 +22,7 @@ namespace CullingControllerTests
             yield return base.SetUp();
             scene = TestUtils.CreateTestScene();
 
+            Environment.i.platform.cullingController.Stop();
             Assert.IsFalse(Environment.i.platform.cullingController.IsRunning());
 
             // If we get the settings copy here, it can be overriden with unwanted values
@@ -32,6 +35,14 @@ namespace CullingControllerTests
             Assert.IsTrue(Environment.i.platform.cullingController.IsRunning());
             Assert.IsTrue(settings.enableObjectCulling);
         }
+
+        protected override ServiceLocator InitializeServiceLocator()
+        {
+            var result = base.InitializeServiceLocator();
+            result.Register<ICullingController>(CullingController.Create);
+            return result;
+        }
+
 
         [UnityTest]
         public IEnumerator CullMovingEntities()

@@ -6,7 +6,7 @@ public class RealmViewerComponentViewTests
     private RealmViewerComponentView realmViewerComponent;
 
     [SetUp]
-    public void SetUp() { realmViewerComponent = BaseComponentView.Create<RealmViewerComponentView>("MainMenu/RealmViewer"); }
+    public void SetUp() { realmViewerComponent = BaseComponentView.Create<RealmViewerComponentView>("MainMenu/Realms/RealmViewer"); }
 
     [TearDown]
     public void TearDown()
@@ -60,7 +60,7 @@ public class RealmViewerComponentViewTests
         if (numberOfUsers >= 1000)
         {
             float formattedUsersCount = numberOfUsers / 1000f;
-            Assert.AreEqual($"{formattedUsersCount}k", realmViewerComponent.numberOfusers.text, "The number of users text does not match.");
+            Assert.AreEqual($"{string.Format("{0:0.##}", formattedUsersCount)}k", realmViewerComponent.numberOfusers.text, "The number of users text does not match.");
         }
         else
         {

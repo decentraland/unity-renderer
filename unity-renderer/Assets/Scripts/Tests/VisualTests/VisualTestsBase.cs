@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine.Rendering.Universal;
+using Object = UnityEngine.Object;
 
 public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
@@ -12,25 +14,14 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
     protected Camera camera;
     private AnisotropicFiltering originalAnisoSetting;
 
-    protected override WorldRuntimeContext CreateRuntimeContext()
+    protected override ServiceLocator InitializeServiceLocator()
     {
-        return DCL.Tests.WorldRuntimeContextFactory.CreateWithGenericMocks(
-            new WorldState(),
-            new RuntimeComponentFactory()
-        );
-    }
-
-    protected override PlatformContext CreatePlatformContext()
-    {
-        return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
-            WebRequestController.Create(),
-            new ServiceProviders()
-        );
-    }
-
-    protected override MessagingContext CreateMessagingContext()
-    {
-        return DCL.Tests.MessagingContextFactory.CreateMocked();
+        ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
+        result.Register<IWebRequestController>(WebRequestController.Create);
+        result.Register<IServiceProviders>( () => new ServiceProviders());
+        result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
+        result.Register<IWorldState>( () => new WorldState());
+        return result;
     }
 
     protected override List<GameObject> SetUp_LegacySystems()

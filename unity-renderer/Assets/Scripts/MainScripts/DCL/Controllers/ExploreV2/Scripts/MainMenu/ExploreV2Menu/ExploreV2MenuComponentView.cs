@@ -27,6 +27,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     IRealmViewerComponentView currentRealmViewer { get; }
 
     /// <summary>
+    /// Realm Selector component.
+    /// </summary>
+    IRealmSelectorComponentView currentRealmSelectorModal { get; }
+
+    /// <summary>
     /// Profile card component.
     /// </summary>
     IProfileCardComponentView currentProfileCard { get; }
@@ -113,10 +118,18 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// <param name="section">Section to configure.</param>
     /// <param name="featureConfiguratorFlag">Flag used to configurates the feature.</param>
     void ConfigureEncapsulatedSection(ExploreSection section, BaseVariable<Transform> featureConfiguratorFlag);
+
+    /// <summary>
+    /// Shows the Realm Selector modal.
+    /// </summary>
+    void ShowRealmSelectorModal();
 }
 
 public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuComponentView
 {
+    [Header("Assets References")]
+    [SerializeField] internal RealmSelectorComponentView realmSelectorModalPrefab;
+
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
     [SerializeField] internal ProfileCardComponentView profileCard;
@@ -136,8 +149,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal RectTransform profileCardTooltipReference;
 
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
+    internal const string REALM_SELECTOR_MODAL_ID = "RealmSelector_Modal";
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
+    public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
     public RectTransform currentTopMenuTooltipReference => sectionSelector.GetSection((int) ExploreSection.Explore).pivot;
@@ -154,11 +169,18 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public event Action OnAfterShowAnimation;
 
     internal RectTransform profileCardRectTranform;
+    internal RealmSelectorComponentView realmSelectorModal;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        profileCardRectTranform = profileCard.GetComponent<RectTransform>();
+        realmSelectorModal = ConfigureRealmSelectorModal();
+    }
 
     public override void Start()
     {
-        profileCardRectTranform = profileCard.GetComponent<RectTransform>();
-
         DataStore.i.exploreV2.currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
         DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
@@ -176,10 +198,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         StartCoroutine(CreateSectionSelectorMappingsAfterDelay());
     }
 
-    public override void Update()
-    {
-        CheckIfProfileCardShouldBeClosed();
-    }
+    public override void Update() { CheckIfProfileCardShouldBeClosed(); }
 
     public override void RefreshControl()
     {
@@ -198,7 +217,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
         closeAction.OnTriggered -= OnCloseActionTriggered;
+        DataStore.i.exploreV2.isSomeModalOpen.OnChange -= IsSomeModalOpen_OnChange;
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
+
+        if (realmSelectorModal != null)
+            realmSelectorModal.Dispose();
     }
 
     public void SetVisible(bool isActive)
@@ -375,6 +398,15 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         closeMenuButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke(false));
         closeAction.OnTriggered += OnCloseActionTriggered;
+        DataStore.i.exploreV2.isSomeModalOpen.OnChange += IsSomeModalOpen_OnChange;
+    }
+
+    internal void IsSomeModalOpen_OnChange(bool current, bool previous)
+    {
+        closeAction.OnTriggered -= OnCloseActionTriggered;
+
+        if (!current)
+            closeAction.OnTriggered += OnCloseActionTriggered;
     }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { OnCloseButtonPressed?.Invoke(true); }
@@ -391,6 +423,30 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
         }
     }
+
+    /// <summary>
+    /// Instantiates (if does not already exists) a realm selector modal from the given prefab.
+    /// </summary>
+    /// <returns>An instance of a realm modal modal.</returns>
+    internal RealmSelectorComponentView ConfigureRealmSelectorModal()
+    {
+        RealmSelectorComponentView realmSelectorModal = null;
+
+        GameObject existingModal = GameObject.Find(REALM_SELECTOR_MODAL_ID);
+        if (existingModal != null)
+            realmSelectorModal = existingModal.GetComponent<RealmSelectorComponentView>();
+        else
+        {
+            realmSelectorModal = GameObject.Instantiate(realmSelectorModalPrefab);
+            realmSelectorModal.name = REALM_SELECTOR_MODAL_ID;
+        }
+
+        realmSelectorModal.Hide(true);
+
+        return realmSelectorModal;
+    }
+
+    public void ShowRealmSelectorModal() { realmSelectorModal.Show(); }
 
     internal static ExploreV2MenuComponentView Create()
     {

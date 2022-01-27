@@ -1,4 +1,8 @@
-public interface IFeatureFlagController
+using System;
+
+namespace DCL
 {
-    void Dispose();
+    public interface IFeatureFlagController : IService
+    {
+    }
 }

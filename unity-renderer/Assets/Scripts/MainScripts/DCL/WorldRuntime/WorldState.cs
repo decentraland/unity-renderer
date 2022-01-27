@@ -10,18 +10,8 @@ namespace DCL
         public HashSet<string> readyScenes { get; set; } = new HashSet<string>();
         public Dictionary<string, IParcelScene> loadedScenes { get; set; } = new Dictionary<string, IParcelScene>();
         public List<IParcelScene> scenesSortedByDistance { get; set; } = new List<IParcelScene>();
-
-        public List<string> globalSceneIds { get; set; }
-        public string currentSceneId { get; set; }
-
-        public void Initialize()
-        {
-            globalSceneIds = new List<string>();
-            currentSceneId = null;
-            readyScenes = new HashSet<string>();
-            loadedScenes = new Dictionary<string, IParcelScene>();
-            scenesSortedByDistance = new List<IParcelScene>();
-        }
+        public List<string> globalSceneIds { get; set; } = new List<string>();
+        public string currentSceneId { get; set; } = null;
 
         public IParcelScene GetScene(string id)
         {
@@ -81,6 +71,14 @@ namespace DCL
             }
 
             return allLoadedParcelCoords;
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public void Initialize()
+        {
         }
     }
 }

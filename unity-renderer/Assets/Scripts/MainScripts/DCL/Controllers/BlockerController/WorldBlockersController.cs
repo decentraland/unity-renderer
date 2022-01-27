@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Rendering;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Controllers
 {
@@ -37,53 +39,16 @@ namespace DCL.Controllers
             new Vector2Int(-1, 1)
         };
 
-        public void Initialize(ISceneHandler sceneHandler, IBlockerInstanceHandler blockerInstanceHandler)
-        {
-            enabled = true;
-            this.blockerInstanceHandler = blockerInstanceHandler;
-            this.sceneHandler = sceneHandler;
-
-            blockerInstanceHandler.SetParent(blockersParent);
-
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-
-            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
-            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
-        }
-
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
             if (newValue && DataStore.i.debugConfig.isDebugMode.Get())
                 SetEnabled(false);
         }
 
-        public WorldBlockersController()
+        public WorldBlockersController(IBlockerInstanceHandler blockerInstanceHandler = null, ISceneHandler sceneHandler = null)
         {
-            blockersParent = new GameObject("WorldBlockers").transform;
-            blockersParent.position = Vector3.zero;
-        }
-
-        public static WorldBlockersController CreateWithDefaultDependencies(ISceneHandler sceneHandler, ICullingController cullingController)
-        {
-            var worldBlockersController = new WorldBlockersController();
-            worldBlockersController.InitializeWithDefaultDependencies(sceneHandler, cullingController);
-            return worldBlockersController;
-        }
-
-        public void InitializeWithDefaultDependencies(ISceneHandler sceneHandler, ICullingController cullingController)
-        {
-            var blockerAnimationHandler = new BlockerAnimationHandler();
-            var blockerInstanceHandler = new BlockerInstanceHandler();
-
-            blockerInstanceHandler.Initialize(
-                blockerAnimationHandler,
-                cullingController
-            );
-
-            Initialize(
-                sceneHandler,
-                blockerInstanceHandler);
+            this.sceneHandler = sceneHandler;
+            this.blockerInstanceHandler = blockerInstanceHandler;
         }
 
         public void SetupWorldBlockers()
@@ -117,6 +82,30 @@ namespace DCL.Controllers
                 Object.Destroy(blockersParent.gameObject);
 
             enabled = false;
+        }
+
+        public void Initialize()
+        {
+            enabled = true;
+            blockersParent = new GameObject("WorldBlockers").transform;
+            blockersParent.position = Vector3.zero;
+
+            if ( blockerInstanceHandler == null )
+            {
+                var blockerAnimationHandler = new BlockerAnimationHandler();
+                blockerInstanceHandler = new BlockerInstanceHandler(blockerAnimationHandler);
+            }
+
+            if ( this.sceneHandler == null )
+                this.sceneHandler = DCL.Environment.i.world.state;
+
+            blockerInstanceHandler.SetParent(blockersParent);
+
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
+            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
+
+            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
+            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
         }
 
         internal void SetupWorldBlockers(HashSet<Vector2Int> allLoadedParcelCoords)
