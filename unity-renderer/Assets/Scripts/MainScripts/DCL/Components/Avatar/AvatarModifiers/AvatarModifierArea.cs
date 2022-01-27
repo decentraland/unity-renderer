@@ -18,7 +18,10 @@ public class AvatarModifierArea : BaseComponent
         public string[] modifiers;
         public string[] excludeIds;
 
-        public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+        public override BaseModel GetDataFromJSON(string json)
+        {
+            return Utils.SafeFromJson<Model>(json);
+        }
     }
 
     private Model cachedModel = new Model();
@@ -65,6 +68,9 @@ public class AvatarModifierArea : BaseComponent
             toRemove.UnionWith(currentInArea);
 
         RemoveAllModifiers(toRemove);
+
+        DataStore.i.player.ownPlayer.OnChange -= OwnPlayerOnOnChange;
+        DataStore.i.player.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
     }
 
     private void Update()
@@ -123,7 +129,10 @@ public class AvatarModifierArea : BaseComponent
         return cachedModel.area?.DetectAvatars(center, rotation, excludedColliders);
     }
 
-    private void RemoveAllModifiers() { RemoveAllModifiers(DetectAllAvatarsInArea()); }
+    private void RemoveAllModifiers()
+    {
+        RemoveAllModifiers(DetectAllAvatarsInArea());
+    }
 
     private void RemoveAllModifiers(HashSet<GameObject> avatars)
     {
@@ -143,6 +152,9 @@ public class AvatarModifierArea : BaseComponent
 
     private void ApplyCurrentModel()
     {
+        DataStore.i.player.ownPlayer.OnChange -= OwnPlayerOnOnChange;
+        DataStore.i.player.otherPlayers.OnAdded -= OtherPlayersOnOnAdded;
+
         cachedModel = (Model)this.model;
         if (cachedModel.modifiers != null)
         {
@@ -158,10 +170,19 @@ public class AvatarModifierArea : BaseComponent
 
             // Set excluded colliders
             excludedColliders = GetExcludedColliders(cachedModel);
+
+            if (cachedModel.excludeIds != null && cachedModel.excludeIds.Length > 0)
+            {
+                DataStore.i.player.ownPlayer.OnChange += OwnPlayerOnOnChange;
+                DataStore.i.player.otherPlayers.OnAdded += OtherPlayersOnOnAdded;
+            }
         }
     }
 
-    public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA; }
+    public override int GetClassId()
+    {
+        return (int)CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA;
+    }
 
     private static HashSet<Collider> GetExcludedColliders(in Model componentModel)
     {
@@ -177,7 +198,7 @@ public class AvatarModifierArea : BaseComponent
         HashSet<Collider> result = new HashSet<Collider>();
         for (int i = 0; i < excludeIds.Length; i++)
         {
-            if (excludeIds[i] == ownPlayer.id)
+            if (ownPlayer != null && excludeIds[i] == ownPlayer.id)
             {
                 result.Add(ownPlayer.collider);
             }
@@ -187,5 +208,38 @@ public class AvatarModifierArea : BaseComponent
             }
         }
         return result;
+    }
+
+    private void OtherPlayersOnOnAdded(string id, Player player)
+    {
+        RefreshExclusionList(player);
+    }
+
+    private void OwnPlayerOnOnChange(Player current, Player previous)
+    {
+        RefreshExclusionList(current);
+    }
+
+    private void RefreshExclusionList(Player player)
+    {
+        string[] excludeIds = cachedModel?.excludeIds;
+        if (excludeIds == null || excludeIds.Length == 0)
+        {
+            return;
+        }
+
+        if (!excludeIds.Contains(player.id))
+        {
+            return;
+        }
+
+        if (excludedColliders == null)
+        {
+            excludedColliders = new HashSet<Collider>() { player.collider };
+        }
+        else if (!excludedColliders.Contains(player.collider))
+        {
+            excludedColliders.Add(player.collider);
+        }
     }
 }
