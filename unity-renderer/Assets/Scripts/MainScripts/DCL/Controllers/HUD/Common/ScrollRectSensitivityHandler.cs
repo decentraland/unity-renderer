@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using MainScripts.DCL.WebPlugin;
 using System;
 using System.IO;
-using DCL.Interface;
 using UnityEngine.Networking;
 
 /// <summary>
@@ -46,7 +45,7 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
 #if UNITY_WEBGL
         return ObtainOsFromWebGLAgent();
 #else
-        return Enum.Parse(typeof(OS_SYSTEM), SystemInfo.operatingSystemFamily.ToString());
+        return (OS_SYSTEM) Enum.Parse(typeof(OS_SYSTEM), SystemInfo.operatingSystemFamily.ToString());
 #endif
     }
 
@@ -54,22 +53,22 @@ public class ScrollRectSensitivityHandler : MonoBehaviour
         String agentInfo = WebGLPlugin.GetUserAgent();
         if (agentInfo.ToLower().Contains("windows"))
         {
-            Debug.log("OS IS WINDOWS");
+            Debug.Log("OS IS WINDOWS");
             return OS_SYSTEM.windows;
         }
         else if (agentInfo.ToLower().Contains("mac") || agentInfo.ToLower().Contains("osx") || agentInfo.ToLower().Contains("os x"))
         {
-            Debug.log("OS IS MAC");
+            Debug.Log("OS IS MAC");
             return OS_SYSTEM.macosx;
         }
         else if (agentInfo.ToLower().Contains("linux"))
         {
-            Debug.log("OS IS LINUX");
+            Debug.Log("OS IS LINUX");
             return OS_SYSTEM.linux;
         }
         else
         {
-            Debug.log("OS IS OTHER");
+            Debug.Log("OS IS OTHER");
             return OS_SYSTEM.other;
         }
     }
