@@ -63,6 +63,12 @@ public interface IDropdownComponentView
     /// Select/unselect all the available options (if multiselect is activated).
     /// </summary>
     void SetSelectAll(bool isSelected);
+
+    /// <summary>
+    /// Set the search bar place holder text.
+    /// </summary>
+    /// <param name="newText">New text.</param>
+    void SetSearchPlaceHolderText(string newText);
 }
 public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig
 {
@@ -121,6 +127,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         isMultiselect = model.isMultiselect;
         SetTitle(model.title);
         SetOptions(model.options);
+        SetSearchPlaceHolderText(model.searchPlaceHolderText);
     }
 
     public void Open()
@@ -218,6 +225,16 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         {
             option.isOn = isSelected;
         }
+    }
+
+    public void SetSearchPlaceHolderText(string newText)
+    {
+        model.searchPlaceHolderText = newText;
+
+        if (searchBar == null)
+            return;
+
+        searchBar.SetPlaceHolderText(newText);
     }
 
     public override void Dispose()

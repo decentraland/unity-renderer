@@ -210,6 +210,20 @@ public class DropdownComponentViewTests
     }
 
     [Test]
+    public void SetSetSearchPlaceHolderTextCorrectly()
+    {
+        // Arrange
+        string testText = "Test";
+
+        // Act
+        dropdownComponent.SetSearchPlaceHolderText(testText);
+
+        // Assert
+        Assert.AreEqual(testText, dropdownComponent.model.searchPlaceHolderText, "The search place holder does not match in the model.");
+        Assert.AreEqual(testText, dropdownComponent.searchBar.placeHolderText.text, "The search place holder text does not match.");
+    }
+
+    [Test]
     public void CreateSelectAllOptionCorrectly()
     {
         // Act
