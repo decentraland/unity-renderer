@@ -87,6 +87,27 @@ namespace Tests
         }
 
         [Test]
+        public void CopyPositionToClipboardOnClick()
+        {
+            var resource = Resources.Load<PreviewMenuPositionView>(PreviewMenuController.POSITION_VIEW_RES_PATH);
+            var positionView = Object.Instantiate(resource);
+
+            positionView.xValueInputField.text = "temp";
+            positionView.yValueInputField.text = "ta";
+            positionView.zValueInputField.text = "tion";
+
+            var clipboard = Substitute.For<IClipboard>();
+            var serviceLocator = new ServiceLocator();
+            serviceLocator.Register<IClipboard>(() => clipboard);
+            Environment.Setup(serviceLocator);
+
+            positionView.buttonReference.onClick.Invoke();
+            clipboard.Received(1).WriteText("temp,ta,tion");
+
+            Object.Destroy(positionView.gameObject);
+        }
+
+        [Test]
         public void ButtonTogglesMenuCorrectly()
         {
             var resource = Resources.Load<PreviewMenuView>(PreviewMenuController.MENU_VIEW_RES_PATH);
