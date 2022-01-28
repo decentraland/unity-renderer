@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public interface IDropdownComponentView
 {
     /// <summary>
-    /// Event that will be triggered when the toggle changes.
+    /// Event that will be triggered when the selection of any option changes.
     /// </summary>
     event Action<bool, string> OnOptionSelectionChanged;
 
