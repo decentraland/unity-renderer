@@ -7433,11 +7433,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2898111001297474158, guid: 3a3187d731887694b8a4a6274fd63814,
-        type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -7578,23 +7573,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
-      propertyPath: model.options.Array.size
+      propertyPath: model.showSelectAllOption
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
         type: 3}
       propertyPath: model.searchPlaceHolderText
       value: Search collection
-      objectReference: {fileID: 0}
-    - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
-        type: 3}
-      propertyPath: model.options.Array.data[0].text
-      value: sadfsaf
-      objectReference: {fileID: 0}
-    - target: {fileID: 8992885240976846846, guid: 3a3187d731887694b8a4a6274fd63814,
-        type: 3}
-      propertyPath: model.options.Array.data[1].text
-      value: fds
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a3187d731887694b8a4a6274fd63814, type: 3}

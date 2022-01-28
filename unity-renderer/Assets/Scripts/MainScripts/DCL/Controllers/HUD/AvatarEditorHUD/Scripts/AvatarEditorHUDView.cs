@@ -456,7 +456,7 @@ public class AvatarEditorHUDView : MonoBehaviour
             {
                 id = collection.urn,
                 text = collection.name,
-                isOn = false,
+                isOn = false
             });
         }
 

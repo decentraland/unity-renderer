@@ -239,6 +239,25 @@ public class DropdownComponentViewTests
     }
 
     [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetSelectAllOptionActiveCorrectly(bool isActive)
+    {
+        // Arrange
+        List<ToggleComponentModel> testOptions = CreateTestOptions(1);
+        dropdownComponent.SetOptions(testOptions);
+        dropdownComponent.model.showSelectAllOption = !isActive;
+        dropdownComponent.selectAllOptionComponent.gameObject.SetActive(!isActive);
+
+        // Act
+        dropdownComponent.SetSelectAllOptionActive(isActive);
+
+        // Assert
+        Assert.AreEqual(isActive, dropdownComponent.model.showSelectAllOption, "The showSelectAllOption property does not match in the model.");
+        Assert.AreEqual(isActive, dropdownComponent.selectAllOptionComponent.gameObject.activeSelf, "The selectAllOptionComponent active property does not match.");
+    }
+
+    [Test]
     public void CreateSelectAllOptionCorrectly()
     {
         // Act

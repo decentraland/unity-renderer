@@ -966,6 +966,7 @@ MonoBehaviour:
     title: Text
     searchPlaceHolderText: Place holder text...
     isMultiselect: 1
+    showSelectAllOption: 1
     options: []
 --- !u!223 &3188484190589710878
 Canvas:

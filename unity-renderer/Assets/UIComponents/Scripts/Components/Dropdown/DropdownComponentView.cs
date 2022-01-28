@@ -75,6 +75,12 @@ public interface IDropdownComponentView
     /// </summary>
     /// <param name="isActive">Tru for showing it.</param>
     void SetLoadingActive(bool isActive);
+
+    /// <summary>
+    /// Show/Hide the "Select All" option (only for multiselect configuration).
+    /// </summary>
+    /// <param name="isActive"></param>
+    void SetSelectAllOptionActive(bool isActive);
 }
 public class DropdownComponentView : BaseComponentView, IDropdownComponentView, IComponentModelConfig
 {
@@ -179,6 +185,7 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
         }
 
         UpdateSelectAllOptionStatus();
+        SetSelectAllOptionActive(model.showSelectAllOption);
     }
 
     public void FilterOptions(string filterText)
@@ -253,6 +260,16 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
             return;
 
         loadingPanel.SetActive(isActive);
+    }
+
+    public void SetSelectAllOptionActive(bool isActive)
+    {
+        model.showSelectAllOption = isActive;
+
+        if (!isMultiselect || selectAllOptionComponent == null)
+            return;
+
+        selectAllOptionComponent.gameObject.SetActive(isActive);
     }
 
     public override void Dispose()
